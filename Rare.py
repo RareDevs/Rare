@@ -425,46 +425,48 @@ def startMainProcess(loggedIn=False):
         # Since some games have the background and logo split into two files,
         # we have to do some extra logic to combine those
         if not os.path.isfile('images/' + game["app_name"] + '/FinalArt.png'):
-            print('Scaling cover for ' + game["app_name"])
-            # First off, check if the extra logo file is even there
-            if os.path.isfile('images/' + game["app_name"] + '/DieselGameBoxLogo.png'):
-                # Load in the two images that need to be combined
-                bg = Image.open('images/' + game["app_name"] + '/DieselGameBoxTall.png')
-                # To make sure the background is actually horizontal (3/4) (looking at you Celeste), resize the image
-                bg = bg.resize((int(bg.size[1] * 3 / 4), bg.size[1]))
-                # Since the logo is transparent, we have to convert it to RGBA
-                logo = Image.open('images/' + game["app_name"] + '/DieselGameBoxLogo.png').convert('RGBA')
-                # Resize the logo to be ~ 3/4 as wide as the background (EGL does something like this)
-                wpercent = ((bg.size[0] * (3 / 4)) / float(logo.size[0]))
-                hsize = int((float(logo.size[1]) * float(wpercent)))
-                logo = logo.resize((int(bg.size[0] * (3 / 4)), hsize), Image.ANTIALIAS)
-                # Calculate where the image has to be placed
-                pasteX = int((bg.size[0] - logo.size[0]) / 2)
-                pasteY = int((bg.size[1] - logo.size[1]) / 2)
-                # And finally copy the background and paste in the image
-                finalArt = bg.copy()
-                finalArt.paste(logo, (pasteX, pasteY), logo)
-                # Write out the file
-                finalArt.save('images/' + game["app_name"] + '/FinalArt.png')
+            try:
+                print('Scaling cover for ' + game["app_name"])
+                # First off, check if the extra logo file is even there
+                if os.path.isfile('images/' + game["app_name"] + '/DieselGameBoxLogo.png'):
+                    # Load in the two images that need to be combined
+                    bg = Image.open('images/' + game["app_name"] + '/DieselGameBoxTall.png')
+                    # To make sure the background is actually horizontal (3/4) (looking at you Celeste), resize the image
+                    bg = bg.resize((int(bg.size[1] * 3 / 4), bg.size[1]))
+                    # Since the logo is transparent, we have to convert it to RGBA
+                    logo = Image.open('images/' + game["app_name"] + '/DieselGameBoxLogo.png').convert('RGBA')
+                    # Resize the logo to be ~ 3/4 as wide as the background (EGL does something like this)
+                    wpercent = ((bg.size[0] * (3 / 4)) / float(logo.size[0]))
+                    hsize = int((float(logo.size[1]) * float(wpercent)))
+                    logo = logo.resize((int(bg.size[0] * (3 / 4)), hsize), Image.ANTIALIAS)
+                    # Calculate where the image has to be placed
+                    pasteX = int((bg.size[0] - logo.size[0]) / 2)
+                    pasteY = int((bg.size[1] - logo.size[1]) / 2)
+                    # And finally copy the background and paste in the image
+                    finalArt = bg.copy()
+                    finalArt.paste(logo, (pasteX, pasteY), logo)
+                    # Write out the file
+                    finalArt.save('images/' + game["app_name"] + '/FinalArt.png')
 
-                # And we have to do part of that again
-                # since the cover for an uninstalled game has the logo half-transparent
-                logoCopy = logo.copy()
-                logoCopy.putalpha(int(256 * 3 / 4))
-                logo.paste(logoCopy, logo)
-                uninstalledArt = bg.copy()
-                uninstalledArt.paste(logo, (pasteX, pasteY), logo)
-                uninstalledArt = uninstalledArt.convert('L')
-                uninstalledArt.save('images/' + game["app_name"] + '/UninstalledArt.png')
-            # And if the logo and background aren't split
-            else:
-                # We just open up the background and save that as the final image
-                finalArt = Image.open('images/' + game["app_name"] + '/DieselGameBoxTall.png')
-                finalArt.save('images/' + game["app_name"] + '/FinalArt.png')
-                # And same with the grayscale one
-                uninstalledArt = finalArt.convert('L')
-                uninstalledArt.save('images/' + game["app_name"] + '/UninstalledArt.png')
-
+                    # And we have to do part of that again
+                    # since the cover for an uninstalled game has the logo half-transparent
+                    logoCopy = logo.copy()
+                    logoCopy.putalpha(int(256 * 3 / 4))
+                    logo.paste(logoCopy, logo)
+                    uninstalledArt = bg.copy()
+                    uninstalledArt.paste(logo, (pasteX, pasteY), logo)
+                    uninstalledArt = uninstalledArt.convert('L')
+                    uninstalledArt.save('images/' + game["app_name"] + '/UninstalledArt.png')
+                # And if the logo and background aren't split
+                else:
+                    # We just open up the background and save that as the final image
+                    finalArt = Image.open('images/' + game["app_name"] + '/DieselGameBoxTall.png')
+                    finalArt.save('images/' + game["app_name"] + '/FinalArt.png')
+                    # And same with the grayscale one
+                    uninstalledArt = finalArt.convert('L')
+                    uninstalledArt.save('images/' + game["app_name"] + '/UninstalledArt.png')
+            except:
+                pass
     #If the user had to login first, the QApplication will already be running, so we don't have to start it again
     if not loggedIn:
         # Start GUI stuff
