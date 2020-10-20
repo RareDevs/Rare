@@ -10,14 +10,14 @@ class GameWidget(QWidget):
 
         self.title = game.title
         self.version = game.version
+        self.size = game.install_size
 
         self.layout = QHBoxLayout()
 
-
-        self.pixmap = QPixmap(f"../images/{game.app_name}/FinalArt.png")
-        self.pixmap = self.pixmap.scaled(240, 320)
+        pixmap = QPixmap(f"../images/{game.app_name}/FinalArt.png")
+        pixmap = pixmap.scaled(240, 320)
         self.image = QLabel()
-        self.image.setPixmap(self.pixmap)
+        self.image.setPixmap(pixmap)
         self.layout.addWidget(self.image)
 
         ##Layout on the right
@@ -28,12 +28,16 @@ class GameWidget(QWidget):
 
         self.launch_button = QPushButton(play_icon, "Launch")
         self.launch_button.clicked.connect(self.launch)
-        self.wine_rating = QLabel("Wine Rating: Comming Soon")
+        self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
         self.version_label = QLabel("Version: " + str(self.version))
+        self.size_label = QLabel(f"Installed size: {round(self.size / (1024 ** 3), 2)} GB")
+        self.settings = QPushButton(qta.icon("fa5s.cogs"), " Settings")
 
         self.childLayout.addWidget(self.launch_button)
         self.childLayout.addWidget(self.wine_rating)
         self.childLayout.addWidget(self.version_label)
+        self.childLayout.addWidget(self.size_label)
+        self.childLayout.addWidget(self.settings)
 
         self.childLayout.addStretch(1)
         # self.layout.addWidget(QLabel(game.title))
@@ -42,3 +46,23 @@ class GameWidget(QWidget):
 
     def launch(self):
         print(f"launch {self.title}")
+        # TODO
+
+    def get_rating(self) -> str:
+        return "gold"  # TODO
+
+
+class UninstalledGameWidget(QWidget):
+    def __init__(self, game):
+        super(UninstalledGameWidget, self).__init__()
+        self.title = game.app_title
+        self.layout = QHBoxLayout()
+
+        pixmap = QPixmap(f"../images/{game.app_name}/UninstalledArt.png")
+        pixmap = pixmap.scaled(240, 320)
+        self.image = QLabel()
+        self.image.setPixmap(pixmap)
+        self.layout.addWidget(self.image)
+
+        self.layout.addWidget(QLabel(f"<h1>{self.title}</h1>"))
+        self.setLayout(self.layout)

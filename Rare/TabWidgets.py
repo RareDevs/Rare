@@ -2,8 +2,8 @@ from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea
 
-from Rare.utils.legendary import get_installed
-from Rare.GameWidget import GameWidget
+from Rare.utils.legendaryUtils import get_installed, get_not_installed
+from Rare.GameWidget import GameWidget, UninstalledGameWidget
 
 
 class BrowserTab(QWebEngineView):
@@ -30,12 +30,12 @@ class GameListInstalled(QScrollArea):
         super(GameListInstalled, self).__init__(parent=parent)
         self.widget = QWidget()
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
         self.layout = QVBoxLayout()
         for i in get_installed():
             widget = GameWidget(i)
-            #widget.setFixedSize(240, 340)
+            #print(i.)
             self.layout.addWidget(widget)
 
         self.widget.setLayout(self.layout)
@@ -45,7 +45,16 @@ class GameListInstalled(QScrollArea):
 class GameListUninstalled(QScrollArea):
     def __init__(self, parent):
         super(GameListUninstalled, self).__init__(parent=parent)
-        self.setWidget(QLabel("Hier kommen die nicht installierten Spiele"))
+        self.widget = QWidget()
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.layout = QVBoxLayout()
+
+        for game in get_not_installed():
+            self.layout.addWidget(UninstalledGameWidget(game))
+        self.widget.setLayout(self.layout)
+        self.setWidget(self.widget)
 
 
 class UpdateList(QWidget):
