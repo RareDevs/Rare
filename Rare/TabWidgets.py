@@ -1,9 +1,9 @@
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit
 
-from Rare.utils.legendaryUtils import get_installed, get_not_installed
 from Rare.GameWidget import GameWidget, UninstalledGameWidget
+from Rare.utils.legendaryUtils import get_installed, get_not_installed
 
 
 class BrowserTab(QWebEngineView):
@@ -18,7 +18,6 @@ class Settings(QWidget):
         super(Settings, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
         label = QLabel()
-        print(label.fontInfo().pixelSize())
         self.layout.addWidget(QLabel("<h1>Settings</h1>"))
         self.layout.addWidget(QLabel("Coming soon"))
         self.layout.addStretch(1)
@@ -35,9 +34,8 @@ class GameListInstalled(QScrollArea):
         self.layout = QVBoxLayout()
         for i in get_installed():
             widget = GameWidget(i)
-            #print(i.)
-            self.layout.addWidget(widget)
 
+            self.layout.addWidget(widget)
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
 
@@ -51,8 +49,15 @@ class GameListUninstalled(QScrollArea):
 
         self.layout = QVBoxLayout()
 
+        self.filter = QLineEdit()
+        self.filter.setPlaceholderText("Search game TODO")
+        self.layout.addWidget(self.filter)
+
+        self.widgets = []
         for game in get_not_installed():
-            self.layout.addWidget(UninstalledGameWidget(game))
+            game_widget = UninstalledGameWidget(game)
+            self.layout.addWidget(game_widget)
+            self.widgets.append(game_widget)
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
 

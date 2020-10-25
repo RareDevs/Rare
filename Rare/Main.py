@@ -1,3 +1,4 @@
+import os
 import sys
 
 from PyQt5.QtWidgets import QTabWidget, QMainWindow, QWidget, QApplication
@@ -36,9 +37,34 @@ class TabWidget(QTabWidget):
         self.addTab(self.settings, "Settings")
 
 
+class LoginWindow(QMainWindow):
+    def __init__(self):
+        super(LoginWindow, self).__init__()
+        self.setWindowTitle("Rare - Login")
+        self.setGeometry(0, 0, 200, 150)
+        self.show()
+
+
 def main():
+    # Check if Legendary is installed
+
+    if os.path.isfile(os.path.expanduser("~") + '/.config/legendary/user.json'):
+        startMainProcess()
+    else:
+        notLoggedIn()
+
+
+def startMainProcess():
+    # TODO Download Images
+
     app = QApplication(sys.argv)
     ex = MainWindow()
+    sys.exit(app.exec_())
+
+
+def notLoggedIn():
+    app = QApplication(sys.argv)
+    window = LoginWindow()
     sys.exit(app.exec_())
 
 
