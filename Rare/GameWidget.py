@@ -66,7 +66,6 @@ class UninstalledGameWidget(QWidget):
         self.layout = QHBoxLayout()
         self.game = game
 
-        self.visible = True
         pixmap = QPixmap(f"../images/{game.app_name}/UninstalledArt.png")
         pixmap = pixmap.scaled(240, 320)
         self.image = QLabel()
@@ -89,5 +88,10 @@ class UninstalledGameWidget(QWidget):
 
     def install(self):
         print("install " + self.title)
-        #TODO
-        # dialog = InstallDialog(self.game)
+        dia = InstallDialog(self.game)
+        data = dia.get_data()
+        if data != 0:
+            path = data.get("install_path")
+            print(path)
+            # TODO
+

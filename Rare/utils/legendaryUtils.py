@@ -5,7 +5,6 @@ from distutils.util import strtobool
 from legendary.cli import LegendaryCLI
 from legendary.core import LegendaryCore
 
-
 core = LegendaryCore()
 cli = LegendaryCLI()
 
@@ -86,7 +85,16 @@ def start(game_name,
                               user_name_override=user_name_override,
                               language=language
                               ),
-                    [] # Extra
+                    []  # Extra
                     )
 
-# start("Sugar")
+def auth(sid:str):
+
+    cli.auth(Namespace(session_id=sid))
+
+
+def auth_import():
+    try:
+        cli.auth(Namespace(import_egs_auth=True))
+    except:
+        pass

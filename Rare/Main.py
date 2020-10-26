@@ -3,6 +3,7 @@ import sys
 
 from PyQt5.QtWidgets import QTabWidget, QMainWindow, QWidget, QApplication
 
+from Rare.Dialogs import LoginDialog
 from Rare.TabWidgets import Settings, GameListInstalled, BrowserTab, GameListUninstalled, UpdateList
 
 
@@ -49,6 +50,7 @@ def main():
     # Check if Legendary is installed
 
     if os.path.isfile(os.path.expanduser("~") + '/.config/legendary/user.json'):
+        print("Launching Rare")
         startMainProcess()
     else:
         notLoggedIn()
@@ -64,7 +66,8 @@ def startMainProcess():
 
 def notLoggedIn():
     app = QApplication(sys.argv)
-    window = LoginWindow()
+    dia = LoginDialog()
+    dia.show()
     sys.exit(app.exec_())
 
 
