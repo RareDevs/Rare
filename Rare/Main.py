@@ -38,17 +38,10 @@ class TabWidget(QTabWidget):
         self.addTab(self.settings, "Settings")
 
 
-class LoginWindow(QMainWindow):
-    def __init__(self):
-        super(LoginWindow, self).__init__()
-        self.setWindowTitle("Rare - Login")
-        self.setGeometry(0, 0, 200, 150)
-        self.show()
-
-
-def main():
+def main(start: bool = True):
     # Check if Legendary is installed
-
+    if not bool:
+        exit(0)
     if os.path.isfile(os.path.expanduser("~") + '/.config/legendary/user.json'):
         print("Launching Rare")
         startMainProcess()
@@ -67,8 +60,9 @@ def startMainProcess():
 def notLoggedIn():
     app = QApplication(sys.argv)
     dia = LoginDialog()
+    dia.signal.connect(main)
     dia.show()
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':

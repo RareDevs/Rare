@@ -1,7 +1,58 @@
 import os
 
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit
-from Rare.utils import legendaryUtils
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QDialog, QStackedLayout, QHBoxLayout, QWidget, QVBoxLayout, QPushButton, QLineEdit, QLabel
+
+from Rare.Login import ImportWidget
+
+
+class LoginDialog(QDialog):
+    signal = pyqtSignal(bool)
+
+    def __init__(self):
+        super(LoginDialog, self).__init__()
+        self.layout = QStackedLayout()
+
+        self.widget = QWidget()
+        self.import_widget = ImportWidget()
+        self.login_widget = QWidget()
+        self.import_widget.signal.connect(self.loggedin)
+        self.initWidget()
+
+        self.layout.insertWidget(0, self.widget)
+        self.layout.insertWidget(1, self.login_widget)
+        self.layout.insertWidget(2, self.import_widget)
+
+        self.setLayout(self.layout)
+        self.layout.setCurrentIndex(0)
+
+    def initWidget(self):
+        self.widget_layout = QVBoxLayout()
+        self.login_button = QPushButton("Login via Browser")
+        self.import_button = QPushButton("Import from existing EGL installation")
+        self.close_button = QPushButton("Exit")
+
+        # self.login_button.clicked.connect(self.login)
+        self.import_button.clicked.connect(self.set_import_widget)
+        self.close_button.clicked.connect(self.exit_login)
+
+        self.widget_layout.addWidget(self.login_button)
+        self.widget_layout.addWidget(self.import_button)
+        self.widget_layout.addWidget(self.close_button)
+        self.widget.setLayout(self.widget_layout)
+
+    def loggedin(self, int):
+        self.signal.emit(True)
+
+    def login(self):
+        self.layout.setCurrentIndex(1)
+
+    def set_import_widget(self):
+        self.layout.setCurrentIndex(2)
+
+    def exit_login(self):
+        self.signal.emit(False)
+
 
 class InstallDialog(QDialog):
     def __init__(self, game):
@@ -42,38 +93,6 @@ class InstallDialog(QDialog):
     def cancel(self):
         self.yes = False
         self.close()
-
-
-class LoginDialog(QDialog):
-    def __init__(self):
-        super(LoginDialog, self).__init__()
-        self.open_browser_button = QPushButton("Open Browser to get sid")
-        self.open_browser_button.clicked.connect(self.open_browser)
-        self.sid_field = QLineEdit()
-        self.sid_field.setPlaceholderText("Enter sid from the Browser")
-        self.login_button = QPushButton("Login")
-        self.login_button.clicked.connect(self.login)
-        self.import_button = QPushButton("Or Import Login from EGL")
-        self.import_button.clicked.connect(self.import_key)
-
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.open_browser_button)
-        self.layout.addWidget(self.sid_field)
-        self.layout.addWidget(self.login_button)
-        self.layout.addWidget(self.import_button)
-        self.setLayout(self.layout)
-
-    def open_browser(self):
-        pass
-
-    def login(self):
-        legendaryUtils.auth(self.sid_field.text())
-
-    def import_key(self):
-        if legendaryUtils.auth_import():
-            self.close()
-        else:
-            self.import_button.setText("Das hat nicht funktioniert")
 
 
 class GameSettingsDialog(QDialog):

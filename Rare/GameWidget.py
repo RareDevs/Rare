@@ -1,3 +1,5 @@
+import subprocess
+
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QStyle
 
@@ -8,14 +10,14 @@ from Rare.utils import legendaryUtils
 class GameWidget(QWidget):
     def __init__(self, game):
         super(GameWidget, self).__init__()
-
+        self.proc: subprocess.Popen = None
         self.title = game.title
         self.app_name = game.app_name
         self.version = game.version
         self.size = game.install_size
         self.launch_params = game.launch_parameters
-        #self.dev =
-
+        # self.dev =
+        self.game_running = False
         self.layout = QHBoxLayout()
 
         pixmap = QPixmap(f"../images/{game.app_name}/FinalArt.png")
@@ -50,10 +52,15 @@ class GameWidget(QWidget):
         self.setLayout(self.layout)
 
     def launch(self):
-        print(f"launch {self.title}")
-        self.launch_button.setText("Running")
-        self.launch_button.setDisabled(True)
-        legendaryUtils.start(self.app_name) # adding launch params #TODO
+        if not self.game_running:
+            print(f"launch {self.title}")
+            self.launch_button.setText("Kill")
+            self.proc = legendaryUtils.launch_game(self.app_name)
+            self.game_running = True
+        else:
+            self.proc.kill()
+            self.launch_button.setText("Launch")
+            self.game_running = False
 
     def get_rating(self) -> str:
         return "gold"  # TODO
@@ -94,4 +101,3 @@ class UninstalledGameWidget(QWidget):
             path = data.get("install_path")
             print(path)
             # TODO
-
