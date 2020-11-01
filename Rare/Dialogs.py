@@ -7,7 +7,6 @@ from Rare.Login import ImportWidget
 
 
 class LoginDialog(QDialog):
-    signal = pyqtSignal(bool)
 
     def __init__(self):
         super(LoginDialog, self).__init__()
@@ -16,7 +15,7 @@ class LoginDialog(QDialog):
         self.widget = QWidget()
         self.import_widget = ImportWidget()
         self.login_widget = QWidget()
-        self.import_widget.signal.connect(self.loggedin)
+        self.import_widget.signal.connect(self.exit_login)
         self.initWidget()
 
         self.layout.insertWidget(0, self.widget)
@@ -25,6 +24,7 @@ class LoginDialog(QDialog):
 
         self.setLayout(self.layout)
         self.layout.setCurrentIndex(0)
+        self.show()
 
     def initWidget(self):
         self.widget_layout = QVBoxLayout()
@@ -41,8 +41,9 @@ class LoginDialog(QDialog):
         self.widget_layout.addWidget(self.close_button)
         self.widget.setLayout(self.widget_layout)
 
-    def loggedin(self, int):
-        self.signal.emit(True)
+    def get_login(self):
+        self.exec_()
+
 
     def login(self):
         self.layout.setCurrentIndex(1)
@@ -51,8 +52,7 @@ class LoginDialog(QDialog):
         self.layout.setCurrentIndex(2)
 
     def exit_login(self):
-        self.signal.emit(False)
-
+        self.close()
 
 class InstallDialog(QDialog):
     def __init__(self, game):

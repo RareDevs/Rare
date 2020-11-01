@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
-import os
-import math
-import json
-import requests
 import configparser
+import json
+import math
+import os
 import subprocess
+
+import requests
 from PIL import Image
-from time import sleep
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 print('Rare v1 starting up...')
 
@@ -279,7 +279,7 @@ class LoginWindow(QMainWindow):
             pass
         if os.path.isfile(os.path.expanduser("~") + '/.config/legendary/user.json'):
             self.close()
-            #Run list-games once to get game list + info for newly logged in account
+            # Run list-games once to get game list + info for newly logged in account
             installedGames = subprocess.Popen('legendary list-games', shell=True,
                                               stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             installedGames.wait()
@@ -386,8 +386,8 @@ def main():
     else:
         notLoggedIn()
 
-def startMainProcess(loggedIn=False):
 
+def startMainProcess(loggedIn=False):
     print('Creating directorys')
     try:
         os.mkdir('images')
@@ -467,7 +467,7 @@ def startMainProcess(loggedIn=False):
                     uninstalledArt.save('images/' + game["app_name"] + '/UninstalledArt.png')
             except:
                 pass
-    #If the user had to login first, the QApplication will already be running, so we don't have to start it again
+    # If the user had to login first, the QApplication will already be running, so we don't have to start it again
     if not loggedIn:
         # Start GUI stuff
         app = QApplication([])
@@ -476,7 +476,6 @@ def startMainProcess(loggedIn=False):
     else:
         mainWindow = MainWindow(allGames, installedGames)
         mainWindow.show()
-
 
 
 def notLoggedIn():
