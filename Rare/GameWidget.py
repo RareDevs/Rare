@@ -48,7 +48,6 @@ class GameWidget(QWidget):
         self.childLayout.addWidget(self.settings)
 
         self.childLayout.addStretch(1)
-        # self.layout.addWidget(QLabel(game.title))
         self.layout.addLayout(self.childLayout)
         self.setLayout(self.layout)
 

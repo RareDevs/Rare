@@ -136,6 +136,14 @@ def auth_import(lutris: bool = False, wine_prefix: str = None) -> bool:
         return False
 
 
+def get_updates():
+
+
+    update_games = []
+    for game in core.get_installed_list():
+        update_games.append(game) if get_game_by_name(game.app_name).app_version != game.version else None
+    return update_games
+
 def logout():
     core.lgd.invalidate_userdata()
 

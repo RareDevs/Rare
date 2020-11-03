@@ -58,6 +58,7 @@ def main():
         dia = LoginDialog()
         if not dia.login():
             main()
+    # TODO
 
     app.exec_()
 

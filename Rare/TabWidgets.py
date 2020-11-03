@@ -3,7 +3,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit, QPushButton
 
 from Rare.GameWidget import GameWidget, UninstalledGameWidget
-from Rare.utils.legendaryUtils import get_installed, get_not_installed, logout
+from Rare.utils.legendaryUtils import get_installed, get_not_installed, logout, get_updates
 
 
 class BrowserTab(QWebEngineView):
@@ -22,6 +22,11 @@ class Settings(QWidget):
         self.logout_button.clicked.connect(self.logout)
         self.layout.addWidget(self.logout_button)
 
+        self.info_label = QLabel("<h2>Information</h2>")
+        self.infotext = QLabel("""Developers : Dummerle, CommandMC\nLicence: GPL v3""")
+
+        self.layout.addWidget(self.info_label)
+        self.layout.addWidget(self.infotext)
         self.layout.addStretch(1)
         self.setLayout(self.layout)
 
@@ -72,5 +77,12 @@ class UpdateList(QWidget):
     def __init__(self, parent):
         super(UpdateList, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
-        self.layout.addWidget(QLabel("Updates"))
+        updates = get_updates()
+        if not updates:
+            for game in get_updates():
+                self.layout.addWidget(QLabel("Update available for " + game.title))
+
+        else:
+            self.layout.addWidget(QLabel("No updates available"))
+        self.layout.addStretch(1)
         self.setLayout(self.layout)
