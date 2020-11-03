@@ -8,14 +8,14 @@ from PyQt5.QtWidgets import QTabWidget, QMainWindow, QWidget, QApplication
 
 from Rare.Dialogs import LoginDialog
 from Rare.TabWidgets import Settings, GameListInstalled, BrowserTab, GameListUninstalled, UpdateList
-from Rare.config import IMAGE_DIR, LOGLEVEL
+from Rare.config import IMAGE_DIR
 from Rare.utils import legendaryUtils
 
 logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',
-    level=LOGLEVEL
 )
 logger = logging.getLogger("Rare")
+
 
 class MainWindow(QMainWindow):
 
@@ -65,6 +65,7 @@ def main():
 def download_images():
     if not os.path.isdir(IMAGE_DIR):
         os.mkdir(IMAGE_DIR)
+        logger.info("Create Image dir")
 
     # Download Images
     for game in legendaryUtils.get_games():
@@ -113,7 +114,7 @@ def download_images():
                     uninstalledArt = finalArt.convert('L')
                     uninstalledArt.save(f'{IMAGE_DIR}/{game.app_name}/UninstalledArt.png')
                 else:
-                    logger.error(f"File {IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png dowsn't exist")
+                    logger.warning(f"File {IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png dowsn't exist")
 
 
 if __name__ == '__main__':

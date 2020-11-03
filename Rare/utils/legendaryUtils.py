@@ -1,10 +1,11 @@
+import logging
 import os
 import subprocess
+from getpass import getuser
 
 from legendary.core import LegendaryCore
 
 core = LegendaryCore()
-from getpass import getuser
 
 
 def get_installed():
@@ -12,10 +13,7 @@ def get_installed():
 
 
 def get_installed_names():
-    names = []
-    for i in core.get_installed_list():
-        names.append(i.app_name)
-    return names
+    return [i.app_name for i in core.get_installed_list()]
 
 
 def get_not_installed():
@@ -32,17 +30,7 @@ def get_games_and_dlcs():
     if not core.login():
         print("Login Failed")
         exit(1)
-
     return core.get_game_and_dlc_list()
-
-
-def get_games_by_name():
-    if not core.login():
-        print("Login Failed")
-        exit(1)
-    game = []
-    for i in core.get_game_list():
-        game.append(i.app_name)
 
 
 def get_game_by_name(name: str):
@@ -53,7 +41,13 @@ def get_games():
     if not core.login():
         print("Login Failed")
         exit(1)
-    return core.get_game_list()
+
+    return sorted(core.get_game_list(), key=lambda x: x.app_title)
+
+
+def get_games_sorted():
+    if not core.login():
+        logging.error("No login")
 
 
 def launch_game(app_name: str, offline: bool = False, skip_version_check: bool = False, username_override=None,
@@ -146,5 +140,7 @@ def logout():
     core.lgd.invalidate_userdata()
 
 
-def install(app_name: str, path: str):
-    pass
+def install(app_name: str, path: str = None):
+    subprocess.Popen(f"legendary -y install {app_name}".split(" "))
+    # TODO
+

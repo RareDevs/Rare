@@ -1,9 +1,9 @@
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit, QPushButton
 
 from Rare.GameWidget import GameWidget, UninstalledGameWidget
-from Rare.utils.legendaryUtils import get_installed, get_not_installed
+from Rare.utils.legendaryUtils import get_installed, get_not_installed, logout
 
 
 class BrowserTab(QWebEngineView):
@@ -17,11 +17,17 @@ class Settings(QWidget):
     def __init__(self, parent):
         super(Settings, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
-        label = QLabel()
-        self.layout.addWidget(QLabel("<h1>Settings</h1>"))
-        self.layout.addWidget(QLabel("Coming soon"))
+        self.layout.addWidget(QLabel("<h1>Rare Settings</h1>"))
+        self.logout_button = QPushButton("Logout")
+        self.logout_button.clicked.connect(self.logout)
+        self.layout.addWidget(self.logout_button)
+
         self.layout.addStretch(1)
         self.setLayout(self.layout)
+
+    def logout(self):
+        logout()
+        exit(0)
 
 
 class GameListInstalled(QScrollArea):

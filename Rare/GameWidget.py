@@ -8,9 +8,10 @@ from Rare.utils import legendaryUtils
 
 
 class GameWidget(QWidget):
+    proc: subprocess.Popen
+
     def __init__(self, game):
         super(GameWidget, self).__init__()
-        self.proc: subprocess.Popen = None
         self.title = game.title
         self.app_name = game.app_name
         self.version = game.version
@@ -21,7 +22,7 @@ class GameWidget(QWidget):
         self.layout = QHBoxLayout()
 
         pixmap = QPixmap(f"../images/{game.app_name}/FinalArt.png")
-        pixmap = pixmap.scaled(240, 320)
+        pixmap = pixmap.scaled(180, 240)
         self.image = QLabel()
         self.image.setPixmap(pixmap)
         self.layout.addWidget(self.image)
@@ -70,21 +71,27 @@ class UninstalledGameWidget(QWidget):
     def __init__(self, game):
         super(UninstalledGameWidget, self).__init__()
         self.title = game.app_title
+        self.app_name = game.app_name
+        self.version = game.app_version
         self.layout = QHBoxLayout()
         self.game = game
 
         pixmap = QPixmap(f"../images/{game.app_name}/UninstalledArt.png")
-        pixmap = pixmap.scaled(240, 320)
+        pixmap = pixmap.scaled(120, 160)
         self.image = QLabel()
         self.image.setPixmap(pixmap)
 
         self.child_layout = QVBoxLayout()
 
         self.title_label = QLabel(f"<h2>{self.title}</h2>")
+        self.app_name_label = QLabel(f"App Name: {self.app_name}")
+        self.version_label = QLabel(f"Version: {self.version}")
         self.install_button = QPushButton("Install")
         self.install_button.clicked.connect(self.install)
 
         self.child_layout.addWidget(self.title_label)
+        self.child_layout.addWidget(self.app_name_label)
+        self.child_layout.addWidget(self.version_label)
         self.child_layout.addWidget(self.install_button)
         self.child_layout.addStretch(1)
         self.layout.addWidget(self.image)
@@ -99,5 +106,6 @@ class UninstalledGameWidget(QWidget):
         data = dia.get_data()
         if data != 0:
             path = data.get("install_path")
-            print(path)
             # TODO
+            print(f"install {self.app_name} in path {path}")
+            legendaryUtils.install(self.app_name)
