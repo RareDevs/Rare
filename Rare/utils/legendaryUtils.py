@@ -9,7 +9,7 @@ core = LegendaryCore()
 
 
 def get_installed():
-    return core.get_installed_list()
+    return sorted(core.get_installed_list(), key=lambda name: name.title)
 
 
 def get_installed_names():
@@ -40,7 +40,7 @@ def get_game_by_name(name: str):
 def get_games():
     if not core.login():
         print("Login Failed")
-        exit(1)
+        return None
 
     return sorted(core.get_game_list(), key=lambda x: x.app_title)
 
@@ -137,12 +137,11 @@ def auth_import(lutris: bool = False, wine_prefix: str = None) -> bool:
 
 
 def get_updates():
-
-
     update_games = []
     for game in core.get_installed_list():
         update_games.append(game) if get_game_by_name(game.app_name).app_version != game.version else None
     return update_games
+
 
 def logout():
     core.lgd.invalidate_userdata()
@@ -152,3 +151,13 @@ def install(app_name: str, path: str = None):
     subprocess.Popen(f"legendary -y install {app_name}".split(" "))
     # TODO
 
+
+def login(sid):
+    code = core.auth_sid(sid)
+    if code != '':
+        return core.auth_code(code)
+    else:
+        return False
+
+def get_name():
+    return core.lgd.userdata["displayName"]

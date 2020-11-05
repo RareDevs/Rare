@@ -1,21 +1,23 @@
 import os
 
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QDialog, QStackedLayout, QHBoxLayout, QWidget, QVBoxLayout, QPushButton, QLineEdit, QLabel
 
-from Rare.Login import ImportWidget
+from Rare.Login import ImportWidget, LoginWidget
 
 
 class LoginDialog(QDialog):
 
     def __init__(self):
+        self.code = 1
         super(LoginDialog, self).__init__()
         self.layout = QStackedLayout()
 
         self.widget = QWidget()
         self.import_widget = ImportWidget()
-        self.login_widget = QWidget()
-        self.import_widget.signal.connect(self.exit_login)
+        self.login_widget = LoginWidget()
+        self.login_widget.signal.connect(self.login_success)
+        self.import_widget.signal.connect(self.login_success)
+
         self.initWidget()
 
         self.layout.insertWidget(0, self.widget)
@@ -34,6 +36,7 @@ class LoginDialog(QDialog):
 
         # self.login_button.clicked.connect(self.login)
         self.import_button.clicked.connect(self.set_import_widget)
+        self.login_button.clicked.connect(self.set_login_widget)
         self.close_button.clicked.connect(self.exit_login)
 
         self.widget_layout.addWidget(self.login_button)
@@ -41,18 +44,24 @@ class LoginDialog(QDialog):
         self.widget_layout.addWidget(self.close_button)
         self.widget.setLayout(self.widget_layout)
 
+    def login_success(self):
+        self.code = 0
+        self.close()
+
     def get_login(self):
         self.exec_()
+        return self.code
 
-
-    def login(self):
+    def set_login_widget(self):
         self.layout.setCurrentIndex(1)
 
     def set_import_widget(self):
         self.layout.setCurrentIndex(2)
 
     def exit_login(self):
+        self.code = 1
         self.close()
+
 
 class InstallDialog(QDialog):
     def __init__(self, game):

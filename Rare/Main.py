@@ -53,13 +53,17 @@ def main():
     if os.path.isfile(os.path.expanduser("~") + '/.config/legendary/user.json'):
         logger.info("Launching Rare")
         download_images()
-        window = MainWindow()
     else:
         dia = LoginDialog()
-        if not dia.login():
-            main()
-    # TODO
+        code = dia.get_login()
+        if code == 1:
+            app.closeAllWindows()
+            logger.info("Exit login")
+            exit(0)
+        elif code == 0:
+            logger.info("Login successfully")
 
+    window = MainWindow()
     app.exec_()
 
 

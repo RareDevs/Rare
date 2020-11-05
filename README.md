@@ -13,4 +13,3 @@ I'm in no way experienced in Python or PyQt5 (this project originally was a "Let
  ### Usage
  When you run Rare, it'll check if you're currently logged in and walk you through logging in if you aren't.
  Once you're logged in, it will pull game covers from the "metadata" folder in Legedary's config folder, join logo and background together and then display a list of games you have in your account. Installed games will appear in full color while not installed ones will appear in black and white.
- Left-clicking a game will install / launch it, right clicking it will bring up the settings for that game.

@@ -3,7 +3,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit, QPushButton
 
 from Rare.GameWidget import GameWidget, UninstalledGameWidget
-from Rare.utils.legendaryUtils import get_installed, get_not_installed, logout, get_updates
+from Rare.utils.legendaryUtils import get_installed, get_not_installed, logout, get_updates, get_name
 
 
 class BrowserTab(QWebEngineView):
@@ -18,11 +18,13 @@ class Settings(QWidget):
         super(Settings, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("<h1>Rare Settings</h1>"))
+        self.logged_in_as = QLabel(f"Logged in as {get_name()}")
         self.logout_button = QPushButton("Logout")
         self.logout_button.clicked.connect(self.logout)
+        self.layout.addWidget(self.logged_in_as)
         self.layout.addWidget(self.logout_button)
 
-        self.info_label = QLabel("<h2>Information</h2>")
+        self.info_label = QLabel("<h2>Credits</h2>")
         self.infotext = QLabel("""Developers : Dummerle, CommandMC\nLicence: GPL v3""")
 
         self.layout.addWidget(self.info_label)
