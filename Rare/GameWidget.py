@@ -1,10 +1,34 @@
 import subprocess
+from logging import getLogger
 
+from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QStyle
 
 from Rare.Dialogs import InstallDialog
 from Rare.utils import legendaryUtils
+
+logger = getLogger("Game")
+
+
+class Thread(QThread):
+    signal = pyqtSignal()
+
+    def __init__(self, proc):
+        super(Thread, self).__init__()
+        self.proc: subprocess.Popen = proc
+
+    def run(self):
+        self.sleep(3)
+        logger.info("Running ")
+        while True:
+            if not self.proc.poll():
+                self.sleep(3)
+            else:
+                self.signal.emit()
+                self.quit()
+                logger.info("Kill")
+                break
 
 
 class GameWidget(QWidget):
@@ -53,14 +77,25 @@ class GameWidget(QWidget):
 
     def launch(self):
         if not self.game_running:
-            print(f"launch {self.title}")
-            self.launch_button.setText("Kill")
-            self.proc = legendaryUtils.launch_game(self.app_name)
-            self.game_running = True
+            logger.info(f"launching {self.title}")
+            resp = legendaryUtils.launch_game(self.app_name)
+            if resp != 1:
+                self.proc = resp
+                self.thread = Thread(self.proc)
+                self.thread.signal.connect(self.kill)
+                self.thread.start()
+                self.launch_button.setText("Kill")
+                self.game_running = True
+            else:
+                logger.warning("Error")
         else:
-            self.proc.kill()
-            self.launch_button.setText("Launch")
-            self.game_running = False
+            self.kill()
+
+
+    def kill(self):
+        self.proc.kill()
+        self.launch_button.setText("Launch3")
+        self.game_running = False
 
     def get_rating(self) -> str:
         return "gold"  # TODO
@@ -100,11 +135,11 @@ class UninstalledGameWidget(QWidget):
         self.setLayout(self.layout)
 
     def install(self):
-        print("install " + self.title)
+        logger.info("install " + self.title)
         dia = InstallDialog(self.game)
         data = dia.get_data()
         if data != 0:
             path = data.get("install_path")
             # TODO
-            print(f"install {self.app_name} in path {path}")
+            logger.info(f"install {self.app_name} in path {path}")
             legendaryUtils.install(self.app_name)

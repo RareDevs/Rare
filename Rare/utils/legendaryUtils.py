@@ -55,10 +55,13 @@ def launch_game(app_name: str, offline: bool = False, skip_version_check: bool =
                 no_wine: bool = os.name == "nt", extra: [] = None):
     game = core.get_installed_game(app_name)
     if not game:
+        print("Game not found")
         return 1
     if game.is_dlc:
+        print("Game is dlc")
         return 1
     if not os.path.exists(game.install_path):
+        print("Game doesn't exist")
         return 1
 
     if not offline:
@@ -82,11 +85,6 @@ def launch_game(app_name: str, offline: bool = False, skip_version_check: bool =
                                                   disable_wine=no_wine)
 
     return subprocess.Popen(params, cwd=cwd, env=env)
-
-
-def auth(sid: str):
-    # cli.auth(Namespace(session_id=sid))
-    pass
 
 
 def auth_import(lutris: bool = False, wine_prefix: str = None) -> bool:
@@ -158,6 +156,7 @@ def login(sid):
         return core.auth_code(code)
     else:
         return False
+
 
 def get_name():
     return core.lgd.userdata["displayName"]

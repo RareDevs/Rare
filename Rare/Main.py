@@ -13,6 +13,7 @@ from Rare.utils import legendaryUtils
 
 logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',
+    level=logging.INFO
 )
 logger = logging.getLogger("Rare")
 
@@ -50,10 +51,13 @@ class TabWidget(QTabWidget):
 
 def main():
     app = QApplication(sys.argv)
-    if os.path.isfile(os.path.expanduser("~") + '/.config/legendary/user.json'):
-        logger.info("Launching Rare")
-        download_images()
+
+    if legendaryUtils.core.login():
+
+        logger.info("Login credentials found")
+
     else:
+        logger.info("No login data found")
         dia = LoginDialog()
         code = dia.get_login()
         if code == 1:
@@ -62,7 +66,7 @@ def main():
             exit(0)
         elif code == 0:
             logger.info("Login successfully")
-
+    download_images()
     window = MainWindow()
     app.exec_()
 
@@ -89,7 +93,7 @@ def download_images():
         if not os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png"):
             logger.info("Scaling cover for " + game.app_name)
             if os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo"):
-                bg: Image.Image = Image.open()
+                bg: Image.Image = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo")
                 bg = bg.resize((int(bg.size[1] * 3 / 4), bg.size[1]))
                 logo = Image.open('images/' + game["app_name"] + '/DieselGameBoxLogo.png').convert('RGBA')
                 wpercent = ((bg.size[0] * (3 / 4)) / float(logo.size[0]))

@@ -25,7 +25,7 @@ class Settings(QWidget):
         self.layout.addWidget(self.logout_button)
 
         self.info_label = QLabel("<h2>Credits</h2>")
-        self.infotext = QLabel("""Developers : Dummerle, CommandMC\nLicence: GPL v3""")
+        self.infotext = QLabel("""Developers : Dummerle, CommandMC\nLegendary Dev: Derrod\nLicence: GPL v3""")
 
         self.layout.addWidget(self.info_label)
         self.layout.addWidget(self.infotext)
