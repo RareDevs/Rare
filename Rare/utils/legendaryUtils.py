@@ -160,3 +160,7 @@ def login(sid):
 
 def get_name():
     return core.lgd.userdata["displayName"]
+
+
+def uninstall(app_name: str):
+    core.uninstall_game(core.get_installed_game(app_name), True, True)

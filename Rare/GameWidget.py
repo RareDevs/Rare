@@ -5,7 +5,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QStyle
 
-from Rare.Dialogs import InstallDialog
+from Rare.Dialogs import InstallDialog, GameSettingsDialog
 from Rare.utils import legendaryUtils
 
 logger = getLogger("Game")
@@ -33,6 +33,7 @@ class Thread(QThread):
 
 class GameWidget(QWidget):
     proc: subprocess.Popen
+    signal = pyqtSignal(str)
 
     def __init__(self, game):
         super(GameWidget, self).__init__()
@@ -62,14 +63,15 @@ class GameWidget(QWidget):
         self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
         self.version_label = QLabel("Version: " + str(self.version))
         self.size_label = QLabel(f"Installed size: {round(self.size / (1024 ** 3), 2)} GB")
-        self.settings = QPushButton(settings_icon, " Settings (Icon TODO)")
+        self.settings_button = QPushButton(settings_icon, " Settings (Icon TODO)")
+        self.settings_button.clicked.connect(self.settings)
 
         self.childLayout.addWidget(self.title_widget)
         self.childLayout.addWidget(self.launch_button)
         self.childLayout.addWidget(self.wine_rating)
         self.childLayout.addWidget(self.version_label)
         self.childLayout.addWidget(self.size_label)
-        self.childLayout.addWidget(self.settings)
+        self.childLayout.addWidget(self.settings_button)
 
         self.childLayout.addStretch(1)
         self.layout.addLayout(self.childLayout)
@@ -91,14 +93,20 @@ class GameWidget(QWidget):
         else:
             self.kill()
 
-
     def kill(self):
         self.proc.kill()
-        self.launch_button.setText("Launch3")
+        self.launch_button.setText("Launch")
         self.game_running = False
 
     def get_rating(self) -> str:
         return "gold"  # TODO
+
+    def settings(self):
+        settings_dialog = GameSettingsDialog()
+        action = settings_dialog.get_settings()
+        if action == "uninstall":
+            legendaryUtils.uninstall(self.app_name)
+            self.signal.emit(self.app_name)
 
 
 class UninstalledGameWidget(QWidget):

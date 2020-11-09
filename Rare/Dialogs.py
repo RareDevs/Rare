@@ -105,5 +105,39 @@ class InstallDialog(QDialog):
 
 
 class GameSettingsDialog(QDialog):
-    def __init__(self):
+    action: str = None
+
+    def __init__(self, settings=None):
         super(GameSettingsDialog, self).__init__()
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(QLabel("Einstellungen"))
+
+        self.wine_prefix_text = QLabel("Wine prefix")
+        self.wine_prefix = QLineEdit(f"{os.path.expanduser('~')}/.wine")
+        self.wine_prefix.setPlaceholderText("Wineprefix")
+        self.uninstall_button = QPushButton("Uninstall Game")
+        self.uninstall_button.clicked.connect(self.uninstall)
+        self.save_button = QPushButton("Save settings")
+        self.exit_button = QPushButton("Exit withot save")
+        self.exit_button.clicked.connect(self.close)
+        self.save_button.clicked.connect(self.exit_settings)
+
+        self.layout.addWidget(self.wine_prefix_text)
+        self.layout.addWidget(self.wine_prefix)
+        self.layout.addWidget(self.uninstall_button)
+        self.layout.addWidget(self.save_button)
+        self.layout.addWidget(self.exit_button)
+
+        self.setLayout(self.layout)
+
+    def get_settings(self):
+        self.exec_()
+        return self.action
+
+    def uninstall(self):
+        self.action = "uninstall"
+        self.close()
+
+    def exit_settings(self):
+        self.action = self.wine_prefix.text()
+        self.close()
