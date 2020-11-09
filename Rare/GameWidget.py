@@ -148,6 +148,5 @@ class UninstalledGameWidget(QWidget):
         data = dia.get_data()
         if data != 0:
             path = data.get("install_path")
-            # TODO
             logger.info(f"install {self.app_name} in path {path}")
-            legendaryUtils.install(self.app_name)
+            legendaryUtils.install(self.app_name, path=path)
