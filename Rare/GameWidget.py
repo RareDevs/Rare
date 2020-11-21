@@ -37,6 +37,7 @@ class GameWidget(QWidget):
 
     def __init__(self, game):
         super(GameWidget, self).__init__()
+        self.game = game
         self.title = game.title
         self.app_name = game.app_name
         self.version = game.version
@@ -102,7 +103,7 @@ class GameWidget(QWidget):
         return "gold"  # TODO
 
     def settings(self):
-        settings_dialog = GameSettingsDialog()
+        settings_dialog = GameSettingsDialog(self.game)
         action = settings_dialog.get_settings()
         if action == "uninstall":
             legendaryUtils.uninstall(self.app_name)

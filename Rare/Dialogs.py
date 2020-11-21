@@ -107,8 +107,9 @@ class InstallDialog(QDialog):
 class GameSettingsDialog(QDialog):
     action: str = None
 
-    def __init__(self, settings=None):
+    def __init__(self, game):
         super(GameSettingsDialog, self).__init__()
+        self.game = game
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("Einstellungen"))
 
@@ -135,9 +136,47 @@ class GameSettingsDialog(QDialog):
         return self.action
 
     def uninstall(self):
-        self.action = "uninstall"
+        dia = AcceptDialog(f"Do you really want to delete {self.game.title}")
+        if dia.get_accept():
+            self.action = "uninstall"
+        else:
+            self.action = "nothing"
         self.close()
 
     def exit_settings(self):
         self.action = self.wine_prefix.text()
+        self.close()
+
+
+class AcceptDialog(QDialog):
+    def __init__(self, text: str):
+        super(AcceptDialog, self).__init__()
+        self.accept_status = False
+        self.text = QLabel(text)
+        self.accept_button = QPushButton("Yes")
+        self.accept_button.clicked.connect(self.accept)
+        self.exit_button = QPushButton("Cancel")
+        self.exit_button.clicked.connect(self.cancel)
+        self.layout = QVBoxLayout()
+        self.child_layout = QHBoxLayout()
+
+        self.layout.addWidget(self.text)
+        self.child_layout.addStretch(1)
+        self.child_layout.addWidget(self.accept_button)
+        self.child_layout.addWidget(self.exit_button)
+
+        self.layout.addStretch(1)
+        self.layout.addLayout(self.child_layout)
+        self.setLayout(self.layout)
+
+    def get_accept(self):
+        self.exec_()
+        return self.accept_status
+
+    def accept(self):
+        self.accept_status = True
+        self.close()
+
+    def cancel(self):
+        self.accept_status = False
         self.close()

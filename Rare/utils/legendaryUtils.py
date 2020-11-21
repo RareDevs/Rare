@@ -6,6 +6,7 @@ from getpass import getuser
 from legendary.core import LegendaryCore
 
 core = LegendaryCore()
+logger = logging.getLogger("LegendaryUtils")
 
 
 def get_installed():
@@ -88,13 +89,7 @@ def launch_game(app_name: str, offline: bool = False, skip_version_check: bool =
 
 
 def auth_import(lutris: bool = False, wine_prefix: str = None) -> bool:
-    '''
-    import Data from existing Egl installation
 
-    :param lutris only linux automate using lutris wine prefix:
-    :param wine_prefix only linux path to wine_prefix:
-    :return success:
-    '''
     print(lutris, wine_prefix)
     # Linux
     if not core.egl.appdata_path:
@@ -164,3 +159,9 @@ def get_name():
 
 def uninstall(app_name: str):
     core.uninstall_game(core.get_installed_game(app_name), True, True)
+    # logger.info("Uninstalling " + app_name)
+
+
+def update(app_name) -> subprocess.Popen:
+    logger.info(f"Updating {app_name}")
+    return subprocess.Popen(f"legendary -y update {app_name}".split())

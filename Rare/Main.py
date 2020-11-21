@@ -48,11 +48,11 @@ class TabWidget(QTabWidget):
 
 def main():
     app = QApplication(sys.argv)
-
-    if legendaryUtils.core.login():
-        logger.info("Login credentials found")
-
-    else:
+    # app.setStyleSheet(open("../style.qss").read())
+    try:
+        if legendaryUtils.core.login():
+            logger.info("Login credentials found")
+    except:
         logger.info("No login data found")
         dia = LoginDialog()
         code = dia.get_login()
