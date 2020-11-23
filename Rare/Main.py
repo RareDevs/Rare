@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QTabWidget, QMainWindow, QWidget, QApplication
 
 from Rare.Dialogs import LoginDialog
 from Rare.TabWidgets import Settings, GameListInstalled, BrowserTab, GameListUninstalled, UpdateList
-from Rare.utils import legendaryUtils
+from Rare.utils import legendaryUtils, RareConfig
 from Rare.utils.RareUtils import download_images
 
 logging.basicConfig(
@@ -48,7 +48,9 @@ class TabWidget(QTabWidget):
 
 def main():
     app = QApplication(sys.argv)
-    # app.setStyleSheet(open("../style.qss").read())
+    # print(RareConfig.get_config())
+    if RareConfig.get_config()["Rare"].get("theme") == "dark":
+        app.setStyleSheet(open("../style.qss").read())
     try:
         if legendaryUtils.core.login():
             logger.info("Login credentials found")

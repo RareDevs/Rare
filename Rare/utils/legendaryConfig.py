@@ -7,7 +7,6 @@ lgd_config.read(config_path + "config.ini")
 
 
 def get_config() -> {}:
-    print(lgd_config.__dict__["_sections"])
     return lgd_config.__dict__["_sections"]
 
 
