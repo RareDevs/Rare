@@ -4,13 +4,13 @@ from logging import getLogger
 import requests
 from PIL import Image
 
-from Rare.config import IMAGE_DIR
 from Rare.utils import legendaryUtils
 
 logger = getLogger("Utils")
 
 
 def download_images():
+    IMAGE_DIR = "../images"
     if not os.path.isdir(IMAGE_DIR):
         os.mkdir(IMAGE_DIR)
         logger.info("Create Image dir")

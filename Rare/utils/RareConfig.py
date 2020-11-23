@@ -5,13 +5,14 @@ config_path = os.path.join(os.path.expanduser("~"), ".config/Rare/")
 rare_config = configparser.ConfigParser()
 
 if not os.path.exists(config_path):
+    os.mkdir(config_path)
     rare_config["Rare"] = {
         "image_dir": "../",
-        "theme": "dark"
+        "theme": "light"
     }
+    rare_config.write(open(config_path + "config.ini", "w"))
 else:
     rare_config.read(config_path + "config.ini")
-print(rare_config.__dict__)
 
 
 def get_config() -> {}:

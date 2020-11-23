@@ -6,10 +6,10 @@ from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtNetwork import QNetworkCookie
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit, QPushButton, QFormLayout, QGroupBox, \
-    QComboBox, QHBoxLayout, QTextEdit
+    QComboBox, QHBoxLayout, QTableWidget, QTableWidgetItem
 
 from Rare.GameWidget import GameWidget, UninstalledGameWidget
-from Rare.utils import legendaryConfig
+from Rare.utils import legendaryConfig, RareConfig
 from Rare.utils.legendaryUtils import get_installed, get_not_installed, logout, get_updates, get_name, update
 
 logger = getLogger("TabWidgets")
@@ -47,14 +47,21 @@ class BrowserTab(QWebEngineView):
             cookies_list_info.append(data)
 
 
-class Settings(QWidget):
+class Settings(QScrollArea):
     def __init__(self, parent):
         super(Settings, self).__init__(parent=parent)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        # Settings
+        if RareConfig.get_config()["Rare"].get("theme") == "dark":
+            self.parent().parent().setStyleSheet(open("../Styles/style.qss").read())
+
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("<h1>Rare Settings</h1>"))
         self.logged_in_as = QLabel(f"Logged in as {get_name()}")
         self.get_legendary_config()
-        self.gen_form()
+        self.gen_form_legendary()
         self.gen_form_rare()
 
         self.logout_button = QPushButton("Logout")
@@ -83,7 +90,7 @@ class Settings(QWidget):
     def update_rare_settings(self):
         print("Update Rare settings")
         if self.style_combo_box.currentIndex() == 1:
-            self.parent().parent().parent().setStyleSheet(open("../style.qss").read())
+            self.parent().parent().parent().setStyleSheet(open("../Styles/style.qss").read())
         else:
             self.parent().parent().parent().setStyleSheet("")
 
@@ -93,13 +100,17 @@ class Settings(QWidget):
         self.config["Legendary"]["wine_prefix"] = self.lgd_conf_wine_prefix.text()
         self.config["Legendary"]["locale"] = self.lgd_conf_locale.text()
         # self.config["default.env"] = self.lgd_conf_env_vars.toPlainText()
+        self.config["default.env"] = {}
+        for row in range(self.table.rowCount()):
+            self.config["default.env"][self.table.item(row, 0).text()] = self.table.item(row, 1).text()
+        print(self.config["default.env"])
         legendaryConfig.set_config(self.config)
 
     def logout(self):
         logout()
         exit(0)
 
-    def gen_form(self):
+    def gen_form_legendary(self):
         # Default Config
         if not self.config.get("Legendary"):
             self.config["Legendary"] = {}
@@ -110,20 +121,36 @@ class Settings(QWidget):
         if not self.config["Legendary"].get("locale"):
             self.config["Legendary"]["locale"] = "en-US"
 
+        env_vars = self.config["default.env"]
+        self.table = QTableWidget(len(env_vars), 2)
+
+        self.table.setHorizontalHeaderLabels(["Variable", "Value"])
+        for i, label in enumerate(env_vars):
+            self.table.setItem(i, 0, QTableWidgetItem(label))
+            self.table.setItem(i, 1, QTableWidgetItem(env_vars[label]))
+
         self.form_group_box = QGroupBox("Legendary Defaults")
         self.form = QFormLayout()
 
         self.lgd_conf_wine_prefix = QLineEdit(self.config["Legendary"]["wine_prefix"])
         self.lgd_conf_wine_exec = QLineEdit(self.config["Legendary"]["wine_executable"])
-        self.lgd_conf_env_vars = QTextEdit(str(self.config["default.env"]))
         self.lgd_conf_locale = QLineEdit(self.config["Legendary"]["locale"])
 
+        self.add_button = QPushButton("Add Environment Variable")
+        self.add_button.clicked.connect(self.add_variable)
         self.form.addRow(QLabel("Default Wineprefix"), self.lgd_conf_wine_prefix)
         self.form.addRow(QLabel("Wine executable"), self.lgd_conf_wine_exec)
-        self.form.addRow(QLabel("Environment Variables"), self.lgd_conf_env_vars)
+        self.form.addRow(QLabel("Environment Variables"), self.table)
+        self.form.addRow(QLabel("Add Variable"), self.add_button)
         self.form.addRow(QLabel("Locale"), self.lgd_conf_locale)
 
         self.form_group_box.setLayout(self.form)
+
+    def add_variable(self):
+        print("add row")
+        self.table.insertRow(self.table.rowCount())
+        self.table.setItem(self.table.rowCount(), 0, QTableWidgetItem(""))
+        self.table.setItem(self.table.rowCount(), 1, QTableWidgetItem(""))
 
     def gen_form_rare(self):
         self.rare_form_group_box = QGroupBox("Rare Settings")
@@ -167,7 +194,7 @@ class GameListUninstalled(QScrollArea):
         super(GameListUninstalled, self).__init__(parent=parent)
         self.widget = QWidget()
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         self.layout = QVBoxLayout()
 
@@ -193,6 +220,7 @@ class GameListUninstalled(QScrollArea):
                 i.setVisible(True)
             else:
                 i.setVisible(False)
+
 
 class UpdateList(QWidget):
     class UpdateWidget(QWidget):

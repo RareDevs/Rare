@@ -19,8 +19,8 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Rare")
-        self.setGeometry(0, 0, 800, 600)
+        self.setWindowTitle("Rare - GUI for legendary-gl")
+        self.setGeometry(0, 0, 1200, 900)
         self.setCentralWidget(TabWidget(self))
         self.show()
 
@@ -49,8 +49,7 @@ class TabWidget(QTabWidget):
 def main():
     app = QApplication(sys.argv)
     # print(RareConfig.get_config())
-    if RareConfig.get_config()["Rare"].get("theme") == "dark":
-        app.setStyleSheet(open("../style.qss").read())
+
     try:
         if legendaryUtils.core.login():
             logger.info("Login credentials found")
