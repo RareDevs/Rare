@@ -166,24 +166,33 @@ class GameListUninstalled(QScrollArea):
     def __init__(self, parent):
         super(GameListUninstalled, self).__init__(parent=parent)
         self.widget = QWidget()
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.layout = QVBoxLayout()
 
         self.filter = QLineEdit()
+        self.filter.textChanged.connect(self.filter_games)
         self.filter.setPlaceholderText("Search game TODO")
         # TODO Search Game
         self.layout.addWidget(self.filter)
 
-        self.widgets = []
+        self.widgets_uninstalled = []
         for game in get_not_installed():
             game_widget = UninstalledGameWidget(game)
             self.layout.addWidget(game_widget)
-            self.widgets.append(game_widget)
+            self.widgets_uninstalled.append(game_widget)
+
+        self.layout.addStretch(1)
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
 
+    def filter_games(self):
+        for i in self.widgets_uninstalled:
+            if self.filter.text().lower() in i.game.app_title.lower() + i.game.app_name.lower():
+                i.setVisible(True)
+            else:
+                i.setVisible(False)
 
 class UpdateList(QWidget):
     class UpdateWidget(QWidget):
