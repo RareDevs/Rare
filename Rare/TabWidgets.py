@@ -54,8 +54,6 @@ class Settings(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         # Settings
-        if RareConfig.get_config()["Rare"].get("theme") == "dark":
-            self.parent().parent().setStyleSheet(open("../Styles/style.qss").read())
 
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("<h1>Rare Settings</h1>"))
@@ -63,6 +61,10 @@ class Settings(QScrollArea):
         self.get_legendary_config()
         self.gen_form_legendary()
         self.gen_form_rare()
+
+        if RareConfig.get_config()["Rare"].get("theme") == "dark":
+            self.parent().parent().setStyleSheet(open("../Styles/style.qss").read())
+            self.style_combo_box.setCurrentIndex(1)
 
         self.logout_button = QPushButton("Logout")
         self.logout_button.clicked.connect(self.logout)
@@ -88,11 +90,16 @@ class Settings(QScrollArea):
         self.setLayout(self.layout)
 
     def update_rare_settings(self):
-        print("Update Rare settings")
+        logger.info("Update Rare settings")
+        config = {"Rare": {}}
         if self.style_combo_box.currentIndex() == 1:
             self.parent().parent().parent().setStyleSheet(open("../Styles/style.qss").read())
+            config["Rare"]["theme"] = "dark"
         else:
             self.parent().parent().parent().setStyleSheet("")
+            config["Rare"]["theme"] = "light"
+
+        RareConfig.set_config(config)
 
     def update_legendary_settings(self):
         print("Legendary update")
@@ -137,11 +144,14 @@ class Settings(QScrollArea):
         self.lgd_conf_locale = QLineEdit(self.config["Legendary"]["locale"])
 
         self.add_button = QPushButton("Add Environment Variable")
+        self.delete_env_var = QPushButton("Delete selected Variable")
+        self.delete_env_var.clicked.connect(self.delete_var)
         self.add_button.clicked.connect(self.add_variable)
         self.form.addRow(QLabel("Default Wineprefix"), self.lgd_conf_wine_prefix)
         self.form.addRow(QLabel("Wine executable"), self.lgd_conf_wine_exec)
         self.form.addRow(QLabel("Environment Variables"), self.table)
         self.form.addRow(QLabel("Add Variable"), self.add_button)
+        self.form.addRow(QLabel("Delete Variable"), self.delete_env_var)
         self.form.addRow(QLabel("Locale"), self.lgd_conf_locale)
 
         self.form_group_box.setLayout(self.form)
@@ -151,6 +161,9 @@ class Settings(QScrollArea):
         self.table.insertRow(self.table.rowCount())
         self.table.setItem(self.table.rowCount(), 0, QTableWidgetItem(""))
         self.table.setItem(self.table.rowCount(), 1, QTableWidgetItem(""))
+
+    def delete_var(self):
+        self.table.removeRow(self.table.currentRow())
 
     def gen_form_rare(self):
         self.rare_form_group_box = QGroupBox("Rare Settings")

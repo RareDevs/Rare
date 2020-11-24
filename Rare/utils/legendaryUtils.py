@@ -3,6 +3,7 @@ import os
 import subprocess
 from getpass import getuser
 
+from PyQt5.QtCore import QProcess, QProcessEnvironment
 from legendary.core import LegendaryCore
 
 core = LegendaryCore()
@@ -57,35 +58,43 @@ def launch_game(app_name: str, offline: bool = False, skip_version_check: bool =
     game = core.get_installed_game(app_name)
     if not game:
         print("Game not found")
-        return 1
+        return None
     if game.is_dlc:
         print("Game is dlc")
-        return 1
+        return None
     if not os.path.exists(game.install_path):
         print("Game doesn't exist")
-        return 1
+        return None
 
     if not offline:
         print("logging in")
         if not core.login():
-            return 1
+            return None
         if not skip_version_check and not core.is_noupdate_game(app_name):
             # check updates
             try:
                 latest = core.get_asset(app_name, update=True)
             except ValueError:
                 print("Metadata doesn't exist")
-                return 1
+                return None
             if latest.build_version != game.version:
                 print("Please update game")
-                return 1
+                return None
     params, cwd, env = core.get_launch_parameters(app_name=app_name, offline=offline,
                                                   extra_args=extra, user=username_override,
                                                   wine_bin=wine_bin, wine_pfx=wine_prfix,
                                                   language=language, wrapper=wrapper,
                                                   disable_wine=no_wine)
+    process = QProcess()
+    process.setWorkingDirectory(cwd)
+    environment = QProcessEnvironment()
+    for e in env:
+        environment.insert(e, env[e])
+    process.setProcessEnvironment(environment)
 
-    return subprocess.Popen(params, cwd=cwd, env=env)
+    process.start(params[0], params[1:])
+    return process
+    # return subprocess.Popen(params, cwd=cwd, env=env)
 
 
 def auth_import(lutris: bool = False, wine_prefix: str = None) -> bool:

@@ -1,7 +1,7 @@
 import subprocess
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QStyle
 
@@ -32,7 +32,7 @@ class Thread(QThread):
 
 
 class GameWidget(QWidget):
-    proc: subprocess.Popen
+    proc: QProcess
     signal = pyqtSignal(str)
 
     def __init__(self, game):
@@ -81,23 +81,28 @@ class GameWidget(QWidget):
     def launch(self):
         if not self.game_running:
             logger.info(f"launching {self.title}")
-            resp = legendaryUtils.launch_game(self.app_name)
-            if resp != 1:
-                self.proc = resp
-                self.thread = Thread(self.proc)
-                self.thread.signal.connect(self.kill)
-                self.thread.start()
-                self.launch_button.setText("Kill")
-                self.game_running = True
-            else:
-                logger.warning("Error")
+            self.proc = legendaryUtils.launch_game(self.app_name)
+            if not self.proc:
+                print("Fail")
+                return
+
+            self.proc.finished.connect(self.finished)
+            self.launch_button.setText("Kill")
+            self.game_running = True
+
         else:
             self.kill()
+
+    def finished(self, exit_code):
+        self.launch_button.setText("Launch")
+        logger.info(f"Game {self.title} finished with exit code {exit_code}")
+        self.game_running = False
 
     def kill(self):
         self.proc.kill()
         self.launch_button.setText("Launch")
         self.game_running = False
+        logger.info("Killing Game")
 
     def get_rating(self) -> str:
         return "gold"  # TODO
