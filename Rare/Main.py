@@ -1,71 +1,37 @@
 import logging
 import sys
 
-from PyQt5.QtWidgets import QTabWidget, QMainWindow, QWidget, QApplication
+from PyQt5.QtWidgets import QApplication
+from legendary.core import LegendaryCore
 
-from Rare.Dialogs import LoginDialog
-from Rare.TabWidgets import Settings, GameListInstalled, BrowserTab, GameListUninstalled, UpdateList
-from Rare.utils import legendaryUtils, RareConfig
-from Rare.utils.RareUtils import download_images
+from Rare.Login import LoginWindow
+from Rare.MainWindow import MainWindow
 
 logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',
     level=logging.INFO
 )
 logger = logging.getLogger("Rare")
-
-
-class MainWindow(QMainWindow):
-
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Rare - GUI for legendary-gl")
-        self.setGeometry(0, 0, 1200, 900)
-        self.setCentralWidget(TabWidget(self))
-        self.show()
-
-
-class TabWidget(QTabWidget):
-
-    def __init__(self, parent):
-        super(QWidget, self).__init__(parent)
-
-        self.game_list = GameListInstalled(self)
-        self.addTab(self.game_list, "Games")
-
-        self.uninstalled_games = GameListUninstalled(self)
-        self.addTab(self.uninstalled_games, "Install Games")
-
-        self.update_tab = UpdateList(self)
-        self.addTab(self.update_tab, "Updates")
-
-        self.browser = BrowserTab(self)
-        self.addTab(self.browser, "Store")
-
-        self.settings = Settings(self)
-        self.addTab(self.settings, "Settings")
+core = LegendaryCore()
 
 
 def main():
     app = QApplication(sys.argv)
-    # print(RareConfig.get_config())
 
+    logger.info("Try if you are logged in")
     try:
-        if legendaryUtils.core.login():
-            logger.info("Login credentials found")
-    except:
-        logger.info("No login data found")
-        dia = LoginDialog()
-        code = dia.get_login()
-        if code == 1:
-            app.closeAllWindows()
-            logger.info("Exit login")
-            exit(0)
-        elif code == 0:
-            logger.info("Login successfully")
-    download_images()
-    window = MainWindow()
-    app.exec_()
+        core.login()
+        logger.info("You are logged in")
+
+
+    except ValueError:
+        logger.info("You ar not logged in. Open Login Window")
+        login_window = LoginWindow(core)
+        if not login_window.login():
+            return
+
+    mainwindow = MainWindow(core)
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':

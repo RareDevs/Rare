@@ -167,6 +167,7 @@ def get_name():
 
 
 def uninstall(app_name: str):
+    return
     core.uninstall_game(core.get_installed_game(app_name), True, True)
     # logger.info("Uninstalling " + app_name)
 

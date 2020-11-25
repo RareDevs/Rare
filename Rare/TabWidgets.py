@@ -3,8 +3,7 @@ import signal
 from logging import getLogger
 
 from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtNetwork import QNetworkCookie
-from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit, QPushButton, QFormLayout, QGroupBox, \
     QComboBox, QHBoxLayout, QTableWidget, QTableWidgetItem
 
@@ -18,33 +17,12 @@ logger = getLogger("TabWidgets")
 class BrowserTab(QWebEngineView):
     def __init__(self, parent):
         super(BrowserTab, self).__init__(parent=parent)
-        self.profile = QWebEngineProfile("storage", self)
-        self.cookie_store = self.profile.cookieStore()
-        self.cookie_store.cookieAdded.connect(self.on_cookie_added)
-        self.cookies = []
-        self.webpage = QWebEnginePage(self.profile, self)
-        self.setPage(self.webpage)
+
         self.load(QUrl("https://www.epicgames.com/store/"))
         self.show()
-        print(self.cookies)
 
     def createWindow(self, QWebEnginePage_WebWindowType):
         return self
-
-    def on_cookie_added(self, keks):
-        for c in self.cookies:
-            if c.hasSameIdentifier(keks):
-                return
-        self.cookies.append(QNetworkCookie(keks))
-        self.toJson()
-
-    def toJson(self):
-        cookies_list_info = []
-        for c in self.cookies:
-            data = {"name": bytearray(c.name()).decode(), "domain": c.domain(), "value": bytearray(c.value()).decode(),
-                    "path": c.path(), "expirationDate": c.expirationDate().toString(Qt.ISODate), "secure": c.isSecure(),
-                    "httponly": c.isHttpOnly()}
-            cookies_list_info.append(data)
 
 
 class Settings(QScrollArea):
@@ -197,6 +175,7 @@ class GameListInstalled(QScrollArea):
 
     def remove_game(self, app_name: str):
         logger.info(f"Uninstall {app_name}")
+        self.widgets[app_name].setVisible(False)
         self.layout.removeWidget(self.widgets[app_name])
         self.widgets[app_name].deleteLater()
         self.widgets.pop(app_name)
@@ -213,8 +192,7 @@ class GameListUninstalled(QScrollArea):
 
         self.filter = QLineEdit()
         self.filter.textChanged.connect(self.filter_games)
-        self.filter.setPlaceholderText("Search game TODO")
-        # TODO Search Game
+        self.filter.setPlaceholderText("Filter Games")
         self.layout.addWidget(self.filter)
 
         self.widgets_uninstalled = []

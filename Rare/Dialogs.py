@@ -1,66 +1,6 @@
 import os
 
-from PyQt5.QtWidgets import QDialog, QStackedLayout, QHBoxLayout, QWidget, QVBoxLayout, QPushButton, QLineEdit, QLabel
-
-from Rare.Login import ImportWidget, LoginWidget
-
-
-class LoginDialog(QDialog):
-
-    def __init__(self):
-        self.code = 1
-        super(LoginDialog, self).__init__()
-        self.layout = QStackedLayout()
-
-        self.widget = QWidget()
-        self.import_widget = ImportWidget()
-        self.login_widget = LoginWidget()
-        self.login_widget.signal.connect(self.login_success)
-        self.import_widget.signal.connect(self.login_success)
-
-        self.initWidget()
-
-        self.layout.insertWidget(0, self.widget)
-        self.layout.insertWidget(1, self.login_widget)
-        self.layout.insertWidget(2, self.import_widget)
-
-        self.setLayout(self.layout)
-        self.layout.setCurrentIndex(0)
-        self.show()
-
-    def initWidget(self):
-        self.widget_layout = QVBoxLayout()
-        self.login_button = QPushButton("Login via Browser")
-        self.import_button = QPushButton("Import from existing EGL installation")
-        self.close_button = QPushButton("Exit")
-
-        # self.login_button.clicked.connect(self.login)
-        self.import_button.clicked.connect(self.set_import_widget)
-        self.login_button.clicked.connect(self.set_login_widget)
-        self.close_button.clicked.connect(self.exit_login)
-
-        self.widget_layout.addWidget(self.login_button)
-        self.widget_layout.addWidget(self.import_button)
-        self.widget_layout.addWidget(self.close_button)
-        self.widget.setLayout(self.widget_layout)
-
-    def login_success(self):
-        self.code = 0
-        self.close()
-
-    def get_login(self):
-        self.exec_()
-        return self.code
-
-    def set_login_widget(self):
-        self.layout.setCurrentIndex(1)
-
-    def set_import_widget(self):
-        self.layout.setCurrentIndex(2)
-
-    def exit_login(self):
-        self.code = 1
-        self.close()
+from PyQt5.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QLabel
 
 
 class InstallDialog(QDialog):

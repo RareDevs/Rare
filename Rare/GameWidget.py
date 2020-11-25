@@ -1,3 +1,4 @@
+import os
 import subprocess
 from logging import getLogger
 
@@ -46,8 +47,12 @@ class GameWidget(QWidget):
         # self.dev =
         self.game_running = False
         self.layout = QHBoxLayout()
-
-        pixmap = QPixmap(f"../images/{game.app_name}/FinalArt.png")
+        if os.path.exists(f"../images/{game.app_name}/FinalArt.png"):
+            pixmap = QPixmap(f"../images/{game.app_name}/FinalArt.png")
+        elif os.path.exists(f"../images/{game.app_name}/DieselGameBoxTall.png"):
+            pixmap = QPixmap(f"../images/{game.app_name}/DieselGameBoxTall.png")
+        elif os.path.exists(f"../images/{game.app_name}/DieselGameBoxLogo.png"):
+            pixmap = QPixmap(f"../images/{game.app_name}/DieselGameBoxLogo.png")
         pixmap = pixmap.scaled(180, 240)
         self.image = QLabel()
         self.image.setPixmap(pixmap)
@@ -99,7 +104,7 @@ class GameWidget(QWidget):
         self.game_running = False
 
     def kill(self):
-        self.proc.kill()
+        self.proc.terminate()
         self.launch_button.setText("Launch")
         self.game_running = False
         logger.info("Killing Game")
@@ -123,6 +128,8 @@ class UninstalledGameWidget(QWidget):
         self.version = game.app_version
         self.layout = QHBoxLayout()
         self.game = game
+
+
 
         pixmap = QPixmap(f"../images/{game.app_name}/UninstalledArt.png")
         pixmap = pixmap.scaled(120, 160)
