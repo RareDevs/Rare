@@ -15,6 +15,7 @@ logger = getLogger("TabWidgets")
 
 
 class BrowserTab(QWebEngineView):
+    # TODO Save login
     def __init__(self, parent):
         super(BrowserTab, self).__init__(parent=parent)
 

@@ -4,6 +4,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from legendary.core import LegendaryCore
 
+from Launch import LaunchDialog
 from Rare.Login import LoginWindow
 from Rare.MainWindow import MainWindow
 
@@ -13,6 +14,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("Rare")
 core = LegendaryCore()
+
 
 
 def main():
@@ -29,9 +31,10 @@ def main():
         login_window = LoginWindow(core)
         if not login_window.login():
             return
-
+    launch_dialog = LaunchDialog(core)
+    launch_dialog.exec_()
     mainwindow = MainWindow(core)
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':

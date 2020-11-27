@@ -53,6 +53,8 @@ class GameWidget(QWidget):
             pixmap = QPixmap(f"../images/{game.app_name}/DieselGameBoxTall.png")
         elif os.path.exists(f"../images/{game.app_name}/DieselGameBoxLogo.png"):
             pixmap = QPixmap(f"../images/{game.app_name}/DieselGameBoxLogo.png")
+        else:
+            logger.warning("No Image found")
         pixmap = pixmap.scaled(180, 240)
         self.image = QLabel()
         self.image.setPixmap(pixmap)

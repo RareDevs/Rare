@@ -15,7 +15,7 @@ class LoginBrowser(QWebEngineView):
     def __init__(self):
         super(LoginBrowser, self).__init__()
 
-    def createWindow(self, QWebEnginePage_WebWindowType):
+    def createWindow(self, webengine_window_type):
         return self
 
 

@@ -6,8 +6,8 @@ from getpass import getuser
 from PyQt5.QtCore import QProcess, QProcessEnvironment
 from legendary.core import LegendaryCore
 
+logger = logging.getLogger("LGD")
 core = LegendaryCore()
-logger = logging.getLogger("LegendaryUtils")
 
 
 def get_installed():
@@ -98,7 +98,6 @@ def launch_game(app_name: str, offline: bool = False, skip_version_check: bool =
 
 
 def auth_import(lutris: bool = False, wine_prefix: str = None) -> bool:
-
     print(lutris, wine_prefix)
     # Linux
     if not core.egl.appdata_path:
@@ -167,8 +166,8 @@ def get_name():
 
 
 def uninstall(app_name: str):
-    return
-    core.uninstall_game(core.get_installed_game(app_name), True, True)
+
+    core.uninstall_game(core.get_installed_game(app_name))
     # logger.info("Uninstalling " + app_name)
 
 
