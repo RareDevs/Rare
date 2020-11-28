@@ -28,8 +28,6 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
                     with open(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png", "wb") as f:
                         f.write(requests.get(url).content)
                         f.close()
-                else:
-                    logger.info(f"Image for {game.app_title} exists")
 
         if not os.path.isfile(f'{IMAGE_DIR}/' + game.app_name + '/UninstalledArt.png'):
 
