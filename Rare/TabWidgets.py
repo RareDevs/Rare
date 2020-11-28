@@ -3,22 +3,24 @@ import signal
 from logging import getLogger
 
 from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit, QPushButton, QFormLayout, QGroupBox, \
     QComboBox, QHBoxLayout, QTableWidget, QTableWidgetItem
+from legendary.core import LegendaryCore
 
 from Rare.GameWidget import GameWidget, UninstalledGameWidget
 from Rare.utils import legendaryConfig, RareConfig
-from Rare.utils.legendaryUtils import get_installed, get_not_installed, logout, get_updates, get_name, update
+from Rare.utils.legendaryUtils import logout, get_updates, get_name, update
 
 logger = getLogger("TabWidgets")
 
 
 class BrowserTab(QWebEngineView):
-    # TODO Save login
     def __init__(self, parent):
         super(BrowserTab, self).__init__(parent=parent)
-
+        self.profile = QWebEngineProfile("storage", self)
+        self.webpage = QWebEnginePage(self.profile, self)
+        self.setPage(self.webpage)
         self.load(QUrl("https://www.epicgames.com/store/"))
         self.show()
 
@@ -31,9 +33,7 @@ class Settings(QScrollArea):
         super(Settings, self).__init__(parent=parent)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
         # Settings
-
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("<h1>Rare Settings</h1>"))
         self.logged_in_as = QLabel(f"Logged in as {get_name()}")
@@ -158,16 +158,17 @@ class Settings(QScrollArea):
 
 
 class GameListInstalled(QScrollArea):
-    def __init__(self, parent):
+    def __init__(self, parent, core: LegendaryCore):
         super(GameListInstalled, self).__init__(parent=parent)
         self.widget = QWidget()
+        self.core = core
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.layout = QVBoxLayout()
         self.widgets = {}
-        for i in get_installed():
-            widget = GameWidget(i)
+        for i in sorted(core.get_installed_list(), key=lambda game: game.title):
+            widget = GameWidget(i, core)
             widget.signal.connect(self.remove_game)
             self.widgets[i.app_name] = widget
             self.layout.addWidget(widget)
@@ -183,7 +184,7 @@ class GameListInstalled(QScrollArea):
 
 
 class GameListUninstalled(QScrollArea):
-    def __init__(self, parent):
+    def __init__(self, parent, core: LegendaryCore):
         super(GameListUninstalled, self).__init__(parent=parent)
         self.widget = QWidget()
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -197,7 +198,13 @@ class GameListUninstalled(QScrollArea):
         self.layout.addWidget(self.filter)
 
         self.widgets_uninstalled = []
-        for game in get_not_installed():
+        games = []
+        installed = [i.app_name for i in core.get_installed_list()]
+        for game in core.get_game_list():
+            if not game.app_name in installed:
+                games.append(game)
+        games = sorted(games, key=lambda x: x.app_title)
+        for game in games:
             game_widget = UninstalledGameWidget(game)
             self.layout.addWidget(game_widget)
             self.widgets_uninstalled.append(game_widget)

@@ -18,10 +18,10 @@ class TabWidget(QTabWidget):
     def __init__(self, parent, core):
         super(QWidget, self).__init__(parent)
 
-        self.game_list = GameListInstalled(self)
+        self.game_list = GameListInstalled(self, core)
         self.addTab(self.game_list, "Games")
 
-        self.uninstalled_games = GameListUninstalled(self)
+        self.uninstalled_games = GameListUninstalled(self, core)
         self.addTab(self.uninstalled_games, "Install Games")
 
         self.update_tab = UpdateList(self)

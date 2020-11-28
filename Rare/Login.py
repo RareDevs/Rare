@@ -4,7 +4,7 @@ from json import loads
 from logging import getLogger
 
 from PyQt5.QtCore import QUrl, pyqtSignal
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage
 from PyQt5.QtWidgets import QDialog, QWidget, QVBoxLayout, QLabel, QPushButton, QStackedLayout
 from legendary.core import LegendaryCore
 
@@ -14,6 +14,9 @@ logger = getLogger("LoginWindow")
 class LoginBrowser(QWebEngineView):
     def __init__(self):
         super(LoginBrowser, self).__init__()
+        self.browser_profile = QWebEngineProfile("storage", self)
+        self.webpage = QWebEnginePage(self.browser_profile, self)
+        self.setPage(self.webpage)
 
     def createWindow(self, webengine_window_type):
         return self

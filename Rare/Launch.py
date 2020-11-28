@@ -9,13 +9,14 @@ class LaunchThread(QThread):
     download_progess = pyqtSignal(int)
     action = pyqtSignal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self, core: LegendaryCore, parent=None):
         super(LaunchThread, self).__init__(parent)
+        self.core = core
 
     def run(self):
         self.action.emit("Login")
         self.action.emit("Downloading Images")
-        download_images(self.download_progess)
+        download_images(self.download_progess, self.core)
         self.action.emit("finish")
 
 
@@ -24,7 +25,7 @@ class LaunchDialog(QDialog):
         super(LaunchDialog, self).__init__()
 
         self.title = QLabel("<h3>Launching Rare</h3>")
-        self.thread = LaunchThread(self)
+        self.thread = LaunchThread(core, self)
         self.thread.download_progess.connect(self.update_pb)
         self.thread.action.connect(self.info)
         self.info_pb = QProgressBar()

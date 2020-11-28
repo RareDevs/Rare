@@ -4,21 +4,19 @@ from logging import getLogger
 import requests
 from PIL import Image
 from PyQt5.QtCore import pyqtSignal
-
-from Rare.utils import legendaryUtils
+from legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 
 
-def download_images(signal: pyqtSignal):
+def download_images(signal: pyqtSignal, core: LegendaryCore):
     IMAGE_DIR = "../images"
     if not os.path.isdir(IMAGE_DIR):
         os.mkdir(IMAGE_DIR)
         logger.info("Create Image dir")
 
     # Download Images
-
-    for i, game in enumerate(legendaryUtils.get_games()):
+    for i, game in enumerate(sorted(core.get_game_list(), key=lambda x: x.app_title)):
         for image in game.metadata["keyImages"]:
             if image["type"] == "DieselGameBoxTall" or image["type"] == "DieselGameBoxLogo":
                 if not os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png"):
@@ -30,6 +28,8 @@ def download_images(signal: pyqtSignal):
                     with open(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png", "wb") as f:
                         f.write(requests.get(url).content)
                         f.close()
+                else:
+                    logger.info(f"Image for {game.app_title} exists")
 
         if not os.path.isfile(f'{IMAGE_DIR}/' + game.app_name + '/UninstalledArt.png'):
 

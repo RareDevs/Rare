@@ -5,6 +5,7 @@ from logging import getLogger
 from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QStyle
+from legendary.core import LegendaryCore
 
 from Rare.Dialogs import InstallDialog, GameSettingsDialog
 from Rare.utils import legendaryUtils
@@ -36,8 +37,9 @@ class GameWidget(QWidget):
     proc: QProcess
     signal = pyqtSignal(str)
 
-    def __init__(self, game):
+    def __init__(self, game, core: LegendaryCore):
         super(GameWidget, self).__init__()
+        self.core = core
         self.game = game
         self.title = game.title
         self.app_name = game.app_name
@@ -86,9 +88,10 @@ class GameWidget(QWidget):
         self.setLayout(self.layout)
 
     def launch(self):
+        print("Launch")
         if not self.game_running:
             logger.info(f"launching {self.title}")
-            self.proc = legendaryUtils.launch_game(self.app_name)
+            self.proc = legendaryUtils.launch_game(self.app_name, self.core)
             if not self.proc:
                 print("Fail")
                 return
@@ -118,7 +121,8 @@ class GameWidget(QWidget):
         settings_dialog = GameSettingsDialog(self.game)
         action = settings_dialog.get_settings()
         if action == "uninstall":
-            legendaryUtils.uninstall(self.app_name)
+
+            legendaryUtils.uninstall(self.app_name, self.core)
             self.signal.emit(self.app_name)
 
 
@@ -130,8 +134,6 @@ class UninstalledGameWidget(QWidget):
         self.version = game.app_version
         self.layout = QHBoxLayout()
         self.game = game
-
-
 
         pixmap = QPixmap(f"../images/{game.app_name}/UninstalledArt.png")
         pixmap = pixmap.scaled(120, 160)
@@ -164,4 +166,12 @@ class UninstalledGameWidget(QWidget):
         if data != 0:
             path = data.get("install_path")
             logger.info(f"install {self.app_name} in path {path}")
-            legendaryUtils.install(self.app_name, path=path)
+            # TODO
+            self.proc = QProcess()
+            self.proc.start("legendary", f"-y --base-path {path} {self.app_name}".split(" "))
+            self.proc.finished.connect(self.download_finished)
+            # legendaryUtils.install(self.app_name, path=path)
+
+    def download_finished(self):
+        self.setVisible(False)
+        logger.info("Download finished")

@@ -1,7 +1,6 @@
 import logging
 import os
 import subprocess
-from getpass import getuser
 
 from PyQt5.QtCore import QProcess, QProcessEnvironment
 from legendary.core import LegendaryCore
@@ -52,10 +51,11 @@ def get_games_sorted():
         logging.error("No login")
 
 
-def launch_game(app_name: str, offline: bool = False, skip_version_check: bool = False, username_override=None,
+def launch_game(app_name: str, lgd_core: LegendaryCore, offline: bool = False, skip_version_check: bool = False,
+                username_override=None,
                 wine_bin: str = None, wine_prfix: str = None, language: str = None, wrapper=None,
                 no_wine: bool = os.name == "nt", extra: [] = None):
-    game = core.get_installed_game(app_name)
+    game = lgd_core.get_installed_game(app_name)
     if not game:
         print("Game not found")
         return None
@@ -68,23 +68,23 @@ def launch_game(app_name: str, offline: bool = False, skip_version_check: bool =
 
     if not offline:
         print("logging in")
-        if not core.login():
+        if not lgd_core.login():
             return None
         if not skip_version_check and not core.is_noupdate_game(app_name):
             # check updates
             try:
-                latest = core.get_asset(app_name, update=True)
+                latest = lgd_core.get_asset(app_name, update=True)
             except ValueError:
                 print("Metadata doesn't exist")
                 return None
             if latest.build_version != game.version:
                 print("Please update game")
                 return None
-    params, cwd, env = core.get_launch_parameters(app_name=app_name, offline=offline,
-                                                  extra_args=extra, user=username_override,
-                                                  wine_bin=wine_bin, wine_pfx=wine_prfix,
-                                                  language=language, wrapper=wrapper,
-                                                  disable_wine=no_wine)
+    params, cwd, env = lgd_core.get_launch_parameters(app_name=app_name, offline=offline,
+                                                      extra_args=extra, user=username_override,
+                                                      wine_bin=wine_bin, wine_pfx=wine_prfix,
+                                                      language=language, wrapper=wrapper,
+                                                      disable_wine=no_wine)
     process = QProcess()
     process.setWorkingDirectory(cwd)
     environment = QProcessEnvironment()
@@ -94,47 +94,6 @@ def launch_game(app_name: str, offline: bool = False, skip_version_check: bool =
 
     process.start(params[0], params[1:])
     return process
-    # return subprocess.Popen(params, cwd=cwd, env=env)
-
-
-def auth_import(lutris: bool = False, wine_prefix: str = None) -> bool:
-    print(lutris, wine_prefix)
-    # Linux
-    if not core.egl.appdata_path:
-        lutris_wine_users = os.path.expanduser('~/Games/epic-games-store/drive_c/users')
-        wine_pfx_users = None
-        if lutris and os.path.exists(lutris_wine_users):
-            print(f'Found Lutris EGL WINE prefix at "{lutris_wine_users}"')
-            wine_pfx_users = lutris_wine_users
-
-        elif wine_prefix:
-            if not os.path.exists(wine_prefix):
-                print("invalid path")
-            wine_pfx_users = os.path.join(wine_prefix, "drive_c/users")
-        else:
-            print("insert parameter")
-            return False
-
-        appdata_dir = os.path.join(wine_pfx_users, getuser(),
-                                   'Local Settings/Application Data/EpicGamesLauncher',
-                                   'Saved/Config/Windows')
-
-        if not os.path.exists(appdata_dir):
-            print("No EGL appdata")
-            return False
-        core.egl.appdata_path = appdata_dir
-
-    try:
-        if core.auth_import():
-            print("Successfully logged in")
-            print(f"Logged in as {core.lgd.userdata['displayName']}")
-            return True
-        else:
-            print("Error: No valid session found")
-            return False
-    except ValueError:
-        print("No session found")
-        return False
 
 
 def get_updates():
@@ -165,9 +124,8 @@ def get_name():
     return core.lgd.userdata["displayName"]
 
 
-def uninstall(app_name: str):
-
-    core.uninstall_game(core.get_installed_game(app_name))
+def uninstall(app_name: str, lgd_core):
+    lgd_core.uninstall_game(core.get_installed_game(app_name))
     # logger.info("Uninstalling " + app_name)
 
 

@@ -19,7 +19,6 @@ if not cfg.sections():
         "LOGLEVEL": logging.INFO
     }
 
-
 with open(config_path + '/Rare.ini', 'w') as configfile:
     cfg.write(configfile)
 

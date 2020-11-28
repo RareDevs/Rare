@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from legendary.core import LegendaryCore
 
-from Launch import LaunchDialog
+from Rare.Launch import LaunchDialog
 from Rare.Login import LoginWindow
 from Rare.MainWindow import MainWindow
 
@@ -16,15 +16,17 @@ logger = logging.getLogger("Rare")
 core = LegendaryCore()
 
 
-
 def main():
     app = QApplication(sys.argv)
 
     logger.info("Try if you are logged in")
     try:
-        core.login()
-        logger.info("You are logged in")
+        if core.login():
 
+            logger.info("You are logged in")
+        else:
+            logger.error("Login Failed")
+            main()
 
     except ValueError:
         logger.info("You ar not logged in. Open Login Window")
