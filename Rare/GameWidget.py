@@ -1,7 +1,7 @@
 import os
 import subprocess
 from logging import getLogger
-
+from legendary.models.game import InstalledGame
 from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QStyle
@@ -37,10 +37,11 @@ class GameWidget(QWidget):
     proc: QProcess
     signal = pyqtSignal(str)
 
-    def __init__(self, game, core: LegendaryCore):
+    def __init__(self, game: InstalledGame, core: LegendaryCore):
         super(GameWidget, self).__init__()
         self.core = core
         self.game = game
+        self.dev = core.get_game(self.game.app_name).metadata["developer"]
         self.title = game.title
         self.app_name = game.app_name
         self.version = game.version
@@ -71,6 +72,7 @@ class GameWidget(QWidget):
         self.launch_button = QPushButton(play_icon, "Launch")
         self.launch_button.clicked.connect(self.launch)
         self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
+        self.developer_label = QLabel("Dev: "+ self.dev)
         self.version_label = QLabel("Version: " + str(self.version))
         self.size_label = QLabel(f"Installed size: {round(self.size / (1024 ** 3), 2)} GB")
         self.settings_button = QPushButton(settings_icon, " Settings (Icon TODO)")
@@ -78,6 +80,7 @@ class GameWidget(QWidget):
 
         self.childLayout.addWidget(self.title_widget)
         self.childLayout.addWidget(self.launch_button)
+        self.childLayout.addWidget(self.developer_label)
         self.childLayout.addWidget(self.wine_rating)
         self.childLayout.addWidget(self.version_label)
         self.childLayout.addWidget(self.size_label)
