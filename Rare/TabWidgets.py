@@ -107,13 +107,19 @@ class Settings(QScrollArea):
         if not self.config["Legendary"].get("locale"):
             self.config["Legendary"]["locale"] = "en-US"
 
-        env_vars = self.config["default.env"]
-        self.table = QTableWidget(len(env_vars), 2)
+        env_vars = self.config.get("default.env")
+        if env_vars:
+            self.table = QTableWidget(len(env_vars), 2)
+            for i, label in enumerate(env_vars):
+                self.table.setItem(i, 0, QTableWidgetItem(label))
+                self.table.setItem(i, 1, QTableWidgetItem(env_vars[label]))
+
+        else:
+            self.table = QTableWidget(0,2)
 
         self.table.setHorizontalHeaderLabels(["Variable", "Value"])
-        for i, label in enumerate(env_vars):
-            self.table.setItem(i, 0, QTableWidgetItem(label))
-            self.table.setItem(i, 1, QTableWidgetItem(env_vars[label]))
+
+
 
         self.form_group_box = QGroupBox("Legendary Defaults")
         self.form = QFormLayout()
