@@ -118,10 +118,9 @@ class GameWidget(QWidget):
         return "gold"  # TODO
 
     def settings(self):
-        settings_dialog = GameSettingsDialog(self.game)
+        settings_dialog = GameSettingsDialog(self.game, self)
         action = settings_dialog.get_settings()
         if action == "uninstall":
-
             legendaryUtils.uninstall(self.app_name, self.core)
             self.signal.emit(self.app_name)
 
@@ -163,14 +162,18 @@ class UninstalledGameWidget(QWidget):
         logger.info("install " + self.title)
         dia = InstallDialog(self.game)
         data = dia.get_data()
+        print(data)
         if data != 0:
             path = data.get("install_path")
             logger.info(f"install {self.app_name} in path {path}")
             # TODO
             self.proc = QProcess()
-            self.proc.start("legendary", f"-y --base-path {path} {self.app_name}".split(" "))
             self.proc.finished.connect(self.download_finished)
+            self.proc.start("legendary", ["-y", f"--base-path {path}", self.app_name])
+
             # legendaryUtils.install(self.app_name, path=path)
+        else:
+            logger.info("Download canceled")
 
     def download_finished(self):
         self.setVisible(False)

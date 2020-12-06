@@ -47,8 +47,8 @@ class InstallDialog(QDialog):
 class GameSettingsDialog(QDialog):
     action: str = None
 
-    def __init__(self, game):
-        super(GameSettingsDialog, self).__init__()
+    def __init__(self, game, parent):
+        super(GameSettingsDialog, self).__init__(parent=parent)
         self.game = game
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("Einstellungen"))

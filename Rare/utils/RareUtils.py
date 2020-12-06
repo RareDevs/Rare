@@ -1,3 +1,4 @@
+import json
 import os
 from logging import getLogger
 
@@ -17,19 +18,31 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
 
     # Download Images
     for i, game in enumerate(sorted(core.get_game_list(), key=lambda x: x.app_title)):
+        # if game.app_name == "CrabEA":
+        #     print(game.metadata)
+
+        if not os.path.isdir(f"{IMAGE_DIR}/" + game.app_name):
+            os.mkdir(f"{IMAGE_DIR}/" + game.app_name)
+
+        if not os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/image.json"):
+            json_data = {"DieselGameBoxTall": None, "DieselGameBoxLogo": None}
+        else:
+            json_data = json.load(open(f"{IMAGE_DIR}/{game.app_name}/image.json", "r"))
+
         for image in game.metadata["keyImages"]:
             if image["type"] == "DieselGameBoxTall" or image["type"] == "DieselGameBoxLogo":
-                if not os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png"):
-                    if not os.path.isdir(f"{IMAGE_DIR}/" + game.app_name):
-                        os.mkdir(f"{IMAGE_DIR}/" + game.app_name)
 
+                if json_data[image["type"]] != image["md5"] or not os.path.isfile(
+                        f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png"):
+                    # Download
+                    json_data[image["type"]] = image["md5"]
+                    # os.remove(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
+                    json.dump(json_data, open(f"{IMAGE_DIR}/{game.app_name}/image.json", "w"))
                     logger.info(f"Download Image for Game: {game.app_title}")
                     url = image["url"]
                     with open(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png", "wb") as f:
                         f.write(requests.get(url).content)
                         f.close()
-                else:
-                    logger.info(f"Image for {game.app_title} exists")
 
         if not os.path.isfile(f'{IMAGE_DIR}/' + game.app_name + '/UninstalledArt.png'):
 

@@ -1207,7 +1207,7 @@ QComboBox {
   padding-right: 36px;
   /* 4 + 16*2 See scrollbar size */
   /* Fixes #103, #111 */
-  min-height: 1.5em;
+  /* min-height: 1.5em; */
   /* padding-top: 2px;     removed to fix #132 */
   /* padding-bottom: 2px;  removed to fix #132 */
   /* min-width: 75px;      removed to fix #109 */
