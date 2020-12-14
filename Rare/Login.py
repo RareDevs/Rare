@@ -45,7 +45,8 @@ class ImportWidget(QWidget):
             self.path = QLineEdit()
             self.path.setPlaceholderText("Path to Wineprefix (Not implemented)")
             self.layout.addWidget(self.path)
-        self.btn_group = QButtonGroup()
+        else:
+            self.btn_group = QButtonGroup()
         for i in appdata_paths:
             radio_button = QRadioButton(i)
             self.btn_group.addButton(radio_button)
@@ -74,7 +75,10 @@ class ImportWidget(QWidget):
 
             for i in possible_wine_paths:
                 if os.path.exists(i):
-                    wine_paths.append(i)
+                    if os.path.exists(os.path.join(i, "drive_c/users", getuser(),
+                                                   'Local Settings/Application Data/EpicGamesLauncher',
+                                                   'Saved/Config/Windows')):
+                        wine_paths.append(i)
 
             if len(wine_paths) > 0:
                 appdata_dirs = [
@@ -85,24 +89,25 @@ class ImportWidget(QWidget):
 
     def auth(self):
         self.import_accept_button.setDisabled(True)
+        if not self.btn_group:
+            self.core.egl.appdata_path = self.path.text()
 
         for i in self.btn_group.buttons():
-            self.core.egl.appdata_path = i.text()
+
             if i.isChecked():
-                try:
-                    if self.core.auth_import():
-                        logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")
-                        self.signal.emit(True)
-                        return
-                    else:
-                        logger.warning("Error: No valid session found")
-                except:
-                    logger.warning("Error: No valid session found")
+                self.core.egl.appdata_path = i.text()
+        try:
+            if self.core.auth_import():
+                logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")
+                self.signal.emit(True)
+                return
+
+        except:
+            pass
 
         self.import_accept_button.setDisabled(False)
+        logger.warning("Error: No valid session found")
         self.login_text.setText("Error: No valid session found")
-
-        return
 
 
 class LoginWindow(QDialog):
