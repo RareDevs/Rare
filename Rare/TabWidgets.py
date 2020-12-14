@@ -2,7 +2,8 @@ import os
 import signal
 from logging import getLogger
 
-from PyQt5.QtCore import QUrl, Qt
+from PyQt5 import QtCore
+from PyQt5.QtCore import QUrl, Qt, QProcess
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit, QPushButton, QFormLayout, QGroupBox, \
     QComboBox, QHBoxLayout, QTableWidget, QTableWidgetItem
@@ -115,11 +116,9 @@ class Settings(QScrollArea):
                 self.table.setItem(i, 1, QTableWidgetItem(env_vars[label]))
 
         else:
-            self.table = QTableWidget(0,2)
+            self.table = QTableWidget(0, 2)
 
         self.table.setHorizontalHeaderLabels(["Variable", "Value"])
-
-
 
         self.form_group_box = QGroupBox("Legendary Defaults")
         self.form = QFormLayout()
@@ -180,6 +179,8 @@ class GameListInstalled(QScrollArea):
             self.layout.addWidget(widget)
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
+
+        # self.setLayout(self.layout)
 
     def remove_game(self, app_name: str):
         logger.info(f"Uninstall {app_name}")
@@ -247,19 +248,49 @@ class UpdateList(QWidget):
             if not self.updating:
                 logger.info("Update " + self.game.title)
                 self.proc = update(self.game.app_name)
-                self.button.setText("Cancel")
-                self.updating = True
+                self.proc = QProcess()
+                self.proc.setProcessChannelMode(QProcess.MergedChannels)
+                self.proc.start("legendary", ["-y", "update", self.game.app_name])
+                self.proc.started.connect(self.start)
+                self.proc.finished.connect(self.finished)
+                self.proc.readyRead.connect(self.dataReady)
+
+
             else:
                 logger.info("Terminate process")
-                self.proc.send_signal(signal.SIGINT)
+                self.proc.kill()
                 self.button.setText("Update")
                 self.updating = False
 
-    def __init__(self, parent):
+        def start(self):
+            self.button.setText("Cancel")
+            self.updating = True
+
+        def finished(self, code):
+            if code == 0:
+                logger.info("Update finished")
+                self.setVisible(False)
+            else:
+                logger.info("Update finished with exit code " + str(code))
+
+        def dataReady(self):
+            bytes = self.process.readAllStandardOutput()
+            byte_list = bytes.split('\n')
+            data=[]
+            for i in byte_list:
+                data.append(byte_list)
+            # TODO Daten verarbeiten
+            print(data)
+
+    def __init__(self, parent, core: LegendaryCore):
         super(UpdateList, self).__init__(parent=parent)
+        self.core = core
         self.layout = QVBoxLayout()
-        updates = get_updates()
-        if updates:
+
+        update_games = []
+        for game in core.get_installed_list():
+            update_games.append(game) if core.get_game(game.app_name).app_version != game.version else None
+        if update_games:
             for game in get_updates():
                 self.layout.addWidget(self.UpdateWidget(game))
         else:

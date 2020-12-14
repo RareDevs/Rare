@@ -36,7 +36,7 @@ class Thread(QThread):
 class GameWidget(QWidget):
     proc: QProcess
     signal = pyqtSignal(str)
-
+    # TODO Repair
     def __init__(self, game: InstalledGame, core: LegendaryCore):
         super(GameWidget, self).__init__()
         self.core = core
@@ -88,6 +88,7 @@ class GameWidget(QWidget):
 
         self.childLayout.addStretch(1)
         self.layout.addLayout(self.childLayout)
+        self.layout.addStretch(1)
         self.setLayout(self.layout)
 
     def launch(self):

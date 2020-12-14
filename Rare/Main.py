@@ -10,7 +10,7 @@ from Rare.MainWindow import MainWindow
 
 logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',
-    level=logging.INFO
+    level=logging.WARNING
 )
 logger = logging.getLogger("Rare")
 core = LegendaryCore()

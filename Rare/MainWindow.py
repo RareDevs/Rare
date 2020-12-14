@@ -24,7 +24,7 @@ class TabWidget(QTabWidget):
         self.uninstalled_games = GameListUninstalled(self, core)
         self.addTab(self.uninstalled_games, "Install Games")
 
-        self.update_tab = UpdateList(self)
+        self.update_tab = UpdateList(self, core)
         self.addTab(self.update_tab, "Updates")
 
         self.browser = BrowserTab(self)

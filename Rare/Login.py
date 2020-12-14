@@ -5,7 +5,8 @@ from logging import getLogger
 
 from PyQt5.QtCore import QUrl, pyqtSignal
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage
-from PyQt5.QtWidgets import QDialog, QWidget, QVBoxLayout, QLabel, QPushButton, QStackedLayout
+from PyQt5.QtWidgets import QDialog, QWidget, QVBoxLayout, QLabel, QPushButton, QStackedLayout, QLineEdit, QButtonGroup, \
+    QRadioButton
 from legendary.core import LegendaryCore
 
 logger = getLogger("LoginWindow")
@@ -36,52 +37,72 @@ class ImportWidget(QWidget):
                                   "logged out there")
         self.import_accept_button = QPushButton("Import")
         self.import_accept_button.clicked.connect(self.auth)
-        self.set_appdata_path()
-        self.appdata_path_text = QLabel(f"Appdata path: {self.core.egl.appdata_path}")
+        appdata_paths = self.get_appdata_path()
 
         self.layout.addWidget(self.import_text)
-        self.layout.addWidget(self.appdata_path_text)
+
+        if len(appdata_paths) == 0:
+            self.path = QLineEdit()
+            self.path.setPlaceholderText("Path to Wineprefix (Not implemented)")
+            self.layout.addWidget(self.path)
+        self.btn_group = QButtonGroup()
+        for i in appdata_paths:
+            radio_button = QRadioButton(i)
+            self.btn_group.addButton(radio_button)
+            self.layout.addWidget(radio_button)
+
+        # for i in appdata_paths:
+
+        self.appdata_path_text = QLabel(f"Appdata path: {self.core.egl.appdata_path}")
+
+        self.login_text = QLabel("")
+        # self.layout.addWidget(self.btn_group)
+        self.layout.addWidget(self.login_text)
         self.layout.addStretch(1)
         self.layout.addWidget(self.import_accept_button)
 
         self.setLayout(self.layout)
 
-    def set_appdata_path(self):
+    def get_appdata_path(self) -> list:
         if self.core.egl.appdata_path:
-            self.wine_paths.append(self.core.egl.appdata_path)
+            return [self.core.egl.appdata_path]
 
         else:  # Linux
             wine_paths = []
-            if os.path.exists(os.path.expanduser('~/Games/epic-games-store/drive_c/users')):
-                wine_paths.append(os.path.expanduser('~/Games/epic-games-store/drive_c/users'))
-            if os.path.exists(os.path.expanduser('~/.wine/drive_c/users')):
-                wine_paths.append(os.path.expanduser('~/.wine/drive_c/users'))
-            appdata_dirs = [os.path.join(i, getuser(),
-                                         'Local Settings/Application Data/EpicGamesLauncher',
-                                         'Saved/Config/Windows') for i in wine_paths]
-            if appdata_dirs == 0:
-                return
-            for i in appdata_dirs:
+            possible_wine_paths = [os.path.expanduser('~/Games/epic-games-store/'),
+                                   os.path.expanduser('~/.wine/')]
+
+            for i in possible_wine_paths:
                 if os.path.exists(i):
-                    self.wine_paths.append(i)
-            self.core.egl.appdata_path = wine_paths[0]
+                    wine_paths.append(i)
+
+            if len(wine_paths) > 0:
+                appdata_dirs = [
+                    os.path.join(i, "drive_c/users", getuser(), 'Local Settings/Application Data/EpicGamesLauncher',
+                                 'Saved/Config/Windows') for i in wine_paths]
+                return appdata_dirs
+        return []
 
     def auth(self):
         self.import_accept_button.setDisabled(True)
-        for i, path in enumerate(self.wine_paths):
-            self.appdata_path_text.setText(f"Appdata path: {self.core.egl.appdata_path}")
-            self.core.egl.appdata_path = path
-            try:
-                if self.core.auth_import():
-                    logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")
-                    self.signal.emit(True)
-                    return
-                else:
-                    logger.warning("Error: No valid session found")
-            except:
-                logger.warning("Error: No valid session found")
 
-        self.signal.emit(False)
+        for i in self.btn_group.buttons():
+            self.core.egl.appdata_path = i.text()
+            if i.isChecked():
+                try:
+                    if self.core.auth_import():
+                        logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")
+                        self.signal.emit(True)
+                        return
+                    else:
+                        logger.warning("Error: No valid session found")
+                except:
+                    logger.warning("Error: No valid session found")
+
+        self.import_accept_button.setDisabled(False)
+        self.login_text.setText("Error: No valid session found")
+
+        return
 
 
 class LoginWindow(QDialog):
