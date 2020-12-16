@@ -15,7 +15,7 @@ if not os.path.exists(config_path):
 
 if not cfg.sections():
     cfg["Rare"] = {
-        "IMAGE_DIR": "../images",
+        "IMAGE_DIR": os.path.expanduser("~/.rare/images"),
         "LOGLEVEL": logging.INFO
     }
 

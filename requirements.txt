@@ -1,4 +1,0 @@
-requests>=2.25.0
-legendary-gl>=0.20.3
-Pillow>=8.0.1
-PyQt5>=5.15.2

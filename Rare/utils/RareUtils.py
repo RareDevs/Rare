@@ -7,13 +7,14 @@ from PIL import Image
 from PyQt5.QtCore import pyqtSignal
 from legendary.core import LegendaryCore
 
+from Rare.config import IMAGE_DIR
+
 logger = getLogger("Utils")
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
-    IMAGE_DIR = "../images"
     if not os.path.isdir(IMAGE_DIR):
-        os.mkdir(IMAGE_DIR)
+        os.makedirs(IMAGE_DIR)
         logger.info("Create Image dir")
 
     # Download Images
