@@ -14,7 +14,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Dummerle/Rare",
-    packages=["Rare", "Rare.utils"],
+    packages=["Rare", "Rare.utils", "Rare.Styles"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",

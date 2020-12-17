@@ -43,7 +43,7 @@ class Settings(QScrollArea):
         self.gen_form_rare()
 
         if RareConfig.get_config()["Rare"].get("theme") == "dark":
-            self.parent().parent().setStyleSheet(open("../Styles/style.qss").read())
+            self.parent().parent().setStyleSheet(open("Styles/style.qss").read())
             self.style_combo_box.setCurrentIndex(1)
 
         self.logout_button = QPushButton("Logout")
@@ -73,7 +73,7 @@ class Settings(QScrollArea):
         logger.info("Update Rare settings")
         config = {"Rare": {}}
         if self.style_combo_box.currentIndex() == 1:
-            self.parent().parent().parent().setStyleSheet(open("../Styles/style.qss").read())
+            self.parent().parent().parent().setStyleSheet(open("Styles/style.qss").read())
             config["Rare"]["theme"] = "dark"
         else:
             self.parent().parent().parent().setStyleSheet("")
