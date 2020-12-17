@@ -27,8 +27,7 @@ setuptools.setup(
         "legendary-gl",
         "requests<3.0",
         "pillow",
-        "PyQT5",
-        "PyQTWebEngine",
+        "PyQtWebEngine",
         "setuptools",
         "wheel"
     ]

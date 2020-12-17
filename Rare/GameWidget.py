@@ -7,6 +7,8 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QStyle
 from legendary.core import LegendaryCore
 
+from Rare.config import IMAGE_DIR
+
 from Rare.Dialogs import InstallDialog, GameSettingsDialog
 from Rare.utils import legendaryUtils
 
@@ -50,18 +52,21 @@ class GameWidget(QWidget):
         # self.dev =
         self.game_running = False
         self.layout = QHBoxLayout()
-        if os.path.exists(f"../images/{game.app_name}/FinalArt.png"):
-            pixmap = QPixmap(f"../images/{game.app_name}/FinalArt.png")
-        elif os.path.exists(f"../images/{game.app_name}/DieselGameBoxTall.png"):
-            pixmap = QPixmap(f"../images/{game.app_name}/DieselGameBoxTall.png")
-        elif os.path.exists(f"../images/{game.app_name}/DieselGameBoxLogo.png"):
-            pixmap = QPixmap(f"../images/{game.app_name}/DieselGameBoxLogo.png")
+        if os.path.exists(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png"):
+            pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png")
+        elif os.path.exists(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png"):
+            pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
+        elif os.path.exists(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png"):
+            pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png")
         else:
-            logger.warning("No Image found")
-        pixmap = pixmap.scaled(180, 240)
-        self.image = QLabel()
-        self.image.setPixmap(pixmap)
-        self.layout.addWidget(self.image)
+            logger.warning(f"No Image found: {self.game.title}")
+            pixmap=None
+        if pixmap:
+
+            pixmap = pixmap.scaled(180, 240)
+            self.image = QLabel()
+            self.image.setPixmap(pixmap)
+            self.layout.addWidget(self.image)
 
         ##Layout on the right
         self.childLayout = QVBoxLayout()

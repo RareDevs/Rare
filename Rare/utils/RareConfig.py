@@ -7,7 +7,7 @@ rare_config = configparser.ConfigParser()
 if not os.path.exists(config_path):
     os.mkdir(config_path)
     rare_config["Rare"] = {
-        "image_dir": "../",
+        "image_dir": ".",
         "theme": "light"
     }
     rare_config.write(open(config_path + "config.ini", "w"))
