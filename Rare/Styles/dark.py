@@ -1,3 +1,4 @@
+dark="""
 /* ---------------------------------------------------------------------------
 
     Created by the qtsass compiler v0.1.1
@@ -2173,3 +2174,4 @@ PlotWidget {
   /* Fix cut labels in plots #134 */
   padding: 0px;
 }
+"""

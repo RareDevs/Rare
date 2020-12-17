@@ -14,7 +14,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Dummerle/Rare",
-    packages=["Rare", "Rare.utils", "Rare.Styles"],
+    packages=["Rare", "Rare.Styles", "Rare.utils"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
@@ -27,7 +27,7 @@ setuptools.setup(
         "legendary-gl",
         "requests<3.0",
         "pillow",
-        "PyQtWebEngine",
+        "pyqtwebengine",
         "setuptools",
         "wheel"
     ]

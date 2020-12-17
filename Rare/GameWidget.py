@@ -142,11 +142,13 @@ class UninstalledGameWidget(QWidget):
         self.version = game.app_version
         self.layout = QHBoxLayout()
         self.game = game
-
-        pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
-        pixmap = pixmap.scaled(120, 160)
-        self.image = QLabel()
-        self.image.setPixmap(pixmap)
+        if os.path.exists(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png"):
+            pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
+            pixmap = pixmap.scaled(120, 160)
+            self.image = QLabel()
+            self.image.setPixmap(pixmap)
+        else:
+            print(os.listdir(IMAGE_DIR)/game.app_name)
 
         self.child_layout = QVBoxLayout()
 

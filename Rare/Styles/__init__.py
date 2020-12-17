@@ -1,2 +1,2 @@
-dark = open("Styles/dark.qss").read()
-obit = open("Styles/Obit.qss").read()
+from Rare.Styles.dark import dark
+from Rare.Styles.Obit import obit
