@@ -2,6 +2,7 @@
 /.idea/
 /Rare/__pycache__/
 /CountLines.sh
+/Rare/utils/__pycache__/
 /build/
 /dist/
 /Rare.egg-info/
