@@ -7,7 +7,7 @@ from PIL import Image
 from PyQt5.QtCore import pyqtSignal
 from legendary.core import LegendaryCore
 
-from Rare.config import IMAGE_DIR
+from Rare.utils.RareConfig import IMAGE_DIR
 
 logger = getLogger("Utils")
 

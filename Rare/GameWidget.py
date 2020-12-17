@@ -7,7 +7,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QStyle
 from legendary.core import LegendaryCore
 
-from Rare.config import IMAGE_DIR
+from Rare.utils.RareConfig import IMAGE_DIR
 
 from Rare.Dialogs import InstallDialog, GameSettingsDialog
 from Rare.utils import legendaryUtils
@@ -143,7 +143,7 @@ class UninstalledGameWidget(QWidget):
         self.layout = QHBoxLayout()
         self.game = game
 
-        pixmap = QPixmap(f"../images/{game.app_name}/UninstalledArt.png")
+        pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
         pixmap = pixmap.scaled(120, 160)
         self.image = QLabel()
         self.image.setPixmap(pixmap)

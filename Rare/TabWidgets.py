@@ -1,8 +1,7 @@
 import os
-import signal
+import shutil
 from logging import getLogger
 
-from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, Qt, QProcess
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit, QPushButton, QFormLayout, QGroupBox, \
@@ -10,6 +9,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea, QLineEdit
 from legendary.core import LegendaryCore
 
 from Rare.GameWidget import GameWidget, UninstalledGameWidget
+from Rare.Styles import dark, obit
 from Rare.utils import legendaryConfig, RareConfig
 from Rare.utils.legendaryUtils import logout, get_updates, get_name, update
 
@@ -42,9 +42,13 @@ class Settings(QScrollArea):
         self.gen_form_legendary()
         self.gen_form_rare()
 
-        if RareConfig.get_config()["Rare"].get("theme") == "dark":
-            self.parent().parent().setStyleSheet(open("Styles/style.qss").read())
+        if RareConfig.THEME == "dark":
+            self.parent().parent().setStyleSheet(dark)
             self.style_combo_box.setCurrentIndex(1)
+        if RareConfig.THEME == "obit":
+            self.parent().parent().setStyleSheet(obit)
+            self.style_combo_box.setCurrentIndex(2)
+        self.image_dir_edit.setText(RareConfig.IMAGE_DIR)
 
         self.logout_button = QPushButton("Logout")
         self.logout_button.clicked.connect(self.logout)
@@ -73,13 +77,29 @@ class Settings(QScrollArea):
         logger.info("Update Rare settings")
         config = {"Rare": {}}
         if self.style_combo_box.currentIndex() == 1:
-            self.parent().parent().parent().setStyleSheet(open("Styles/style.qss").read())
+            self.parent().parent().parent().setStyleSheet(dark)
             config["Rare"]["theme"] = "dark"
+        elif self.style_combo_box.currentIndex() == 2:
+            self.parent().parent().parent().setStyleSheet(obit)
+            config["Rare"]["theme"] = "obit"
         else:
             self.parent().parent().parent().setStyleSheet("")
             config["Rare"]["theme"] = "light"
+        config["Rare"]["IMAGE_DIR"] = self.image_dir_edit.text()
+
+        if self.image_dir_edit.text() != RareConfig.IMAGE_DIR:
+            shutil.rmtree(RareConfig.IMAGE_DIR)
+            restart = True
+        else:
+            restart = False
+
 
         RareConfig.set_config(config)
+
+        if restart:
+            logger.info("Restart App to download Images")
+            # TODO Restart automatically
+
 
     def update_legendary_settings(self):
         print("Legendary update")
@@ -153,9 +173,13 @@ class Settings(QScrollArea):
         self.rare_form_group_box = QGroupBox("Rare Settings")
         self.rare_form = QFormLayout()
         self.style_combo_box = QComboBox()
-        self.style_combo_box.addItems(["Light", "Dark"])
+        self.style_combo_box.addItems(["Light", "Dark", "Obit"])
         self.rare_form.addRow(QLabel("Style"), self.style_combo_box)
 
+        self.image_dir_edit = QLineEdit()
+        self.image_dir_edit.setPlaceholderText("Image directory")
+
+        self.rare_form.addRow(QLabel("Image Directory"),self.image_dir_edit)
         self.rare_form_group_box.setLayout(self.rare_form)
 
     def get_legendary_config(self):
@@ -276,7 +300,7 @@ class UpdateList(QWidget):
         def dataReady(self):
             bytes = self.process.readAllStandardOutput()
             byte_list = bytes.split('\n')
-            data=[]
+            data = []
             for i in byte_list:
                 data.append(byte_list)
             # TODO Daten verarbeiten
