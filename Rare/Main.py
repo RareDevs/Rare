@@ -2,6 +2,10 @@ import logging
 import sys
 
 from PyQt5.QtWidgets import QApplication
+
+from Rare.Styles import dark
+from Rare.utils import RareConfig
+
 from legendary.core import LegendaryCore
 
 from Rare.Launch import LaunchDialog
@@ -18,7 +22,8 @@ core = LegendaryCore()
 
 def main():
     app = QApplication(sys.argv)
-
+    if RareConfig.THEME == "dark":
+        app.setStyleSheet(dark)
     logger.info("Try if you are logged in")
     try:
         if core.login():
@@ -34,6 +39,8 @@ def main():
         if not login_window.login():
             return
     launch_dialog = LaunchDialog(core)
+    if RareConfig.THEME == "dark":
+        launch_dialog.setStyleSheet(dark)
     launch_dialog.exec_()
     mainwindow = MainWindow(core)
     app.exec_()

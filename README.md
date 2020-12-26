@@ -14,12 +14,9 @@ Rare is currently considered beta software and in no way feature-complete. You *
  ### Implemented
 - Launch, install and uninstall games
 - Authentication(Import from existing installation and via Browser)**(Please test it!)**
-
+- In-app Browser to buy games
 ### Todos
 - Sync saves
-- Settings
-- Search Games
-- In-app Browser to buy games
 - ...
 
 If you have features you want to have in this app, create an issue on github or build it yourself. Please report bugs(Especially Windows)

@@ -2,7 +2,7 @@ import logging
 import os
 import subprocess
 
-from PyQt5.QtCore import QProcess, QProcessEnvironment
+from PyQt5.QtCore import QProcess, QProcessEnvironment, QThread
 from legendary.core import LegendaryCore
 
 logger = logging.getLogger("LGD")
@@ -91,7 +91,6 @@ def launch_game(app_name: str, lgd_core: LegendaryCore, offline: bool = False, s
     for e in env:
         environment.insert(e, env[e])
     process.setProcessEnvironment(environment)
-
     process.start(params[0], params[1:])
     return process
 
@@ -129,6 +128,3 @@ def uninstall(app_name: str, lgd_core):
     # logger.info("Uninstalling " + app_name)
 
 
-def update(app_name) -> subprocess.Popen:
-    logger.info(f"Updating {app_name}")
-    return subprocess.Popen(f"legendary -y update {app_name}".split())

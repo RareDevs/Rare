@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QTabWidget, QWidget
 
-from Rare.TabWidgets import GameListInstalled, GameListUninstalled, UpdateList, BrowserTab, Settings
+from Rare.TabWidgets import GameListInstalled, GameListUninstalled, BrowserTab
+from Rare.Tabs import SettingsTab, UpdateTab
 
 
 class MainWindow(QMainWindow):
@@ -24,11 +25,11 @@ class TabWidget(QTabWidget):
         self.uninstalled_games = GameListUninstalled(self, core)
         self.addTab(self.uninstalled_games, "Install Games")
 
-        self.update_tab = UpdateList(self, core)
+        self.update_tab = UpdateTab(self, core)
         self.addTab(self.update_tab, "Updates")
 
         self.browser = BrowserTab(self)
         self.addTab(self.browser, "Store")
 
-        self.settings = Settings(self)
+        self.settings = SettingsTab(self, core)
         self.addTab(self.settings, "Settings")
