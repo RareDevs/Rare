@@ -98,7 +98,7 @@ class LegendarySettingsForm(QGroupBox):
             self.config["default.env"] = {}
             for row in range(self.table.rowCount()):
                 self.config["default.env"][self.table.item(row, 0).text()] = self.table.item(row, 1).text()
-        else:
+        elif "default.env" in self.config["Legendary"]:
             self.config.pop("default.env")
         legendaryConfig.set_config(self.config)
         print(self.config)
