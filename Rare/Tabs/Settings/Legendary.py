@@ -82,14 +82,14 @@ class LegendarySettingsForm(QGroupBox):
             self.config["Legendary"].pop("wine_executable")
 
         # Wineprefix
-        if self.lgd_conf_wine_exec.text() != '':
-            self.config["Legendary"]["wine_prefix"] = self.lgd_conf_wine_exec.text()
+        if self.lgd_conf_wine_prefix.text() != '':
+            self.config["Legendary"]["wine_prefix"] = self.lgd_conf_wine_prefix.text()
         elif "wine_prefix" in self.config["Legendary"]:
             self.config["Legendary"].pop("wine_prefix")
 
         # Locale
         if self.lgd_conf_locale.text() != "":
-            self.config["Legendary"]["wine_prefix"] = self.lgd_conf_wine_prefix.text()
+            self.config["Legendary"]["locale"] = self.lgd_conf_locale.text()
         elif "locale" in self.config["Legendary"]:
             self.config["Legendary"].pop("locale")
 
@@ -100,5 +100,6 @@ class LegendarySettingsForm(QGroupBox):
                 self.config["default.env"][self.table.item(row, 0).text()] = self.table.item(row, 1).text()
         elif "default.env" in self.config["Legendary"]:
             self.config.pop("default.env")
+            print("pop")
         legendaryConfig.set_config(self.config)
         print(self.config)
