@@ -3,9 +3,9 @@ from logging import getLogger
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QPushButton, QScrollArea
 
-from Rare.Tabs.Settings.Legendary import LegendarySettingsForm
+from Rare.SettingsForm import SettingsForm
 from Rare.Tabs.Settings.Rare import RareSettingsForm
-from Rare.utils.legendaryUtils import get_name, logout
+from Rare.utils.legendaryUtils import get_name
 from legendary.core import LegendaryCore
 
 logger = getLogger("Settings")
@@ -21,7 +21,7 @@ class SettingsTab(QScrollArea):
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("<h1>Rare Settings</h1>"))
         self.logged_in_as = QLabel(f"Logged in as {get_name()}")
-        self.legendary_form = LegendarySettingsForm("Legendary")
+        self.legendary_form = SettingsForm("Legendary")
         self.rare_form = RareSettingsForm()
 
         self.logout_button = QPushButton("Logout")

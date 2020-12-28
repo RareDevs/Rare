@@ -3,7 +3,7 @@ import os
 from PyQt5.QtWidgets import *
 
 from Rare.Dialogs import AcceptDialog
-from Rare.Tabs.GamesInstalled.SettingsForm import LegendarySettingsForm
+from Rare.SettingsForm import SettingsForm
 
 
 class GameSettingsDialog(QDialog):
@@ -20,10 +20,10 @@ class GameSettingsDialog(QDialog):
         self.wine_prefix.setPlaceholderText("Wineprefix")
         self.uninstall_button = QPushButton("Uninstall Game")
 
-        self.settings = LegendarySettingsForm(self.game.app_name)
+        self.settings = SettingsForm(self.game.app_name)
 
         self.uninstall_button.clicked.connect(self.uninstall)
-        self.exit_button = QPushButton("Exit withot save")
+        self.exit_button = QPushButton("Exit")
         self.exit_button.clicked.connect(self.close)
 
         self.layout.addWidget(self.settings)
