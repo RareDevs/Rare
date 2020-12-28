@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QFormLayout, QGroupBox, QLineEdit, QPushButton, \
-    QLabel
+    QLabel, QCheckBox
 
 from Rare.utils import legendaryConfig
 
@@ -14,7 +14,7 @@ class SettingsForm(QGroupBox):
         self.app_name = app_name
         self.logger = getLogger(f"{app_name} Settings")
         config: dict
-        super(SettingsForm, self).__init__(f"{'Legendary Settings' if app_name=='Legendary' else f'Settings for Game {self.app_name}'}")
+        super(SettingsForm, self).__init__(f'Settings for Game {self.app_name}')
         self.config = legendaryConfig.get_config()
         if not self.config.get(self.app_name):
             self.config[self.app_name] = {}
@@ -22,8 +22,10 @@ class SettingsForm(QGroupBox):
             self.config[self.app_name]["wine_executable"] = ""
         if not self.config[self.app_name].get("wine_prefix"):
             self.config[self.app_name]["wine_prefix"] = ""
-        if not self.config[self.app_name].get("locale"):
-            self.config[self.app_name]["locale"] = ""
+        if not self.config[self.app_name].get("language"):
+            self.config[self.app_name]["language"] = ""
+        if not self.config["Legendary"].get("offline"):
+            self.config["Legendary"]["offline"] = ""
 
         env_vars = self.config.get(f"{self.app_name}.env")
         if env_vars:
@@ -39,12 +41,15 @@ class SettingsForm(QGroupBox):
 
         self.form = QFormLayout()
 
-        self._conf_wine_prefix = QLineEdit(self.config[self.app_name]["wine_prefix"])
-        self._conf_wine_prefix.setPlaceholderText("Default")
-        self._conf_wine_exec = QLineEdit(self.config[self.app_name]["wine_executable"])
-        self._conf_wine_exec.setPlaceholderText("Default")
-        self._conf_locale = QLineEdit(self.config[self.app_name]["locale"])
-        self._conf_locale.setPlaceholderText("Default")
+        self.game_conf_wine_prefix = QLineEdit(self.config[self.app_name]["wine_prefix"])
+        self.game_conf_wine_prefix.setPlaceholderText("Default")
+        self.game_conf_wine_exec = QLineEdit(self.config[self.app_name]["wine_executable"])
+        self.game_conf_wine_exec.setPlaceholderText("Default")
+        self.language = QLineEdit(self.config[self.app_name]["language"])
+        self.language.setPlaceholderText("Default")
+
+        self.offline = QCheckBox(self.config["offline"] == "false")
+
 
         self.add_button = QPushButton("Add Environment Variable")
         self.delete_env_var = QPushButton("Delete selected Variable")
@@ -52,12 +57,13 @@ class SettingsForm(QGroupBox):
         self.add_button.clicked.connect(self.add_variable)
 
         if os.name != "nt":
-            self.form.addRow(QLabel("Default Wineprefix"), self._conf_wine_prefix)
-            self.form.addRow(QLabel("Wine executable"), self._conf_wine_exec)
+            self.form.addRow(QLabel("Default Wineprefix"), self.game_conf_wine_prefix)
+            self.form.addRow(QLabel("Wine executable"), self.game_conf_wine_exec)
+        # self.form.addRow(QLabel("Offline"), self.offline)
         self.form.addRow(QLabel("Environment Variables"), self.table)
         self.form.addRow(QLabel("Add Variable"), self.add_button)
         self.form.addRow(QLabel("Delete Variable"), self.delete_env_var)
-        self.form.addRow(QLabel("Locale"), self._conf_locale)
+        self.form.addRow(QLabel("language"), self.language)
         self.submit_button = QPushButton("Update")
         self.submit_button.clicked.connect(self.update_legendary_settings)
         self.form.addRow(self.submit_button)
@@ -78,22 +84,22 @@ class SettingsForm(QGroupBox):
         # Wine exec
         if not self.config.get(self.app_name):
             self.config[self.app_name] = {}
-        if self._conf_wine_exec.text() != "":
-            self.config[self.app_name]["wine_executable"] = self._conf_wine_exec.text()
+        if self.game_conf_wine_exec.text() != "":
+            self.config[self.app_name]["wine_executable"] = self.game_conf_wine_exec.text()
         elif "wine_executable" in self.config[self.app_name]:
             self.config[self.app_name].pop("wine_executable")
 
         # Wineprefix
-        if self._conf_wine_prefix.text() != '':
-            self.config[self.app_name]["wine_prefix"] = self._conf_wine_prefix.text()
+        if self.game_conf_wine_prefix.text() != '':
+            self.config[self.app_name]["wine_prefix"] = self.game_conf_wine_prefix.text()
         elif "wine_prefix" in self.config[self.app_name]:
             self.config[self.app_name].pop("wine_prefix")
 
-        # Locale
-        if self._conf_locale.text() != "":
-            self.config[self.app_name]["locale"] = self._conf_locale.text()
-        elif "locale" in self.config[self.app_name]:
-            self.config[self.app_name].pop("locale")
+        # language
+        if self.language.text() != "":
+            self.config[self.app_name]["language"] = self.language.text()
+        elif "language" in self.config[self.app_name]:
+            self.config[self.app_name].pop("language")
 
         # Env vars
         if self.table.rowCount() > 0:

@@ -3,7 +3,7 @@ import os
 from PyQt5.QtWidgets import *
 
 from Rare.Dialogs import AcceptDialog
-from Rare.SettingsForm import SettingsForm
+from Rare.Tabs.GamesInstalled.SettingsForm import SettingsForm
 
 
 class GameSettingsDialog(QDialog):
