@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QTabWidget, QWidget
 
-from Rare.TabWidgets import GameListInstalled, GameListUninstalled, BrowserTab
-from Rare.Tabs import SettingsTab, UpdateTab
+from Rare.Tabs import SettingsTab, UpdateTab, GameListInstalled,GameListUninstalled, BrowserTab
 
 
 class MainWindow(QMainWindow):

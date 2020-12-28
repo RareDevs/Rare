@@ -21,7 +21,7 @@ class SettingsTab(QScrollArea):
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("<h1>Rare Settings</h1>"))
         self.logged_in_as = QLabel(f"Logged in as {get_name()}")
-        self.legendary_form = LegendarySettingsForm()
+        self.legendary_form = LegendarySettingsForm("Legendary")
         self.rare_form = RareSettingsForm()
 
         self.logout_button = QPushButton("Logout")

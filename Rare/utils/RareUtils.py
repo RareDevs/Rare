@@ -19,8 +19,6 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
 
     # Download Images
     for i, game in enumerate(sorted(core.get_game_list(), key=lambda x: x.app_title)):
-        # if game.app_name == "CrabEA":
-        #     print(game.metadata)
 
         if not os.path.isdir(f"{IMAGE_DIR}/" + game.app_name):
             os.mkdir(f"{IMAGE_DIR}/" + game.app_name)
