@@ -2,3 +2,4 @@ legendary_gl>=0.20.1
 requests==2.25.1
 Pillow==8.0.1
 PyQt5==5.15.2
+PyQtWebengine
