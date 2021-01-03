@@ -145,3 +145,4 @@ class SettingsForm(QGroupBox):
         if self.config.get("Legendary") == {}:
             self.config.pop("Legendary")
         legendaryConfig.set_config(self.config)
+        print(self.config)

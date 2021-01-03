@@ -14,7 +14,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Dummerle/Rare",
-    packages=["Rare", "Rare.Styles", "Rare.utils", "Rare.Tabs", "Rare.Tabs.Settings", "Rare.Tabs.GamesInstalled", "Rare.Tabs.GamesUninstalled"],
+    packages=setuptools.find_packages(where="Rare/"),
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",

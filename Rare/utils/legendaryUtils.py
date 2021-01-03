@@ -2,7 +2,7 @@ import logging
 import os
 import subprocess
 
-from PyQt5.QtCore import QProcess, QProcessEnvironment, QThread
+from PyQt5.QtCore import QProcess, QProcessEnvironment
 from legendary.core import LegendaryCore
 
 logger = logging.getLogger("LGD")
@@ -128,3 +128,27 @@ def uninstall(app_name: str, lgd_core):
     # logger.info("Uninstalling " + app_name)
 
 
+def import_game(core: LegendaryCore, app_name: str, path: str):
+    logger.info("Import " + app_name)
+    igame = core.get_game(app_name)
+    manifest, jgame = core.import_game(igame, path)
+    exe_path = os.path.join(path, manifest.meta.launch_exe.lstrip('/'))
+    total = len(manifest.file_manifest_list.elements)
+    found = sum(os.path.exists(os.path.join(path, f.filename))
+                for f in manifest.file_manifest_list.elements)
+    ratio = found / total
+    if not os.path.exists(exe_path):
+        logger.error(f"Game {igame.app_title} failed to import")
+        return False
+    if ratio < 0.95:
+        logger.error(
+            "Game files are missing. It may be not the lates version ore it is corrupt")
+        return False
+    core.install_game(jgame)
+    if jgame.needs_verification:
+        logger.info(logger.info(
+            f'NOTE: The game installation will have to be verified before it can be updated '
+            f'with legendary. Run "legendary repair {app_name}" to do so.'))
+
+    logger.info("Successfully imported Game: " + igame.app_title)
+    return True

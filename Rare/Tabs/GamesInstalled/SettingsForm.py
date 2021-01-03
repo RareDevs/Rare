@@ -24,8 +24,8 @@ class SettingsForm(QGroupBox):
             self.config[self.app_name]["wine_prefix"] = ""
         if not self.config[self.app_name].get("language"):
             self.config[self.app_name]["language"] = ""
-        if not self.config["Legendary"].get("offline"):
-            self.config["Legendary"]["offline"] = ""
+        # if not self.config["Legendary"].get("offline"):
+        #     self.config["Legendary"]["offline"] = ""
 
         env_vars = self.config.get(f"{self.app_name}.env")
         if env_vars:
@@ -48,7 +48,7 @@ class SettingsForm(QGroupBox):
         self.language = QLineEdit(self.config[self.app_name]["language"])
         self.language.setPlaceholderText("Default")
 
-        self.offline = QCheckBox(self.config["offline"] == "false")
+        # self.offline = QCheckBox(self.config["offline"] == "false")
 
 
         self.add_button = QPushButton("Add Environment Variable")
@@ -92,6 +92,7 @@ class SettingsForm(QGroupBox):
         # Wineprefix
         if self.game_conf_wine_prefix.text() != '':
             self.config[self.app_name]["wine_prefix"] = self.game_conf_wine_prefix.text()
+            pass
         elif "wine_prefix" in self.config[self.app_name]:
             self.config[self.app_name].pop("wine_prefix")
 
@@ -112,3 +113,4 @@ class SettingsForm(QGroupBox):
         if self.config.get(self.app_name) == {}:
             self.config.pop(self.app_name)
         legendaryConfig.set_config(self.config)
+        print(self.config)

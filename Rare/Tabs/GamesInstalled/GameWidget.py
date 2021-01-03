@@ -55,7 +55,8 @@ class GameWidget(QWidget):
         self.title_widget = QLabel(f"<h1>{self.title}</h1>")
         self.launch_button = QPushButton(play_icon, "Launch")
         self.launch_button.clicked.connect(self.launch)
-        self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
+        if os.name != "nt":
+            self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
         self.developer_label = QLabel("Dev: "+ self.dev)
         self.version_label = QLabel("Version: " + str(self.version))
         self.size_label = QLabel(f"Installed size: {round(self.size / (1024 ** 3), 2)} GB")
@@ -65,7 +66,8 @@ class GameWidget(QWidget):
         self.childLayout.addWidget(self.title_widget)
         self.childLayout.addWidget(self.launch_button)
         self.childLayout.addWidget(self.developer_label)
-        self.childLayout.addWidget(self.wine_rating)
+        if os.name != "nt":
+            self.childLayout.addWidget(self.wine_rating)
         self.childLayout.addWidget(self.version_label)
         self.childLayout.addWidget(self.size_label)
         self.childLayout.addWidget(self.settings_button)

@@ -4,10 +4,13 @@ from PyQt5.QtWidgets import *
 from Rare.Tabs.GamesUninstalled.GameWidget import UninstalledGameWidget
 from legendary.core import LegendaryCore
 
+from Rare.utils.Dialogs.ImportDialog import ImportDialog
+
 
 class GameListUninstalled(QScrollArea):
     def __init__(self, parent, core: LegendaryCore):
         super(GameListUninstalled, self).__init__(parent=parent)
+        self.core = core
         self.widget = QWidget()
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -17,8 +20,10 @@ class GameListUninstalled(QScrollArea):
         self.filter = QLineEdit()
         self.filter.textChanged.connect(self.filter_games)
         self.filter.setPlaceholderText("Filter Games")
+        self.import_button = QPushButton("Import installed Game from Epic Games Store")
+        self.import_button.clicked.connect(self.import_game)
         self.layout.addWidget(self.filter)
-
+        self.layout.addWidget(self.import_button)
         self.widgets_uninstalled = []
         games = []
         installed = [i.app_name for i in core.get_installed_list()]
@@ -41,3 +46,7 @@ class GameListUninstalled(QScrollArea):
                 i.setVisible(True)
             else:
                 i.setVisible(False)
+
+    def import_game(self):
+        import_dia = ImportDialog(self.core)
+        import_dia.import_dialog()
