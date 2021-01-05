@@ -57,7 +57,9 @@ class GameListInstalled(QScrollArea):
             available_drives = ['%s:' % d for d in string.ascii_uppercase if os.path.exists('%s:' % d)]
             for drive in available_drives:
                 path = f"{drive}/Program Files/Epic Games/"
-                self.auto_import_games(path)
+                if os.path.exists(path):
+                    self.auto_import_games(path)
+
         else:
             possible_wineprefixes = [os.path.expanduser("~/.wine/"), os.path.expanduser("~/Games/epic-games-store/")]
             for wine_prefix in possible_wineprefixes:
@@ -68,7 +70,9 @@ class GameListInstalled(QScrollArea):
     def auto_import_games(self, game_path):
         if not os.path.exists(game_path):
             return
-
+        if os.listdir(game_path) == 0:
+            logger.info(f"No Games found in {game_path}")
+            return
         for path in os.listdir(game_path):
             json_path = game_path + path + "/.egstore"
             print(json_path)

@@ -30,6 +30,7 @@ class ImportDialog(QDialog):
 
     def button_click(self):
         if self.import_game():
+            QMessageBox.about(self, "Info", "Please restart App to reload installed Games")
             self.close()
         else:
             self.info_text.setText("Failed to import Game")
