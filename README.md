@@ -9,19 +9,27 @@ Rare is currently considered beta software and in no way feature-complete. You *
  - pyqt5
  - legendary-gl
  - PyQtWebengine
+
+##Installation
+
+### Installation via pip
+Execute *pip install Rare*
  
- ### Usage
- When you run Rare, it'll check if you're currently logged in and walk you through logging in if you aren't.
- Once you're logged in, it will pull game covers from the "metadata" folder in Legedary's config folder, join logo and background together and then display a list of games you have in your account. Installed games will appear in full color while not installed ones will appear in black and white.
+### Simple Windows Windows
+Download Rare.exe and place it somewhere in PATH
+
+### Linux
+- For Arch Linux is an AUR package available: [rare-git](https://aur.archlinux.org/packages/rare-git)
+- Other distributions have to install it with pip or clone the repo and install it manually: *python3 setup.py install*
 
  ### Implemented
 - Launch, install and uninstall games
-- Authentication(Import from existing installation and via Browser)**(Please test it!)**
+- Authentication(Import from existing installation and via Browser)
 - In-app Browser to buy games
 - Settings
 ### Todos
 - Sync saves
-- ...
+- More Settings
 
 
 ### Images
