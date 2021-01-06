@@ -53,26 +53,29 @@ class GameListInstalled(QScrollArea):
 
     def import_games_prepare(self):
         # Automatically import from windows
+        imported = 0
         if os.name == "nt":
             available_drives = ['%s:' % d for d in string.ascii_uppercase if os.path.exists('%s:' % d)]
             for drive in available_drives:
                 path = f"{drive}/Program Files/Epic Games/"
                 if os.path.exists(path):
-                    self.auto_import_games(path)
+                    imported += self.auto_import_games(path)
 
         else:
             possible_wineprefixes = [os.path.expanduser("~/.wine/"), os.path.expanduser("~/Games/epic-games-store/")]
             for wine_prefix in possible_wineprefixes:
-                self.auto_import_games(f"{wine_prefix}drive_c/Program Files/Epic Games/")
+                imported += self.auto_import_games(f"{wine_prefix}drive_c/Program Files/Epic Games/")
 
+        QMessageBox.information(self, "Imported Games", f"Successfully imported  {imported} Games")
         logger.info("Restarting app to import games")
 
     def auto_import_games(self, game_path):
+        imported = 0
         if not os.path.exists(game_path):
-            return
+            return 0
         if os.listdir(game_path) == 0:
             logger.info(f"No Games found in {game_path}")
-            return
+            return 0
         for path in os.listdir(game_path):
             json_path = game_path + path + "/.egstore"
             print(json_path)
@@ -83,4 +86,6 @@ class GameListInstalled(QScrollArea):
             for file in os.listdir(json_path):
                 if file.endswith(".mancpn"):
                     app_name = json.load(open(os.path.join(json_path, file)))["AppName"]
-                    legendaryUtils.import_game(self.core, app_name, game_path + path)
+                    if legendaryUtils.import_game(self.core, app_name, game_path + path):
+                        imported +=1
+        return imported

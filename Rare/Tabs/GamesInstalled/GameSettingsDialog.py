@@ -38,12 +38,16 @@ class GameSettingsDialog(QDialog):
         return self.action
 
     def uninstall(self):
-        dia = AcceptDialog(f"Do you really want to delete {self.game.title}")
-        if dia.get_accept():
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setText(f"Do you really want to delete {self.game.title}")
+        msg.setWindowTitle("Uninstall Game")
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        ret = msg.exec_()
+
+        if ret == QMessageBox.Ok:
             self.action = "uninstall"
             self.close()
-
-
 
     def exit_settings(self):
         self.close()
