@@ -14,7 +14,7 @@ Rare is currently considered beta software and in no way feature-complete. You *
 
 ### Installation via pip
 Execute *pip install Rare* for all users
-Or *pip install Rare --user for only one user
+Or *pip install Rare --user* for only one user
  
 ### Simple Windows Windows
 Download Rare.exe and place it somewhere in PATH
