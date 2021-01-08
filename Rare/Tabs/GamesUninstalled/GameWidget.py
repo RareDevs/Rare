@@ -4,7 +4,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QMessageBox
 
 from Rare.Dialogs import InstallDialog
 from Rare.utils.RareConfig import IMAGE_DIR
@@ -77,13 +77,13 @@ class UninstalledGameWidget(QWidget):
             logger.info(f"install {self.app_name} in path {path}")
             # TODO
             self.proc = QProcess()
+            self.proc.start("legendary", ["-y", "install", self.app_name, "--base-path", path])
             self.proc.finished.connect(self.download_finished)
-            self.proc.start("legendary", ["-y", f"--base-path {path}", self.app_name])
 
-            # legendaryUtils.install(self.app_name, path=path)
         else:
             logger.info("Download canceled")
 
-    def download_finished(self):
+    def download_finished(self, code):
         self.setVisible(False)
-        logger.info("Download finished")
+        logger.info(f"Download finished code: {code}")
+        QMessageBox.information(self, "Download finished", "Download has finished")
