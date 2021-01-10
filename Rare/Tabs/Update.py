@@ -110,8 +110,8 @@ class UpdateWidget(QWidget):
 
 class UpdateTab(QWidget):
 
-    def __init__(self, parent, core: LegendaryCore):
-        super(UpdateTab, self).__init__(parent=parent)
+    def __init__(self, core: LegendaryCore):
+        super(UpdateTab, self).__init__()
         self.core = core
         self.layout = QVBoxLayout()
         update_games = self.get_updates()

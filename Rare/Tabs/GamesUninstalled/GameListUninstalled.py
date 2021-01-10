@@ -8,8 +8,8 @@ from Rare.utils.Dialogs.ImportDialog import ImportDialog
 
 
 class GameListUninstalled(QScrollArea):
-    def __init__(self, parent, core: LegendaryCore):
-        super(GameListUninstalled, self).__init__(parent=parent)
+    def __init__(self, core: LegendaryCore):
+        super(GameListUninstalled, self).__init__()
         self.core = core
         self.widget = QWidget()
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)

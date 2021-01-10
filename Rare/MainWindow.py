@@ -9,26 +9,26 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Rare - GUI for legendary-gl")
         self.setGeometry(0, 0, 1200, 900)
-        self.setCentralWidget(TabWidget(self, core))
+        self.setCentralWidget(TabWidget(core))
         self.show()
 
 
 class TabWidget(QTabWidget):
 
-    def __init__(self, parent, core):
-        super(QWidget, self).__init__(parent)
+    def __init__(self, core):
+        super(QWidget, self).__init__()
 
-        self.game_list = GameListInstalled(self, core)
+        self.game_list = GameListInstalled(core)
         self.addTab(self.game_list, "Games")
 
-        self.uninstalled_games = GameListUninstalled(self, core)
+        self.uninstalled_games = GameListUninstalled(core)
         self.addTab(self.uninstalled_games, "Install Games")
 
-        self.update_tab = UpdateTab(self, core)
+        self.update_tab = UpdateTab(core)
         self.addTab(self.update_tab, "Updates")
 
-        self.browser = BrowserTab(self)
+        self.browser = BrowserTab()
         self.addTab(self.browser, "Store")
 
-        self.settings = SettingsTab(self, core)
+        self.settings = SettingsTab(core)
         self.addTab(self.settings, "Settings")

@@ -2,8 +2,8 @@ import os
 
 from PyQt5.QtWidgets import *
 
-from Rare.Dialogs import AcceptDialog
-from Rare.Tabs.GamesInstalled.SettingsForm import SettingsForm
+from Rare.SettingsForm import SettingsForm
+from Rare.utils.constants import game_settings
 
 
 class GameSettingsDialog(QDialog):
@@ -20,7 +20,7 @@ class GameSettingsDialog(QDialog):
         self.wine_prefix.setPlaceholderText("Wineprefix")
         self.uninstall_button = QPushButton("Uninstall Game")
 
-        self.settings = SettingsForm(self.game.app_name)
+        self.settings = SettingsForm(self.game.app_name, game_settings, table=True)
 
         self.uninstall_button.clicked.connect(self.uninstall)
         self.exit_button = QPushButton("Exit")

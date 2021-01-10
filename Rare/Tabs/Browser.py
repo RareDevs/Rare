@@ -3,8 +3,8 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEngi
 
 
 class BrowserTab(QWebEngineView):
-    def __init__(self, parent):
-        super(BrowserTab, self).__init__(parent=parent)
+    def __init__(self):
+        super(BrowserTab, self).__init__()
         self.profile = QWebEngineProfile("storage", self)
         self.webpage = QWebEnginePage(self.profile, self)
         self.setPage(self.webpage)

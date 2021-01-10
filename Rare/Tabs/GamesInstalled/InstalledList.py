@@ -14,14 +14,18 @@ logger = getLogger("InstalledList")
 
 
 class GameListInstalled(QScrollArea):
-    def __init__(self, parent, core: LegendaryCore):
-        super(GameListInstalled, self).__init__(parent=parent)
+    def __init__(self, core: LegendaryCore):
+        super(GameListInstalled, self).__init__()
         self.widget = QWidget()
         self.core = core
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.layout = QVBoxLayout()
+
+        self.update_button = QPushButton("Update")
+        self.update_button.clicked.connect(lambda: self.__init__(self.core))
+        self.layout.addWidget(self.update_button)
         self.widgets = {}
         games = sorted(core.get_installed_list(), key=lambda game: game.title)
         if games:
@@ -50,6 +54,7 @@ class GameListInstalled(QScrollArea):
         self.layout.removeWidget(self.widgets[app_name])
         self.widgets[app_name].deleteLater()
         self.widgets.pop(app_name)
+        self.__init__(self.core)
 
     def import_games_prepare(self):
         # Automatically import from windows
@@ -80,12 +85,16 @@ class GameListInstalled(QScrollArea):
             json_path = game_path + path + "/.egstore"
             print(json_path)
             if not os.path.isdir(json_path):
-                logger.info(f"Game at {game_path+path} doesn't exist")
+                logger.info(f"Game at {game_path + path} doesn't exist")
                 continue
 
             for file in os.listdir(json_path):
                 if file.endswith(".mancpn"):
                     app_name = json.load(open(os.path.join(json_path, file)))["AppName"]
                     if legendaryUtils.import_game(self.core, app_name, game_path + path):
-                        imported +=1
+                        imported += 1
         return imported
+
+    def update(self):
+        self.__init__(self.core)
+        self.update()

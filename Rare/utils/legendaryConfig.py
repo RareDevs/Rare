@@ -3,13 +3,14 @@ import os
 
 config_path = os.path.expanduser("~") + "/.config/legendary/"
 lgd_config = configparser.ConfigParser()
-lgd_config.read(config_path + "config.ini")
 
 
 def get_config() -> {}:
-    return lgd_config.__dict__["_sections"]
+    lgd_config.read(config_path + "config.ini")
+
+    return lgd_config
 
 
-def set_config(new_config: {}):
-    lgd_config.__dict__["_sections"] = new_config
+def set_config( new_config: {}):
+    lgd_config = new_config
     lgd_config.write(open(config_path + "config.ini", "w"))

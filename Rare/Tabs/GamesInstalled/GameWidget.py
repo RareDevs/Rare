@@ -9,7 +9,6 @@ from Rare.Tabs.GamesInstalled.GameSettingsDialog import GameSettingsDialog
 from Rare.utils import legendaryUtils
 from Rare.utils.RareConfig import IMAGE_DIR
 from legendary.core import LegendaryCore
-
 from legendary.models.game import InstalledGame
 
 logger = getLogger("GameWidget")
