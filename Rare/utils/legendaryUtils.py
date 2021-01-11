@@ -123,9 +123,22 @@ def get_name():
     return core.lgd.userdata["displayName"]
 
 
-def uninstall(app_name: str, lgd_core):
-    lgd_core.uninstall_game(core.get_installed_game(app_name))
-    # logger.info("Uninstalling " + app_name)
+def uninstall(app_name: str, core):
+    igame = core.get_installed_game(app_name)
+    try:
+        # Remove DLC first so directory is empty when game uninstall runs
+        dlcs = core.get_dlc_for_game(app_name)
+        for dlc in dlcs:
+            if (idlc := core.get_installed_game(dlc.app_name)) is not None:
+                logger.info(f'Uninstalling DLC "{dlc.app_name}"...')
+                core.uninstall_game(idlc, delete_files=True)
+
+        logger.info(f'Removing "{igame.title}" from "{igame.install_path}"...')
+        core.uninstall_game(igame, delete_files=True, delete_root_directory=True)
+        logger.info('Game has been uninstalled.')
+
+    except Exception as e:
+        logger.warning(f'Removing game failed: {e!r}, please remove {igame.install_path} manually.')
 
 
 def import_game(core: LegendaryCore, app_name: str, path: str):

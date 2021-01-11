@@ -53,6 +53,15 @@ class GameWidget(QWidget):
         settings_icon = self.style().standardIcon(getattr(QStyle, 'SP_DirIcon'))
         self.title_widget = QLabel(f"<h1>{self.title}</h1>")
         self.launch_button = QPushButton(play_icon, "Launch")
+        self.launch_button.setFixedWidth(120)
+        '''
+        self.launch_button.setStyleSheet("""
+            QPushButton{
+                background-color: blue;
+                color: white;
+            }
+        """)
+        '''
         self.launch_button.clicked.connect(self.launch)
         if os.name != "nt":
             self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
@@ -60,6 +69,7 @@ class GameWidget(QWidget):
         self.version_label = QLabel("Version: " + str(self.version))
         self.size_label = QLabel(f"Installed size: {round(self.size / (1024 ** 3), 2)} GB")
         self.settings_button = QPushButton(settings_icon, " Settings (Icon TODO)")
+        self.settings_button.setFixedWidth(200)
         self.settings_button.clicked.connect(self.settings)
 
         self.childLayout.addWidget(self.title_widget)

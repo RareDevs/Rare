@@ -15,9 +15,8 @@ class GameSettingsDialog(QDialog):
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("<h1>Settings</h1>"))
 
-        self.wine_prefix_text = QLabel("Wine prefix")
-        self.wine_prefix = QLineEdit(f"{os.path.expanduser('~')}/.wine")
-        self.wine_prefix.setPlaceholderText("Wineprefix")
+
+
         self.uninstall_button = QPushButton("Uninstall Game")
 
         self.settings = SettingsForm(self.game.app_name, game_settings, table=True)
@@ -28,6 +27,10 @@ class GameSettingsDialog(QDialog):
 
         self.layout.addWidget(self.settings)
 
+        if os.name != 'nt':
+            self.use_proton = QPushButton("Use Proton")
+            self.use_proton.clicked.connect(self.settings.use_proton_template)
+            self.layout.addWidget(self.use_proton)
         self.layout.addWidget(self.uninstall_button)
         self.layout.addWidget(self.exit_button)
 
@@ -47,6 +50,10 @@ class GameSettingsDialog(QDialog):
 
         if ret == QMessageBox.Ok:
             self.action = "uninstall"
+            self.close()
+            return
+        else:
+            self.action = ""
             self.close()
 
     def exit_settings(self):

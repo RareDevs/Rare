@@ -41,9 +41,7 @@ class RareSettingsForm(QGroupBox):
             self.parent().parent().parent().setStyleSheet("")
             config["Rare"]["theme"] = "light"
         config["Rare"]["IMAGE_DIR"] = self.image_dir_edit.text()
-        print(config["Rare"]["IMAGE_DIR"])
 
         if self.image_dir_edit.text() != RareConfig.IMAGE_DIR:
-            print("Move")
             shutil.move(RareConfig.IMAGE_DIR, self.image_dir_edit.text())
         RareConfig.set_config(config)

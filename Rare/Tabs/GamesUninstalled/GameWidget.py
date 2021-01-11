@@ -33,6 +33,8 @@ class Thread(QThread):
 
 
 class UninstalledGameWidget(QWidget):
+    finished = pyqtSignal()
+
     def __init__(self, game):
         super(UninstalledGameWidget, self).__init__()
         self.title = game.app_title
@@ -45,8 +47,6 @@ class UninstalledGameWidget(QWidget):
             pixmap = pixmap.scaled(120, 160)
             self.image = QLabel()
             self.image.setPixmap(pixmap)
-        else:
-            print(os.listdir(IMAGE_DIR) / game.app_name)
 
         self.child_layout = QVBoxLayout()
 
@@ -54,6 +54,7 @@ class UninstalledGameWidget(QWidget):
         self.app_name_label = QLabel(f"App Name: {self.app_name}")
         self.version_label = QLabel(f"Version: {self.version}")
         self.install_button = QPushButton("Install")
+        self.install_button.setFixedWidth(120)
         self.install_button.clicked.connect(self.install)
 
         self.child_layout.addWidget(self.title_label)
@@ -76,6 +77,8 @@ class UninstalledGameWidget(QWidget):
             path = data.get("install_path")
             logger.info(f"install {self.app_name} in path {path}")
             # TODO
+            self.install_button.setDisabled(True)
+            self.install_button.setText("installing")
             self.proc = QProcess()
             self.proc.start("legendary", ["-y", "install", self.app_name, "--base-path", path])
             self.proc.finished.connect(self.download_finished)
@@ -85,5 +88,6 @@ class UninstalledGameWidget(QWidget):
 
     def download_finished(self, code):
         self.setVisible(False)
-        logger.info(f"Download finished code: {code}")
+        logger.info(f"Download finished. code: {code}")
         QMessageBox.information(self, "Download finished", "Download has finished")
+        self.finished.emit()

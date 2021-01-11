@@ -16,22 +16,27 @@ logger = getLogger("InstalledList")
 class GameListInstalled(QScrollArea):
     def __init__(self, core: LegendaryCore):
         super(GameListInstalled, self).__init__()
-        self.widget = QWidget()
+
         self.core = core
+        self.init_ui()
+
+        # self.setLayout(self.layout)
+
+    def init_ui(self):
+        self.widget = QWidget()
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.layout = QVBoxLayout()
 
         self.update_button = QPushButton("Update")
-        self.update_button.clicked.connect(lambda: self.__init__(self.core))
+        self.update_button.clicked.connect(self.update_list)
         self.layout.addWidget(self.update_button)
         self.widgets = {}
-        games = sorted(core.get_installed_list(), key=lambda game: game.title)
+        games = sorted(self.core.get_installed_list(), key=lambda game: game.title)
         if games:
-
             for i in games:
-                widget = GameWidget(i, core)
+                widget = GameWidget(i, self.core)
                 widget.signal.connect(self.remove_game)
                 self.widgets[i.app_name] = widget
                 self.layout.addWidget(widget)
@@ -46,15 +51,13 @@ class GameListInstalled(QScrollArea):
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
 
-        # self.setLayout(self.layout)
-
     def remove_game(self, app_name: str):
         logger.info(f"Uninstall {app_name}")
+        legendaryUtils.uninstall(app_name=app_name, core=self.core)
         self.widgets[app_name].setVisible(False)
         self.layout.removeWidget(self.widgets[app_name])
         self.widgets[app_name].deleteLater()
         self.widgets.pop(app_name)
-        self.__init__(self.core)
 
     def import_games_prepare(self):
         # Automatically import from windows
@@ -70,9 +73,11 @@ class GameListInstalled(QScrollArea):
             possible_wineprefixes = [os.path.expanduser("~/.wine/"), os.path.expanduser("~/Games/epic-games-store/")]
             for wine_prefix in possible_wineprefixes:
                 imported += self.auto_import_games(f"{wine_prefix}drive_c/Program Files/Epic Games/")
-
-        QMessageBox.information(self, "Imported Games", f"Successfully imported  {imported} Games")
-        logger.info("Restarting app to import games")
+        if imported > 0:
+            QMessageBox.information(self, "Imported Games", f"Successfully imported  {imported} Games")
+            logger.info("Restarting app to import games")
+        else:
+            QMessageBox.information(self, "Imported Games", "No Games were found")
 
     def auto_import_games(self, game_path):
         imported = 0
@@ -95,6 +100,12 @@ class GameListInstalled(QScrollArea):
                         imported += 1
         return imported
 
-    def update(self):
-        self.__init__(self.core)
+    def update_list(self):
+        # self.__init__(self.core)
+        print("update")
+        self.core = LegendaryCore()
+        # self.core.login()
+        del self.widget
+        self.setWidget(QWidget())
+        self.init_ui()
         self.update()

@@ -1,9 +1,12 @@
 import os
+from logging import getLogger
 
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import *
 
 from Rare.utils import legendaryConfig
+
+logger = getLogger("SettingsForm")
 
 
 class SettingsForm(QGroupBox):
@@ -141,4 +144,22 @@ class SettingsForm(QGroupBox):
 
     def use_proton_template(self):
         for i in self.rows:
-            pass  # TODO
+            field, type_of_input, lgd_name = i
+
+            if lgd_name == "wrapper":
+                for file in os.listdir(os.path.expanduser("~/.steam/steam/steamapps/common")):
+                    if file.startswith("Proton"):
+                        protonpath = os.path.expanduser("~/.steam/steam/steamapps/common/" + file)
+                        break
+                else:
+                    logger.error("No Proton found")
+                    QMessageBox.Warning("Error", "No Proton was found")
+                    return
+                field.setText(os.path.join(protonpath, "proton") + " run")
+            elif lgd_name == "no_wine":
+                field.setCurrentIndex(1)
+
+        self.table.insertRow(self.table.rowCount())
+
+        self.table.setItem(self.table.rowCount() - 1, 0, QTableWidgetItem("STEAM_COMPAT_DATA_PATH"))
+        self.table.setItem(self.table.rowCount() - 1, 1, QTableWidgetItem(os.path.expanduser("~/.proton")))

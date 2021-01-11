@@ -1,13 +1,14 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import *
-
-from Rare.Tabs.GamesUninstalled.GameWidget import UninstalledGameWidget
 from legendary.core import LegendaryCore
 
+from Rare.Tabs.GamesUninstalled.GameWidget import UninstalledGameWidget
 from Rare.utils.Dialogs.ImportDialog import ImportDialog
 
 
 class GameListUninstalled(QScrollArea):
+    finished = pyqtSignal()
+
     def __init__(self, core: LegendaryCore):
         super(GameListUninstalled, self).__init__()
         self.core = core
@@ -33,6 +34,7 @@ class GameListUninstalled(QScrollArea):
         games = sorted(games, key=lambda x: x.app_title)
         for game in games:
             game_widget = UninstalledGameWidget(game)
+            game_widget.finished.connect(self.installed)
             self.layout.addWidget(game_widget)
             self.widgets_uninstalled.append(game_widget)
 
@@ -50,3 +52,7 @@ class GameListUninstalled(QScrollArea):
     def import_game(self):
         import_dia = ImportDialog(self.core)
         import_dia.import_dialog()
+
+    def installed(self):
+        print("xy")
+        self.finished.emit()

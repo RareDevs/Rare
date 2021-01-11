@@ -7,6 +7,7 @@ class BrowserTab(QWebEngineView):
         super(BrowserTab, self).__init__()
         self.profile = QWebEngineProfile("storage", self)
         self.webpage = QWebEnginePage(self.profile, self)
+        self.webpage.javaScriptConsoleMessage = lambda level, msg, line, sourceID: None
         self.setPage(self.webpage)
         self.load(QUrl("https://www.epicgames.com/store/"))
         self.show()

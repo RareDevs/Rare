@@ -3,7 +3,7 @@ from logging import getLogger
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QPushButton, QScrollArea
 
-from Rare.Tabs.Settings.Rare import RareSettingsForm
+from Rare.Tabs.Settings.RareSettingsForm import RareSettingsForm
 from Rare.SettingsForm import SettingsForm
 from Rare.utils.constants import default_settings, legendary_settings
 from Rare.utils.legendaryUtils import get_name
