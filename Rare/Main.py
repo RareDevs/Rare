@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 
 from PyQt5.QtWidgets import QApplication, QMessageBox
@@ -20,7 +21,7 @@ core = LegendaryCore()
 
 def main():
     app = QApplication(sys.argv)
-    if RareConfig.THEME == "default":
+    if RareConfig.THEME == "default" and os.path.exists(style_path):
         app.setStyleSheet(open(style_path).read())
     # app.setStyleSheet(open("Styles/RareStyle.css").read())
     logger.info("Try if you are logged in")
