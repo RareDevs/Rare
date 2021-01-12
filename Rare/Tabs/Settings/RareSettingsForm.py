@@ -37,7 +37,7 @@ class RareSettingsForm(QGroupBox):
         logger.info("Update Rare settings")
         config = {"Rare": {}}
         if self.style_combo_box.currentIndex() == 1:
-            self.parent().parent().parent().setStyleSheet(open(os.path.join(style_path, "Styles/dark.qss")).read())
+            self.parent().parent().parent().parent().parent().setStyleSheet(open(style_path).read())
             config["Rare"]["theme"] = "default"
         else:
             self.parent().parent().parent().setStyleSheet("")

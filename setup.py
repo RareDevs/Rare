@@ -13,6 +13,7 @@ setuptools.setup(
     license="GPL-3",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    include_package_data=True,
     url="https://github.com/Dummerle/Rare",
     packages=setuptools.find_packages(),
     classifiers=[

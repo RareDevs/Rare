@@ -1,8 +1,7 @@
 import logging
-import os
 import sys
 
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
 from legendary.core import LegendaryCore
 
 from Rare import style_path
@@ -38,6 +37,9 @@ def main():
         login_window = LoginWindow(core)
         if not login_window.login():
             return
+    except ConnectionError:
+        QMessageBox.warning(app, "No Internet", "Connection Error, Failed to login. The offine mode is not implemented")
+        # Start Offline mode
     launch_dialog = LaunchDialog(core)
     if RareConfig.THEME == "dark":
         launch_dialog.setStyleSheet(open(style_path).read())
