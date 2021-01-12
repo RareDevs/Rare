@@ -2,8 +2,7 @@
 
 ## A frontend for legendary, the open source Epic Games Launcher alternative
 
-Rare is currently considered beta software and in no way feature-complete. You **will** run into issues, so make backups
-first!
+Rare is currently considered beta software and in no way feature-complete. You **will** run into issues, so it is recommend to make a backup
 
 ### Requirements
 
@@ -15,7 +14,7 @@ first!
 
 ## Installation
 
-### Installation via pip
+### Installation via pip (recommend)
 
 Execute *pip install Rare* for all users Or *pip install Rare --user* for only one user
 
