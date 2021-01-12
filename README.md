@@ -22,6 +22,9 @@ Execute *pip install Rare* for all users Or *pip install Rare --user* for only o
 
 Download Rare.exe and place it somewhere in PATH
 
+**Note**
+Using the exe-file could cause an error with the stylesheets
+
 ### Linux
 
 - For Arch Linux is an AUR package available: [rare-git](https://aur.archlinux.org/packages/rare-git)
