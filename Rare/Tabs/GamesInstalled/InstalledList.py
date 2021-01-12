@@ -101,10 +101,7 @@ class GameListInstalled(QScrollArea):
         return imported
 
     def update_list(self):
-        # self.__init__(self.core)
-        print("update")
         self.core = LegendaryCore()
-        # self.core.login()
         del self.widget
         self.setWidget(QWidget())
         self.init_ui()

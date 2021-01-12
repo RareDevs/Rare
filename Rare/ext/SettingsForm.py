@@ -1,9 +1,12 @@
+import configparser
 import os
 from logging import getLogger
 
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import *
 
+from Rare.ext.QtExtensions import PathEdit
 from Rare.utils import legendaryConfig
 
 logger = getLogger("SettingsForm")
@@ -21,6 +24,7 @@ class SettingsForm(QGroupBox):
         for i in settings:
             self.add_Row(*i)
         if table:
+
             if not f"{self.app_name}.env" in self.config:
                 env_vars = {}
             else:
@@ -28,15 +32,21 @@ class SettingsForm(QGroupBox):
 
             if env_vars:
                 self.table = QTableWidget(len(env_vars), 2)
+                header = self.table.horizontalHeader()
+                header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+                header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+
                 for i, label in enumerate(env_vars):
                     self.table.setItem(i, 0, QTableWidgetItem(label))
                     self.table.setItem(i, 1, QTableWidgetItem(env_vars[label]))
 
             else:
                 self.table = QTableWidget(0, 2)
-
             self.table.setHorizontalHeaderLabels(["Variable", "Value"])
+            self.table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
+            self.table.setMaximumSize(self._getQTableWidgetSize())
             self.form.addRow(QLabel("Environment Variables"), self.table)
 
             self.add_button = QPushButton("Add Variable")
@@ -53,6 +63,17 @@ class SettingsForm(QGroupBox):
         self.form.addRow(self.update_button)
 
         self.setLayout(self.form)
+
+    def _getQTableWidgetSize(self):
+        w = self.table.verticalHeader().width() + 15
+        for i in range(self.table.columnCount()):
+            w += self.table.columnWidth(i)  # seems to include gridline (on my machine)
+        h = self.table.horizontalHeader().height() + 15
+        for i in range(self.table.rowCount() + 1):
+            h += self.table.rowHeight(i)
+            if h < 50:
+                h = 75
+        return QtCore.QSize(w, h)
 
     def add_Row(self, info_text: str, type_of_input: str, lgd_name: str, flags: [] = None):
         if flags is None:
@@ -71,7 +92,13 @@ class SettingsForm(QGroupBox):
             field.setPlaceholderText("Default")
             if "only_int" in flags:
                 field.setValidator(QIntValidator())
-
+            if "path" in flags:
+                if lgd_name == "wine_prefix":
+                    field = PathEdit(text=self.config[self.app_name][lgd_name], type_of_file=QFileDialog.DirectoryOnly,
+                                     infotext="Select Wine Prefix")
+                if lgd_name == "install_dir":
+                    field = PathEdit(text=self.config[self.app_name][lgd_name], type_of_file=QFileDialog.DirectoryOnly,
+                                     infotext="Select Default installation directory")
         elif type_of_input == "QComboBox":
             combo_list = []
             if "binary" in flags:
@@ -99,6 +126,7 @@ class SettingsForm(QGroupBox):
         self.table.insertRow(self.table.rowCount())
         self.table.setItem(self.table.rowCount(), 0, QTableWidgetItem(""))
         self.table.setItem(self.table.rowCount(), 1, QTableWidgetItem(""))
+        self.table.setMaximumSize(self._getQTableWidgetSize())
 
     def update_config(self):
         config = {self.app_name: {}}
@@ -110,15 +138,15 @@ class SettingsForm(QGroupBox):
             elif type_of_input == "QComboBox":
                 # print(type(field.currentText()), field.currentText())
                 if field.currentText() == "true":
-                    config[self.app_name][lgd_name] = True
+                    config[self.app_name][lgd_name] = "true"
                 elif field.currentText() == "false":
-                    config[self.app_name][lgd_name] = False
+                    config[self.app_name][lgd_name] = "false"
                 elif field.currentText == "unset":
                     pass
                 else:
                     pass
                     # config[self.app_name][lgd_name] = field.currentText()
-
+        # Environment Variables
         if self.has_table:
             if self.table.rowCount() > 0:
                 config[f"{self.app_name}.env"] = {}
@@ -126,7 +154,15 @@ class SettingsForm(QGroupBox):
                     config[f"{self.app_name}.env"][self.table.item(row, 0).text()] = self.table.item(row, 1).text()
             else:
                 config[f"{self.app_name}.env"] = {}
-        lgd_config = legendaryConfig.get_config()
+        logger.info(config)
+
+        config_path = os.path.expanduser("~") + "/.config/legendary/"
+        lgd_config = configparser.ConfigParser()
+        lgd_config.optionxform = str
+
+        lgd_config.read(config_path + "config.ini")
+
+        logger.info(lgd_config.__dict__)
         if config[self.app_name] == {}:
             config.pop(self.app_name)
             lgd_config.remove_section(self.app_name)
@@ -140,7 +176,10 @@ class SettingsForm(QGroupBox):
             else:
                 lgd_config[self.app_name + ".env"] = config[f"{self.app_name}.env"]
         # legendaryConfig.set_config()
+        logger.info(f"Game: {self.app_name}/   {lgd_config.__dict__}")
         legendaryConfig.set_config(lgd_config)
+
+
 
     def use_proton_template(self):
         for i in self.rows:

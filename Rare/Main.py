@@ -1,16 +1,15 @@
 import logging
+import os
 import sys
 
 from PyQt5.QtWidgets import QApplication
-
-from Rare.Styles import dark
-from Rare.utils import RareConfig
-
 from legendary.core import LegendaryCore
 
-from Rare.Launch import LaunchDialog
-from Rare.Login import LoginWindow
+from Rare import style_path
 from Rare.MainWindow import MainWindow
+from Rare.Start.Launch import LaunchDialog
+from Rare.Start.Login import LoginWindow
+from Rare.utils import RareConfig
 
 logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',
@@ -22,8 +21,9 @@ core = LegendaryCore()
 
 def main():
     app = QApplication(sys.argv)
-    if RareConfig.THEME == "dark":
-        app.setStyleSheet(dark)
+    if RareConfig.THEME == "default":
+        app.setStyleSheet(open(style_path).read())
+    # app.setStyleSheet(open("Styles/RareStyle.css").read())
     logger.info("Try if you are logged in")
     try:
         if core.login():
@@ -40,7 +40,7 @@ def main():
             return
     launch_dialog = LaunchDialog(core)
     if RareConfig.THEME == "dark":
-        launch_dialog.setStyleSheet(dark)
+        launch_dialog.setStyleSheet(open(style_path).read())
     launch_dialog.exec_()
     mainwindow = MainWindow(core)
     app.exec_()

@@ -1,6 +1,5 @@
 import json
 import os
-import re
 import webbrowser
 from getpass import getuser
 from json import loads
@@ -10,7 +9,6 @@ from PyQt5.QtCore import QUrl, pyqtSignal
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage
 from PyQt5.QtWidgets import QDialog, QWidget, QVBoxLayout, QLabel, QPushButton, QStackedLayout, QLineEdit, QButtonGroup, \
     QRadioButton
-
 from legendary.core import LegendaryCore
 
 logger = getLogger("LoginWindow")

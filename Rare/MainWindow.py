@@ -17,12 +17,10 @@ class TabWidget(QTabWidget):
 
     def __init__(self, core):
         super(QWidget, self).__init__()
-
         self.game_list = GameListInstalled(core)
         self.addTab(self.game_list, "Games")
-
         self.uninstalled_games = GameListUninstalled(core)
-        self.uninstalled_games.finished.connect(self.installed)
+        self.uninstalled_games.finished.connect(lambda: self.game_list.update_list())
         self.addTab(self.uninstalled_games, "Install Games")
 
         self.update_tab = UpdateTab(core)
@@ -33,7 +31,3 @@ class TabWidget(QTabWidget):
 
         self.settings = SettingsTab(core)
         self.addTab(self.settings, "Settings")
-
-    def installed(self):
-        print("zs")
-        self.game_list.update_list()

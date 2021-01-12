@@ -1,9 +1,11 @@
+import os
 import shutil
 from logging import getLogger
 
-from PyQt5.QtWidgets import QGroupBox, QComboBox, QFormLayout, QLineEdit, QLabel, QPushButton
+from PyQt5.QtWidgets import QGroupBox, QComboBox, QFormLayout, QLabel, QPushButton, QFileDialog
 
-from Rare.Styles import dark
+from Rare import style_path
+from Rare.ext.QtExtensions import PathEdit
 from Rare.utils import RareConfig
 
 logger = getLogger("Rare Settings")
@@ -16,14 +18,14 @@ class RareSettingsForm(QGroupBox):
         self.rare_form = QFormLayout()
         self.style_combo_box = QComboBox()
         self.style_combo_box.addItems(["Light", "Dark"])
-        if RareConfig.THEME == "dark":
+        if RareConfig.THEME == "default":
             self.style_combo_box.setCurrentIndex(1)
 
         self.rare_form.addRow(QLabel("Style"), self.style_combo_box)
 
-        self.image_dir_edit = QLineEdit()
+        self.image_dir_edit = PathEdit(RareConfig.IMAGE_DIR, QFileDialog.Directory, "Choose Folder")
         self.image_dir_edit.setPlaceholderText("Image directory")
-        self.image_dir_edit.setText(RareConfig.IMAGE_DIR)
+        # self.image_dir_edit.setText(RareConfig.IMAGE_DIR)
 
         self.rare_form.addRow(QLabel("Image Directory"), self.image_dir_edit)
         self.submit_button = QPushButton("Update Rare Settings")
@@ -35,8 +37,8 @@ class RareSettingsForm(QGroupBox):
         logger.info("Update Rare settings")
         config = {"Rare": {}}
         if self.style_combo_box.currentIndex() == 1:
-            self.parent().parent().parent().setStyleSheet(dark)
-            config["Rare"]["theme"] = "dark"
+            self.parent().parent().parent().setStyleSheet(open(os.path.join(style_path, "Styles/dark.qss")).read())
+            config["Rare"]["theme"] = "default"
         else:
             self.parent().parent().parent().setStyleSheet("")
             config["Rare"]["theme"] = "light"

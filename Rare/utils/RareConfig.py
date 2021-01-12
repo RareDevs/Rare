@@ -12,13 +12,13 @@ if not os.path.exists(config_path):
     os.makedirs(config_path)
     rare_config["Rare"] = {
         "IMAGE_DIR": os.path.expanduser("~/.cache/images"),
-        "theme": "dark"
+        "theme": "default"
     }
     rare_config.write(open(config_path + "config.ini", "w"))
 elif not rare_config.sections():
     rare_config["Rare"] = {
         "IMAGE_DIR": os.path.expanduser("~/.cache/images"),
-        "theme": "dark"
+        "theme": "default"
     }
     rare_config.write(open(config_path + "config.ini", "w"))
 

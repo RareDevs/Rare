@@ -6,7 +6,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QMessageBox
 
-from Rare.Dialogs import InstallDialog
+from Rare.Tabs.GamesUninstalled.InstallDialog import InstallDialog
 from Rare.utils.RareConfig import IMAGE_DIR
 
 logger = getLogger("Game")

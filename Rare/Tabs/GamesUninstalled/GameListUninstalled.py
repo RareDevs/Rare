@@ -34,7 +34,7 @@ class GameListUninstalled(QScrollArea):
         games = sorted(games, key=lambda x: x.app_title)
         for game in games:
             game_widget = UninstalledGameWidget(game)
-            game_widget.finished.connect(self.installed)
+            game_widget.finished.connect(lambda: self.finished.emit())
             self.layout.addWidget(game_widget)
             self.widgets_uninstalled.append(game_widget)
 
@@ -52,7 +52,3 @@ class GameListUninstalled(QScrollArea):
     def import_game(self):
         import_dia = ImportDialog(self.core)
         import_dia.import_dialog()
-
-    def installed(self):
-        print("xy")
-        self.finished.emit()

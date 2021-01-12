@@ -4,18 +4,20 @@ from logging import getLogger
 from PyQt5.QtCore import QProcess, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QStyle, QVBoxLayout
+from legendary.core import LegendaryCore
+from legendary.models.game import InstalledGame
 
 from Rare.Tabs.GamesInstalled.GameSettingsDialog import GameSettingsDialog
 from Rare.utils import legendaryUtils
 from Rare.utils.RareConfig import IMAGE_DIR
-from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame
 
 logger = getLogger("GameWidget")
+
 
 class GameWidget(QWidget):
     proc: QProcess
     signal = pyqtSignal(str)
+
     # TODO Repair
     def __init__(self, game: InstalledGame, core: LegendaryCore):
         super(GameWidget, self).__init__()
@@ -38,9 +40,8 @@ class GameWidget(QWidget):
             pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png")
         else:
             logger.warning(f"No Image found: {self.game.title}")
-            pixmap=None
+            pixmap = None
         if pixmap:
-
             pixmap = pixmap.scaled(180, 240)
             self.image = QLabel()
             self.image.setPixmap(pixmap)
@@ -52,7 +53,9 @@ class GameWidget(QWidget):
         play_icon = self.style().standardIcon(getattr(QStyle, 'SP_MediaPlay'))
         settings_icon = self.style().standardIcon(getattr(QStyle, 'SP_DirIcon'))
         self.title_widget = QLabel(f"<h1>{self.title}</h1>")
+        self.app_name_label = QLabel(self.app_name)
         self.launch_button = QPushButton(play_icon, "Launch")
+        self.launch_button.setObjectName("launch_game_button")
         self.launch_button.setFixedWidth(120)
         '''
         self.launch_button.setStyleSheet("""
@@ -65,7 +68,7 @@ class GameWidget(QWidget):
         self.launch_button.clicked.connect(self.launch)
         if os.name != "nt":
             self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
-        self.developer_label = QLabel("Dev: "+ self.dev)
+        self.developer_label = QLabel("Dev: " + self.dev)
         self.version_label = QLabel("Version: " + str(self.version))
         self.size_label = QLabel(f"Installed size: {round(self.size / (1024 ** 3), 2)} GB")
         self.settings_button = QPushButton(settings_icon, " Settings (Icon TODO)")
@@ -74,6 +77,7 @@ class GameWidget(QWidget):
 
         self.childLayout.addWidget(self.title_widget)
         self.childLayout.addWidget(self.launch_button)
+        self.childLayout.addWidget(self.app_name_label)
         self.childLayout.addWidget(self.developer_label)
         if os.name != "nt":
             self.childLayout.addWidget(self.wine_rating)
@@ -119,6 +123,7 @@ class GameWidget(QWidget):
     def settings(self):
         settings_dialog = GameSettingsDialog(self.game, self)
         action = settings_dialog.get_settings()
+        del settings_dialog
         if action == "uninstall":
             legendaryUtils.uninstall(self.app_name, self.core)
             self.signal.emit(self.app_name)

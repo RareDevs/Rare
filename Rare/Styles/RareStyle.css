@@ -1,0 +1,14 @@
+QWidget {
+    background-color: #333;
+    color: white;
+}
+
+QPushButton#launch_game_button {
+    background-color: #4040ff;
+    color: white;
+}
+
+QProgressbar {
+    border: 2px solid grey;
+    border-radius: 5px;
+}

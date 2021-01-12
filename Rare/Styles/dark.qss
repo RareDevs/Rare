@@ -1,4 +1,3 @@
-dark="""
 /* ---------------------------------------------------------------------------
 
     Created by the qtsass compiler v0.1.1
@@ -1280,8 +1279,6 @@ QComboBox::item:selected {
 }
 
 QComboBox::drop-down {
-  subcontrol-origin: padding;
-  subcontrol-position: top right;
   width: 12px;
   border-left: 1px solid #32414B;
 }
@@ -2174,4 +2171,4 @@ PlotWidget {
   /* Fix cut labels in plots #134 */
   padding: 0px;
 }
-"""
+

@@ -2,7 +2,7 @@ import os
 
 from PyQt5.QtWidgets import *
 
-from Rare.SettingsForm import SettingsForm
+from Rare.ext.SettingsForm import SettingsForm
 from Rare.utils.constants import game_settings
 
 
@@ -14,8 +14,6 @@ class GameSettingsDialog(QDialog):
         self.game = game
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("<h1>Settings</h1>"))
-
-
 
         self.uninstall_button = QPushButton("Uninstall Game")
 
