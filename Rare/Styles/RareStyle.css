@@ -8,7 +8,3 @@ QPushButton#launch_game_button {
     color: white;
 }
 
-QProgressbar {
-    border: 2px solid grey;
-    border-radius: 5px;
-}

@@ -18,7 +18,7 @@ class SettingsTab(QScrollArea):
         self.core = core
         self.widget = QWidget()
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # Settings
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("<h1>Rare Settings</h1>"))
@@ -31,7 +31,7 @@ class SettingsTab(QScrollArea):
         self.rare_form = RareSettingsForm()
 
         self.logout_button = QPushButton("Logout")
-        self.logout_button.clicked.connect(self.logout)
+        self.logout_button.clicked.connect(self.update_list)
         self.layout.addWidget(self.logged_in_as)
 
         self.layout.addWidget(self.rare_form)
@@ -46,6 +46,7 @@ class SettingsTab(QScrollArea):
 
         self.layout.addWidget(self.info_label)
         self.layout.addWidget(self.infotext)
+        self.setStyleSheet("QScrollArea{padding-left: 80; padding-right: 80; margin-left: auto; margin-right: auto}")
 
         self.widget.setLayout(self.layout)
         self.widget.setFixedWidth(self.width())
@@ -54,3 +55,9 @@ class SettingsTab(QScrollArea):
     def logout(self):
         self.core.lgd.invalidate_userdata()
         exit(0)
+
+    def update_list(self):
+        # del self.widget
+        # self.setWidget(QWidget())
+        self.__init__(self.core)
+        self.update()

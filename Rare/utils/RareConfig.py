@@ -11,7 +11,7 @@ rare_config.read(config_path + "config.ini")
 if not os.path.exists(config_path):
     os.makedirs(config_path)
     rare_config["Rare"] = {
-        "IMAGE_DIR": os.path.expanduser("~/.cache/images"),
+        "IMAGE_DIR": os.path.expanduser(f"~/.cache/images"),
         "theme": "default"
     }
     rare_config.write(open(config_path + "config.ini", "w"))

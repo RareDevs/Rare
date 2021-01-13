@@ -9,6 +9,7 @@ from legendary.core import LegendaryCore
 
 from Rare.Tabs.GamesInstalled.GameWidget import GameWidget
 from Rare.utils import legendaryUtils
+from Rare.utils.Dialogs.SyncSavesDialog import SyncSavesDialog
 
 logger = getLogger("InstalledList")
 
@@ -28,10 +29,14 @@ class GameListInstalled(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.layout = QVBoxLayout()
-
-        self.update_button = QPushButton("Update")
+        mini_layout = QHBoxLayout()
+        self.update_button = QPushButton("Manually reload Games")
         self.update_button.clicked.connect(self.update_list)
-        self.layout.addWidget(self.update_button)
+        mini_layout.addWidget(self.update_button)
+        self.upload_button = QPushButton("Cloud Saves")
+        mini_layout.addWidget(self.upload_button)
+        self.upload_button.clicked.connect(self.sync_saves)
+        self.layout.addLayout(mini_layout)
         self.widgets = {}
         games = sorted(self.core.get_installed_list(), key=lambda game: game.title)
         if games:
@@ -106,3 +111,6 @@ class GameListInstalled(QScrollArea):
         self.setWidget(QWidget())
         self.init_ui()
         self.update()
+
+    def sync_saves(self):
+        SyncSavesDialog(self.core).exec_()

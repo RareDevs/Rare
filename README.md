@@ -40,6 +40,7 @@ Using the exe-file could cause an error with the stylesheets
 ### Todos
 - Download Progressbar
 - Sync saves
+  
 - Translations
 - Design(Pretty Stylesheets, Icon view)
 

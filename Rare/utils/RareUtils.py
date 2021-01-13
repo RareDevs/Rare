@@ -80,6 +80,3 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
                 logger.warning(f"File {IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png dowsn't exist")
         signal.emit(i)
 
-
-def restart():
-    os.execv(sys.executable, ['python'] + sys.argv)

@@ -1,13 +1,26 @@
 import os
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import *
 
 
 class CustomQLabel(QLabel):
     def __init__(self, *__args):
         super().__init__(*__args)
-        self.app_name_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.setTextInteractionFlags(Qt.TextSelectableByMouse)
+
+
+class WaitingSpinner(QLabel):
+    def __init__(self):
+        super(WaitingSpinner, self).__init__()
+        self.setStyleSheet("""
+            margin-left: auto;
+            margin-right: auto;
+        """)
+        self.movie = QMovie("Styles/Icons/loader.gif")
+        self.setMovie(self.movie)
+        self.movie.start()
 
 
 class PathEdit(QWidget):
@@ -19,11 +32,11 @@ class PathEdit(QWidget):
         self.info_text = infotext
         self.layout = QHBoxLayout()
         self.text_edit = QLineEdit(text)
+        self.setObjectName("text_edit")
         self.path_select = QPushButton("Select Path")
         self.path_select.clicked.connect(self.set_path)
         self.layout.addWidget(self.text_edit)
         self.layout.addWidget(self.path_select)
-
         self.setLayout(self.layout)
 
     def setPlaceholderText(self, text: str):

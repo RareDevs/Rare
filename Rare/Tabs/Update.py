@@ -90,7 +90,6 @@ class UpdateWidget(QWidget):
             self.update_thread.finish.connect(self.finished)
             self.update_thread.start()
             self.button.setDisabled(True)
-            # TODO Wird 1000% nicht funktionieren
 
         else:
             logger.info("Terminate process")

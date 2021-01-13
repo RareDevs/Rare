@@ -57,14 +57,7 @@ class GameWidget(QWidget):
         self.launch_button = QPushButton(play_icon, "Launch")
         self.launch_button.setObjectName("launch_game_button")
         self.launch_button.setFixedWidth(120)
-        '''
-        self.launch_button.setStyleSheet("""
-            QPushButton{
-                background-color: blue;
-                color: white;
-            }
-        """)
-        '''
+
         self.launch_button.clicked.connect(self.launch)
         if os.name != "nt":
             self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
