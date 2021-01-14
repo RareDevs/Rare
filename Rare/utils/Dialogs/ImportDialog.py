@@ -13,11 +13,12 @@ logger = getLogger("ImportDialog")
 class ImportDialog(QDialog):
     def __init__(self, core: LegendaryCore):
         super(ImportDialog, self).__init__()
+        self.imported = False
         self.core = core
-        self.title_text = QLabel("Select Path")
+        self.title_text = QLabel(self.tr("Select Path"))
         self.path_field = QLineEdit()
         self.info_text = QLabel("")
-        self.import_button = QPushButton("Import")
+        self.import_button = QPushButton(self.tr("Import"))
         self.import_button.clicked.connect(self.button_click)
 
         self.layout = QVBoxLayout()
@@ -30,10 +31,10 @@ class ImportDialog(QDialog):
 
     def button_click(self):
         if self.import_game():
-            QMessageBox.about(self, "Info", "Please restart App to reload installed Games")
+            self.imported = True
             self.close()
         else:
-            self.info_text.setText("Failed to import Game")
+            self.info_text.setText(self.tr("Failed to import Game"))
 
     def import_game(self):
         path = self.path_field.text()
@@ -58,3 +59,4 @@ class ImportDialog(QDialog):
 
     def import_dialog(self):
         self.exec_()
+        return self.imported

@@ -38,9 +38,9 @@ Using the exe-file could cause an error with the stylesheets
 - In-app Browser to buy games
 - Settings (Legendary and games)
 - Sync Cloud Saves
+- Translations (English and German)
 
 ## Planned
-- Translations (English and German)
 - Design (Pretty Stylesheets, Icons, Icon view for installed Games)
 - Download Progressbar
 - Offline mode

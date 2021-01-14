@@ -17,18 +17,18 @@ class RareSettingsForm(QGroupBox):
 
         self.rare_form = QFormLayout()
         self.style_combo_box = QComboBox()
-        self.style_combo_box.addItems(["Light", "Dark"])
+        self.style_combo_box.addItems([self.tr("Light"), self.tr("Dark")])
         if RareConfig.THEME == "default":
             self.style_combo_box.setCurrentIndex(1)
 
         self.rare_form.addRow(QLabel("Style"), self.style_combo_box)
 
-        self.image_dir_edit = PathEdit(RareConfig.IMAGE_DIR, QFileDialog.Directory, "Choose Folder")
-        self.image_dir_edit.setPlaceholderText("Image directory")
+        self.image_dir_edit = PathEdit(RareConfig.IMAGE_DIR, QFileDialog.Directory, self.tr("Choose Folder"))
+        self.image_dir_edit.setPlaceholderText(self.tr("Image directory"))
         # self.image_dir_edit.setText(RareConfig.IMAGE_DIR)
 
-        self.rare_form.addRow(QLabel("Image Directory"), self.image_dir_edit)
-        self.submit_button = QPushButton("Update Rare Settings")
+        self.rare_form.addRow(QLabel(self.tr("Image Directory")), self.image_dir_edit)
+        self.submit_button = QPushButton(self.tr("Update Rare Settings"))
         self.submit_button.clicked.connect(self.update_rare_settings)
         self.rare_form.addRow(self.submit_button)
         self.setLayout(self.rare_form)

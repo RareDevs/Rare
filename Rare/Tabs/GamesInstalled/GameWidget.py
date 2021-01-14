@@ -49,22 +49,21 @@ class GameWidget(QWidget):
 
         ##Layout on the right
         self.childLayout = QVBoxLayout()
-
         play_icon = self.style().standardIcon(getattr(QStyle, 'SP_MediaPlay'))
         settings_icon = self.style().standardIcon(getattr(QStyle, 'SP_DirIcon'))
         self.title_widget = QLabel(f"<h1>{self.title}</h1>")
         self.app_name_label = QLabel(self.app_name)
-        self.launch_button = QPushButton(play_icon, "Launch")
+        self.launch_button = QPushButton(play_icon, self.tr("Launch"))
         self.launch_button.setObjectName("launch_game_button")
         self.launch_button.setFixedWidth(120)
 
         self.launch_button.clicked.connect(self.launch)
         if os.name != "nt":
             self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
-        self.developer_label = QLabel("Dev: " + self.dev)
+        self.developer_label = QLabel(self.tr("Developer: ") + self.dev)
         self.version_label = QLabel("Version: " + str(self.version))
-        self.size_label = QLabel(f"Installed size: {round(self.size / (1024 ** 3), 2)} GB")
-        self.settings_button = QPushButton(settings_icon, " Settings (Icon TODO)")
+        self.size_label = QLabel(f"{self.tr('Installed size')}: {round(self.size / (1024 ** 3), 2)} GB")
+        self.settings_button = QPushButton(settings_icon, f" {self.tr('Settings')} (Icon TODO)")
         self.settings_button.setFixedWidth(200)
         self.settings_button.clicked.connect(self.settings)
 
@@ -92,7 +91,7 @@ class GameWidget(QWidget):
                 print("Fail")
                 return
 
-            self.proc.finished.connect(self.finished)
+            self.proc.reload.connect(self.finished)
             self.launch_button.setText("Kill")
             self.game_running = True
 

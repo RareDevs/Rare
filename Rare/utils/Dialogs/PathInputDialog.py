@@ -16,7 +16,7 @@ class PathInputDialog(QDialog):
         self.info_label = CustomQLabel(text)
         self.info_label.setWordWrap(True)
 
-        self.input = PathEdit("Select directory", QFileDialog.DirectoryOnly, )
+        self.input = PathEdit(self.tr("Select directory"), QFileDialog.DirectoryOnly)
 
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.info_label)

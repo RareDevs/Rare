@@ -21,16 +21,16 @@ class SettingsTab(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # Settings
         self.layout = QVBoxLayout()
-        self.layout.addWidget(QLabel("<h1>Rare Settings</h1>"))
-        self.logged_in_as = QLabel(f"Logged in as {get_name()}")
+        self.layout.addWidget(QLabel("<h1>"+self.tr("Settings")+"</h1>"))
+        self.logged_in_as = QLabel(self.tr("Logged in as ")+get_name())
         # self.legendary_form =SettingsForm()
 
-        self.default_settings = SettingsForm("default", default_settings, True)
+        self.default_settings = SettingsForm(self.tr("default"), default_settings, True)
         self.legendary_form = SettingsForm("Legendary", legendary_settings, False)
 
         self.rare_form = RareSettingsForm()
 
-        self.logout_button = QPushButton("Logout")
+        self.logout_button = QPushButton(self.tr("Logout"))
         self.logout_button.clicked.connect(self.update_list)
         self.layout.addWidget(self.logged_in_as)
 
@@ -42,7 +42,7 @@ class SettingsTab(QScrollArea):
         self.layout.addWidget(self.logout_button)
 
         self.info_label = QLabel("<h2>Credits</h2>")
-        self.infotext = QLabel("Developers : Dummerle, CommandMC\nLegendary Dev: Rodney\nLicense: GPL v.3")
+        self.infotext = QLabel(self.tr("Developers : ")+"Dummerle, CommandMC\nLegendary Dev: Rodney\nLicense: GPL v.3")
 
         self.layout.addWidget(self.info_label)
         self.layout.addWidget(self.infotext)

@@ -6,17 +6,17 @@ from PyQt5.QtWidgets import QLineEdit, QPushButton, QLabel, QVBoxLayout, QDialog
 class InstallDialog(QDialog):
     def __init__(self, game):
         super(InstallDialog, self).__init__()
-        self.setWindowTitle("Install Game")
+        self.setWindowTitle(self.tr("Install Game"))
         self.layout = QVBoxLayout()
         self.yes = False
         self.install_path = QLineEdit(f"{os.path.expanduser('~')}/legendary")
-        self.options = QLabel("Some Settings")
+        self.options = QLabel("Some Settings (Comming soon)")
         # self.layout.addWidget(self.options)
 
         self.layout.addStretch(1)
-        self.yes_button = QPushButton("Install")
+        self.yes_button = QPushButton(self.tr("Install game ") + game.title)
         self.yes_button.clicked.connect(self.close)
-        self.cancel_button = QPushButton("cancel")
+        self.cancel_button = QPushButton(self.tr("cancel"))
 
         self.layout.addWidget(self.options)
         self.layout.addWidget(self.install_path)

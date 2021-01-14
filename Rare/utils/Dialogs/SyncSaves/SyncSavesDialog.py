@@ -61,8 +61,9 @@ class SyncSavesDialog(QDialog):
         self.start_thread.disconnect()
         QObjectCleanupHandler().add(self.layout())
         self.main_layout = QVBoxLayout()
-        self.title = CustomQLabel("<h1>Cloud Saves</h1>\nFound Saves for folowing Games")
-        self.sync_all_button = QPushButton("Sync all games")
+        self.title = CustomQLabel(
+            f"<h1>" + self.tr("Cloud Saves") + "</h1>\n" + self.tr("Found Saves for folowing Games"))
+        self.sync_all_button = QPushButton(self.tr("Sync all games"))
         self.sync_all_button.clicked.connect(self.sync_all)
         self.main_layout.addWidget(self.title)
         self.main_layout.addWidget(self.sync_all_button)
@@ -72,7 +73,7 @@ class SyncSavesDialog(QDialog):
             latest_save[i.app_name] = i
         logger.info(f'Got {len(latest_save)} remote save game(s)')
         if len(latest_save) == 0:
-            QMessageBox.information("No Games Found", "Your games don't support cloud save")
+            QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
             self.close()
             return
         self.widgets = []
@@ -97,8 +98,8 @@ class SyncSavesDialog(QDialog):
                 save_path = self.core.get_save_path(w.igame.app_name)
                 if '%' in save_path or '{' in save_path:
                     self.logger.info("Could not find save_path")
-                    save_path = PathInputDialog("Found no savepath",
-                                                "No save path was found. Please select path or skip")
+                    save_path = PathInputDialog(self.tr("Found no savepath"),
+                                                self.tr("No save path was found. Please select path or skip"))
                     if save_path == "":
                         continue
                 else:

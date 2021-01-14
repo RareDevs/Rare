@@ -41,12 +41,7 @@ class SyncWidget(QWidget):
     def __init__(self, igame: InstalledGame, save, core: LegendaryCore):
         super(SyncWidget, self).__init__()
         self.layout = QVBoxLayout()
-        self.setObjectName("syncwidget")
-        self.setStyleSheet("""
-            QWidget#syncwidget{
-                border: 2px solid white;
-            }
-        """)
+
         self.core = core
         self.save = save
         self.logger = getLogger("Sync " + igame.app_name)
@@ -56,8 +51,8 @@ class SyncWidget(QWidget):
         if not igame.save_path:
             save_path = self.core.get_save_path(igame.app_name)
             if '%' in save_path or '{' in save_path:
-                status = "PathNotFound"
-                self.logger.info("Could not find save_path")
+                status = self.tr("Path not found")
+                self.logger.info("Could not find save path")
             else:
                 igame.save_path = save_path
 
@@ -70,26 +65,26 @@ class SyncWidget(QWidget):
             return
         game_title = CustomQLabel(f"<h2>{igame.title}</h2>")
         if dt_local:
-            local_save_date = CustomQLabel(f"Local Save date: {dt_local.strftime('%Y-%m-%d %H:%M:%S')}")
+            local_save_date = CustomQLabel(self.tr("Local Save date: ")+str(dt_local.strftime('%Y-%m-%d %H:%M:%S')))
         else:
-            local_save_date = CustomQLabel("No Local Save files")
+            local_save_date = CustomQLabel(self.tr("No Local Save files"))
         if dt_remote:
-            cloud_save_date = CustomQLabel(f"Cloud save date: {dt_remote.strftime('%Y-%m-%d %H:%M:%S')}")
+            cloud_save_date = CustomQLabel(self.tr("Cloud save date: ")+str(dt_remote.strftime('%Y-%m-%d %H:%M:%S')))
         else:
-            cloud_save_date = CustomQLabel(f"No Cloud saves")
+            cloud_save_date = CustomQLabel(self.tr("No Cloud saves"))
 
         if self.res == SaveGameStatus.SAME_AGE:
             self.logger.info(f'Save game for "{igame.title}" is up to date')
-            status = "Game is up to date"
-            self.upload_button = QPushButton("Upload anyway")
-            self.download_button = QPushButton("Download anyway")
+            status = self.tr("Game is up to date")
+            self.upload_button = QPushButton(self.tr("Upload anyway"))
+            self.download_button = QPushButton(self.tr("Download anyway"))
         if self.res == SaveGameStatus.REMOTE_NEWER:
-            status = "Cloud save is newer"
-            self.download_button = QPushButton("Download Cloud saves")
+            status = self.tr("Cloud save is newer")
+            self.download_button = QPushButton(self.tr("Download Cloud saves"))
             self.download_button.setStyleSheet("""
                            QPushButton{ background-color: lime}
                        """)
-            self.upload_button = QPushButton("Upload Saves")
+            self.upload_button = QPushButton(self.tr("Upload Saves"))
             self.logger.info(f'Cloud save for "{igame.title}" is newer:')
             self.logger.info(f'- Cloud save date: {dt_remote.strftime("%Y-%m-%d %H:%M:%S")}')
             if dt_local:
@@ -100,12 +95,12 @@ class SyncWidget(QWidget):
                 self.upload_button.setToolTip("No local save")
 
         elif self.res == SaveGameStatus.LOCAL_NEWER:
-            status = "Local save is newer"
-            self.upload_button = QPushButton("Upload saves")
+            status = self.tr("Local save is newer")
+            self.upload_button = QPushButton(self.tr("Upload saves"))
             self.upload_button.setStyleSheet("""
                            QPushButton{ background-color: lime}
                        """)
-            self.download_button = QPushButton("Download saves")
+            self.download_button = QPushButton(self.tr("Download saves"))
             self.logger.info(f'Local save for "{igame.title}" is newer')
             if dt_remote:
                 self.logger.info(f'- Cloud save date: {dt_remote.strftime("%Y-%m-%d %H:%M:%S")}')
@@ -126,7 +121,7 @@ class SyncWidget(QWidget):
 
         save_path_layout = QHBoxLayout()
         self.save_path_text = CustomQLabel(igame.save_path)
-        self.change_save_path = QPushButton("Change path")
+        self.change_save_path = QPushButton(self.tr("Change path"))
         save_path_layout.addWidget(self.save_path_text)
         save_path_layout.addWidget(self.change_save_path)
         self.layout.addWidget(self.info_text)
@@ -139,7 +134,7 @@ class SyncWidget(QWidget):
 
     def upload(self):
         self.logger.info("Uploading Saves for game " + self.igame.title)
-        self.info_text.setText("Uploading...")
+        self.info_text.setText(self.tr("Uploading..."))
         self.upload_button.setDisabled(True)
         self.download_button.setDisabled(True)
         thr = _UploadThread(self.igame.app_name, self.save, self.igame.save_path, self.core)
@@ -147,7 +142,7 @@ class SyncWidget(QWidget):
         thr.start()
 
     def uploaded(self):
-        self.info_text.setText("Upload finished")
+        self.info_text.setText(self.tr("Upload finished"))
 
     def download(self):
         if not os.path.exists(self.igame.save_path):
@@ -155,13 +150,13 @@ class SyncWidget(QWidget):
         self.upload_button.setDisabled(True)
         self.download_button.setDisabled(True)
         self.logger.info("Downloading Saves for game " + self.igame.title)
-        self.info_text.setText("Downloading...")
+        self.info_text.setText(self.tr("Downloading..."))
         thr = _DownloadThread(self.igame.app_name, self.save, self.igame.save_path, self.core)
         thr.finished.connect(self.downloaded)
         thr.start()
 
     def downloaded(self):
-        self.info_text.setText("Download finished")
+        self.info_text.setText(self.tr("Download finished"))
         self.upload_button.setDisabled(True)
         self.download_button.setDisabled(True)
         self.download_button.setStyleSheet("QPushButton{background-color: black}")

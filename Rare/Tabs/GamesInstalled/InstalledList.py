@@ -30,10 +30,10 @@ class GameListInstalled(QScrollArea):
 
         self.layout = QVBoxLayout()
         mini_layout = QHBoxLayout()
-        self.update_button = QPushButton("Manually reload Games")
+        self.update_button = QPushButton(self.tr("Manually reload Games"))
         self.update_button.clicked.connect(self.update_list)
         mini_layout.addWidget(self.update_button)
-        self.upload_button = QPushButton("Cloud Saves")
+        self.upload_button = QPushButton(self.tr("Cloud Saves"))
         mini_layout.addWidget(self.upload_button)
         self.upload_button.clicked.connect(self.sync_saves)
         self.layout.addLayout(mini_layout)
@@ -47,8 +47,8 @@ class GameListInstalled(QScrollArea):
                 self.layout.addWidget(widget)
 
         else:
-            not_installed_label = QLabel("No Games are installed. Do you want to import them?")
-            not_installed_button = QPushButton("Import Games")
+            not_installed_label = QLabel(self.tr("No Games are installed. Do you want to import them?"))
+            not_installed_button = QPushButton(self.tr("Import Games"))
             not_installed_button.clicked.connect(self.import_games_prepare)
             self.layout.addWidget(not_installed_label)
             self.layout.addWidget(not_installed_button)
@@ -79,7 +79,7 @@ class GameListInstalled(QScrollArea):
             for wine_prefix in possible_wineprefixes:
                 imported += self.auto_import_games(f"{wine_prefix}drive_c/Program Files/Epic Games/")
         if imported > 0:
-            QMessageBox.information(self, "Imported Games", f"Successfully imported  {imported} Games")
+            QMessageBox.information(self, "Imported Games", self.tr(f"Successfully imported {imported} Games"))
             logger.info("Restarting app to import games")
         else:
             QMessageBox.information(self, "Imported Games", "No Games were found")

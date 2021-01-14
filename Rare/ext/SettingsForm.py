@@ -42,23 +42,23 @@ class SettingsForm(QGroupBox):
 
             else:
                 self.table = QTableWidget(0, 2)
-            self.table.setHorizontalHeaderLabels(["Variable", "Value"])
+            self.table.setHorizontalHeaderLabels(["Variable", self.tr("Value")])
             self.table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
             self.table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
             self.table.setMaximumSize(self._getQTableWidgetSize())
-            self.form.addRow(QLabel("Environment Variables"), self.table)
+            self.form.addRow(QLabel(self.tr("Environment Variables")), self.table)
 
-            self.add_button = QPushButton("Add Variable")
+            self.add_button = QPushButton(self.tr("Add Variable"))
             self.add_button.clicked.connect(self.add_variable)
 
-            self.delete_button = QPushButton("Delete Variable")
+            self.delete_button = QPushButton(self.tr("Delete Variable"))
             self.delete_button.clicked.connect(lambda: self.table.removeRow(self.table.currentRow()))
 
             self.form.addRow(self.add_button)
             self.form.addRow(self.delete_button)
 
-        self.update_button = QPushButton("Update Settings")
+        self.update_button = QPushButton(self.tr("Update Settings"))
         self.update_button.clicked.connect(self.update_config)
         self.form.addRow(self.update_button)
 
@@ -89,16 +89,16 @@ class SettingsForm(QGroupBox):
 
         if type_of_input == "QLineEdit":
             field = QLineEdit(self.config[self.app_name][lgd_name])
-            field.setPlaceholderText("Default")
+            field.setPlaceholderText(self.tr("Default"))
             if "only_int" in flags:
                 field.setValidator(QIntValidator())
             if "path" in flags:
                 if lgd_name == "wine_prefix":
                     field = PathEdit(text=self.config[self.app_name][lgd_name], type_of_file=QFileDialog.DirectoryOnly,
-                                     infotext="Select Wine Prefix")
+                                     infotext=self.tr("Select Wine Prefix"))
                 if lgd_name == "install_dir":
                     field = PathEdit(text=self.config[self.app_name][lgd_name], type_of_file=QFileDialog.DirectoryOnly,
-                                     infotext="Select Default installation directory")
+                                     infotext=self.tr("Select Default installation directory"))
         elif type_of_input == "QComboBox":
             combo_list = []
             if "binary" in flags:
@@ -192,7 +192,7 @@ class SettingsForm(QGroupBox):
                         break
                 else:
                     logger.error("No Proton found")
-                    QMessageBox.Warning("Error", "No Proton was found")
+                    QMessageBox.Warning("Error", self.tr("No Proton version was found"))
                     return
                 field.setText(os.path.join(protonpath, "proton") + " run")
             elif lgd_name == "no_wine":

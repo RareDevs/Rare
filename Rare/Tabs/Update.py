@@ -52,7 +52,7 @@ class UpdateWidget(QWidget):
         self.core = core
         self.layout = QVBoxLayout()
         self.childlayout = QHBoxLayout()
-        self.label = QLabel("Update available for " + self.game.title)
+        self.label = QLabel(self.tr("Update available for ") + self.game.title)
         self.button = QPushButton("Update")
         self.button.clicked.connect(self.update_game2)
 
@@ -103,14 +103,14 @@ class UpdateWidget(QWidget):
 
     def finished(self, text: str):
         if text == "Fail":
-            QMessageBox.warning(self, "Update Failed", "Update failed")
+            QMessageBox.warning(self, self.tr("Update Failed"), self.tr("Update failed"))
         else:
-            QMessageBox.information(self, "Update finished", f"Update finished in {time} ")
-        self.setVisible(False)
-        self.installed.emit()
+            QMessageBox.information(self, self.tr("Update finished"), self.tr("Update finished in ") + str(time))
+            self.setVisible(False)
+            self.installed.emit()
 
     def start(self):
-        self.button.setText("Cancel")
+        self.button.setText(self.tr("Cancel"))
         self.updating = True
 
     def get_update_info(self):
@@ -143,7 +143,7 @@ class UpdateTab(QWidget):
             widget.installed.connect(lambda: self.__init__(self.core))
             self.layout.addWidget(widget)
         if len(update_games) == 0:
-            self.layout.addWidget(QLabel("No updates available"))
+            self.layout.addWidget(QLabel(self.tr("No updates available")))
         self.layout.addStretch(1)
         self.setLayout(self.layout)
 

@@ -35,8 +35,9 @@ class ImportWidget(QWidget):
         self.layout = QVBoxLayout()
         self.core = core
 
-        self.import_text = QLabel("<h2>Import from existing Epic Games Launcher installation</h2>\nYou will get "
-                                  "logged out there")
+        self.import_text = QLabel(
+            "<h2>" + self.tr("Import from existing Epic Games Launcher installation") + "</h2>\n" + self.tr(
+                "You will get logged out there"))
         self.import_accept_button = QPushButton("Import")
         self.import_accept_button.clicked.connect(self.auth)
         appdata_paths = self.get_appdata_path()
@@ -45,7 +46,7 @@ class ImportWidget(QWidget):
 
         if len(appdata_paths) == 0:
             self.path = QLineEdit()
-            self.path.setPlaceholderText("Path to Wineprefix (Not implemented)")
+            self.path.setPlaceholderText(self.tr("Path to Wineprefix"))
             self.layout.addWidget(self.path)
         else:
             self.btn_group = QButtonGroup()
@@ -56,7 +57,7 @@ class ImportWidget(QWidget):
 
         # for i in appdata_paths:
 
-        self.appdata_path_text = QLabel(f"Appdata path: {self.core.egl.appdata_path}")
+        self.appdata_path_text = QLabel(self.tr("Appdata path: ") + {self.core.egl.appdata_path})
 
         self.login_text = QLabel("")
         # self.layout.addWidget(self.btn_group)
@@ -109,7 +110,7 @@ class ImportWidget(QWidget):
 
         self.import_accept_button.setDisabled(False)
         logger.warning("Error: No valid session found")
-        self.login_text.setText("Error: No valid session found")
+        self.login_text.setText(self.tr("Error: No valid session found"))
 
 
 class SystemBrowserWidget(QWidget):
@@ -120,10 +121,10 @@ class SystemBrowserWidget(QWidget):
         self.core = core
         self.layout = QVBoxLayout()
 
-        self.text = QLabel("Insert Sid from Browser")
+        self.text = QLabel(self.tr("Insert Sid from Browser"))
         self.layout.addWidget(self.text)
         self.input = QLineEdit()
-        self.input.setPlaceholderText("Insert sid from Browser")
+        self.input.setPlaceholderText(self.tr("Insert sid from Browser"))
         self.layout.addWidget(self.input)
 
         self.loading_text = QLabel("")
@@ -133,14 +134,14 @@ class SystemBrowserWidget(QWidget):
         self.back_button.clicked.connect(self.back)
         self.layout.addWidget(self.back_button)
 
-        self.submit_button = QPushButton("Login")
+        self.submit_button = QPushButton(self.tr("Login"))
         self.submit_button.clicked.connect(self.login)
         self.layout.addWidget(self.submit_button)
 
         self.setLayout(self.layout)
 
     def login(self):
-        self.loading_text.setText("Loading")
+        self.loading_text.setText(self.tr("Loading..."))
         token = self.input.text()
         if token.startswith("{") and token.endswith("}"):
             token = json.loads(token)['sid']
@@ -167,16 +168,18 @@ class LoginWindow(QDialog):
         self.setGeometry(0, 0, 200, 300)
         self.welcome_layout = QVBoxLayout()
         self.title = QLabel(
-            "<h2>Welcome to Rare the graphical interface for Legendary, an open source Epic Games alternative.</h2>\n<h3>Select one Option to Login</h3>")
-        self.browser_btn = QPushButton("Use built in browser to login")
+            "<h2>" + self.tr(
+                "Welcome to Rare the graphical interface for Legendary, an open source Epic Games alternative.") + "</h2>\n<h3>" + self.tr(
+                "Select an option to Login") + "</h3>")
+        self.browser_btn = QPushButton(self.tr("Use built in browser to login"))
         self.browser_btn.clicked.connect(self.browser_login)
-        self.browser_btn_normal = QPushButton("Use System browser")
+        self.browser_btn_normal = QPushButton(self.tr("Use System browser"))
         self.browser_btn_normal.clicked.connect(self.sys_browser_login)
-        self.import_btn = QPushButton("Import from existing Epic Games installation")
+        self.import_btn = QPushButton(self.tr("Import from existing Epic Games installation"))
 
         self.import_btn.clicked.connect(self.import_login)
         self.text = QLabel("")
-        self.exit_btn = QPushButton("Exit App")
+        self.exit_btn = QPushButton(self.tr("Exit App"))
         self.exit_btn.clicked.connect(self.exit_login)
 
         self.welcome_layout.addWidget(self.title)
@@ -209,7 +212,7 @@ class LoginWindow(QDialog):
             self.success()
         else:
             self.layout.setCurrentIndex(0)
-            self.text.setText("<h4 style='color: red'>Login failed</h4>")
+            self.text.setText("<h4 style='color: red'>"+self.tr("Login failed")+"</h4>")
 
     def login(self):
         self.exec_()
@@ -253,4 +256,4 @@ class LoginWindow(QDialog):
             self.layout.setCurrentIndex(0)
             logger.warning("Login failed")
             self.browser.close()
-            self.text.setText("Login Failed")
+            self.text.setText(self.tr("Login Failed"))

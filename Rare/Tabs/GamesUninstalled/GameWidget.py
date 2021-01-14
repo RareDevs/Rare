@@ -53,7 +53,7 @@ class UninstalledGameWidget(QWidget):
         self.title_label = QLabel(f"<h2>{self.title}</h2>")
         self.app_name_label = QLabel(f"App Name: {self.app_name}")
         self.version_label = QLabel(f"Version: {self.version}")
-        self.install_button = QPushButton("Install")
+        self.install_button = QPushButton(self.tr("Install"))
         self.install_button.setFixedWidth(120)
         self.install_button.clicked.connect(self.install)
 
@@ -72,16 +72,15 @@ class UninstalledGameWidget(QWidget):
         logger.info("install " + self.title)
         dia = InstallDialog(self.game)
         data = dia.get_data()
-        print(data)
         if data != 0:
             path = data.get("install_path")
             logger.info(f"install {self.app_name} in path {path}")
             # TODO
             self.install_button.setDisabled(True)
-            self.install_button.setText("installing")
+            self.install_button.setText(self.tr("installing"))
             self.proc = QProcess()
             self.proc.start("legendary", ["-y", "install", self.app_name, "--base-path", path])
-            self.proc.finished.connect(self.download_finished)
+            self.proc.reload.connect(self.download_finished)
 
         else:
             logger.info("Download canceled")
@@ -89,5 +88,5 @@ class UninstalledGameWidget(QWidget):
     def download_finished(self, code):
         self.setVisible(False)
         logger.info(f"Download finished. code: {code}")
-        QMessageBox.information(self, "Download finished", "Download has finished")
+        QMessageBox.information(self, self.tr("Download finished"), self.tr("Download has finished"))
         self.finished.emit()

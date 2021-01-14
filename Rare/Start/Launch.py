@@ -24,13 +24,13 @@ class LaunchDialog(QDialog):
     def __init__(self, core: LegendaryCore):
         super(LaunchDialog, self).__init__()
 
-        self.title = QLabel("<h3>Launching Rare</h3>")
+        self.title = QLabel("<h3>"+self.tr("Launching Rare")+"</h3>")
         self.thread = LaunchThread(core, self)
         self.thread.download_progess.connect(self.update_pb)
         self.thread.action.connect(self.info)
         self.info_pb = QProgressBar()
         self.info_pb.setMaximum(len(core.get_game_list()))
-        self.info_text = QLabel("Logging in")
+        self.info_text = QLabel(self.tr("Logging in"))
         self.layout = QVBoxLayout()
 
         self.layout.addWidget(self.title)

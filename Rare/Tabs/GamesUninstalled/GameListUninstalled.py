@@ -7,7 +7,7 @@ from Rare.utils.Dialogs.ImportDialog import ImportDialog
 
 
 class GameListUninstalled(QScrollArea):
-    finished = pyqtSignal()
+    reload = pyqtSignal()
 
     def __init__(self, core: LegendaryCore):
         super(GameListUninstalled, self).__init__()
@@ -20,8 +20,8 @@ class GameListUninstalled(QScrollArea):
 
         self.filter = QLineEdit()
         self.filter.textChanged.connect(self.filter_games)
-        self.filter.setPlaceholderText("Filter Games")
-        self.import_button = QPushButton("Import installed Game from Epic Games Store")
+        self.filter.setPlaceholderText(self.tr("Filter Games"))
+        self.import_button = QPushButton(self.tr("Import installed Game from Epic Games Store"))
         self.import_button.clicked.connect(self.import_game)
         self.layout.addWidget(self.filter)
         self.layout.addWidget(self.import_button)
@@ -34,7 +34,7 @@ class GameListUninstalled(QScrollArea):
         games = sorted(games, key=lambda x: x.app_title)
         for game in games:
             game_widget = UninstalledGameWidget(game)
-            game_widget.finished.connect(lambda: self.finished.emit())
+            game_widget.finished.connect(lambda: self.reload.emit())
             self.layout.addWidget(game_widget)
             self.widgets_uninstalled.append(game_widget)
 
@@ -51,4 +51,5 @@ class GameListUninstalled(QScrollArea):
 
     def import_game(self):
         import_dia = ImportDialog(self.core)
-        import_dia.import_dialog()
+        if import_dia.import_dialog():
+            self.reload.emit()

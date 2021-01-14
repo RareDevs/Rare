@@ -32,8 +32,7 @@ class PathEdit(QWidget):
         self.info_text = infotext
         self.layout = QHBoxLayout()
         self.text_edit = QLineEdit(text)
-        self.setObjectName("text_edit")
-        self.path_select = QPushButton("Select Path")
+        self.path_select = QPushButton(self.tr("Select Path"))
         self.path_select.clicked.connect(self.set_path)
         self.layout.addWidget(self.text_edit)
         self.layout.addWidget(self.path_select)
@@ -46,7 +45,7 @@ class PathEdit(QWidget):
         return self.text_edit.text()
 
     def set_path(self):
-        dlg = QFileDialog(self, "Choose Path", os.path.expanduser("~/"))
+        dlg = QFileDialog(self, self.tr("Choose Path"), os.path.expanduser("~/"))
         dlg.setFileMode(self.type_of_file)
         if self.filter:
             dlg.setFilter(self.filter)

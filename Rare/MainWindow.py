@@ -18,16 +18,16 @@ class TabWidget(QTabWidget):
     def __init__(self, core):
         super(QWidget, self).__init__()
         self.game_list = GameListInstalled(core)
-        self.addTab(self.game_list, "Games")
+        self.addTab(self.game_list, self.tr("Games"))
         self.uninstalled_games = GameListUninstalled(core)
-        self.uninstalled_games.finished.connect(lambda: self.game_list.update_list())
-        self.addTab(self.uninstalled_games, "Install Games")
+        self.uninstalled_games.reload.connect(lambda: self.game_list.update_list())
+        self.addTab(self.uninstalled_games, self.tr("Install Games"))
 
         self.update_tab = UpdateTab(core)
-        self.addTab(self.update_tab, "Updates")
+        self.addTab(self.update_tab, self.tr("Updates"))
 
         self.browser = BrowserTab()
-        self.addTab(self.browser, "Store")
+        self.addTab(self.browser, self.tr("Website"))
 
         self.settings = SettingsTab(core)
-        self.addTab(self.settings, "Settings")
+        self.addTab(self.settings, self.tr("Settings"))

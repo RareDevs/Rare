@@ -13,7 +13,6 @@ legendary_settings = [
     ("Default install dir", "QLineEdit", "install_dir", ["path"]),
     ("Max Memory", "QLineEdit", "max_memory", ["only_int"]),
     ("EGL Sync", "QComboBox", "egl_sync", ["binary"]),
-    ("No Wine", "QComboBox", "no_wine", ["binary"])
 ]
 
 game_settings = default_settings + [

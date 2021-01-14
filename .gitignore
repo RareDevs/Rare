@@ -1,10 +1,11 @@
 /images/
 /.idea/
 /Rare/__pycache__/
-/CountLines.sh
+/Scripts/CountLines.sh
 /Rare/utils/__pycache__/
 /build/
 /dist/
 /Rare.egg-info/
-/RareBuild.sh
+/Scripts/RareBuild.sh
 /venv/
+Scripts/*

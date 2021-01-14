@@ -1,13 +1,14 @@
 import json
+import locale
 import os
-import sys
 from logging import getLogger
 
 import requests
 from PIL import Image
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QLocale
 from legendary.core import LegendaryCore
 
+from Rare.utils import legendaryConfig
 from Rare.utils.RareConfig import IMAGE_DIR
 
 logger = getLogger("Utils")
@@ -80,3 +81,11 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
                 logger.warning(f"File {IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png dowsn't exist")
         signal.emit(i)
 
+
+def get_lang():
+    if "locale" in legendaryConfig.get_config()["Legendary"]:
+        logger.info("Found locale in Legendary config: " + legendaryConfig.get_config()["Legendary"]["locale"])
+        return legendaryConfig.get_config()["Legendary"]["locale"].split("-")[0]
+    else:
+        logger.info("Found locale in Legendary config: " + QLocale.system().name())
+        return locale.getdefaultlocale()
