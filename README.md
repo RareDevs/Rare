@@ -43,6 +43,7 @@ Using the exe-file could cause an error with the stylesheets
 - Translations (English and German)
 - Design (Pretty Stylesheets, Icons, Icon view for installed Games)
 - Download Progressbar
+- Offline mode
 
 ## Images
 

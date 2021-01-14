@@ -9,7 +9,7 @@ from legendary.core import LegendaryCore
 
 from Rare.Tabs.GamesInstalled.GameWidget import GameWidget
 from Rare.utils import legendaryUtils
-from Rare.utils.Dialogs.SyncSavesDialog import SyncSavesDialog
+from Rare.utils.Dialogs.SyncSaves.SyncSavesDialog import SyncSavesDialog
 
 logger = getLogger("InstalledList")
 
