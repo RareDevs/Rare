@@ -5,11 +5,11 @@ from Rare.Tabs import SettingsTab, UpdateTab, GameListInstalled, GameListUninsta
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, core):
+    def __init__(self, core, offline):
         super().__init__()
         self.setWindowTitle("Rare - GUI for legendary-gl")
         self.setGeometry(0, 0, 1200, 900)
-        self.setCentralWidget(TabWidget(core))
+        self.setCentralWidget(TabWidget(core, offline))
         self.show()
 
 

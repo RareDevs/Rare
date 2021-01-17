@@ -46,7 +46,7 @@ def main():
             main()
 
     except ValueError:
-        logger.info("You ar not logged in. Open Login Window")
+        logger.info("You are not logged in. Open Login Window")
         login_window = LoginWindow(core)
         if not login_window.login():
             return
