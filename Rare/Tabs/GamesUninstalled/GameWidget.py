@@ -47,6 +47,7 @@ class UninstalledGameWidget(QWidget):
             pixmap = pixmap.scaled(120, 160)
             self.image = QLabel()
             self.image.setPixmap(pixmap)
+            self.layout.addWidget(self.image)
 
         self.child_layout = QVBoxLayout()
 
@@ -62,7 +63,6 @@ class UninstalledGameWidget(QWidget):
         self.child_layout.addWidget(self.version_label)
         self.child_layout.addWidget(self.install_button)
         self.child_layout.addStretch(1)
-        self.layout.addWidget(self.image)
         self.layout.addLayout(self.child_layout)
 
         self.layout.addStretch(1)
