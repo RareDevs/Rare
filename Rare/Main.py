@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 
+import requests
 from PyQt5.QtCore import QTranslator
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from legendary.core import LegendaryCore
@@ -24,6 +25,7 @@ def main():
     app = QApplication(sys.argv)
     translator = QTranslator()
     lang = get_lang()
+
     if os.path.exists(lang_path + lang + ".qm"):
         translator.load(lang_path + lang + ".qm")
     else:
@@ -32,10 +34,13 @@ def main():
 
     app.setStyleSheet(open(style_path + "dark.qss").read())
 
+    offline = True
+
     logger.info("Try if you are logged in")
     try:
         if core.login():
             logger.info("You are logged in")
+            offline = False
         else:
             logger.error("Login Failed")
             main()
@@ -45,17 +50,18 @@ def main():
         login_window = LoginWindow(core)
         if not login_window.login():
             return
-    except ConnectionError:
-        QMessageBox.warning(app, "No Internet", "Connection Error, Failed to login. The offine mode is not implemented")
-        # Start Offline mode
-    launch_dialog = LaunchDialog(core)
 
-    #if RareConfig.THEME == "default":
+        # Start Offline mode
+    except requests.exceptions.ConnectionError:
+        offline = True
+        QMessageBox.information(None, "Offline", "You are offline. Launching Rare in offline mode")
+        # Launch Offlienmode
+    if not offline:
+        launch_dialog = LaunchDialog(core)
+    mainwindow = MainWindow(core, offline)
+# if RareConfig.THEME == "default":
     #   launch_dialog.setStyleSheet(open(style_path).read())
 
-
-    app.exec_()
-    mainwindow = MainWindow(core)
     app.exec_()
 
 

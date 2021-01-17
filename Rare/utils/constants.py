@@ -1,5 +1,5 @@
 # (Info Text, Type of input, legendary conf name, flags)
-# possible flags: wine, path, only_int, binary(ComboBox), Combobox content
+# possible flags: wine, path, only_int, binary(ComboBox), Combobox content([x,y,z])
 
 default_settings = [
     ("Wine Prefix", "QLineEdit", "wine_prefix", ["wine", "path"]),

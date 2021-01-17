@@ -78,7 +78,7 @@ class SyncWidget(QWidget):
             status = self.tr("Game is up to date")
             self.upload_button = QPushButton(self.tr("Upload anyway"))
             self.download_button = QPushButton(self.tr("Download anyway"))
-        if self.res == SaveGameStatus.REMOTE_NEWER:
+        elif self.res == SaveGameStatus.REMOTE_NEWER:
             status = self.tr("Cloud save is newer")
             self.download_button = QPushButton(self.tr("Download Cloud saves"))
             self.download_button.setStyleSheet("""
@@ -124,6 +124,7 @@ class SyncWidget(QWidget):
         self.change_save_path = QPushButton(self.tr("Change path"))
         save_path_layout.addWidget(self.save_path_text)
         save_path_layout.addWidget(self.change_save_path)
+        self.layout.addLayout(save_path_layout)
         self.layout.addWidget(self.info_text)
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.upload_button)

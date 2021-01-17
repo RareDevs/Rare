@@ -15,13 +15,14 @@ class MainWindow(QMainWindow):
 
 class TabWidget(QTabWidget):
 
-    def __init__(self, core):
+    def __init__(self, core, offline: bool):
         super(QWidget, self).__init__()
         self.game_list = GameListInstalled(core)
         self.addTab(self.game_list, self.tr("Games"))
-        self.uninstalled_games = GameListUninstalled(core)
-        self.uninstalled_games.reload.connect(lambda: self.game_list.update_list())
-        self.addTab(self.uninstalled_games, self.tr("Install Games"))
+        if not offline:
+            self.uninstalled_games = GameListUninstalled(core)
+            self.uninstalled_games.reload.connect(lambda: self.game_list.update_list())
+            self.addTab(self.uninstalled_games, self.tr("Install Games"))
 
         self.update_tab = UpdateTab(core)
         self.addTab(self.update_tab, self.tr("Updates"))

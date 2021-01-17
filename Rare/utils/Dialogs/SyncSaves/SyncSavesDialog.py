@@ -82,7 +82,10 @@ class SyncSavesDialog(QDialog):
             game = self.core.get_game(igame.app_name)
             if not game.supports_cloud_saves:
                 continue
-            sync_widget = SyncWidget(igame, latest_save[igame.app_name], self.core)
+            if latest_save.get(igame.app_name):
+                sync_widget = SyncWidget(igame, latest_save[igame.app_name], self.core)
+            else:
+                continue
             self.main_layout.addWidget(sync_widget)
             self.widgets.append(sync_widget)
 
