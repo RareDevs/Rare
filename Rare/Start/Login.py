@@ -57,7 +57,7 @@ class ImportWidget(QWidget):
 
         # for i in appdata_paths:
 
-        self.appdata_path_text = QLabel(self.tr("Appdata path: ") + {self.core.egl.appdata_path})
+        self.appdata_path_text = QLabel(self.tr("Appdata path: ") + str(self.core.egl.appdata_path))
 
         self.login_text = QLabel("")
         # self.layout.addWidget(self.btn_group)

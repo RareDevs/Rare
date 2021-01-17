@@ -31,7 +31,7 @@ class SettingsTab(QScrollArea):
         self.rare_form = RareSettingsForm()
 
         self.logout_button = QPushButton(self.tr("Logout"))
-        self.logout_button.clicked.connect(self.update_list)
+        self.logout_button.clicked.connect(self.logout)
         self.layout.addWidget(self.logged_in_as)
 
         self.layout.addWidget(self.rare_form)
