@@ -1,5 +1,6 @@
 import configparser
 import os
+
 from legendary.lfs.lgndry import LGDLFS
 
 lgd = LGDLFS()
