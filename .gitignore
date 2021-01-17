@@ -1,8 +1,11 @@
+# python
+*.pyc
+*.pyo
+__pycache__
+
 /images/
 /.idea/
-/Rare/__pycache__/
 /Scripts/CountLines.sh
-*/__pycache__/
 /build/
 /dist/
 /Rare.egg-info/
