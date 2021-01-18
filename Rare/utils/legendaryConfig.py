@@ -1,17 +1,14 @@
 import configparser
 import os
 
-config_path = os.path.expanduser("~") + "/.config/legendary/"
-lgd_config = configparser.ConfigParser()
-lgd_config.optionxform = str
+from legendary.lfs.lgndry import LGDLFS
 
+lgd = LGDLFS()
 
 def get_config() -> {}:
-    lgd_config.read(config_path + "config.ini")
-    lgd_config.optionxform = str
-    return lgd_config
-
+    return lgd.config
 
 def set_config(new_config: {}):
-    lgd_config = new_config
-    lgd_config.write(open(config_path + "config.ini", "w"))
+    lgd.config = new_config
+    with open(os.path.join(lgd.path, 'config.ini'), "w") as cf:
+        lgd.config.write(cf)

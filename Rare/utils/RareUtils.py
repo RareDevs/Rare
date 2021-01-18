@@ -87,5 +87,5 @@ def get_lang():
         logger.info("Found locale in Legendary config: " + legendaryConfig.get_config()["Legendary"]["locale"])
         return legendaryConfig.get_config()["Legendary"]["locale"].split("-")[0]
     else:
-        logger.info("Found locale in Legendary config: " + QLocale.system().name())
-        return locale.getdefaultlocale()
+        logger.info("Found locale in system config: " + QLocale.system().name())
+        return QLocale.system().name()
