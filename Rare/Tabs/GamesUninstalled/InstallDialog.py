@@ -1,10 +1,11 @@
 import os
 
 from PyQt5.QtWidgets import QLineEdit, QPushButton, QLabel, QVBoxLayout, QDialog, QHBoxLayout
+from legendary.models.game import Game
 
 
 class InstallDialog(QDialog):
-    def __init__(self, game):
+    def __init__(self, game: Game):
         super(InstallDialog, self).__init__()
         self.setWindowTitle(self.tr("Install Game"))
         self.layout = QVBoxLayout()
@@ -14,7 +15,7 @@ class InstallDialog(QDialog):
         # self.layout.addWidget(self.options)
 
         self.layout.addStretch(1)
-        self.yes_button = QPushButton(self.tr("Install game ") + game.title)
+        self.yes_button = QPushButton(self.tr("Install game ") + game.app_title)
         self.yes_button.clicked.connect(self.close)
         self.cancel_button = QPushButton(self.tr("cancel"))
 

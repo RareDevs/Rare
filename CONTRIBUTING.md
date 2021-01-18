@@ -4,7 +4,7 @@
 
 ### Add translations
 
-1. Execute **pylupdate5 $(find -name "*.py") -ts Rare/languages/{your lang (two letters)}.ts** in project directrory
+1. Execute **pylupdate5 $(find -name "\*.py") -ts Rare/languages/{your lang (two letters)}.ts** in project directrory
 2. Modify the .ts file manually or in Qt Linguist
 3. Compile the file with **lrelease Rare/languages/{lang}.ts**
 4. Create a Pull request
