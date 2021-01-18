@@ -25,7 +25,7 @@ class SettingsTab(QScrollArea):
         self.logged_in_as = QLabel(self.tr("Logged in as ")+get_name())
         # self.legendary_form =SettingsForm()
 
-        self.default_settings = SettingsForm(self.tr("default"), default_settings, True)
+        self.default_settings = SettingsForm("default", default_settings, True)
         self.legendary_form = SettingsForm("Legendary", legendary_settings, False)
 
         self.rare_form = RareSettingsForm()
