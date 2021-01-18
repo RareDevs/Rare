@@ -12,15 +12,15 @@ from Rare.ext.QtExtensions import CustomQLabel
 class _UploadThread(QThread):
     signal = pyqtSignal()
 
-    def __init__(self, app_name, latest_save, save_path, core: LegendaryCore):
+    def __init__(self, app_name, date_time, save_path, core: LegendaryCore):
         super(_UploadThread, self).__init__()
         self.core = core
         self.app_name = app_name
-        self.latest_save = latest_save
+        self.date_time = date_time
         self.save_path = save_path
 
     def run(self) -> None:
-        self.core.upload_save(self.app_name, self.latest_save.manifest_nam, self.save_path)
+        self.core.upload_save(self.app_name, self.save_path, self.date_time)
 
 
 class _DownloadThread(QThread):
@@ -59,17 +59,18 @@ class SyncWidget(QWidget):
         if not os.path.exists(igame.save_path):
             os.makedirs(igame.save_path)
 
-        self.res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, save)
+        self.res, (self.dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, save)
         if self.res == SaveGameStatus.NO_SAVE:
             self.logger.info('No cloud or local savegame found.')
             return
         game_title = CustomQLabel(f"<h2>{igame.title}</h2>")
-        if dt_local:
-            local_save_date = CustomQLabel(self.tr("Local Save date: ")+str(dt_local.strftime('%Y-%m-%d %H:%M:%S')))
+        if self.dt_local:
+            local_save_date = CustomQLabel(
+                self.tr("Local Save date: ") + str(self.dt_local.strftime('%Y-%m-%d %H:%M:%S')))
         else:
             local_save_date = CustomQLabel(self.tr("No Local Save files"))
         if dt_remote:
-            cloud_save_date = CustomQLabel(self.tr("Cloud save date: ")+str(dt_remote.strftime('%Y-%m-%d %H:%M:%S')))
+            cloud_save_date = CustomQLabel(self.tr("Cloud save date: ") + str(dt_remote.strftime('%Y-%m-%d %H:%M:%S')))
         else:
             cloud_save_date = CustomQLabel(self.tr("No Cloud saves"))
 
@@ -87,8 +88,8 @@ class SyncWidget(QWidget):
             self.upload_button = QPushButton(self.tr("Upload Saves"))
             self.logger.info(f'Cloud save for "{igame.title}" is newer:')
             self.logger.info(f'- Cloud save date: {dt_remote.strftime("%Y-%m-%d %H:%M:%S")}')
-            if dt_local:
-                self.logger.info(f'- Local save date: {dt_local.strftime("%Y-%m-%d %H:%M:%S")}')
+            if self.dt_local:
+                self.logger.info(f'- Local save date: {self.dt_local.strftime("%Y-%m-%d %H:%M:%S")}')
             else:
                 self.logger.info('- Local save date: N/A')
                 self.upload_button.setDisabled(True)
@@ -107,7 +108,7 @@ class SyncWidget(QWidget):
             else:
                 self.logger.info('- Cloud save date: N/A')
                 self.download_button.setDisabled(True)
-            self.logger.info(f'- Local save date: {dt_local.strftime("%Y-%m-%d %H:%M:%S")}')
+            self.logger.info(f'- Local save date: {self.dt_local.strftime("%Y-%m-%d %H:%M:%S")}')
         else:
             self.logger.error("Error")
             return
@@ -138,9 +139,9 @@ class SyncWidget(QWidget):
         self.info_text.setText(self.tr("Uploading..."))
         self.upload_button.setDisabled(True)
         self.download_button.setDisabled(True)
-        thr = _UploadThread(self.igame.app_name, self.save, self.igame.save_path, self.core)
-        thr.finished.connect(self.uploaded)
-        thr.start()
+        self.thr = _UploadThread(self.igame.app_name, self.dt_local, self.igame.save_path, self.core)
+        self.thr.finished.connect(self.uploaded)
+        self.thr.start()
 
     def uploaded(self):
         self.info_text.setText(self.tr("Upload finished"))
