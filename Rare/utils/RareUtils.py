@@ -1,5 +1,4 @@
 import json
-import locale
 import os
 from logging import getLogger
 
