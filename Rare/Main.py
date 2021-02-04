@@ -59,10 +59,9 @@ def main():
     if not offline:
         launch_dialog = LaunchDialog(core)
         launch_dialog.exec_()
-    mainwindow = MainWindow(core, offline)
+    mainwindow = MainWindow(core)
 # if RareConfig.THEME == "default":
     #   launch_dialog.setStyleSheet(open(style_path).read())
-
     app.exec_()
 
 

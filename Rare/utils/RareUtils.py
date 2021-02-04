@@ -82,9 +82,9 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
 
 
 def get_lang():
-    if "locale" in legendaryConfig.get_config()["Legendary"]:
+    if "Legendary" in legendaryConfig.get_config() and "locale" in legendaryConfig.get_config()["Legendary"]:
         logger.info("Found locale in Legendary config: " + legendaryConfig.get_config()["Legendary"]["locale"])
         return legendaryConfig.get_config()["Legendary"]["locale"].split("-")[0]
     else:
-        logger.info("Found locale in system config: " + QLocale.system().name())
-        return QLocale.system().name()
+        logger.info("Found locale in system config: " + QLocale.system().name().split("_")[0])
+        return QLocale.system().name().split("_")[0]
