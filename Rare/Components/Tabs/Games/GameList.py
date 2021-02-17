@@ -27,23 +27,19 @@ class GameList(QScrollArea):
         self.widgets=[]
         self.layout = FlowLayout()
         # Installed Games
-        for game in self.core.get_installed_list():
+        for game in sorted(self.core.get_installed_list(), key=lambda x: x.title):
             # continue
             widget = GameWidgetInstalled(self.core, game)
             self.layout.addWidget(widget)
             widget.update_list.connect(self.update_list)
 
         uninstalled_games = []
-        installed = []
         installed = [i.app_name for i in self.core.get_installed_list()]
-        print(len(installed))
         # get Uninstalled games
-        print(len(self.core.get_game_list()))
         for game in sorted(self.core.get_game_list(), key=lambda x: x.app_title):
             if not game.app_name in installed:
                 uninstalled_games.append(game)
         # add uninstalled to gui
-        print(len(uninstalled_games))
         for game in uninstalled_games:
             widget = GameWidgetUninstalled(self.core, game)
             widget.install_game.connect(lambda options: self.install_game.emit(options))
@@ -68,6 +64,5 @@ class GameList(QScrollArea):
     def update_list(self):
         print("Updating List")
         self.setWidget(QWidget())
-        self.core.login()
         self.init_ui()
         self.update()

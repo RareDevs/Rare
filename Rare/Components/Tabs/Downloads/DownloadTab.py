@@ -108,6 +108,7 @@ class DownloadTab(QWidget):
 
     def install_game(self, options: {}):
         game = self.core.get_game(options["app_name"])
+
         dlm, analysis, igame = self.core.prepare_download(
             game=game,
             base_path=options["options"]["path"],

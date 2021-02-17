@@ -39,6 +39,7 @@ class GameWidgetInstalled(QWidget):
         else:
             logger.warning(f"No Image found: {self.game.title}")
             pixmap = None
+
         if pixmap:
             w = 200
             pixmap = pixmap.scaled(w, int(w * 4 / 3))

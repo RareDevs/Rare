@@ -2,20 +2,17 @@ import logging
 import os
 import sys
 
-import requests
-from PyQt5.QtCore import QTranslator, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QMessageBox
-
+from PyQt5.QtCore import QTranslator
+from PyQt5.QtWidgets import QApplication
 from legendary.core import LegendaryCore
 
 from Rare import style_path, lang_path
+from Rare.Components.Launch.LaunchDialog import LaunchDialog
 from Rare.Components.MainWindow import MainWindow
-
 # from Rare.Start.Launch import LaunchDialog
 # from Rare.Start.Login import LoginWindow
 # from Rare.utils.RareUtils import get_lang
-from Rare.utils.Dialogs.Login.LoginDialog import LoginDialog
-from Rare.utils.utils import download_images, get_lang
+from Rare.utils.utils import get_lang
 
 logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',
@@ -39,35 +36,9 @@ def main():
     # Style
     app.setStyleSheet(open(style_path + "RareStyle.qss").read())
 
-    # Offline mode (not completed)
-    offline = True
-    # Login
-    logger.info("Try if you are logged in")
-    try:
-        if core.login():
-            logger.info("You are logged in")
-            offline = False
-        else:
-            logger.error("Login Failed")
-            main()
 
-    except ValueError:
-        # If not Logged in: Start Login window
-        logger.info("You are not logged in. Open Login Window")
-        login_window = LoginDialog(core)
-        if not login_window.login():
-            return
-
-        # Start Offline mode
-    except requests.exceptions.ConnectionError:
-        offline = True
-        QMessageBox.information(None, "Offline", "You are offline. Launching Rare in offline mode")
-        # Launch Offlienmode
-    if not offline:
-        # launch_dialog = LaunchDialog(core)
-        # launch_dialog.exec_()
-        pass
-    # mainwindow = MainWindow(core)
+    launch_dialog = LaunchDialog(core)
+    launch_dialog.exec_()
     mainwindow = MainWindow(core)
 
     app.exec_()
