@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import *
 from legendary.core import LegendaryCore
 
@@ -8,30 +8,45 @@ from Rare.utils.QtExtensions import FlowLayout
 
 
 class GameList(QScrollArea):
+    install_game = pyqtSignal(dict)
+
     def __init__(self, core: LegendaryCore):
         super(GameList, self).__init__()
         self.core = core
-        self.widget = QWidget()
-        self .setObjectName("list_widget")
+        self.widgets = []
+
+        self.setObjectName("list_widget")
         self.setWidgetResizable(True)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.init_ui()
 
+
+    def init_ui(self):
+        self.widget = QWidget()
+        self.widgets=[]
         self.layout = FlowLayout()
-
-        for i in self.core.get_installed_list():
+        # Installed Games
+        for game in self.core.get_installed_list():
             # continue
-            self.layout.addWidget(GameWidgetInstalled(core, i))
+            widget = GameWidgetInstalled(self.core, game)
+            self.layout.addWidget(widget)
+            widget.update_list.connect(self.update_list)
 
         uninstalled_games = []
-        installed = [i.app_name for i in core.get_installed_list()]
-        for game in sorted(core.get_game_list(), key=lambda x: x.app_title):
+        installed = []
+        installed = [i.app_name for i in self.core.get_installed_list()]
+        print(len(installed))
+        # get Uninstalled games
+        print(len(self.core.get_game_list()))
+        for game in sorted(self.core.get_game_list(), key=lambda x: x.app_title):
             if not game.app_name in installed:
                 uninstalled_games.append(game)
-        self.widgets = []
-
-        for i in uninstalled_games:
-            widget = GameWidgetUninstalled(core, i)
+        # add uninstalled to gui
+        print(len(uninstalled_games))
+        for game in uninstalled_games:
+            widget = GameWidgetUninstalled(self.core, game)
+            widget.install_game.connect(lambda options: self.install_game.emit(options))
             self.layout.addWidget(widget)
             self.widgets.append(widget)
 
@@ -49,3 +64,10 @@ class GameList(QScrollArea):
         # TODO save state
         for w in self.widgets:
             w.setVisible(not i_o)
+
+    def update_list(self):
+        print("Updating List")
+        self.setWidget(QWidget())
+        self.core.login()
+        self.init_ui()
+        self.update()

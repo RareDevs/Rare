@@ -1,8 +1,10 @@
 import os
 from logging import getLogger
+from multiprocessing import Queue as MPQueue
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QInputDialog
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
 
@@ -14,6 +16,8 @@ logger = getLogger("Uninstalled")
 
 
 class GameWidgetUninstalled(QWidget):
+    install_game = pyqtSignal(dict)
+
     def __init__(self, core: LegendaryCore, game: Game):
         super(GameWidgetUninstalled, self).__init__()
         self.layout = QVBoxLayout()
@@ -57,7 +61,16 @@ class GameWidgetUninstalled(QWidget):
 
     def install(self):
         logger.info("Install " + self.game.app_title)
+
+
         infos = InstallDialog().get_information()
         if infos != 0:
             path, max_workers = infos
-            print(path, max_workers)
+            self.install_game.emit({
+                "app_name": self.game.app_name,
+                "options": {
+                    "path": path,
+                    "max_workers": max_workers
+                }
+            })
+        # wait for update of legendary to get progress

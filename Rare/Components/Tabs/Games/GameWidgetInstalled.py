@@ -1,8 +1,8 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QEvent
-from PyQt5.QtGui import QPixmap, QIcon, QMouseEvent
+from PyQt5.QtCore import QEvent, pyqtSignal
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
@@ -16,6 +16,8 @@ logger = getLogger("GameWidgetInstalled")
 
 
 class GameWidgetInstalled(QWidget):
+    update_list = pyqtSignal()
+
     def __init__(self, core: LegendaryCore, game: InstalledGame):
         super(GameWidgetInstalled, self).__init__()
         self.setObjectName("game_widget_parent")
@@ -26,7 +28,7 @@ class GameWidgetInstalled(QWidget):
 
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != game.version
         if self.update_available:
-            logger.info("Update available for game: "+ self.game.app_name)
+            logger.info("Update available for game: " + self.game.app_name)
 
         if os.path.exists(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png"):
             pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png")
@@ -40,7 +42,6 @@ class GameWidgetInstalled(QWidget):
         if pixmap:
             w = 200
             pixmap = pixmap.scaled(w, int(w * 4 / 3))
-
             self.image = ClickableLabel()
             self.image.setObjectName("game_widget")
             self.image.setPixmap(pixmap)
@@ -53,11 +54,13 @@ class GameWidgetInstalled(QWidget):
         self.title_label.setObjectName("game_widget")
         minilayout.addWidget(self.title_label)
         # minilayout.addStretch(1)
-        self.menu = QPushButton(QIcon(style_path + "/Icons/menu.png"), "")
-        self.menu.setMenu(Menu())
-        self.menu.setObjectName("menu")
-        self.menu.setFixedWidth(10)
-        minilayout.addWidget(self.menu)
+        self.menu_btn = QPushButton(QIcon(style_path + "/Icons/menu.png"), "")
+        self.menu = Menu()
+        self.menu.action.connect(self.menu_action)
+        self.menu_btn.setMenu(self.menu)
+        self.menu_btn.setObjectName("menu")
+        self.menu_btn.setFixedWidth(10)
+        minilayout.addWidget(self.menu_btn)
         minilayout.addStretch(1)
         self.layout.addLayout(minilayout)
 
@@ -93,11 +96,22 @@ class GameWidgetInstalled(QWidget):
         self.info_label.setText("")
         self.running = False
 
+    def menu_action(self, action: str):
+        if action == "uninstall":
+            if QMessageBox.question(self, "Uninstall", f"Do you want to uninstall {self.game.title}",
+                                    QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+                logger.info("Uninstalling " + self.game.title)
+                self.core.uninstall_game(self.game)
+                self.update_list.emit()
+
+
 class Menu(QMenu):
+    action = pyqtSignal(str)
+
     def __init__(self):
         super(Menu, self).__init__()
-        self.addAction("Game info", self.info)
-        self.addAction("Uninstall", self.uninstall)
+        self.addAction("Game info", lambda: self.action.emit("info"))
+        self.addAction("Uninstall", lambda: self.action.emit("uninstall"))
 
     def info(self):
         pass

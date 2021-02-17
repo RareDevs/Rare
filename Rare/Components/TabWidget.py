@@ -1,8 +1,10 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTabWidget, QTabBar, QWidget, QToolButton, QWidgetAction, QMenu
+
 from Rare import style_path
 from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
-from Rare.Components.Tabs.Games.Games import Games
+from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
+from Rare.Components.Tabs.Games.GamesTab import Games
 
 
 class TabWidget(QTabWidget):
@@ -11,12 +13,12 @@ class TabWidget(QTabWidget):
         self.setTabBar(TabBar(2))
 
         self.game_list = Games(core)
-
         self.addTab(self.game_list, self.tr("Games"))
 
-        self.downloads = QWidget()
-        self.addTab(self.downloads, "Downloads")
-
+        self.downloadTab = DownloadTab(core)
+        self.addTab(self.downloadTab, "Downloads")
+        self.downloadTab.finished.connect(self.game_list.game_list.update_list)
+        self.game_list.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
         # Space Tab
         self.addTab(QWidget(), "")
         self.setTabEnabled(2, False)
@@ -34,9 +36,6 @@ class TabWidget(QTabWidget):
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
         super(TabWidget, self).resizeEvent(event)
-
-    def download(self):
-        self.downloads.download()
 
 
 class TabBar(QTabBar):
@@ -59,7 +58,7 @@ class TabButtonWidget(QToolButton):
         super(TabButtonWidget, self).__init__()
         self.setText("Icon")
         self.setPopupMode(QToolButton.InstantPopup)
-        self.setIcon(QIcon(style_path+"/Icons/account.png"))
+        self.setIcon(QIcon(style_path + "/Icons/account.png"))
         self.setToolTip("Account")
         self.setMenu(QMenu())
         action = QWidgetAction(self)
