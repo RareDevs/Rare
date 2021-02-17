@@ -1,0 +1,4 @@
+legendary-gl
+requests
+Pillow
+PyQt5
