@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+__pycache__
+
+/.idea
+/build
+/dist
+/Rare.egg-info/
+/venv
