@@ -12,6 +12,7 @@ class GameList(QScrollArea):
         super(GameList, self).__init__()
         self.core = core
         self.widget = QWidget()
+        self .setObjectName("list_widget")
         self.setWidgetResizable(True)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -27,10 +28,24 @@ class GameList(QScrollArea):
         for game in sorted(core.get_game_list(), key=lambda x: x.app_title):
             if not game.app_name in installed:
                 uninstalled_games.append(game)
+        self.widgets = []
 
         for i in uninstalled_games:
-            self.layout.addWidget(GameWidgetUninstalled(core, i))
-        
+            widget = GameWidgetUninstalled(core, i)
+            self.layout.addWidget(widget)
+            self.widgets.append(widget)
 
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
+
+    def filter(self, text: str):
+        for w in self.widgets:
+            if text.lower() in w.game.app_title.lower() + w.game.app_name.lower():
+                w.setVisible(True)
+            else:
+                w.setVisible(False)
+
+    def installed_only(self, i_o: bool):
+        # TODO save state
+        for w in self.widgets:
+            w.setVisible(not i_o)

@@ -19,7 +19,6 @@ QTabBar::tab:disabled {
 }
 
 
-
 QToolButton {
     padding: 5px;
 }
@@ -41,4 +40,22 @@ QPushButton#menu {
     padding: 0px;
     margin: 0px;
     border-style: none;
+}
+
+QLineEdit {
+    border: 1px solid white;
+}
+
+QCheckBox::indicator {
+    border: 1px solid white;
+    border-radius: 2px;
+}
+QCheckBox::indicator:checked {
+    background-color: white;
+}
+#head_bar{
+    border-bottom: 2px solid white;
+}
+#list_widget{
+    border-top: 2px solid white;
 }

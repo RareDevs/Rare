@@ -12,7 +12,7 @@ from Rare.utils import LegendaryApi
 from Rare.utils.QtExtensions import ClickableLabel
 from Rare.utils.RareConfig import IMAGE_DIR
 
-logger = getLogger("FlowWidget")
+logger = getLogger("GameWidgetInstalled")
 
 
 class GameWidgetInstalled(QWidget):
@@ -24,7 +24,9 @@ class GameWidgetInstalled(QWidget):
         self.game = game
         self.running = False
 
-        Qt.WA_MouseTracking = Qt.WA_Hover
+        self.update_available = self.core.get_asset(self.game.app_name, True).build_version != game.version
+        if self.update_available:
+            logger.info("Update available for game: "+ self.game.app_name)
 
         if os.path.exists(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png"):
             pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png")
@@ -72,10 +74,6 @@ class GameWidgetInstalled(QWidget):
 
     def leaveEvent(self, a0: QEvent) -> None:
         self.info_label.setText("")
-
-
-
-        #return QWidget.mouseMoveEvent(self, mouseEvent)
 
     def mousePressEvent(self, a0) -> None:
         self.launch()

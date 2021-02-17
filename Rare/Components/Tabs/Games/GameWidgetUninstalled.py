@@ -49,6 +49,12 @@ class GameWidgetUninstalled(QWidget):
     def mousePressEvent(self, a0) -> None:
         self.install()
 
+    def enterEvent(self, QEvent):
+        self.info_label.setText("Install Game")
+
+    def leaveEvent(self, QEvent):
+        self.info_label.setText("")
+
     def install(self):
         logger.info("Install " + self.game.app_title)
         infos = InstallDialog().get_information()
