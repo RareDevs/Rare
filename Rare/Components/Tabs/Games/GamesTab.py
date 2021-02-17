@@ -44,7 +44,6 @@ class GameListHeadBar(QWidget):
         self.layout.addWidget(self.list_view)
         self.view = QCheckBox("Icon view")
         self.layout.addWidget(self.view)
-
         self.refresh_list = QPushButton()
         self.refresh_list.setIcon(self.style().standardIcon(getattr(QStyle, "SP_BrowserReload"))) # Reload icon
         self.layout.addWidget(self.refresh_list)

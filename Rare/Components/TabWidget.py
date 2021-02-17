@@ -14,7 +14,6 @@ class TabWidget(QTabWidget):
 
         self.game_list = Games(core)
         self.addTab(self.game_list, self.tr("Games"))
-
         self.downloadTab = DownloadTab(core)
         self.addTab(self.downloadTab, "Downloads")
         self.downloadTab.finished.connect(self.game_list.game_list.update_list)
@@ -26,11 +25,9 @@ class TabWidget(QTabWidget):
         self.account = QWidget()
         self.addTab(self.account, "")
         self.setTabEnabled(3, False)
-
         # self.settings = SettingsTab(core)
         self.settings = QWidget()
         self.addTab(self.settings, QIcon(style_path + "/Icons/settings.png"), "")
-
         self.tabBar().setTabButton(3, self.tabBar().RightSide, TabButtonWidget(core))
 
     def resizeEvent(self, event):

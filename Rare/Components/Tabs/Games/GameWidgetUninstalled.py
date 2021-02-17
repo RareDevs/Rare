@@ -11,6 +11,7 @@ from legendary.models.game import Game
 from Rare.utils.Dialogs.InstallDialog import InstallDialog
 from Rare.utils.QtExtensions import ClickableLabel
 from Rare.utils.RareConfig import IMAGE_DIR
+from Rare.utils.utils import download_image
 
 logger = getLogger("Uninstalled")
 
@@ -29,18 +30,20 @@ class GameWidgetUninstalled(QWidget):
         else:
             logger.warning(f"No Image found: {self.game.app_title}")
             pixmap = None
+
+        if pixmap.isNull():
+            logger.info(game.app_title + " has a corrupt image.")
+            download_image(game, force=True)
+            pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
+
         if pixmap:
             w = 200
             pixmap = pixmap.scaled(w, int(w * 4 / 3))
             self.image = ClickableLabel()
             self.image.setPixmap(pixmap)
             self.layout.addWidget(self.image)
+
         self.title_label = QLabel(f"<h3>{game.app_title}</h3>")
-        self.title_label.setStyleSheet("""
-                    QLabel{
-                       text-align: center;
-                    }
-                """)
         self.title_label.setWordWrap(True)
         self.layout.addWidget(self.title_label)
 

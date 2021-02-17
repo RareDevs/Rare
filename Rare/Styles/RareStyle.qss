@@ -59,3 +59,6 @@ QCheckBox::indicator:checked {
 #list_widget{
     border-top: 2px solid white;
 }
+QPushButton:hover#installed_menu_button{
+    background-color: green;
+}

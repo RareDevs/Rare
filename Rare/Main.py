@@ -24,7 +24,6 @@ core = LegendaryCore()
 
 def main():
     app = QApplication(sys.argv)
-
     # Translator
     translator = QTranslator()
     lang = get_lang()
