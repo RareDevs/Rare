@@ -23,6 +23,7 @@ class LaunchThread(QThread):
         self.action.emit("finish")
 
 class LoginThread(QThread):
+    login = pyqtSignal()
     def __init__(self, core: LegendaryCore):
         super(LoginThread, self).__init__()
         self.core = core
@@ -36,9 +37,7 @@ class LoginThread(QThread):
                 self.run()
         except ValueError:
             logger.info("You are not logged in. Open Login Window")
-            login_window = LoginDialog(self.core)
-            if not login_window.login():
-                return
+            self.login.emit()
 
 
 class LaunchDialog(QDialog):
@@ -46,6 +45,7 @@ class LaunchDialog(QDialog):
         super(LaunchDialog, self).__init__()
         self.core = core
         self.login_thread = LoginThread(core)
+        self.login_thread.login.connect(self.login)
         self.login_thread.finished.connect(self.launch)
         self.login_thread.start()
 
@@ -59,6 +59,11 @@ class LaunchDialog(QDialog):
         self.layout.addWidget(self.info_text)
 
         self.setLayout(self.layout)
+
+    def login(self):
+        if not LoginDialog(core=self.core).login():
+            self.close()
+
 
 
     def launch(self):

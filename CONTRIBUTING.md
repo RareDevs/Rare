@@ -11,7 +11,7 @@
 
 ### Add Stylesheets
 
-For this you can create a .qss file in Rare/Styles/ directory. Here are some exmples: 
+For this you can create a .qss file in Rare/Styles/ directory or modify the existing RareStyle.qss file. Here are some exmples: 
 [Qt Docs](https://doc.qt.io/qt-5/stylesheet-examples.html)
 
 ### Add features
