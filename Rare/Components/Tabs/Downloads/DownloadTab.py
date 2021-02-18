@@ -7,7 +7,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar
 from legendary.core import LegendaryCore
 
-from Rare.utils.Dialogs.InstallDialog import InstallInfoDialog
+from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog
 
 logger = getLogger("Download")
 

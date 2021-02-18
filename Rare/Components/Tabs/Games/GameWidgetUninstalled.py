@@ -1,6 +1,5 @@
 import os
 from logging import getLogger
-from multiprocessing import Queue as MPQueue
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap
@@ -8,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
 
-from Rare.utils.Dialogs.InstallDialog import InstallDialog
+from Rare.Components.Dialogs.InstallDialog import InstallDialog
 from Rare.utils.QtExtensions import ClickableLabel
 from Rare.utils.RareConfig import IMAGE_DIR
 from Rare.utils.utils import download_image

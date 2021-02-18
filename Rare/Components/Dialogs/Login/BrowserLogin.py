@@ -1,5 +1,4 @@
 import json
-import webbrowser
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
@@ -7,20 +6,22 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit
 from legendary.core import LegendaryCore
 
 logger = getLogger("BrowserLogin")
-class BrowserLogin(QWidget):
 
+
+class BrowserLogin(QWidget):
     success = pyqtSignal()
     url: str = "https://www.epicgames.com/id/login?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Fapi%2Fredirect"
+
     def __init__(self, core: LegendaryCore):
         super(BrowserLogin, self).__init__()
         self.layout = QVBoxLayout()
         self.core = core
 
-        self.back = QPushButton("Back") # TODO Icon
-        self.back.clicked.connect(lambda: self.success.emit("back"))
+        self.back = QPushButton("Back")  # TODO Icon
         self.layout.addWidget(self.back)
 
-        self.info_text = QLabel(f"Opens a browser. You login and copy the json code in the field below. Click <a href='{self.url}'>here</a> to open Browser")
+        self.info_text = QLabel(
+            f"Opens a browser. You login and copy the json code in the field below. Click <a href='{self.url}'>here</a> to open Browser")
         self.info_text.setWordWrap(True)
         self.info_text.setOpenExternalLinks(True)
         self.layout.addWidget(self.info_text)
@@ -36,7 +37,6 @@ class BrowserLogin(QWidget):
         self.layout.addWidget(self.login_btn)
 
         self.setLayout(self.layout)
-
 
     def login(self):
         self.mini_info.setText("Loading...")

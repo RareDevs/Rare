@@ -1,10 +1,8 @@
-import time
-
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QStackedLayout, QWidget, QPushButton
 from legendary.core import LegendaryCore
 
-from Rare.utils.Dialogs.Login.BrowserLogin import BrowserLogin
-from Rare.utils.Dialogs.Login.ImportWidget import ImportWidget
+from Rare.Components.Dialogs.Login import BrowserLogin
+from Rare.Components.Dialogs.Login import ImportWidget
 
 
 # Login Opportunities: Browser, Import
@@ -33,6 +31,7 @@ class LoginDialog(QDialog):
         self.landing_layout.addWidget(self.info_text)
 
         self.browser_login = OptionWidget("Use Browser", "This opens your default webbrowser. Login and copy the text")
+
         self.landing_layout.addWidget(self.browser_login)
         self.browser_login.button.clicked.connect(lambda: self.layout.setCurrentIndex(1))
 
@@ -49,11 +48,11 @@ class LoginDialog(QDialog):
         self.layout.addWidget(self.landing_widget)
 
         self.browser_widget = BrowserLogin(self.core)
-        self.browser_widget.success.connect(lambda: self.layout.setCurrentIndex(0))
         self.browser_widget.success.connect(self.success)
+        self.browser_widget.back.clicked.connect(lambda: self.layout.setCurrentIndex(0))
         self.layout.addWidget(self.browser_widget)
 
-        self.import_widget = ImportWidget()
+        self.import_widget = ImportWidget(self.core)
         self.layout.addWidget(self.import_widget)
 
         self.layout.addWidget(LoginSuccessfulWidget())
@@ -68,7 +67,7 @@ class LoginDialog(QDialog):
         if self.core.login():
             self.logged_in = True
             self.layout.setCurrentIndex(3)
-            time.sleep(1)
+            # time.sleep(1)
         self.close()
 
 
