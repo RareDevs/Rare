@@ -11,7 +11,7 @@ class MiniWidget(QWidget):
         self.layout = QVBoxLayout()
         self.core = core
         self.layout.addWidget(QLabel("Account"))
-        self.layout.addWidget(QLabel("Logged in as "+ self.core.lgd.userdata["display_name"]))
+        self.layout.addWidget(QLabel("Logged in as " + self.core.lgd.userdata.get("display_name")))
 
         self.open_browser = QPushButton("Account settings")
         self.open_browser.clicked.connect(self.open_account)
@@ -30,8 +30,6 @@ class MiniWidget(QWidget):
         if reply == QMessageBox.Yes:
             self.core.lgd.invalidate_userdata()
             QCoreApplication.exit(0)
-            # self.core.lgd.invalidate_userdata()
-        # exit()
 
     def open_account(self):
         webbrowser.open("https://www.epicgames.com/account/personal?productName=epicgames")

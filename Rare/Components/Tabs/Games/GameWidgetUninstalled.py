@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from legendary.core import LegendaryCore
@@ -9,7 +9,6 @@ from legendary.models.game import Game
 
 from Rare.Components.Dialogs.InstallDialog import InstallDialog
 from Rare.utils.QtExtensions import ClickableLabel
-from Rare.utils.RareConfig import IMAGE_DIR
 from Rare.utils.utils import download_image
 
 logger = getLogger("Uninstalled")
@@ -24,6 +23,7 @@ class GameWidgetUninstalled(QWidget):
         self.core = core
         self.game = game
 
+        IMAGE_DIR = QSettings().value("img_dir", type=str)
         if os.path.exists(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png"):
             pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
         else:

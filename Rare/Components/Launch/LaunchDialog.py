@@ -4,7 +4,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QLabel, QProgressBar, QVBoxLayout
 from legendary.core import LegendaryCore
 
-from Rare.Components.Dialogs.Login import LoginDialog
+from Rare.Components.Dialogs.Login.LoginDialog import LoginDialog
 from Rare.utils.utils import download_images
 logger = getLogger("Login")
 

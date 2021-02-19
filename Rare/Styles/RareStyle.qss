@@ -2,14 +2,16 @@ QWidget {
     background-color: #202225;
     color: white;
 }
+QLabel{
+    background-color: transparent;
+}
 
-
-QTabBar::tab {
-
+QTabBar::tab#main_tab_bar{
+    border: none;
     padding: 5px;
 }
 
-QTabBar::tab:hover {
+QTabBar::tab:hover#main_tab_bar{
     background-color: black;
 }
 
@@ -61,4 +63,18 @@ QCheckBox::indicator:checked {
 }
 QPushButton:hover#installed_menu_button{
     background-color: green;
+}
+
+QTabBar::tab#settings_bar{
+
+    border-radius: 0;
+
+}
+
+QTabBar::tab:hover#settings_bar {
+    border-left: 2px solid white;
+}
+
+QTabBar::tab::selected#settings_bar {
+    background-color: darkslategrey;
 }

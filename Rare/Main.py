@@ -2,16 +2,14 @@ import logging
 import os
 import sys
 
-from PyQt5.QtCore import QTranslator
+from PyQt5.QtCore import QTranslator, QSettings
 from PyQt5.QtWidgets import QApplication
+
 from legendary.core import LegendaryCore
 
 from Rare import style_path, lang_path
 from Rare.Components.Launch.LaunchDialog import LaunchDialog
 from Rare.Components.MainWindow import MainWindow
-# from Rare.Start.Launch import LaunchDialog
-# from Rare.Start.Login import LoginWindow
-# from Rare.utils.RareUtils import get_lang
 from Rare.utils.utils import get_lang
 
 logging.basicConfig(
@@ -24,9 +22,11 @@ core = LegendaryCore()
 
 def main():
     app = QApplication(sys.argv)
+    settings = QSettings()
     # Translator
     translator = QTranslator()
-    lang = get_lang()
+    lang = settings.value("language",get_lang() , type=str)
+
     if os.path.exists(lang_path + lang + ".qm"):
         translator.load(lang_path + lang + ".qm")
     elif not lang == "en":

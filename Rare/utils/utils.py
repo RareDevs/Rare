@@ -5,13 +5,15 @@ from logging import getLogger
 
 import requests
 from PIL import Image
-from PyQt5.QtCore import pyqtSignal, QLocale
+from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 from legendary.core import LegendaryCore
 
+from Rare import lang_path
 from Rare.utils import legendaryConfig
-from Rare.utils.RareConfig import IMAGE_DIR
 
 logger = getLogger("Utils")
+s = QSettings()
+IMAGE_DIR = s.value("language", os.path.expanduser("~/.cache/rare"), type=str)
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
@@ -21,7 +23,12 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
 
     # Download Images
     for i, game in enumerate(sorted(core.get_game_list(), key=lambda x: x.app_title)):
-        download_image(game)
+
+        try:
+            download_image(game)
+        except json.decoder.JSONDecodeError:
+            shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
+            download_image(game)
         signal.emit(i)
 
 
@@ -94,3 +101,11 @@ def get_lang():
     else:
         logger.info("Found locale in system config: " + QLocale.system().name().split("_")[0])
         return QLocale.system().name().split("_")[0]
+
+
+def get_possible_langs():
+    langs = ["en"]
+    for i in os.listdir(lang_path):
+        if i.endswith(".qm"):
+            langs.append(i.split(".")[0])
+    return langs

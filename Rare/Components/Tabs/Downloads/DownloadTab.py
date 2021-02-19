@@ -3,6 +3,8 @@ import subprocess
 import time
 from logging import getLogger
 
+from legendary.models.game import Game
+from notifypy import Notify
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar
 from legendary.core import LegendaryCore
@@ -80,6 +82,7 @@ class DownloadTab(QWidget):
         super(DownloadTab, self).__init__()
         self.core = core
         self.layout = QVBoxLayout()
+        self.active_game: Game = None
 
         self.installing_game = QLabel("Installing Game: None")
         self.dl_speed = QLabel("Download speed: 0MB/s")
@@ -134,7 +137,7 @@ class DownloadTab(QWidget):
             logger.error('Installation cannot proceed, exiting.')
             QMessageBox.warning(self, "Installation failed", "Installation failed. See logs for more information")
             return
-
+        self.active_game = game
         self.thread = DownloadThread(dlm, self.core, igame)
         self.thread.status.connect(self.status)
         self.thread.start()
@@ -143,7 +146,11 @@ class DownloadTab(QWidget):
         if text == "dl_finished":
             pass
         elif text == "finish":
-            QMessageBox.information(self, "Info", "Download finished")
+            notification = Notify()
+            notification.title = "Installation finished"
+            notification.message = f"Download of game {self.active_game.app_title}"
+            notification.send()
+            #QMessageBox.information(self, "Info", "Download finished")
             self.finished.emit()
             self.installing_game.setText("Installing Game: No running download")
         elif text == "error":

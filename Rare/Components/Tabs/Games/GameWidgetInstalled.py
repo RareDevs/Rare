@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QEvent, pyqtSignal
+from PyQt5.QtCore import QEvent, pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
 from legendary.core import LegendaryCore
@@ -10,7 +10,6 @@ from legendary.models.game import InstalledGame
 from Rare import style_path
 from Rare.utils import LegendaryApi
 from Rare.utils.QtExtensions import ClickableLabel
-from Rare.utils.RareConfig import IMAGE_DIR
 
 logger = getLogger("GameWidgetInstalled")
 
@@ -25,17 +24,20 @@ class GameWidgetInstalled(QWidget):
         self.core = core
         self.game = game
         self.running = False
+        settings = QSettings()
+
+        self.IMAGE_DIR = settings.value("img_dir", os.path.expanduser("~/.cache/rare"))
 
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != game.version
         if self.update_available:
             logger.info("Update available for game: " + self.game.app_name)
 
-        if os.path.exists(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png"):
-            pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png")
-        elif os.path.exists(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png"):
-            pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
-        elif os.path.exists(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png"):
-            pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png")
+        if os.path.exists(f"{self.IMAGE_DIR}/{game.app_name}/FinalArt.png"):
+            pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/FinalArt.png")
+        elif os.path.exists(f"{self.IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png"):
+            pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
+        elif os.path.exists(f"{self.IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png"):
+            pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png")
         else:
             logger.warning(f"No Image found: {self.game.title}")
             pixmap = None

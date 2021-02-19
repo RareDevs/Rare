@@ -1,17 +1,19 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTabWidget, QTabBar, QWidget, QToolButton, QWidgetAction, QMenu
+from legendary.core import LegendaryCore
 
 from Rare import style_path
 from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
 from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
 from Rare.Components.Tabs.Games.GamesTab import Games
+from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
 
 
 class TabWidget(QTabWidget):
-    def __init__(self, core):
+    def __init__(self, core: LegendaryCore):
         super(TabWidget, self).__init__()
         self.setTabBar(TabBar(2))
-
+        self.settings = SettingsTab(core)
         self.game_list = Games(core)
         self.addTab(self.game_list, self.tr("Games"))
         self.downloadTab = DownloadTab(core)
@@ -26,8 +28,9 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(3, False)
         # self.settings = SettingsTab(core)
-        self.settings = QWidget()
-        self.addTab(self.settings, QIcon(style_path + "/Icons/settings.png"), "")
+
+        self.addTab(self.settings, QIcon(style_path + "/Icons/settings.png"), None)
+
         self.tabBar().setTabButton(3, self.tabBar().RightSide, TabButtonWidget(core))
 
     def resizeEvent(self, event):
@@ -39,6 +42,7 @@ class TabBar(QTabBar):
     def __init__(self, expanded):
         super(TabBar, self).__init__()
         self._expanded = expanded
+        self.setObjectName("main_tab_bar")
 
     def tabSizeHint(self, index):
         size = super(TabBar, self).tabSizeHint(index)
@@ -55,6 +59,7 @@ class TabButtonWidget(QToolButton):
         super(TabButtonWidget, self).__init__()
         self.setText("Icon")
         self.setPopupMode(QToolButton.InstantPopup)
+
         self.setIcon(QIcon(style_path + "/Icons/account.png"))
         self.setToolTip("Account")
         self.setMenu(QMenu())

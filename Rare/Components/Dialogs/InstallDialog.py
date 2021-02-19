@@ -23,7 +23,7 @@ class InstallDialog(QDialog):
 
         self.layout.addLayout(self.form)
 
-        self.ok_btn = QPushButton("Get Download infos")
+        self.ok_btn = QPushButton("Next")
         self.ok_btn.clicked.connect(self.ok)
         self.cancel = QPushButton("Cancel")
         self.cancel.clicked.connect(lambda: self.close())
