@@ -2,13 +2,16 @@ import os
 import shutil
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, QTranslator
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QComboBox, QApplication, QPushButton
+from PyQt5.QtCore import QSettings
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QComboBox, QPushButton
 
+from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
 from Rare.utils.utils import get_lang, get_possible_langs
 
 logger = getLogger("RareSettings")
+
+
 class RareSettings(QWidget):
     def __init__(self):
         super(RareSettings, self).__init__()
@@ -76,20 +79,3 @@ class RareSettings(QWidget):
                 os.makedirs(new_path)
             logger.info("Move Images")
             shutil.move(old_path, new_path)
-
-
-
-
-
-class SettingsWidget(QWidget):
-    def __init__(self, text: str, widget: QWidget, accept_button: QPushButton=None):
-        super(SettingsWidget, self).__init__()
-        self.setObjectName("settings_widget")
-        self.layout = QVBoxLayout()
-        self.info_text = QLabel("")
-        self.layout.addWidget(QLabel(text))
-        self.layout.addWidget(widget)
-        if accept_button:
-            self.layout.addWidget(accept_button)
-        self.layout.addWidget(self.info_text)
-        self.setLayout(self.layout)

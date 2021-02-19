@@ -16,9 +16,9 @@ class SettingsTab(QTabWidget):
         self.setTabBar(TabBar())
         self.setTabPosition(QTabWidget.West)
         self.addTab(RareSettings(), "Rare")
-        self.addTab(LegendarySettings(), "Legendary")
+        self.addTab(LegendarySettings(core), "Legendary")
         if os.name != "nt":
-            self.addTab(LinuxSettings(), "Linux")
+            self.addTab(LinuxSettings(core), "Linux")
         self.addTab(About(), "About")
 
 
