@@ -6,7 +6,9 @@ from legendary.core import LegendaryCore
 
 from Rare.Components.Dialogs.Login.LoginDialog import LoginDialog
 from Rare.utils.utils import download_images
+
 logger = getLogger("Login")
+
 
 class LaunchThread(QThread):
     download_progess = pyqtSignal(int)
@@ -22,8 +24,11 @@ class LaunchThread(QThread):
         download_images(self.download_progess, self.core)
         self.action.emit("finish")
 
+
 class LoginThread(QThread):
     login = pyqtSignal()
+    start_app = pyqtSignal(LegendaryCore)
+
     def __init__(self, core: LegendaryCore):
         super(LoginThread, self).__init__()
         self.core = core
@@ -33,6 +38,7 @@ class LoginThread(QThread):
         try:
             if self.core.login():
                 logger.info("You are logged in")
+                self.start_app.emit(self.core)
             else:
                 self.run()
         except ValueError:
@@ -46,10 +52,10 @@ class LaunchDialog(QDialog):
         self.core = core
         self.login_thread = LoginThread(core)
         self.login_thread.login.connect(self.login)
-        self.login_thread.finished.connect(self.launch)
+        self.login_thread.start_app.connect(self.launch)
         self.login_thread.start()
 
-        self.title = QLabel("<h3>"+self.tr("Launching Rare")+"</h3>")
+        self.title = QLabel("<h3>" + self.tr("Launching Rare") + "</h3>")
         self.info_pb = QProgressBar()
         self.info_text = QLabel(self.tr("Logging in"))
         self.layout = QVBoxLayout()
@@ -64,9 +70,8 @@ class LaunchDialog(QDialog):
         if not LoginDialog(core=self.core).login():
             exit(0)
 
-
-
-    def launch(self):
+    def launch(self, core: LegendaryCore):
+        self.core = core
         self.info_pb.setMaximum(len(self.core.get_game_list()))
         self.info_text.setText("Downloading Images")
         self.thread = LaunchThread(self.core, self)

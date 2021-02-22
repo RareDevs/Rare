@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-from PyQt5.QtCore import QTranslator, QSettings
+from PyQt5.QtCore import QTranslator, QSettings, QCoreApplication
 from PyQt5.QtWidgets import QApplication
 from legendary.core import LegendaryCore
 
@@ -21,6 +21,9 @@ core = LegendaryCore()
 
 def main():
     app = QApplication(sys.argv)
+    #app2 = QCoreApplication()
+    app.setApplicationName("Rare")
+    app.setOrganizationName("Rare")
     settings = QSettings()
     # Translator
     translator = QTranslator()

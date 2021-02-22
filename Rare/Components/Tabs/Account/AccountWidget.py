@@ -11,7 +11,7 @@ class MiniWidget(QWidget):
         self.layout = QVBoxLayout()
         self.core = core
         self.layout.addWidget(QLabel("Account"))
-        self.layout.addWidget(QLabel("Logged in as " + self.core.lgd.userdata.get("display_name")))
+        self.layout.addWidget(QLabel("Logged in as " + str(self.core.lgd.userdata.get("display_name"))))
 
         self.open_browser = QPushButton("Account settings")
         self.open_browser.clicked.connect(self.open_account)
