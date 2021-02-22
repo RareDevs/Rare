@@ -1,6 +1,25 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QLabel, QPushButton, QStyle
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QLabel, QPushButton, QStyle, \
+    QStackedLayout
 
+from Rare.Components.Tabs.Games.GameInfo import GameInfo
 from Rare.Components.Tabs.Games.GameList import GameList
+
+
+class GameTab(QWidget):
+    def __init__(self, core):
+        super(GameTab, self).__init__()
+        self.layout = QStackedLayout()
+        self.default_widget = Games(core)
+        self.default_widget.game_list.show_game_info.connect(self.show_info)
+        self.layout.addWidget(self.default_widget)
+        self.game_info = GameInfo(core)
+        self.game_info.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
+        self.layout.addWidget(self.game_info)
+        self.setLayout(self.layout)
+
+    def show_info(self, app_name):
+        self.game_info.update_game(app_name)
+        self.layout.setCurrentIndex(1)
 
 
 class Games(QWidget):
@@ -45,7 +64,7 @@ class GameListHeadBar(QWidget):
         self.view = QCheckBox("Icon view")
         self.layout.addWidget(self.view)
         self.refresh_list = QPushButton()
-        self.refresh_list.setIcon(self.style().standardIcon(getattr(QStyle, "SP_BrowserReload"))) # Reload icon
+        self.refresh_list.setIcon(self.style().standardIcon(getattr(QStyle, "SP_BrowserReload")))  # Reload icon
         self.layout.addWidget(self.refresh_list)
 
         self.setLayout(self.layout)

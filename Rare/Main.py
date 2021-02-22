@@ -4,7 +4,6 @@ import sys
 
 from PyQt5.QtCore import QTranslator, QSettings
 from PyQt5.QtWidgets import QApplication
-
 from legendary.core import LegendaryCore
 
 from Rare import style_path, lang_path
@@ -25,7 +24,7 @@ def main():
     settings = QSettings()
     # Translator
     translator = QTranslator()
-    lang = settings.value("language",get_lang() , type=str)
+    lang = settings.value("language", get_lang(), type=str)
 
     if os.path.exists(lang_path + lang + ".qm"):
         translator.load(lang_path + lang + ".qm")
@@ -34,7 +33,6 @@ def main():
     app.installTranslator(translator)
     # Style
     app.setStyleSheet(open(style_path + "RareStyle.qss").read())
-
 
     launch_dialog = LaunchDialog(core)
     launch_dialog.exec_()

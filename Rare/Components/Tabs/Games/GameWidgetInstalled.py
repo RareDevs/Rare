@@ -16,6 +16,7 @@ logger = getLogger("GameWidgetInstalled")
 
 class GameWidgetInstalled(QWidget):
     update_list = pyqtSignal()
+    show_info = pyqtSignal(str)
 
     def __init__(self, core: LegendaryCore, game: InstalledGame):
         super(GameWidgetInstalled, self).__init__()
@@ -108,6 +109,8 @@ class GameWidgetInstalled(QWidget):
                 logger.info("Uninstalling " + self.game.title)
                 self.core.uninstall_game(self.game)
                 self.update_list.emit()
+        elif action == "info":
+            self.show_info.emit(self.game.app_name)
 
 
 class Menu(QMenu):

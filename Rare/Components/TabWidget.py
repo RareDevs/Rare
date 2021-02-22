@@ -5,7 +5,7 @@ from legendary.core import LegendaryCore
 from Rare import style_path
 from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
 from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
-from Rare.Components.Tabs.Games.GamesTab import Games
+from Rare.Components.Tabs.Games.GamesTab import GameTab
 from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
 
 
@@ -14,12 +14,12 @@ class TabWidget(QTabWidget):
         super(TabWidget, self).__init__()
         self.setTabBar(TabBar(2))
         self.settings = SettingsTab(core)
-        self.game_list = Games(core)
+        self.game_list = GameTab(core)
         self.addTab(self.game_list, self.tr("Games"))
         self.downloadTab = DownloadTab(core)
         self.addTab(self.downloadTab, "Downloads")
-        self.downloadTab.finished.connect(self.game_list.game_list.update_list)
-        self.game_list.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
+        self.downloadTab.finished.connect(self.game_list.default_widget.game_list.update_list)
+        self.game_list.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
         # Space Tab
         self.addTab(QWidget(), "")
         self.setTabEnabled(2, False)

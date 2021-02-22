@@ -9,6 +9,7 @@ from Rare.utils.QtExtensions import FlowLayout
 
 class GameList(QScrollArea):
     install_game = pyqtSignal(dict)
+    show_game_info = pyqtSignal(str)
 
     def __init__(self, core: LegendaryCore):
         super(GameList, self).__init__()
@@ -21,10 +22,9 @@ class GameList(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.init_ui()
 
-
     def init_ui(self):
         self.widget = QWidget()
-        self.widgets=[]
+        self.widgets = []
         self.layout = FlowLayout()
         # Installed Games
         for game in sorted(self.core.get_installed_list(), key=lambda x: x.title):
@@ -32,6 +32,7 @@ class GameList(QScrollArea):
             widget = GameWidgetInstalled(self.core, game)
             self.layout.addWidget(widget)
             widget.update_list.connect(self.update_list)
+            widget.show_info.connect(lambda app_name: self.show_game_info.emit(app_name))
 
         uninstalled_games = []
         installed = [i.app_name for i in self.core.get_installed_list()]
