@@ -50,12 +50,20 @@ class DxvkWidget(QWidget):
     def update_dxvk_active(self):
         if self.show_dxvk.isChecked():
             if not "default.env" in self.core.lgd.config.sections():
-                self.core.lgd.config["default.env"]=""
+                self.core.lgd.config["default.env"] = ""
             self.more_settings.setDisabled(False)
-            self.core.lgd.config["default.env"]["DXVK_HUD"]="fps,gpuload"
+            self.more_settings_widget.settings = {"fps": (True, "Fps"),
+                                                  "gpuload": (True, "GPU usage"),
+                                                  "memory": (False, "Used Memory"),
+                                                  "devinfo": (False, "Device info"),
+                                                  "version": (False, "DXVK version"),
+                                                  "api": (False, "D3D Level of application")
+                                                  }
+            self.core.lgd.config["default.env"]["DXVK_HUD"] = "fps,gpuload"
             for w in self.more_settings_widget.widgets:
-                if w.tag == "fps" or w.tag=="gpuload":
+                if w.tag == "fps" or w.tag == "gpuload":
                     w.setChecked(True)
+
                 else:
                     w.setChecked(False)
         else:
@@ -63,6 +71,7 @@ class DxvkWidget(QWidget):
             self.core.lgd.config.remove_option("default.env", "DXVK_HUD")
             print("Remove Section DXVK_HUD")
         self.core.lgd.save_config()
+
 
 class DxvkMoreSettingsWidget(QWidget):
     def __init__(self, settings: dict, core: LegendaryCore):
@@ -80,12 +89,14 @@ class DxvkMoreSettingsWidget(QWidget):
         self.setLayout(self.layout)
 
     def change(self, signal: tuple):
+        print(self.settings)
         tag, checked = signal
         y = list(self.settings[tag])
         y[0] = checked
         self.settings[tag] = tuple(y)
         # print(self.settings)
         sett = []
+        print(self.settings)
         for i in self.settings:
             check, _ = self.settings[i]
             if check:
