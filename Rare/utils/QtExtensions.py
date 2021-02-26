@@ -145,4 +145,3 @@ class PathEdit(QWidget):
         if dlg.exec_():
             names = dlg.selectedFiles()
             self.text_edit.setText(names[0])
-

@@ -24,7 +24,8 @@ class LegendarySettings(QWidget):
         self.select_path.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
         self.save_path_button = QPushButton("Save")
         self.save_path_button.clicked.connect(self.save_path)
-        self.install_dir_widget = SettingsWidget("Default installation directory", self.select_path, self.save_path_button)
+        self.install_dir_widget = SettingsWidget("Default installation directory", self.select_path,
+                                                 self.save_path_button)
         self.layout.addWidget(self.install_dir_widget)
 
         # Max Workers

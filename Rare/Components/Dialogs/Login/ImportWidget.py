@@ -28,7 +28,7 @@ class ImportWidget(QWidget):
 
         else:
             self.btn_group = QButtonGroup()
-            for i,p in enumerate(appdata_paths):
+            for i, p in enumerate(appdata_paths):
                 radio_button = QRadioButton(p)
                 if i == 0:
                     radio_button.setChecked(True)

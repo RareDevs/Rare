@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QStackedLayout, QWidget, QPushButton
 from legendary.core import LegendaryCore
 
-
 # Login Opportunities: Browser, Import
 from Rare.Components.Dialogs.Login.BrowserLogin import BrowserLogin
 from Rare.Components.Dialogs.Login.ImportWidget import ImportWidget
@@ -82,6 +81,7 @@ class OptionWidget(QWidget):
         self.layout.addWidget(self.text)
 
         self.setLayout(self.layout)
+
 
 class LoginSuccessfulWidget(QWidget):
     def __init__(self):

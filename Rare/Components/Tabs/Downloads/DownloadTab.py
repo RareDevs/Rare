@@ -3,11 +3,11 @@ import subprocess
 import time
 from logging import getLogger
 
-from legendary.models.game import Game
-from notifypy import Notify
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar
 from legendary.core import LegendaryCore
+from legendary.models.game import Game
+from notifypy import Notify
 
 from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog
 
@@ -93,14 +93,15 @@ class DownloadTab(QWidget):
 
         self.info_layout.addWidget(self.installing_game, 0, 0)
         self.info_layout.addWidget(self.dl_speed, 0, 1)
-        self.info_layout.addWidget(self.cache_used, 1,0)
-        self.info_layout.addWidget(self.downloaded, 1,1)
+        self.info_layout.addWidget(self.cache_used, 1, 0)
+        self.info_layout.addWidget(self.downloaded, 1, 1)
 
         self.layout.addLayout(self.info_layout)
         self.prog_bar = QProgressBar()
         self.layout.addWidget(self.prog_bar)
 
-        self.layout.addWidget(QLabel("WARNING: This feature is not implemented. It  is normal, if there is no progress. The progress is in console"))
+        self.layout.addWidget(QLabel(
+            "WARNING: This feature is not implemented. It  is normal, if there is no progress. The progress is in console"))
 
         self.installing_game_widget = QLabel("No active Download")
         self.layout.addWidget(self.installing_game_widget)
@@ -124,7 +125,7 @@ class DownloadTab(QWidget):
             return
 
         self.installing_game_widget.setText("")
-        self.installing_game.setText("Installing Game: "+ game.app_title)
+        self.installing_game.setText("Installing Game: " + game.app_title)
         res = self.core.check_installation_conditions(analysis=analysis, install=igame, game=game,
                                                       updating=self.core.is_installed(options["app_name"]),
                                                       )
@@ -150,7 +151,7 @@ class DownloadTab(QWidget):
             notification.title = "Installation finished"
             notification.message = f"Download of game {self.active_game.app_title}"
             notification.send()
-            #QMessageBox.information(self, "Info", "Download finished")
+            # QMessageBox.information(self, "Info", "Download finished")
             self.finished.emit()
             self.installing_game.setText("Installing Game: No running download")
         elif text == "error":

@@ -2,16 +2,17 @@ QWidget {
     background-color: #202225;
     color: white;
 }
-QLabel{
+
+QLabel {
     background-color: transparent;
 }
 
-QTabBar::tab#main_tab_bar{
+QTabBar::tab#main_tab_bar {
     border: none;
     padding: 5px;
 }
 
-QTabBar::tab:hover#main_tab_bar{
+QTabBar::tab:hover#main_tab_bar {
     background-color: black;
 }
 
@@ -52,20 +53,24 @@ QCheckBox::indicator {
     border: 1px solid white;
     border-radius: 2px;
 }
+
 QCheckBox::indicator:checked {
     background-color: white;
 }
-#head_bar{
+
+#head_bar {
     border-bottom: 2px solid white;
 }
-#list_widget{
+
+#list_widget {
     border-top: 2px solid white;
 }
-QPushButton:hover#installed_menu_button{
+
+QPushButton:hover#installed_menu_button {
     background-color: green;
 }
 
-QTabBar::tab#settings_bar{
+QTabBar::tab#settings_bar {
 
     border-radius: 0;
 

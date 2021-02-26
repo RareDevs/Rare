@@ -52,7 +52,8 @@ class InstallInfoDialog(QDialog):
     def __init__(self, dl_size, install_size):
         super(InstallInfoDialog, self).__init__()
         self.layout = QVBoxLayout()
-        self.infos = QLabel(f"Download size: {(dl_size/1024**3):.02f}GB\nInstall size: {(install_size/1024**3):.02f}GB")
+        self.infos = QLabel(
+            f"Download size: {(dl_size / 1024 ** 3):.02f}GB\nInstall size: {(install_size / 1024 ** 3):.02f}GB")
         self.layout.addWidget(self.infos)
 
         self.btn_layout = QHBoxLayout()

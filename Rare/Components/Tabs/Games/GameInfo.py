@@ -20,8 +20,6 @@ class GameInfo(QWidget):
         self.game_title = QLabel("Error")
         self.layout.addWidget(self.game_title)
 
-
-
         self.setLayout(self.layout)
 
     def update_game(self, app_name):

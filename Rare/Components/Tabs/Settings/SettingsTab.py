@@ -1,7 +1,7 @@
 import os
 
 from PyQt5.QtCore import QRect, QPoint, QSize
-from PyQt5.QtWidgets import QWidget, QTabWidget, QStylePainter, QStyleOptionTab, QTabBar, QStyle, QLabel
+from PyQt5.QtWidgets import QTabWidget, QStylePainter, QStyleOptionTab, QTabBar, QStyle
 
 from Rare.Components.Tabs.Settings.About import About
 from Rare.Components.Tabs.Settings.Legendary import LegendarySettings
@@ -22,12 +22,10 @@ class SettingsTab(QTabWidget):
         self.addTab(About(), "About")
 
 
-
 class TabBar(QTabBar):
     def __init__(self):
         super(TabBar, self).__init__()
         self.setObjectName("settings_bar")
-
 
     def tabSizeHint(self, index):
         # width = QTabBar.tabSizeHint(self, index).width()

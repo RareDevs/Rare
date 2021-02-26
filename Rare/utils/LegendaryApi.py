@@ -1,9 +1,6 @@
 import os
 
 from PyQt5.QtCore import QProcess, QProcessEnvironment
-from legendary.core import LegendaryCore
-
-
 
 
 def launch_game(core, app_name: str, offline: bool = False, skip_version_check: bool = False):

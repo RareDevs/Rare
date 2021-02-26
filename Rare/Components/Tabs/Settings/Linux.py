@@ -1,8 +1,9 @@
 from logging import getLogger
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QCheckBox, QHBoxLayout, QToolButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog
 from legendary.core import LegendaryCore
 
+from Rare.Components.Tabs.Settings.DXVK.Dxvk import DxvkWidget
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
 
@@ -69,33 +70,3 @@ class LinuxSettings(QWidget):
         if self.core.lgd.config["default"] == {}:
             self.core.lgd.config.remove_section("default")
         self.core.lgd.save_config()
-
-
-
-class DxvkWidget(QWidget):
-    def __init__(self, core: LegendaryCore):
-        super(DxvkWidget, self).__init__()
-        self.core = core
-        self.layout = QVBoxLayout()
-        self.child_layout = QHBoxLayout()
-        self.title = QLabel("dxvk settings")
-        self.show_dxvk = QCheckBox("Show Dxvk HUD")
-        self.more_settings = QPushButton()
-        self.more_settings.clicked.connect(self.show_more_settings)
-        active = not self.core.lgd.config.get("default.env", "DXVK_HUD", fallback="") == ""
-        self.more_settings.setDisabled(active)
-        self.show_dxvk.stateChanged.connect(lambda x: self.more_settings.setDisabled(x == 0))
-        self.show_dxvk.setChecked(active)
-        self.layout.addWidget(self.title)
-        self.child_layout.addWidget(self.show_dxvk)
-
-        self.child_layout.addWidget(self.more_settings)
-        self.layout.addLayout(self.child_layout)
-
-        self.setLayout(self.layout)
-
-    def update_dettings(self):
-        pass
-
-    def show_more_settings(self):
-        pass

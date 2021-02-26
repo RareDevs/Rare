@@ -64,7 +64,6 @@ class GameWidgetUninstalled(QWidget):
     def install(self):
         logger.info("Install " + self.game.app_title)
 
-
         infos = InstallDialog().get_information()
         if infos != 0:
             path, max_workers = infos
