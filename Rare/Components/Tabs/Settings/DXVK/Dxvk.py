@@ -37,7 +37,7 @@ class DxvkWidget(QWidget):
         action.setDefaultWidget(self.more_settings_widget)
         self.more_settings.menu().addAction(action)
 
-        self.show_dxvk.stateChanged.connect(lambda x: self.more_settings.setDisabled(x == 0))
+        self.show_dxvk.stateChanged.connect(self.update_dxvk_active)
         self.show_dxvk.setChecked(not dxvk_hud == "")
         self.layout.addWidget(self.title)
         self.child_layout.addWidget(self.show_dxvk)
@@ -47,9 +47,22 @@ class DxvkWidget(QWidget):
 
         self.setLayout(self.layout)
 
-    def update_dettings(self):
-        pass
-
+    def update_dxvk_active(self):
+        if self.show_dxvk.isChecked():
+            if not "default.env" in self.core.lgd.config.sections():
+                self.core.lgd.config["default.env"]=""
+            self.more_settings.setDisabled(False)
+            self.core.lgd.config["default.env"]["DXVK_HUD"]="fps,gpuload"
+            for w in self.more_settings_widget.widgets:
+                if w.tag == "fps" or w.tag=="gpuload":
+                    w.setChecked(True)
+                else:
+                    w.setChecked(False)
+        else:
+            self.more_settings.setDisabled(True)
+            self.core.lgd.config.remove_option("default.env", "DXVK_HUD")
+            print("Remove Section DXVK_HUD")
+        self.core.lgd.save_config()
 
 class DxvkMoreSettingsWidget(QWidget):
     def __init__(self, settings: dict, core: LegendaryCore):
