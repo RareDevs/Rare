@@ -1,6 +1,10 @@
+from logging import getLogger
+
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QWidgetAction, QMenu, QToolButton, QHBoxLayout, QLabel
 from legendary.core import LegendaryCore
+
+logger = getLogger("DXVK Settings")
 
 
 class DxvkWidget(QWidget):
@@ -89,14 +93,13 @@ class DxvkMoreSettingsWidget(QWidget):
         self.setLayout(self.layout)
 
     def change(self, signal: tuple):
-        print(self.settings)
         tag, checked = signal
         y = list(self.settings[tag])
         y[0] = checked
         self.settings[tag] = tuple(y)
         # print(self.settings)
         sett = []
-        print(self.settings)
+        logger.debug(self.settings)
         for i in self.settings:
             check, _ = self.settings[i]
             if check:

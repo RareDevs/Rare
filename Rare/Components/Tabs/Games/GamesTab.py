@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QLabel, QPushButton, QStyle, \
     QStackedLayout
 
-from Rare.Components.Tabs.Games.GameInfo import GameInfo
+from Rare.Components.Tabs.Games.GameInfo.GameInfo import InfoTabs
 from Rare.Components.Tabs.Games.GameList import GameList
 
 
@@ -12,13 +12,13 @@ class GameTab(QWidget):
         self.default_widget = Games(core)
         self.default_widget.game_list.show_game_info.connect(self.show_info)
         self.layout.addWidget(self.default_widget)
-        self.game_info = GameInfo(core)
-        self.game_info.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
+        self.game_info = InfoTabs(core)
+        self.game_info.info.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
         self.layout.addWidget(self.game_info)
         self.setLayout(self.layout)
 
     def show_info(self, app_name):
-        self.game_info.update_game(app_name)
+        self.game_info.info.update_game(app_name)
         self.layout.setCurrentIndex(1)
 
 

@@ -83,3 +83,12 @@ QTabBar::tab:hover#settings_bar {
 QTabBar::tab::selected#settings_bar {
     background-color: darkslategrey;
 }
+/*
+QScrollBar:vertical{
+    border: 1px solid white;
+}
+QScrollBar::handle:vertical{
+    background-color: gray;
+    border-radius: 4px;
+}
+*/
