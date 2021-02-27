@@ -1,8 +1,11 @@
 import os
 
 from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal
+from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QLineEdit, \
     QPushButton, QStyleOptionTab, QStylePainter, QTabBar
+
+from Rare import style_path
 
 
 class FlowLayout(QLayout):
@@ -177,3 +180,14 @@ class SideTabBar(QTabBar):
             painter.translate(-c)
             painter.drawControl(QStyle.CE_TabBarTabLabel, opt);
             painter.restore()
+
+class WaitingSpinner(QLabel):
+    def __init__(self):
+        super(WaitingSpinner, self).__init__()
+        self.setStyleSheet("""
+            margin-left: auto;
+            margin-right: auto;
+        """)
+        self.movie = QMovie(style_path+"Icons/loader.gif")
+        self.setMovie(self.movie)
+        self.movie.start()

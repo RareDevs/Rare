@@ -4,6 +4,7 @@ from legendary.core import LegendaryCore
 
 from Rare import style_path
 from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
+from Rare.Components.Tabs.CloudSaves.CloudSaves import SyncSaves
 from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
 from Rare.Components.Tabs.Games.GamesTab import GameTab
 from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
@@ -12,7 +13,7 @@ from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
 class TabWidget(QTabWidget):
     def __init__(self, core: LegendaryCore):
         super(TabWidget, self).__init__()
-        self.setTabBar(TabBar(2))
+        self.setTabBar(TabBar(3))
         self.settings = SettingsTab(core)
         self.game_list = GameTab(core)
         self.addTab(self.game_list, self.tr("Games"))
@@ -20,13 +21,16 @@ class TabWidget(QTabWidget):
         self.addTab(self.downloadTab, "Downloads")
         self.downloadTab.finished.connect(self.game_list.default_widget.game_list.update_list)
         self.game_list.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
+
+        self.cloud_saves = SyncSaves(core)
+        self.addTab(self.cloud_saves, "Cloud Saves")
         # Space Tab
         self.addTab(QWidget(), "")
-        self.setTabEnabled(2, False)
+        self.setTabEnabled(3, False)
 
         self.account = QWidget()
         self.addTab(self.account, "")
-        self.setTabEnabled(3, False)
+        self.setTabEnabled(4, False)
         # self.settings = SettingsTab(core)
 
         self.addTab(self.settings, QIcon(style_path + "/Icons/settings.png"), None)

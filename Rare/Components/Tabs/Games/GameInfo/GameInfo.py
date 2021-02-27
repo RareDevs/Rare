@@ -18,7 +18,6 @@ class InfoTabs(QTabWidget):
 
         self.info = GameInfo(core)
         self.addTab(self.info, "Game Info")
-        self.addTab(QLabel("Coming soon"), "Cloud Saves")
         self.addTab(QLabel("Coming soon"), "Settings")
 
 
