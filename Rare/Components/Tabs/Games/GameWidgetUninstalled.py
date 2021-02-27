@@ -22,18 +22,19 @@ class GameWidgetUninstalled(QWidget):
         self.layout = QVBoxLayout()
         self.core = core
         self.game = game
-
-        IMAGE_DIR = QSettings().value("img_dir", type=str)
+        s = QSettings()
+        IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare"), type=str)
         if os.path.exists(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png"):
             pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
+
+            if pixmap.isNull():
+                logger.info(game.app_title + " has a corrupt image.")
+                download_image(game, force=True)
+                pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
+
         else:
             logger.warning(f"No Image found: {self.game.app_title}")
             pixmap = None
-
-        if pixmap.isNull():
-            logger.info(game.app_title + " has a corrupt image.")
-            download_image(game, force=True)
-            pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
 
         if pixmap:
             w = 200
