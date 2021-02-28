@@ -71,11 +71,16 @@ class RareSettings(QWidget):
         settings = QSettings()
         old_path = settings.value("img_dir", type=str)
         new_path = self.select_path.text()
-        settings.setValue("img_dir", new_path)
+
         print(old_path, new_path)
         if old_path != new_path:
             if not os.path.exists(new_path):
                 os.makedirs(new_path)
+            elif len(os.listdir(new_path)) > 0:
+                logger.warning("New directory is not empty")
+                return
             logger.info("Move Images")
-            for i in old_path:
-                shutil.move(os.path.join(old_path, i), new_path)
+            for i in os.listdir(old_path):
+                shutil.move(os.path.join(old_path, i), os.path.join(new_path, i))
+            os.rmdir(old_path)
+            settings.setValue("img_dir", new_path)
