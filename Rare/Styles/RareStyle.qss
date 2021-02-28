@@ -7,13 +7,21 @@ QLabel {
     background-color: transparent;
 }
 
+QTabBar{
+    border-bottom: none;
+}
+
 QTabBar::tab#main_tab_bar {
-    border: none;
+    border-bottom: none;
     padding: 5px;
+}
+QTabBar::tab:selected{
+    border-bottom: 2px solid white;
 }
 
 QTabBar::tab:hover#main_tab_bar {
     background-color: black;
+
 }
 
 QTabBar::tab:disabled {
@@ -71,9 +79,7 @@ QPushButton:hover#installed_menu_button {
 }
 
 QTabBar::tab#settings_bar {
-
     border-radius: 0;
-
 }
 
 QTabBar::tab:hover#settings_bar {

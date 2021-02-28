@@ -15,7 +15,7 @@ class LegendarySettings(QWidget):
         super(LegendarySettings, self).__init__()
         self.layout = QVBoxLayout()
         self.core = core
-        self.title = QLabel("<h2>Legendary settings</h2>")
+        self.title = QLabel("<h2>"+self.tr("Legendary settings")+"</h2>")
         self.layout.addWidget(self.title)
 
         # Default installation directory
@@ -24,7 +24,7 @@ class LegendarySettings(QWidget):
         self.select_path.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
         self.save_path_button = QPushButton("Save")
         self.save_path_button.clicked.connect(self.save_path)
-        self.install_dir_widget = SettingsWidget("Default installation directory", self.select_path,
+        self.install_dir_widget = SettingsWidget(self.tr("Default installation directory"), self.select_path,
                                                  self.save_path_button)
         self.layout.addWidget(self.install_dir_widget)
 
@@ -33,7 +33,7 @@ class LegendarySettings(QWidget):
         self.max_worker_select.setValidator(QIntValidator())
         self.max_worker_select.setPlaceholderText("Default")
         self.max_worker_select.textChanged.connect(self.max_worker_save)
-        self.max_worker_widget = SettingsWidget("Max workers for Download (Less: slower download)(0: Default)",
+        self.max_worker_widget = SettingsWidget(self.tr("Max workers for Download (Less: slower download)(0: Default)"),
                                                 self.max_worker_select)
         self.layout.addWidget(self.max_worker_widget)
 

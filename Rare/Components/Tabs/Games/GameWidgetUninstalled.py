@@ -57,7 +57,7 @@ class GameWidgetUninstalled(QWidget):
         self.install()
 
     def enterEvent(self, QEvent):
-        self.info_label.setText("Install Game")
+        self.info_label.setText(self.tr("Install Game"))
 
     def leaveEvent(self, QEvent):
         self.info_label.setText("")

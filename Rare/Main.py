@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 
 from PyQt5.QtCore import QTranslator, QSettings
 from PyQt5.QtWidgets import QApplication
@@ -20,7 +19,7 @@ core = LegendaryCore()
 
 
 def main():
-    app = QApplication(sys.argv)
+    app = QApplication(["--style", "material"])
     app.setApplicationName("Rare")
     app.setOrganizationName("Rare")
     settings = QSettings()

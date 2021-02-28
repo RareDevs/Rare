@@ -100,13 +100,13 @@ class DownloadTab(QWidget):
         self.prog_bar = QProgressBar()
         self.layout.addWidget(self.prog_bar)
         label = QLabel(
-            "<b>WARNING</b>: The progress bar is not implemented. It  is normal, if there is no progress. The "
-            "progress is visible in console, because Legendary prints output to console. A pull request is active to "
-            "get output")
+            self.tr("<b>WARNING</b>: The progress bar is not implemented. It  is normal, if there is no progress. The "
+                    "progress is visible in console, because Legendary prints output to console. A pull request is "
+                    "active to get output"))
         label.setWordWrap(True)
         self.layout.addWidget(label)
 
-        self.installing_game_widget = QLabel("No active Download")
+        self.installing_game_widget = QLabel(self.tr("No active Download"))
         self.layout.addWidget(self.installing_game_widget)
 
         self.update_title = QLabel("<h2>Updates</h2>")
@@ -117,7 +117,7 @@ class DownloadTab(QWidget):
         """)
         self.layout.addWidget(self.update_title)
         if not updates:
-            self.update_text = QLabel("No updates available")
+            self.update_text = QLabel(self.tr("No updates available"))
             self.layout.addWidget(self.update_text)
         else:
             for i in updates:
@@ -137,7 +137,7 @@ class DownloadTab(QWidget):
             base_path=options["options"]["path"],
             max_workers=options["options"]["max_workers"])
         if not analysis.dl_size:
-            QMessageBox.information(self, "Warning", "Download size is 0")
+            QMessageBox.information(self, "Warning", self.tr("Download size is 0. Game already exists"))
             return
         # Information
         if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
@@ -155,7 +155,8 @@ class DownloadTab(QWidget):
             for msg in sorted(res.failures):
                 logger.error(msg)
             logger.error('Installation cannot proceed, exiting.')
-            QMessageBox.warning(self, "Installation failed", "Installation failed. See logs for more information")
+            QMessageBox.warning(self, "Installation failed",
+                                self.tr("Installation failed. See logs for more information"))
             return
         self.active_game = game
         self.thread = DownloadThread(dlm, self.core, igame)
@@ -167,12 +168,12 @@ class DownloadTab(QWidget):
             pass
         elif text == "finish":
             notification = Notify()
-            notification.title = "Installation finished"
-            notification.message = f"Download of game {self.active_game.app_title}"
+            notification.title = self.tr("Installation finished")
+            notification.message = self.tr("Download of game ")+self.active_game.app_title
             notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
             self.finished.emit()
-            self.installing_game.setText("Installing Game: No running download")
+            self.installing_game.setText(self.tr("Installing Game: No active download"))
         elif text == "error":
             QMessageBox.warning(self, "warn", "Download error")
 
@@ -192,8 +193,8 @@ class UpdateWidget(QWidget):
         self.title = QLabel(self.game.title)
         self.layout.addWidget(self.title)
 
-        self.update_button = QPushButton("Update Game")
-        self.update_button.clicked.connect(lambda :self.update.emit(app_name))
+        self.update_button = QPushButton(self.tr("Update Game"))
+        self.update_button.clicked.connect(lambda: self.update.emit(app_name))
         self.layout.addWidget(self.update_button)
 
         self.setLayout(self.layout)

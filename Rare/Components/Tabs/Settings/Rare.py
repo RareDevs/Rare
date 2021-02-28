@@ -16,7 +16,7 @@ class RareSettings(QWidget):
     def __init__(self):
         super(RareSettings, self).__init__()
         self.layout = QVBoxLayout()
-        self.title = QLabel("<h2>Rare settings</h2>")
+        self.title = QLabel("<h2>"+self.tr("Rare settings")+"</h2>")
         self.layout.addWidget(self.title)
         settings = QSettings()
         img_dir = settings.value("img_dir", type=str)
@@ -32,7 +32,7 @@ class RareSettings(QWidget):
         self.select_path.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
         self.save_path_button = QPushButton("Save")
         self.save_path_button.clicked.connect(self.save_path)
-        self.img_dir = SettingsWidget("Image Directory", self.select_path, self.save_path_button)
+        self.img_dir = SettingsWidget(self.tr("Image Directory"), self.select_path, self.save_path_button)
         self.layout.addWidget(self.img_dir)
 
         # Select lang
@@ -65,7 +65,7 @@ class RareSettings(QWidget):
         elif i == 1:
             settings.setValue("language", "de")
         del settings
-        self.lang_widget.info_text.setText("Restart Application to activate changes")
+        self.lang_widget.info_text.setText(self.tr("Restart Application to activate changes"))
 
     def update_path(self):
         settings = QSettings()

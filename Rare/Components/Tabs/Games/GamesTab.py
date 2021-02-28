@@ -49,19 +49,19 @@ class GameListHeadBar(QWidget):
         super(GameListHeadBar, self).__init__()
         self.layout = QHBoxLayout()
 
-        self.installed_only = QCheckBox("Installed only")
+        self.installed_only = QCheckBox(self.tr("Installed only"))
         self.layout.addWidget(self.installed_only)
 
         self.layout.addStretch()
 
         self.search_bar = QLineEdit()
-        self.search_bar.setPlaceholderText("Search Game")
+        self.search_bar.setPlaceholderText(self.tr("Search Game"))
         self.layout.addWidget(self.search_bar)
 
         self.layout.addStretch()
-        self.list_view = QLabel("List view")
+        self.list_view = QLabel(self.tr("List view"))
         self.layout.addWidget(self.list_view)
-        self.view = QCheckBox("Icon view")
+        self.view = QCheckBox(self.tr("Icon view"))
         self.layout.addWidget(self.view)
         self.refresh_list = QPushButton()
         self.refresh_list.setIcon(self.style().standardIcon(getattr(QStyle, "SP_BrowserReload")))  # Reload icon

@@ -32,7 +32,7 @@ class GameWidgetInstalled(QWidget):
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != game.version
         if self.update_available:
             logger.info("Update available for game: " + self.game.app_name)
-            self.info_text = "Update available"
+            self.info_text = self.tr("Update available")
 
         if os.path.exists(f"{self.IMAGE_DIR}/{game.app_name}/FinalArt.png"):
             pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/FinalArt.png")
@@ -96,7 +96,7 @@ class GameWidgetInstalled(QWidget):
                 logger.error("Could not start process")
                 return
             self.proc.finished.connect(self.finished)
-            self.info_label.setText("Game running")
+            self.info_label.setText(self.tr("Game running"))
             self.running = True
 
     def finished(self):
@@ -105,7 +105,7 @@ class GameWidgetInstalled(QWidget):
 
     def menu_action(self, action: str):
         if action == "uninstall":
-            if QMessageBox.question(self, "Uninstall", f"Do you want to uninstall {self.game.title}",
+            if QMessageBox.question(self, "Uninstall", self.tr("Do you want to uninstall") + self.game.title,
                                     QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
                 logger.info("Uninstalling " + self.game.title)
                 self.core.uninstall_game(self.game)
@@ -119,8 +119,8 @@ class Menu(QMenu):
 
     def __init__(self):
         super(Menu, self).__init__()
-        self.addAction("Game info", lambda: self.action.emit("info"))
-        self.addAction("Uninstall", lambda: self.action.emit("uninstall"))
+        self.addAction(self.tr("Game info"), lambda: self.action.emit("info"))
+        self.addAction(self.tr("Uninstall"), lambda: self.action.emit("uninstall"))
 
     def info(self):
         pass

@@ -25,7 +25,7 @@ class LinuxSettings(QWidget):
         self.select_path.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
         self.save_path_button = QPushButton("Save")
         self.save_path_button.clicked.connect(self.save_wineprefix)
-        self.install_dir_widget = SettingsWidget("Default Wine Prefix", self.select_path, self.save_path_button)
+        self.install_dir_widget = SettingsWidget(self.tr("Default Wine Prefix"), self.select_path, self.save_path_button)
         self.layout.addWidget(self.install_dir_widget)
 
         # Wine executable
@@ -35,7 +35,7 @@ class LinuxSettings(QWidget):
         self.select_wine_exec.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
         self.save_wine_exec = QPushButton("Save")
         self.save_wine_exec.clicked.connect(self.save_wineexec)
-        self.install_dir_widget = SettingsWidget("Default Wine executable", self.select_wine_exec, self.save_wine_exec)
+        self.install_dir_widget = SettingsWidget(self.tr("Default Wine executable"), self.select_wine_exec, self.save_wine_exec)
         self.layout.addWidget(self.install_dir_widget)
 
         # dxvk
