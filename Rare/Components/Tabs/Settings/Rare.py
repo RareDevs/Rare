@@ -73,9 +73,9 @@ class RareSettings(QWidget):
         new_path = self.select_path.text()
         settings.setValue("img_dir", new_path)
         print(old_path, new_path)
-        del settings
         if old_path != new_path:
             if not os.path.exists(new_path):
                 os.makedirs(new_path)
             logger.info("Move Images")
-            shutil.move(old_path, new_path)
+            for i in old_path:
+                shutil.move(os.path.join(old_path, i), new_path)
