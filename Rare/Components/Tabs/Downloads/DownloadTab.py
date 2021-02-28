@@ -4,7 +4,7 @@ import time
 from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar
+from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from notifypy import Notify
@@ -78,7 +78,7 @@ class DownloadTab(QWidget):
     finished = pyqtSignal()
     thread: QThread
 
-    def __init__(self, core: LegendaryCore):
+    def __init__(self, core: LegendaryCore, updates: list):
         super(DownloadTab, self).__init__()
         self.core = core
         self.layout = QVBoxLayout()
@@ -99,12 +99,31 @@ class DownloadTab(QWidget):
         self.layout.addLayout(self.info_layout)
         self.prog_bar = QProgressBar()
         self.layout.addWidget(self.prog_bar)
-
-        self.layout.addWidget(QLabel(
-            "WARNING: This feature is not implemented. It  is normal, if there is no progress. The progress is in console"))
+        label = QLabel(
+            "<b>WARNING</b>: The progress bar is not implemented. It  is normal, if there is no progress. The "
+            "progress is visible in console, because Legendary prints output to console. A pull request is active to "
+            "get output")
+        label.setWordWrap(True)
+        self.layout.addWidget(label)
 
         self.installing_game_widget = QLabel("No active Download")
         self.layout.addWidget(self.installing_game_widget)
+
+        self.update_title = QLabel("<h2>Updates</h2>")
+        self.update_title.setStyleSheet("""
+            QLabel{
+                margin-top: 20px;
+            }
+        """)
+        self.layout.addWidget(self.update_title)
+        if not updates:
+            self.update_text = QLabel("No updates available")
+            self.layout.addWidget(self.update_text)
+        else:
+            for i in updates:
+                widget = UpdateWidget(core, i)
+                self.layout.addWidget(widget)
+                widget.update.connect(self.update_game)
 
         self.layout.addStretch(1)
 
@@ -159,3 +178,22 @@ class DownloadTab(QWidget):
 
     def update_game(self, app_name: str):
         print("Update ", app_name)
+
+
+class UpdateWidget(QWidget):
+    update = pyqtSignal(str)
+
+    def __init__(self, core: LegendaryCore, app_name):
+        super(UpdateWidget, self).__init__()
+        self.core = core
+        self.game = core.get_installed_game(app_name)
+
+        self.layout = QVBoxLayout()
+        self.title = QLabel(self.game.title)
+        self.layout.addWidget(self.title)
+
+        self.update_button = QPushButton("Update Game")
+        self.update_button.clicked.connect(lambda :self.update.emit(app_name))
+        self.layout.addWidget(self.update_button)
+
+        self.setLayout(self.layout)

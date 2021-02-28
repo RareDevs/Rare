@@ -26,12 +26,15 @@ class GameList(QScrollArea):
         self.widget = QWidget()
         self.widgets = []
         self.layout = FlowLayout()
+        self.updates = []
         # Installed Games
         for game in sorted(self.core.get_installed_list(), key=lambda x: x.title):
-            # continue
             widget = GameWidgetInstalled(self.core, game)
+            if widget.update_available:
+                self.updates.append(widget.game.app_name)
             self.layout.addWidget(widget)
             widget.update_list.connect(self.update_list)
+
             widget.show_info.connect(lambda app_name: self.show_game_info.emit(app_name))
 
         uninstalled_games = []

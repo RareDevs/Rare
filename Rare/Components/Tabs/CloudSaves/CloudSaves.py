@@ -60,7 +60,8 @@ class SyncSaves(QScrollArea):
         logger.info(f'Got {len(latest_save)} remote save game(s)')
         if len(latest_save) == 0:
             QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
-            self.close()
+            self.widget = QLabel("No Games found, supporting cloud saves")
+            self.setWidget(self.widget)
             return
         self.widgets = []
 

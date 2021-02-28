@@ -13,24 +13,28 @@ from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
 class TabWidget(QTabWidget):
     def __init__(self, core: LegendaryCore):
         super(TabWidget, self).__init__()
-        self.setTabBar(TabBar(3))
+        disabled_tab = 2
+        self.setTabBar(TabBar(disabled_tab))
         self.settings = SettingsTab(core)
         self.game_list = GameTab(core)
+        updates = self.game_list.default_widget.game_list.updates
         self.addTab(self.game_list, self.tr("Games"))
-        self.downloadTab = DownloadTab(core)
+        self.downloadTab = DownloadTab(core, updates)
         self.addTab(self.downloadTab, "Downloads")
         self.downloadTab.finished.connect(self.game_list.default_widget.game_list.update_list)
         self.game_list.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
 
-        self.cloud_saves = SyncSaves(core)
-        self.addTab(self.cloud_saves, "Cloud Saves")
+        # Commented, because it is not finished
+        #self.cloud_saves = SyncSaves(core)
+        #self.addTab(self.cloud_saves, "Cloud Saves")
+
         # Space Tab
         self.addTab(QWidget(), "")
-        self.setTabEnabled(3, False)
+        self.setTabEnabled(disabled_tab, False)
 
         self.account = QWidget()
         self.addTab(self.account, "")
-        self.setTabEnabled(4, False)
+        self.setTabEnabled(disabled_tab+1, False)
         # self.settings = SettingsTab(core)
 
         self.addTab(self.settings, QIcon(style_path + "/Icons/settings.png"), None)

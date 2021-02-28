@@ -26,12 +26,13 @@ class GameWidgetInstalled(QWidget):
         self.game = game
         self.running = False
         settings = QSettings()
-
+        self.info_text = ""
         self.IMAGE_DIR = settings.value("img_dir", os.path.expanduser("~/.cache/rare"))
 
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != game.version
         if self.update_available:
             logger.info("Update available for game: " + self.game.app_name)
+            self.info_text = "Update available"
 
         if os.path.exists(f"{self.IMAGE_DIR}/{game.app_name}/FinalArt.png"):
             pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/FinalArt.png")
@@ -70,7 +71,7 @@ class GameWidgetInstalled(QWidget):
         minilayout.addStretch(1)
         self.layout.addLayout(minilayout)
 
-        self.info_label = QLabel("")
+        self.info_label = QLabel(self.info_text)
         self.info_label.setObjectName("info_label")
         self.layout.addWidget(self.info_label)
 
@@ -82,7 +83,7 @@ class GameWidgetInstalled(QWidget):
             self.info_label.setText("Start Game")
 
     def leaveEvent(self, a0: QEvent) -> None:
-        self.info_label.setText("")
+        self.info_label.setText(self.info_text)
 
     def mousePressEvent(self, a0) -> None:
         self.launch()
