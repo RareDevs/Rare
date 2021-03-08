@@ -2,6 +2,7 @@ import logging
 import os
 
 from PyQt5.QtCore import QTranslator, QSettings
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 from legendary.core import LegendaryCore
 
@@ -19,7 +20,7 @@ core = LegendaryCore()
 
 
 def main():
-    app = QApplication(["--style", "material"])
+    app = QApplication([])
     app.setApplicationName("Rare")
     app.setOrganizationName("Rare")
     settings = QSettings()
@@ -34,7 +35,7 @@ def main():
     app.installTranslator(translator)
     # Style
     app.setStyleSheet(open(style_path + "RareStyle.qss").read())
-
+    app.setWindowIcon(QIcon(style_path+"Logo.png"))
     launch_dialog = LaunchDialog(core)
     launch_dialog.exec_()
     mainwindow = MainWindow(core)
