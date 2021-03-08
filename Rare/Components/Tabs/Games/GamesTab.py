@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QLabel, QPushButton, QStyle, \
     QStackedLayout
 
@@ -29,6 +30,7 @@ class Games(QWidget):
 
         self.head_bar = GameListHeadBar()
         self.head_bar.setObjectName("head_bar")
+
         self.game_list = GameList(core)
 
         self.head_bar.search_bar.textChanged.connect(
@@ -41,6 +43,8 @@ class Games(QWidget):
         self.layout.addWidget(self.head_bar)
         self.layout.addWidget(self.game_list)
         # self.layout.addStretch(1)
+        self.head_bar.view.stateChanged.connect(
+            lambda: self.game_list.update_list(not self.head_bar.view.isChecked()))
         self.setLayout(self.layout)
 
 
@@ -62,6 +66,7 @@ class GameListHeadBar(QWidget):
         self.list_view = QLabel(self.tr("List view"))
         self.layout.addWidget(self.list_view)
         self.view = QCheckBox(self.tr("Icon view"))
+        self.view.setChecked(not QSettings().value("icon_view", True, bool))
         self.layout.addWidget(self.view)
         self.refresh_list = QPushButton()
         self.refresh_list.setIcon(self.style().standardIcon(getattr(QStyle, "SP_BrowserReload")))  # Reload icon

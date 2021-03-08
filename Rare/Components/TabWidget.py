@@ -1,10 +1,10 @@
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QTabWidget, QTabBar, QWidget, QToolButton, QWidgetAction, QMenu
 from legendary.core import LegendaryCore
 
 from Rare import style_path
 from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
-from Rare.Components.Tabs.CloudSaves.CloudSaves import SyncSaves
 from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
 from Rare.Components.Tabs.Games.GamesTab import GameTab
 from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
@@ -25,8 +25,8 @@ class TabWidget(QTabWidget):
         self.game_list.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
 
         # Commented, because it is not finished
-        #self.cloud_saves = SyncSaves(core)
-        #self.addTab(self.cloud_saves, "Cloud Saves")
+        # self.cloud_saves = SyncSaves(core)
+        # self.addTab(self.cloud_saves, "Cloud Saves")
 
         # Space Tab
         self.addTab(QWidget(), "")
@@ -34,11 +34,11 @@ class TabWidget(QTabWidget):
 
         self.account = QWidget()
         self.addTab(self.account, "")
-        self.setTabEnabled(disabled_tab+1, False)
+        self.setTabEnabled(disabled_tab + 1, False)
         # self.settings = SettingsTab(core)
 
         self.addTab(self.settings, QIcon(style_path + "/Icons/settings.png"), None)
-
+        self.setIconSize(QSize(25, 25))
         self.tabBar().setTabButton(3, self.tabBar().RightSide, TabButtonWidget(core))
 
     def resizeEvent(self, event):
@@ -51,6 +51,8 @@ class TabBar(QTabBar):
         super(TabBar, self).__init__()
         self._expanded = expanded
         self.setObjectName("main_tab_bar")
+        self.setFont(QFont("Arial", 13))
+        # self.setContentsMargins(0,10,0,10)
 
     def tabSizeHint(self, index):
         size = super(TabBar, self).tabSizeHint(index)
@@ -70,6 +72,7 @@ class TabButtonWidget(QToolButton):
 
         self.setIcon(QIcon(style_path + "/Icons/account.png"))
         self.setToolTip("Account")
+        self.setIconSize(QSize(25, 25))
         self.setMenu(QMenu())
         action = QWidgetAction(self)
         action.setDefaultWidget(MiniWidget(core))

@@ -122,8 +122,3 @@ class Menu(QMenu):
         self.addAction(self.tr("Game info"), lambda: self.action.emit("info"))
         self.addAction(self.tr("Uninstall"), lambda: self.action.emit("uninstall"))
 
-    def info(self):
-        pass
-
-    def uninstall(self):
-        pass

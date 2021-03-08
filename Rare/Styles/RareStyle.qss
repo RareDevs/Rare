@@ -13,7 +13,7 @@ QTabBar{
 
 QTabBar::tab#main_tab_bar {
     border-bottom: none;
-    padding: 5px;
+    padding: 5px
 }
 QTabBar::tab:selected{
     border-bottom: 2px solid white;
