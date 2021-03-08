@@ -1,5 +1,6 @@
 import os
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget
 from legendary.core import LegendaryCore
@@ -28,7 +29,6 @@ class GameInfo(QWidget):
     def __init__(self, core: LegendaryCore):
         super(GameInfo, self).__init__()
         self.core = core
-        self.app_name = ""
         self.layout = QVBoxLayout()
         self.back_button = QPushButton("Back")
         self.layout.addWidget(self.back_button)
@@ -41,9 +41,27 @@ class GameInfo(QWidget):
 
         right_layout = QVBoxLayout()
         self.game_title = QLabel("Error")
+        self.game_title.setTextInteractionFlags(Qt.TextSelectableByMouse)
         right_layout.addWidget(self.game_title)
 
+        self.dev = QLabel("Error")
+        right_layout.addWidget(self.dev)
+
+        self.app_name = QLabel("Error")
+        self.app_name.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        right_layout.addWidget(self.app_name)
+
+        self.version = QLabel("Error")
+        right_layout.addWidget(self.version)
+
+        self.install_size = QLabel("Error")
+        right_layout.addWidget(self.install_size)
+
+        self.install_path = QLabel("Error")
+        right_layout.addWidget(self.install_path)
+
         top_layout.addLayout(right_layout)
+        top_layout.addStretch()
 
         self.layout.addLayout(top_layout)
         self.layout.addStretch()
@@ -68,3 +86,10 @@ class GameInfo(QWidget):
             w = 200
             pixmap = pixmap.scaled(w, int(w * 4 / 3))
             self.image.setPixmap(pixmap)
+        self.app_name.setText("App name: "+ self.game.app_name)
+        self.version.setText("Version: " + self.game.app_version)
+        self.dev.setText(self.tr("Developer: ") + self.game.metadata["developer"])
+        self.install_size.setText(self.tr("Install size: ") + str(round(self.igame.install_size/(1024**3), 2))+ " GB")
+        self.install_path.setText(self.tr("Install path: ") + self.igame.install_path)
+        print(self.game.__dict__)
+        print(self.igame.__dict__)
