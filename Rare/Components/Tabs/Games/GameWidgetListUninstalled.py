@@ -8,12 +8,14 @@ from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButt
 from legendary.core import LegendaryCore
 
 from Rare.Components.Dialogs.InstallDialog import InstallDialog
+from Rare.utils.Models import InstallOptions
 
 logger = getLogger("Game")
 
 
 class UninstalledGameWidget(QWidget):
-    install_game = pyqtSignal(dict)
+    install_game = pyqtSignal(InstallOptions)
+
     def __init__(self, core: LegendaryCore, game):
         super(UninstalledGameWidget, self).__init__()
         self.title = game.app_title
@@ -57,11 +59,9 @@ class UninstalledGameWidget(QWidget):
         infos = InstallDialog().get_information()
         if infos != 0:
             path, max_workers = infos
-            self.install_game.emit({
-                "app_name": self.game.app_name,
-                "options": {
-                    "path": path,
-                    "max_workers": max_workers
-                }
-            })
+            self.install_game.emit(InstallOptions(
+                app_name=self.game.app_name,
+                path=path,
+                max_workers=max_workers,
+                repair=False))
         # wait for update of legendary to get progress

@@ -17,6 +17,7 @@ logger = getLogger("GameWidgetInstalled")
 class GameWidgetInstalled(QWidget):
     update_list = pyqtSignal()
     show_info = pyqtSignal(str)
+    update_game = pyqtSignal()
 
     def __init__(self, core: LegendaryCore, game: InstalledGame):
         super(GameWidgetInstalled, self).__init__()
@@ -79,7 +80,9 @@ class GameWidgetInstalled(QWidget):
         self.setFixedWidth(self.sizeHint().width())
 
     def enterEvent(self, a0: QEvent) -> None:
-        if not self.running:
+        if self.update_available:
+            self.info_label.setText("Please update Game")
+        elif not self.running:
             self.info_label.setText("Start Game")
 
     def leaveEvent(self, a0: QEvent) -> None:
@@ -89,7 +92,7 @@ class GameWidgetInstalled(QWidget):
         self.launch()
 
     def launch(self, offline=False):
-        if not self.running:
+        if not self.running and not self.update_available:
             logger.info("Launching " + self.game.title)
             self.proc = LegendaryApi.launch_game(self.core, self.game.app_name, offline)
             if not self.proc:
@@ -98,6 +101,8 @@ class GameWidgetInstalled(QWidget):
             self.proc.finished.connect(self.finished)
             self.info_label.setText(self.tr("Game running"))
             self.running = True
+        if self.update_available:
+            self.update_game.emit()
 
     def finished(self):
         self.info_label.setText("")
@@ -121,4 +126,3 @@ class Menu(QMenu):
         super(Menu, self).__init__()
         self.addAction(self.tr("Game info"), lambda: self.action.emit("info"))
         self.addAction(self.tr("Uninstall"), lambda: self.action.emit("uninstall"))
-

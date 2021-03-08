@@ -12,7 +12,7 @@ from Rare.utils.QtExtensions import FlowLayout
 class GameList(QScrollArea):
     install_game = pyqtSignal(dict)
     show_game_info = pyqtSignal(str)
-
+    update_game = pyqtSignal()
     def __init__(self, core: LegendaryCore):
         super(GameList, self).__init__()
         self.core = core
@@ -45,6 +45,7 @@ class GameList(QScrollArea):
                 widget = GameWidget(game, self.core)
             if widget.update_available:
                 self.updates.append(widget.game.app_name)
+                widget.update_game.connect(self.update_game.emit)
             self.layout.addWidget(widget)
             widget.update_list.connect(self.update_list)
 

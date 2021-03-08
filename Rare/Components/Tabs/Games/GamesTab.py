@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineE
 
 from Rare.Components.Tabs.Games.GameInfo.GameInfo import InfoTabs
 from Rare.Components.Tabs.Games.GameList import GameList
+from Rare.utils.QtExtensions import Switch
 
 
 class GameTab(QWidget):
@@ -43,7 +44,7 @@ class Games(QWidget):
         self.layout.addWidget(self.head_bar)
         self.layout.addWidget(self.game_list)
         # self.layout.addStretch(1)
-        self.head_bar.view.stateChanged.connect(
+        self.head_bar.view.toggled.connect(
             lambda: self.game_list.update_list(not self.head_bar.view.isChecked()))
         self.setLayout(self.layout)
 
@@ -64,10 +65,16 @@ class GameListHeadBar(QWidget):
 
         self.layout.addStretch()
         self.list_view = QLabel(self.tr("List view"))
-        self.layout.addWidget(self.list_view)
-        self.view = QCheckBox(self.tr("Icon view"))
-        self.view.setChecked(not QSettings().value("icon_view", True, bool))
+
+        self.icon_view = QLabel(self.tr("Icon view"))
+
+        self.view = Switch()
+        checked = not QSettings().value("icon_view", True, bool)
+        self.view.setChecked(checked)
+        self.layout.addWidget(self.icon_view)
         self.layout.addWidget(self.view)
+        self.layout.addWidget(self.list_view)
+
         self.refresh_list = QPushButton()
         self.refresh_list.setIcon(self.style().standardIcon(getattr(QStyle, "SP_BrowserReload")))  # Reload icon
         self.layout.addWidget(self.refresh_list)

@@ -10,6 +10,7 @@ from legendary.models.game import Game
 from notifypy import Notify
 
 from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog
+from Rare.utils.Models import InstallOptions
 
 logger = getLogger("Download")
 
@@ -37,6 +38,7 @@ class DownloadThread(QThread):
         else:
             self.status.emit("dl_finished")
             end_t = time.time()
+
             game = self.core.get_game(self.igame.app_name)
             postinstall = self.core.install_game(self.igame)
             if postinstall:
@@ -129,13 +131,34 @@ class DownloadTab(QWidget):
 
         self.setLayout(self.layout)
 
-    def install_game(self, options: {}):
-        game = self.core.get_game(options["app_name"])
+    def install_game(self, options: InstallOptions):
+        game = self.core.get_game(options.app_name, update_meta=True)
+        if self.core.is_installed(options.app_name):
+            igame = self.core.get_installed_game(options.app_name)
+            if igame.needs_verification and not options.repair:
+                options.repair = True
+
+        if not game:
+            QMessageBox.warning(self, "Error", "Could not find Game in your library")
+            return
+
+        if game.is_dlc:
+            return
+
+        if options.repair:
+            repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{options.app_name}.repair')
+
+            if not self.core.is_installed(game.app_name):
+                return
+            if not os.path.exists(repair_file):
+                logger.info("Game has not been verified yet")
+                return
+            self.repair()
 
         dlm, analysis, igame = self.core.prepare_download(
             game=game,
-            base_path=options["options"]["path"],
-            max_workers=options["options"]["max_workers"])
+            base_path=options.path,
+            max_workers=options.max_workers)
         if not analysis.dl_size:
             QMessageBox.information(self, "Warning", self.tr("Download size is 0. Game already exists"))
             return
@@ -146,7 +169,7 @@ class DownloadTab(QWidget):
         self.installing_game_widget.setText("")
         self.installing_game.setText("Installing Game: " + game.app_title)
         res = self.core.check_installation_conditions(analysis=analysis, install=igame, game=game,
-                                                      updating=self.core.is_installed(options["app_name"]),
+                                                      updating=self.core.is_installed(options.app_name),
                                                       )
         if res.warnings:
             for w in sorted(res.warnings):
@@ -179,6 +202,11 @@ class DownloadTab(QWidget):
 
     def update_game(self, app_name: str):
         print("Update ", app_name)
+        self.install_game(InstallOptions(app_name))
+
+
+    def repair(self):
+        pass
 
 
 class UpdateWidget(QWidget):

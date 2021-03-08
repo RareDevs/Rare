@@ -17,6 +17,7 @@ class TabWidget(QTabWidget):
         self.setTabBar(TabBar(disabled_tab))
         self.settings = SettingsTab(core)
         self.game_list = GameTab(core)
+        self.game_list.default_widget.game_list.update_game.connect(lambda: self.setCurrentIndex(1))
         updates = self.game_list.default_widget.game_list.updates
         self.addTab(self.game_list, self.tr("Games"))
         self.downloadTab = DownloadTab(core, updates)
