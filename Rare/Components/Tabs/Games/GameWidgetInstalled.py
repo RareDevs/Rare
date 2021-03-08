@@ -1,13 +1,13 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QEvent, pyqtSignal, QSettings
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import QEvent, pyqtSignal, QSettings, QSize
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
+from qtawesome import icon
 
-from Rare import style_path
 from Rare.utils import LegendaryApi
 from Rare.utils.QtExtensions import ClickableLabel
 
@@ -59,14 +59,22 @@ class GameWidgetInstalled(QWidget):
         minilayout = QHBoxLayout()
         self.title_label.setObjectName("game_widget")
         minilayout.addWidget(self.title_label)
-        # minilayout.addStretch(1)
+
+        # Info Button
         self.menu_btn = QPushButton()
-        self.menu_btn.setIcon(QIcon(style_path + "/Icons/menu.png"))
-        self.menu_btn.setObjectName("installed_menu_button")
-        self.menu = Menu()
-        self.menu.action.connect(self.menu_action)
-        self.menu_btn.setMenu(self.menu)
-        self.menu_btn.setObjectName("menu")
+        self.menu_btn.setIcon(icon("ei.info-circle", color="white"))
+        # self.menu_btn.setObjectName("installed_menu_button")
+        self.menu_btn.setIconSize(QSize(18, 18))
+        self.menu_btn.enterEvent = lambda x: self.info_label.setText("Information")
+        self.menu_btn.leaveEvent = lambda x: self.info_label.setText(
+            "Please update Game") if self.update_available else self.info_label.setText("Start Game")
+        # remove Border
+        self.menu_btn.setStyleSheet("""
+        QPushButton{
+            border: none;
+        }
+        """)
+        self.menu_btn.clicked.connect(lambda: self.show_info.emit(self.game.app_name))
         self.menu_btn.setFixedWidth(17)
         minilayout.addWidget(self.menu_btn)
         minilayout.addStretch(1)
@@ -81,7 +89,7 @@ class GameWidgetInstalled(QWidget):
 
     def enterEvent(self, a0: QEvent) -> None:
         if self.update_available:
-            self.info_label.setText("Please update Game")
+            self.info_label.setText(self.tr("Please update Game"))
         elif not self.running:
             self.info_label.setText("Start Game")
 
@@ -107,22 +115,3 @@ class GameWidgetInstalled(QWidget):
     def finished(self):
         self.info_label.setText("")
         self.running = False
-
-    def menu_action(self, action: str):
-        if action == "uninstall":
-            if QMessageBox.question(self, "Uninstall", self.tr("Do you want to uninstall") + self.game.title,
-                                    QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
-                logger.info("Uninstalling " + self.game.title)
-                self.core.uninstall_game(self.game)
-                self.update_list.emit()
-        elif action == "info":
-            self.show_info.emit(self.game.app_name)
-
-
-class Menu(QMenu):
-    action = pyqtSignal(str)
-
-    def __init__(self):
-        super(Menu, self).__init__()
-        self.addAction(self.tr("Game info"), lambda: self.action.emit("info"))
-        self.addAction(self.tr("Uninstall"), lambda: self.action.emit("uninstall"))

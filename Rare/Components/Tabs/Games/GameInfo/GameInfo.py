@@ -1,11 +1,12 @@
 import os
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 
+from Rare.utils import LegendaryApi
 from Rare.utils.QtExtensions import SideTabBar
 from Rare.utils.utils import IMAGE_DIR
 
@@ -25,7 +26,7 @@ class InfoTabs(QTabWidget):
 class GameInfo(QWidget):
     igame: InstalledGame
     game: Game
-
+    update_list = pyqtSignal()
     def __init__(self, core: LegendaryCore):
         super(GameInfo, self).__init__()
         self.core = core
@@ -63,9 +64,20 @@ class GameInfo(QWidget):
         top_layout.addLayout(right_layout)
         top_layout.addStretch()
 
+        self.game_actions = GameActions()
+
+        self.game_actions.uninstall_button.clicked.connect(self.uninstall)
+
         self.layout.addLayout(top_layout)
+        self.layout.addWidget(self.game_actions)
         self.layout.addStretch()
         self.setLayout(self.layout)
+
+    def uninstall(self):
+        if QMessageBox.question(self, "Uninstall", self.tr("Are you sure to uninstall " + self.game.app_title), QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+            LegendaryApi.uninstall(self.game.app_name, self.core)
+            self.update_list.emit()
+            self.back_button.click()
 
     def update_game(self, app_name):
         self.game = self.core.get_game(app_name)
@@ -86,10 +98,24 @@ class GameInfo(QWidget):
             w = 200
             pixmap = pixmap.scaled(w, int(w * 4 / 3))
             self.image.setPixmap(pixmap)
-        self.app_name.setText("App name: "+ self.game.app_name)
+        self.app_name.setText("App name: " + self.game.app_name)
         self.version.setText("Version: " + self.game.app_version)
         self.dev.setText(self.tr("Developer: ") + self.game.metadata["developer"])
-        self.install_size.setText(self.tr("Install size: ") + str(round(self.igame.install_size/(1024**3), 2))+ " GB")
+        self.install_size.setText(
+            self.tr("Install size: ") + str(round(self.igame.install_size / (1024 ** 3), 2)) + " GB")
         self.install_path.setText(self.tr("Install path: ") + self.igame.install_path)
-        print(self.game.__dict__)
-        print(self.igame.__dict__)
+
+
+class GameActions(QWidget):
+    def __init__(self):
+        super(GameActions, self).__init__()
+        self.layout = QVBoxLayout()
+        self.game_actions = QLabel("<h3>Game actions</h3>")
+        self.layout.addWidget(self.game_actions)
+        uninstall_layout = QHBoxLayout()
+        self.uninstall_game = QLabel(self.tr("Uninstall game"))
+        uninstall_layout.addWidget(self.uninstall_game)
+        self.uninstall_button = QPushButton("Uninstall")
+        uninstall_layout.addWidget(self.uninstall_button)
+        self.layout.addLayout(uninstall_layout)
+        self.setLayout(self.layout)

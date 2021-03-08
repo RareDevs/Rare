@@ -229,10 +229,10 @@ class SwitchPrivate(QObject):
         button = self.mPointer.palette().color(QPalette.Button)
         painter.setPen(Qt.NoPen)
 
-        self.mGradient.setColorAt(0, shadow.darker(130))
-        self.mGradient.setColorAt(1, light.darker(130))
-        self.mGradient.setStart(0, r.height())
-        self.mGradient.setFinalStop(0, 0)
+        #self.mGradient.setColorAt(0, shadow.darker(130))
+        #self.mGradient.setColorAt(1, light.darker(130))
+        #self.mGradient.setStart(0, r.height())
+        #self.mGradient.setFinalStop(0, 0)
         painter.setBrush(self.mGradient)
         painter.drawRoundedRect(r, r.height()/2, r.height()/2)
 

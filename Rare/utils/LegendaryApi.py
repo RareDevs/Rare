@@ -1,6 +1,9 @@
 import os
+from logging import getLogger
 
 from PyQt5.QtCore import QProcess, QProcessEnvironment
+
+logger = getLogger("Legendary Utils")
 
 
 def launch_game(core, app_name: str, offline: bool = False, skip_version_check: bool = False):
@@ -36,3 +39,21 @@ def launch_game(core, app_name: str, offline: bool = False, skip_version_check: 
     process.setProcessEnvironment(environment)
     process.start(params[0], params[1:])
     return process
+
+
+def uninstall(app_name: str, core):
+    igame = core.get_installed_game(app_name)
+    try:
+        # Remove DLC first so directory is empty when game uninstall runs
+        dlcs = core.get_dlc_for_game(app_name)
+        for dlc in dlcs:
+            if (idlc := core.get_installed_game(dlc.app_name)) is not None:
+                logger.info(f'Uninstalling DLC "{dlc.app_name}"...')
+                core.uninstall_game(idlc, delete_files=True)
+
+        logger.info(f'Removing "{igame.title}" from "{igame.install_path}"...')
+        core.uninstall_game(igame, delete_files=True, delete_root_directory=True)
+        logger.info('Game has been uninstalled.')
+
+    except Exception as e:
+        logger.warning(f'Removing game failed: {e!r}, please remove {igame.install_path} manually.')

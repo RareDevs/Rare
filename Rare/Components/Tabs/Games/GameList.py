@@ -6,13 +6,15 @@ from Rare.Components.Tabs.Games.GameWidgetInstalled import GameWidgetInstalled
 from Rare.Components.Tabs.Games.GameWidgetListUninstalled import UninstalledGameWidget
 from Rare.Components.Tabs.Games.GameWidgetUninstalled import GameWidgetUninstalled
 from Rare.Components.Tabs.Games.InstalledListWidget import GameWidget
+from Rare.utils.Models import InstallOptions
 from Rare.utils.QtExtensions import FlowLayout
 
 
 class GameList(QScrollArea):
-    install_game = pyqtSignal(dict)
+    install_game = pyqtSignal(InstallOptions)
     show_game_info = pyqtSignal(str)
     update_game = pyqtSignal()
+
     def __init__(self, core: LegendaryCore):
         super(GameList, self).__init__()
         self.core = core
@@ -48,8 +50,6 @@ class GameList(QScrollArea):
                 widget.update_game.connect(self.update_game.emit)
             self.layout.addWidget(widget)
             widget.update_list.connect(self.update_list)
-
-
 
         uninstalled_games = []
         installed = [i.app_name for i in self.core.get_installed_list()]

@@ -2,6 +2,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QTabWidget, QTabBar, QWidget, QToolButton, QWidgetAction, QMenu
 from legendary.core import LegendaryCore
+from qtawesome import icon
 
 from Rare import style_path
 from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
@@ -37,8 +38,7 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
         # self.settings = SettingsTab(core)
-
-        self.addTab(self.settings, QIcon(style_path + "/Icons/settings.png"), None)
+        self.addTab(self.settings, icon("fa.gear", color='white'), None)
         self.setIconSize(QSize(25, 25))
         self.tabBar().setTabButton(3, self.tabBar().RightSide, TabButtonWidget(core))
 
@@ -70,8 +70,7 @@ class TabButtonWidget(QToolButton):
         super(TabButtonWidget, self).__init__()
         self.setText("Icon")
         self.setPopupMode(QToolButton.InstantPopup)
-
-        self.setIcon(QIcon(style_path + "/Icons/account.png"))
+        self.setIcon(icon("mdi.account-circle", color="white", scale_factor=1.25))
         self.setToolTip("Account")
         self.setIconSize(QSize(25, 25))
         self.setMenu(QMenu())

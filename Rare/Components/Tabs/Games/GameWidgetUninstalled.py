@@ -8,6 +8,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import Game
 
 from Rare.Components.Dialogs.InstallDialog import InstallDialog
+from Rare.utils.Models import InstallOptions
 from Rare.utils.QtExtensions import ClickableLabel
 from Rare.utils.utils import download_image
 
@@ -15,7 +16,7 @@ logger = getLogger("Uninstalled")
 
 
 class GameWidgetUninstalled(QWidget):
-    install_game = pyqtSignal(dict)
+    install_game = pyqtSignal(InstallOptions)
 
     def __init__(self, core: LegendaryCore, game: Game):
         super(GameWidgetUninstalled, self).__init__()
@@ -68,11 +69,5 @@ class GameWidgetUninstalled(QWidget):
         infos = InstallDialog().get_information()
         if infos != 0:
             path, max_workers = infos
-            self.install_game.emit({
-                "app_name": self.game.app_name,
-                "options": {
-                    "path": path,
-                    "max_workers": max_workers
-                }
-            })
+            self.install_game.emit(InstallOptions(app_name=self.game.app_name, max_workers=max_workers, path=path))
         # wait for update of legendary to get progress
