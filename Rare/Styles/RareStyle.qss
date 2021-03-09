@@ -7,20 +7,24 @@ QLabel {
     background-color: transparent;
 }
 
-QTabBar{
+QTabBar#main_tab_bar{
     border-bottom: none;
+    background-color: #2b2b2c;
+}
+QTabBar::tab#main_tab_bar{
+    border-bottom: noneq;
 }
 
 QTabBar::tab#main_tab_bar {
     border-bottom: none;
     padding: 5px
 }
-QTabBar::tab:selected{
-    border-bottom: 2px solid white;
+QTabBar::tab:selected#main_tab_bar{
+    background-color: gray;
 }
 
 QTabBar::tab:hover#main_tab_bar {
-    background-color: black;
+    border-bottom: 2px solid black;
 
 }
 
@@ -31,13 +35,18 @@ QTabBar::tab:disabled {
 
 
 QToolButton {
-    padding: 5px;
+    padding: 6px;
 }
 
 
 QPushButton {
-    border: 2px solid white;
-    border-radius: 2px;
+    border: 1px solid white;
+    border-radius: 4px;
+    background-color: #3c3f41;
+    padding: 3px;
+}
+QPushButton:hover{
+    background-color: #223;
 }
 
 QPushButton::menu-indicator {
@@ -53,22 +62,23 @@ QPushButton#menu {
     border-style: none;
 }
 
+QPushButton#menu_button{
+    background-color: transparent;
+    border: none;
+}
+QPushButton:hover#menu_button{
+    background-color: #334;
+}
+
 QLineEdit {
     border: 1px solid white;
 }
 
-QCheckBox::indicator {
-    border: 1px solid white;
-    border-radius: 2px;
+QCheckBox{
+    color: #F0F0F0;
 }
 
-QCheckBox::indicator:checked {
-    background-color: white;
-}
 
-#head_bar {
-    border-bottom: 2px solid white;
-}
 
 #list_widget {
     border-top: 2px solid white;
@@ -89,6 +99,13 @@ QTabBar::tab:hover#settings_bar {
 QTabBar::tab::selected#settings_bar {
     background-color: darkslategrey;
 }
+
+#search_bar{
+    padding: 3px;
+    border-radius: 5px;
+    background-color: #334;
+}
+
 /*
 QScrollBar:vertical{
     border: 1px solid white;

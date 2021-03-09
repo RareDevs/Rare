@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QPushButton, QStackedLayout
+from PyQt5.QtCore import QSettings, QSize
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QPushButton, QStackedLayout, QLabel
 from qtawesome import icon
 
 from Rare.Components.Tabs.Games.GameInfo.GameInfo import InfoTabs
@@ -60,7 +60,6 @@ class Games(QWidget):
         self.head_bar.view.toggled.connect(
             lambda: self.game_list.update_list(not self.head_bar.view.isChecked()))
 
-
         self.setLayout(self.layout)
 
 
@@ -68,7 +67,6 @@ class GameListHeadBar(QWidget):
     def __init__(self):
         super(GameListHeadBar, self).__init__()
         self.layout = QHBoxLayout()
-
         self.installed_only = QCheckBox(self.tr("Installed only"))
         self.layout.addWidget(self.installed_only)
 
@@ -80,6 +78,11 @@ class GameListHeadBar(QWidget):
         self.layout.addStretch(1)
 
         self.search_bar = QLineEdit()
+        self.search_bar.setObjectName("search_bar")
+        self.search_bar.setFrame(False)
+        icon_label = QLabel()
+        icon_label.setPixmap(icon("fa.search", color="white").pixmap(QSize(20, 20)))
+        self.layout.addWidget(icon_label)
         self.search_bar.setMinimumWidth(200)
         self.search_bar.setPlaceholderText(self.tr("Search Game"))
         self.layout.addWidget(self.search_bar)

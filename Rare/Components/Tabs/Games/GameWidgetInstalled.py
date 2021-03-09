@@ -71,11 +71,9 @@ class GameWidgetInstalled(QWidget):
         self.menu_btn.leaveEvent = lambda x: self.info_label.setText(
             "Please update Game") if self.update_available else self.info_label.setText("Start Game")
         # remove Border
-        self.menu_btn.setStyleSheet("""
-        QPushButton{
-            border: none;
-        }
-        """)
+
+        self.menu_btn.setObjectName("menu_button")
+
         self.menu_btn.clicked.connect(lambda: self.show_info.emit(self.game.app_name))
         self.menu_btn.setFixedWidth(17)
         minilayout.addWidget(self.menu_btn)

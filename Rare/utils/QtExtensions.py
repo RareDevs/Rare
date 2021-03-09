@@ -202,7 +202,7 @@ class SelectViewWidget(QWidget):
     def __init__(self, icon_view: bool):
         super(SelectViewWidget, self).__init__()
         self.icon_view = icon_view
-        self.setStyleSheet("""QPushButton{border: none}""")
+        self.setStyleSheet("""QPushButton{border: none; background-color: transparent}""")
         self.icon_view_button = QPushButton()
         self.list_view = QPushButton()
         if icon_view:
