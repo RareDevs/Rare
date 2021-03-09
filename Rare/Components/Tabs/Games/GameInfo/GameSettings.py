@@ -1,0 +1,128 @@
+import os
+
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox
+from legendary.core import LegendaryCore
+from legendary.models.game import InstalledGame, Game
+
+from Rare.Components.Tabs.Settings.Linux import LinuxSettings
+from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
+from Rare.utils.QtExtensions import PathEdit
+
+
+class GameSettings(QWidget):
+    game: Game
+    igame: InstalledGame
+    x = True
+    def __init__(self, core: LegendaryCore):
+        super(GameSettings, self).__init__()
+        self.core = core
+        self.layout = QVBoxLayout()
+        self.title = QLabel("Error")
+        self.layout.addWidget(self.title)
+        if os.name != "nt":
+            self.linux_settings = LinuxAppSettings(core)
+            self.layout.addWidget(self.linux_settings)
+
+            self.possible_proton_wrappers = []
+            for i in os.listdir(os.path.expanduser("~/.steam/steam/steamapps/common")):
+                if i.startswith("Proton"):
+                    wrapper = os.path.join(os.path.expanduser("~/.steam/steam/steamapps/common"), i, "proton") + " run"
+                    self.possible_proton_wrappers.append(wrapper)
+            self.select_proton = QComboBox()
+            self.select_proton.addItems(["Don't use Proton"] + self.possible_proton_wrappers)
+            self.select_proton.currentIndexChanged.connect(self.change_proton)
+            self.select_proton_widget = SettingsWidget(self.tr("Proton Wrapper"), self.select_proton)
+            self.layout.addWidget(self.select_proton_widget)
+            self.proton_prefix = PathEdit("x", QFileDialog.DirectoryOnly)
+            self.proton_prefix_accept_button = QPushButton(self.tr("Save"))
+            self.proton_prefix_accept_button.clicked.connect(self.update_prefix)
+            self.proton_prefix_widget = SettingsWidget(self.tr("Proton prefix"), self.proton_prefix, self.proton_prefix_accept_button)
+            self.layout.addWidget(self.proton_prefix_widget)
+
+        # Offline, startparams, skip_update_check
+
+        self.layout.addStretch(1)
+        self.setLayout(self.layout)
+
+    def change_proton(self, i):
+        # Dont use Proton
+        if self.x:
+            if i == 0:
+                self.proton_prefix_widget.setVisible(False)
+                if f"{self.game.app_name}" in self.core.lgd.config.sections():
+                    if self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback="") != "":
+                        self.core.lgd.config.remove_option(self.game.app_name, "wrapper")
+                    if self.core.lgd.config.get(f"{self.game.app_name}", "no_wine", fallback="") != "":
+                        self.core.lgd.config.remove_option(self.game.app_name, "no_wine")
+                    if self.core.lgd.config[self.game.app_name] == {}:
+                        self.core.lgd.config.remove_section(self.game.app_name)
+                if f"{self.game.app_name}.env" in self.core.lgd.config.sections():
+                    if self.core.lgd.config.get(f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH", fallback="") != "":
+                        self.core.lgd.config.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH")
+                    if self.core.lgd.config[self.game.app_name + ".env"] == {}:
+                        self.core.lgd.config.remove_section(self.game.app_name + ".env")
+            else:
+                self.proton_prefix_widget.setVisible(True)
+                wrapper = self.possible_proton_wrappers[i-1]
+                if not self.game.app_name in self.core.lgd.config.sections():
+                    self.core.lgd.config[self.game.app_name] = {}
+                if not self.game.app_name + ".env" in self.core.lgd.config.sections():
+                    self.core.lgd.config[self.game.app_name + ".env"] = {}
+                self.core.lgd.config.set(self.game.app_name, "wrapper", wrapper)
+                self.core.lgd.config.set(self.game.app_name, "no_wine", "true")
+                self.core.lgd.config.set(self.game.app_name+".env", "STEAM_COMPAT_DATA_PATH", os.path.expanduser("~/.proton"))
+                self.proton_prefix.text_edit.setText(os.path.expanduser("~/.proton"))
+            self.core.lgd.save_config()
+
+    def update_prefix(self):
+        text = self.proton_prefix.text()
+        if text == "":
+            text = os.path.expanduser("~/.proton")
+            self.proton_prefix.text_edit.setText(text)
+        if not os.path.exists(text):
+            try:
+                os.makedirs(text)
+            except PermissionError:
+                QMessageBox.warning(self, "Warning", self.tr("No permission to create folder"))
+                text = os.path.expanduser("~/.proton")
+                self.proton_prefix.text_edit.setText(text)
+
+        self.core.lgd.config.set(self.game.app_name+".env", "STEAM_COMPAT_DATA_PATH", text)
+        self.core.lgd.save_config()
+
+    def update_game(self, app_name):
+        # print(self.core.lgd.config.get(f"{app_name}.env", "STEAM_COMPAT_DATA_PATH", fallback=self.tr("hefjoa")))
+        self.x = False
+        self.game = self.core.get_game(app_name)
+        self.igame = self.core.get_installed_game(app_name)
+
+        self.title.setText(f"<h2>{self.game.app_title}</h2>")
+        if os.name != "nt":
+            self.linux_settings.update_game(app_name)
+            self.linux_settings.dxvk_widget.update_settings(app_name)
+            proton = self.core.lgd.config.get(f"{app_name}", "wrapper", fallback="").replace('"', "")
+            print(proton)
+            if proton != "":
+                self.select_proton.setCurrentText(proton)
+                self.select_proton_widget.setVisible(True)
+                proton_prefix = self.core.lgd.config.get(f"{app_name}.env", "STEAM_COMPAT_DATA_PATH",
+                                                                              fallback=self.tr(
+                                                                                  "Please select path for proton prefix"))
+                self.proton_prefix.text_edit.setText(proton_prefix)
+
+            else:
+                self.select_proton.setCurrentIndex(0)
+                self.proton_prefix_widget.setVisible(False)
+        self.x = True
+
+
+class LinuxAppSettings(LinuxSettings):
+    def __init__(self, core):
+        super(LinuxAppSettings, self).__init__(core, "app")
+
+    def update_game(self, app_name):
+        self.name = app_name
+        self.select_path.text_edit.setText(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""))
+        self.select_wine_exec.setText(self.core.lgd.config.get(self.name, "wine_executable", fallback=""))
+        self.dxvk_widget.name = app_name
+        self.dxvk_widget.more_settings_widget.name = app_name

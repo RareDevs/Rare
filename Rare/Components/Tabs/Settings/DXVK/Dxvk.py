@@ -19,13 +19,15 @@ class DxvkWidget(QWidget):
     def __init__(self, core: LegendaryCore):
         super(DxvkWidget, self).__init__()
         self.core = core
+        self.name = "default"
         self.layout = QVBoxLayout()
         self.child_layout = QHBoxLayout()
         self.title = QLabel("dxvk settings")
         self.show_dxvk = QCheckBox("Show Dxvk HUD")
 
         self.more_settings = QToolButton()
-        dxvk_hud = self.core.lgd.config.get("default.env", "DXVK_HUD", fallback="")
+        dxvk_hud = self.core.lgd.config.get(f"{self.name}.env", "DXVK_HUD", fallback="")
+
         self.more_settings.setDisabled(not dxvk_hud == "")
         if dxvk_hud:
             for s in dxvk_hud.split(","):
@@ -51,10 +53,22 @@ class DxvkWidget(QWidget):
 
         self.setLayout(self.layout)
 
+    def update_settings(self, app_name):
+        self.name = app_name
+        dxvk_hud = self.core.lgd.config.get(f"{self.name}.env", "DXVK_HUD", fallback="")
+        self.more_settings.setDisabled(not dxvk_hud == "")
+        if dxvk_hud:
+            for s in dxvk_hud.split(","):
+                y = list(self.dxvk_settings[s])
+                y[0] = True
+                self.dxvk_settings[s] = tuple(y)
+        else:
+            self.show_dxvk.setChecked(False)
+
     def update_dxvk_active(self):
         if self.show_dxvk.isChecked():
-            if not "default.env" in self.core.lgd.config.sections():
-                self.core.lgd.config["default.env"] = ""
+            if not f"{self.name}.env" in self.core.lgd.config.sections():
+                self.core.lgd.config[f"{self.name}.env"] = {}
             self.more_settings.setDisabled(False)
             self.more_settings_widget.settings = {"fps": (True, "Fps"),
                                                   "gpuload": (True, "GPU usage"),
@@ -63,7 +77,7 @@ class DxvkWidget(QWidget):
                                                   "version": (False, "DXVK version"),
                                                   "api": (False, "D3D Level of application")
                                                   }
-            self.core.lgd.config["default.env"]["DXVK_HUD"] = "fps,gpuload"
+            self.core.lgd.config[f"{self.name}.env"]["DXVK_HUD"] = "fps,gpuload"
             for w in self.more_settings_widget.widgets:
                 if w.tag == "fps" or w.tag == "gpuload":
                     w.setChecked(True)
@@ -72,7 +86,10 @@ class DxvkWidget(QWidget):
                     w.setChecked(False)
         else:
             self.more_settings.setDisabled(True)
-            self.core.lgd.config.remove_option("default.env", "DXVK_HUD")
+            if not self.core.lgd.config.get(f"{self.name}.env", "DXVK_HUD", fallback="") == "":
+                self.core.lgd.config.remove_option(f"{self.name}.env", "DXVK_HUD")
+                if not self.core.lgd.config[f"{self.name}.env"]:
+                    self.core.lgd.config.remove_section(f"{self.name}.env")
             print("Remove Section DXVK_HUD")
         self.core.lgd.save_config()
 
@@ -81,6 +98,7 @@ class DxvkMoreSettingsWidget(QWidget):
     def __init__(self, settings: dict, core: LegendaryCore):
         super(DxvkMoreSettingsWidget, self).__init__()
         self.layout = QVBoxLayout()
+        self.name = "default"
         self.widgets = []
         self.core = core
         self.settings = settings
@@ -105,7 +123,7 @@ class DxvkMoreSettingsWidget(QWidget):
             if check:
                 sett.append(i)
         if sett:
-            self.core.lgd.config["default.env"]["DXVK_HUD"] = ",".join(sett)
+            self.core.lgd.config[f"{self.name}.env"]["DXVK_HUD"] = ",".join(sett)
             self.core.lgd.save_config()
 
 
@@ -118,6 +136,3 @@ class CheckBox(QCheckBox):
         self.setChecked(checked)
         self.tag = tag
         self.clicked.connect(lambda: self.signal.emit((self.tag, self.isChecked())))
-
-    def update_settings(self):
-        pass

@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayo
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 
+from Rare.Components.Tabs.Games.GameInfo.GameSettings import GameSettings
 from Rare.utils import LegendaryApi
 from Rare.utils.LegendaryApi import VerifyThread
 from Rare.utils.QtExtensions import SideTabBar
@@ -16,13 +17,19 @@ from Rare.utils.utils import IMAGE_DIR
 class InfoTabs(QTabWidget):
     def __init__(self, core):
         super(InfoTabs, self).__init__()
-
+        self.app_name = ""
+        self.core = core
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
 
         self.info = GameInfo(core)
-        self.addTab(self.info, "Game Info")
-        self.addTab(QLabel("Coming soon"), "Settings")
+        self.addTab(self.info, self.tr("Game Info"))
+        self.settings = GameSettings(core)
+        self.addTab(self.settings, self.tr("Settings"))
+
+    def update_game(self, app_name):
+        self.info.update_game(app_name)
+        self.settings.update_game(app_name)
 
 
 class GameInfo(QWidget):
