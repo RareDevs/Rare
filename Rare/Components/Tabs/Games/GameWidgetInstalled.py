@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QEvent, pyqtSignal, QSettings, QSize
+from PyQt5.QtCore import QEvent, pyqtSignal, QSettings, QSize, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 from legendary.core import LegendaryCore
@@ -22,6 +22,7 @@ class GameWidgetInstalled(QWidget):
     def __init__(self, core: LegendaryCore, game: InstalledGame):
         super(GameWidgetInstalled, self).__init__()
         self.setObjectName("game_widget_parent")
+
         self.layout = QVBoxLayout()
         self.core = core
         self.game = game
@@ -54,6 +55,7 @@ class GameWidgetInstalled(QWidget):
             self.layout.addWidget(self.image)
 
         self.title_label = QLabel(f"<h4>{game.title}</h4>")
+        self.title_label.setAutoFillBackground(False)
         self.title_label.setWordWrap(True)
         self.title_label.setFixedWidth(175)
         minilayout = QHBoxLayout()
@@ -81,8 +83,13 @@ class GameWidgetInstalled(QWidget):
         self.layout.addLayout(minilayout)
 
         self.info_label = QLabel(self.info_text)
+        self.info_label.setAutoFillBackground(False)
         self.info_label.setObjectName("info_label")
         self.layout.addWidget(self.info_label)
+
+        #p = self.palette()
+        #p.setColor(self.backgroundRole(), Qt.red)
+        #self.setPalette(p)
 
         self.setLayout(self.layout)
         self.setFixedWidth(self.sizeHint().width())
@@ -92,9 +99,14 @@ class GameWidgetInstalled(QWidget):
             self.info_label.setText(self.tr("Please update Game"))
         elif not self.running:
             self.info_label.setText("Start Game")
+        else:
+            self.info_label.setText(self.tr("Game running"))
 
     def leaveEvent(self, a0: QEvent) -> None:
-        self.info_label.setText(self.info_text)
+        if self.running:
+            self.info_label.setText(self.tr("Game running"))
+        else:
+            self.info_label.setText(self.info_text)
 
     def mousePressEvent(self, a0) -> None:
         self.launch()

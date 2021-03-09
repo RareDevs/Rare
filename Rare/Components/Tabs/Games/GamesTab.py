@@ -1,11 +1,11 @@
 from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QLabel, QPushButton, QStyle, \
-    QStackedLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QPushButton, QStackedLayout
 from qtawesome import icon
 
 from Rare.Components.Tabs.Games.GameInfo.GameInfo import InfoTabs
 from Rare.Components.Tabs.Games.GameList import GameList
-from Rare.utils.QtExtensions import Switch
+from Rare.Components.Tabs.Games.ImportWidget import ImportWidget
+from Rare.utils.QtExtensions import SelectViewWidget
 
 
 class GameTab(QWidget):
@@ -14,13 +14,22 @@ class GameTab(QWidget):
         self.layout = QStackedLayout()
         self.default_widget = Games(core)
         self.default_widget.game_list.show_game_info.connect(self.show_info)
+        self.default_widget.head_bar.import_game.clicked.connect(lambda: self.layout.setCurrentIndex(2))
         self.layout.addWidget(self.default_widget)
         self.game_info = InfoTabs(core)
         self.game_info.info.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
-        self.game_info.info.update_list.connect(
-            lambda: self.default_widget.game_list.update_list(not self.default_widget.head_bar.view.isChecked()))
+        self.game_info.info.update_list.connect(self.update_list)
         self.layout.addWidget(self.game_info)
+
+        self.import_widget = ImportWidget(core)
+        self.layout.addWidget(self.import_widget)
+        self.import_widget.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
+        self.import_widget.update_list.connect(self.update_list)
         self.setLayout(self.layout)
+
+    def update_list(self):
+        self.default_widget.game_list.update_list(self.default_widget.head_bar.view.isChecked())
+        self.layout.setCurrentIndex(0)
 
     def show_info(self, app_name):
         self.game_info.info.update_game(app_name)
@@ -43,12 +52,15 @@ class Games(QWidget):
         self.head_bar.installed_only.stateChanged.connect(lambda:
                                                           self.game_list.installed_only(
                                                               self.head_bar.installed_only.isChecked()))
-        self.head_bar.refresh_list.clicked.connect(lambda: self.game_list.update_list(not self.head_bar.view.isChecked()))
+        self.head_bar.refresh_list.clicked.connect(
+            lambda: self.game_list.update_list(not self.head_bar.view.isChecked()))
         self.layout.addWidget(self.head_bar)
         self.layout.addWidget(self.game_list)
         # self.layout.addStretch(1)
         self.head_bar.view.toggled.connect(
             lambda: self.game_list.update_list(not self.head_bar.view.isChecked()))
+
+
         self.setLayout(self.layout)
 
 
@@ -60,24 +72,25 @@ class GameListHeadBar(QWidget):
         self.installed_only = QCheckBox(self.tr("Installed only"))
         self.layout.addWidget(self.installed_only)
 
-        self.layout.addStretch()
+        self.layout.addStretch(1)
+
+        self.import_game = QPushButton(icon("mdi.import", color="white"), self.tr("Import Game"))
+        self.layout.addWidget(self.import_game)
+
+        self.layout.addStretch(1)
 
         self.search_bar = QLineEdit()
+        self.search_bar.setMinimumWidth(200)
         self.search_bar.setPlaceholderText(self.tr("Search Game"))
         self.layout.addWidget(self.search_bar)
 
-        self.layout.addStretch()
-        self.list_view = QLabel(self.tr("List view"))
+        self.layout.addStretch(2)
 
-        self.icon_view = QLabel(self.tr("Icon view"))
+        checked = QSettings().value("icon_view", True, bool)
 
-        self.view = Switch()
-        checked = not QSettings().value("icon_view", True, bool)
-        self.view.setChecked(checked)
-        self.layout.addWidget(self.icon_view)
+        self.view = SelectViewWidget(checked)
         self.layout.addWidget(self.view)
-        self.layout.addWidget(self.list_view)
-
+        self.layout.addStretch(1)
         self.refresh_list = QPushButton()
         self.refresh_list.setIcon(icon("fa.refresh", color="white"))  # Reload icon
         self.layout.addWidget(self.refresh_list)

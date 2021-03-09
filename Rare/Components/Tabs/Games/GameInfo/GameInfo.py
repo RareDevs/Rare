@@ -2,11 +2,13 @@ import os
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox, \
+    QProgressBar, QStackedWidget
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 
 from Rare.utils import LegendaryApi
+from Rare.utils.LegendaryApi import VerifyThread
 from Rare.utils.QtExtensions import SideTabBar
 from Rare.utils.utils import IMAGE_DIR
 
@@ -27,6 +29,8 @@ class GameInfo(QWidget):
     igame: InstalledGame
     game: Game
     update_list = pyqtSignal()
+    verify_game = pyqtSignal(str)
+
     def __init__(self, core: LegendaryCore):
         super(GameInfo, self).__init__()
         self.core = core
@@ -67,6 +71,8 @@ class GameInfo(QWidget):
         self.game_actions = GameActions()
 
         self.game_actions.uninstall_button.clicked.connect(self.uninstall)
+        self.game_actions.verify_button.clicked.connect(self.verify)
+        self.game_actions.repair_button.clicked.connect(self.repair)
 
         self.layout.addLayout(top_layout)
         self.layout.addWidget(self.game_actions)
@@ -74,10 +80,38 @@ class GameInfo(QWidget):
         self.setLayout(self.layout)
 
     def uninstall(self):
-        if QMessageBox.question(self, "Uninstall", self.tr("Are you sure to uninstall " + self.game.app_title), QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+        if QMessageBox.question(self, "Uninstall", self.tr("Are you sure to uninstall " + self.game.app_title),
+                                QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
             LegendaryApi.uninstall(self.game.app_name, self.core)
             self.update_list.emit()
             self.back_button.click()
+
+    def repair(self):
+        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')
+        if not os.path.exists(repair_file):
+            QMessageBox.warning(self, "Warning", self.tr(
+                "Repair file does not exist or game does not need a repair. Please verify game first"))
+            return
+        self.verify_game.emit(self.game.app_name)
+
+    def verify(self):
+        self.game_actions.verify_widget.setCurrentIndex(1)
+        self.verify_thread = VerifyThread(self.core, self.game.app_name)
+        self.verify_thread.status.connect(lambda x: self.game_actions.verify_progress_bar.setValue(x[0] * 100 / x[1]))
+        self.verify_thread.summary.connect(self.finish_verify)
+        self.verify_thread.start()
+
+    def finish_verify(self, failed):
+        failed, missing = failed
+        if failed == 0 and missing == 0:
+            QMessageBox.information(self, "Summary", "Game was verified successfully. No missing or corrupt files found")
+        else:
+            ans = QMessageBox.question(self, "Summary", self.tr(
+                'Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?').format(
+                failed, missing), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if ans == QMessageBox.Yes:
+                self.verify_game.emit(self.game.app_name)
+        self.game_actions.verify_widget.setCurrentIndex(0)
 
     def update_game(self, app_name):
         self.game = self.core.get_game(app_name)
@@ -112,10 +146,35 @@ class GameActions(QWidget):
         self.layout = QVBoxLayout()
         self.game_actions = QLabel("<h3>Game actions</h3>")
         self.layout.addWidget(self.game_actions)
+
         uninstall_layout = QHBoxLayout()
         self.uninstall_game = QLabel(self.tr("Uninstall game"))
         uninstall_layout.addWidget(self.uninstall_game)
         self.uninstall_button = QPushButton("Uninstall")
+        self.uninstall_button.setFixedWidth(250)
         uninstall_layout.addWidget(self.uninstall_button)
         self.layout.addLayout(uninstall_layout)
+
+        verify_layout = QHBoxLayout()
+        self.verify_game = QLabel(self.tr("Verify Game"))
+        verify_layout.addWidget(self.verify_game)
+        self.verify_widget = QStackedWidget()
+        self.verify_widget.setMaximumHeight(20)
+        self.verify_widget.setFixedWidth(250)
+        self.verify_button = QPushButton("Verify")
+        self.verify_widget.addWidget(self.verify_button)
+        self.verify_progress_bar = QProgressBar()
+        self.verify_progress_bar.setMaximum(100)
+        self.verify_widget.addWidget(self.verify_progress_bar)
+        verify_layout.addWidget(self.verify_widget)
+        self.layout.addLayout(verify_layout)
+
+        repair_layout = QHBoxLayout()
+        repair_info = QLabel("Repair Game")
+        repair_layout.addWidget(repair_info)
+        self.repair_button = QPushButton("Repair")
+        self.repair_button.setFixedWidth(250)
+        repair_layout.addWidget(self.repair_button)
+        self.layout.addLayout(repair_layout)
+
         self.setLayout(self.layout)

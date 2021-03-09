@@ -19,7 +19,6 @@ class GameList(QScrollArea):
         super(GameList, self).__init__()
         self.core = core
         self.widgets = []
-
         self.setObjectName("list_widget")
         self.setWidgetResizable(True)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -88,3 +87,6 @@ class GameList(QScrollArea):
         self.setWidget(QWidget())
         self.init_ui(icon_view)
         self.update()
+
+    def import_game(self):
+        pass

@@ -22,91 +22,160 @@
 <context>
     <name>DownloadTab</name>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="102"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="121"/>
         <source>&lt;b&gt;WARNING&lt;/b&gt;: The progress bar is not implemented. It  is normal, if there is no progress. The progress is visible in console, because Legendary prints output to console. A pull request is active to get output</source>
         <translation>&lt;b&gt;Warnung&lt;/b&gt;: Die Anzeige ist noch nicht fertig. Es wird normal sein, wenn dort kein Fortschritt angezeigt wird. Dafür musst du in die Konsole schauen, da es in Legendary noch keine Möglichkeit gibt, die Ausgabe zu verarbeiten. Ein Pull Request ist eingereicht</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="109"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="128"/>
         <source>No active Download</source>
         <translation>Keine aktiven Downloads</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="120"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="139"/>
         <source>No updates available</source>
         <translation>Keine verfügbaren Updates</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="140"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="203"/>
         <source>Download size is 0. Game already exists</source>
         <translation>Downloadgröße ist 0. Spiel exitstiert bereits</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="158"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="221"/>
         <source>Installation failed. See logs for more information</source>
         <translation>Installation fehlgeschlagen. Siehe Log für mehr Informationen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="171"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="234"/>
         <source>Installation finished</source>
         <translation>Installation abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="172"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="235"/>
         <source>Download of game </source>
         <translation>Download des Spiels </translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="176"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="239"/>
         <source>Installing Game: No active download</source>
         <translation>Zu installierendes Spiel: Kein aktiver Download</translation>
     </message>
 </context>
 <context>
+    <name>GameActions</name>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="151"/>
+        <source>Uninstall game</source>
+        <translation>Spiel deinstallieren</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="159"/>
+        <source>Verify Game</source>
+        <translation>Spieldateien überprüfen</translation>
+    </message>
+</context>
+<context>
+    <name>GameInfo</name>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="83"/>
+        <source>Are you sure to uninstall </source>
+        <translation>Möchstes du das Spiel deinstallieren </translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="92"/>
+        <source>Repair file does not exist or game does not need a repair. Please verify game first</source>
+        <translation>Es ist keine Reperatur nötig oder das Spiel wurde noch nicht verifiziert. Verifiziere das Spiel zu erst</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="109"/>
+        <source>Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?</source>
+        <translation>Überprüfung fehlgeschlagen, {} Dateien sind falsch, {} Dateien fehlen. Willst du das Spiel reparieren?</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="137"/>
+        <source>Developer: </source>
+        <translation>Entwickler: </translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="138"/>
+        <source>Install size: </source>
+        <translation>Installationsgröße: </translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="140"/>
+        <source>Install path: </source>
+        <translation>Installations pfad: </translation>
+    </message>
+</context>
+<context>
     <name>GameListHeadBar</name>
     <message>
-        <location filename="../Components/Tabs/Games/GamesTab.py" line="52"/>
+        <location filename="../Components/Tabs/Games/GamesTab.py" line="60"/>
         <source>Installed only</source>
         <translation>Nur installierte</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GamesTab.py" line="58"/>
+        <location filename="../Components/Tabs/Games/GamesTab.py" line="67"/>
         <source>Search Game</source>
         <translation>Spiel suchen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GamesTab.py" line="62"/>
+        <location filename="../Components/Tabs/Games/GamesTab.py" line="71"/>
         <source>List view</source>
         <translation>Listenansicht</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GamesTab.py" line="64"/>
+        <location filename="../Components/Tabs/Games/GamesTab.py" line="73"/>
         <source>Icon view</source>
         <translation>Iconansicht</translation>
     </message>
 </context>
 <context>
+    <name>GameWidget</name>
+    <message>
+        <location filename="../Components/Tabs/Games/InstalledListWidget.py" line="59"/>
+        <source>Launch</source>
+        <translation>Starten</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/InstalledListWidget.py" line="66"/>
+        <source>Developer: </source>
+        <translation>Entwickler: </translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/InstalledListWidget.py" line="91"/>
+        <source>Game running</source>
+        <translation>Spiel läuft</translation>
+    </message>
+</context>
+<context>
     <name>GameWidgetInstalled</name>
     <message>
-        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="35"/>
+        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="36"/>
         <source>Update available</source>
         <translation>Update verfügbar</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="99"/>
+        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="115"/>
         <source>Game running</source>
         <translation>Spiel läuft</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="108"/>
         <source>Do you want to uninstall</source>
-        <translation>Möchtest du das Spiel deinstallieren: </translation>
+        <translation type="obsolete">Möchtest du das Spiel deinstallieren: </translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="92"/>
+        <source>Please update Game</source>
+        <translation>Bitte das Spiel updaten</translation>
     </message>
 </context>
 <context>
     <name>GameWidgetUninstalled</name>
     <message>
-        <location filename="../Components/Tabs/Games/GameWidgetUninstalled.py" line="60"/>
+        <location filename="../Components/Tabs/Games/GameWidgetUninstalled.py" line="61"/>
         <source>Install Game</source>
         <translation>Spiel installieren</translation>
     </message>
@@ -176,12 +245,12 @@
     <message>
         <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="122"/>
         <source>Game info</source>
-        <translation>Spielinformation</translation>
+        <translation type="obsolete">Spielinformation</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="123"/>
         <source>Uninstall</source>
-        <translation>Deinstallieren</translation>
+        <translation type="obsolete">Deinstallieren</translation>
     </message>
 </context>
 <context>
@@ -210,12 +279,12 @@
 <context>
     <name>PathEdit</name>
     <message>
-        <location filename="../utils/QtExtensions.py" line="131"/>
+        <location filename="../utils/QtExtensions.py" line="132"/>
         <source>Select Path</source>
         <translation>Wähle Pfad</translation>
     </message>
     <message>
-        <location filename="../utils/QtExtensions.py" line="144"/>
+        <location filename="../utils/QtExtensions.py" line="145"/>
         <source>Choose Path</source>
         <translation>Wähle Pfad</translation>
     </message>
@@ -244,6 +313,16 @@
         <location filename="../Components/Tabs/Settings/Rare.py" line="68"/>
         <source>Restart Application to activate changes</source>
         <translation>Starte die App neu um die Änderungen zu aktivieren</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Rare.py" line="33"/>
+        <source>Save</source>
+        <translation>Speichern</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Rare.py" line="49"/>
+        <source>Language</source>
+        <translation>Sprache</translation>
     </message>
 </context>
 <context>
@@ -385,15 +464,23 @@
 <context>
     <name>TabWidget</name>
     <message>
-        <location filename="../Components/TabWidget.py" line="21"/>
+        <location filename="../Components/TabWidget.py" line="24"/>
         <source>Games</source>
         <translation>Spiele</translation>
     </message>
 </context>
 <context>
+    <name>UninstalledGameWidget</name>
+    <message>
+        <location filename="../Components/Tabs/Games/GameWidgetListUninstalled.py" line="42"/>
+        <source>Install</source>
+        <translation>Installieren</translation>
+    </message>
+</context>
+<context>
     <name>UpdateWidget</name>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="196"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="263"/>
         <source>Update Game</source>
         <translation>Spiel updaten</translation>
     </message>

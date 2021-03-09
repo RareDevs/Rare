@@ -30,7 +30,7 @@ class RareSettings(QWidget):
         # select Image dir
         self.select_path = PathEdit(img_dir, type_of_file=QFileDialog.DirectoryOnly)
         self.select_path.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
-        self.save_path_button = QPushButton("Save")
+        self.save_path_button = QPushButton(self.tr("Save"))
         self.save_path_button.clicked.connect(self.save_path)
         self.img_dir = SettingsWidget(self.tr("Image Directory"), self.select_path, self.save_path_button)
         self.layout.addWidget(self.img_dir)
@@ -46,7 +46,7 @@ class RareSettings(QWidget):
                 self.select_lang.setCurrentIndex(0)
         else:
             self.select_lang.setCurrentIndex(0)
-        self.lang_widget = SettingsWidget("Language", self.select_lang)
+        self.lang_widget = SettingsWidget(self.tr("Language"), self.select_lang)
         self.select_lang.currentIndexChanged.connect(self.update_lang)
         self.layout.addWidget(self.lang_widget)
 

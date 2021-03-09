@@ -10,6 +10,7 @@ from legendary.models.game import Game
 from notifypy import Notify
 
 from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog
+from Rare.utils.LegendaryApi import VerifyThread
 from Rare.utils.Models import InstallOptions
 
 logger = getLogger("Download")
@@ -18,11 +19,13 @@ logger = getLogger("Download")
 class DownloadThread(QThread):
     status = pyqtSignal(str)
 
-    def __init__(self, dlm, core: LegendaryCore, igame):
+    def __init__(self, dlm, core: LegendaryCore, igame, repair=False, repair_file=None):
         super(DownloadThread, self).__init__()
         self.dlm = dlm
         self.core = core
         self.igame = igame
+        self.repair = repair
+        self.repair_file = repair_file
 
     def run(self):
         start_time = time.time()
@@ -43,6 +46,7 @@ class DownloadThread(QThread):
             postinstall = self.core.install_game(self.igame)
             if postinstall:
                 self._handle_postinstall(postinstall, self.igame)
+
             dlcs = self.core.get_dlc_for_game(self.igame.app_name)
             if dlcs:
                 print('The following DLCs are available for this game:')
@@ -55,6 +59,19 @@ class DownloadThread(QThread):
             if game.supports_cloud_saves and not game.is_dlc:
                 logger.info('This game supports cloud saves, syncing is handled by the "sync-saves" command.')
                 logger.info(f'To download saves for this game run "legendary sync-saves {game.app_name}"')
+        old_igame = self.core.get_installed_game(game.app_name)
+        if old_igame and self.repair and os.path.exists(self.repair_file):
+            if old_igame.needs_verification:
+                old_igame.needs_verification = False
+                self.core.install_game(old_igame)
+
+            logger.debug('Removing repair file.')
+            os.remove(self.repair_file)
+        if old_igame and old_igame.install_tags != self.igame.install_tags:
+            old_igame.install_tags = self.igame.install_tags
+            self.logger.info('Deleting now untagged files.')
+            self.core.uninstall_tag(old_igame)
+            self.core.install_game(old_igame)
 
         self.status.emit("finish")
 
@@ -137,28 +154,51 @@ class DownloadTab(QWidget):
             igame = self.core.get_installed_game(options.app_name)
             if igame.needs_verification and not options.repair:
                 options.repair = True
+        repair_file = None
+        if options.repair:
+            repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{options.app_name}.repair')
 
         if not game:
             QMessageBox.warning(self, "Error", "Could not find Game in your library")
             return
 
         if game.is_dlc:
+            logger.info("DLCs are currently not supported")
             return
+
+        if game.is_dlc:
+            logger.info('Install candidate is DLC')
+            app_name = game.metadata['mainGameItem']['releaseInfo'][0]['appId']
+            base_game = self.core.get_game(app_name)
+            # check if base_game is actually installed
+            if not self.core.is_installed(app_name):
+                # download mode doesn't care about whether or not something's installed
+                logger.error("Base Game is not installed")
+                return
+        else:
+            base_game = None
 
         if options.repair:
             repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{options.app_name}.repair')
-
             if not self.core.is_installed(game.app_name):
                 return
+
             if not os.path.exists(repair_file):
                 logger.info("Game has not been verified yet")
+                if QMessageBox.question(self, "Verify", "Game has not been verified yet. Do you want to verify first?",
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
+                    self.verify_thread = VerifyThread(self.core, game.app_name)
+                    self.verify_thread.finished.connect(
+                        lambda: self.prepare_download(game, options, base_game, repair_file))
+                    self.verify_thread.start()
                 return
-            self.repair()
+        self.prepare_download(game, options, base_game, repair_file)
 
+    def prepare_download(self, game, options, base_game, repair_file):
         dlm, analysis, igame = self.core.prepare_download(
             game=game,
             base_path=options.path,
-            max_workers=options.max_workers)
+            max_workers=options.max_workers, base_game=base_game, repair=options.repair)
         if not analysis.dl_size:
             QMessageBox.information(self, "Warning", self.tr("Download size is 0. Game already exists"))
             return
@@ -182,7 +222,7 @@ class DownloadTab(QWidget):
                                 self.tr("Installation failed. See logs for more information"))
             return
         self.active_game = game
-        self.thread = DownloadThread(dlm, self.core, igame)
+        self.thread = DownloadThread(dlm, self.core, igame, options.repair, repair_file)
         self.thread.status.connect(self.status)
         self.thread.start()
 
@@ -192,7 +232,7 @@ class DownloadTab(QWidget):
         elif text == "finish":
             notification = Notify()
             notification.title = self.tr("Installation finished")
-            notification.message = self.tr("Download of game ")+self.active_game.app_title
+            notification.message = self.tr("Download of game ") + self.active_game.app_title
             notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
             self.finished.emit()
@@ -203,7 +243,6 @@ class DownloadTab(QWidget):
     def update_game(self, app_name: str):
         print("Update ", app_name)
         self.install_game(InstallOptions(app_name))
-
 
     def repair(self):
         pass

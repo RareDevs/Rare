@@ -23,6 +23,8 @@ def main():
     app = QApplication([])
     app.setApplicationName("Rare")
     app.setOrganizationName("Rare")
+    # app.setQuitOnLastWindowClosed(False)
+
     settings = QSettings()
     # Translator
     translator = QTranslator()
@@ -35,7 +37,7 @@ def main():
     app.installTranslator(translator)
     # Style
     app.setStyleSheet(open(style_path + "RareStyle.qss").read())
-    app.setWindowIcon(QIcon(style_path+"Logo.png"))
+    app.setWindowIcon(QIcon(style_path + "Logo.png"))
     launch_dialog = LaunchDialog(core)
     launch_dialog.exec_()
     mainwindow = MainWindow(core)
@@ -45,3 +47,20 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+"""
+    tray = QSystemTrayIcon()
+    tray.setIcon(icon("fa.gamepad", color="white"))
+    tray.setVisible(True)
+    menu = QMenu()
+    option1 = QAction("Geeks for Geeks")
+    option1.triggered.connect(lambda: app.exec_())
+    option2 = QAction("GFG")
+    menu.addAction(option1)
+    menu.addAction(option2)
+    # To quit the app
+    quit = QAction("Quit")
+    quit.triggered.connect(app.quit)
+    menu.addAction(quit)
+    # Adding options to the System Tray
+    tray.setContextMenu(menu)"""

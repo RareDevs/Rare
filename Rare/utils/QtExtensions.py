@@ -1,10 +1,10 @@
 import os
 
-from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QPropertyAnimation, pyqtSlot, QPointF, QEasingCurve, \
-    QObject, pyqtProperty
-from PyQt5.QtGui import QMovie, QPainter, QPalette, QLinearGradient, QGradient
+from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal
+from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QLineEdit, \
-    QPushButton, QStyleOptionTab, QStylePainter, QTabBar, QAbstractButton, QCheckBox
+    QPushButton, QStyleOptionTab, QStylePainter, QTabBar
+from qtawesome import icon
 
 from Rare import style_path
 
@@ -121,8 +121,9 @@ class ClickableLabel(QLabel):
 
 
 class PathEdit(QWidget):
-    def __init__(self, text: str = "", type_of_file: QFileDialog.FileType = QFileDialog.AnyFile, infotext: str = "",
-                 filter: str = None):
+    def __init__(self, text: str = "",
+                 type_of_file: QFileDialog.FileType = QFileDialog.AnyFile,
+                 infotext: str = "", filter: str = None):
         super(PathEdit, self).__init__()
         self.filter = filter
         self.type_of_file = type_of_file
@@ -182,6 +183,7 @@ class SideTabBar(QTabBar):
             painter.drawControl(QStyle.CE_TabBarTabLabel, opt);
             painter.restore()
 
+
 class WaitingSpinner(QLabel):
     def __init__(self):
         super(WaitingSpinner, self).__init__()
@@ -189,92 +191,47 @@ class WaitingSpinner(QLabel):
             margin-left: auto;
             margin-right: auto;
         """)
-        self.movie = QMovie(style_path+"Icons/loader.gif")
+        self.movie = QMovie(style_path + "Icons/loader.gif")
         self.setMovie(self.movie)
         self.movie.start()
 
 
-class SwitchPrivate(QObject):
-    def __init__(self, q, parent=None):
-        QObject.__init__(self, parent=parent)
-        self.mPointer = q
-        self.mPosition = 0.0
-        self.mGradient = QLinearGradient()
-        self.mGradient.setSpread(QGradient.PadSpread)
+class SelectViewWidget(QWidget):
+    toggled = pyqtSignal()
 
-        self.animation = QPropertyAnimation(self)
-        self.animation.setTargetObject(self)
-        self.animation.setPropertyName(b'position')
-        self.animation.setStartValue(0.0)
-        self.animation.setEndValue(1.0)
-        self.animation.setDuration(200)
-        self.animation.setEasingCurve(QEasingCurve.InOutExpo)
+    def __init__(self, icon_view: bool):
+        super(SelectViewWidget, self).__init__()
+        self.icon_view = icon_view
+        self.setStyleSheet("""QPushButton{border: none}""")
+        self.icon_view_button = QPushButton()
+        self.list_view = QPushButton()
+        if icon_view:
+            self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="orange"))
+            self.list_view.setIcon(icon("fa5s.list", color="white"))
+        else:
+            self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="white"))
+            self.list_view.setIcon(icon("fa5s.list", color="orange"))
 
-        self.animation.finished.connect(self.mPointer.update)
+        self.icon_view_button.clicked.connect(self.icon)
+        self.list_view.clicked.connect(self.list)
 
-    @pyqtProperty(float)
-    def position(self):
-        return self.mPosition
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(self.icon_view_button)
+        self.layout.addWidget(self.list_view)
 
-    @position.setter
-    def position(self, value):
-        self.mPosition = value
-        self.mPointer.update()
+        self.setLayout(self.layout)
 
-    def draw(self, painter):
-        r = self.mPointer.rect()
-        margin = r.height()/10
-        shadow = self.mPointer.palette().color(QPalette.Dark)
-        light = self.mPointer.palette().color(QPalette.Light)
-        button = self.mPointer.palette().color(QPalette.Button)
-        painter.setPen(Qt.NoPen)
+    def isChecked(self):
+        return self.icon_view
 
-        #self.mGradient.setColorAt(0, shadow.darker(130))
-        #self.mGradient.setColorAt(1, light.darker(130))
-        #self.mGradient.setStart(0, r.height())
-        #self.mGradient.setFinalStop(0, 0)
-        painter.setBrush(self.mGradient)
-        painter.drawRoundedRect(r, r.height()/2, r.height()/2)
+    def icon(self):
+        self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="orange"))
+        self.list_view.setIcon(icon("fa5s.list", color="white"))
+        self.icon_view = False
+        self.toggled.emit()
 
-        self.mGradient.setColorAt(0, shadow.darker(140))
-        self.mGradient.setColorAt(1, light.darker(160))
-        self.mGradient.setStart(0, 0)
-        self.mGradient.setFinalStop(0, r.height())
-        painter.setBrush(self.mGradient)
-        painter.drawRoundedRect(r.adjusted(margin, margin, -margin, -margin), r.height()/2, r.height()/2)
-
-        self.mGradient.setColorAt(0, button.darker(130))
-        self.mGradient.setColorAt(1, button)
-
-        painter.setBrush(self.mGradient)
-
-        x = r.height()/2.0 + self.mPosition*(r.width()-r.height())
-        painter.drawEllipse(QPointF(x, r.height()/2), r.height()/2-margin, r.height()/2-margin)
-
-    @pyqtSlot(bool, name='animate')
-    def animate(self, checked):
-        self.animation.setDirection(QPropertyAnimation.Forward if checked else QPropertyAnimation.Backward)
-        self.animation.start()
-
-
-class Switch(QAbstractButton):
-    def __init__(self):
-        QAbstractButton.__init__(self)
-        self.dPtr = SwitchPrivate(self)
-        self.setCheckable(True)
-        self.clicked.connect(self.dPtr.animate)
-
-    def sizeHint(self):
-        return QSize(42, 21)
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        self.dPtr.draw(painter)
-
-    def setChecked(self, a0: bool) -> None:
-        super().setChecked(a0)
-        self.dPtr.animate(a0)
-
-    def resizeEvent(self, event):
-        self.update()
+    def list(self):
+        self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="white"))
+        self.list_view.setIcon(icon("fa5s.list", color="orange"))
+        self.icon_view = True
+        self.toggled.emit()

@@ -9,6 +9,7 @@ from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
 from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
 from Rare.Components.Tabs.Games.GamesTab import GameTab
 from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
+from Rare.utils.Models import InstallOptions
 
 
 class TabWidget(QTabWidget):
@@ -25,6 +26,10 @@ class TabWidget(QTabWidget):
         self.addTab(self.downloadTab, "Downloads")
         self.downloadTab.finished.connect(self.game_list.default_widget.game_list.update_list)
         self.game_list.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
+
+        self.game_list.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(InstallOptions(app_name, core.get_installed_game(app_name).install_path, repair=True)))
+
+        self.tabBarClicked.connect(lambda x: self.game_list.layout.setCurrentIndex(0) if x==0 else None)
 
         # Commented, because it is not finished
         # self.cloud_saves = SyncSaves(core)
