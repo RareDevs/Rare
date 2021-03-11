@@ -20,6 +20,29 @@
     </message>
 </context>
 <context>
+    <name>BrowserLogin</name>
+    <message>
+        <location filename="../Components/Dialogs/Login/BrowserLogin.py" line="23"/>
+        <source>Opens a browser. You login and copy the json code in the field below. Click &lt;a href=&apos;{}&apos;&gt;here&lt;/a&gt; to open Browser</source>
+        <translation>Ein Browser wird geöffnet. Einloggen und den json Code in das untere Feld kopieren. Drücke &lt;a href=&apos;{}&apos;&gt;hier&lt;/a&gt; um den Browser zu öffnen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Dialogs/Login/BrowserLogin.py" line="30"/>
+        <source>Insert SID here</source>
+        <translation>Die SID hier einfügen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Dialogs/Login/BrowserLogin.py" line="35"/>
+        <source>Login</source>
+        <translation>Einloggen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Dialogs/Login/BrowserLogin.py" line="42"/>
+        <source>Loading...</source>
+        <translation>Laden...</translation>
+    </message>
+</context>
+<context>
     <name>DownloadTab</name>
     <message>
         <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="121"/>
@@ -61,16 +84,46 @@
         <source>Installing Game: No active download</source>
         <translation>Zu installierendes Spiel: Kein aktiver Download</translation>
     </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="107"/>
+        <source>Download speed</source>
+        <translation>Download Geschwindigkeit</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="108"/>
+        <source>Cache used</source>
+        <translation>Genutzter Cache</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="109"/>
+        <source>Downloaded</source>
+        <translation>Runtergeladen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="162"/>
+        <source>Could not find Game in your library</source>
+        <translation>Konnte das Spiel nicht in deiner Bibliothek finden</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="188"/>
+        <source>Game has not been verified yet. Do you want to verify first?</source>
+        <translation>Spiel wurde noch nicht überprüft. Willst du es überprüfen?</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="210"/>
+        <source>Installing Game: </source>
+        <translation>Installierendes Spiel: </translation>
+    </message>
 </context>
 <context>
     <name>GameActions</name>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="151"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="166"/>
         <source>Uninstall game</source>
         <translation>Spiel deinstallieren</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="159"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="174"/>
         <source>Verify Game</source>
         <translation>Spieldateien überprüfen</translation>
     </message>
@@ -78,32 +131,32 @@
 <context>
     <name>GameInfo</name>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="83"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="97"/>
         <source>Are you sure to uninstall </source>
         <translation>Möchstes du das Spiel deinstallieren </translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="92"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="106"/>
         <source>Repair file does not exist or game does not need a repair. Please verify game first</source>
         <translation>Es ist keine Reperatur nötig oder das Spiel wurde noch nicht verifiziert. Verifiziere das Spiel zu erst</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="109"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="124"/>
         <source>Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?</source>
         <translation>Überprüfung fehlgeschlagen, {} Dateien sind falsch, {} Dateien fehlen. Willst du das Spiel reparieren?</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="137"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="152"/>
         <source>Developer: </source>
         <translation>Entwickler: </translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="138"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="153"/>
         <source>Install size: </source>
         <translation>Installationsgröße: </translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="140"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="155"/>
         <source>Install path: </source>
         <translation>Installations pfad: </translation>
     </message>
@@ -111,24 +164,57 @@
 <context>
     <name>GameListHeadBar</name>
     <message>
-        <location filename="../Components/Tabs/Games/GamesTab.py" line="60"/>
+        <location filename="../Components/Tabs/Games/GamesTab.py" line="69"/>
         <source>Installed only</source>
         <translation>Nur installierte</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GamesTab.py" line="67"/>
+        <location filename="../Components/Tabs/Games/GamesTab.py" line="86"/>
         <source>Search Game</source>
         <translation>Spiel suchen</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GamesTab.py" line="71"/>
         <source>List view</source>
-        <translation>Listenansicht</translation>
+        <translation type="obsolete">Listenansicht</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GamesTab.py" line="73"/>
         <source>Icon view</source>
-        <translation>Iconansicht</translation>
+        <translation type="obsolete">Iconansicht</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GamesTab.py" line="74"/>
+        <source>Import Game</source>
+        <translation>Spiel importieren</translation>
+    </message>
+</context>
+<context>
+    <name>GameSettings</name>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="36"/>
+        <source>Proton Wrapper</source>
+        <translation>Protonversion</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="39"/>
+        <source>Save</source>
+        <translation>Speichern</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="41"/>
+        <source>Proton prefix</source>
+        <translation>Proton prefix</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="100"/>
+        <source>No permission to create folder</source>
+        <translation>Keine Berechtigung um den Ordner zu erstellen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="121"/>
+        <source>Please select path for proton prefix</source>
+        <translation>Wähle den Pfad für das Proton Prefix</translation>
     </message>
 </context>
 <context>
@@ -152,12 +238,12 @@
 <context>
     <name>GameWidgetInstalled</name>
     <message>
-        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="36"/>
+        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="37"/>
         <source>Update available</source>
         <translation>Update verfügbar</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="115"/>
+        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="120"/>
         <source>Game running</source>
         <translation>Spiel läuft</translation>
     </message>
@@ -167,7 +253,7 @@
         <translation type="obsolete">Möchtest du das Spiel deinstallieren: </translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="92"/>
+        <location filename="../Components/Tabs/Games/GameWidgetInstalled.py" line="97"/>
         <source>Please update Game</source>
         <translation>Bitte das Spiel updaten</translation>
     </message>
@@ -187,6 +273,82 @@
         <source>Appdata path: </source>
         <translation>Appdata pfad: </translation>
     </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="23"/>
+        <source>Back</source>
+        <translation>Zurück</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="37"/>
+        <source>Select path to game</source>
+        <translation>Wähle den Pfad zum Spiel</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="51"/>
+        <source>Import all games from Epic Games Launcher</source>
+        <translation>Alle Spiele von Epic Games Launcher importieren</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="116"/>
+        <source>Successfully imported {imported} Games</source>
+        <translation type="obsolete">Es wurden {} Spiele erfolgreich importiert</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="43"/>
+        <source>Import Game</source>
+        <translation>Spiel importieren</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="116"/>
+        <source>Successfully imported {} Games</source>
+        <translation>Es wurden {} Spiele erfolgreich importiert</translation>
+    </message>
+</context>
+<context>
+    <name>InfoTabs</name>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="26"/>
+        <source>Back</source>
+        <translation>Zurück</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="30"/>
+        <source>Game Info</source>
+        <translation>Spiel Informationen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="32"/>
+        <source>Settings</source>
+        <translation>Einstellungen</translation>
+    </message>
+</context>
+<context>
+    <name>InstallDialog</name>
+    <message>
+        <location filename="../Components/Dialogs/InstallDialog.py" line="22"/>
+        <source>Max workers (0: Default)</source>
+        <translation>Maximale Anzahl an Downloadprozessen (0: Standard)</translation>
+    </message>
+</context>
+<context>
+    <name>InstallInfoDialog</name>
+    <message>
+        <location filename="../Components/Dialogs/InstallDialog.py" line="55"/>
+        <source>Download size: {}GB
+Install size: {}GB</source>
+        <translation>Downloadgröße: {}GB
+Installationsgröße: {}GB</translation>
+    </message>
+    <message>
+        <location filename="../Components/Dialogs/InstallDialog.py" line="60"/>
+        <source>Install</source>
+        <translation>Installieren</translation>
+    </message>
+    <message>
+        <location filename="../Components/Dialogs/InstallDialog.py" line="62"/>
+        <source>Cancel</source>
+        <translation>Schließen</translation>
+    </message>
 </context>
 <context>
     <name>LaunchDialog</name>
@@ -199,6 +361,11 @@
         <location filename="../Components/Launch/LaunchDialog.py" line="60"/>
         <source>Logging in</source>
         <translation>Einloggen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Launch/LaunchDialog.py" line="78"/>
+        <source>Downloading Images</source>
+        <translation>Bilder runterladen</translation>
     </message>
 </context>
 <context>
@@ -222,12 +389,12 @@
 <context>
     <name>LinuxSettings</name>
     <message>
-        <location filename="../Components/Tabs/Settings/Linux.py" line="28"/>
+        <location filename="../Components/Tabs/Settings/Linux.py" line="29"/>
         <source>Default Wine Prefix</source>
         <translation>Standard Wine Prefix</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Settings/Linux.py" line="38"/>
+        <location filename="../Components/Tabs/Settings/Linux.py" line="37"/>
         <source>Default Wine executable</source>
         <translation>Standard Wine zum ausführen</translation>
     </message>
@@ -238,6 +405,16 @@
         <location filename="../Components/Dialogs/Login/LoginDialog.py" line="27"/>
         <source>Select one option to Login</source>
         <translation>Wähle eine Option zum einloggen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Dialogs/Login/LoginDialog.py" line="30"/>
+        <source>Use Browser</source>
+        <translation>Browser benutzen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Dialogs/Login/LoginDialog.py" line="30"/>
+        <source>This opens your default browser. Login and copy the text</source>
+        <translation>Dies öffnet den Browser. Logge dich ein und kopiere den angezeigten Text</translation>
     </message>
 </context>
 <context>
@@ -256,22 +433,22 @@
 <context>
     <name>MiniWidget</name>
     <message>
-        <location filename="../Components/Tabs/Account/AccountWidget.py" line="14"/>
+        <location filename="../Components/Tabs/Account/AccountWidget.py" line="19"/>
         <source>Logged in as </source>
         <translation>Eingeloggt als </translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Account/AccountWidget.py" line="16"/>
+        <location filename="../Components/Tabs/Account/AccountWidget.py" line="21"/>
         <source>Account settings</source>
         <translation>Accounteinstellungen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Account/AccountWidget.py" line="20"/>
+        <location filename="../Components/Tabs/Account/AccountWidget.py" line="25"/>
         <source>Logout</source>
         <translation>Ausloggen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Account/AccountWidget.py" line="26"/>
+        <location filename="../Components/Tabs/Account/AccountWidget.py" line="31"/>
         <source>Do you really want to logout</source>
         <translation>Möchtest du dich wirklich ausloggen</translation>
     </message>
@@ -279,12 +456,12 @@
 <context>
     <name>PathEdit</name>
     <message>
-        <location filename="../utils/QtExtensions.py" line="132"/>
+        <location filename="../utils/QtExtensions.py" line="133"/>
         <source>Select Path</source>
         <translation>Wähle Pfad</translation>
     </message>
     <message>
-        <location filename="../utils/QtExtensions.py" line="145"/>
+        <location filename="../utils/QtExtensions.py" line="146"/>
         <source>Choose Path</source>
         <translation>Wähle Pfad</translation>
     </message>
@@ -295,6 +472,11 @@
         <location filename="../Components/Dialogs/PathInputDialog.py" line="15"/>
         <source>Select directory</source>
         <translation>Wähle Ordner</translation>
+    </message>
+    <message>
+        <location filename="../Components/Dialogs/PathInputDialog.py" line="24"/>
+        <source>Cancel</source>
+        <translation>Schließen</translation>
     </message>
 </context>
 <context>

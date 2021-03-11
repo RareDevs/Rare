@@ -31,7 +31,7 @@ class ImportWidget(QWidget):
         self.title = QLabel("<h2>Import Game</h2")
         self.layout.addWidget(self.title)
 
-        self.import_one_game = QLabel("<h3>Import existing game</h3>")
+        self.import_one_game = QLabel(f"<h3>{self.tr('Import existing game')}</h3>")
         self.layout.addWidget(self.import_one_game)
 
         self.import_game_info = QLabel(self.tr("Select path to game"))
@@ -40,13 +40,13 @@ class ImportWidget(QWidget):
         self.path_edit = PathEdit(os.path.expanduser("~"), QFileDialog.DirectoryOnly)
         self.layout.addWidget(self.path_edit)
 
-        self.import_button = QPushButton("Import Game")
+        self.import_button = QPushButton(self.tr("Import Game"))
         self.layout.addWidget(self.import_button)
         self.import_button.clicked.connect(self.import_game)
 
         self.layout.addStretch(1)
 
-        self.auto_import = QLabel("<h3>Auto import all existing games</h3>")
+        self.auto_import = QLabel(f"<h3>{self.tr('Auto import all existing games')}</h3>")
         self.layout.addWidget(self.auto_import)
         self.auto_import_button = QPushButton(self.tr("Import all games from Epic Games Launcher"))
         self.auto_import_button.clicked.connect(self.import_games_prepare)
@@ -113,7 +113,7 @@ class ImportWidget(QWidget):
             for wine_prefix in possible_wineprefixes:
                 imported += self.auto_import_games(f"{wine_prefix}drive_c/Program Files/Epic Games/")
         if imported > 0:
-            QMessageBox.information(self, "Imported Games", self.tr(f"Successfully imported {imported} Games"))
+            QMessageBox.information(self, "Imported Games", self.tr("Successfully imported {} Games").format(imported))
             self.update_list.emit()
             logger.info("Restarting app to import games")
         else:

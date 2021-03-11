@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QLabel, QDialog
+from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QLabel, QDialog, QFileDialog
 
 from Rare.utils.QtExtensions import PathEdit
 
@@ -21,7 +21,7 @@ class PathInputDialog(QDialog):
         self.child_layout = QHBoxLayout()
         self.ok_button = QPushButton("Ok")
         self.ok_button.clicked.connect(self.ok)
-        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button = QPushButton(self.tr("Cancel"))
         self.cancel_button.clicked.connect(self.cancel)
         self.child_layout.addStretch()
         self.child_layout.addWidget(self.ok_button)

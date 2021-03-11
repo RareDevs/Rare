@@ -103,10 +103,10 @@ class DownloadTab(QWidget):
         self.layout = QVBoxLayout()
         self.active_game: Game = None
 
-        self.installing_game = QLabel("Installing Game: None")
-        self.dl_speed = QLabel("Download speed: 0MB/s")
-        self.cache_used = QLabel("Cache used: 0MB")
-        self.downloaded = QLabel("Downloaded: 0MB")
+        self.installing_game = QLabel(self.tr("No active Download"))
+        self.dl_speed = QLabel(self.tr("Download speed") + ": 0MB/s")
+        self.cache_used = QLabel(self.tr("Cache used") + ": 0MB")
+        self.downloaded = QLabel(self.tr("Downloaded") + ": 0MB")
 
         self.info_layout = QGridLayout()
 
@@ -128,7 +128,7 @@ class DownloadTab(QWidget):
         self.installing_game_widget = QLabel(self.tr("No active Download"))
         self.layout.addWidget(self.installing_game_widget)
 
-        self.update_title = QLabel("<h2>Updates</h2>")
+        self.update_title = QLabel(f"<h2>{self.tr('Updates')}</h2>")
         self.update_title.setStyleSheet("""
             QLabel{
                 margin-top: 20px;
@@ -159,7 +159,7 @@ class DownloadTab(QWidget):
             repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{options.app_name}.repair')
 
         if not game:
-            QMessageBox.warning(self, "Error", "Could not find Game in your library")
+            QMessageBox.warning(self, "Error", self.tr("Could not find Game in your library"))
             return
 
         if game.is_dlc:
@@ -185,7 +185,7 @@ class DownloadTab(QWidget):
 
             if not os.path.exists(repair_file):
                 logger.info("Game has not been verified yet")
-                if QMessageBox.question(self, "Verify", "Game has not been verified yet. Do you want to verify first?",
+                if QMessageBox.question(self, "Verify", self.tr("Game has not been verified yet. Do you want to verify first?"),
                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
                     self.verify_thread = VerifyThread(self.core, game.app_name)
                     self.verify_thread.finished.connect(
@@ -207,7 +207,7 @@ class DownloadTab(QWidget):
             return
 
         self.installing_game_widget.setText("")
-        self.installing_game.setText("Installing Game: " + game.app_title)
+        self.installing_game.setText(self.tr("Installing Game: ") + game.app_title)
         res = self.core.check_installation_conditions(analysis=analysis, install=igame, game=game,
                                                       updating=self.core.is_installed(options.app_name),
                                                       )

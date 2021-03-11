@@ -67,7 +67,6 @@ class LaunchDialog(QDialog):
         self.setLayout(self.layout)
 
     def login(self):
-        print("Login dlg")
         if LoginDialog(core=self.core).login():
             self.login_thread.start()
         else:
@@ -76,7 +75,7 @@ class LaunchDialog(QDialog):
     def launch(self, core: LegendaryCore):
         self.core = core
         self.info_pb.setMaximum(len(self.core.get_game_list()))
-        self.info_text.setText("Downloading Images")
+        self.info_text.setText(self.tr("Downloading Images"))
         self.thread = LaunchThread(self.core, self)
         self.thread.download_progess.connect(self.update_pb)
         self.thread.action.connect(self.info)

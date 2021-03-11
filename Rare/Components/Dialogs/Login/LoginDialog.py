@@ -27,7 +27,8 @@ class LoginDialog(QDialog):
         self.info_text = QLabel(self.tr("Select one option to Login"))
         self.landing_layout.addWidget(self.info_text)
 
-        self.browser_login = OptionWidget("Use Browser", "This opens your default webbrowser. Login and copy the text")
+        self.browser_login = OptionWidget(self.tr("Use Browser"),
+                                          self.tr("This opens your default browser. Login and copy the text"))
 
         self.landing_layout.addWidget(self.browser_login)
         self.browser_login.button.clicked.connect(lambda: self.layout.setCurrentIndex(1))
@@ -35,7 +36,7 @@ class LoginDialog(QDialog):
         self.import_login = OptionWidget("Import from existing installation",
                                          "Import an existing login session from an Epic Games Launcher installation. You will get logged out there")
         self.import_login.button.clicked.connect(lambda: self.layout.setCurrentIndex(2))
-        self.landing_layout.addWidget(self.import_login)
+        # self.landing_layout.addWidget(self.import_login)
 
         self.close_button = QPushButton("Exit App")
         self.close_button.clicked.connect(self.close)

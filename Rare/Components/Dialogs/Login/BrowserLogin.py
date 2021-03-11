@@ -20,26 +20,26 @@ class BrowserLogin(QWidget):
         self.back = QPushButton("Back")  # TODO Icon
         self.layout.addWidget(self.back)
 
-        self.info_text = QLabel(
-            f"Opens a browser. You login and copy the json code in the field below. Click <a href='{self.url}'>here</a> to open Browser")
+        self.info_text = QLabel(self.tr(
+            "Opens a browser. You login and copy the json code in the field below. Click <a href='{}'>here</a> to open Browser").format(self.url))
         self.info_text.setWordWrap(True)
         self.info_text.setOpenExternalLinks(True)
         self.layout.addWidget(self.info_text)
 
         self.input_field = QLineEdit()
-        self.input_field.setPlaceholderText("Insert SID here")
+        self.input_field.setPlaceholderText(self.tr("Insert SID here"))
         self.layout.addWidget(self.input_field)
 
         self.mini_info = QLabel("")
 
-        self.login_btn = QPushButton("Login")
+        self.login_btn = QPushButton(self.tr("Login"))
         self.login_btn.clicked.connect(self.login)
         self.layout.addWidget(self.login_btn)
 
         self.setLayout(self.layout)
 
     def login(self):
-        self.mini_info.setText("Loading...")
+        self.mini_info.setText(self.tr("Loading..."))
         sid = self.input_field.text()
         # when the text copied
         if sid.startswith("{") and sid.endswith("}"):

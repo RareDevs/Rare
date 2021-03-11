@@ -19,7 +19,7 @@ class InstallDialog(QDialog):
         self.form.addRow(QLabel("Install directory"), self.install_path_field)
 
         self.max_workes = QSpinBox()
-        self.form.addRow(QLabel("Max workers (0: Default)"), self.max_workes)
+        self.form.addRow(QLabel(self.tr("Max workers (0: Default)")), self.max_workes)
 
         self.layout.addLayout(self.form)
 
@@ -52,14 +52,14 @@ class InstallInfoDialog(QDialog):
     def __init__(self, dl_size, install_size):
         super(InstallInfoDialog, self).__init__()
         self.layout = QVBoxLayout()
-        self.infos = QLabel(
-            f"Download size: {(dl_size / 1024 ** 3):.02f}GB\nInstall size: {(install_size / 1024 ** 3):.02f}GB")
+        self.infos = QLabel(self.tr(
+            "Download size: {}GB\nInstall size: {}GB").format(round(dl_size / 1024 ** 3, 2), round(install_size / 1024 ** 3, 2)))
         self.layout.addWidget(self.infos)
 
         self.btn_layout = QHBoxLayout()
-        self.install_btn = QPushButton("Install")
+        self.install_btn = QPushButton(self.tr("Install"))
         self.install_btn.clicked.connect(self.install)
-        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button = QPushButton(self.tr("Cancel"))
         self.cancel_button.clicked.connect(self.cancel)
         self.btn_layout.addStretch(1)
         self.btn_layout.addWidget(self.install_btn)
