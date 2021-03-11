@@ -1,10 +1,10 @@
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QTabWidget, QTabBar, QWidget, QToolButton, QWidgetAction, QMenu
 from legendary.core import LegendaryCore
 from qtawesome import icon
 
-from Rare import style_path
+# from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
 from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
 from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
 from Rare.Components.Tabs.Games.GamesTab import GameTab
@@ -27,9 +27,10 @@ class TabWidget(QTabWidget):
         self.downloadTab.finished.connect(self.game_list.default_widget.game_list.update_list)
         self.game_list.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
 
-        self.game_list.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(InstallOptions(app_name, core.get_installed_game(app_name).install_path, repair=True)))
+        self.game_list.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
+            InstallOptions(app_name, core.get_installed_game(app_name).install_path, repair=True)))
 
-        self.tabBarClicked.connect(lambda x: self.game_list.layout.setCurrentIndex(0) if x==0 else None)
+        self.tabBarClicked.connect(lambda x: self.game_list.layout.setCurrentIndex(0) if x == 0 else None)
 
         # Commented, because it is not finished
         # self.cloud_saves = SyncSaves(core)

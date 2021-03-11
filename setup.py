@@ -29,6 +29,7 @@ setuptools.setup(
         "requests<3.0",
         "pillow",
         "setuptools",
-        "wheel"
+        "wheel",
+        "QtAwesome"
     ]
 )
