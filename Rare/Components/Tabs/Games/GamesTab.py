@@ -17,7 +17,6 @@ class GameTab(QWidget):
         self.default_widget.head_bar.import_game.clicked.connect(lambda: self.layout.setCurrentIndex(2))
         self.layout.addWidget(self.default_widget)
         self.game_info = InfoTabs(core)
-        self.game_info.info.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
         self.game_info.info.update_list.connect(self.update_list)
         self.layout.addWidget(self.game_info)
 

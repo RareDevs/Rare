@@ -1,11 +1,12 @@
 import os
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox, \
     QProgressBar, QStackedWidget
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
+from qtawesome import icon
 
 from Rare.Components.Tabs.Games.GameInfo.GameSettings import GameSettings
 from Rare.utils import LegendaryApi
@@ -22,14 +23,22 @@ class InfoTabs(QTabWidget):
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
 
+        self.addTab(QWidget(), icon("mdi.keyboard-backspace", color="white"), self.tr("Back"))
+        self.tabBarClicked.connect(lambda x: self.parent().layout.setCurrentIndex(0) if x == 0 else None)
+
         self.info = GameInfo(core)
         self.addTab(self.info, self.tr("Game Info"))
         self.settings = GameSettings(core)
         self.addTab(self.settings, self.tr("Settings"))
+        self.tabBar().setCurrentIndex(1)
 
     def update_game(self, app_name):
         self.info.update_game(app_name)
         self.settings.update_game(app_name)
+
+    def keyPressEvent(self, e: QKeyEvent):
+        if e.key() == Qt.Key_Escape:
+            self.parent().layout.setCurrentIndex(0)
 
 
 class GameInfo(QWidget):
@@ -42,8 +51,6 @@ class GameInfo(QWidget):
         super(GameInfo, self).__init__()
         self.core = core
         self.layout = QVBoxLayout()
-        self.back_button = QPushButton("Back")
-        self.layout.addWidget(self.back_button)
 
         # TODO More Information: Image text settings needs_verification platform
         top_layout = QHBoxLayout()
@@ -111,7 +118,8 @@ class GameInfo(QWidget):
     def finish_verify(self, failed):
         failed, missing = failed
         if failed == 0 and missing == 0:
-            QMessageBox.information(self, "Summary", "Game was verified successfully. No missing or corrupt files found")
+            QMessageBox.information(self, "Summary",
+                                    "Game was verified successfully. No missing or corrupt files found")
         else:
             ans = QMessageBox.question(self, "Summary", self.tr(
                 'Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?').format(
