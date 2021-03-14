@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QButtonGr
 from legendary.core import LegendaryCore
 
 logger = getLogger("Import")
+
+
 class ImportWidget(QWidget):
     success = pyqtSignal(str)
 
@@ -77,7 +79,8 @@ class ImportWidget(QWidget):
         self.import_button.setText(self.tr("Loading..."))
         self.import_button.setDisabled(True)
         if os.name != "nt":
-            self.core.egl.appdata_path = os.path.join(self.data_path, f"drive_c/users/{getuser()}/Local Settings/Application Data/EpicGamesLauncher/Saved/Config/Windows")
+            self.core.egl.appdata_path = os.path.join(self.data_path,
+                                                      f"drive_c/users/{getuser()}/Local Settings/Application Data/EpicGamesLauncher/Saved/Config/Windows")
         print(self.core.egl.appdata_path)
         print(os.path.exists(self.core.egl.appdata_path))
         if self.core.auth_import():
