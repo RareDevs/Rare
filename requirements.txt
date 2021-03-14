@@ -3,3 +3,4 @@ requests
 Pillow
 PyQt5
 QtAwesome
+notify-py
