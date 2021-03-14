@@ -55,6 +55,7 @@ class LoginDialog(QDialog):
 
         self.import_widget = ImportWidget(self.core)
         self.import_widget.back.clicked.connect(lambda: self.layout.setCurrentIndex(0))
+        self.import_widget.success.connect(self.success)
         self.layout.addWidget(self.import_widget)
 
         self.layout.addWidget(LoginSuccessfulWidget())

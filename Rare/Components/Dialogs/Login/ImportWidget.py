@@ -10,7 +10,7 @@ logger = getLogger("Import")
 
 
 class ImportWidget(QWidget):
-    success = pyqtSignal(str)
+    success = pyqtSignal()
 
     def __init__(self, core: LegendaryCore):
         super(ImportWidget, self).__init__()
