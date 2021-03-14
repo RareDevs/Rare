@@ -14,6 +14,9 @@ class LoginDialog(QDialog):
 
         self.core = core
         self.setWindowTitle("Rare - Login")
+        self.setFixedWidth(350)
+        self.setFixedHeight(450)
+
         self.init_ui()
 
     def init_ui(self):
@@ -36,7 +39,7 @@ class LoginDialog(QDialog):
         self.import_login = OptionWidget("Import from existing installation",
                                          "Import an existing login session from an Epic Games Launcher installation. You will get logged out there")
         self.import_login.button.clicked.connect(lambda: self.layout.setCurrentIndex(2))
-        # self.landing_layout.addWidget(self.import_login)
+        self.landing_layout.addWidget(self.import_login)
 
         self.close_button = QPushButton("Exit App")
         self.close_button.clicked.connect(self.close)

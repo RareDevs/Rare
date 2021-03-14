@@ -1,11 +1,12 @@
 import os
 from getpass import getuser
+from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QButtonGroup, QRadioButton
 from legendary.core import LegendaryCore
 
-
+logger = getLogger("Import")
 class ImportWidget(QWidget):
     success = pyqtSignal(str)
 
@@ -19,54 +20,72 @@ class ImportWidget(QWidget):
         self.title = QLabel("<h3>Import existing Login session</h3>")
         self.title.setWordWrap(True)
         self.layout.addWidget(self.title)
-        appdata_paths = self.get_appdata_paths()
-
-        if len(appdata_paths) == 0:
-            self.infoText = QLabel("Found Installations here. \n<b>Note:</b> You will get logged out there")
-            self.infoText.setWordWrap(True)
-            self.layout.addWidget(self.infoText)
-
+        self.infoText = QLabel(
+            "Found Installations here. \nPlease select prefix, where Epic Games Launcher is installed\nNote: You will get logged out there")
+        self.infoText.setWordWrap(True)
+        self.layout.addWidget(self.infoText)
+        self.import_button = QPushButton(self.tr("Import"))
+        self.data_path = ""
+        if os.name == "nt" and not self.core.egl.appdata_path:
+            if os.path.exists(os.path.expanduser("~/Local Settings/Application "
+                                                 "Data/EpicGamesLauncher/Saved/Config/Windows")):
+                self.prefixes = QLabel(self.tr("Found Data. Do you want to import them?"))
+                self.data_path = os.path.expanduser("~/Local Settings/Application "
+                                                    "Data/EpicGamesLauncher/Saved/Config/Windows")
+            else:
+                self.infoText.setText(self.tr("Could not find any Epic Games login data"))
+                self.import_button.setDisabled(True)
         else:
-            self.btn_group = QButtonGroup()
-            for i, p in enumerate(appdata_paths):
-                radio_button = QRadioButton(p)
-                if i == 0:
-                    radio_button.setChecked(True)
-                self.btn_group.addButton(radio_button)
-                self.layout.addWidget(radio_button)
+            self.radio_buttons = []
+            prefixes = self.get_wine_prefixes()
+            if len(prefixes) == 0:
+                self.infoText.setText(self.tr("Could not find any Epic Games login data"))
+                self.import_button.setDisabled(True)
+            else:
+                self.btn_group = QButtonGroup()
+                for i in prefixes:
+                    radio_button = QRadioButton(i)
+                    self.radio_buttons.append(radio_button)
+                    self.btn_group.addButton(radio_button)
+                    self.layout.addWidget(radio_button)
+                    radio_button.toggled.connect(self.toggle_radiobutton)
 
-            self.appdata_path_text = QLabel(self.tr("Appdata path: ") + str(self.core.egl.appdata_path))
-            self.appdata_path_text.setWordWrap(True)
-            self.login_text = QLabel("")
-            # self.layout.addWidget(self.btn_group)
-            self.layout.addWidget(self.login_text)
-            self.layout.addStretch(1)
-            self.import_btn = QPushButton("Import")
-            self.layout.addWidget(self.import_btn)
+        self.login_text = QLabel("")
+        self.layout.addWidget(self.login_text)
+        self.layout.addWidget(self.import_button)
+        self.import_button.clicked.connect(self.import_login_data)
 
         self.setLayout(self.layout)
 
-    def get_appdata_paths(self) -> list:
-        if self.core.egl.appdata_path:
-            return [self.core.egl.appdata_path]
+    def toggle_radiobutton(self):
+        if self.sender().isChecked():
+            self.data_path = self.sender().text()
 
-        else:  # Linux
-            wine_paths = []
-            possible_wine_paths = [os.path.expanduser('~/Games/epic-games-store/'),
-                                   os.path.expanduser('~/.wine/')]
-            if os.environ.get("WINEPREFIX"):
-                possible_wine_paths.append(os.environ.get("WINEPREFIX"))
+    def get_wine_prefixes(self):
+        possible_prefixes = [
+            os.path.expanduser("~/.wine"),
+            os.path.expanduser("~/Games/epic-games-store")
+        ]
+        prefixes = []
+        for i in possible_prefixes:
+            if os.path.exists(os.path.join(i, "drive_c/users", getuser(),
+                                           "Local Settings/Application Data/EpicGamesLauncher/Saved/Config/Windows")):
+                prefixes.append(i)
+        return prefixes
 
-            for i in possible_wine_paths:
-                if os.path.exists(i):
-                    if os.path.exists(os.path.join(i, "drive_c/users", getuser(),
-                                                   'Local Settings/Application Data/EpicGamesLauncher',
-                                                   'Saved/Config/Windows')):
-                        wine_paths.append(i)
-
-            if len(wine_paths) > 0:
-                appdata_dirs = [
-                    os.path.join(i, "drive_c/users", getuser(), 'Local Settings/Application Data/EpicGamesLauncher',
-                                 'Saved/Config/Windows') for i in wine_paths]
-                return appdata_dirs
-        return []
+    def import_login_data(self):
+        self.import_button.setText(self.tr("Loading..."))
+        self.import_button.setDisabled(True)
+        if os.name != "nt":
+            self.core.egl.appdata_path = os.path.join(self.data_path, f"drive_c/users/{getuser()}/Local Settings/Application Data/EpicGamesLauncher/Saved/Config/Windows")
+        print(self.core.egl.appdata_path)
+        print(os.path.exists(self.core.egl.appdata_path))
+        if self.core.auth_import():
+            logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")
+            self.success.emit()
+        else:
+            print("Lol")
+        logger.warning("Error: No valid session found")
+        self.login_text.setText(self.tr("Error: No valid session found"))
+        self.import_button.setText(self.tr("Import"))
+        self.import_button.setDisabled(False)
