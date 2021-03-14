@@ -28,15 +28,21 @@ class ImportWidget(QWidget):
         self.layout.addWidget(self.infoText)
         self.import_button = QPushButton(self.tr("Import"))
         self.data_path = ""
-        if os.name == "nt" and not self.core.egl.appdata_path:
-            if os.path.exists(os.path.expanduser("~/Local Settings/Application "
-                                                 "Data/EpicGamesLauncher/Saved/Config/Windows")):
-                self.prefixes = QLabel(self.tr("Found Data. Do you want to import them?"))
-                self.data_path = os.path.expanduser("~/Local Settings/Application "
-                                                    "Data/EpicGamesLauncher/Saved/Config/Windows")
+        if os.name == "nt":
+
+            if not self.core.egl.appdata_path and os.path.exists(
+                    os.path.expandvars("%LOCALAPPDATA%/EpicGamesLauncher/Saved/Config/Windows")):
+                self.core.egl.appdata_path = os.path.expandvars("%LOCALAPPDATA%/EpicGamesLauncher/Saved/Config/Windows")
+
+            if not self.core.egl.appdata_path:
+                self.text = QLabel(self.tr("Could not find EGL program data"))
+
             else:
-                self.infoText.setText(self.tr("Could not find any Epic Games login data"))
-                self.import_button.setDisabled(True)
+                self.text = QLabel(self.tr("Found EGL program Data. Do you want to import them?"))
+
+            self.layout.addWidget(self.text)
+
+        # Linux
         else:
             self.radio_buttons = []
             prefixes = self.get_wine_prefixes()
@@ -81,8 +87,7 @@ class ImportWidget(QWidget):
         if os.name != "nt":
             self.core.egl.appdata_path = os.path.join(self.data_path,
                                                       f"drive_c/users/{getuser()}/Local Settings/Application Data/EpicGamesLauncher/Saved/Config/Windows")
-        print(self.core.egl.appdata_path)
-        print(os.path.exists(self.core.egl.appdata_path))
+
         if self.core.auth_import():
             logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")
             self.success.emit()
