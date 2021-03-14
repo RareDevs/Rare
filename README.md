@@ -3,7 +3,6 @@
 ## A frontend for legendary, the open source Epic Games Launcher alternative
 
 Rare is currently considered beta software and in no way feature-complete. You will probably run into issues, so it is recommend to make a backup. If you have features you want to have in this app, create an issue on github, contact me on Discord (Dummerle#7419) or build it yourself. Please report bugs so I can fix them.
-I work on a new and better version, with better style and better ui. If you are a designer and want to contribute, please contact me. You can test it in the branch "new-style", but it has just the basic features
 
 
 ### Requirements
