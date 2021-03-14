@@ -12,6 +12,7 @@ from Rare.utils.QtExtensions import PathEdit
 class GameSettings(QWidget):
     game: Game
     igame: InstalledGame
+    # variable to no update when changing game
     change = False
 
     def __init__(self, core: LegendaryCore):
@@ -20,6 +21,20 @@ class GameSettings(QWidget):
         self.layout = QVBoxLayout()
         self.title = QLabel("Error")
         self.layout.addWidget(self.title)
+
+        self.offline = QComboBox()
+        self.offline.addItems(["unset", "true", "false"])
+        self.offline_widget = SettingsWidget(self.tr("Launch Game offline"), self.offline)
+        self.offline.currentIndexChanged.connect(self.update_offline)
+
+        self.skip_update = QComboBox()
+        self.skip_update.addItems(["unset", "true", "false"])
+        self.skip_update_widget = SettingsWidget(self.tr("Skip update check before launching"), self.skip_update)
+        self.layout.addWidget(self.skip_update_widget)
+        self.skip_update.currentIndexChanged.connect(self.update_skip_update)
+
+        self.layout.addWidget(self.offline_widget)
+
         if os.name != "nt":
             self.linux_settings = LinuxAppSettings(core)
             self.layout.addWidget(self.linux_settings)
@@ -42,15 +57,48 @@ class GameSettings(QWidget):
                                                        self.proton_prefix_accept_button)
             self.layout.addWidget(self.proton_prefix_widget)
 
-        # Offline, startparams, skip_update_check
+        # startparams, skip_update_check
 
         self.layout.addStretch(1)
         self.setLayout(self.layout)
 
+    def update_offline(self, i):
+        if self.change:
+            # remove section
+            if i == 0:
+                if self.game.app_name in self.core.lgd.config.sections():
+                    if self.core.lgd.config.get(f"{self.game.app_name}", "offline", fallback="") != "":
+                        self.core.lgd.config.remove_option(self.game.app_name, "offline")
+                if self.core.lgd.config[self.game.app_name] == {}:
+                    self.core.lgd.config.remove_section(self.game.app_name)
+            elif i == 1:
+                self.core.lgd.config[self.game.app_name] = {}
+                self.core.lgd.config.set(self.game.app_name, "offline", "true")
+            elif i == 2:
+                self.core.lgd.config[self.game.app_name] = {}
+                self.core.lgd.config.set(self.game.app_name, "offline", "false")
+            self.core.lgd.save_config()
+
+    def update_skip_update(self, i):
+        if self.change:
+            # remove section
+            if i == 0:
+                if self.game.app_name in self.core.lgd.config.sections():
+                    if self.core.lgd.config.get(f"{self.game.app_name}", "skip_update_check", fallback="") != "":
+                        self.core.lgd.config.remove_option(self.game.app_name, "skip_update_check")
+                if self.core.lgd.config[self.game.app_name] == {}:
+                    self.core.lgd.config.remove_section(self.game.app_name)
+            elif i == 1:
+                self.core.lgd.config[self.game.app_name] = {}
+                self.core.lgd.config.set(self.game.app_name, "skip_update_check", "true")
+            elif i == 2:
+                self.core.lgd.config[self.game.app_name] = {}
+                self.core.lgd.config.set(self.game.app_name, "skip_update_check", "false")
+            self.core.lgd.save_config()
+
     def change_proton(self, i):
         if self.change:
-            print("change proton")
-        # Dont use Proton
+            # Dont use Proton
             if i == 0:
                 self.proton_prefix_widget.setVisible(False)
                 if f"{self.game.app_name}" in self.core.lgd.config.sections():
@@ -88,7 +136,6 @@ class GameSettings(QWidget):
         self.core.lgd.save_config()
 
     def update_prefix(self):
-        print("Update prefix")
         text = self.proton_prefix.text()
         if text == "":
             text = os.path.expanduser("~/.proton")
@@ -105,10 +152,30 @@ class GameSettings(QWidget):
         self.core.lgd.save_config()
 
     def update_game(self, app_name):
-        # print(self.core.lgd.config.get(f"{app_name}.env", "STEAM_COMPAT_DATA_PATH", fallback=self.tr("hefjoa")))
         self.change = False
         self.game = self.core.get_game(app_name)
         self.igame = self.core.get_installed_game(app_name)
+
+        if self.igame.can_run_offline:
+            offline = self.core.lgd.config.get(self.game.app_name, "offline", fallback="unset")
+            if offline == "true":
+                self.offline.setCurrentIndex(1)
+            elif offline == "false":
+                self.offline.setCurrentIndex(2)
+            else:
+                self.offline.setCurrentIndex(0)
+
+            self.offline_widget.setVisible(True)
+        else:
+            self.offline_widget.setVisible(False)
+
+        skip_update = self.core.lgd.config.get(self.game.app_name, "skip_update_check", fallback="unset")
+        if skip_update == "true":
+            self.skip_update.setCurrentIndex(1)
+        elif skip_update == "false":
+            self.skip_update.setCurrentIndex(2)
+        else:
+            self.skip_update.setCurrentIndex(0)
 
         self.title.setText(f"<h2>{self.game.app_title}</h2>")
         if os.name != "nt":
@@ -121,7 +188,6 @@ class GameSettings(QWidget):
                 proton_prefix = self.core.lgd.config.get(f"{app_name}.env", "STEAM_COMPAT_DATA_PATH",
                                                          fallback=self.tr(
                                                              "Please select path for proton prefix"))
-                print(proton_prefix)
                 self.proton_prefix.text_edit.setText(proton_prefix)
 
             else:

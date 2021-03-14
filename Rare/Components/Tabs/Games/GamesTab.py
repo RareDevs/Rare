@@ -34,6 +34,7 @@ class GameTab(QWidget):
 
     def show_info(self, app_name):
         self.game_info.update_game(app_name)
+        self.game_info.setCurrentIndex(1)
         self.layout.setCurrentIndex(1)
 
 
