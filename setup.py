@@ -26,13 +26,12 @@ setuptools.setup(
     python_requires=">=3.8",
     entry_points=dict(console_scripts=["rare=Rare.__main__:main"]),
     install_requires=[
-        "legendary-gl",
         "requests<3.0",
         "pillow",
         "setuptools",
         "wheel",
         "PyQt5",
         "QtAwesome",
-        "notify-py"
-    ]
+        "notify-py",
+    ],
 )
