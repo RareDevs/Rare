@@ -4,13 +4,17 @@
     <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredPackages">
         <value>
-          <list size="6">
+          <list size="10">
             <item index="0" class="java.lang.String" itemvalue="certifi" />
             <item index="1" class="java.lang.String" itemvalue="requests" />
             <item index="2" class="java.lang.String" itemvalue="urllib3" />
             <item index="3" class="java.lang.String" itemvalue="Pillow" />
             <item index="4" class="java.lang.String" itemvalue="PyQt5" />
             <item index="5" class="java.lang.String" itemvalue="legendary_gl" />
+            <item index="6" class="java.lang.String" itemvalue="notify-py" />
+            <item index="7" class="java.lang.String" itemvalue="legendary-gl" />
+            <item index="8" class="java.lang.String" itemvalue="QtAwesome" />
+            <item index="9" class="java.lang.String" itemvalue="PyQtWebengine" />
           </list>
         </value>
       </option>
