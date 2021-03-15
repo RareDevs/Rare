@@ -36,13 +36,12 @@ Using the exe-file could cause an error with the stylesheets
 
 - Launch, install and uninstall games
 - Authentication(Import from existing installation and via Browser)
-- In-app Browser to buy games
+- Download progress bar
 - Settings (Legendary and games)
 - Translations (English and German)
 
 ## Planned
 - Sync Cloud Saves
-- Download Progressbar
 - Offline mode
 - More Translations
 

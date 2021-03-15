@@ -1,4 +1,4 @@
-legendary-gl
+git+https://github.com/ChemicalXandco/legendary.git@c1db2b9#egg=legendary-gl
 requests
 Pillow
 PyQt5

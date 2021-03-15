@@ -98,7 +98,6 @@ class GameInfo(QWidget):
                                 QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
             LegendaryApi.uninstall(self.game.app_name, self.core)
             self.update_list.emit()
-            self.back_button.click()
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')

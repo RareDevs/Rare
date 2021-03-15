@@ -40,11 +40,14 @@ class GameSettings(QWidget):
             self.layout.addWidget(self.linux_settings)
 
             self.possible_proton_wrappers = []
-            for i in os.listdir(os.path.expanduser("~/.steam/steam/steamapps/common")):
-                if i.startswith("Proton"):
-                    wrapper = '"' + os.path.join(os.path.expanduser("~/.steam/steam/steamapps/common"), i,
-                                                 "proton") + '" run'
-                    self.possible_proton_wrappers.append(wrapper)
+            try:
+                for i in os.listdir(os.path.expanduser("~/.steam/steam/steamapps/common")):
+                    if i.startswith("Proton"):
+                        wrapper = '"' + os.path.join(os.path.expanduser("~/.steam/steam/steamapps/common"), i,
+                                                    "proton") + '" run'
+                        self.possible_proton_wrappers.append(wrapper)
+            except FileNotFoundError as e:
+                print("Unable to find Proton:", e)
             self.select_proton = QComboBox()
             self.select_proton.addItems(["Don't use Proton"] + self.possible_proton_wrappers)
             self.select_proton.currentIndexChanged.connect(self.change_proton)
