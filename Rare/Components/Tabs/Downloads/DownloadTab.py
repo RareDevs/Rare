@@ -202,6 +202,7 @@ class DownloadTab(QWidget):
         self.thread.status.connect(self.status)
         self.thread.statistics.connect(self.statistics)
         self.thread.start()
+        self.installing_game.setText("Installing Game: " + self.active_game.app_title)
 
     def sdl_prompt(self, app_name: str = '', title: str = '') -> list:
         sdl = QDialog()
@@ -257,6 +258,10 @@ class DownloadTab(QWidget):
             # QMessageBox.information(self, "Info", "Download finished")
             self.finished.emit()
             self.installing_game.setText(self.tr("Installing Game: No active download"))
+            self.prog_bar.setValue(0)
+            self.dl_speed.setText("")
+            self.cache_used.setText("")
+            self.downloaded.setText("")
         elif text == "error":
             QMessageBox.warning(self, "warn", "Download error")
 
