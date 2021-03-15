@@ -7,7 +7,7 @@ from multiprocessing import Queue as MPQueue
 
 from PyQt5.QtCore import QThread, pyqtSignal, Qt, QVariant
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, QListWidget
-from notifypy import Notify
+
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from legendary.models.downloading import UIUpdate
@@ -245,10 +245,15 @@ class DownloadTab(QWidget):
         if text == "dl_finished":
             pass
         elif text == "finish":
-            notification = Notify()
-            notification.title = self.tr("Installation finished")
-            notification.message = self.tr("Download of game ") + self.active_game.app_title
-            notification.send()
+            try:
+                from notifypy import Notify
+            except ModuleNotFoundError:
+                logger.warning("No Notification Module found")
+            else:
+                notification = Notify()
+                notification.title = self.tr("Installation finished")
+                notification.message = self.tr("Download of game ") + self.active_game.app_title
+                notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
             self.finished.emit()
             self.installing_game.setText(self.tr("Installing Game: No active download"))

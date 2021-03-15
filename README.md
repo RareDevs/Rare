@@ -10,7 +10,6 @@ Rare is currently considered beta software and in no way feature-complete. You w
 - requests,
 - pillow
 - pyqt5
-- legendary-gl
 - notify-py
 - QtAwesome
 
