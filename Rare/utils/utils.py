@@ -9,7 +9,6 @@ from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 from legendary.core import LegendaryCore
 
 from Rare import lang_path
-from Rare.utils import legendaryConfig
 
 logger = getLogger("Utils")
 s = QSettings("Rare","Rare")
@@ -95,9 +94,10 @@ def download_image(game, force=False):
 
 
 def get_lang():
-    if "Legendary" in legendaryConfig.get_config() and "locale" in legendaryConfig.get_config()["Legendary"]:
-        logger.info("Found locale in Legendary config: " + legendaryConfig.get_config()["Legendary"]["locale"])
-        return legendaryConfig.get_config()["Legendary"]["locale"].split("-")[0]
+    core = LegendaryCore()
+    if "Legendary" in core.lgd.config.sections() and "locale" in core.lgd.config["Legendary"]:
+        logger.info("Found locale in Legendary config: " + core.lgd.config.get("Legendary", "locale"))
+        return core.lgd.config.get("Legendary", "locale").split("-")[0]
     else:
         logger.info("Found locale in system config: " + QLocale.system().name().split("_")[0])
         return QLocale.system().name().split("_")[0]

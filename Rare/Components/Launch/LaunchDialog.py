@@ -2,7 +2,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QLabel, QProgressBar, QVBoxLayout
-from legendary.core import LegendaryCore
+from custom_legendary.core import LegendaryCore
 
 from Rare.Components.Dialogs.Login.LoginDialog import LoginDialog
 from Rare.utils.utils import download_images
@@ -27,7 +27,7 @@ class LaunchThread(QThread):
 
 class LoginThread(QThread):
     login = pyqtSignal()
-    start_app = pyqtSignal(LegendaryCore)
+    start_app = pyqtSignal()
 
     def __init__(self, core: LegendaryCore):
         super(LoginThread, self).__init__()
@@ -38,7 +38,7 @@ class LoginThread(QThread):
         try:
             if self.core.login():
                 logger.info("You are logged in")
-                self.start_app.emit(self.core)
+                self.start_app.emit()
             else:
                 self.run()
         except ValueError:
@@ -72,8 +72,8 @@ class LaunchDialog(QDialog):
         else:
             exit(0)
 
-    def launch(self, core: LegendaryCore):
-        self.core = core
+    def launch(self):
+        #self.core = core
         self.info_pb.setMaximum(len(self.core.get_game_list()))
         self.info_text.setText(self.tr("Downloading Images"))
         self.thread = LaunchThread(self.core, self)

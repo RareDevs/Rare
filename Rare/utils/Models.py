@@ -10,3 +10,7 @@ class InstallOptions:
         self.max_workers = max_workers
         self.repair = repair
         self.download_only = download_only
+
+
+class KillDownloadException(Exception):
+    pass

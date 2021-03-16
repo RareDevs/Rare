@@ -5,9 +5,9 @@ from sys import stdout
 
 from PyQt5.QtCore import QProcess, QProcessEnvironment, QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox, QWidget
-from legendary.core import LegendaryCore
-from legendary.models.game import VerifyResult
-from legendary.utils.lfs import validate_files
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import VerifyResult
+from custom_legendary.utils.lfs import validate_files
 
 logger = getLogger("Legendary Utils")
 

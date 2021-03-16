@@ -4,8 +4,8 @@ from logging import getLogger
 from PyQt5.QtCore import QProcess, pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QStyle, QVBoxLayout
-from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame
 
 from Rare.utils import LegendaryApi
 
@@ -16,6 +16,7 @@ class GameWidget(QWidget):
     proc: QProcess
     signal = pyqtSignal(str)
     update_list = pyqtSignal()
+    update_game = pyqtSignal()
 
     # TODO Repair
     def __init__(self, game: InstalledGame, core: LegendaryCore):

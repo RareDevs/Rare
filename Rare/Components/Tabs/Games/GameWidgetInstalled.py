@@ -4,8 +4,8 @@ from logging import getLogger
 from PyQt5.QtCore import QEvent, pyqtSignal, QSettings, QSize, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
-from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame
 from qtawesome import icon
 
 from Rare.utils import LegendaryApi

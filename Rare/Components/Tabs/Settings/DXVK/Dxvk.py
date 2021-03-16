@@ -2,7 +2,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QWidgetAction, QMenu, QToolButton, QHBoxLayout, QLabel
-from legendary.core import LegendaryCore
+from custom_legendary.core import LegendaryCore
 
 logger = getLogger("DXVK Settings")
 

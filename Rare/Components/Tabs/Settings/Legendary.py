@@ -2,7 +2,7 @@ from logging import getLogger
 
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton, QLineEdit
-from legendary.core import LegendaryCore
+from custom_legendary.core import LegendaryCore
 
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit

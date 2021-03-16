@@ -1,7 +1,6 @@
 import os
 
-from PyQt5.QtCore import QRect, QPoint, QSize
-from PyQt5.QtWidgets import QTabWidget, QStylePainter, QStyleOptionTab, QTabBar, QStyle
+from PyQt5.QtWidgets import QTabWidget
 
 from Rare.Components.Tabs.Settings.About import About
 from Rare.Components.Tabs.Settings.Legendary import LegendarySettings
@@ -21,4 +20,3 @@ class SettingsTab(QTabWidget):
         if os.name != "nt":
             self.addTab(LinuxSettings(core), "Linux")
         self.addTab(About(), "About")
-

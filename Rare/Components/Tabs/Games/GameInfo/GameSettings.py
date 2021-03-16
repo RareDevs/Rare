@@ -1,8 +1,8 @@
 import os
 
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox
-from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame, Game
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame, Game
 
 from Rare.Components.Tabs.Settings.Linux import LinuxSettings
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget

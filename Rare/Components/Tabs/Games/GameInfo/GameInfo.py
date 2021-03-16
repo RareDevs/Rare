@@ -4,8 +4,8 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox, \
     QProgressBar, QStackedWidget
-from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame, Game
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame, Game
 from qtawesome import icon
 
 from Rare.Components.Tabs.Games.GameInfo.GameSettings import GameSettings

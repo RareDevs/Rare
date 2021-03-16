@@ -2,8 +2,8 @@ from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import *
-from legendary.core import LegendaryCore
-from legendary.models.game import SaveGameStatus
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import SaveGameStatus
 
 from Rare.Components.Dialogs.PathInputDialog import PathInputDialog
 from Rare.Components.Tabs.CloudSaves.SyncWidget import SyncWidget

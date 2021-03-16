@@ -1,14 +1,13 @@
 import os
-import subprocess
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal, QProcess, QSettings
+from PyQt5.QtCore import pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QMessageBox
-from legendary.core import LegendaryCore
+from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton
 
 from Rare.Components.Dialogs.InstallDialog import InstallDialog
 from Rare.utils.Models import InstallOptions
+from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Game")
 

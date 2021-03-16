@@ -3,9 +3,9 @@ from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, QLabel
-from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame, SaveGameStatus
 
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame, SaveGameStatus
 
 
 class _UploadThread(QThread):
@@ -48,7 +48,11 @@ class SyncWidget(QWidget):
         self.igame = igame
         self.has_save_path = True
         if not igame.save_path:
-            save_path = self.core.get_save_path(igame.app_name)
+            try:
+                save_path = self.core.get_save_path(igame.app_name)
+            except Exception as e:
+                self.logger.error(e)
+                return
             if '%' in save_path or '{' in save_path:
                 status = self.tr("Path not found")
                 self.logger.info("Could not find save path")

@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QTabWidget, QTabBar, QWidget, QToolButton, QWidgetAction, QMenu
 from Rare.Components.Tabs.CloudSaves.CloudSaves import SyncSaves
-from legendary.core import LegendaryCore
+from custom_legendary.core import LegendaryCore
 from qtawesome import icon
 
 # from Rare.Components.Tabs.Account.AccountWidget import MiniWidget

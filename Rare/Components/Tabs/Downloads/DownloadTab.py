@@ -5,17 +5,20 @@ import time
 from logging import getLogger
 from multiprocessing import Queue as MPQueue
 
-from PyQt5.QtCore import QThread, pyqtSignal, Qt, QVariant
-from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, QListWidget
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
+    QListWidget, QHBoxLayout
 
-from legendary.core import LegendaryCore
-from legendary.models.game import Game
-from legendary.models.downloading import UIUpdate
-from legendary.utils.selective_dl import games
+
+
+from custom_legendary.core import LegendaryCore
+from custom_legendary.downloader.manager import DLManager
+from custom_legendary.models.downloading import UIUpdate
+from custom_legendary.models.game import Game
+from custom_legendary.utils.selective_dl import games
 
 from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog
-from Rare.utils.LegendaryApi import VerifyThread
-from Rare.utils.Models import InstallOptions
+from Rare.utils.Models import InstallOptions, KillDownloadException
 
 logger = getLogger("Download")
 
@@ -23,8 +26,10 @@ logger = getLogger("Download")
 class DownloadThread(QThread):
     status = pyqtSignal(str)
     statistics = pyqtSignal(UIUpdate)
+    kill = False
 
-    def __init__(self, dlm, core: LegendaryCore, status_queue: MPQueue, igame, repair=False, repair_file=None):
+    def __init__(self, dlm: DLManager, core: LegendaryCore, status_queue: MPQueue, igame, repair=False,
+                 repair_file=None):
         super(DownloadThread, self).__init__()
         self.dlm = dlm
         self.core = core
@@ -40,11 +45,23 @@ class DownloadThread(QThread):
             self.dlm.start()
             time.sleep(1)
             while self.dlm.is_alive():
+                if self.kill:
+                    #raise KillDownloadException()
+                    # TODO kill download queue, workers
+                    pass
                 try:
-                    self.statistics.emit(self.status_queue.get(timeout=0.1))
+                    self.statistics.emit(self.status_queue.get(timeout=1))
                 except queue.Empty:
                     pass
+
             self.dlm.join()
+
+        except KillDownloadException:
+            self.status.emit("stop")
+            logger.info("Downlaod can be continued later")
+            self.dlm.kill()
+            return
+
         except Exception as e:
             logger.error(f"Installation failed after {time.time() - start_time:.02f} seconds: {e}")
             self.status.emit("error")
@@ -128,9 +145,18 @@ class DownloadTab(QWidget):
         self.info_layout.addWidget(self.downloaded, 1, 1)
         self.layout.addLayout(self.info_layout)
 
+        self.mini_layout = QHBoxLayout()
+
         self.prog_bar = QProgressBar()
         self.prog_bar.setMaximum(100)
-        self.layout.addWidget(self.prog_bar)
+        self.mini_layout.addWidget(self.prog_bar)
+
+        self.kill_button = QPushButton(self.tr("Stop Download"))
+        # self.mini_layout.addWidget(self.kill_button)
+        self.kill_button.setDisabled(True)
+        self.kill_button.clicked.connect(self.stop_download)
+
+        self.layout.addLayout(self.mini_layout)
 
         self.installing_game_widget = QLabel(self.tr("No active Download"))
         self.layout.addWidget(self.installing_game_widget)
@@ -155,6 +181,9 @@ class DownloadTab(QWidget):
 
         self.setLayout(self.layout)
 
+    def stop_download(self):
+        self.thread.kill = True
+
     def install_game(self, options: InstallOptions):
         game = self.core.get_game(options.app_name, update_meta=True)
         status_queue = MPQueue()
@@ -162,28 +191,28 @@ class DownloadTab(QWidget):
             dlm, analysis, game, igame, repair, repair_file = self.core.prepare_download(
                 app_name=options.app_name,
                 base_path=options.path,
-                force=False, # TODO allow overwrite
+                force=False,  # TODO allow overwrite
                 no_install=options.download_only,
                 status_q=status_queue,
-                #max_shm=,
+                # max_shm=,
                 max_workers=options.max_workers,
-                #game_folder=,
-                #disable_patching=,
-                #override_manifest=,
-                #override_old_manifest=,
-                #override_base_url=,
-                #platform_override=,
-                #file_prefix_filter=,
-                #file_exclude_filter=,
-                #file_install_tag=,
-                #dl_optimizations=,
-                #dl_timeout=,
+                # game_folder=,
+                # disable_patching=,
+                # override_manifest=,
+                # override_old_manifest=,
+                # override_base_url=,
+                # platform_override=,
+                # file_prefix_filter=,
+                # file_exclude_filter=,
+                # file_install_tag=,
+                # dl_optimizations=,
+                # dl_timeout=,
                 repair=options.repair,
-                #repair_use_latest=,
-                #ignore_space_req=,
-                #disable_delta=,
-                #override_delta_manifest=,
-                #reset_sdl=,
+                # repair_use_latest=,
+                # ignore_space_req=,
+                # disable_delta=,
+                # override_delta_manifest=,
+                # reset_sdl=,
                 sdl_prompt=self.sdl_prompt)
         except Exception as e:
             QMessageBox.warning(self, self.tr("Error preparing download"),
@@ -202,6 +231,7 @@ class DownloadTab(QWidget):
         self.thread.status.connect(self.status)
         self.thread.statistics.connect(self.statistics)
         self.thread.start()
+        self.kill_button.setDisabled(False)
         self.installing_game.setText("Installing Game: " + self.active_game.app_title)
 
     def sdl_prompt(self, app_name: str = '', title: str = '') -> list:
@@ -223,7 +253,7 @@ class DownloadTab(QWidget):
             tags.extend(games[app_name]['__required']['tags'])
 
         # add available additional downloads to list
-        pack_list.addItems([ tag + ': ' + info['name'] for tag, info in games[app_name].items() if tag != '__required' ])
+        pack_list.addItems([tag + ': ' + info['name'] for tag, info in games[app_name].items() if tag != '__required'])
 
         # enable checkboxes
         for i in range(len(pack_list)):
@@ -265,11 +295,19 @@ class DownloadTab(QWidget):
         elif text == "error":
             QMessageBox.warning(self, "warn", "Download error")
 
+        elif text == "stop":
+            self.kill_button.setDisabled(True)
+            self.installing_game.setText(self.tr("Installing Game: No active download"))
+            self.prog_bar.setValue(0)
+            self.dl_speed.setText("")
+            self.cache_used.setText("")
+            self.downloaded.setText("")
+
     def statistics(self, ui_update: UIUpdate):
         self.prog_bar.setValue(ui_update.progress)
-        self.dl_speed.setText(self.tr("Download speed") + f": {ui_update.download_speed/1024/1024:.02f}MB/s")
-        self.cache_used.setText(self.tr("Cache used") + f": {ui_update.cache_usage/1024/1024:.02f}MB")
-        self.downloaded.setText(self.tr("Downloaded") + f": {ui_update.total_downloaded/1024/1024:.02f}MB")
+        self.dl_speed.setText(self.tr("Download speed") + f": {ui_update.download_speed / 1024 / 1024:.02f}MB/s")
+        self.cache_used.setText(self.tr("Cache used") + f": {ui_update.cache_usage / 1024 / 1024:.02f}MB")
+        self.downloaded.setText(self.tr("Downloaded") + f": {ui_update.total_downloaded / 1024 / 1024:.02f}MB")
 
     def update_game(self, app_name: str):
         print("Update ", app_name)

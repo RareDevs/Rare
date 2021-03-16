@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt, pyqtSignal, QSettings
 from PyQt5.QtWidgets import *
-from legendary.core import LegendaryCore
+from custom_legendary.core import LegendaryCore
 
 from Rare.Components.Tabs.Games.GameWidgetInstalled import GameWidgetInstalled
 from Rare.Components.Tabs.Games.GameWidgetListUninstalled import UninstalledGameWidget
@@ -46,7 +46,7 @@ class GameList(QScrollArea):
                 widget = GameWidget(game, self.core)
             if widget.update_available:
                 self.updates.append(widget.game.app_name)
-                widget.update_game.connect(self.update_game.emit)
+                widget.update_game.connect(lambda: self.update_game.emit())
             self.layout.addWidget(widget)
             widget.update_list.connect(self.update_list)
 
