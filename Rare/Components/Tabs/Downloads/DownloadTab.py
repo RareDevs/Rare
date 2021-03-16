@@ -168,12 +168,14 @@ class DownloadTab(QWidget):
             }
         """)
         self.layout.addWidget(self.update_title)
+        self.update_widgets = {}
         if not updates:
             self.update_text = QLabel(self.tr("No updates available"))
             self.layout.addWidget(self.update_text)
         else:
             for i in updates:
                 widget = UpdateWidget(core, i)
+                self.update_widgets[i] = widget
                 self.layout.addWidget(widget)
                 widget.update.connect(self.update_game)
 
@@ -234,6 +236,9 @@ class DownloadTab(QWidget):
         self.kill_button.setDisabled(False)
         self.installing_game.setText("Installing Game: " + self.active_game.app_title)
 
+        for i in self.update_widgets.values():
+            i.update_button.setDisabled(True)
+
     def sdl_prompt(self, app_name: str = '', title: str = '') -> list:
         sdl = QDialog()
         sdl.setWindowTitle('Select Additional Downloads')
@@ -286,9 +291,16 @@ class DownloadTab(QWidget):
                 notification.message = self.tr("Download of game ") + self.active_game.app_title
                 notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
+            self.update_widgets[self.active_game.app_name].setVisible(False)
+            self.update_widgets.pop(self.active_game.app_name)
+
+            for i in self.update_widgets.values():
+                i.update_button.setDisabled(False)
+
             self.finished.emit()
             self.installing_game.setText(self.tr("Installing Game: No active download"))
             self.prog_bar.setValue(0)
+
             self.dl_speed.setText("")
             self.cache_used.setText("")
             self.downloaded.setText("")
