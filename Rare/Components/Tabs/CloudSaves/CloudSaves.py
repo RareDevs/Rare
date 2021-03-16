@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal, QObjectCleanupHandler, Qt
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import *
 from legendary.core import LegendaryCore
 from legendary.models.game import SaveGameStatus
@@ -55,11 +55,12 @@ class SyncSaves(QScrollArea):
         self.main_layout.addWidget(self.sync_all_button)
 
         latest_save = {}
-        for i in saves:
+        for i in sorted(saves, key=lambda a: a.datetime):
             latest_save[i.app_name] = i
+
         logger.info(f'Got {len(latest_save)} remote save game(s)')
         if len(latest_save) == 0:
-            QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
+            # QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
             self.widget = QLabel("No Games found, supporting cloud saves")
             self.setWidget(self.widget)
             return

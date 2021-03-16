@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QTabWidget, QTabBar, QWidget, QToolButton, QWidgetAction, QMenu
+from Rare.Components.Tabs.CloudSaves.CloudSaves import SyncSaves
 from legendary.core import LegendaryCore
 from qtawesome import icon
 
@@ -15,7 +16,7 @@ from Rare.utils.Models import InstallOptions
 class TabWidget(QTabWidget):
     def __init__(self, core: LegendaryCore):
         super(TabWidget, self).__init__()
-        disabled_tab = 2
+        disabled_tab = 3
         self.setTabBar(TabBar(disabled_tab))
         self.settings = SettingsTab(core)
         self.game_list = GameTab(core)
@@ -33,8 +34,8 @@ class TabWidget(QTabWidget):
         self.tabBarClicked.connect(lambda x: self.game_list.layout.setCurrentIndex(0) if x == 0 else None)
 
         # Commented, because it is not finished
-        # self.cloud_saves = SyncSaves(core)
-        # self.addTab(self.cloud_saves, "Cloud Saves")
+        self.cloud_saves = SyncSaves(core)
+        self.addTab(self.cloud_saves, "Cloud Saves")
 
         # Space Tab
         self.addTab(QWidget(), "")
