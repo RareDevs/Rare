@@ -51,7 +51,7 @@ jobs:
       run: pyinstaller
         --onefile
         --name Rare
-        --add-data="Rare/Styles/languages/*;Rare/Styles/"
+        --add-data="Rare/Styles/*;Rare/Styles/"
         --add-data="Rare/languages/*;Rare/languages"
         ${{ steps.strip.outputs.option }}
         __main__.py
