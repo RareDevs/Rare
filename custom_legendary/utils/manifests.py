@@ -1,4 +1,4 @@
-from legendary.models.manifest import Manifest
+from custom_legendary.models.manifest import Manifest
 
 
 def combine_manifests(base_manifest: Manifest, delta_manifest: Manifest):

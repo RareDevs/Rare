@@ -14,9 +14,9 @@ from queue import Empty
 from sys import exit
 from threading import Condition, Thread
 
-from legendary.downloader.workers import DLWorker, FileWorker
-from legendary.models.downloading import *
-from legendary.models.manifest import ManifestComparison, Manifest
+from custom_legendary.downloader.workers import DLWorker, FileWorker
+from custom_legendary.models.downloading import *
+from custom_legendary.models.manifest import ManifestComparison, Manifest
 
 
 class DLManager(Process):

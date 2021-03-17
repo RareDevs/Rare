@@ -10,8 +10,8 @@ from multiprocessing import Process
 from multiprocessing.shared_memory import SharedMemory
 from queue import Empty
 
-from legendary.models.chunk import Chunk
-from legendary.models.downloading import DownloaderTaskResult, WriterTaskResult
+from custom_legendary.models.chunk import Chunk
+from custom_legendary.models.downloading import DownloaderTaskResult, WriterTaskResult
 
 
 class DLWorker(Process):

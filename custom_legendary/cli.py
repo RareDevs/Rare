@@ -19,12 +19,12 @@ from logging.handlers import QueueListener
 from multiprocessing import freeze_support, Queue as MPQueue
 from sys import exit, stdout
 
-from legendary import __version__, __codename__
-from legendary.core import LegendaryCore
-from legendary.models.exceptions import InvalidCredentialsError
-from legendary.models.game import SaveGameStatus, VerifyResult
-from legendary.utils.cli import get_boolean_choice, sdl_prompt
-from legendary.utils.custom_parser import AliasedSubParsersAction
+from custom_legendary import __version__, __codename__
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.exceptions import InvalidCredentialsError
+from custom_legendary.models.game import SaveGameStatus, VerifyResult
+from custom_legendary.utils.cli import get_boolean_choice, sdl_prompt
+from custom_legendary.utils.custom_parser import AliasedSubParsersAction
 
 # todo custom formatter for cli logger (clean info, highlighted error/warning)
 logging.basicConfig(

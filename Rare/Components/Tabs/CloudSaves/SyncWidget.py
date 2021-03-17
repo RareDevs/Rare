@@ -66,7 +66,9 @@ class SyncWidget(QWidget):
         if self.res == SaveGameStatus.NO_SAVE:
             self.logger.info('No cloud or local savegame found.')
             return
+
         game_title = QLabel(f"<h2>{igame.title}</h2>")
+
         if self.dt_local:
             local_save_date = QLabel(
                 self.tr("Local Save date: ") + str(self.dt_local.strftime('%Y-%m-%d %H:%M:%S')))
@@ -113,7 +115,7 @@ class SyncWidget(QWidget):
                 self.download_button.setDisabled(True)
             self.logger.info(f'- Local save date: {self.dt_local.strftime("%Y-%m-%d %H:%M:%S")}')
         else:
-            self.logger.error("Error")
+            self.logger.error(self.res)
             return
 
         self.upload_button.clicked.connect(self.upload)

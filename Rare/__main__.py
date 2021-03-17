@@ -6,7 +6,7 @@ from Rare import __version__
 from PyQt5.QtCore import QTranslator, QSettings
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
-from legendary.core import LegendaryCore
+from custom_legendary.core import LegendaryCore
 
 from Rare import style_path, lang_path
 from Rare.Components.Launch.LaunchDialog import LaunchDialog

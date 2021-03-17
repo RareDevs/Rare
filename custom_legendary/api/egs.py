@@ -6,7 +6,7 @@ import logging
 
 from requests.auth import HTTPBasicAuth
 
-from legendary.models.exceptions import InvalidCredentialsError
+from custom_legendary.models.exceptions import InvalidCredentialsError
 
 
 class EPCAPI:

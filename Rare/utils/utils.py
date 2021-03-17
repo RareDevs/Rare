@@ -6,7 +6,7 @@ from logging import getLogger
 import requests
 from PIL import Image
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
-from legendary.core import LegendaryCore
+from custom_legendary.core import LegendaryCore
 
 from Rare import lang_path
 

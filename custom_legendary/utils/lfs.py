@@ -7,7 +7,7 @@ import logging
 
 from typing import List, Iterator
 
-from legendary.models.game import VerifyResult
+from custom_legendary.models.game import VerifyResult
 
 logger = logging.getLogger('LFS Utils')
 

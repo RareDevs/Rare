@@ -7,7 +7,7 @@ from hashlib import sha1
 from io import BytesIO
 from uuid import uuid4
 
-from legendary.utils.rolling_hash import get_hash
+from custom_legendary.utils.rolling_hash import get_hash
 
 
 # ToDo do some reworking to make this more memory efficient

@@ -6,7 +6,7 @@ import os
 
 from typing import List
 
-from legendary.models.egl import EGLManifest
+from custom_legendary.models.egl import EGLManifest
 
 
 class EPCLFS:

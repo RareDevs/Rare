@@ -17,23 +17,23 @@ from requests.exceptions import HTTPError
 from typing import List, Dict, Callable
 from uuid import uuid4
 
-from legendary.api.egs import EPCAPI
-from legendary.downloader.manager import DLManager
-from legendary.lfs.egl import EPCLFS
-from legendary.lfs.lgndry import LGDLFS
-from legendary.utils.lfs import clean_filename, delete_folder, delete_filelist, validate_files
-from legendary.models.downloading import AnalysisResult, ConditionCheckResult
-from legendary.models.egl import EGLManifest
-from legendary.models.exceptions import InvalidCredentialsError
-from legendary.models.game import GameAsset, Game, InstalledGame, SaveGameFile, SaveGameStatus, VerifyResult
-from legendary.models.json_manifest import JSONManifest
-from legendary.models.manifest import Manifest, ManifestMeta
-from legendary.models.chunk import Chunk
-from legendary.utils.game_workarounds import is_opt_enabled
-from legendary.utils.savegame_helper import SaveGameHelper
-from legendary.utils.manifests import combine_manifests
-from legendary.utils.wine_helpers import read_registry, get_shell_folders
-from legendary.utils.selective_dl import get_sdl_appname
+from custom_legendary.api.egs import EPCAPI
+from custom_legendary.downloader.manager import DLManager
+from custom_legendary.lfs.egl import EPCLFS
+from custom_legendary.lfs.lgndry import LGDLFS
+from custom_legendary.utils.lfs import clean_filename, delete_folder, delete_filelist, validate_files
+from custom_legendary.models.downloading import AnalysisResult, ConditionCheckResult
+from custom_legendary.models.egl import EGLManifest
+from custom_legendary.models.exceptions import InvalidCredentialsError
+from custom_legendary.models.game import GameAsset, Game, InstalledGame, SaveGameFile, SaveGameStatus, VerifyResult
+from custom_legendary.models.json_manifest import JSONManifest
+from custom_legendary.models.manifest import Manifest, ManifestMeta
+from custom_legendary.models.chunk import Chunk
+from custom_legendary.utils.game_workarounds import is_opt_enabled
+from custom_legendary.utils.savegame_helper import SaveGameHelper
+from custom_legendary.utils.manifests import combine_manifests
+from custom_legendary.utils.wine_helpers import read_registry, get_shell_folders
+from custom_legendary.utils.selective_dl import get_sdl_appname
 
 
 # ToDo: instead of true/false return values for success/failure actually raise an exception that the CLI/GUI

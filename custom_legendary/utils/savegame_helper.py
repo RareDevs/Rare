@@ -7,8 +7,8 @@ from hashlib import sha1
 from io import BytesIO
 from tempfile import TemporaryFile
 
-from legendary.models.chunk import Chunk
-from legendary.models.manifest import \
+from custom_legendary.models.chunk import Chunk
+from custom_legendary.models.manifest import \
     Manifest, ManifestMeta, CDL, FML, CustomFields, FileManifest, ChunkPart, ChunkInfo
 
 
