@@ -1,58 +1,14 @@
-import logging
-import os
 import sys
 
-from Rare import __version__
-from PyQt5.QtCore import QTranslator, QSettings
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
-from custom_legendary.core import LegendaryCore
-
-from Rare import style_path, lang_path
-from Rare.Components.Launch.LaunchDialog import LaunchDialog
-from Rare.Components.MainWindow import MainWindow
-from Rare.utils.utils import get_lang
-
-logging.basicConfig(
-    format='[%(name)s] %(levelname)s: %(message)s',
-    level=logging.INFO
-)
-logger = logging.getLogger("Rare")
-core = LegendaryCore()
-
-
-def main():
-
-    if "--version" in sys.argv:
-        print(__version__)
-        return
-
-    app = QApplication([])
-    app.setApplicationName("Rare")
-    app.setOrganizationName("Rare")
-    # app.setQuitOnLastWindowClosed(False)
-
-    settings = QSettings()
-    # Translator
-    translator = QTranslator()
-    lang = settings.value("language", get_lang(), type=str)
-
-    if os.path.exists(lang_path + lang + ".qm"):
-        translator.load(lang_path + lang + ".qm")
-    elif not lang == "en":
-        logger.info("Your language is not supported")
-    app.installTranslator(translator)
-    # Style
-    app.setStyleSheet(open(style_path + "RareStyle.qss").read())
-    app.setWindowIcon(QIcon(style_path + "Logo.png"))
-    launch_dialog = LaunchDialog(core)
-    launch_dialog.exec_()
-    mainwindow = MainWindow(core)
-
-    app.exec_()
-
-
 if __name__ == '__main__':
+    if "--version" in sys.argv:
+        from Rare import __version__
+
+        print(__version__)
+        exit(0)
+
+    from Rare.Main import main
+
     main()
 
 """
