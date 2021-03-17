@@ -54,16 +54,19 @@ class SyncSaves(QScrollArea):
         self.main_layout.addWidget(self.title)
         self.main_layout.addWidget(self.sync_all_button)
 
-        latest_save = {}
-        for i in sorted(saves, key=lambda a: a.datetime):
-            latest_save[i.app_name] = i
 
-        logger.info(f'Got {len(latest_save)} remote save game(s)')
         if len(saves) == 0:
             # QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
             self.widget = QLabel("No Games found, supporting cloud saves")
             self.setWidget(self.widget)
             return
+
+        latest_save = {}
+        for i in sorted(saves, key=lambda a: a.datetime):
+            latest_save[i.app_name] = i
+
+        logger.info(f'Got {len(latest_save)} remote save game(s)')
+
         self.widgets = []
 
         for igame in self.igames:
