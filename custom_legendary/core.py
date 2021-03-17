@@ -774,9 +774,6 @@ class LegendaryCore:
             no_install = repair_use_latest is False
             repair_file = os.path.join(self.lgd.get_tmp_path(), f'{app_name}.repair')
 
-        if not self.login():
-            raise RuntimeError('Login failed! Cannot continue with download process.')
-
         if file_prefix_filter or file_exclude_filter or file_install_tag:
             no_install = True
 
