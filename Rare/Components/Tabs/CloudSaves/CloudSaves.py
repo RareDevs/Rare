@@ -2,12 +2,12 @@ from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import *
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import SaveGameStatus
 
 from Rare.Components.Dialogs.PathInputDialog import PathInputDialog
 from Rare.Components.Tabs.CloudSaves.SyncWidget import SyncWidget
 from Rare.utils.QtExtensions import WaitingSpinner
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import SaveGameStatus
 
 logger = getLogger("Sync Saves")
 
@@ -53,7 +53,6 @@ class SyncSaves(QScrollArea):
         self.sync_all_button.clicked.connect(self.sync_all)
         self.main_layout.addWidget(self.title)
         self.main_layout.addWidget(self.sync_all_button)
-
 
         if len(saves) == 0:
             # QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
