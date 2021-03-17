@@ -1,6 +1,8 @@
 import logging
 import os
+import sys
 
+from Rare import __version__
 from PyQt5.QtCore import QTranslator, QSettings
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
@@ -20,6 +22,11 @@ core = LegendaryCore()
 
 
 def main():
+
+    if "--version" in sys.argv:
+        print(__version__)
+        return
+
     app = QApplication([])
     app.setApplicationName("Rare")
     app.setOrganizationName("Rare")
