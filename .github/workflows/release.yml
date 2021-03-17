@@ -31,3 +31,26 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         twine upload dist/*
+
+  aur-publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Generate PKGBUILD
+      run:
+        ./.github/GenPKG.sh
+    
+    - name: Upload
+      uses: KSXGitHub/github-actions-deploy-aur@v2.2.3
+      with:
+        pkgname: rare
+        pkgbuild: ./.github/rare/PKGBUILD
+        commit_username: Dummerle
+        commit_email: ${{ secrets.MAIL }}
+        ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        commit_message: Update AUR package
+        
+
+
+
+
