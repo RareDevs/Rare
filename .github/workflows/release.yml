@@ -5,8 +5,8 @@ name: New Release
 
 on:
   release:
-    types: [ created ]
-
+    types: [published]
+    
   workflow_dispatch:
 
 jobs:
@@ -15,42 +15,69 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine
-      - name: Build and publish
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          python setup.py sdist bdist_wheel
-          twine upload dist/*
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build and publish
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        python setup.py sdist bdist_wheel
+        twine upload dist/*
 
   aur-publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Generate PKGBUILD
-        run:
-          ./.github/GenPKG.sh
-
-      - name: Upload
-        uses: KSXGitHub/github-actions-deploy-aur@v2.2.3
-        with:
-          pkgname: rare
-          pkgbuild: ./.github/rare/PKGBUILD
-          commit_username: Dummerle
-          commit_email: ${{ secrets.MAIL }}
-          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: Update AUR package
+    - uses: actions/checkout@v2
+    - name: Generate PKGBUILD
+      run:
+        ./.github/GenPKG.sh
+    
+    - name: Upload
+      uses: KSXGitHub/github-actions-deploy-aur@v2.2.3
+      with:
+        pkgname: rare
+        pkgbuild: ./.github/rare/PKGBUILD
+        commit_username: Dummerle
+        commit_email: ${{ secrets.MAIL }}
+        ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        commit_message: Update AUR package
         
-
-
-
+  pyinstaller:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with: 
+        python-version: '3.8'
+    - name: Install python libs
+      run: pip3 install pyinstaller setuptools wheel
+    - name: Install deps
+      run: pip3 install -r requirements.txt
+    - name: Copy Main
+      run: cp Rare/__main__.py ./
+    - name: Build
+      working-directory: Rare
+      run: pyinstaller 
+        --one-file
+        --name Rare
+        --add-data="Rare/languages/*;Rare/languages"
+        --add-data="Rare/Styles/*;Rare/Styles"
+        --windowed
+        __main__.py
+    - name: Upload files to a GitHub release
+      uses: svenstaro/upload-release-action@2.2.1
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: dist/Rare.exe
+        asset_name: Rare.exe
+        tag: ${{ github.ref }}
+        overwrite: true
 
