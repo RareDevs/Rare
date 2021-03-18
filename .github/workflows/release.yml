@@ -64,7 +64,6 @@ jobs:
     - name: Copy Main
       run: cp Rare/__main__.py ./
     - name: Build
-      working-directory: Rare
       run: pyinstaller 
         --onefile
         --name Rare
