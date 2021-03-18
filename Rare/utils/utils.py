@@ -6,14 +6,15 @@ from logging import getLogger
 import requests
 from PIL import Image
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
-from custom_legendary.core import LegendaryCore
 
 from Rare import lang_path
+from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
-s = QSettings("Rare","Rare")
+s = QSettings("Rare", "Rare")
 IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare"), type=str)
-logger.info("IMAGE DIRECTORY: "+IMAGE_DIR)
+logger.info("IMAGE DIRECTORY: " + IMAGE_DIR)
+
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
     if not os.path.isdir(IMAGE_DIR):

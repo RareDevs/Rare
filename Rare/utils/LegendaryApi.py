@@ -4,7 +4,7 @@ from logging import getLogger
 from sys import stdout
 
 from PyQt5.QtCore import QProcess, QProcessEnvironment, QThread, pyqtSignal
-from PyQt5.QtWidgets import QMessageBox, QWidget
+
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import VerifyResult
 from custom_legendary.utils.lfs import validate_files
@@ -125,7 +125,7 @@ class VerifyThread(QThread):
 
         if not missing and not failed:
             logger.info('Verification finished successfully.')
-            self.summary.emit((0,0))
+            self.summary.emit((0, 0))
 
         else:
             logger.error(f'Verification failed, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')

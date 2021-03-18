@@ -16,7 +16,7 @@ class RareSettings(QWidget):
     def __init__(self):
         super(RareSettings, self).__init__()
         self.layout = QVBoxLayout()
-        self.title = QLabel("<h2>"+self.tr("Rare settings")+"</h2>")
+        self.title = QLabel("<h2>" + self.tr("Rare settings") + "</h2>")
         self.layout.addWidget(self.title)
         settings = QSettings()
         img_dir = settings.value("img_dir", type=str)

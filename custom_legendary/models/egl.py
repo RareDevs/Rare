@@ -3,7 +3,6 @@ from distutils.util import strtobool
 
 from custom_legendary.models.game import InstalledGame, Game
 
-
 _template = {
     'AppCategories': ['public', 'games', 'applications'],
     'AppName': '',

@@ -9,16 +9,13 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
     QListWidget, QHBoxLayout
 
-
-
+from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog
+from Rare.utils.Models import InstallOptions, KillDownloadException
 from custom_legendary.core import LegendaryCore
 from custom_legendary.downloader.manager import DLManager
 from custom_legendary.models.downloading import UIUpdate
 from custom_legendary.models.game import Game
 from custom_legendary.utils.selective_dl import games
-
-from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog
-from Rare.utils.Models import InstallOptions, KillDownloadException
 
 logger = getLogger("Download")
 
@@ -46,7 +43,7 @@ class DownloadThread(QThread):
             time.sleep(1)
             while self.dlm.is_alive():
                 if self.kill:
-                    #raise KillDownloadException()
+                    # raise KillDownloadException()
                     # TODO kill download queue, workers
                     pass
                 try:

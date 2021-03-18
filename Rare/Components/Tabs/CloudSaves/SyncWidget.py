@@ -39,6 +39,7 @@ class _DownloadThread(QThread):
 
 class SyncWidget(QWidget):
     reload = pyqtSignal()
+
     def __init__(self, igame: InstalledGame, save, core: LegendaryCore):
         super(SyncWidget, self).__init__()
         self.layout = QVBoxLayout()
@@ -152,6 +153,7 @@ class SyncWidget(QWidget):
             self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
             self.save_path_text.setText(self.igame.save_path)
             self.reload.emit()
+
     def upload(self):
         self.logger.info("Uploading Saves for game " + self.igame.title)
         self.info_text.setText(self.tr("Uploading..."))

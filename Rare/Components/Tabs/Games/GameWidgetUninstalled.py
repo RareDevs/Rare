@@ -4,13 +4,13 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import Game
 
 from Rare.Components.Dialogs.InstallDialog import InstallDialog
 from Rare.utils.Models import InstallOptions
 from Rare.utils.QtExtensions import ClickableLabel
 from Rare.utils.utils import download_image
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import Game
 
 logger = getLogger("Uninstalled")
 

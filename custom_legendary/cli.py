@@ -12,7 +12,6 @@ import shlex
 import subprocess
 import time
 import webbrowser
-
 from distutils.util import strtobool
 from getpass import getuser
 from logging.handlers import QueueListener
@@ -22,7 +21,7 @@ from sys import exit, stdout
 from custom_legendary import __version__, __codename__
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.exceptions import InvalidCredentialsError
-from custom_legendary.models.game import SaveGameStatus, VerifyResult
+from custom_legendary.models.game import SaveGameStatus
 from custom_legendary.utils.cli import get_boolean_choice, sdl_prompt
 from custom_legendary.utils.custom_parser import AliasedSubParsersAction
 
@@ -220,7 +219,7 @@ class LegendaryCLI:
                 self.core.install_game(game)
 
             print(f' * {game.title} (App name: {game.app_name} | Version: {game.version} | '
-                  f'{game.install_size / (1024*1024*1024):.02f} GiB)')
+                  f'{game.install_size / (1024 * 1024 * 1024):.02f} GiB)')
             if args.include_dir:
                 print(f'  + Location: {game.install_path}')
             if not os.path.exists(game.install_path):
@@ -570,7 +569,7 @@ class LegendaryCLI:
                 exit(0)
 
         logger.info('Downloads are resumable, you can interrupt the download with '
-            'CTRL-C and resume it using the same command later on.')
+                    'CTRL-C and resume it using the same command later on.')
 
         start_t = time.time()
 
@@ -584,7 +583,8 @@ class LegendaryCLI:
             while dlm.is_alive():
                 try:
                     status = status_queue.get(timeout=0.1)
-                    logger.info(f'= Progress: {status.progress:.02f}% ({status.processed_chunks}/{status.chunk_tasks}), '
+                    logger.info(
+                        f'= Progress: {status.progress:.02f}% ({status.processed_chunks}/{status.chunk_tasks}), '
                         f'Running for {str(datetime.timedelta(seconds=status.runtime))}, '
                         f'ETA: {str(datetime.timedelta(seconds=status.estimated_time_left))}')
                     logger.info(f' - Downloaded: {status.total_downloaded / 1024 / 1024:.02f} MiB, '
@@ -937,7 +937,7 @@ class LegendaryCLI:
         self.core.lgd.clean_tmp_data()
 
         after = self.core.lgd.get_dir_size()
-        logger.info(f'Cleanup complete! Removed {(before - after)/1024/1024:.02f} MiB.')
+        logger.info(f'Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.')
 
 
 def main():

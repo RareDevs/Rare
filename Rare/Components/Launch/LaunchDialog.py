@@ -2,10 +2,10 @@ from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QLabel, QProgressBar, QVBoxLayout
-from custom_legendary.core import LegendaryCore
 
 from Rare.Components.Dialogs.Login.LoginDialog import LoginDialog
 from Rare.utils.utils import download_images
+from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Login")
 
@@ -73,7 +73,7 @@ class LaunchDialog(QDialog):
             exit(0)
 
     def launch(self):
-        #self.core = core
+        # self.core = core
         self.info_pb.setMaximum(len(self.core.get_game_list()))
         self.info_text.setText(self.tr("Downloading Images"))
         self.thread = LaunchThread(self.core, self)

@@ -1,18 +1,15 @@
 import logging
+import os
 
 from PyQt5.QtCore import QSettings, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
-from Rare.Components.MainWindow import MainWindow
-
-from Rare.Components.Launch.LaunchDialog import LaunchDialog
 
 from Rare import lang_path, style_path
-
+from Rare.Components.Launch.LaunchDialog import LaunchDialog
+from Rare.Components.MainWindow import MainWindow
 from Rare.utils.utils import get_lang
 from custom_legendary.core import LegendaryCore
-
-import os
 
 logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',

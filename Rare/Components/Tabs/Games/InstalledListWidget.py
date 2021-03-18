@@ -4,10 +4,10 @@ from logging import getLogger
 from PyQt5.QtCore import QProcess, pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QStyle, QVBoxLayout
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame
 
 from Rare.utils import LegendaryApi
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame
 
 logger = getLogger("GameWidget")
 

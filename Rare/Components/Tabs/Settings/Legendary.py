@@ -2,10 +2,10 @@ from logging import getLogger
 
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton, QLineEdit
-from custom_legendary.core import LegendaryCore
 
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
+from custom_legendary.core import LegendaryCore
 
 logger = getLogger("LegendarySettings")
 
@@ -15,7 +15,7 @@ class LegendarySettings(QWidget):
         super(LegendarySettings, self).__init__()
         self.layout = QVBoxLayout()
         self.core = core
-        self.title = QLabel("<h2>"+self.tr("Legendary settings")+"</h2>")
+        self.title = QLabel("<h2>" + self.tr("Legendary settings") + "</h2>")
         self.layout.addWidget(self.title)
 
         # Default installation directory

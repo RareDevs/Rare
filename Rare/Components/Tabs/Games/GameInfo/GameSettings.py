@@ -1,12 +1,12 @@
 import os
 
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame, Game
 
 from Rare.Components.Tabs.Settings.Linux import LinuxSettings
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame, Game
 
 
 class GameSettings(QWidget):
@@ -44,7 +44,7 @@ class GameSettings(QWidget):
                 for i in os.listdir(os.path.expanduser("~/.steam/steam/steamapps/common")):
                     if i.startswith("Proton"):
                         wrapper = '"' + os.path.join(os.path.expanduser("~/.steam/steam/steamapps/common"), i,
-                                                    "proton") + '" run'
+                                                     "proton") + '" run'
                         self.possible_proton_wrappers.append(wrapper)
             except FileNotFoundError as e:
                 print("Unable to find Proton:", e)

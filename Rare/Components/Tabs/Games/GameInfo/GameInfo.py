@@ -4,8 +4,6 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox, \
     QProgressBar, QStackedWidget
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame, Game
 from qtawesome import icon
 
 from Rare.Components.Tabs.Games.GameInfo.GameSettings import GameSettings
@@ -13,6 +11,8 @@ from Rare.utils import LegendaryApi
 from Rare.utils.LegendaryApi import VerifyThread
 from Rare.utils.QtExtensions import SideTabBar
 from Rare.utils.utils import IMAGE_DIR
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame, Game
 
 
 class InfoTabs(QTabWidget):

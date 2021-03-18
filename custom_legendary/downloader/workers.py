@@ -1,14 +1,14 @@
 # coding: utf-8
 
-import os
-import requests
-import time
 import logging
-
+import os
+import time
 from logging.handlers import QueueHandler
 from multiprocessing import Process
 from multiprocessing.shared_memory import SharedMemory
 from queue import Empty
+
+import requests
 
 from custom_legendary.models.chunk import Chunk
 from custom_legendary.models.downloading import DownloaderTaskResult, WriterTaskResult
@@ -252,13 +252,13 @@ class FileWorker(Process):
                                                   chunk_guid=j.chunk_guid,
                                                   release_memory=j.release_memory,
                                                   shm=j.shm, size=j.chunk_size,
-                                                  time_delta=post_write-pre_write))
+                                                  time_delta=post_write - pre_write))
                 else:
                     self.o_q.put(WriterTaskResult(success=True, filename=j.filename,
                                                   chunk_guid=j.chunk_guid,
                                                   release_memory=j.release_memory,
                                                   shm=j.shm, size=j.chunk_size,
-                                                  time_delta=post_write-pre_write))
+                                                  time_delta=post_write - pre_write))
             except Exception as e:
                 logger.warning(f'Job {j.filename} failed with: {e!r}, fetching next one...')
                 self.o_q.put(WriterTaskResult(success=False, filename=j.filename, chunk_guid=j.chunk_guid))

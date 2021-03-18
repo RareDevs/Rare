@@ -2,7 +2,6 @@
 
 import json
 import struct
-
 from copy import deepcopy
 
 from custom_legendary.models.manifest import (
@@ -37,6 +36,7 @@ class JSONManifest(Manifest):
     Manifest-compatible reader for JSON based manifests
 
     """
+
     def __init__(self):
         super().__init__()
         self.json_data = None
@@ -127,7 +127,7 @@ class JSONCDL(CDL):
             _ci.hash = blob_to_num(chl.pop(guid))
             _ci.sha_hash = bytes.fromhex(csl.pop(guid))
             _ci.group_num = blob_to_num(dgl.pop(guid))
-            _ci.window_size = 1024*1024
+            _ci.window_size = 1024 * 1024
             _cdl.elements.append(_ci)
 
         for _dc in (cfl, chl, csl, dgl):
@@ -149,7 +149,7 @@ class JSONFML(FML):
         for _fmj in json_data.pop('FileManifestList'):
             _fm = FileManifest()
             _fm.filename = _fmj.pop('Filename', '')
-            _fm.hash = blob_to_num(_fmj.pop('FileHash')).to_bytes(160//8, 'little')
+            _fm.hash = blob_to_num(_fmj.pop('FileHash')).to_bytes(160 // 8, 'little')
             _fm.flags |= int(_fmj.pop('bIsReadOnly', False))
             _fm.flags |= int(_fmj.pop('bIsCompressed', False)) << 1
             _fm.flags |= int(_fmj.pop('bIsUnixExecutable', False)) << 2

@@ -1,6 +1,5 @@
 import logging
 import os
-
 from datetime import datetime
 from fnmatch import fnmatch
 from hashlib import sha1
@@ -130,7 +129,7 @@ class SaveGameHelper:
                         self.log.warning(f'Got EOF for "{f.filename}" with {remaining} bytes remaining! '
                                          f'File may have been corrupted/modified.')
                         break
-                    
+
                     cur_buffer.write(_tmp)
                     fhash.update(_tmp)  # update sha1 hash with new data
                     f.chunk_parts.append(cp)

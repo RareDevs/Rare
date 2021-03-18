@@ -1,16 +1,16 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QTabWidget, QTabBar, QWidget, QToolButton, QWidgetAction, QMenu
-from Rare.Components.Tabs.CloudSaves.CloudSaves import SyncSaves
-from custom_legendary.core import LegendaryCore
 from qtawesome import icon
 
 # from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
 from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
+from Rare.Components.Tabs.CloudSaves.CloudSaves import SyncSaves
 from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
 from Rare.Components.Tabs.Games.GamesTab import GameTab
 from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
 from Rare.utils.Models import InstallOptions
+from custom_legendary.core import LegendaryCore
 
 
 class TabWidget(QTabWidget):

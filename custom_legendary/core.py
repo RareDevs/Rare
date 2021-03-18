@@ -5,35 +5,35 @@ import logging
 import os
 import shlex
 import shutil
-
 from base64 import b64decode
 from collections import defaultdict
 from datetime import datetime, timezone
 from locale import getdefaultlocale
 from multiprocessing import Queue
 from random import choice as randchoice
-from requests import session
-from requests.exceptions import HTTPError
 from typing import List, Dict, Callable
 from uuid import uuid4
+
+from requests import session
+from requests.exceptions import HTTPError
 
 from custom_legendary.api.egs import EPCAPI
 from custom_legendary.downloader.manager import DLManager
 from custom_legendary.lfs.egl import EPCLFS
 from custom_legendary.lfs.lgndry import LGDLFS
-from custom_legendary.utils.lfs import clean_filename, delete_folder, delete_filelist, validate_files
+from custom_legendary.models.chunk import Chunk
 from custom_legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from custom_legendary.models.egl import EGLManifest
 from custom_legendary.models.exceptions import InvalidCredentialsError
 from custom_legendary.models.game import GameAsset, Game, InstalledGame, SaveGameFile, SaveGameStatus, VerifyResult
 from custom_legendary.models.json_manifest import JSONManifest
-from custom_legendary.models.manifest import Manifest, ManifestMeta
-from custom_legendary.models.chunk import Chunk
+from custom_legendary.models.manifest import Manifest
 from custom_legendary.utils.game_workarounds import is_opt_enabled
-from custom_legendary.utils.savegame_helper import SaveGameHelper
+from custom_legendary.utils.lfs import clean_filename, delete_folder, delete_filelist, validate_files
 from custom_legendary.utils.manifests import combine_manifests
-from custom_legendary.utils.wine_helpers import read_registry, get_shell_folders
+from custom_legendary.utils.savegame_helper import SaveGameHelper
 from custom_legendary.utils.selective_dl import get_sdl_appname
+from custom_legendary.utils.wine_helpers import read_registry, get_shell_folders
 
 
 # ToDo: instead of true/false return values for success/failure actually raise an exception that the CLI/GUI
@@ -349,11 +349,11 @@ class LegendaryCore:
             params.extend(shlex.split(install.launch_parameters, posix=False))
 
         params.extend([
-              '-AUTH_LOGIN=unused',
-              f'-AUTH_PASSWORD={game_token}',
-              '-AUTH_TYPE=exchangecode',
-              f'-epicapp={app_name}',
-              '-epicenv=Prod'])
+            '-AUTH_LOGIN=unused',
+            f'-AUTH_PASSWORD={game_token}',
+            '-AUTH_TYPE=exchangecode',
+            f'-epicapp={app_name}',
+            '-epicenv=Prod'])
 
         if install.requires_ot and not offline:
             self.log.info('Getting ownership token.')
@@ -370,10 +370,10 @@ class LegendaryCore:
             language_code = self.language_code
 
         params.extend([
-              '-EpicPortal',
-              f'-epicusername={user_name}',
-              f'-epicuserid={account_id}',
-              f'-epiclocale={language_code}'
+            '-EpicPortal',
+            f'-epicusername={user_name}',
+            f'-epicuserid={account_id}',
+            f'-epiclocale={language_code}'
         ])
 
         if extra_args:
@@ -431,7 +431,7 @@ class LegendaryCore:
                 '{appdata}': os.path.expandvars('%APPDATA%'),
                 '{userdir}': os.path.expandvars('%userprofile%/documents'),
                 # '{userprofile}': os.path.expandvars('%userprofile%'),  # possibly wrong
-                '{usersavedgames}':  os.path.expandvars('%userprofile%/Saved Games')
+                '{usersavedgames}': os.path.expandvars('%userprofile%/Saved Games')
             })
         else:
             # attempt to get WINE prefix from config
@@ -589,7 +589,7 @@ class LegendaryCore:
                 self.log.debug(f'Writing "{fpath}"...')
                 with open(fpath, 'wb') as fh:
                     for cp in fm.chunk_parts:
-                        fh.write(chunks[cp.guid_num][cp.offset:cp.offset+cp.size])
+                        fh.write(chunks[cp.guid_num][cp.offset:cp.offset + cp.size])
 
                 # set modified time to savegame creation timestamp
                 m_date = datetime.strptime(f_parts[4], '%Y.%m.%d-%H.%M.%S.manifest')
@@ -696,7 +696,7 @@ class LegendaryCore:
         else:
             return None
 
-    def verify_game(self, app_name: str, callback: Callable[[int, int], None]=print):
+    def verify_game(self, app_name: str, callback: Callable[[int, int], None] = print):
         if not self.is_installed(app_name):
             self.log.error(f'Game "{app_name}" is not installed')
             return
@@ -747,7 +747,8 @@ class LegendaryCore:
         if not missing and not failed:
             self.log.info('Verification finished successfully.')
         else:
-            raise RuntimeError(f'Verification failed, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
+            raise RuntimeError(
+                f'Verification failed, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
 
     def prepare_download(self, app_name: str, base_path: str = '', no_install: bool = False,
                          status_q: Queue = None, max_shm: int = 0, max_workers: int = 0,
@@ -761,7 +762,8 @@ class LegendaryCore:
                          ignore_space_req: bool = False,
                          disable_delta: bool = False, override_delta_manifest: str = '',
                          egl_guid: str = '', reset_sdl: bool = False,
-                         sdl_prompt: Callable[[str, str], List[str]] = list) -> (DLManager, AnalysisResult, Game, InstalledGame, bool, str):
+                         sdl_prompt: Callable[[str, str], List[str]] = list) -> (
+    DLManager, AnalysisResult, Game, InstalledGame, bool, str):
         if self.is_installed(app_name):
             igame = self.get_installed_game(app_name)
             if igame.needs_verification and not repair:
@@ -784,7 +786,7 @@ class LegendaryCore:
 
         if not game:
             raise RuntimeError(f'Could not find "{app_name}" in list of available games,'
-                         f'did you type the name correctly?')
+                               f'did you type the name correctly?')
 
         if game.is_dlc:
             self.log.info('Install candidate is DLC')
@@ -889,10 +891,10 @@ class LegendaryCore:
         else:
             if not game_folder:
                 if game.is_dlc:
-                    game_folder = base_game.metadata.get('customAttributes', {}).\
+                    game_folder = base_game.metadata.get('customAttributes', {}). \
                         get('FolderName', {}).get('value', base_game.app_name)
                 else:
-                    game_folder = game.metadata.get('customAttributes', {}).\
+                    game_folder = game.metadata.get('customAttributes', {}). \
                         get('FolderName', {}).get('value', game.app_name)
 
             if not base_path:
@@ -992,8 +994,8 @@ class LegendaryCore:
             raise RuntimeError('Nothing to do.')
 
         res = self.check_installation_conditions(analysis=anlres, install=igame, game=game,
-                                                      updating=self.is_installed(app_name),
-                                                      ignore_space_req=ignore_space_req)
+                                                 updating=self.is_installed(app_name),
+                                                 ignore_space_req=ignore_space_req)
 
         if res.warnings or res.failures:
             self.log.info('Installation requirements check returned the following results:')
@@ -1179,8 +1181,8 @@ class LegendaryCore:
             # If there's no in-progress installation assume the game doesn't need to be verified
             if mf and not os.path.exists(os.path.join(app_path, '.egstore', 'bps')):
                 needs_verify = False
-                if os.path.exists(os.path.join(app_path, '.egstore',  'Pending')):
-                    if os.listdir(os.path.join(app_path, '.egstore',  'Pending')):
+                if os.path.exists(os.path.join(app_path, '.egstore', 'Pending')):
+                    if os.listdir(os.path.join(app_path, '.egstore', 'Pending')):
                         needs_verify = True
 
                 if not needs_verify:
@@ -1304,13 +1306,13 @@ class LegendaryCore:
             os.makedirs(egstore_folder)
 
         # copy manifest and create mancpn file in .egstore folder
-        with open(os.path.join(egstore_folder, f'{egl_game.installation_guid}.manifest',), 'wb') as mf:
+        with open(os.path.join(egstore_folder, f'{egl_game.installation_guid}.manifest', ), 'wb') as mf:
             mf.write(manifest_data)
 
         mancpn = dict(FormatVersion=0, AppName=app_name,
                       CatalogItemId=lgd_game.asset_info.catalog_item_id,
                       CatalogNamespace=lgd_game.asset_info.namespace)
-        with open(os.path.join(egstore_folder, f'{egl_game.installation_guid}.mancpn',), 'w') as mcpnf:
+        with open(os.path.join(egstore_folder, f'{egl_game.installation_guid}.mancpn', ), 'w') as mcpnf:
             json.dump(mancpn, mcpnf, indent=4, sort_keys=True)
 
         # And finally, write the file for EGL

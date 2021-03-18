@@ -1,6 +1,5 @@
 from PyQt5.QtCore import Qt, pyqtSignal, QSettings
 from PyQt5.QtWidgets import *
-from custom_legendary.core import LegendaryCore
 
 from Rare.Components.Tabs.Games.GameWidgetInstalled import GameWidgetInstalled
 from Rare.Components.Tabs.Games.GameWidgetListUninstalled import UninstalledGameWidget
@@ -8,6 +7,7 @@ from Rare.Components.Tabs.Games.GameWidgetUninstalled import GameWidgetUninstall
 from Rare.Components.Tabs.Games.InstalledListWidget import GameWidget
 from Rare.utils.Models import InstallOptions
 from Rare.utils.QtExtensions import FlowLayout
+from custom_legendary.core import LegendaryCore
 
 
 class GameList(QScrollArea):

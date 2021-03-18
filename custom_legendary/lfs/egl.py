@@ -3,7 +3,6 @@
 import configparser
 import json
 import os
-
 from typing import List
 
 from custom_legendary.models.egl import EGLManifest

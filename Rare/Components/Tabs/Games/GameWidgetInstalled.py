@@ -4,12 +4,12 @@ from logging import getLogger
 from PyQt5.QtCore import QEvent, pyqtSignal, QSettings, QSize, Qt
 from PyQt5.QtGui import QPixmap, QMouseEvent
 from PyQt5.QtWidgets import *
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame
 from qtawesome import icon
 
 from Rare.utils import LegendaryApi
 from Rare.utils.QtExtensions import ClickableLabel
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame
 
 logger = getLogger("GameWidgetInstalled")
 
@@ -87,9 +87,9 @@ class GameWidgetInstalled(QWidget):
         self.info_label.setObjectName("info_label")
         self.layout.addWidget(self.info_label)
 
-        #p = self.palette()
-        #p.setColor(self.backgroundRole(), Qt.red)
-        #self.setPalette(p)
+        # p = self.palette()
+        # p.setColor(self.backgroundRole(), Qt.red)
+        # self.setPalette(p)
 
         self.setLayout(self.layout)
         self.setFixedWidth(self.sizeHint().width())
@@ -108,7 +108,7 @@ class GameWidgetInstalled(QWidget):
         else:
             self.info_label.setText(self.info_text)
 
-    def mousePressEvent(self, e:QMouseEvent):
+    def mousePressEvent(self, e: QMouseEvent):
         # left button
         if e.button() == 1:
             if self.update_available:
@@ -118,7 +118,6 @@ class GameWidgetInstalled(QWidget):
         # right
         elif e.button() == 2:
             pass
-
 
     def launch(self, offline=False, skip_version_check=False):
         if not self.running:
