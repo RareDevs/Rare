@@ -5,7 +5,7 @@ name: New Release
 
 on:
   release:
-    types: [created]
+    types: [published]
     
   workflow_dispatch:
 
@@ -50,7 +50,34 @@ jobs:
         ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
         commit_message: Update AUR package
         
-
-
-
+  pyinstaller:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with: 
+        python-version: '3.8'
+    - name: Install python libs
+      run: pip3 install pyinstaller setuptools wheel
+    - name: Install deps
+      run: pip3 install -r requirements.txt
+    - name: Copy Main
+      run: cp Rare/__main__.py ./
+    - name: Build
+      working-directory: Rare
+      run: pyinstaller 
+        --one-file
+        --name Rare
+        --add-data="Rare/languages/*;Rare/languages"
+        --add-data="Rare/Styles/*;Rare/Styles"
+        --windowed
+        __main__.py
+    - name: Upload files to a GitHub release
+      uses: svenstaro/upload-release-action@2.2.1
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: dist/Rare.exe
+        asset_name: Rare.exe
+        tag: ${{ github.ref }}
+        overwrite: true
 
