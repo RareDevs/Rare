@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import QEvent, pyqtSignal, QSettings, QSize, Qt
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QMouseEvent
 from PyQt5.QtWidgets import *
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
@@ -22,6 +22,8 @@ class GameWidgetInstalled(QWidget):
     def __init__(self, core: LegendaryCore, game: InstalledGame):
         super(GameWidgetInstalled, self).__init__()
         self.setObjectName("game_widget_parent")
+
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
 
         self.layout = QVBoxLayout()
         self.core = core
@@ -94,7 +96,7 @@ class GameWidgetInstalled(QWidget):
 
     def enterEvent(self, a0: QEvent) -> None:
         if self.update_available:
-            self.info_label.setText(self.tr("Please update Game"))
+            self.info_label.setText(self.tr("Start game without version check"))
         elif not self.running:
             self.info_label.setText("Start Game")
         else:
@@ -106,21 +108,28 @@ class GameWidgetInstalled(QWidget):
         else:
             self.info_label.setText(self.info_text)
 
-    def mousePressEvent(self, a0) -> None:
-        self.launch()
+    def mousePressEvent(self, e:QMouseEvent):
+        # left button
+        if e.button() == 1:
+            if self.update_available:
+                self.launch(skip_version_check=True)
+            else:
+                self.launch()
+        # right
+        elif e.button() == 2:
+            pass
 
-    def launch(self, offline=False):
-        if not self.running and not self.update_available:
+
+    def launch(self, offline=False, skip_version_check=False):
+        if not self.running:
             logger.info("Launching " + self.game.title)
-            self.proc = LegendaryApi.launch_game(self.core, self.game.app_name, offline)
+            self.proc = LegendaryApi.launch_game(self.core, self.game.app_name, offline, skip_version_check)
             if not self.proc:
                 logger.error("Could not start process")
                 return
             self.proc.finished.connect(self.finished)
             self.info_label.setText(self.tr("Game running"))
             self.running = True
-        if self.update_available:
-            self.update_game.emit()
 
     def finished(self):
         self.info_label.setText("")

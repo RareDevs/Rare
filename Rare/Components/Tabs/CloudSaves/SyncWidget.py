@@ -4,6 +4,7 @@ from logging import getLogger
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, QLabel
 
+from Rare.Components.Dialogs.PathInputDialog import PathInputDialog
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame, SaveGameStatus
 
@@ -37,10 +38,11 @@ class _DownloadThread(QThread):
 
 
 class SyncWidget(QWidget):
+    reload = pyqtSignal()
     def __init__(self, igame: InstalledGame, save, core: LegendaryCore):
         super(SyncWidget, self).__init__()
         self.layout = QVBoxLayout()
-
+        self.thr = None
         self.core = core
         self.save = save
         self.logger = getLogger("Sync " + igame.app_name)
@@ -129,6 +131,7 @@ class SyncWidget(QWidget):
         self.save_path_text = QLabel(igame.save_path)
         self.save_path_text.setWordWrap(True)
         self.change_save_path = QPushButton(self.tr("Change path"))
+        self.change_save_path.clicked.connect(self.change_path)
         save_path_layout.addWidget(self.save_path_text)
         save_path_layout.addWidget(self.change_save_path)
         self.layout.addLayout(save_path_layout)
@@ -140,6 +143,15 @@ class SyncWidget(QWidget):
 
         self.setLayout(self.layout)
 
+    def change_path(self):
+        path = PathInputDialog("Select directory", "Select savepath. Warning: Do not change if you are not sure",
+                               self.igame.save_path).get_path()
+        print(path)
+        if path != "":
+            self.igame.save_path = path
+            self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
+            self.save_path_text.setText(self.igame.save_path)
+            self.reload.emit()
     def upload(self):
         self.logger.info("Uploading Saves for game " + self.igame.title)
         self.info_text.setText(self.tr("Uploading..."))
@@ -151,6 +163,8 @@ class SyncWidget(QWidget):
 
     def uploaded(self):
         self.info_text.setText(self.tr("Upload finished"))
+        self.upload_button.setDisabled(False)
+        self.reload.emit()
 
     def download(self):
         if not os.path.exists(self.igame.save_path):
@@ -168,3 +182,4 @@ class SyncWidget(QWidget):
         self.upload_button.setDisabled(True)
         self.download_button.setDisabled(True)
         self.download_button.setStyleSheet("QPushButton{background-color: black}")
+        self.reload.emit()

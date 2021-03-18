@@ -30,6 +30,9 @@ class SyncSaves(QScrollArea):
         super(SyncSaves, self).__init__()
         self.core = core
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.load_saves()
+
+    def load_saves(self):
         self.widget = QWidget()
         layout = QVBoxLayout()
         layout.addWidget(WaitingSpinner())
@@ -76,12 +79,19 @@ class SyncSaves(QScrollArea):
                 sync_widget = SyncWidget(igame, latest_save[igame.app_name], self.core)
             else:
                 continue
+            sync_widget.reload.connect(self.reload)
             self.main_layout.addWidget(sync_widget)
             self.widgets.append(sync_widget)
 
         self.widget = QWidget()
         self.widget.setLayout(self.main_layout)
         self.setWidget(self.widget)
+
+    def reload(self):
+        print("reload")
+        self.setWidget(QWidget())
+        self.load_saves()
+        self.update()
 
     def sync_all(self):
         for w in self.widgets:
