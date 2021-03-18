@@ -288,8 +288,10 @@ class DownloadTab(QWidget):
                 notification.message = self.tr("Download of game ") + self.active_game.app_title
                 notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
-            self.update_widgets[self.active_game.app_name].setVisible(False)
-            self.update_widgets.pop(self.active_game.app_name)
+            logger.info("Download finished: "+ self.active_game.app_title)
+            if self.active_game.app_name in self.update_widgets.keys():
+                self.update_widgets[self.active_game.app_name].setVisible(False)
+                self.update_widgets.pop(self.active_game.app_name)
 
             for i in self.update_widgets.values():
                 i.update_button.setDisabled(False)

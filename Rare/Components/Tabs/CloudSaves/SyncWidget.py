@@ -175,9 +175,9 @@ class SyncWidget(QWidget):
         self.download_button.setDisabled(True)
         self.logger.info("Downloading Saves for game " + self.igame.title)
         self.info_text.setText(self.tr("Downloading..."))
-        thr = _DownloadThread(self.igame.app_name, self.save, self.igame.save_path, self.core)
-        thr.finished.connect(self.downloaded)
-        thr.start()
+        self.thr = _DownloadThread(self.igame.app_name, self.save, self.igame.save_path, self.core)
+        self.thr.finished.connect(self.downloaded)
+        self.thr.start()
 
     def downloaded(self):
         self.info_text.setText(self.tr("Download finished"))

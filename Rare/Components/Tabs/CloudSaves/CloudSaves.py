@@ -59,7 +59,7 @@ class SyncSaves(QScrollArea):
 
         if len(saves) == 0:
             # QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
-            self.widget = QLabel("No Games found, supporting cloud saves")
+            self.title.setText(f"<h1>" + self.tr("Cloud Saves") + "</h1>\n" + self.tr("Your games does not support Cloud Saves"))
             self.setWidget(self.widget)
             return
 
@@ -94,6 +94,7 @@ class SyncSaves(QScrollArea):
         self.update()
 
     def sync_all(self):
+        logger.info("Sync all Games")
         for w in self.widgets:
             if not w.igame.save_path:
                 save_path = self.core.get_save_path(w.igame.app_name)
@@ -108,6 +109,8 @@ class SyncSaves(QScrollArea):
             if w.res == SaveGameStatus.SAME_AGE:
                 continue
             if w.res == SaveGameStatus.REMOTE_NEWER:
+                logger.info("Download")
                 w.download()
             elif w.res == SaveGameStatus.LOCAL_NEWER:
+                logger.info("Upload")
                 w.upload()

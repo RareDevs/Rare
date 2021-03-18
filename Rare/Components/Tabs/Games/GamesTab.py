@@ -54,8 +54,6 @@ class Games(QWidget):
         self.head_bar.installed_only.stateChanged.connect(lambda:
                                                           self.game_list.installed_only(
                                                               self.head_bar.installed_only.isChecked()))
-        self.head_bar.refresh_list.clicked.connect(
-            lambda: self.game_list.update_list(not self.head_bar.view.isChecked()))
         self.layout.addWidget(self.head_bar)
         self.layout.addWidget(self.game_list)
         # self.layout.addStretch(1)
