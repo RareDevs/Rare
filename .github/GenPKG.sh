@@ -1,4 +1,6 @@
 export PYTHONPATH=$PWD
 version=$(python3 Rare --version)
-cd .github/rare
-sed -i "s/.*pkgver=.*/pkgver=$version/" PKGBUILD
+cd .github
+git clone https://aur.archlinux.org/rare.git
+cd ..
+sed -i "s/.*pkgver=.*/pkgver=$version/" .github/rare/PKGBUILD
