@@ -88,7 +88,6 @@ class SyncSaves(QScrollArea):
         self.setWidget(self.widget)
 
     def reload(self):
-        print("reload")
         self.setWidget(QWidget())
         self.load_saves()
         self.update()
