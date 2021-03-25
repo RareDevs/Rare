@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  pypy-deploy:
 
     runs-on: ubuntu-latest
 
@@ -50,7 +50,7 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Update AUR package
 
-  pyinstaller:
+  pyinstaller-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
