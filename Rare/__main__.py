@@ -1,6 +1,6 @@
 import sys
 
-if __name__ == '__main__':
+def main():
     if "--version" in sys.argv:
         from Rare import __version__
 
@@ -9,6 +9,7 @@ if __name__ == '__main__':
 
     from Rare.Main import main
 
+if __name__ == '__main__':
     main()
 
 """
