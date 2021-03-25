@@ -50,6 +50,6 @@ class App(QApplication):
         self.launch_dialog.close()
 
 
-def main():
+def start():
     app = App()
     app.exec_()
