@@ -28,15 +28,10 @@ class GameWidgetInstalled(BaseInstalledWidget):
 
         self.layout = QVBoxLayout()
         self.core = core
-        self.game = game
         self.running = False
         settings = QSettings()
         self.info_text = ""
-        self.IMAGE_DIR = settings.value("img_dir", os.path.expanduser("~/.cache/rare"))
-        try:
-            self.update_available = self.core.get_asset(self.game.app_name, True).build_version != game.version
-        except:
-            self.update_available = False
+
         if self.update_available:
             logger.info("Update available for game: " + self.game.app_name)
             self.info_text = self.tr("Update available")

@@ -5,8 +5,8 @@ from PyQt5.QtCore import Qt, pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 
-from Rare.Components.Tabs.Games.GameWidgets.GameWidgetListUninstalled import ListWidgetUninstalled
-from Rare.Components.Tabs.Games.GameWidgets.IconWidgetUninstalled import IconWidgetUninstalled
+from Rare.Components.Tabs.Games.GameWidgets.UninstalledListWidget import ListWidgetUninstalled
+from Rare.Components.Tabs.Games.GameWidgets.UninstalledIconWidget import IconWidgetUninstalled
 from Rare.Components.Tabs.Games.GameWidgets.InstalledIconWidget import GameWidgetInstalled
 from Rare.Components.Tabs.Games.GameWidgets.InstalledListWidget import InstalledListWidget
 from Rare.utils.Models import InstallOptions
@@ -136,7 +136,7 @@ class GameList(QStackedWidget):
     def filter(self, text: str):
         for t in self.widgets.values():
             for w in t:
-                if text.lower() in w.game.title.lower() + w.game.app_name.lower():
+                if text.lower() in w.game.app_title.lower() + w.game.app_name.lower():
                     w.setVisible(True)
                 else:
                     w.setVisible(False)

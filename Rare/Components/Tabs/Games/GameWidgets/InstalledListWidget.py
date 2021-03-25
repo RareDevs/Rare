@@ -19,12 +19,9 @@ class InstalledListWidget(BaseInstalledWidget):
 
     def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap):
         super(InstalledListWidget, self).__init__(game, core, pixmap)
-        self.core = core
-        self.game = game
-        self.dev = core.get_game(self.game.app_name).metadata["developer"]
+        self.dev = core.get_game(self.igame.app_name).metadata["developer"]
         self.size = game.install_size
         self.launch_params = game.launch_parameters
-        self.update_available = self.core.get_asset(self.game.app_name, True).build_version != game.version
 
         self.layout = QHBoxLayout()
 
@@ -38,21 +35,21 @@ class InstalledListWidget(BaseInstalledWidget):
             self.layout.addWidget(self.image)
 
         play_icon = self.style().standardIcon(getattr(QStyle, 'SP_MediaPlay'))
-        self.title_widget = QLabel(f"<h1>{self.game.title}</h1>")
-        self.app_name_label = QLabel(self.game.app_name)
+        self.title_widget = QLabel(f"<h1>{self.igame.title}</h1>")
+        self.app_name_label = QLabel(self.igame.app_name)
         self.launch_button = QPushButton(play_icon, self.tr("Launch"))
         self.launch_button.setObjectName("launch_game_button")
         self.launch_button.setFixedWidth(120)
 
         self.info = QPushButton("Info")
-        self.info.clicked.connect(lambda: self.show_info.emit(self.game.app_name))
+        self.info.clicked.connect(lambda: self.show_info.emit(self.igame.app_name))
         self.info.setFixedWidth(80)
 
         self.launch_button.clicked.connect(self.launch)
         if os.name != "nt":
             self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
         self.developer_label = QLabel(self.tr("Developer: ") + self.dev)
-        self.version_label = QLabel("Version: " + str(self.game.version))
+        self.version_label = QLabel("Version: " + str(self.igame.version))
         self.size_label = QLabel(f"{self.tr('Installed size')}: {round(self.size / (1024 ** 3), 2)} GB")
         self.childLayout.addWidget(self.title_widget)
         self.childLayout.addWidget(self.launch_button)

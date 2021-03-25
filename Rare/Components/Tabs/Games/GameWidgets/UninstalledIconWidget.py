@@ -18,9 +18,6 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
     def __init__(self, game: Game, core: LegendaryCore, pixmap):
         super(IconWidgetUninstalled, self).__init__(game, core, pixmap)
         self.layout = QVBoxLayout()
-        self.core = core
-        self.game = game
-        self.pixmap = pixmap
 
         if self.pixmap:
             w = 200
