@@ -59,7 +59,8 @@ class SyncSaves(QScrollArea):
 
         if len(saves) == 0:
             # QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
-            self.title.setText(f"<h1>" + self.tr("Cloud Saves") + "</h1>\n" + self.tr("Your games does not support Cloud Saves"))
+            self.title.setText(
+                f"<h1>" + self.tr("Cloud Saves") + "</h1>\n" + self.tr("Your games does not support Cloud Saves"))
             self.setWidget(self.widget)
             return
 
@@ -98,7 +99,7 @@ class SyncSaves(QScrollArea):
             if not w.igame.save_path:
                 save_path = self.core.get_save_path(w.igame.app_name)
                 if '%' in save_path or '{' in save_path:
-                    self.logger.info("Could not find save_path")
+                    self.logger.info_label("Could not find save_path")
                     save_path = PathInputDialog(self.tr("Found no savepath"),
                                                 self.tr("No save path was found. Please select path or skip"))
                     if save_path == "":

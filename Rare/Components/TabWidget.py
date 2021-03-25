@@ -22,7 +22,7 @@ class TabWidget(QTabWidget):
         updates = self.game_list.default_widget.game_list.updates
         self.addTab(self.game_list, self.tr("Games"))
         self.downloadTab = DownloadTab(core, updates)
-        self.addTab(self.downloadTab, "Downloads" + (" " + str(len(updates)) if len(updates) != 0 else ""))
+        self.addTab(self.downloadTab, "Downloads" + (" (" + str(len(updates)) + ")" if len(updates) != 0 else ""))
         self.downloadTab.finished.connect(self.game_list.default_widget.game_list.update_list)
         self.game_list.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
 
@@ -36,7 +36,7 @@ class TabWidget(QTabWidget):
         self.addTab(self.cloud_saves, "Cloud Saves")
 
         # Space Tab
-        self.addTab(None, "")
+        self.addTab(QWidget(), "")
         self.setTabEnabled(disabled_tab, False)
 
         self.account = QWidget()

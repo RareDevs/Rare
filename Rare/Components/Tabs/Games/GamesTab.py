@@ -57,10 +57,14 @@ class Games(QWidget):
         self.layout.addWidget(self.head_bar)
         self.layout.addWidget(self.game_list)
         # self.layout.addStretch(1)
-        self.head_bar.view.toggled.connect(
-            lambda: self.game_list.update_list(not self.head_bar.view.isChecked()))
+        self.head_bar.view.toggled.connect(self.toggle_view)
 
         self.setLayout(self.layout)
+
+    def toggle_view(self):
+        self.game_list.setCurrentIndex(1 if self.head_bar.view.isChecked() else 0)
+        settings = QSettings()
+        settings.setValue("icon_view", not self.head_bar.view.isChecked())
 
 
 class GameListHeadBar(QWidget):

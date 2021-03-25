@@ -48,6 +48,7 @@ class LoginThread(QThread):
 
 class LaunchDialog(QDialog):
     start_app = pyqtSignal()
+
     def __init__(self, core: LegendaryCore):
         super(LaunchDialog, self).__init__()
         self.core = core
@@ -83,7 +84,7 @@ class LaunchDialog(QDialog):
         self.thread.start()
 
     def update_pb(self, i: int):
-        self.info_pb.setValue(i/self.pb_size*100)
+        self.info_pb.setValue(i / self.pb_size * 100)
 
     def info(self, text: str):
         if text == "finish":

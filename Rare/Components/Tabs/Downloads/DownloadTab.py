@@ -14,7 +14,7 @@ from Rare.utils.Models import InstallOptions, KillDownloadException
 from custom_legendary.core import LegendaryCore
 from custom_legendary.downloader.manager import DLManager
 from custom_legendary.models.downloading import UIUpdate
-from custom_legendary.models.game import Game
+from custom_legendary.models.game import Game, InstalledGame
 from custom_legendary.utils.selective_dl import games
 
 logger = getLogger("Download")
@@ -170,9 +170,9 @@ class DownloadTab(QWidget):
             self.update_text = QLabel(self.tr("No updates available"))
             self.layout.addWidget(self.update_text)
         else:
-            for i in updates:
-                widget = UpdateWidget(core, i)
-                self.update_widgets[i] = widget
+            for igame in updates:
+                widget = UpdateWidget(core, igame)
+                self.update_widgets[igame.app_name] = widget
                 self.layout.addWidget(widget)
                 widget.update.connect(self.update_game)
 
@@ -288,7 +288,7 @@ class DownloadTab(QWidget):
                 notification.message = self.tr("Download of game ") + self.active_game.app_title
                 notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
-            logger.info("Download finished: "+ self.active_game.app_title)
+            logger.info("Download finished: " + self.active_game.app_title)
             if self.active_game.app_name in self.update_widgets.keys():
                 self.update_widgets[self.active_game.app_name].setVisible(False)
                 self.update_widgets.pop(self.active_game.app_name)
@@ -331,17 +331,19 @@ class DownloadTab(QWidget):
 class UpdateWidget(QWidget):
     update = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, app_name):
+    def __init__(self, core: LegendaryCore, game: InstalledGame):
         super(UpdateWidget, self).__init__()
+        print(game)
         self.core = core
-        self.game = core.get_installed_game(app_name)
+        self.game = game
+        print(self.game)
 
         self.layout = QVBoxLayout()
         self.title = QLabel(self.game.title)
         self.layout.addWidget(self.title)
 
         self.update_button = QPushButton(self.tr("Update Game"))
-        self.update_button.clicked.connect(lambda: self.update.emit(app_name))
+        self.update_button.clicked.connect(lambda: self.update.emit(game.app_name))
         self.layout.addWidget(self.update_button)
 
         self.setLayout(self.layout)

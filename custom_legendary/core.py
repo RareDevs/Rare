@@ -763,7 +763,7 @@ class LegendaryCore:
                          disable_delta: bool = False, override_delta_manifest: str = '',
                          egl_guid: str = '', reset_sdl: bool = False,
                          sdl_prompt: Callable[[str, str], List[str]] = list) -> (
-    DLManager, AnalysisResult, Game, InstalledGame, bool, str):
+            DLManager, AnalysisResult, Game, InstalledGame, bool, str):
         if self.is_installed(app_name):
             igame = self.get_installed_game(app_name)
             if igame.needs_verification and not repair:
