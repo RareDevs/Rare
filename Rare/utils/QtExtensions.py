@@ -206,10 +206,10 @@ class SelectViewWidget(QWidget):
         self.icon_view_button = QPushButton()
         self.list_view = QPushButton()
         if icon_view:
-            self.icon_view_button.setIcon(icon("fa.th-large", color="orange"))
+            self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="orange"))
             self.list_view.setIcon(icon("fa5s.list", color="white"))
         else:
-            self.icon_view_button.setIcon(icon("fa.th-large", color="white"))
+            self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="white"))
             self.list_view.setIcon(icon("fa5s.list", color="orange"))
 
         self.icon_view_button.clicked.connect(self.icon)

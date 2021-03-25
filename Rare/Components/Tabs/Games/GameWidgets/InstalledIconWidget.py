@@ -20,7 +20,7 @@ class GameWidgetInstalled(BaseInstalledWidget):
     show_info = pyqtSignal(str)
     update_game = pyqtSignal()
 
-    def __init__(self, core: LegendaryCore, game: InstalledGame, pixmap):
+    def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap):
         super(GameWidgetInstalled, self).__init__(game, core, pixmap)
         self.setObjectName("game_widget_parent")
 
@@ -29,7 +29,6 @@ class GameWidgetInstalled(BaseInstalledWidget):
         self.layout = QVBoxLayout()
         self.core = core
         self.running = False
-        settings = QSettings()
         self.info_text = ""
 
         if self.update_available:

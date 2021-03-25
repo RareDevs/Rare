@@ -72,6 +72,8 @@ class GameListHeadBar(QWidget):
         super(GameListHeadBar, self).__init__()
         self.layout = QHBoxLayout()
         self.installed_only = QCheckBox(self.tr("Installed only"))
+        self.settings = QSettings()
+        self.installed_only.setChecked(self.settings.value("installed_only", False, bool))
         self.layout.addWidget(self.installed_only)
 
         self.layout.addStretch(1)

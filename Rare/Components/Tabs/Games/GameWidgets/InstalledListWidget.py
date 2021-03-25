@@ -3,6 +3,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import QProcess, pyqtSignal
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QStyle, QVBoxLayout
+from qtawesome import icon
 
 from Rare.Components.Tabs.Games.GameWidgets.BaseInstalledWidget import BaseInstalledWidget
 from custom_legendary.core import LegendaryCore
@@ -34,7 +35,7 @@ class InstalledListWidget(BaseInstalledWidget):
             self.image.setPixmap(self.pixmap)
             self.layout.addWidget(self.image)
 
-        play_icon = self.style().standardIcon(getattr(QStyle, 'SP_MediaPlay'))
+        play_icon = icon("ei.play", color="white")
         self.title_widget = QLabel(f"<h1>{self.igame.title}</h1>")
         self.app_name_label = QLabel(self.igame.app_name)
         self.launch_button = QPushButton(play_icon, self.tr("Launch"))
@@ -56,8 +57,8 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.info)
         self.childLayout.addWidget(self.app_name_label)
         self.childLayout.addWidget(self.developer_label)
-        if os.name != "nt":
-            self.childLayout.addWidget(self.wine_rating)
+        #if os.name != "nt":
+        #    self.childLayout.addWidget(self.wine_rating)
         self.childLayout.addWidget(self.version_label)
         self.childLayout.addWidget(self.size_label)
 

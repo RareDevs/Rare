@@ -48,9 +48,9 @@ class GameList(QStackedWidget):
         IMAGE_DIR = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare"), str)
         self.updates = []
         self.widgets = {}
+
         # Installed Games
         for game in sorted(self.core.get_installed_list(), key=lambda x: x.title):
-            print(game.title)
             if os.path.exists(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png"):
                 pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/FinalArt.png")
             elif os.path.exists(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png"):
@@ -66,7 +66,7 @@ class GameList(QStackedWidget):
                 download_image(game, force=True)
                 pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
 
-            icon_widget = GameWidgetInstalled(self.core, game, pixmap)
+            icon_widget = GameWidgetInstalled(game, self.core, pixmap)
             list_widget = InstalledListWidget(game, self.core, pixmap)
 
             icon_widget.show_info.connect(self.show_game_info.emit)
@@ -106,6 +106,7 @@ class GameList(QStackedWidget):
 
             icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
             icon_widget.install_game.connect(self.install_game.emit)
+
             list_widget = ListWidgetUninstalled(self.core, game, pixmap)
             list_widget.install_game.connect(self.install_game.emit)
 
@@ -114,6 +115,7 @@ class GameList(QStackedWidget):
 
             self.widgets[game.app_name] = (icon_widget, list_widget)
 
+        self.list_layout.addStretch(1)
         self.icon_widget.setLayout(self.icon_layout)
         self.list_widget.setLayout(self.list_layout)
 
@@ -126,8 +128,10 @@ class GameList(QStackedWidget):
         if not icon_view:
             self.setCurrentIndex(1)
 
+        if self.settings.value("installed_only", False, bool):
+            self.installed_only(True)
+
     def launch(self, app_name):
-        print("Launch")
         self.widgets[app_name][0].info_text = self.tr("Game running")
         self.widgets[app_name][1].launch_button.setDisabled(True)
         self.widgets[app_name][1].launch_button.setText(self.tr("Game running"))
@@ -142,11 +146,10 @@ class GameList(QStackedWidget):
                     w.setVisible(False)
 
     def installed_only(self, i_o: bool):
-        # TODO save state
-
         for t in self.widgets.values():
             for w in t:
                 w.setVisible(not (not self.core.is_installed(w.game.app_name) and i_o))
+        self.settings.setValue("installed_only", i_o)
 
     def update_list(self, icon_view=True):
         print("Updating List")
