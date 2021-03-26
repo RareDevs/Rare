@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
-
+from Rare import __version__
 
 class About(QWidget):
     def __init__(self):
@@ -8,6 +8,9 @@ class About(QWidget):
 
         self.title = QLabel("<h2>About</h2>")
         self.layout.addWidget(self.title)
+
+        self.version = QLabel("Version: " + __version__)
+        self.layout.addWidget(self.version)
 
         self.dev = QLabel(self.tr("Developer:") + "<a href='https://github.com/Dummerle'>Dummerle</a>")
         self.dev.setToolTip("Github")

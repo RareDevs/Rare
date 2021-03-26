@@ -1,7 +1,7 @@
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QGroupBox
 
 from Rare.Components.Dialogs.InstallDialog import InstallDialog
 from Rare.utils.Models import InstallOptions
@@ -9,7 +9,7 @@ from Rare.utils.Models import InstallOptions
 logger = getLogger("Uninstalled")
 
 
-class BaseUninstalledWidget(QWidget):
+class BaseUninstalledWidget(QGroupBox):
     install_game = pyqtSignal(InstallOptions)
 
     def __init__(self, game, core, pixmap):
@@ -17,6 +17,8 @@ class BaseUninstalledWidget(QWidget):
         self.game = game
         self.core = core
         self.pixmap = pixmap
+
+        self.setContentsMargins(0, 0, 0, 0)
 
     def install(self):
         infos = InstallDialog().get_information()

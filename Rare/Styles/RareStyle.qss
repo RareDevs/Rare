@@ -13,7 +13,7 @@ QTabBar#main_tab_bar {
 }
 
 QTabBar::tab#main_tab_bar {
-    border-bottom: noneq;
+    border-bottom: none;
 }
 
 QTabBar::tab#main_tab_bar {

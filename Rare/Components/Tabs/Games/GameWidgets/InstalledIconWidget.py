@@ -22,7 +22,7 @@ class GameWidgetInstalled(BaseInstalledWidget):
 
     def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap):
         super(GameWidgetInstalled, self).__init__(game, core, pixmap)
-        self.setObjectName("game_widget_parent")
+        self.setObjectName("game_widget_icon")
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
 

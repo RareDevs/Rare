@@ -1,7 +1,7 @@
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QProcess
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QGroupBox
 from custom_legendary.models.game import InstalledGame
 
 from custom_legendary.core import LegendaryCore
@@ -11,7 +11,7 @@ from Rare.utils import LegendaryApi
 logger = getLogger("Game")
 
 
-class BaseInstalledWidget(QWidget):
+class BaseInstalledWidget(QGroupBox):
     launch_signal = pyqtSignal(str)
     show_info = pyqtSignal(str)
     finish_signal = pyqtSignal(str)
@@ -25,6 +25,10 @@ class BaseInstalledWidget(QWidget):
         self.pixmap = pixmap
         self.game_running = False
         self.update_available = self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
+
+        self.setContentsMargins(0,0,0,0)
+
+        # self.setStyleSheet("border-radius: 5px")
 
     def launch(self, offline=False, skip_version_check=False):
 

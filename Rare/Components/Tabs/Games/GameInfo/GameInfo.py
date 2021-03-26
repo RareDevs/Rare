@@ -3,7 +3,7 @@ import os
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox, \
-    QProgressBar, QStackedWidget
+    QProgressBar, QStackedWidget, QGroupBox
 from qtawesome import icon
 
 from Rare.Components.Tabs.Games.GameInfo.GameSettings import GameSettings
@@ -154,13 +154,14 @@ class GameInfo(QWidget):
         self.install_path.setText(self.tr("Install path: ") + self.igame.install_path)
 
 
-class GameActions(QWidget):
+class GameActions(QGroupBox):
     def __init__(self):
         super(GameActions, self).__init__()
+        self.setTitle(f"{self.tr('Game actions')}")
+        self.setStyleSheet("QGroupBox{font-size: 20px}")
         self.layout = QVBoxLayout()
         self.game_actions = QLabel("<h3>Game actions</h3>")
-        self.layout.addWidget(self.game_actions)
-
+        # self.layout.addWidget(self.game_actions)
         uninstall_layout = QHBoxLayout()
         self.uninstall_game = QLabel(self.tr("Uninstall game"))
         uninstall_layout.addWidget(self.uninstall_game)
