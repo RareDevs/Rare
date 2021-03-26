@@ -89,7 +89,7 @@ jobs:
       - name: Install Deps
         run: sudo apt install python3-stdeb 
           fakeroot 
-          python3-all 
+          python-all 
           dh-python 
           python3-all 
           python3-setuptools
