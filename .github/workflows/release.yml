@@ -87,9 +87,13 @@ jobs:
         with:
           python-version: '3.8'
       - name: Install Deps
-        run: sudo apt install python3-stdeb fakeroot python3-all dh-python python-all
-      - name: Install Python deps
-        run: pip3 install setuptools wheel
+        run: sudo apt install python3-stdeb 
+          fakeroot 
+          python3-all 
+          dh-python 
+          python3-all 
+          python3-setuptools
+          python3-wheel
       - name: run python setup
         run: |
           python3 setup.py sdist
