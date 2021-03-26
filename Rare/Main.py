@@ -22,7 +22,12 @@ logger = logging.getLogger("Rare")
 class App(QApplication):
     def __init__(self):
         super(App, self).__init__(sys.argv)
+        # init Legendary
         self.core = LegendaryCore()
+        if not "Legendary" in self.core.lgd.config.sections():
+            self.core.lgd.config.add_section("Legendary")
+            self.core.lgd.save_config()
+
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")
         settings = QSettings()

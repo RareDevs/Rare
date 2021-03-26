@@ -164,6 +164,3 @@ class GameList(QStackedWidget):
         self.removeWidget(self.list_scrollarea)
         self.init_ui(icon_view)
         self.update()
-
-    def import_game(self):
-        pass

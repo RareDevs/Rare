@@ -43,8 +43,8 @@ def launch_game(core, app_name: str, offline: bool = False, skip_version_check: 
     for e in env:
         environment.insert(e, env[e])
     process.setProcessEnvironment(environment)
-    process.start(params[0], params[1:])
-    return process
+
+    return process, params
 
 
 def uninstall(app_name: str, core):

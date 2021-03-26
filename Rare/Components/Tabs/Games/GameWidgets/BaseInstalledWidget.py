@@ -1,12 +1,11 @@
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QProcess
-from PyQt5.QtWidgets import QWidget, QGroupBox
-from custom_legendary.models.game import InstalledGame
-
-from custom_legendary.core import LegendaryCore
+from PyQt5.QtWidgets import QGroupBox
 
 from Rare.utils import LegendaryApi
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame
 
 logger = getLogger("Game")
 
@@ -24,21 +23,21 @@ class BaseInstalledWidget(QGroupBox):
         self.game = self.core.get_game(self.igame.app_name)
         self.pixmap = pixmap
         self.game_running = False
-        self.update_available = self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
+        self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
 
-        self.setContentsMargins(0,0,0,0)
+        self.setContentsMargins(0, 0, 0, 0)
 
         # self.setStyleSheet("border-radius: 5px")
 
     def launch(self, offline=False, skip_version_check=False):
-
         logger.info("Launching " + self.igame.title)
-        self.proc = LegendaryApi.launch_game(self.core, self.igame.app_name, offline,
-                                             skip_version_check=skip_version_check)
+        self.proc, params = LegendaryApi.launch_game(self.core, self.igame.app_name, offline,
+                                                     skip_version_check=skip_version_check)
         if not self.proc:
             logger.error("Could not start process")
             return 1
         self.proc.finished.connect(self.finished)
+        self.proc.start(params[0], params[1:])
         self.launch_signal.emit(self.igame.app_name)
         self.game_running = True
         return 0
