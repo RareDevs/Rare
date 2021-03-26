@@ -2,7 +2,8 @@
 
 ## A frontend for legendary, the open source Epic Games Launcher alternative
 
-Rare is currently considered beta software and in no way feature-complete. You will probably run into issues, so it is
+Rare is a GUI for Legendary, a command line aternative to Epic Games launcher. 
+It is currently considered beta software. You will probably run into issues, so it is
 recommend to make a backup. If you have features you want to have in this app, create an issue on github, contact me on
 Discord (Dummerle#7419) or build it yourself. Please report bugs so I can fix them.
 
@@ -18,7 +19,7 @@ Discord (Dummerle#7419) or build it yourself. Please report bugs so I can fix th
 
 ### Installation via pip (recommend)
 
-Execute *pip install Rare* for all users Or *pip install Rare --user* for only one user
+Execute *(sudo) pip install Rare* for all users Or *pip install Rare --user* for only one user
 
 **Note**: On Linux must be /home/user/.local/bin in PATH
 
@@ -29,13 +30,13 @@ Download Rare.exe and place it somewhere in PATH
 **Note**
 Using the exe file could cause errors
 
-## Linux
+### Linux
 
 - For Arch Linux is an AUR package available: [rare-git](https://aur.archlinux.org/packages/rare-git)
   or [rare](https://aur.archlinux.org/packages/rare)
 - Other distributions have to install it with pip or clone the repo and install it manually: *python3 setup.py install*
 
-## Implemented
+## Features
 
 - Launch, install and uninstall games
 - Authentication(Import from existing installation and via Browser)
@@ -44,10 +45,10 @@ Using the exe file could cause errors
 - Sync Cloud Saves
 - Translations (English and German)
 
-## Planned
-
+## Planned Features
 - Offline mode
 - More Translations (Need help)
+- More Information about Games
 
 ## Images
 
