@@ -14,6 +14,7 @@ logger = getLogger("Game")
 class BaseInstalledWidget(QWidget):
     launch_signal = pyqtSignal(str)
     show_info = pyqtSignal(str)
+    finish_signal = pyqtSignal(str)
     proc: QProcess()
 
     def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap):
@@ -37,5 +38,7 @@ class BaseInstalledWidget(QWidget):
         self.launch_signal.emit(self.igame.app_name)
         self.game_running = True
         return 0
+
     def finished(self):
+        self.finish_signal.emit(self.game.app_name)
         self.game_running = False

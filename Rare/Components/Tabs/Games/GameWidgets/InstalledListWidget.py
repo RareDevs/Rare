@@ -71,10 +71,5 @@ class InstalledListWidget(BaseInstalledWidget):
         if not self.game_running:
             super(InstalledListWidget, self).launch(skip_version_check=self.update_available)
 
-    def finished(self):
-        super().finished()
-        self.launch_button.setText("Launch")
-        self.launch_button.setDisabled(False)
-
     def get_rating(self) -> str:
         return "gold"  # TODO

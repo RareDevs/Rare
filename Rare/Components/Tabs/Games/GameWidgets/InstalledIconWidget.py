@@ -106,7 +106,3 @@ class GameWidgetInstalled(BaseInstalledWidget):
         # right
         elif e.button() == 2:
             pass
-
-    def finished(self):
-        super().finished()
-        self.info_text = ""

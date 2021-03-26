@@ -73,7 +73,9 @@ class GameList(QStackedWidget):
             list_widget.show_info.connect(self.show_game_info.emit)
 
             icon_widget.launch_signal.connect(self.launch)
+            icon_widget.finish_signal.connect(self.finished)
             list_widget.launch_signal.connect(self.launch)
+            list_widget.launch_signal.connect(self.finished)
 
             self.icon_layout.addWidget(icon_widget)
             self.list_layout.addWidget(list_widget)
@@ -131,11 +133,16 @@ class GameList(QStackedWidget):
         if self.settings.value("installed_only", False, bool):
             self.installed_only(True)
 
+    def finished(self, app_name):
+        self.widgets[app_name][0].info_text = ""
+        self.widgets[app_name][0].info_label.setText("")
+        self.widgets[app_name][1].launch_button.setDisabled(False)
+        self.widgets[app_name][1].launch_button.setText(self.tr("Launch"))
+
     def launch(self, app_name):
         self.widgets[app_name][0].info_text = self.tr("Game running")
         self.widgets[app_name][1].launch_button.setDisabled(True)
         self.widgets[app_name][1].launch_button.setText(self.tr("Game running"))
-
 
     def filter(self, text: str):
         for t in self.widgets.values():
@@ -152,7 +159,6 @@ class GameList(QStackedWidget):
         self.settings.setValue("installed_only", i_o)
 
     def update_list(self, icon_view=True):
-        print("Updating List")
         self.settings.setValue("icon_view", icon_view)
         self.removeWidget(self.icon_scrollarea)
         self.removeWidget(self.list_scrollarea)
