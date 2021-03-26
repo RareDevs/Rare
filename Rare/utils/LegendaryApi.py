@@ -89,16 +89,16 @@ class VerifyThread(QThread):
 
         # build list of hashes
         file_list = [(f.filename, f.sha_hash.hex()) for f in files]
-        total = len(file_list)
-        num = 0
+        self.total = len(file_list)
+        self.num = 0
         failed = []
         missing = []
 
         logger.info(f'Verifying "{igame.title}" version "{manifest.meta.build_version}"')
         repair_file = []
         for result, path, result_hash in validate_files(igame.install_path, file_list):
-            self.status.emit((num, total))
-            num += 1
+            self.status.emit((self.num, self.total, self.app_name))
+            self.num += 1
 
             if result == VerifyResult.HASH_MATCH:
                 repair_file.append(f'{result_hash}:{path}')
@@ -114,7 +114,7 @@ class VerifyThread(QThread):
                 logger.error(f'Other failure (see log), treating file as missing: "{path}"')
                 missing.append(path)
 
-        stdout.write(f'Verification progress: {num}/{total} ({num * 100 / total:.01f}%)\t\n')
+        stdout.write(f'Verification progress: {self.num}/{self.total} ({self.num * 100 / self.total:.01f}%)\t\n')
 
         # always write repair file, even if all match
         if repair_file:
@@ -125,11 +125,11 @@ class VerifyThread(QThread):
 
         if not missing and not failed:
             logger.info('Verification finished successfully.')
-            self.summary.emit((0, 0))
+            self.summary.emit((0, 0, self.app_name))
 
         else:
             logger.error(f'Verification failed, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
-            self.summary.emit((len(failed), len(missing)))
+            self.summary.emit((len(failed), len(missing), self.app_name))
 
 
 def import_game(core: LegendaryCore, app_name: str, path: str):
