@@ -95,7 +95,9 @@ jobs:
           python3-setuptools
           python3-wheel
       - name: Install Python deps
-        run: pip3 install wheel setuptools
+        run: |
+          pip3 install wheel setuptools
+          sudo pip3 install wheel setuptools
       - name: run python setup
         run: python3 setup.py sdist
       - name: create deb package
