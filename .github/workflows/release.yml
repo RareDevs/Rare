@@ -87,13 +87,13 @@ jobs:
         with:
           python-version: '3.8'
       - name: Install Deps
-        run: sudo apt install python3-stdeb fakeroot python3-all dh-python
+        run: sudo apt install python3-stdeb fakeroot python3-all dh-python python-all
       - name: Install Python deps
         run: pip3 install setuptools wheel
-      - name: run setup
-        run: python3 setup.py sdist
-      - name: create deb package
-        run: python3 setup.py --command-packages=stdeb.command bdist_deb
+      - name: run python setup
+        run: |
+          python3 setup.py sdist
+          python3 setup.py --command-packages=stdeb.command bdist_deb
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
@@ -103,5 +103,4 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
       
-    
     
