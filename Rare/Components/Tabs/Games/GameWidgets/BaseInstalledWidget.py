@@ -42,6 +42,7 @@ class BaseInstalledWidget(QGroupBox):
         self.game_running = True
         return 0
 
-    def finished(self):
+    def finished(self, exit_code):
+        logger.info("Game exited with exit code: ", exit_code)
         self.finish_signal.emit(self.game.app_name)
         self.game_running = False

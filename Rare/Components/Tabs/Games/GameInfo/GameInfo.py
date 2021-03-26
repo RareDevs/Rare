@@ -95,7 +95,7 @@ class GameInfo(QWidget):
         self.setLayout(self.layout)
 
     def uninstall(self):
-        if QMessageBox.question(self, "Uninstall", self.tr("Are you sure to uninstall " + self.game.app_title),
+        if QMessageBox.question(self, "Uninstall", self.tr("Are you sure to uninstall {}").format(self.game.app_title),
                                 QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
             LegendaryApi.uninstall(self.game.app_name, self.core)
             self.update_list.emit()
