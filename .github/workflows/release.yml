@@ -1,4 +1,4 @@
-# This workflow will upload a Python Package using Twine when a release is created
+# This workflow will upload a Python Package using Twine when a release
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
 name: New Release
@@ -6,9 +6,8 @@ name: New Release
 on:
   release:
     types: [ published ]
-
   workflow_dispatch:
-
+  
 jobs:
   pypy-deploy:
 
@@ -57,11 +56,11 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
-      - name: Install python libs
-        run: pip3 install pyinstaller setuptools wheel
-      - name: Install deps
-        run: pip3 install -r requirements.txt
-      - name: Copy Main
+      - name: Install python deps 
+        run: |
+          pip3 install pyinstaller setuptools wheel
+          pip3 install -r requirements.txt
+      - name: Prepare
         run: cp Rare/__main__.py ./
       - name: Build
         run: pyinstaller
@@ -71,7 +70,7 @@ jobs:
           --add-data="Rare/Styles/*;Rare/Styles"
           --windowed
           __main__.py
-      - name: Upload files to a GitHub release
+      - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -80,3 +79,29 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
 
+  deb-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install Deps
+        run: sudo apt install python-stdeb fakeroot python-all dh-python
+      - name: Install Python deps
+        run: pip3 install setuptools wheel
+      - name: run setup
+        run: |
+          python3 setup.py sdist
+          python3 setup.py --command-packages=stdeb.command bdist_deb
+      - name: Upload files to GitHub
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: deb_dist/*.deb
+          asset_name: Rare.deb
+          tag: ${{ github.ref }}
+          overwrite: true
+      
+    
+    
