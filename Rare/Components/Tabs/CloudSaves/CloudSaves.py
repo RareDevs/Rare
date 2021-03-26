@@ -49,20 +49,27 @@ class SyncSaves(QScrollArea):
     def setup_ui(self, saves: list):
         self.start_thread.disconnect()
 
+
         self.main_layout = QVBoxLayout()
         self.title = QLabel(
             f"<h1>" + self.tr("Cloud Saves") + "</h1>\n" + self.tr("Found Saves for folowing Games"))
-        self.sync_all_button = QPushButton(self.tr("Sync all games"))
-        self.sync_all_button.clicked.connect(self.sync_all)
-        self.main_layout.addWidget(self.title)
-        self.main_layout.addWidget(self.sync_all_button)
 
-        if len(saves) == 0:
+        self.main_layout.addWidget(self.title)
+
+        saves_games = []
+        for i in saves:
+            if not i.app_name in saves_games and self.core.is_installed(i.app_name):
+                saves_games.append(i.app_name)
+        if len(saves_games) == 0:
             # QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
             self.title.setText(
                 f"<h1>" + self.tr("Cloud Saves") + "</h1>\n" + self.tr("Your games does not support Cloud Saves"))
-            self.setWidget(self.widget)
+            self.setWidget(self.title)
             return
+
+        self.sync_all_button = QPushButton(self.tr("Sync all games"))
+        self.sync_all_button.clicked.connect(self.sync_all)
+        self.main_layout.addWidget(self.sync_all_button)
 
         latest_save = {}
         for i in sorted(saves, key=lambda a: a.datetime):
