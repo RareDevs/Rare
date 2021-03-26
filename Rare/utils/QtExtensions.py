@@ -191,7 +191,7 @@ class WaitingSpinner(QLabel):
             margin-left: auto;
             margin-right: auto;
         """)
-        self.movie = QMovie(style_path + "Icons/loader.gif")
+        self.movie = QMovie(os.path.join(style_path, "loader.gif"))
         self.setMovie(self.movie)
         self.movie.start()
 

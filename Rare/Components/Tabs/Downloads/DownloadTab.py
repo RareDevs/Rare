@@ -1,3 +1,4 @@
+import datetime
 import os
 import queue
 import subprocess
@@ -133,6 +134,7 @@ class DownloadTab(QWidget):
         self.dl_speed = QLabel()
         self.cache_used = QLabel()
         self.downloaded = QLabel()
+        self.time_left = QLabel()
 
         self.info_layout = QGridLayout()
 
@@ -140,6 +142,7 @@ class DownloadTab(QWidget):
         self.info_layout.addWidget(self.dl_speed, 0, 1)
         self.info_layout.addWidget(self.cache_used, 1, 0)
         self.info_layout.addWidget(self.downloaded, 1, 1)
+        self.info_layout.addWidget(self.time_left, 2, 0)
         self.layout.addLayout(self.info_layout)
 
         self.mini_layout = QHBoxLayout()
@@ -319,6 +322,10 @@ class DownloadTab(QWidget):
         self.dl_speed.setText(self.tr("Download speed") + f": {ui_update.download_speed / 1024 / 1024:.02f}MB/s")
         self.cache_used.setText(self.tr("Cache used") + f": {ui_update.cache_usage / 1024 / 1024:.02f}MB")
         self.downloaded.setText(self.tr("Downloaded") + f": {ui_update.total_downloaded / 1024 / 1024:.02f}MB")
+        self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
+
+    def get_time(self, seconds: int) -> str:
+        return str(datetime.timedelta(seconds=seconds))
 
     def update_game(self, app_name: str):
         print("Update ", app_name)

@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
+
 from Rare import __version__
+
 
 class About(QWidget):
     def __init__(self):
