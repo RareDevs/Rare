@@ -96,14 +96,17 @@ jobs:
         run: |
           python3 setup.py sdist
           python3 setup.py --command-packages=stdeb.command bdist_deb
-          
+      
+      - name: move file
+        run: mv deb_dist/*.deb rare.deb
+        
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: deb_dist/python3-rare_${GITHUB_REF##*/}-1_all.deb
+          file: rare.deb
           asset_name: Rare.deb
-          tag: ${{ github.ref }}
+          tag: ${{  }}
           overwrite: true
       
     
