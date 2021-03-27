@@ -1,7 +1,7 @@
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QProcess
-from PyQt5.QtWidgets import QGroupBox
+from PyQt5.QtCore import pyqtSignal, QProcess, QSettings
+from PyQt5.QtWidgets import QGroupBox, QMessageBox
 
 from Rare.utils import LegendaryApi
 from custom_legendary.core import LegendaryCore
@@ -30,6 +30,11 @@ class BaseInstalledWidget(QGroupBox):
         # self.setStyleSheet("border-radius: 5px")
 
     def launch(self, offline=False, skip_version_check=False):
+        if QSettings().value("confirm_start", False, bool):
+            if not QMessageBox.question(self, "Launch", self.tr("Do you want to launch {}").format(self.game.app_title),
+                                        QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+                logger.info("Cancel Startup")
+                return 1
         logger.info("Launching " + self.igame.title)
         self.proc, params = LegendaryApi.launch_game(self.core, self.igame.app_name, offline,
                                                      skip_version_check=skip_version_check)
@@ -43,6 +48,6 @@ class BaseInstalledWidget(QGroupBox):
         return 0
 
     def finished(self, exit_code):
-        logger.info("Game exited with exit code: ", exit_code)
+        logger.info("Game exited with exit code: " + str(exit_code))
         self.finish_signal.emit(self.game.app_name)
         self.game_running = False

@@ -3,7 +3,7 @@ import shutil
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QComboBox, QPushButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QComboBox, QPushButton, QCheckBox
 
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
@@ -50,9 +50,18 @@ class RareSettings(QWidget):
         self.select_lang.currentIndexChanged.connect(self.update_lang)
         self.layout.addWidget(self.lang_widget)
 
+        self.game_start_accept = QCheckBox(self.tr("Confirm launch of game"))
+        self.game_start_accept.stateChanged.connect(self.update_start_confirm)
+        self.game_start_accept_widget = SettingsWidget(self.tr("Confirm launch of game"), self.game_start_accept)
+        self.layout.addWidget(self.game_start_accept_widget)
+
         self.layout.addStretch()
 
         self.setLayout(self.layout)
+
+    def update_start_confirm(self):
+        settings = QSettings()
+        settings.setValue("confirm_start", self.game_start_accept.isChecked())
 
     def save_path(self):
         self.save_path_button.setDisabled(True)

@@ -59,13 +59,14 @@ class GameSettings(QWidget):
             self.select_proton.addItems(["Don't use Proton"] + self.possible_proton_wrappers)
             self.select_proton.currentIndexChanged.connect(self.change_proton)
             self.select_proton_widget = SettingsWidget(self.tr("Proton Wrapper"), self.select_proton)
-            self.layout.addWidget(self.select_proton_widget)
+            self.linux_settings.layout.addWidget(self.select_proton_widget)
+
             self.proton_prefix = PathEdit("x", QFileDialog.DirectoryOnly)
             self.proton_prefix_accept_button = QPushButton(self.tr("Save"))
             self.proton_prefix_accept_button.clicked.connect(self.update_prefix)
             self.proton_prefix_widget = SettingsWidget(self.tr("Proton prefix"), self.proton_prefix,
                                                        self.proton_prefix_accept_button)
-            self.layout.addWidget(self.proton_prefix_widget)
+            self.linux_settings.layout.addWidget(self.proton_prefix_widget)
 
         # startparams, skip_update_check
 

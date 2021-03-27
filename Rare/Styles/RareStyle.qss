@@ -30,6 +30,10 @@ QTabBar::tab:hover#main_tab_bar {
 
 }
 
+QGroupBox#group{
+    font-size: 15px;
+}
+
 QTabBar::tab:disabled {
     color: transparent;
     background-color: transparent;

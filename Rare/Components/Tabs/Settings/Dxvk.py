@@ -1,29 +1,31 @@
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QWidgetAction, QMenu, QToolButton, QHBoxLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QWidgetAction, QMenu, QToolButton, QHBoxLayout, QGroupBox
 
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("DXVK Settings")
 
 
-class DxvkWidget(QWidget):
-    dxvk_settings = {"fps": (False, "Fps"),
-                     "gpuload": (False, "GPU usage"),
-                     "memory": (False, "Used Memory"),
-                     "devinfo": (False, "Device info"),
-                     "version": (False, "DXVK version"),
-                     "api": (False, "D3D Level of application")
-                     }
+class DxvkWidget(QGroupBox):
 
     def __init__(self, core: LegendaryCore):
         super(DxvkWidget, self).__init__()
         self.core = core
+        self.dxvk_settings = {
+            "fps": (False, "Fps"),
+            "gpuload": (False, self.tr("GPU usage")),
+            "memory": (False, self.tr("Used Memory")),
+            "devinfo": (False, self.tr("Device info")),
+            "version": (False, self.tr("DXVK version")),
+            "api": (False, self.tr("D3D Level of application")),
+            "frametime": (False, self.tr("Frame time graph"))
+        }
         self.name = "default"
         self.layout = QVBoxLayout()
         self.child_layout = QHBoxLayout()
-        self.title = QLabel("dxvk settings")
+        self.setTitle(self.tr("dxvk settings"))
         self.show_dxvk = QCheckBox("Show Dxvk HUD")
 
         self.more_settings = QToolButton()
@@ -46,7 +48,6 @@ class DxvkWidget(QWidget):
 
         self.show_dxvk.stateChanged.connect(self.update_dxvk_active)
         self.show_dxvk.setChecked(not dxvk_hud == "")
-        self.layout.addWidget(self.title)
         self.child_layout.addWidget(self.show_dxvk)
 
         self.child_layout.addWidget(self.more_settings)
@@ -57,27 +58,28 @@ class DxvkWidget(QWidget):
     def update_settings(self, app_name):
         self.name = app_name
         dxvk_hud = self.core.lgd.config.get(f"{self.name}.env", "DXVK_HUD", fallback="")
-        self.more_settings.setDisabled(not dxvk_hud == "")
         if dxvk_hud:
+            self.more_settings.setDisabled(False)
             for s in dxvk_hud.split(","):
                 y = list(self.dxvk_settings[s])
                 y[0] = True
                 self.dxvk_settings[s] = tuple(y)
         else:
             self.show_dxvk.setChecked(False)
+            self.more_settings.setDisabled(True)
 
     def update_dxvk_active(self):
         if self.show_dxvk.isChecked():
             if not f"{self.name}.env" in self.core.lgd.config.sections():
                 self.core.lgd.config[f"{self.name}.env"] = {}
             self.more_settings.setDisabled(False)
-            self.more_settings_widget.settings = {"fps": (True, "Fps"),
-                                                  "gpuload": (True, "GPU usage"),
-                                                  "memory": (False, "Used Memory"),
-                                                  "devinfo": (False, "Device info"),
-                                                  "version": (False, "DXVK version"),
-                                                  "api": (False, "D3D Level of application")
-                                                  }
+
+            for i in self.more_settings_widget.settings:
+                if i in ["fps", "gpuload"]:
+                    lst = list(self.more_settings_widget.settings[i])
+                    lst[0] = True
+                    self.more_settings_widget.settings[i] = tuple(lst)
+
             self.core.lgd.config[f"{self.name}.env"]["DXVK_HUD"] = "fps,gpuload"
             for w in self.more_settings_widget.widgets:
                 if w.tag == "fps" or w.tag == "gpuload":
