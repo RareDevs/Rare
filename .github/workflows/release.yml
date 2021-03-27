@@ -106,7 +106,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: rare.deb
           asset_name: Rare.deb
-          tag: ${{  }}
+          tag: ${{ github.ref }}
           overwrite: true
       
     
