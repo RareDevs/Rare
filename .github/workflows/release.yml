@@ -80,28 +80,23 @@ jobs:
           overwrite: true
 
   deb-package:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest    
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
       - name: Install Deps
-        run: sudo apt install python3-stdeb 
-          fakeroot 
-          python-all 
-          dh-python 
-          python3-all 
+        run: sudo apt install 
+          python3-all
+          python3-stdeb
+          dh-python
+          python3-requests
           python3-setuptools
           python3-wheel
-      - name: Install Python deps
-        run: |
-          pip3 install wheel setuptools
-          sudo pip3 install wheel setuptools
+
       - name: run python setup
-        run: python3 setup.py sdist
-      - name: create deb package
-        run: python3 setup.py --command-packages=stdeb.command bdist_deb
+        run: |
+          python3 setup.py sdist
+          python3 setup.py --command-packages=stdeb.command bdist_deb
+          
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
