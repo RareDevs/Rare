@@ -4,8 +4,10 @@
 
 Rare is a GUI for Legendary, a command line aternative to Epic Games launcher. 
 It is currently considered beta software. You will probably run into issues, so it is
-recommend to make a backup. If you have features you want to have in this app, create an issue on github, contact me on
-Discord (Dummerle#7419) or build it yourself. Please report bugs so I can fix them.
+recommend to make a backup. If you run into an issue, please report it by creating an issue on github or on Discord: https://discord.gg/YvmABK9YSk 
+
+![Discord Shield](https://discordapp.com/api/guilds/826881530310819914/widget.png?style=shield)
+
 
 ### Requirements
 
@@ -49,6 +51,14 @@ Using the exe file could cause errors
 - Offline mode
 - More Translations (Need help)
 - More Information about Games
+
+## Contributing
+There are more options to contribute. 
+- If you can Python and PyQt you can implement new Features.
+- If you are a designer, you can add Stylesheets or create a logo or a banner
+- You can translate the application
+
+More Information is in CONTRIBUTING.md
 
 ## Images
 
