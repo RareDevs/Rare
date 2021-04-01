@@ -28,7 +28,7 @@ class About(QWidget):
         self.info_text = QLabel(
             self.tr("This is a beta version, so you can get bugs. If you get a bug, please report it by creating a "
                     "Issue on <a href='https://github.com/Dummerle/Rare/issues'>Github</a>. You can also contact me "
-                    "on Discord (Dummerle#7419). If you have a feature request, please contact me"))
+                    "on Discord (Dummerle#7419). Or you can join the <a href='https://discord.gg/YvmABK9YSk'>Discord server</a>"))
         self.info_text.setWordWrap(True)
         self.info_text.setOpenExternalLinks(True)
         self.layout.addWidget(self.info_text)
