@@ -10,7 +10,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
     QListWidget, QHBoxLayout
 
-from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog
+from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog, InstallDialog
 from Rare.utils.Models import InstallOptions, KillDownloadException
 from custom_legendary.core import LegendaryCore
 from custom_legendary.downloader.manager import DLManager
@@ -193,7 +193,7 @@ class DownloadTab(QWidget):
             dlm, analysis, game, igame, repair, repair_file = self.core.prepare_download(
                 app_name=options.app_name,
                 base_path=options.path,
-                force=False,  # TODO allow overwrite
+                force=options.force,
                 no_install=options.download_only,
                 status_q=status_queue,
                 # max_shm=,
@@ -211,7 +211,7 @@ class DownloadTab(QWidget):
                 # dl_timeout=,
                 repair=options.repair,
                 # repair_use_latest=,
-                # ignore_space_req=,
+                ignore_space_req=options.ignore_free_space,
                 # disable_delta=,
                 # override_delta_manifest=,
                 # reset_sdl=,
@@ -229,6 +229,7 @@ class DownloadTab(QWidget):
             return
 
         self.active_game = game
+        self.installing_game_widget.setText(self.tr("Installing game: ")+self.active_game.app_title)
         self.thread = DownloadThread(dlm, self.core, status_queue, igame, options.repair, repair_file)
         self.thread.status.connect(self.status)
         self.thread.statistics.connect(self.statistics)
@@ -329,7 +330,11 @@ class DownloadTab(QWidget):
 
     def update_game(self, app_name: str):
         print("Update ", app_name)
-        self.install_game(InstallOptions(app_name))
+        infos = InstallDialog(app_name, self.core, True).get_information()
+        if infos != 0:
+            path, max_workers, force, ignore_free_space = infos
+            self.install_game(InstallOptions(app_name=app_name, max_workers=max_workers, path=path,
+                                             force=force, ignore_free_space=ignore_free_space))
 
     def repair(self):
         pass
@@ -343,7 +348,6 @@ class UpdateWidget(QWidget):
         print(game)
         self.core = core
         self.game = game
-        print(self.game)
 
         self.layout = QVBoxLayout()
         self.title = QLabel(self.game.title)

@@ -21,7 +21,7 @@ class BaseUninstalledWidget(QGroupBox):
         self.setContentsMargins(0, 0, 0, 0)
 
     def install(self):
-        infos = InstallDialog().get_information()
+        infos = InstallDialog(self.game.app_name, self.core).get_information()
         if infos != 0:
-            path, max_workers = infos
-            self.install_game.emit(InstallOptions(app_name=self.game.app_name, max_workers=max_workers, path=path))
+            path, max_workers, force, ignore_free_space = infos
+            self.install_game.emit(InstallOptions(app_name=self.game.app_name, max_workers=max_workers, path=path, force=force, ignore_free_space=ignore_free_space))
