@@ -5,10 +5,10 @@ from PyQt5.QtCore import Qt, pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 
-from Rare.Components.Tabs.Games.GameWidgets.UninstalledListWidget import ListWidgetUninstalled
-from Rare.Components.Tabs.Games.GameWidgets.UninstalledIconWidget import IconWidgetUninstalled
 from Rare.Components.Tabs.Games.GameWidgets.InstalledIconWidget import GameWidgetInstalled
 from Rare.Components.Tabs.Games.GameWidgets.InstalledListWidget import InstalledListWidget
+from Rare.Components.Tabs.Games.GameWidgets.UninstalledIconWidget import IconWidgetUninstalled
+from Rare.Components.Tabs.Games.GameWidgets.UninstalledListWidget import ListWidgetUninstalled
 from Rare.utils.Models import InstallOptions
 from Rare.utils.QtExtensions import FlowLayout
 from Rare.utils.utils import download_image
@@ -42,8 +42,16 @@ class GameList(QStackedWidget):
 
         self.list_scrollarea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
+        self.info_text = self.tr("Installed Games: {}    Available Games: {}").format(
+            len(self.core.get_installed_list()),
+            len(self.core.get_game_list(update_assets=True)))
+
+        self.icon_parent_layout = QVBoxLayout()
+        self.icon_parent_layout.addWidget(QLabel(self.info_text))
+
         self.icon_layout = FlowLayout()
         self.list_layout = QVBoxLayout()
+        self.list_layout.addWidget(QLabel(self.info_text))
 
         IMAGE_DIR = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare"), str)
         self.updates = []
@@ -117,8 +125,10 @@ class GameList(QStackedWidget):
 
             self.widgets[game.app_name] = (icon_widget, list_widget)
 
+        self.icon_parent_layout.addLayout(self.icon_layout)
+        self.icon_parent_layout.addStretch(1)
         self.list_layout.addStretch(1)
-        self.icon_widget.setLayout(self.icon_layout)
+        self.icon_widget.setLayout(self.icon_parent_layout)
         self.list_widget.setLayout(self.list_layout)
 
         self.icon_scrollarea.setWidget(self.icon_widget)

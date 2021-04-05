@@ -1,7 +1,7 @@
 from logging import getLogger
 
 from PyQt5.QtGui import QIntValidator
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton, QLineEdit
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton, QLineEdit, QGroupBox, QMessageBox
 
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
@@ -37,6 +37,21 @@ class LegendarySettings(QWidget):
                                                 self.max_worker_select)
         self.layout.addWidget(self.max_worker_widget)
 
+        #cleanup
+        self.clean_layout = QVBoxLayout()
+        self.cleanup_widget = QGroupBox()
+        self.cleanup_widget.setTitle(self.tr("Cleanup"))
+        self.clean_button = QPushButton(self.tr("Remove everything"))
+        self.clean_button.clicked.connect(lambda: self.cleanup(False))
+        self.clean_layout.addWidget(self.clean_button)
+
+        self.clean_button_without_manifests = QPushButton(self.tr("Clean, but keep manifests"))
+        self.clean_button_without_manifests.clicked.connect(lambda: self.cleanup(True))
+        self.clean_layout.addWidget(self.clean_button_without_manifests)
+
+        self.cleanup_widget.setLayout(self.clean_layout)
+        self.layout.addWidget(self.cleanup_widget)
+
         self.layout.addStretch(1)
         self.setLayout(self.layout)
 
@@ -59,3 +74,25 @@ class LegendarySettings(QWidget):
             self.core.lgd.config["Legendary"].pop("max_workers")
         logger.info("Updating config for max_workers")
         self.core.lgd.save_config()
+
+    def cleanup(self, keep_manifests):
+        before = self.core.lgd.get_dir_size()
+        logger.debug('Removing app metadata...')
+        app_names = set(g.app_name for g in self.core.get_assets(update_assets=False))
+        self.core.lgd.clean_metadata(app_names)
+
+        if not keep_manifests:
+            logger.debug('Removing manifests...')
+            installed = [(ig.app_name, ig.version) for ig in self.core.get_installed_list()]
+            installed.extend((ig.app_name, ig.version) for ig in self.core.get_installed_dlc_list())
+            self.core.lgd.clean_manifests(installed)
+
+        logger.debug('Removing tmp data')
+        self.core.lgd.clean_tmp_data()
+
+        after = self.core.lgd.get_dir_size()
+        logger.info(f'Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.')
+        if cleaned := (before-after) != 0:
+            QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {} MB").format(round(cleaned / 1024 / 1024, 3)))
+        else:
+            QMessageBox.information(self, "Cleanup", "Nothing to clean")

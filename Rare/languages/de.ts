@@ -16,7 +16,20 @@
     <message>
         <location filename="../Components/Tabs/Settings/About.py" line="28"/>
         <source>This is a beta version, so you can get bugs. If you get a bug, please report it by creating a Issue on &lt;a href=&apos;https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt;. You can also contact me on Discord (Dummerle#7419). If you have a feature request, please contact me</source>
-        <translation>Dies ist eine beta version, also können Bugs entstehen. Wenn du einen Bug bemerkst, kontaktiere mich, indem du einen Issue auf &lt;a href=&apos;https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt; erstellst oder mir auf Discord eine Nachricht schickst. Ebenso bei einem Wunsch für Features</translation>
+        <translation type="obsolete">Dies ist eine beta version, also können Bugs entstehen. Wenn du einen Bug bemerkst, kontaktiere mich, indem du einen Issue auf &lt;a href=&apos;https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt; erstellst oder mir auf Discord eine Nachricht schickst. Ebenso bei einem Wunsch für Features</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/About.py" line="28"/>
+        <source>This is a beta version, so you can get bugs. If you get a bug, please report it by creating a Issue on &lt;a href=&apos;https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt;. You can also contact me on Discord (Dummerle#7419). Or you can join the &lt;a href=&apos;https://discord.gg/YvmABK9YSk&apos;&gt;Discord server&lt;/a&gt;</source>
+        <translation>Dies ist eine Betaversion, also können Bugs und andere Unschönheiten auftreten. Falls ein Bug auftritt, bitte auf &lt;a href=&apos;https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt; melden, indem du einen Issue erstellst oder auf Discord. (Dummerle#7419). Ein Rare &lt;a href=&apos;https://discord.gg/YvmABK9YSk&apos;&gt;Discord server&lt;/a&gt; existiert ebenfalls</translation>
+    </message>
+</context>
+<context>
+    <name>BaseInstalledWidget</name>
+    <message>
+        <location filename="../Components/Tabs/Games/GameWidgets/BaseInstalledWidget.py" line="34"/>
+        <source>Do you want to launch {}</source>
+        <translation>Möchtest du {} starten</translation>
     </message>
 </context>
 <context>
@@ -45,7 +58,7 @@
 <context>
     <name>DownloadTab</name>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="161"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="133"/>
         <source>No active Download</source>
         <translation>Kein aktiver Download</translation>
     </message>
@@ -55,54 +68,92 @@
         <translation>Download anhalten</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="173"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="170"/>
         <source>No updates available</source>
         <translation>Keine Updates verfügbar</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="220"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="217"/>
         <source>Error preparing download</source>
         <translation>Fehler beim Vorbereiten des Downloads</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="225"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="222"/>
         <source>Download size is 0. Game already exists</source>
         <translation>Die Größe des Downloads ist 0. Spiel existiert bereits</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="290"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="287"/>
         <source>Installation finished</source>
         <translation>Installation abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="314"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="311"/>
         <source>Installing Game: No active download</source>
         <translation>Installierendes Spiel: Kein aktiver Download</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="322"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="319"/>
         <source>Download speed</source>
         <translation>Geschwindigkeit</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="323"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="320"/>
         <source>Cache used</source>
         <translation>Benutzter Cache</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="324"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="321"/>
         <source>Downloaded</source>
         <translation>Runtergeladen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="325"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="322"/>
         <source>Time left: </source>
         <translation>Zeit übrig: </translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="291"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="288"/>
         <source>Finished Download of game {}</source>
         <translation>Downlaod von {} abgeschlossen</translation>
+    </message>
+</context>
+<context>
+    <name>DxvkWidget</name>
+    <message>
+        <location filename="../Components/Tabs/Settings/Dxvk.py" line="18"/>
+        <source>GPU usage</source>
+        <translation>GPU nutzung</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Dxvk.py" line="19"/>
+        <source>Used Memory</source>
+        <translation>Benutzter Speicher</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Dxvk.py" line="20"/>
+        <source>Device info</source>
+        <translation>Geräteinfo</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Dxvk.py" line="21"/>
+        <source>DXVK version</source>
+        <translation>DXVK Version</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Dxvk.py" line="22"/>
+        <source>D3D Level of application</source>
+        <translation>D3D Level des Spiels</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Dxvk.py" line="23"/>
+        <source>Frame time graph</source>
+        <translation>Graph über die Frametime</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Dxvk.py" line="28"/>
+        <source>dxvk settings</source>
+        <translation>DXVK Einstellungen</translation>
     </message>
 </context>
 <context>
@@ -174,14 +225,19 @@
 <context>
     <name>GameList</name>
     <message>
-        <location filename="../Components/Tabs/Games/GameList.py" line="140"/>
+        <location filename="../Components/Tabs/Games/GameList.py" line="148"/>
         <source>Launch</source>
         <translation>Starten</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameList.py" line="145"/>
+        <location filename="../Components/Tabs/Games/GameList.py" line="153"/>
         <source>Game running</source>
         <translation>Spiel läuft</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameList.py" line="45"/>
+        <source>Installed Games: {}    Available Games: {}</source>
+        <translation>Installierte Spiele: {}    Verfügbare Spiele: {}</translation>
     </message>
 </context>
 <context>
@@ -215,7 +271,7 @@
         <translation>Überprüfung nach Updates beim Start überspringen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="64"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="65"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
@@ -230,17 +286,17 @@
         <translation>Proton Version</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="66"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="67"/>
         <source>Proton prefix</source>
         <translation>Protonprefix</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="172"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="173"/>
         <source>No permission to create folder</source>
         <translation>Keine Berechtigung den Ordner zu erstellen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="217"/>
+        <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="218"/>
         <source>Please select path for proton prefix</source>
         <translation>Bitte wähle den Pfad zum Protonprefix</translation>
     </message>
@@ -304,29 +360,54 @@
         <translation>Keine valide Session gefunden</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/ImportWidget.py" line="23"/>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="26"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/ImportWidget.py" line="37"/>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="40"/>
         <source>Select path to game</source>
         <translation>Wähle den Pfad zum Spiel</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/ImportWidget.py" line="43"/>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="62"/>
         <source>Import Game</source>
         <translation>Spiel importieren</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/ImportWidget.py" line="51"/>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="70"/>
         <source>Import all games from Epic Games Launcher</source>
         <translation>Alle Spiele aus dem Epic Games Launcher importieren</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="116"/>
         <source>Successfully imported {} Games</source>
-        <translation>{} Spiele erfolgreich importiert</translation>
+        <translation type="obsolete">{} Spiele erfolgreich importiert</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="43"/>
+        <source>Override app name (Only if imported game from legendary or the app could not find the app name)</source>
+        <translation>App Name überschreiben (Nur falls das Spiel von Legendary importiert wird oder der App Name nicht gefunden wird</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="110"/>
+        <source>Could not find app name</source>
+        <translation>Konnte den Appnamen nicht finden</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="114"/>
+        <source>Successfully imported {}. Reload library</source>
+        <translation>Erfolgreich {} importiert. Spiele neu laden</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="120"/>
+        <source>Failed to import {}</source>
+        <translation>{} Konnte nicht importiert werden</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/ImportWidget.py" line="159"/>
+        <source>Successfully imported {} Games. Reloading Library</source>
+        <translation>Erfolgreich {} Spiele importiert. Spiele neu laden</translation>
     </message>
 </context>
 <context>
@@ -412,6 +493,14 @@ Installationsgröße: {} GB</translation>
     </message>
 </context>
 <context>
+    <name>LaunchThread</name>
+    <message>
+        <location filename="../Components/Launch/LaunchDialog.py" line="23"/>
+        <source>Downloading Images</source>
+        <translation>Bilder runterladen</translation>
+    </message>
+</context>
+<context>
     <name>LegendarySettings</name>
     <message>
         <location filename="../Components/Tabs/Settings/Legendary.py" line="18"/>
@@ -428,18 +517,43 @@ Installationsgröße: {} GB</translation>
         <source>Max workers for Download (Less: slower download)(0: Default)</source>
         <translation>Maximale Anzahl Downloadprozesse (Weniger: langsamer)(Standard: 0)</translation>
     </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Legendary.py" line="43"/>
+        <source>Cleanup</source>
+        <translation>Aufräumen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Legendary.py" line="44"/>
+        <source>Remove everything</source>
+        <translation>Alles aufräumen</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Legendary.py" line="48"/>
+        <source>Clean, but keep manifests</source>
+        <translation>Aufräumen, aber Manifests behalten</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Legendary.py" line="96"/>
+        <source>Cleanup complete! Successfully removed {} MB</source>
+        <translation>Fertig! Es wurden {} MB entfernt</translation>
+    </message>
 </context>
 <context>
     <name>LinuxSettings</name>
     <message>
-        <location filename="../Components/Tabs/Settings/Linux.py" line="29"/>
+        <location filename="../Components/Tabs/Settings/Linux.py" line="28"/>
         <source>Default Wine Prefix</source>
         <translation>Standard Wineprefix</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Settings/Linux.py" line="37"/>
+        <location filename="../Components/Tabs/Settings/Linux.py" line="36"/>
         <source>Default Wine executable</source>
         <translation>Standard Wine</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Linux.py" line="19"/>
+        <source>Linux settings</source>
+        <translation>Linux Einstellungen</translation>
     </message>
 </context>
 <context>
@@ -535,9 +649,14 @@ Installationsgröße: {} GB</translation>
         <translation>Sprache</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Settings/Rare.py" line="68"/>
+        <location filename="../Components/Tabs/Settings/Rare.py" line="77"/>
         <source>Restart Application to activate changes</source>
         <translation>Starte die App neu um die Änderungen zu aktivieren</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Rare.py" line="55"/>
+        <source>Confirm launch of game</source>
+        <translation>Start des Spiels bestätigen</translation>
     </message>
 </context>
 <context>
@@ -682,7 +801,7 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>UpdateWidget</name>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="352"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="349"/>
         <source>Update Game</source>
         <translation>Spiel updaten</translation>
     </message>

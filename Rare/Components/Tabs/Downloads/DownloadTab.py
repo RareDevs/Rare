@@ -158,9 +158,6 @@ class DownloadTab(QWidget):
 
         self.layout.addLayout(self.mini_layout)
 
-        self.installing_game_widget = QLabel(self.tr("No active Download"))
-        self.layout.addWidget(self.installing_game_widget)
-
         self.update_title = QLabel(f"<h2>{self.tr('Updates')}</h2>")
         self.update_title.setStyleSheet("""
             QLabel{
