@@ -36,7 +36,8 @@ Using the exe file could cause errors
 
 - For Arch Linux is an AUR package available: [rare-git](https://aur.archlinux.org/packages/rare-git)
   or [rare](https://aur.archlinux.org/packages/rare)
-- Other distributions have to install it with pip or clone the repo and install it manually: *python3 setup.py install*
+- For Debian-based Distros is a .deb package at the releases
+- Other distributions have to install it with pip or clone the repo and install it manually: *python3 setup.py install (--user)*
 
 ## Features
 
@@ -51,6 +52,7 @@ Using the exe file could cause errors
 - Offline mode
 - More Translations (Need help)
 - More Information about Games
+More planned features are in projects
 
 ## Contributing
 There are more options to contribute. 
