@@ -20,7 +20,7 @@ class LaunchThread(QThread):
 
     def run(self):
         self.action.emit("Login")
-        self.action.emit("Downloading Images")
+        self.action.emit(self.tr("Downloading Images"))
         download_images(self.download_progess, self.core)
         self.action.emit("finish")
 

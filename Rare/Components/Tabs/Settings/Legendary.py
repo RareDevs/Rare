@@ -50,7 +50,6 @@ class LegendarySettings(QWidget):
         self.clean_layout.addWidget(self.clean_button_without_manifests)
 
         self.cleanup_widget.setLayout(self.clean_layout)
-
         self.layout.addWidget(self.cleanup_widget)
 
         self.layout.addStretch(1)
@@ -94,6 +93,6 @@ class LegendarySettings(QWidget):
         after = self.core.lgd.get_dir_size()
         logger.info(f'Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.')
         if cleaned := (before-after) != 0:
-            QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {} MB").format(round(cleaned / 1024 / 1024, 2)))
+            QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {} MB").format(round(cleaned / 1024 / 1024, 3)))
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")
