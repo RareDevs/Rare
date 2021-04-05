@@ -48,6 +48,7 @@ class GameList(QStackedWidget):
 
         self.icon_parent_layout = QVBoxLayout()
         self.icon_parent_layout.addWidget(QLabel(self.info_text))
+
         self.icon_layout = FlowLayout()
         self.list_layout = QVBoxLayout()
         self.list_layout.addWidget(QLabel(self.info_text))
@@ -125,6 +126,7 @@ class GameList(QStackedWidget):
             self.widgets[game.app_name] = (icon_widget, list_widget)
 
         self.icon_parent_layout.addLayout(self.icon_layout)
+        self.icon_parent_layout.addStretch(1)
         self.list_layout.addStretch(1)
         self.icon_widget.setLayout(self.icon_parent_layout)
         self.list_widget.setLayout(self.list_layout)
