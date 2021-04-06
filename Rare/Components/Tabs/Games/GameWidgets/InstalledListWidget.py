@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QProcess, pyqtSignal
+from PyQt5.QtCore import QProcess, pyqtSignal, Qt
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QStyle, QVBoxLayout
 from qtawesome import icon
 
@@ -30,7 +30,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout = QVBoxLayout()
 
         if self.pixmap:
-            self.pixmap = self.pixmap.scaled(180, 240)
+            self.pixmap = self.pixmap.scaled(180, 240, transformMode=Qt.SmoothTransformation)
             self.image = QLabel()
             self.image.setPixmap(self.pixmap)
             self.layout.addWidget(self.image)
