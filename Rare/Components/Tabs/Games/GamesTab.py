@@ -29,7 +29,7 @@ class GameTab(QWidget):
         self.setLayout(self.layout)
 
     def update_list(self):
-        self.default_widget.game_list.update_list(not self.default_widget.head_bar.view.isChecked())
+        self.default_widget.game_list.update_list(self.default_widget.head_bar.view.isChecked())
         self.layout.setCurrentIndex(0)
 
     def show_info(self, app_name):
