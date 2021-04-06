@@ -278,6 +278,7 @@ class DownloadTab(QWidget):
         if text == "dl_finished":
             pass
         elif text == "finish":
+            self.installing_game.setText(self.tr("Download finished. Reload library"))
             try:
                 from notifypy import Notify
             except ModuleNotFoundError:

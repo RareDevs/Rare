@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayo
     QProgressBar, QStackedWidget, QGroupBox
 from qtawesome import icon
 
+from Rare.Components.Dialogs.UninstallDialog import UninstallDialog
 from Rare.Components.Tabs.Games.GameInfo.GameSettings import GameSettings
 from Rare.utils import LegendaryApi
 from Rare.utils.LegendaryApi import VerifyThread
@@ -98,10 +99,13 @@ class GameInfo(QWidget):
         self.setLayout(self.layout)
 
     def uninstall(self):
-        if QMessageBox.question(self, "Uninstall", self.tr("Are you sure to uninstall {}").format(self.game.app_title),
-                                QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
-            LegendaryApi.uninstall(self.game.app_name, self.core)
-            self.update_list.emit()
+        infos = UninstallDialog(self.game).get_information()
+        if infos == 0:
+            print("Cancel Uninstall")
+            return
+
+        LegendaryApi.uninstall(self.game.app_name, self.core, infos)
+        self.update_list.emit()
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')
