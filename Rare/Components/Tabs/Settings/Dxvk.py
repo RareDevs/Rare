@@ -129,7 +129,7 @@ class DxvkMoreSettingsWidget(QWidget):
             if check:
                 sett.append(i)
         if len(sett) != 0:
-            self.core.lgd.config[f"{self.name}.env"]["DXVK_HUD"] = ",".join(sett)
+            self.core.lgd.config.set(f"{self.name}.env", "DXVK_HUD", ",".join(sett))
 
         else:
             self.core.lgd.config.remove_option(f"{self.name}.env", "DXVK_HUD")
