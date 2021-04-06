@@ -40,6 +40,7 @@ class GameList(QStackedWidget):
         self.icon_scrollarea.setWidgetResizable(True)
         self.icon_scrollarea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
+        self.list_scrollarea.setWidgetResizable(True)
         self.list_scrollarea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         self.info_text = self.tr("Installed Games: {}    Available Games: {}").format(

@@ -30,8 +30,15 @@ QTabBar::tab:hover#main_tab_bar {
 
 }
 
+QGroupBox{
+    border: none;
+}
+
 QGroupBox#group{
     font-size: 15px;
+    border: 1px solid white;
+    padding: 8px;
+    margin-top: 10px;
 }
 
 QTabBar::tab:disabled {

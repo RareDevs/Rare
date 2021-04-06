@@ -4,7 +4,8 @@ import string
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLineEdit
+from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLineEdit, \
+    QGroupBox
 from qtawesome import icon
 
 from Rare.utils import LegendaryApi
@@ -34,11 +35,13 @@ class ImportWidget(QWidget):
         self.title = QLabel("<h2>Import Game</h2")
         self.layout.addWidget(self.title)
 
-        self.import_one_game = QLabel(f"<h3>{self.tr('Import existing game from Epic Games Launcher')}</h3>")
-        self.layout.addWidget(self.import_one_game)
+        # self.import_one_game = QLabel(f"<h3>{self.tr('Import existing game from Epic Games Launcher')}</h3>")
+        self.import_one_game = QGroupBox(self.tr('Import existing game from Epic Games Launcher'))
+        self.import_one_game.setObjectName("group")
+        self.gb_layout = QVBoxLayout()
 
         self.import_game_info = QLabel(self.tr("Select path to game"))
-        self.layout.addWidget(self.import_game_info)
+        self.gb_layout.addWidget(self.import_game_info)
 
         self.override_app_name_label = QLabel(self.tr("Override app name (Only if imported game from legendary or the app could not find the app name)"))
         self.app_name_input = QLineEdit()
@@ -52,16 +55,20 @@ class ImportWidget(QWidget):
 
         self.path_edit = PathEdit(os.path.expanduser("~"), QFileDialog.DirectoryOnly)
         self.path_edit.text_edit.textChanged.connect(self.path_changed)
-        self.layout.addWidget(self.path_edit)
+        self.gb_layout.addWidget(self.path_edit)
 
-        self.layout.addWidget(self.override_app_name_label)
-        self.layout.addWidget(self.app_name_input)
+        self.gb_layout.addWidget(self.override_app_name_label)
+        self.gb_layout.addWidget(self.app_name_input)
 
         self.info_label = QLabel("")
-        self.layout.addWidget(self.info_label)
+        self.gb_layout.addWidget(self.info_label)
         self.import_button = QPushButton(self.tr("Import Game"))
-        self.layout.addWidget(self.import_button)
+        self.gb_layout.addWidget(self.import_button)
         self.import_button.clicked.connect(self.import_game)
+
+        self.import_one_game.setLayout(self.gb_layout)
+
+        self.layout.addWidget(self.import_one_game)
 
         self.layout.addStretch(1)
 
