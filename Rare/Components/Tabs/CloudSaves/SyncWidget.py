@@ -148,7 +148,6 @@ class SyncWidget(QWidget):
     def change_path(self):
         path = PathInputDialog("Select directory", "Select savepath. Warning: Do not change if you are not sure",
                                self.igame.save_path).get_path()
-        print(path)
         if path != "":
             self.igame.save_path = path
             self.core.lgd.set_installed_game(self.igame.app_name, self.igame)

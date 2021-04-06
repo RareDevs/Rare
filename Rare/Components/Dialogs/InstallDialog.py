@@ -1,25 +1,40 @@
 import os
 
-from PyQt5.QtWidgets import QDialog, QFormLayout, QVBoxLayout, QSpinBox, QFileDialog, QLabel, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import QDialog, QFormLayout, QVBoxLayout, QSpinBox, QFileDialog, QLabel, QPushButton, QHBoxLayout, \
+    QCheckBox
 
 from Rare.utils.QtExtensions import PathEdit
+from custom_legendary.core import LegendaryCore
 
 
 class InstallDialog(QDialog):
     infos = 0
 
-    def __init__(self):
+    def __init__(self, app_name, core: LegendaryCore, update=False):
         super(InstallDialog, self).__init__()
         self.layout = QVBoxLayout()
-
+        self.core = core
+        self.game = self.core.get_game(app_name)
         self.form = QFormLayout()
+        self.update_game = update
+        self.layout.addWidget(QLabel(self.tr("<h3>Install {}</h3>").format(self.game.app_title)))
         default_path = os.path.expanduser("~/legendary")
+
         # TODO read from config
-        self.install_path_field = PathEdit(text=default_path, type_of_file=QFileDialog.DirectoryOnly)
-        self.form.addRow(QLabel("Install directory"), self.install_path_field)
+        if not update:
+            self.install_path_field = PathEdit(text=default_path, type_of_file=QFileDialog.DirectoryOnly)
+            self.form.addRow(QLabel("Install directory"), self.install_path_field)
 
         self.max_workes = QSpinBox()
         self.form.addRow(QLabel(self.tr("Max workers (0: Default)")), self.max_workes)
+
+        self.force = QCheckBox()
+        self.force.setChecked(False)
+        self.form.addRow(QLabel(self.tr("Force download")), self.force)
+
+        self.ignore_free_space = QCheckBox()
+        self.ignore_free_space.setChecked(False)
+        self.form.addRow(QLabel(self.tr("Ignore free space (Warning!)")), self.ignore_free_space)
 
         self.layout.addLayout(self.form)
 
@@ -42,7 +57,7 @@ class InstallDialog(QDialog):
         return self.infos
 
     def ok(self):
-        self.infos = self.install_path_field.text(), self.max_workes.value()
+        self.infos = self.install_path_field.text() if not self.update_game else None, self.max_workes.value(), self.force.isChecked(), self.ignore_free_space.isChecked()
         self.close()
 
 
@@ -80,3 +95,4 @@ class InstallInfoDialog(QDialog):
     def cancel(self):
         self.accept = False
         self.close()
+

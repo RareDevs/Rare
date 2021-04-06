@@ -84,7 +84,12 @@ QLineEdit {
 
 QCheckBox {
     color: #F0F0F0;
+    background-color: none;
 }
+QCheckBox::indicator{
+
+}
+
 
 
 #list_widget {

@@ -36,11 +36,11 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
         self.setLayout(self.layout)
         self.setFixedWidth(self.sizeHint().width())
 
-    def mousePressEvent(self, a0) -> None:
+    def mousePressEvent(self, e) -> None:
         self.install()
 
-    def enterEvent(self, QEvent):
+    def enterEvent(self, e):
         self.info_label.setText(self.tr("Install Game"))
 
-    def leaveEvent(self, QEvent):
+    def leaveEvent(self, e):
         self.info_label.setText("")
