@@ -337,7 +337,6 @@ class UpdateWidget(QWidget):
 
     def __init__(self, core: LegendaryCore, game: InstalledGame):
         super(UpdateWidget, self).__init__()
-        print(game)
         self.core = core
         self.game = game
         print(self.game)

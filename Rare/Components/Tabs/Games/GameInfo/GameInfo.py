@@ -65,6 +65,7 @@ class GameInfo(QWidget):
         right_layout.addWidget(self.game_title)
 
         self.dev = QLabel("Error")
+        self.dev.setTextInteractionFlags(Qt.TextSelectableByMouse)
         right_layout.addWidget(self.dev)
 
         self.app_name = QLabel("Error")
@@ -72,12 +73,14 @@ class GameInfo(QWidget):
         right_layout.addWidget(self.app_name)
 
         self.version = QLabel("Error")
+        self.version.setTextInteractionFlags(Qt.TextSelectableByMouse)
         right_layout.addWidget(self.version)
 
         self.install_size = QLabel("Error")
         right_layout.addWidget(self.install_size)
 
         self.install_path = QLabel("Error")
+        self.install_path.setTextInteractionFlags(Qt.TextSelectableByMouse)
         right_layout.addWidget(self.install_path)
 
         top_layout.addLayout(right_layout)

@@ -41,8 +41,10 @@ class DxvkWidget(QGroupBox):
         self.more_settings.setPopupMode(QToolButton.InstantPopup)
         self.more_settings.setMenu(QMenu())
         self.more_settings.setText("More DXVK settings")
+
         action = QWidgetAction(self)
         self.more_settings_widget = DxvkMoreSettingsWidget(self.dxvk_settings, self.core)
+        self.more_settings_widget.show_dxvk.connect(lambda x: self.show_dxvk.setChecked(x))
         action.setDefaultWidget(self.more_settings_widget)
         self.more_settings.menu().addAction(action)
 
@@ -71,7 +73,8 @@ class DxvkWidget(QGroupBox):
     def update_dxvk_active(self):
         if self.show_dxvk.isChecked():
             if not f"{self.name}.env" in self.core.lgd.config.sections():
-                self.core.lgd.config[f"{self.name}.env"] = {}
+                print("add section dxvk")
+                self.core.lgd.config.add_section(f"{self.name}.env")
             self.more_settings.setDisabled(False)
 
             for i in self.more_settings_widget.settings:
@@ -93,11 +96,11 @@ class DxvkWidget(QGroupBox):
                 self.core.lgd.config.remove_option(f"{self.name}.env", "DXVK_HUD")
                 if not self.core.lgd.config[f"{self.name}.env"]:
                     self.core.lgd.config.remove_section(f"{self.name}.env")
-            print("Remove Section DXVK_HUD")
         self.core.lgd.save_config()
 
 
 class DxvkMoreSettingsWidget(QWidget):
+    show_dxvk = pyqtSignal(bool)
     def __init__(self, settings: dict, core: LegendaryCore):
         super(DxvkMoreSettingsWidget, self).__init__()
         self.layout = QVBoxLayout()
@@ -118,16 +121,22 @@ class DxvkMoreSettingsWidget(QWidget):
         y = list(self.settings[tag])
         y[0] = checked
         self.settings[tag] = tuple(y)
-        # print(self.settings)
+
         sett = []
         logger.debug(self.settings)
         for i in self.settings:
             check, _ = self.settings[i]
             if check:
                 sett.append(i)
-        if sett:
+        if len(sett) != 0:
             self.core.lgd.config[f"{self.name}.env"]["DXVK_HUD"] = ",".join(sett)
-            self.core.lgd.save_config()
+
+        else:
+            self.core.lgd.config.remove_option(f"{self.name}.env", "DXVK_HUD")
+            self.show_dxvk.emit(False)
+            if not self.core.lgd.config.options(f"{self.name}.env"):
+                self.core.lgd.config.remove_section(f"{self.name}.env")
+        self.core.lgd.save_config()
 
 
 class CheckBox(QCheckBox):

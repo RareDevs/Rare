@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, QLabel
 
 from Rare.Components.Dialogs.PathInputDialog import PathInputDialog
@@ -130,6 +130,7 @@ class SyncWidget(QWidget):
 
         save_path_layout = QHBoxLayout()
         self.save_path_text = QLabel(igame.save_path)
+        self.save_path_text.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.save_path_text.setWordWrap(True)
         self.change_save_path = QPushButton(self.tr("Change path"))
         self.change_save_path.clicked.connect(self.change_path)
