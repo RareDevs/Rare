@@ -304,6 +304,7 @@ class DownloadTab(QWidget):
             self.dl_speed.setText("")
             self.cache_used.setText("")
             self.downloaded.setText("")
+            self.time_left.setText("")
         elif text == "error":
             QMessageBox.warning(self, "warn", "Download error")
 
