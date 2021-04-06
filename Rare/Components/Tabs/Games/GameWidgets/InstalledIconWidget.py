@@ -2,56 +2,45 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import QEvent, pyqtSignal, QSettings, QSize, Qt
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import *
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame
 from qtawesome import icon
 
+from Rare.Components.Tabs.Games.GameWidgets.BaseInstalledWidget import BaseInstalledWidget
 from Rare.utils import LegendaryApi
 from Rare.utils.QtExtensions import ClickableLabel
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame
 
 logger = getLogger("GameWidgetInstalled")
 
 
-class GameWidgetInstalled(QWidget):
+class GameWidgetInstalled(BaseInstalledWidget):
     update_list = pyqtSignal()
     show_info = pyqtSignal(str)
     update_game = pyqtSignal()
 
-    def __init__(self, core: LegendaryCore, game: InstalledGame):
-        super(GameWidgetInstalled, self).__init__()
-        self.setObjectName("game_widget_parent")
+    def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap):
+        super(GameWidgetInstalled, self).__init__(game, core, pixmap)
+        self.setObjectName("game_widget_icon")
+
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
 
         self.layout = QVBoxLayout()
         self.core = core
-        self.game = game
         self.running = False
-        settings = QSettings()
         self.info_text = ""
-        self.IMAGE_DIR = settings.value("img_dir", os.path.expanduser("~/.cache/rare"))
 
-        self.update_available = self.core.get_asset(self.game.app_name, True).build_version != game.version
         if self.update_available:
             logger.info("Update available for game: " + self.game.app_name)
             self.info_text = self.tr("Update available")
 
-        if os.path.exists(f"{self.IMAGE_DIR}/{game.app_name}/FinalArt.png"):
-            pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/FinalArt.png")
-        elif os.path.exists(f"{self.IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png"):
-            pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
-        elif os.path.exists(f"{self.IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png"):
-            pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png")
-        else:
-            logger.warning(f"No Image found: {self.game.title}")
-            pixmap = None
-
-        if pixmap:
+        if self.pixmap:
             w = 200
-            pixmap = pixmap.scaled(w, int(w * 4 / 3))
+            self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3))
             self.image = ClickableLabel()
             self.image.setObjectName("game_widget")
-            self.image.setPixmap(pixmap)
+            self.image.setPixmap(self.pixmap)
             self.layout.addWidget(self.image)
 
         self.title_label = QLabel(f"<h4>{game.title}</h4>")
@@ -85,16 +74,16 @@ class GameWidgetInstalled(QWidget):
         self.info_label.setObjectName("info_label")
         self.layout.addWidget(self.info_label)
 
-        #p = self.palette()
-        #p.setColor(self.backgroundRole(), Qt.red)
-        #self.setPalette(p)
+        # p = self.palette()
+        # p.setColor(self.backgroundRole(), Qt.red)
+        # self.setPalette(p)
 
         self.setLayout(self.layout)
         self.setFixedWidth(self.sizeHint().width())
 
     def enterEvent(self, a0: QEvent) -> None:
         if self.update_available:
-            self.info_label.setText(self.tr("Please update Game"))
+            self.info_label.setText(self.tr("Start game without version check"))
         elif not self.running:
             self.info_label.setText("Start Game")
         else:
@@ -106,22 +95,14 @@ class GameWidgetInstalled(QWidget):
         else:
             self.info_label.setText(self.info_text)
 
-    def mousePressEvent(self, a0) -> None:
-        self.launch()
+    def mousePressEvent(self, e: QMouseEvent):
+        # left button
+        if e.button() == 1 and not self.game_running:
+            if self.update_available:
+                self.launch(skip_version_check=True)
+            else:
+                self.launch()
 
-    def launch(self, offline=False):
-        if not self.running and not self.update_available:
-            logger.info("Launching " + self.game.title)
-            self.proc = LegendaryApi.launch_game(self.core, self.game.app_name, offline)
-            if not self.proc:
-                logger.error("Could not start process")
-                return
-            self.proc.finished.connect(self.finished)
-            self.info_label.setText(self.tr("Game running"))
-            self.running = True
-        if self.update_available:
-            self.update_game.emit()
-
-    def finished(self):
-        self.info_label.setText("")
-        self.running = False
+        # right
+        elif e.button() == 2:
+            pass

@@ -1,16 +1,14 @@
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QTabWidget, QTabBar, QWidget, QToolButton, QWidgetAction, QMenu
-from Rare.Components.Tabs.CloudSaves.CloudSaves import SyncSaves
-from custom_legendary.core import LegendaryCore
+from PyQt5.QtWidgets import QTabWidget, QWidget
 from qtawesome import icon
 
-# from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
-from Rare.Components.Tabs.Account.AccountWidget import MiniWidget
+from Rare.Components.TabUtils import TabBar, TabButtonWidget
+from Rare.Components.Tabs.CloudSaves.CloudSaves import SyncSaves
 from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
 from Rare.Components.Tabs.Games.GamesTab import GameTab
 from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
 from Rare.utils.Models import InstallOptions
+from custom_legendary.core import LegendaryCore
 
 
 class TabWidget(QTabWidget):
@@ -24,7 +22,7 @@ class TabWidget(QTabWidget):
         updates = self.game_list.default_widget.game_list.updates
         self.addTab(self.game_list, self.tr("Games"))
         self.downloadTab = DownloadTab(core, updates)
-        self.addTab(self.downloadTab, "Downloads")
+        self.addTab(self.downloadTab, "Downloads" + (" (" + str(len(updates)) + ")" if len(updates) != 0 else ""))
         self.downloadTab.finished.connect(self.game_list.default_widget.game_list.update_list)
         self.game_list.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
 
@@ -52,35 +50,3 @@ class TabWidget(QTabWidget):
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
         super(TabWidget, self).resizeEvent(event)
-
-
-class TabBar(QTabBar):
-    def __init__(self, expanded):
-        super(TabBar, self).__init__()
-        self._expanded = expanded
-        self.setObjectName("main_tab_bar")
-        self.setFont(QFont("Arial", 13))
-        # self.setContentsMargins(0,10,0,10)
-
-    def tabSizeHint(self, index):
-        size = super(TabBar, self).tabSizeHint(index)
-        if index == self._expanded:
-            offset = self.width()
-            for index in range(self.count()):
-                offset -= super(TabBar, self).tabSizeHint(index).width()
-            size.setWidth(max(size.width(), size.width() + offset))
-        return size
-
-
-class TabButtonWidget(QToolButton):
-    def __init__(self, core):
-        super(TabButtonWidget, self).__init__()
-        self.setText("Icon")
-        self.setPopupMode(QToolButton.InstantPopup)
-        self.setIcon(icon("mdi.account-circle", color="white", scale_factor=1.25))
-        self.setToolTip("Account")
-        self.setIconSize(QSize(25, 25))
-        self.setMenu(QMenu())
-        action = QWidgetAction(self)
-        action.setDefaultWidget(MiniWidget(core))
-        self.menu().addAction(action)

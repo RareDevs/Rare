@@ -2,12 +2,11 @@
 
 import struct
 import zlib
-
 from hashlib import sha1
 from io import BytesIO
 from uuid import uuid4
 
-from legendary.utils.rolling_hash import get_hash
+from custom_legendary.utils.rolling_hash import get_hash
 
 
 # ToDo do some reworking to make this more memory efficient
@@ -50,7 +49,7 @@ class Chunk:
 
     @data.setter
     def data(self, value: bytes):
-        if len(value) > 1024*1024:
+        if len(value) > 1024 * 1024:
             raise ValueError('Provided data is too large (> 1 MiB)!')
         # data is now uncompressed
         if self.compressed:

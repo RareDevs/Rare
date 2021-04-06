@@ -7,25 +7,31 @@ QLabel {
     background-color: transparent;
 }
 
-QTabBar#main_tab_bar{
+QTabBar#main_tab_bar {
     border-bottom: none;
     background-color: #2b2b2c;
 }
-QTabBar::tab#main_tab_bar{
-    border-bottom: noneq;
+
+QTabBar::tab#main_tab_bar {
+    border-bottom: none;
 }
 
 QTabBar::tab#main_tab_bar {
     border-bottom: none;
     padding: 5px
 }
-QTabBar::tab:selected#main_tab_bar{
+
+QTabBar::tab:selected#main_tab_bar {
     background-color: gray;
 }
 
 QTabBar::tab:hover#main_tab_bar {
     border-bottom: 2px solid black;
 
+}
+
+QGroupBox#group{
+    font-size: 15px;
 }
 
 QTabBar::tab:disabled {
@@ -45,7 +51,8 @@ QPushButton {
     background-color: #3c3f41;
     padding: 3px;
 }
-QPushButton:hover{
+
+QPushButton:hover {
     background-color: #223;
 }
 
@@ -62,11 +69,12 @@ QPushButton#menu {
     border-style: none;
 }
 
-QPushButton#menu_button{
+QPushButton#menu_button {
     background-color: transparent;
     border: none;
 }
-QPushButton:hover#menu_button{
+
+QPushButton:hover#menu_button {
     background-color: #334;
 }
 
@@ -74,8 +82,12 @@ QLineEdit {
     border: 1px solid white;
 }
 
-QCheckBox{
+QCheckBox {
     color: #F0F0F0;
+    background-color: none;
+}
+QCheckBox::indicator{
+
 }
 
 
@@ -100,7 +112,7 @@ QTabBar::tab::selected#settings_bar {
     background-color: darkslategrey;
 }
 
-#search_bar{
+#search_bar {
     padding: 3px;
     border-radius: 5px;
     background-color: #334;

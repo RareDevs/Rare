@@ -2,12 +2,13 @@
 
 ## What you can do
 
+To Contribute first fork the repository
+
 ### Add translations
 
 1. Execute ```pylupdate5 $(find -name "*.py") -ts Rare/languages/{your lang (two letters)}.ts``` in project directrory
 2. Modify the .ts file manually or in Qt Linguist
 3. Compile the file with ```lrelease Rare/languages/{lang}.ts```
-4. Create a Pull request
 
 ### Add Stylesheets
 
@@ -17,4 +18,7 @@ exmples:
 
 ### Add features
 
-Select one Feature of the Todo list or improve the code. Then you can create a Pull request
+Select one Card of the project and implement it or make other changes
+
+
+If you made your changes, create a pull request

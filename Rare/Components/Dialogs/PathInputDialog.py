@@ -4,7 +4,7 @@ from Rare.utils.QtExtensions import PathEdit
 
 
 class PathInputDialog(QDialog):
-    def __init__(self, title_text, text):
+    def __init__(self, title_text, text, path="Select Directory"):
         super().__init__()
         self.path = ""
 
@@ -12,7 +12,7 @@ class PathInputDialog(QDialog):
         self.info_label = QLabel(text)
         self.info_label.setWordWrap(True)
 
-        self.input = PathEdit(self.tr("Select directory"), QFileDialog.DirectoryOnly)
+        self.input = PathEdit(path, QFileDialog.DirectoryOnly)
 
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.info_label)

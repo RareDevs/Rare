@@ -1,5 +1,5 @@
-import os
 import configparser
+import os
 
 
 def read_registry(wine_pfx):

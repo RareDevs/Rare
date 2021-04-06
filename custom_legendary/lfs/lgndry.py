@@ -1,14 +1,13 @@
 # coding: utf-8
 
-import json
-import os
 import configparser
+import json
 import logging
-
+import os
 from pathlib import Path
 
-from legendary.models.game import *
-from legendary.utils.lfs import clean_filename
+from custom_legendary.models.game import *
+from custom_legendary.utils.lfs import clean_filename
 
 
 class LGDLFS:

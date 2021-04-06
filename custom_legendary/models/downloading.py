@@ -169,6 +169,7 @@ class AnalysisResult:
 
 class ConditionCheckResult:
     """Result object used in Core to identify problems that would prevent an installation from succeeding"""
+
     def __init__(self, failures=None, warnings=None):
         self.failures = failures
         self.warnings = warnings

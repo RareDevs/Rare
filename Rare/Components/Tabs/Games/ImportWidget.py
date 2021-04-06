@@ -4,11 +4,12 @@ import string
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayout, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLineEdit
 from qtawesome import icon
 
 from Rare.utils import LegendaryApi
 from Rare.utils.QtExtensions import PathEdit
+from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Import")
 
@@ -16,9 +17,11 @@ logger = getLogger("Import")
 class ImportWidget(QWidget):
     update_list = pyqtSignal()
 
-    def __init__(self, core):
+    def __init__(self, core: LegendaryCore):
         super(ImportWidget, self).__init__()
         self.core = core
+        self.game_list = [i.app_name for i in self.core.get_game_list()]
+
         self.main_layout = QHBoxLayout()
         self.back_button = QPushButton(icon("mdi.keyboard-backspace", color="white"), self.tr("Back"))
         self.right_layout = QVBoxLayout()
@@ -31,15 +34,31 @@ class ImportWidget(QWidget):
         self.title = QLabel("<h2>Import Game</h2")
         self.layout.addWidget(self.title)
 
-        self.import_one_game = QLabel(f"<h3>{self.tr('Import existing game')}</h3>")
+        self.import_one_game = QLabel(f"<h3>{self.tr('Import existing game from Epic Games Launcher')}</h3>")
         self.layout.addWidget(self.import_one_game)
 
         self.import_game_info = QLabel(self.tr("Select path to game"))
         self.layout.addWidget(self.import_game_info)
 
+        self.override_app_name_label = QLabel(self.tr("Override app name (Only if imported game from legendary or the app could not find the app name)"))
+        self.app_name_input = QLineEdit()
+        self.app_name_input.setFixedHeight(32)
+        minilayout = QHBoxLayout()
+        minilayout.addStretch(1)
+        self.indicator_label = QLabel("")
+        minilayout.addWidget(self.indicator_label)
+        self.app_name_input.setLayout(minilayout)
+        self.app_name_input.textChanged.connect(self.app_name_changed)
+
         self.path_edit = PathEdit(os.path.expanduser("~"), QFileDialog.DirectoryOnly)
+        self.path_edit.text_edit.textChanged.connect(self.path_changed)
         self.layout.addWidget(self.path_edit)
 
+        self.layout.addWidget(self.override_app_name_label)
+        self.layout.addWidget(self.app_name_input)
+
+        self.info_label = QLabel("")
+        self.layout.addWidget(self.info_label)
         self.import_button = QPushButton(self.tr("Import Game"))
         self.layout.addWidget(self.import_button)
         self.import_button.clicked.connect(self.import_game)
@@ -57,24 +76,48 @@ class ImportWidget(QWidget):
         # self.main_layout.addStretch(1)
         self.setLayout(self.main_layout)
 
-    def import_game(self, path=None):
-        if not path:
-            path = self.path_edit.text()
-        if not path.endswith("/"):
-            path = path + "/"
+    def app_name_changed(self, text):
+        if text in self.game_list:
+            self.indicator_label.setPixmap(icon("ei.ok-sign", color="green").pixmap(16,16))
+        else:
+            self.indicator_label.setPixmap(icon("ei.remove-sign", color="red").pixmap(16,16))
 
+    def path_changed(self, path):
+        if os.path.exists(path):
+            if os.path.exists(os.path.join(path, ".egstore")):
+                self.app_name_input.setText(self.find_app_name(path))
+
+    def find_app_name(self, path):
+        if not os.path.exists(os.path.join(path, ".egstore")):
+            return None
         for i in os.listdir(os.path.join(path, ".egstore")):
             if i.endswith(".mancpn"):
-                file = path + ".egstore/" + i
+                file = os.path.join(path, ".egstore", i)
                 break
         else:
             logger.warning("File was not found")
-            return
-        app_name = json.load(open(file, "r"))["AppName"]
+            return None
+        return json.load(open(file, "r"))["AppName"]
+
+    def import_game(self, path=None):
+        app_name = self.app_name_input.text()
+        if not path:
+            path = self.path_edit.text()
+        if not app_name:
+            if a_n := self.find_app_name(path):
+                app_name = a_n
+            else:
+                self.info_label.setText(self.tr("Could not find app name"))
+                return
+
         if LegendaryApi.import_game(self.core, app_name=app_name, path=path):
+            self.info_label.setText(self.tr("Successfully imported {}. Reload library").format(self.core.get_installed_game(app_name).title))
+            self.app_name_input.setText("")
+
             self.update_list.emit()
         else:
             logger.warning("Failed to import" + app_name)
+            self.info_label.setText(self.tr("Failed to import {}").format(app_name))
             return
 
     def auto_import_games(self, game_path):
@@ -85,17 +128,17 @@ class ImportWidget(QWidget):
             logger.info(f"No Games found in {game_path}")
             return 0
         for path in os.listdir(game_path):
-            json_path = game_path + path + "/.egstore"
-            print(json_path)
+            json_path = game_path + path
             if not os.path.isdir(json_path):
                 logger.info(f"Game at {game_path + path} doesn't exist")
                 continue
+            app_name = self.find_app_name(json_path)
+            if not app_name:
+                logger.warning("Could not find app name")
+                continue
 
-            for file in os.listdir(json_path):
-                if file.endswith(".mancpn"):
-                    app_name = json.load(open(os.path.join(json_path, file)))["AppName"]
-                    if LegendaryApi.import_game(self.core, app_name, game_path + path):
-                        imported += 1
+            if LegendaryApi.import_game(self.core, app_name, game_path + path):
+                imported += 1
         return imported
 
     def import_games_prepare(self):
@@ -109,12 +152,11 @@ class ImportWidget(QWidget):
                     imported += self.auto_import_games(path)
 
         else:
-            possible_wineprefixes = [os.path.expanduser("~/.wine/"), os.path.expanduser("~/Games/epic-games-store/")]
+            possible_wineprefixes = [os.path.expanduser("~/.wine"), os.path.expanduser("~/Games/epic-games-store")]
             for wine_prefix in possible_wineprefixes:
-                imported += self.auto_import_games(f"{wine_prefix}drive_c/Program Files/Epic Games/")
+                imported += self.auto_import_games(os.path.join(wine_prefix, "drive_c/Program Files/Epic Games/"))
         if imported > 0:
-            QMessageBox.information(self, "Imported Games", self.tr("Successfully imported {} Games").format(imported))
+            QMessageBox.information(self, "Imported Games", self.tr("Successfully imported {} Games. Reloading Library").format(imported))
             self.update_list.emit()
-            logger.info("Restarting app to import games")
         else:
             QMessageBox.information(self, "Imported Games", "No Games were found")

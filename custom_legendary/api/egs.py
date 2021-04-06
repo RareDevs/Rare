@@ -1,12 +1,12 @@
 # !/usr/bin/env python
 # coding: utf-8
 
-import requests
 import logging
 
+import requests
 from requests.auth import HTTPBasicAuth
 
-from legendary.models.exceptions import InvalidCredentialsError
+from custom_legendary.models.exceptions import InvalidCredentialsError
 
 
 class EPCAPI:
@@ -157,7 +157,7 @@ class EPCAPI:
                                  f'{user_id}/{app_name}')
         r.raise_for_status()
         return r.json()
-    
+
     def create_game_cloud_saves(self, app_name, filenames):
         return self.get_user_cloud_saves(app_name, filenames=filenames)
 

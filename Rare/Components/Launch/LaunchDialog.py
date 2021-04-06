@@ -2,10 +2,10 @@ from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QLabel, QProgressBar, QVBoxLayout
-from custom_legendary.core import LegendaryCore
 
 from Rare.Components.Dialogs.Login.LoginDialog import LoginDialog
 from Rare.utils.utils import download_images
+from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Login")
 
@@ -20,7 +20,7 @@ class LaunchThread(QThread):
 
     def run(self):
         self.action.emit("Login")
-        self.action.emit("Downloading Images")
+        self.action.emit(self.tr("Downloading Images"))
         download_images(self.download_progess, self.core)
         self.action.emit("finish")
 
@@ -47,6 +47,8 @@ class LoginThread(QThread):
 
 
 class LaunchDialog(QDialog):
+    start_app = pyqtSignal()
+
     def __init__(self, core: LegendaryCore):
         super(LaunchDialog, self).__init__()
         self.core = core
@@ -73,8 +75,8 @@ class LaunchDialog(QDialog):
             exit(0)
 
     def launch(self):
-        #self.core = core
-        self.info_pb.setMaximum(len(self.core.get_game_list()))
+        # self.core = core
+        self.pb_size = len(self.core.get_game_list())
         self.info_text.setText(self.tr("Downloading Images"))
         self.thread = LaunchThread(self.core, self)
         self.thread.download_progess.connect(self.update_pb)
@@ -82,9 +84,12 @@ class LaunchDialog(QDialog):
         self.thread.start()
 
     def update_pb(self, i: int):
-        self.info_pb.setValue(i)
+        self.info_pb.setValue(i / self.pb_size * 100)
 
     def info(self, text: str):
         if text == "finish":
-            self.close()
-        self.info_text.setText(text)
+            self.info_text.setText(self.tr("Starting..."))
+            self.info_pb.setValue(100)
+            self.start_app.emit()
+        else:
+            self.info_text.setText(text)

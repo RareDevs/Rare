@@ -1,24 +1,23 @@
 from logging import getLogger
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit
-from custom_legendary.core import LegendaryCore
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit, QGroupBox
 
-from Rare.Components.Tabs.Settings.DXVK.Dxvk import DxvkWidget
+from Rare.Components.Tabs.Settings.Dxvk import DxvkWidget
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
+from custom_legendary.core import LegendaryCore
 
 logger = getLogger("LinuxSettings")
 
 
-class LinuxSettings(QWidget):
+class LinuxSettings(QGroupBox):
     def __init__(self, core: LegendaryCore, name="default"):
         super(LinuxSettings, self).__init__()
         self.layout = QVBoxLayout()
         self.name = name
         self.core = core
-        self.title = QLabel("<h2>Linux settings</h2>")
-        self.layout.addWidget(self.title)
-
+        self.setTitle(self.tr("Linux settings"))
+        self.setObjectName("group")
         # Wineprefix
         self.select_path = PathEdit(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""),
                                     type_of_file=QFileDialog.DirectoryOnly,

@@ -5,7 +5,6 @@
 import logging
 import os
 import time
-
 from collections import Counter, defaultdict, deque
 from logging.handlers import QueueHandler
 from multiprocessing import cpu_count, Process, Queue as MPQueue
@@ -14,9 +13,9 @@ from queue import Empty
 from sys import exit
 from threading import Condition, Thread
 
-from legendary.downloader.workers import DLWorker, FileWorker
-from legendary.models.downloading import *
-from legendary.models.manifest import ManifestComparison, Manifest
+from custom_legendary.downloader.workers import DLWorker, FileWorker
+from custom_legendary.models.downloading import *
+from custom_legendary.models.manifest import ManifestComparison, Manifest
 
 
 class DLManager(Process):
@@ -172,7 +171,7 @@ class DLManager(Process):
 
             file_prefix_filter = [f.lower() for f in file_prefix_filter]
             files_to_skip = set(i.filename for i in manifest.file_manifest_list.elements if not
-                                any(i.filename.lower().startswith(pfx) for pfx in file_prefix_filter))
+            any(i.filename.lower().startswith(pfx) for pfx in file_prefix_filter))
             self.log.info(f'Found {len(files_to_skip)} files to skip based on include prefix(es)')
             mc.added -= files_to_skip
             mc.changed -= files_to_skip

@@ -3,6 +3,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit
+
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("BrowserLogin")
@@ -21,7 +22,8 @@ class BrowserLogin(QWidget):
         self.layout.addWidget(self.back)
 
         self.info_text = QLabel(self.tr(
-            "Opens a browser. You login and copy the json code in the field below. Click <a href='{}'>here</a> to open Browser").format(self.url))
+            "Opens a browser. You login and copy the json code in the field below. Click <a href='{}'>here</a> to open Browser").format(
+            self.url))
         self.info_text.setWordWrap(True)
         self.info_text.setOpenExternalLinks(True)
         self.layout.addWidget(self.info_text)

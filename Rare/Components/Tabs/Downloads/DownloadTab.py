@@ -1,3 +1,4 @@
+import datetime
 import os
 import queue
 import subprocess
@@ -9,16 +10,13 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
     QListWidget, QHBoxLayout
 
-
-
+from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog, InstallDialog
+from Rare.utils.Models import InstallOptions, KillDownloadException
 from custom_legendary.core import LegendaryCore
 from custom_legendary.downloader.manager import DLManager
 from custom_legendary.models.downloading import UIUpdate
-from custom_legendary.models.game import Game
+from custom_legendary.models.game import Game, InstalledGame
 from custom_legendary.utils.selective_dl import games
-
-from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog
-from Rare.utils.Models import InstallOptions, KillDownloadException
 
 logger = getLogger("Download")
 
@@ -46,7 +44,7 @@ class DownloadThread(QThread):
             time.sleep(1)
             while self.dlm.is_alive():
                 if self.kill:
-                    #raise KillDownloadException()
+                    # raise KillDownloadException()
                     # TODO kill download queue, workers
                     pass
                 try:
@@ -136,6 +134,7 @@ class DownloadTab(QWidget):
         self.dl_speed = QLabel()
         self.cache_used = QLabel()
         self.downloaded = QLabel()
+        self.time_left = QLabel()
 
         self.info_layout = QGridLayout()
 
@@ -143,6 +142,7 @@ class DownloadTab(QWidget):
         self.info_layout.addWidget(self.dl_speed, 0, 1)
         self.info_layout.addWidget(self.cache_used, 1, 0)
         self.info_layout.addWidget(self.downloaded, 1, 1)
+        self.info_layout.addWidget(self.time_left, 2, 0)
         self.layout.addLayout(self.info_layout)
 
         self.mini_layout = QHBoxLayout()
@@ -158,9 +158,6 @@ class DownloadTab(QWidget):
 
         self.layout.addLayout(self.mini_layout)
 
-        self.installing_game_widget = QLabel(self.tr("No active Download"))
-        self.layout.addWidget(self.installing_game_widget)
-
         self.update_title = QLabel(f"<h2>{self.tr('Updates')}</h2>")
         self.update_title.setStyleSheet("""
             QLabel{
@@ -168,12 +165,14 @@ class DownloadTab(QWidget):
             }
         """)
         self.layout.addWidget(self.update_title)
+        self.update_widgets = {}
         if not updates:
             self.update_text = QLabel(self.tr("No updates available"))
             self.layout.addWidget(self.update_text)
         else:
-            for i in updates:
-                widget = UpdateWidget(core, i)
+            for igame in updates:
+                widget = UpdateWidget(core, igame)
+                self.update_widgets[igame.app_name] = widget
                 self.layout.addWidget(widget)
                 widget.update.connect(self.update_game)
 
@@ -191,7 +190,7 @@ class DownloadTab(QWidget):
             dlm, analysis, game, igame, repair, repair_file = self.core.prepare_download(
                 app_name=options.app_name,
                 base_path=options.path,
-                force=False,  # TODO allow overwrite
+                force=options.force,
                 no_install=options.download_only,
                 status_q=status_queue,
                 # max_shm=,
@@ -209,7 +208,7 @@ class DownloadTab(QWidget):
                 # dl_timeout=,
                 repair=options.repair,
                 # repair_use_latest=,
-                # ignore_space_req=,
+                ignore_space_req=options.ignore_free_space,
                 # disable_delta=,
                 # override_delta_manifest=,
                 # reset_sdl=,
@@ -227,12 +226,16 @@ class DownloadTab(QWidget):
             return
 
         self.active_game = game
+        self.installing_game_widget.setText(self.tr("Installing game: ")+self.active_game.app_title)
         self.thread = DownloadThread(dlm, self.core, status_queue, igame, options.repair, repair_file)
         self.thread.status.connect(self.status)
         self.thread.statistics.connect(self.statistics)
         self.thread.start()
         self.kill_button.setDisabled(False)
         self.installing_game.setText("Installing Game: " + self.active_game.app_title)
+
+        for i in self.update_widgets.values():
+            i.update_button.setDisabled(True)
 
     def sdl_prompt(self, app_name: str = '', title: str = '') -> list:
         sdl = QDialog()
@@ -283,12 +286,21 @@ class DownloadTab(QWidget):
             else:
                 notification = Notify()
                 notification.title = self.tr("Installation finished")
-                notification.message = self.tr("Download of game ") + self.active_game.app_title
+                notification.message = self.tr("Finished Download of game {}").format(self.active_game.app_name)
                 notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
+            logger.info("Download finished: " + self.active_game.app_title)
+            if self.active_game.app_name in self.update_widgets.keys():
+                self.update_widgets[self.active_game.app_name].setVisible(False)
+                self.update_widgets.pop(self.active_game.app_name)
+
+            for i in self.update_widgets.values():
+                i.update_button.setDisabled(False)
+
             self.finished.emit()
             self.installing_game.setText(self.tr("Installing Game: No active download"))
             self.prog_bar.setValue(0)
+
             self.dl_speed.setText("")
             self.cache_used.setText("")
             self.downloaded.setText("")
@@ -308,10 +320,18 @@ class DownloadTab(QWidget):
         self.dl_speed.setText(self.tr("Download speed") + f": {ui_update.download_speed / 1024 / 1024:.02f}MB/s")
         self.cache_used.setText(self.tr("Cache used") + f": {ui_update.cache_usage / 1024 / 1024:.02f}MB")
         self.downloaded.setText(self.tr("Downloaded") + f": {ui_update.total_downloaded / 1024 / 1024:.02f}MB")
+        self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
+
+    def get_time(self, seconds: int) -> str:
+        return str(datetime.timedelta(seconds=seconds))
 
     def update_game(self, app_name: str):
         print("Update ", app_name)
-        self.install_game(InstallOptions(app_name))
+        infos = InstallDialog(app_name, self.core, True).get_information()
+        if infos != 0:
+            path, max_workers, force, ignore_free_space = infos
+            self.install_game(InstallOptions(app_name=app_name, max_workers=max_workers, path=path,
+                                             force=force, ignore_free_space=ignore_free_space))
 
     def repair(self):
         pass
@@ -320,17 +340,18 @@ class DownloadTab(QWidget):
 class UpdateWidget(QWidget):
     update = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, app_name):
+    def __init__(self, core: LegendaryCore, game: InstalledGame):
         super(UpdateWidget, self).__init__()
+        print(game)
         self.core = core
-        self.game = core.get_installed_game(app_name)
+        self.game = game
 
         self.layout = QVBoxLayout()
         self.title = QLabel(self.game.title)
         self.layout.addWidget(self.title)
 
         self.update_button = QPushButton(self.tr("Update Game"))
-        self.update_button.clicked.connect(lambda: self.update.emit(app_name))
+        self.update_button.clicked.connect(lambda: self.update.emit(game.app_name))
         self.layout.addWidget(self.update_button)
 
         self.setLayout(self.layout)

@@ -1,4 +1,4 @@
-from legendary.utils.selective_dl import games
+from custom_legendary.utils.selective_dl import games
 
 
 def get_boolean_choice(prompt, default=True):

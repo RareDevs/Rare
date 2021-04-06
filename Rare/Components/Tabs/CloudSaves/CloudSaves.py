@@ -2,12 +2,12 @@ from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import *
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import SaveGameStatus
 
 from Rare.Components.Dialogs.PathInputDialog import PathInputDialog
 from Rare.Components.Tabs.CloudSaves.SyncWidget import SyncWidget
 from Rare.utils.QtExtensions import WaitingSpinner
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import SaveGameStatus
 
 logger = getLogger("Sync Saves")
 
@@ -30,6 +30,9 @@ class SyncSaves(QScrollArea):
         super(SyncSaves, self).__init__()
         self.core = core
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.load_saves()
+
+    def load_saves(self):
         self.widget = QWidget()
         layout = QVBoxLayout()
         layout.addWidget(WaitingSpinner())
@@ -46,12 +49,26 @@ class SyncSaves(QScrollArea):
     def setup_ui(self, saves: list):
         self.start_thread.disconnect()
 
+
         self.main_layout = QVBoxLayout()
         self.title = QLabel(
             f"<h1>" + self.tr("Cloud Saves") + "</h1>\n" + self.tr("Found Saves for folowing Games"))
+
+        self.main_layout.addWidget(self.title)
+
+        saves_games = []
+        for i in saves:
+            if not i.app_name in saves_games and self.core.is_installed(i.app_name):
+                saves_games.append(i.app_name)
+        if len(saves_games) == 0:
+            # QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
+            self.title.setText(
+                f"<h1>" + self.tr("Cloud Saves") + "</h1>\n" + self.tr("Your games does not support Cloud Saves"))
+            self.setWidget(self.title)
+            return
+
         self.sync_all_button = QPushButton(self.tr("Sync all games"))
         self.sync_all_button.clicked.connect(self.sync_all)
-        self.main_layout.addWidget(self.title)
         self.main_layout.addWidget(self.sync_all_button)
 
         latest_save = {}
@@ -59,11 +76,7 @@ class SyncSaves(QScrollArea):
             latest_save[i.app_name] = i
 
         logger.info(f'Got {len(latest_save)} remote save game(s)')
-        if len(latest_save) == 0:
-            # QMessageBox.information(self.tr("No Games Found"), self.tr("Your games don't support cloud save"))
-            self.widget = QLabel("No Games found, supporting cloud saves")
-            self.setWidget(self.widget)
-            return
+
         self.widgets = []
 
         for igame in self.igames:
@@ -74,6 +87,7 @@ class SyncSaves(QScrollArea):
                 sync_widget = SyncWidget(igame, latest_save[igame.app_name], self.core)
             else:
                 continue
+            sync_widget.reload.connect(self.reload)
             self.main_layout.addWidget(sync_widget)
             self.widgets.append(sync_widget)
 
@@ -81,12 +95,18 @@ class SyncSaves(QScrollArea):
         self.widget.setLayout(self.main_layout)
         self.setWidget(self.widget)
 
+    def reload(self):
+        self.setWidget(QWidget())
+        self.load_saves()
+        self.update()
+
     def sync_all(self):
+        logger.info("Sync all Games")
         for w in self.widgets:
             if not w.igame.save_path:
                 save_path = self.core.get_save_path(w.igame.app_name)
                 if '%' in save_path or '{' in save_path:
-                    self.logger.info("Could not find save_path")
+                    self.logger.info_label("Could not find save_path")
                     save_path = PathInputDialog(self.tr("Found no savepath"),
                                                 self.tr("No save path was found. Please select path or skip"))
                     if save_path == "":
@@ -96,6 +116,8 @@ class SyncSaves(QScrollArea):
             if w.res == SaveGameStatus.SAME_AGE:
                 continue
             if w.res == SaveGameStatus.REMOTE_NEWER:
+                logger.info("Download")
                 w.download()
             elif w.res == SaveGameStatus.LOCAL_NEWER:
+                logger.info("Upload")
                 w.upload()

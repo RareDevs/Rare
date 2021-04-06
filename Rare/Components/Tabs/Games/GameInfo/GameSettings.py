@@ -1,12 +1,12 @@
 import os
 
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame, Game
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox, QLineEdit
 
 from Rare.Components.Tabs.Settings.Linux import LinuxSettings
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame, Game
 
 
 class GameSettings(QWidget):
@@ -35,6 +35,12 @@ class GameSettings(QWidget):
 
         self.layout.addWidget(self.offline_widget)
 
+        self.wrapper = QLineEdit("")
+        self.wrapper_save_button = QPushButton(self.tr("Save"))
+        self.wrapper_save_button.clicked.connect(self.update_wrapper)
+        self.wrapper_widget = SettingsWidget(self.tr("Wrapper (e.g. optirun)"), self.wrapper, self.wrapper_save_button)
+        self.layout.addWidget(self.wrapper_widget)
+
         if os.name != "nt":
             self.linux_settings = LinuxAppSettings(core)
             self.layout.addWidget(self.linux_settings)
@@ -44,26 +50,41 @@ class GameSettings(QWidget):
                 for i in os.listdir(os.path.expanduser("~/.steam/steam/steamapps/common")):
                     if i.startswith("Proton"):
                         wrapper = '"' + os.path.join(os.path.expanduser("~/.steam/steam/steamapps/common"), i,
-                                                    "proton") + '" run'
+                                                     "proton") + '" run'
                         self.possible_proton_wrappers.append(wrapper)
             except FileNotFoundError as e:
-                print("Unable to find Proton:", e)
+                print("Unable to find any Proton version")
+
             self.select_proton = QComboBox()
             self.select_proton.addItems(["Don't use Proton"] + self.possible_proton_wrappers)
             self.select_proton.currentIndexChanged.connect(self.change_proton)
             self.select_proton_widget = SettingsWidget(self.tr("Proton Wrapper"), self.select_proton)
-            self.layout.addWidget(self.select_proton_widget)
+            self.linux_settings.layout.addWidget(self.select_proton_widget)
+
             self.proton_prefix = PathEdit("x", QFileDialog.DirectoryOnly)
             self.proton_prefix_accept_button = QPushButton(self.tr("Save"))
             self.proton_prefix_accept_button.clicked.connect(self.update_prefix)
             self.proton_prefix_widget = SettingsWidget(self.tr("Proton prefix"), self.proton_prefix,
                                                        self.proton_prefix_accept_button)
-            self.layout.addWidget(self.proton_prefix_widget)
+            self.linux_settings.layout.addWidget(self.proton_prefix_widget)
 
         # startparams, skip_update_check
 
         self.layout.addStretch(1)
         self.setLayout(self.layout)
+
+    def update_wrapper(self):
+        wrapper = self.wrapper.text()
+        if wrapper != "":
+            if not self.game.app_name in self.core.lgd.config.sections():
+                self.core.lgd.config[self.game.app_name] = {}
+            self.core.lgd.config.set(self.game.app_name, "wrapper", wrapper)
+        else:
+            if self.game.app_name in self.core.lgd.config.sections() and self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback="") != "":
+                self.core.lgd.config.remove_option(self.game.app_name, "wrapper")
+            if self.core.lgd.config[self.game.app_name] == {}:
+                self.core.lgd.config.remove_section(self.game.app_name)
+        self.core.lgd.save_config()
 
     def update_offline(self, i):
         if self.change:
@@ -104,6 +125,7 @@ class GameSettings(QWidget):
             # Dont use Proton
             if i == 0:
                 self.proton_prefix_widget.setVisible(False)
+                self.wrapper_widget.setVisible(True)
                 if f"{self.game.app_name}" in self.core.lgd.config.sections():
                     if self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback="") != "":
                         self.core.lgd.config.remove_option(self.game.app_name, "wrapper")
@@ -119,6 +141,7 @@ class GameSettings(QWidget):
                         self.core.lgd.config.remove_section(self.game.app_name + ".env")
             else:
                 self.proton_prefix_widget.setVisible(True)
+                self.wrapper_widget.setVisible(False)
                 wrapper = self.possible_proton_wrappers[i - 1]
                 if not self.game.app_name in self.core.lgd.config.sections():
                     self.core.lgd.config[self.game.app_name] = {}
@@ -180,6 +203,10 @@ class GameSettings(QWidget):
         else:
             self.skip_update.setCurrentIndex(0)
 
+        wrapper = self.core.lgd.config.get(self.game.app_name, "wrapper", fallback="")
+        self.wrapper.setText(wrapper)
+
+
         self.title.setText(f"<h2>{self.game.app_title}</h2>")
         if os.name != "nt":
             self.linux_settings.update_game(app_name)
@@ -192,10 +219,11 @@ class GameSettings(QWidget):
                                                          fallback=self.tr(
                                                              "Please select path for proton prefix"))
                 self.proton_prefix.text_edit.setText(proton_prefix)
-
+                self.wrapper_widget.setVisible(False)
             else:
                 self.select_proton.setCurrentIndex(0)
                 self.proton_prefix_widget.setVisible(False)
+                self.wrapper_widget.setVisible(True)
         self.change = True
 
 

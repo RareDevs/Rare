@@ -3,9 +3,7 @@ import os
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox, \
-    QProgressBar, QStackedWidget
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame, Game
+    QProgressBar, QStackedWidget, QGroupBox
 from qtawesome import icon
 
 from Rare.Components.Tabs.Games.GameInfo.GameSettings import GameSettings
@@ -13,6 +11,8 @@ from Rare.utils import LegendaryApi
 from Rare.utils.LegendaryApi import VerifyThread
 from Rare.utils.QtExtensions import SideTabBar
 from Rare.utils.utils import IMAGE_DIR
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame, Game
 
 
 class InfoTabs(QTabWidget):
@@ -46,6 +46,7 @@ class GameInfo(QWidget):
     game: Game
     update_list = pyqtSignal()
     verify_game = pyqtSignal(str)
+    verify_threads = {}
 
     def __init__(self, core: LegendaryCore):
         super(GameInfo, self).__init__()
@@ -94,7 +95,7 @@ class GameInfo(QWidget):
         self.setLayout(self.layout)
 
     def uninstall(self):
-        if QMessageBox.question(self, "Uninstall", self.tr("Are you sure to uninstall " + self.game.app_title),
+        if QMessageBox.question(self, "Uninstall", self.tr("Are you sure to uninstall {}").format(self.game.app_title),
                                 QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
             LegendaryApi.uninstall(self.game.app_name, self.core)
             self.update_list.emit()
@@ -109,13 +110,20 @@ class GameInfo(QWidget):
 
     def verify(self):
         self.game_actions.verify_widget.setCurrentIndex(1)
-        self.verify_thread = VerifyThread(self.core, self.game.app_name)
-        self.verify_thread.status.connect(lambda x: self.game_actions.verify_progress_bar.setValue(x[0] * 100 / x[1]))
-        self.verify_thread.summary.connect(self.finish_verify)
-        self.verify_thread.start()
+        verify_thread = VerifyThread(self.core, self.game.app_name)
+        verify_thread.status.connect(self.verify_satistics)
+        verify_thread.summary.connect(self.finish_verify)
+        verify_thread.start()
+        self.game_actions.verify_progress_bar.setValue(0)
+        self.verify_threads[self.game.app_name] = verify_thread
+
+    def verify_satistics(self, progress):
+        # checked, max, app_name
+        if progress[2] == self.game.app_name:
+            self.game_actions.verify_progress_bar.setValue(progress[0] * 100 / progress[1])
 
     def finish_verify(self, failed):
-        failed, missing = failed
+        failed, missing, app_name = failed
         if failed == 0 and missing == 0:
             QMessageBox.information(self, "Summary",
                                     "Game was verified successfully. No missing or corrupt files found")
@@ -126,6 +134,7 @@ class GameInfo(QWidget):
             if ans == QMessageBox.Yes:
                 self.verify_game.emit(self.game.app_name)
         self.game_actions.verify_widget.setCurrentIndex(0)
+        self.verify_threads.pop(app_name)
 
     def update_game(self, app_name):
         self.game = self.core.get_game(app_name)
@@ -153,14 +162,22 @@ class GameInfo(QWidget):
             self.tr("Install size: ") + str(round(self.igame.install_size / (1024 ** 3), 2)) + " GB")
         self.install_path.setText(self.tr("Install path: ") + self.igame.install_path)
 
+        if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(app_name):
+            self.game_actions.verify_widget.setCurrentIndex(0)
+        elif self.verify_threads.get(app_name):
+            self.game_actions.verify_widget.setCurrentIndex(1)
+            self.game_actions.verify_progress_bar.setValue(
+                self.verify_threads[app_name].num / self.verify_threads[app_name].total * 100)
 
-class GameActions(QWidget):
+
+class GameActions(QGroupBox):
     def __init__(self):
         super(GameActions, self).__init__()
+        self.setTitle(f"{self.tr('Game actions')}")
+        self.setStyleSheet("QGroupBox{font-size: 20px}")
         self.layout = QVBoxLayout()
         self.game_actions = QLabel("<h3>Game actions</h3>")
-        self.layout.addWidget(self.game_actions)
-
+        # self.layout.addWidget(self.game_actions)
         uninstall_layout = QHBoxLayout()
         self.uninstall_game = QLabel(self.tr("Uninstall game"))
         uninstall_layout.addWidget(self.uninstall_game)
