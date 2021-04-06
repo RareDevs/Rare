@@ -48,12 +48,9 @@ class SyncSaves(QScrollArea):
 
     def setup_ui(self, saves: list):
         self.start_thread.disconnect()
-
-
         self.main_layout = QVBoxLayout()
         self.title = QLabel(
             f"<h1>" + self.tr("Cloud Saves") + "</h1>\n" + self.tr("Found Saves for folowing Games"))
-
         self.main_layout.addWidget(self.title)
 
         saves_games = []
@@ -78,7 +75,6 @@ class SyncSaves(QScrollArea):
         logger.info(f'Got {len(latest_save)} remote save game(s)')
 
         self.widgets = []
-
         for igame in self.igames:
             game = self.core.get_game(igame.app_name)
             if not game.supports_cloud_saves:
@@ -92,7 +88,9 @@ class SyncSaves(QScrollArea):
             self.widgets.append(sync_widget)
 
         self.widget = QWidget()
+        self.main_layout.addStretch(1)
         self.widget.setLayout(self.main_layout)
+        self.setWidgetResizable(True)
         self.setWidget(self.widget)
 
     def reload(self):

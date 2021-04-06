@@ -111,6 +111,7 @@ class ImportWidget(QWidget):
         if not path:
             path = self.path_edit.text()
         if not app_name:
+            # try to find app name
             if a_n := self.find_app_name(path):
                 app_name = a_n
             else:
@@ -141,7 +142,7 @@ class ImportWidget(QWidget):
                 continue
             app_name = self.find_app_name(json_path)
             if not app_name:
-                logger.warning("Could not find app name")
+                logger.warning("Could not find app name at " + game_path)
                 continue
 
             if LegendaryApi.import_game(self.core, app_name, game_path + path):
@@ -166,4 +167,4 @@ class ImportWidget(QWidget):
             QMessageBox.information(self, "Imported Games", self.tr("Successfully imported {} Games. Reloading Library").format(imported))
             self.update_list.emit()
         else:
-            QMessageBox.information(self, "Imported Games", "No Games were found")
+            QMessageBox.information(self, "Imported Games", self.tr("No Games were found"))

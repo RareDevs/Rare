@@ -39,8 +39,7 @@ class LegendarySettings(QWidget):
 
         #cleanup
         self.clean_layout = QVBoxLayout()
-        self.cleanup_widget = QGroupBox()
-        self.cleanup_widget.setTitle(self.tr("Cleanup"))
+        self.cleanup_widget = QGroupBox(self.tr("Cleanup"))
         self.clean_button = QPushButton(self.tr("Remove everything"))
         self.clean_button.clicked.connect(lambda: self.cleanup(False))
         self.clean_layout.addWidget(self.clean_button)
@@ -92,7 +91,7 @@ class LegendarySettings(QWidget):
 
         after = self.core.lgd.get_dir_size()
         logger.info(f'Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.')
-        if cleaned := (before-after) != 0:
+        if cleaned := (before-after) > 0:
             QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {} MB").format(round(cleaned / 1024 / 1024, 3)))
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")
