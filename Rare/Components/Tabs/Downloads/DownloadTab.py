@@ -226,7 +226,6 @@ class DownloadTab(QWidget):
             return
 
         self.active_game = game
-        self.installing_game_widget.setText(self.tr("Installing game: ")+self.active_game.app_title)
         self.thread = DownloadThread(dlm, self.core, status_queue, igame, options.repair, repair_file)
         self.thread.status.connect(self.status)
         self.thread.statistics.connect(self.statistics)
