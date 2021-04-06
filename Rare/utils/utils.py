@@ -4,7 +4,7 @@ import shutil
 from logging import getLogger
 
 import requests
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 
 from Rare import lang_path
@@ -38,6 +38,7 @@ def download_image(game, force=False):
     if not os.path.isdir(f"{IMAGE_DIR}/" + game.app_name):
         os.mkdir(f"{IMAGE_DIR}/" + game.app_name)
 
+    # to git picture updates
     if not os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/image.json"):
         json_data = {"DieselGameBoxTall": None, "DieselGameBoxLogo": None}
     else:
@@ -56,7 +57,13 @@ def download_image(game, force=False):
                 url = image["url"]
                 with open(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png", "wb") as f:
                     f.write(requests.get(url).content)
-                    f.close()
+                    try:
+                        img = Image.open(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
+                        img = img.resize((200, int(200*4/3)))
+                        img.save(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
+                    except UnidentifiedImageError as e:
+                        logger.warning(e)
+
     # scale and grey
     if not os.path.isfile(f'{IMAGE_DIR}/' + game.app_name + '/UninstalledArt.png'):
 
@@ -67,6 +74,7 @@ def download_image(game, force=False):
 
             bg = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
             uninstalledArt = bg.convert('L')
+            uninstalledArt = uninstalledArt.resize((200, int(200*4/3)))
             uninstalledArt.save(f'{IMAGE_DIR}/{game.app_name}/UninstalledArt.png')
         elif os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png"):
             bg: Image.Image = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png")
@@ -91,7 +99,7 @@ def download_image(game, force=False):
             uninstalledArt = uninstalledArt.convert('L')
             uninstalledArt.save(f'{IMAGE_DIR}/' + game.app_name + '/UninstalledArt.png')
         else:
-            logger.warning(f"File {IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png dowsn't exist")
+            logger.warning(f"File {IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png doesn't exist")
 
 
 def get_lang():
