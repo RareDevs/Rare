@@ -37,10 +37,17 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
         self.setFixedWidth(self.sizeHint().width())
 
     def mousePressEvent(self, e) -> None:
-        self.install()
+        if not self.installing:
+            self.install()
 
     def enterEvent(self, e):
-        self.info_label.setText(self.tr("Install Game"))
+        if not self.installing:
+            self.info_label.setText(self.tr("Install Game"))
+        else:
+            self.info_label.setText(self.tr("Installation running"))
 
     def leaveEvent(self, e):
-        self.info_label.setText("")
+        if self.installing:
+            self.info_label.setText("Installation...")
+        else:
+            self.info_label.setText("")

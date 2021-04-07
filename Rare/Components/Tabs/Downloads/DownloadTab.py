@@ -4,7 +4,7 @@ from multiprocessing import Queue as MPQueue
 
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
-    QListWidget, QHBoxLayout
+    QListWidget, QHBoxLayout, QGroupBox
 
 from Rare.Components.Dialogs.InstallDialog import InstallInfoDialog, InstallDialog
 from Rare.Components.Tabs.Downloads.DlQueueWidget import DlQueueWidget
@@ -61,31 +61,29 @@ class DownloadTab(QWidget):
         self.layout.addWidget(self.queue_widget)
         self.queue_widget.update_list.connect(self.update_dl_queue)
 
-        self.update_title = QLabel(f"<h2>{self.tr('Updates')}</h2>")
-        self.update_title.setStyleSheet("""
-            QLabel{
-                margin-top: 20px;
-            }
-        """)
-        self.layout.addWidget(self.update_title)
+        self.updates = QGroupBox(self.tr("Updates"))
+        self.updates.setObjectName("group")
+        self.update_layout = QVBoxLayout()
         self.update_widgets = {}
-        if not updates:
-            self.update_text = QLabel(self.tr("No updates available"))
-            self.layout.addWidget(self.update_text)
-        else:
-            for igame in updates:
-                widget = UpdateWidget(core, igame)
-                self.update_widgets[igame.app_name] = widget
-                self.layout.addWidget(widget)
-                widget.update.connect(self.update_game)
 
+        self.update_text = QLabel(self.tr("No updates available"))
+        self.update_text.setVisible(len(updates) == 0)
+        self.update_layout.addWidget(self.update_text)
+
+        for igame in updates:
+            widget = UpdateWidget(core, igame)
+            self.update_widgets[igame.app_name] = widget
+            self.update_layout.addWidget(widget)
+            widget.update.connect(self.update_game)
+
+        self.updates.setLayout(self.update_layout)
+        self.layout.addWidget(self.updates)
         self.layout.addStretch(1)
 
         self.setLayout(self.layout)
 
     def update_dl_queue(self, dl_queue):
         self.dl_queue = dl_queue
-
 
     def stop_download(self):
         self.thread.kill = True

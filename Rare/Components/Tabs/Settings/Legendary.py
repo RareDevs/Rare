@@ -59,20 +59,20 @@ class LegendarySettings(QGroupBox):
         self.core.lgd.config["Legendary"]["install_dir"] = self.select_path.text()
         if self.select_path.text() == "" and "install_dir" in self.core.lgd.config["Legendary"].keys():
             self.core.lgd.config["Legendary"].pop("install_dir")
-            logger.info("Remove install_dir section")
         else:
             logger.info("Set config install_dir to " + self.select_path.text())
         self.core.lgd.save_config()
 
     def max_worker_save(self, num_workers: str):
-        self.core.lgd.config["Legendary"]["max_workers"] = num_workers
         if num_workers == "":
-            self.core.lgd.config["Legendary"].pop("max_workers")
+            self.core.lgd.config.remove_option("Legendary", "max_workers")
+            self.core.lgd.save_config()
             return
         num_workers = int(num_workers)
         if num_workers == 0:
-            self.core.lgd.config["Legendary"].pop("max_workers")
-        logger.info("Updating config for max_workers")
+            self.core.lgd.config.remove_option("Legendary", "max_workers")
+        else:
+            self.core.lgd.config.set("Legendary", "max_workers", str(num_workers))
         self.core.lgd.save_config()
 
     def cleanup(self, keep_manifests):

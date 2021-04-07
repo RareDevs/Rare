@@ -1,6 +1,10 @@
+from logging import getLogger
+
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QWidget
 from qtawesome import icon
+
+logger = getLogger("QueueWidget")
 
 
 class DlWidget(QWidget):
@@ -65,6 +69,7 @@ class DlQueueWidget(QGroupBox):
         self.setLayout(self.layout)
 
     def update_queue(self, dl_queue: list):
+        logger.info("Update Queue " + ", ".join(i[1].app_title for i in dl_queue))
         self.dl_queue = dl_queue
         self.setLayout(QVBoxLayout())
         QWidget().setLayout(self.layout)
@@ -92,7 +97,7 @@ class DlQueueWidget(QGroupBox):
                 self.dl_queue.pop(index)
                 break
         else:
-            print("BUG! ", app_name)
+            logger.warning("BUG! ", app_name)
             return
         self.update_list.emit(self.dl_queue)
         self.update_queue(self.dl_queue)
@@ -105,6 +110,7 @@ class DlQueueWidget(QGroupBox):
                 index = i
                 break
         else:
+            logger.warning("Could not find appname" + app_name)
             return
         self.dl_queue.insert(index - 1, self.dl_queue.pop(index))
         self.update_list.emit(self.dl_queue)
@@ -118,6 +124,7 @@ class DlQueueWidget(QGroupBox):
                 index = i
                 break
         else:
+            logger.warning("Could not find appname" + app_name)
             return
         self.dl_queue.insert(index + 1, self.dl_queue.pop(index))
         self.update_list.emit(self.dl_queue)
