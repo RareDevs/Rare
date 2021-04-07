@@ -3,7 +3,7 @@ from logging import getLogger
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton, QLineEdit, QGroupBox, QMessageBox
 
-from rare.components.tabs.Settings.settings_widget import SettingsWidget
+from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
 from custom_legendary.core import LegendaryCore
 

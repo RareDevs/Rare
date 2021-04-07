@@ -2,11 +2,11 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QTabWidget, QWidget
 from qtawesome import icon
 
-from rare.components.TabUtils import TabBar, TabButtonWidget
-from rare.components.tabs.CloudSaves import SyncSaves
-from rare.components.tabs.Downloads.__init__ import DownloadTab
-from rare.components.tabs.Games import GameTab
-from rare.components.tabs.Settings import SettingsTab
+from rare.components.tab_utils import TabBar, TabButtonWidget
+from rare.components.tabs.cloud_saves import SyncSaves
+from rare.components.tabs.downloads.__init__ import DownloadTab
+from rare.components.tabs.games import GameTab
+from rare.components.tabs.settings import SettingsTab
 from rare.utils.models import InstallOptions
 from custom_legendary.core import LegendaryCore
 

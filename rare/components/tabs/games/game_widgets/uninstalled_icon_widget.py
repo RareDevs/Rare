@@ -3,7 +3,7 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QVBoxLayout, QLabel
 
-from rare.components.tabs.Games.GameWidgets.base_uninstalled_widget import BaseUninstalledWidget
+from rare.components.tabs.games.game_widgets.base_uninstalled_widget import BaseUninstalledWidget
 from rare.utils.models import InstallOptions
 from rare.utils.extra_widgets import ClickableLabel
 from custom_legendary.core import LegendaryCore

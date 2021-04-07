@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayo
 from qtawesome import icon
 
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.tabs.Games.GameInfo.game_settings import GameSettings
+from rare.components.tabs.games.game_info.game_settings import GameSettings
 from rare.utils import legendary_utils
 from rare.utils.legendary_utils import VerifyThread
 from rare.utils.extra_widgets import SideTabBar

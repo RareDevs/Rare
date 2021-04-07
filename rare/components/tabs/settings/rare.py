@@ -5,7 +5,7 @@ from logging import getLogger
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QVBoxLayout, QFileDialog, QComboBox, QPushButton, QCheckBox, QGroupBox
 
-from rare.components.tabs.Settings.settings_widget import SettingsWidget
+from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import get_lang, get_possible_langs
 

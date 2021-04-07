@@ -2,7 +2,7 @@ from logging import getLogger
 
 from PyQt5.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QPushButton
 
-from rare.components.tabs.Games.GameWidgets.base_uninstalled_widget import BaseUninstalledWidget
+from rare.components.tabs.games.game_widgets.base_uninstalled_widget import BaseUninstalledWidget
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Game")

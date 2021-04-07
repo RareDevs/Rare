@@ -3,7 +3,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QTabBar, QToolButton, QMenu, QWidgetAction
 from qtawesome import icon
 
-from rare.components.tabs.Account import MiniWidget
+from rare.components.tabs.account import MiniWidget
 
 
 class TabBar(QTabBar):

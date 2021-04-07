@@ -2,10 +2,10 @@ import os
 
 from PyQt5.QtWidgets import QTabWidget
 
-from rare.components.tabs.Settings.about import About
-from rare.components.tabs.Settings.legendary import LegendarySettings
-from rare.components.tabs.Settings.linux import LinuxSettings
-from rare.components.tabs.Settings.rare import RareSettings
+from rare.components.tabs.settings.about import About
+from rare.components.tabs.settings.legendary import LegendarySettings
+from rare.components.tabs.settings.linux import LinuxSettings
+from rare.components.tabs.settings.rare import RareSettings
 from rare.utils.extra_widgets import SideTabBar
 
 

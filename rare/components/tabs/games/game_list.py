@@ -5,10 +5,10 @@ from PyQt5.QtCore import Qt, pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 
-from rare.components.tabs.Games.GameWidgets.installed_icon_widget import GameWidgetInstalled
-from rare.components.tabs.Games.GameWidgets.installed_list_widget import InstalledListWidget
-from rare.components.tabs.Games.GameWidgets.uninstalled_icon_widget import IconWidgetUninstalled
-from rare.components.tabs.Games.GameWidgets.uninstalled_list_widget import ListWidgetUninstalled
+from rare.components.tabs.games.game_widgets.installed_icon_widget import GameWidgetInstalled
+from rare.components.tabs.games.game_widgets.installed_list_widget import InstalledListWidget
+from rare.components.tabs.games.game_widgets.uninstalled_icon_widget import IconWidgetUninstalled
+from rare.components.tabs.games.game_widgets.uninstalled_list_widget import ListWidgetUninstalled
 from rare.utils.models import InstallOptions
 from rare.utils.extra_widgets import FlowLayout
 from rare.utils.utils import download_image

@@ -5,7 +5,7 @@ from PyQt5.QtCore import QProcess, pyqtSignal, Qt
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QStyle, QVBoxLayout
 from qtawesome import icon
 
-from rare.components.tabs.Games.GameWidgets.base_installed_widget import BaseInstalledWidget
+from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
 

@@ -2,8 +2,8 @@ import os
 
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox, QLineEdit
 
-from rare.components.tabs.Settings.linux import LinuxSettings
-from rare.components.tabs.Settings.settings_widget import SettingsWidget
+from rare.components.tabs.settings.linux import LinuxSettings
+from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame, Game

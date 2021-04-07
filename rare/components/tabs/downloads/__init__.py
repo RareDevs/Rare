@@ -7,8 +7,8 @@ from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayo
     QListWidget, QHBoxLayout, QGroupBox
 
 from rare.components.dialogs.install_dialog import InstallInfoDialog, InstallDialog
-from rare.components.tabs.Downloads.dl_queue_widget import DlQueueWidget
-from rare.components.tabs.Downloads.download_thread import DownloadThread
+from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
+from rare.components.tabs.downloads.download_thread import DownloadThread
 from rare.utils.models import InstallOptions
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.downloading import UIUpdate

@@ -2,9 +2,9 @@ from PyQt5.QtCore import QSettings, QSize
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QPushButton, QStackedLayout, QLabel
 from qtawesome import icon
 
-from rare.components.tabs.Games.GameInfo import InfoTabs
-from rare.components.tabs.Games.game_list import GameList
-from rare.components.tabs.Games.import_widget import ImportWidget
+from rare.components.tabs.games.game_info import InfoTabs
+from rare.components.tabs.games.game_list import GameList
+from rare.components.tabs.games.import_widget import ImportWidget
 from rare.utils.extra_widgets import SelectViewWidget
 
 

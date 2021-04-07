@@ -4,7 +4,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import *
 
 from rare.components.dialogs.path_input_dialog import PathInputDialog
-from rare.components.tabs.CloudSaves.sync_widget import SyncWidget
+from rare.components.tabs.cloud_saves.sync_widget import SyncWidget
 from rare.utils.extra_widgets import WaitingSpinner
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import SaveGameStatus
