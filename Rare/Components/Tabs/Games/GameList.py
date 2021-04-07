@@ -112,7 +112,7 @@ class GameList(QStackedWidget):
                     pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
 
             else:
-                logger.warning(f"No Image found: {self.game.app_title}")
+                logger.warning(f"No Image found: {game.app_title}")
                 download_image(game, force=True)
                 pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
 
