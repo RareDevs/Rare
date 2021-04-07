@@ -6,7 +6,7 @@ import time
 from logging import getLogger
 from multiprocessing import Queue as MPQueue
 
-from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtCore import QThread, pyqtSignal, Qt, QCoreApplication
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
     QListWidget, QHBoxLayout
 
@@ -123,6 +123,7 @@ class DownloadThread(QThread):
 class DownloadTab(QWidget):
     finished = pyqtSignal()
     thread: QThread
+    dl_queue = []
 
     def __init__(self, core: LegendaryCore, updates: list):
         super(DownloadTab, self).__init__()
@@ -158,6 +159,9 @@ class DownloadTab(QWidget):
 
         self.layout.addLayout(self.mini_layout)
 
+        self.queue_label = QLabel(self.tr("Download queue: Empty"))
+        self.layout.addWidget(self.queue_label)
+
         self.update_title = QLabel(f"<h2>{self.tr('Updates')}</h2>")
         self.update_title.setStyleSheet("""
             QLabel{
@@ -183,8 +187,13 @@ class DownloadTab(QWidget):
     def stop_download(self):
         self.thread.kill = True
 
-    def install_game(self, options: InstallOptions):
-        game = self.core.get_game(options.app_name, update_meta=True)
+    def install_game(self, options: InstallOptions, no_confirm=False):
+        if self.active_game is not None:
+            self.dl_queue.append(options)
+            self.queue_label.setText(self.tr("Download queue: ") + ", ".join(self.core.get_game(i.app_name).app_title for i in self.dl_queue))
+            return
+        self.queue_label.setText(
+            self.tr("Download queue: ") + ", ".join(self.core.get_game(i.app_name).app_title for i in self.dl_queue))
         status_queue = MPQueue()
         try:
             dlm, analysis, game, igame, repair, repair_file = self.core.prepare_download(
@@ -222,8 +231,9 @@ class DownloadTab(QWidget):
             QMessageBox.information(self, "Warning", self.tr("Download size is 0. Game already exists"))
             return
         # Information
-        if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
-            return
+        if not no_confirm:
+            if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
+                return
 
         self.active_game = game
         self.thread = DownloadThread(dlm, self.core, status_queue, igame, options.repair, repair_file)
@@ -231,10 +241,7 @@ class DownloadTab(QWidget):
         self.thread.statistics.connect(self.statistics)
         self.thread.start()
         self.kill_button.setDisabled(False)
-        self.installing_game.setText("Installing Game: " + self.active_game.app_title)
-
-        for i in self.update_widgets.values():
-            i.update_button.setDisabled(True)
+        self.installing_game.setText(self.tr("Installing Game: ") + self.active_game.app_title)
 
     def sdl_prompt(self, app_name: str = '', title: str = '') -> list:
         sdl = QDialog()
@@ -279,6 +286,7 @@ class DownloadTab(QWidget):
             pass
         elif text == "finish":
             self.installing_game.setText(self.tr("Download finished. Reload library"))
+
             try:
                 from notifypy import Notify
             except ModuleNotFoundError:
@@ -290,9 +298,15 @@ class DownloadTab(QWidget):
                 notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
             logger.info("Download finished: " + self.active_game.app_title)
+
+            if self.dl_queue[0].app_name == self.active_game.app_name:
+                self.dl_queue.pop(0)
+
             if self.active_game.app_name in self.update_widgets.keys():
                 self.update_widgets[self.active_game.app_name].setVisible(False)
                 self.update_widgets.pop(self.active_game.app_name)
+
+            self.active_game = None
 
             for i in self.update_widgets.values():
                 i.update_button.setDisabled(False)
@@ -305,6 +319,12 @@ class DownloadTab(QWidget):
             self.cache_used.setText("")
             self.downloaded.setText("")
             self.time_left.setText("")
+
+            if len(self.dl_queue) != 0:
+                self.install_game(self.dl_queue[0])
+            else:
+                self.queue_label.setText(self.tr("Download queue: Empty"))
+
         elif text == "error":
             QMessageBox.warning(self, "warn", "Download error")
 
@@ -327,15 +347,12 @@ class DownloadTab(QWidget):
         return str(datetime.timedelta(seconds=seconds))
 
     def update_game(self, app_name: str):
-        print("Update ", app_name)
+        logger.info("Update " + app_name)
         infos = InstallDialog(app_name, self.core, True).get_information()
         if infos != 0:
             path, max_workers, force, ignore_free_space = infos
             self.install_game(InstallOptions(app_name=app_name, max_workers=max_workers, path=path,
                                              force=force, ignore_free_space=ignore_free_space))
-
-    def repair(self):
-        pass
 
 
 class UpdateWidget(QWidget):
