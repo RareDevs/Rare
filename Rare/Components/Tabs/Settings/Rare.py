@@ -19,14 +19,9 @@ class RareSettings(QGroupBox):
         self.setObjectName("group")
         self.layout = QVBoxLayout()
         settings = QSettings()
-        img_dir = settings.value("img_dir", type=str)
-        language = settings.value("language", type=str)
-        # default settings
-        if not img_dir:
-            settings.setValue("img_dir", os.path.expanduser("~/.cache/rare/images/"))
-        if not language:
-            settings.setValue("language", get_lang())
-        del settings
+        img_dir = settings.value("img_dir",os.path.expanduser("~/.cache/rare/images/"), type=str)
+        language = settings.value("language", get_lang(), type=str)
+
         # select Image dir
         self.select_path = PathEdit(img_dir, type_of_file=QFileDialog.DirectoryOnly)
         self.select_path.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
@@ -50,6 +45,12 @@ class RareSettings(QGroupBox):
         self.select_lang.currentIndexChanged.connect(self.update_lang)
         self.layout.addWidget(self.lang_widget)
 
+        self.exit_to_sys_tray = QCheckBox("Hide to System Tray Icon")
+        self.exit_to_sys_tray.setChecked(settings.value("sys_tray", True, bool))
+        self.exit_to_sys_tray.stateChanged.connect(self.update_sys_tray)
+        self.sys_tray_widget = SettingsWidget(self.tr("Exit to System Tray Icon"), self.exit_to_sys_tray)
+        self.layout.addWidget(self.sys_tray_widget)
+
         self.game_start_accept = QCheckBox(self.tr("Confirm launch of game"))
         self.game_start_accept.stateChanged.connect(self.update_start_confirm)
         self.game_start_accept_widget = SettingsWidget(self.tr("Confirm launch of game"), self.game_start_accept)
@@ -58,6 +59,10 @@ class RareSettings(QGroupBox):
         self.layout.addStretch()
 
         self.setLayout(self.layout)
+
+    def update_sys_tray(self):
+        settings = QSettings()
+        settings.setValue("sys_tray", self.exit_to_sys_tray.isChecked())
 
     def update_start_confirm(self):
         settings = QSettings()

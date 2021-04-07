@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QSettings
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
@@ -14,9 +15,10 @@ class MainWindow(QMainWindow):
         self.show()
 
     def closeEvent(self, e: QCloseEvent):
-        if self.tab_widget.downloadTab.active_game is None:
-            e.accept()
-        elif QMessageBox.question(self, "Close", self.tr("There is a download active. Do you really want to exit app?"), QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
+        if QSettings().value("sys_tray", True, bool):
+            self.hide()
+            e.ignore()
+        elif self.tab_widget.downloadTab.active_game is not None and QMessageBox.question(self, "Close", self.tr("There is a download active. Do you really want to exit app?"), QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
             e.accept()
         else:
-            e.ignore()
+            e.accept()

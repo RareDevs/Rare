@@ -31,7 +31,6 @@ class TabWidget(QTabWidget):
 
         self.tabBarClicked.connect(lambda x: self.game_list.layout.setCurrentIndex(0) if x == 0 else None)
 
-        # Commented, because it is not finished
         self.cloud_saves = SyncSaves(core)
         self.addTab(self.cloud_saves, "Cloud Saves")
 

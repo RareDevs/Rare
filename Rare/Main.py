@@ -6,11 +6,12 @@ import time
 
 from PyQt5.QtCore import QSettings, QTranslator
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon
 
 from Rare import lang_path, style_path
 from Rare.Components.Launch.LaunchDialog import LaunchDialog
 from Rare.Components.MainWindow import MainWindow
+from Rare.Components.TrayIcon import TrayIcon
 from Rare.utils.utils import get_lang
 from custom_legendary.core import LegendaryCore
 
@@ -67,6 +68,8 @@ class App(QApplication):
         self.setStyleSheet(open(style_path + "RareStyle.qss").read())
         self.setWindowIcon(QIcon(style_path + "Logo.png"))
 
+        # tray icon
+
         # launch app
         self.launch_dialog = LaunchDialog(self.core)
         self.launch_dialog.start_app.connect(self.start_app)
@@ -74,8 +77,19 @@ class App(QApplication):
 
     def start_app(self):
         self.mainwindow = MainWindow(self.core)
-        # close launch dialog after app widgets were created
+        self.tray_icon = TrayIcon(self)
+        self.tray_icon.exit_action.triggered.connect(lambda: exit(0))
+        self.tray_icon.start_rare.triggered.connect(self.mainwindow.show)
+        self.tray_icon.activated.connect(self.tray)
+        self.mainwindow.tab_widget.downloadTab.finished.connect(lambda: self.tray_icon.showMessage(
+            self.tr("Download finished"), self.tr("Download finished. Game is playable now"),
+            QSystemTrayIcon.Information, 4000))
         self.launch_dialog.close()
+
+    def tray(self, reason):
+        if reason == QSystemTrayIcon.DoubleClick:
+            self.mainwindow.show()
+            logger.info("Show App")
 
 
 def start():
