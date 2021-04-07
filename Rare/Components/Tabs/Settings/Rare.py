@@ -45,7 +45,7 @@ class RareSettings(QGroupBox):
         self.select_lang.currentIndexChanged.connect(self.update_lang)
         self.layout.addWidget(self.lang_widget)
 
-        self.exit_to_sys_tray = QCheckBox("Hide to System Tray Icon")
+        self.exit_to_sys_tray = QCheckBox(self.tr("Hide to System Tray Icon"))
         self.exit_to_sys_tray.setChecked(settings.value("sys_tray", True, bool))
         self.exit_to_sys_tray.stateChanged.connect(self.update_sys_tray)
         self.sys_tray_widget = SettingsWidget(self.tr("Exit to System Tray Icon"), self.exit_to_sys_tray)
