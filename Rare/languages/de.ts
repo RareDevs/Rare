@@ -79,91 +79,127 @@
     </message>
 </context>
 <context>
+    <name>DlQueueWidget</name>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DlQueueWidget.py" line="63"/>
+        <source>Download Queue</source>
+        <translation>Eingereihte Downloads</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DlQueueWidget.py" line="79"/>
+        <source>No downloads in queue</source>
+        <translation>Keine eingereihten Downloads</translation>
+    </message>
+</context>
+<context>
+    <name>DlWidget</name>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DlQueueWidget.py" line="44"/>
+        <source>Download size: {} GB</source>
+        <translation>Download Größe: {} GB</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DlQueueWidget.py" line="45"/>
+        <source>Install size: {} GB</source>
+        <translation>Installierte Größe: {} GB</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DlQueueWidget.py" line="48"/>
+        <source>Remove Download</source>
+        <translation>Download löschen</translation>
+    </message>
+</context>
+<context>
     <name>DownloadTab</name>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="134"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="32"/>
         <source>No active Download</source>
         <translation>Kein aktiver Download</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="155"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="53"/>
         <source>Stop Download</source>
         <translation>Download anhalten</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="174"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="69"/>
         <source>No updates available</source>
         <translation>Keine Updates verfügbar</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="221"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="122"/>
         <source>Error preparing download</source>
         <translation>Fehler beim Vorbereiten des Downloads</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="226"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="127"/>
         <source>Download size is 0. Game already exists</source>
         <translation>Die Größe des Downloads ist 0. Spiel existiert bereits</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="302"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="201"/>
         <source>Installation finished</source>
         <translation>Installation abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="339"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="240"/>
         <source>Installing Game: No active download</source>
         <translation>Installierendes Spiel: Kein aktiver Download</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="347"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="248"/>
         <source>Download speed</source>
         <translation>Geschwindigkeit</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="348"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="249"/>
         <source>Cache used</source>
         <translation>Benutzter Cache</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="349"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="250"/>
         <source>Downloaded</source>
         <translation>Runtergeladen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="350"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="251"/>
         <source>Time left: </source>
         <translation>Zeit übrig: </translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="303"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="202"/>
         <source>Finished Download of game {}</source>
         <translation>Downlaod von {} abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="294"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="193"/>
         <source>Download finished. Reload library</source>
         <translation>Download abgeschlossen. Spiele neu laden</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="332"/>
         <source>Download queue: Empty</source>
-        <translation>Anschließende Downloads: Keine</translation>
+        <translation type="obsolete">Anschließende Downloads: Keine</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="238"/>
         <source>Download queue: </source>
-        <translation>Anschließende Downloads: </translation>
+        <translation type="obsolete">Anschließende Downloads: </translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="238"/>
         <source>Empty</source>
-        <translation>Keine</translation>
+        <translation type="obsolete">Keine</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="250"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="149"/>
         <source>Installing Game: </source>
         <translation>Installierendes Spiel: </translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="64"/>
+        <source>Updates</source>
+        <translation>Updates</translation>
     </message>
 </context>
 <context>
@@ -273,12 +309,12 @@
 <context>
     <name>GameList</name>
     <message>
-        <location filename="../Components/Tabs/Games/GameList.py" line="151"/>
+        <location filename="../Components/Tabs/Games/GameList.py" line="160"/>
         <source>Launch</source>
         <translation>Starten</translation>
     </message>
     <message>
-        <location filename="../Components/Tabs/Games/GameList.py" line="156"/>
+        <location filename="../Components/Tabs/Games/GameList.py" line="165"/>
         <source>Game running</source>
         <translation>Spiel läuft</translation>
     </message>
@@ -370,9 +406,14 @@
 <context>
     <name>IconWidgetUninstalled</name>
     <message>
-        <location filename="../Components/Tabs/Games/GameWidgets/UninstalledIconWidget.py" line="43"/>
+        <location filename="../Components/Tabs/Games/GameWidgets/UninstalledIconWidget.py" line="45"/>
         <source>Install Game</source>
         <translation>Spiel installieren</translation>
+    </message>
+    <message>
+        <location filename="../Components/Tabs/Games/GameWidgets/UninstalledIconWidget.py" line="47"/>
+        <source>Installation running</source>
+        <translation>Installation läuft</translation>
     </message>
 </context>
 <context>
@@ -744,6 +785,11 @@ Installationsgröße: {} GB</translation>
         <source>Exit to System Tray Icon</source>
         <translation>Beim verlassen auf das System Tray Icon minimieren</translation>
     </message>
+    <message>
+        <location filename="../Components/Tabs/Settings/Rare.py" line="48"/>
+        <source>Hide to System Tray Icon</source>
+        <translation>In das System Tray Icon minimieren</translation>
+    </message>
 </context>
 <context>
     <name>SyncSaves</name>
@@ -923,7 +969,7 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>UpdateWidget</name>
     <message>
-        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="376"/>
+        <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="277"/>
         <source>Update Game</source>
         <translation>Spiel updaten</translation>
     </message>
