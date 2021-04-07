@@ -54,7 +54,7 @@ class GameList(QStackedWidget):
         self.list_layout = QVBoxLayout()
         self.list_layout.addWidget(QLabel(self.info_text))
 
-        IMAGE_DIR = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare"), str)
+        IMAGE_DIR = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images"), str)
         self.updates = []
         self.widgets = {}
 
