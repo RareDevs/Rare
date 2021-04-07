@@ -2,6 +2,7 @@ import configparser
 import logging
 import os
 import sys
+import time
 
 from PyQt5.QtCore import QSettings, QTranslator
 from PyQt5.QtGui import QIcon
@@ -13,10 +14,17 @@ from Rare.Components.MainWindow import MainWindow
 from Rare.utils.utils import get_lang
 from custom_legendary.core import LegendaryCore
 
+start_time = time.strftime('%y-%m-%d--%H:%M')  # year-month-day-hour-minute
+file_name = os.path.expanduser(f"~/.cache/rare/logs/Rare_{start_time}.log")
+if not os.path.exists(os.path.dirname(file_name)):
+    os.makedirs(os.path.dirname(file_name))
+
 logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',
-    level=logging.INFO
-)
+    level=logging.INFO,
+    filename=file_name,
+    filemode="w"
+    )
 logger = logging.getLogger("Rare")
 
 
@@ -40,6 +48,7 @@ class App(QApplication):
             self.core.lgd.save_config()
 
         # set Application name for settings
+        self.mainwindow = None
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")
         settings = QSettings()
@@ -70,5 +79,11 @@ class App(QApplication):
 
 
 def start():
-    app = App()
-    app.exec_()
+    while True:
+        app = App()
+        exit_code = app.exec_()
+        # if not restart
+        if exit_code != -133742:
+            break
+        # restart app
+        del app

@@ -20,7 +20,8 @@ class MiniWidget(QWidget):
         self.layout.addWidget(QLabel(self.tr("Logged in as ") + username))
 
         self.open_browser = QPushButton(self.tr("Account settings"))
-        self.open_browser.clicked.connect(lambda: webbrowser.open("https://www.epicgames.com/account/personal?productName=epicgames"))
+        self.open_browser.clicked.connect(
+            lambda: webbrowser.open("https://www.epicgames.com/account/personal?productName=epicgames"))
         self.layout.addWidget(self.open_browser)
 
         self.logout_button = QPushButton(self.tr("Logout"))
@@ -35,6 +36,5 @@ class MiniWidget(QWidget):
 
         if reply == QMessageBox.Yes:
             self.core.lgd.invalidate_userdata()
-            QCoreApplication.exit()
-
-
+            # restart app
+            QCoreApplication.instance().exit(-133742)  # restart exit code
