@@ -12,12 +12,12 @@ class MiniWidget(QWidget):
         self.layout = QVBoxLayout()
         self.core = core
         self.layout.addWidget(QLabel("Account"))
-        username = str(self.core.lgd.userdata.get("display_name"))
+        username = self.core.lgd.userdata.get("display_name")
         if not username:
             self.core.login()
-            username = str(self.core.lgd.userdata.get("display_name"))
+            username = self.core.lgd.userdata.get("display_name")
 
-        self.layout.addWidget(QLabel(self.tr("Logged in as ") + username))
+        self.layout.addWidget(QLabel(self.tr("Logged in as ") + str(username)))
 
         self.open_browser = QPushButton(self.tr("Account settings"))
         self.open_browser.clicked.connect(
@@ -37,4 +37,4 @@ class MiniWidget(QWidget):
         if reply == QMessageBox.Yes:
             self.core.lgd.invalidate_userdata()
             # restart app
-            QCoreApplication.instance().exit(-133742)  # restart exit code
+            QCoreApplication.instance().exit_action(-133742)  # restart exit code
