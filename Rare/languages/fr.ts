@@ -36,7 +36,7 @@
     <message>
         <location filename="../Components/Dialogs/Login/BrowserLogin.py" line="32"/>
         <source>Insert SID here</source>
-        <translation type="unfinished">Insérer le SID ici</translation>
+        <translation>Insérer le SID ici</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/Login/BrowserLogin.py" line="37"/>
@@ -152,7 +152,7 @@
     <message>
         <location filename="../Components/Tabs/Settings/Dxvk.py" line="28"/>
         <source>dxvk settings</source>
-        <translation type="unfinished">dxvk paramètres</translation>
+        <translation>dxvk paramètres</translation>
     </message>
 </context>
 <context>
@@ -203,22 +203,22 @@
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="131"/>
         <source>Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?</source>
-        <translation type="unfinished"></translation>
+        <translation>La vérification a échoué, {} fichier(s) corrompu(s), {} fichier(s) manquant(s). Voulez-vous les réparer ?</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="160"/>
         <source>Developer: </source>
-        <translation type="unfinished"></translation>
+        <translation>Développeur: </translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="161"/>
         <source>Install size: </source>
-        <translation type="unfinished"></translation>
+        <translation>Taille d'installation: </translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="163"/>
         <source>Install path: </source>
-        <translation type="unfinished"></translation>
+        <translation>Chemin d'installation:</translation>
     </message>
 </context>
 <context>
@@ -226,17 +226,17 @@
     <message>
         <location filename="../Components/Tabs/Games/GameList.py" line="45"/>
         <source>Installed Games: {}    Available Games: {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeux installés: {}    Jeux disponibles: {}</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameList.py" line="150"/>
         <source>Launch</source>
-        <translation type="unfinished"></translation>
+        <translation>Lancer</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameList.py" line="155"/>
         <source>Game running</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeu en cours</translation>
     </message>
 </context>
 <context>
@@ -244,17 +244,17 @@
     <message>
         <location filename="../Components/Tabs/Games/GamesTab.py" line="74"/>
         <source>Installed only</source>
-        <translation type="unfinished"></translation>
+        <translation>Installé uniquement</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GamesTab.py" line="81"/>
         <source>Import Game</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeu d'importation</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GamesTab.py" line="93"/>
         <source>Search Game</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechercher un jeu</translation>
     </message>
 </context>
 <context>
@@ -262,42 +262,42 @@
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="27"/>
         <source>Launch Game offline</source>
-        <translation type="unfinished"></translation>
+        <translation>Lancer le jeu hors ligne</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="32"/>
         <source>Skip update check before launching</source>
-        <translation type="unfinished"></translation>
+        <translation>Sauter la vérification de la mise à jour avant le lancement</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="65"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Sauvez</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="41"/>
         <source>Wrapper (e.g. optirun)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wrapper (p.e. optirun)</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="61"/>
         <source>Proton Wrapper</source>
-        <translation type="unfinished"></translation>
+        <translation>Enveloppeur de Proton</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="67"/>
         <source>Proton prefix</source>
-        <translation type="unfinished"></translation>
+        <translation>Préfixe du proton</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="173"/>
         <source>No permission to create folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Pas de permission pour créer un dossier</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameSettings.py" line="218"/>
         <source>Please select path for proton prefix</source>
-        <translation type="unfinished"></translation>
+        <translation>Veuillez sélectionner le chemin pour le préfixe proton</translation>
     </message>
 </context>
 <context>
@@ -305,17 +305,17 @@
     <message>
         <location filename="../Components/Tabs/Games/GameWidgets/InstalledIconWidget.py" line="36"/>
         <source>Update available</source>
-        <translation type="unfinished"></translation>
+        <translation>Mise à jour disponible</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameWidgets/InstalledIconWidget.py" line="86"/>
         <source>Start game without version check</source>
-        <translation type="unfinished"></translation>
+        <translation>Démarrer le jeu sans vérifier la version</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameWidgets/InstalledIconWidget.py" line="94"/>
         <source>Game running</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeu en cours</translation>
     </message>
 </context>
 <context>
@@ -323,7 +323,7 @@
     <message>
         <location filename="../Components/Tabs/Games/GameWidgets/UninstalledIconWidget.py" line="43"/>
         <source>Install Game</source>
-        <translation type="unfinished"></translation>
+        <translation>Installer le jeu</translation>
     </message>
 </context>
 <context>
@@ -331,77 +331,77 @@
     <message>
         <location filename="../Components/Dialogs/Login/ImportWidget.py" line="99"/>
         <source>Import</source>
-        <translation type="unfinished"></translation>
+        <translation>Importer</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/Login/ImportWidget.py" line="39"/>
         <source>Could not find EGL program data</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de trouver les données du programme EGL</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/Login/ImportWidget.py" line="42"/>
         <source>Found EGL program Data. Do you want to import them?</source>
-        <translation type="unfinished"></translation>
+        <translation>Les données du programme EGL ont été trouvées. Voulez-vous les importer ?</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/Login/ImportWidget.py" line="51"/>
         <source>Could not find any Epic Games login data</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de trouver les données de connexion d'Epic Games</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/Login/ImportWidget.py" line="86"/>
         <source>Loading...</source>
-        <translation type="unfinished"></translation>
+        <translation>Chargement...</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/Login/ImportWidget.py" line="98"/>
         <source>Error: No valid session found</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur : Aucune session valide n'a été trouvée</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="26"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Dos</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="40"/>
         <source>Select path to game</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionnez le chemin vers le jeu</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="43"/>
         <source>Override app name (Only if imported game from legendary or the app could not find the app name)</source>
-        <translation type="unfinished"></translation>
+        <translation>Remplacer le nom de l'application (uniquement si le jeu a été importé depuis le légendaire ou si l'application n'a pas pu trouver le nom de l'application)</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="62"/>
         <source>Import Game</source>
-        <translation type="unfinished"></translation>
+        <translation>Import jeu</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="70"/>
         <source>Import all games from Epic Games Launcher</source>
-        <translation type="unfinished"></translation>
+        <translation>Importer tous les jeux du Epic Games Launcher</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="110"/>
         <source>Could not find app name</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de trouver le nom de l'application</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="114"/>
         <source>Successfully imported {}. Reload library</source>
-        <translation type="unfinished"></translation>
+        <translation>Importation réussie de {}. Recharger la bibliothèque</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="120"/>
         <source>Failed to import {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d'importer {}</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/ImportWidget.py" line="159"/>
         <source>Successfully imported {} Games. Reloading Library</source>
-        <translation type="unfinished"></translation>
+        <translation>Importation réussie de {} Jeux. Bibliothèque de rechargement</translation>
     </message>
 </context>
 <context>
@@ -409,17 +409,17 @@
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="26"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Dos</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="30"/>
         <source>Game Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Info de jeu</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameInfo/GameInfo.py" line="32"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramètres</translation>
     </message>
 </context>
 <context>
@@ -427,22 +427,22 @@
     <message>
         <location filename="../Components/Dialogs/InstallDialog.py" line="20"/>
         <source>&lt;h3&gt;Install {}&lt;/h3&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Installer {}&lt;/h3&gt;</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/InstallDialog.py" line="29"/>
         <source>Max workers (0: Default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Travailleurs maximum (0: Par défaut)</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/InstallDialog.py" line="33"/>
         <source>Force download</source>
-        <translation type="unfinished"></translation>
+        <translation>Téléchargement forcé</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/InstallDialog.py" line="37"/>
         <source>Ignore free space (Warning!)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorer l'espace libre (Attention!)</translation>
     </message>
 </context>
 <context>
@@ -451,17 +451,18 @@
         <location filename="../Components/Dialogs/InstallDialog.py" line="70"/>
         <source>Download size: {}GB
 Install size: {}GB</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille du téléchargement: {}GB
+Taille de l'installation: {}GB</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/InstallDialog.py" line="76"/>
         <source>Install</source>
-        <translation type="unfinished"></translation>
+        <translation>Installer</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/InstallDialog.py" line="78"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuler</translation>
     </message>
 </context>
 <context>
@@ -469,12 +470,12 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Tabs/Games/GameWidgets/InstalledListWidget.py" line="41"/>
         <source>Launch</source>
-        <translation type="unfinished"></translation>
+        <translation>Lancer</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Games/GameWidgets/InstalledListWidget.py" line="52"/>
         <source>Developer: </source>
-        <translation type="unfinished"></translation>
+        <translation>Développeur: </translation>
     </message>
 </context>
 <context>
@@ -482,22 +483,22 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Launch/LaunchDialog.py" line="60"/>
         <source>Launching Rare</source>
-        <translation type="unfinished"></translation>
+        <translation>Lancer Rare</translation>
     </message>
     <message>
         <location filename="../Components/Launch/LaunchDialog.py" line="62"/>
         <source>Logging in</source>
-        <translation type="unfinished"></translation>
+        <translation>Se connecter</translation>
     </message>
     <message>
         <location filename="../Components/Launch/LaunchDialog.py" line="80"/>
         <source>Downloading Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Téléchargement d'images</translation>
     </message>
     <message>
         <location filename="../Components/Launch/LaunchDialog.py" line="91"/>
         <source>Starting...</source>
-        <translation type="unfinished"></translation>
+        <translation>Démarrage...</translation>
     </message>
 </context>
 <context>
@@ -505,7 +506,7 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Launch/LaunchDialog.py" line="23"/>
         <source>Downloading Images</source>
-        <translation type="unfinished"></translation>
+        <translation>Téléchargement d'images</translation>
     </message>
 </context>
 <context>
@@ -513,37 +514,37 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Tabs/Settings/Legendary.py" line="18"/>
         <source>Legendary settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Legendary paramètres</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Legendary.py" line="27"/>
         <source>Default installation directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Répertoire d'installation par défaut</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Legendary.py" line="36"/>
         <source>Max workers for Download (Less: slower download)(0: Default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre maximum de travailleurs pour le téléchargement (Moins: téléchargement plus lent)(0: Défaut)</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Legendary.py" line="43"/>
         <source>Cleanup</source>
-        <translation type="unfinished"></translation>
+        <translation>Nettoyage</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Legendary.py" line="44"/>
         <source>Remove everything</source>
-        <translation type="unfinished"></translation>
+        <translation>Enlever tout</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Legendary.py" line="48"/>
         <source>Clean, but keep manifests</source>
-        <translation type="unfinished"></translation>
+        <translation>Nettoyer, mais garder les manifestes</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Legendary.py" line="96"/>
         <source>Cleanup complete! Successfully removed {} MB</source>
-        <translation type="unfinished"></translation>
+        <translation>Nettoyage terminé ! J'ai réussi à supprimer {} MB</translation>
     </message>
 </context>
 <context>
@@ -551,17 +552,17 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Tabs/Settings/Linux.py" line="19"/>
         <source>Linux settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Linux paramètres</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Linux.py" line="28"/>
         <source>Default Wine Prefix</source>
-        <translation type="unfinished"></translation>
+        <translation>Défaut Wine Prefix</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Linux.py" line="36"/>
         <source>Default Wine executable</source>
-        <translation type="unfinished"></translation>
+        <translation>Défaut Wine exécutable</translation>
     </message>
 </context>
 <context>
@@ -569,7 +570,7 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Tabs/Games/GameWidgets/UninstalledListWidget.py" line="29"/>
         <source>Install</source>
-        <translation type="unfinished"></translation>
+        <translation>Installer</translation>
     </message>
 </context>
 <context>
@@ -577,17 +578,17 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Dialogs/Login/LoginDialog.py" line="30"/>
         <source>Select one option to Login</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionnez une option pour vous connecter</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/Login/LoginDialog.py" line="33"/>
         <source>Use Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Utiliser le navigateur</translation>
     </message>
     <message>
         <location filename="../Components/Dialogs/Login/LoginDialog.py" line="33"/>
         <source>This opens your default browser. Login and copy the text</source>
-        <translation type="unfinished"></translation>
+        <translation>Cela ouvre votre navigateur par défaut. Connectez-vous et copiez le texte</translation>
     </message>
 </context>
 <context>
@@ -595,22 +596,22 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Tabs/Account/AccountWidget.py" line="20"/>
         <source>Logged in as </source>
-        <translation type="unfinished"></translation>
+        <translation>Connecté en tant que </translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Account/AccountWidget.py" line="22"/>
         <source>Account settings</source>
-        <translation type="unfinished"></translation>
+        <translation>paramètres du compte</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Account/AccountWidget.py" line="26"/>
         <source>Logout</source>
-        <translation type="unfinished"></translation>
+        <translation>Déconnexion</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Account/AccountWidget.py" line="32"/>
         <source>Do you really want to logout</source>
-        <translation type="unfinished"></translation>
+        <translation>Voulez-vous vraiment vous déconnecter?</translation>
     </message>
 </context>
 <context>
@@ -618,12 +619,12 @@ Install size: {}GB</source>
     <message>
         <location filename="../utils/QtExtensions.py" line="133"/>
         <source>Select Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner le chemin</translation>
     </message>
     <message>
         <location filename="../utils/QtExtensions.py" line="146"/>
         <source>Choose Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le chemin</translation>
     </message>
 </context>
 <context>
@@ -631,7 +632,7 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Dialogs/PathInputDialog.py" line="24"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuler</translation>
     </message>
 </context>
 <context>
@@ -639,32 +640,32 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Tabs/Settings/Rare.py" line="19"/>
         <source>Rare settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Rare paramètres</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Rare.py" line="33"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Sauvez</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Rare.py" line="35"/>
         <source>Image Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Répertoire d'images</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Rare.py" line="49"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Langue</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Rare.py" line="55"/>
         <source>Confirm launch of game</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmation du lancement du jeu</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/Settings/Rare.py" line="77"/>
         <source>Restart Application to activate changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Redémarrez l'application pour activer les changements</translation>
     </message>
 </context>
 <context>
@@ -672,32 +673,32 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Tabs/CloudSaves/CloudSaves.py" line="65"/>
         <source>Cloud Saves</source>
-        <translation type="unfinished"></translation>
+        <translation>Cloud Saves</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/CloudSaves.py" line="54"/>
         <source>Found Saves for folowing Games</source>
-        <translation type="unfinished"></translation>
+        <translation>Sauvegardes trouvées pour les jeux suivants</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/CloudSaves.py" line="65"/>
         <source>Your games does not support Cloud Saves</source>
-        <translation type="unfinished"></translation>
+        <translation>Vos jeux ne prennent pas en charge les sauvegardes en nuage</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/CloudSaves.py" line="70"/>
         <source>Sync all games</source>
-        <translation type="unfinished"></translation>
+        <translation>Sync tous les jeux</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/CloudSaves.py" line="110"/>
         <source>Found no savepath</source>
-        <translation type="unfinished"></translation>
+        <translation>Pas de chemin de sauvegarde trouvé</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/CloudSaves.py" line="110"/>
         <source>No save path was found. Please select path or skip</source>
-        <translation type="unfinished"></translation>
+        <translation>Aucun chemin de sauvegarde n'a été trouvé. Veuillez sélectionner le chemin ou passer</translation>
     </message>
 </context>
 <context>
@@ -705,97 +706,97 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="60"/>
         <source>Path not found</source>
-        <translation type="unfinished"></translation>
+        <translation>Chemin non trouvé</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="76"/>
         <source>Local Save date: </source>
-        <translation type="unfinished"></translation>
+        <translation>Local Save date: </translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="79"/>
         <source>No Local Save files</source>
-        <translation type="unfinished"></translation>
+        <translation>Pas de fichiers de sauvegarde locaux</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="81"/>
         <source>Cloud save date: </source>
-        <translation type="unfinished"></translation>
+        <translation>Cloud save date: </translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="83"/>
         <source>No Cloud saves</source>
-        <translation type="unfinished"></translation>
+        <translation>Pas Cloud saves</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="87"/>
         <source>Game is up to date</source>
-        <translation type="unfinished"></translation>
+        <translation>Le jeu est à jour</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="88"/>
         <source>Upload anyway</source>
-        <translation type="unfinished"></translation>
+        <translation>Télécharger quand même</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="89"/>
         <source>Download anyway</source>
-        <translation type="unfinished"></translation>
+        <translation>Télécharger en tout cas</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="91"/>
         <source>Cloud save is newer</source>
-        <translation type="unfinished"></translation>
+        <translation>La sauvegarde en nuage est plus récente</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="92"/>
         <source>Download Cloud saves</source>
-        <translation type="unfinished"></translation>
+        <translation>Télécharger Cloud saves</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="96"/>
         <source>Upload Saves</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload Saves</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="107"/>
         <source>Local save is newer</source>
-        <translation type="unfinished"></translation>
+        <translation>La sauvegarde locale est plus récente</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="108"/>
         <source>Upload saves</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload Saves</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="112"/>
         <source>Download saves</source>
-        <translation type="unfinished"></translation>
+        <translation>Télécharger les sauvegardes</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="134"/>
         <source>Change path</source>
-        <translation type="unfinished"></translation>
+        <translation>Changement de trajectoire</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="158"/>
         <source>Uploading...</source>
-        <translation type="unfinished"></translation>
+        <translation>Téléchargement...</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="166"/>
         <source>Upload finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Téléchargement terminé</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="176"/>
         <source>Downloading...</source>
-        <translation type="unfinished"></translation>
+        <translation>Téléchargement...</translation>
     </message>
     <message>
         <location filename="../Components/Tabs/CloudSaves/SyncWidget.py" line="182"/>
         <source>Download finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Téléchargement terminé</translation>
     </message>
 </context>
 <context>
@@ -803,7 +804,7 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/TabWidget.py" line="23"/>
         <source>Games</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeus</translation>
     </message>
 </context>
 <context>
@@ -811,7 +812,7 @@ Install size: {}GB</source>
     <message>
         <location filename="../Components/Tabs/Downloads/DownloadTab.py" line="353"/>
         <source>Update Game</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeu de mise à jour</translation>
     </message>
 </context>
 </TS>
