@@ -10,14 +10,15 @@ from custom_legendary.core import LegendaryCore
 logger = getLogger("LegendarySettings")
 
 
-class LegendarySettings(QWidget):
+class LegendarySettings(QGroupBox):
     def __init__(self, core: LegendaryCore):
         super(LegendarySettings, self).__init__()
+        self.setTitle(self.tr("Legendary settings"))
         self.layout = QVBoxLayout()
         self.core = core
-        self.title = QLabel("<h2>" + self.tr("Legendary settings") + "</h2>")
-        self.layout.addWidget(self.title)
-
+        #self.title = QLabel("<h2>" + self.tr("Legendary settings") + "</h2>")
+        #self.layout.addWidget(self.title)
+        self.setObjectName("group")
         # Default installation directory
         self.select_path = PathEdit(core.get_default_install_dir(), type_of_file=QFileDialog.DirectoryOnly,
                                     infotext="Default")

@@ -2,8 +2,6 @@
 
 ## What you can do
 
-To Contribute first fork the repository
-
 ### Add translations
 
 1. Execute ```pylupdate5 $(find -name "*.py") -ts Rare/languages/{your lang (two letters)}.ts``` in project directrory
@@ -21,4 +19,7 @@ exmples:
 Select one Card of the project and implement it or make other changes
 
 
-If you made your changes, create a pull request
+##Git crash-course
+To contribute fork the repository and clone **your** repo. Then make your changes, add it to git with `git add .` and upload it to Github with `git commit -m "message"` and `git push` or with your IDE. 
+
+If you uploaded your changes, create a pull request

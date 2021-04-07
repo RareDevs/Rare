@@ -3,7 +3,7 @@ import shutil
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QComboBox, QPushButton, QCheckBox
+from PyQt5.QtWidgets import QVBoxLayout, QFileDialog, QComboBox, QPushButton, QCheckBox, QGroupBox
 
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
@@ -12,18 +12,18 @@ from Rare.utils.utils import get_lang, get_possible_langs
 logger = getLogger("RareSettings")
 
 
-class RareSettings(QWidget):
+class RareSettings(QGroupBox):
     def __init__(self):
         super(RareSettings, self).__init__()
+        self.setTitle(self.tr("Rare settings"))
+        self.setObjectName("group")
         self.layout = QVBoxLayout()
-        self.title = QLabel("<h2>" + self.tr("Rare settings") + "</h2>")
-        self.layout.addWidget(self.title)
         settings = QSettings()
         img_dir = settings.value("img_dir", type=str)
         language = settings.value("language", type=str)
         # default settings
         if not img_dir:
-            settings.setValue("img_dir", os.path.expanduser("~/.cache/rare/"))
+            settings.setValue("img_dir", os.path.expanduser("~/.cache/rare/images/"))
         if not language:
             settings.setValue("language", get_lang())
         del settings
