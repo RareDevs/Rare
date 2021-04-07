@@ -12,7 +12,7 @@ from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
-IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare/images/"), type=str)
+IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare/images"), type=str)
 logger.info("IMAGE DIRECTORY: " + IMAGE_DIR)
 
 

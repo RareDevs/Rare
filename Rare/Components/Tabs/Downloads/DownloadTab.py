@@ -45,7 +45,6 @@ class DownloadTab(QWidget):
         self.layout.addLayout(self.info_layout)
 
         self.mini_layout = QHBoxLayout()
-
         self.prog_bar = QProgressBar()
         self.prog_bar.setMaximum(100)
         self.mini_layout.addWidget(self.prog_bar)
@@ -219,13 +218,7 @@ class DownloadTab(QWidget):
                 i.update_button.setDisabled(False)
 
             self.finished.emit()
-            self.installing_game.setText(self.tr("Installing Game: No active download"))
-            self.prog_bar.setValue(0)
-
-            self.dl_speed.setText("")
-            self.cache_used.setText("")
-            self.downloaded.setText("")
-            self.time_left.setText("")
+            self.reset_infos()
 
             if len(self.dl_queue) != 0:
                 self.start_installation(*self.dl_queue[0])
@@ -236,12 +229,16 @@ class DownloadTab(QWidget):
             QMessageBox.warning(self, "warn", "Download error")
 
         elif text == "stop":
-            self.kill_button.setDisabled(True)
-            self.installing_game.setText(self.tr("Installing Game: No active download"))
-            self.prog_bar.setValue(0)
-            self.dl_speed.setText("")
-            self.cache_used.setText("")
-            self.downloaded.setText("")
+            self.reset_infos()
+
+    def reset_infos(self):
+        self.kill_button.setDisabled(True)
+        self.installing_game.setText(self.tr("Installing Game: No active download"))
+        self.prog_bar.setValue(0)
+        self.dl_speed.setText("")
+        self.time_left.setText("")
+        self.cache_used.setText("")
+        self.downloaded.setText("")
 
     def statistics(self, ui_update: UIUpdate):
         self.prog_bar.setValue(ui_update.progress)
