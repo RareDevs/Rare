@@ -37,8 +37,8 @@ class DlWidget(QWidget):
 
         self.size = QHBoxLayout()
 
-        self.size.addWidget(QLabel(self.tr("Download size: {} GB").format(dl_size/1024**3)))
-        self.size.addWidget(QLabel(self.tr("Install size: {} GB").format(install_size/1024**3)))
+        self.size.addWidget(QLabel(self.tr("Download size: {} GB").format(dl_size / 1024 ** 3)))
+        self.size.addWidget(QLabel(self.tr("Install size: {} GB").format(install_size / 1024 ** 3)))
         self.right_layout.addLayout(self.size)
 
         self.delete = QPushButton(self.tr("Remove Download"))
@@ -52,6 +52,7 @@ class DlWidget(QWidget):
 class DlQueueWidget(QGroupBox):
     update_list = pyqtSignal(list)
     dl_queue = []
+
     def __init__(self):
 
         super(DlQueueWidget, self).__init__()
@@ -77,7 +78,11 @@ class DlQueueWidget(QGroupBox):
         for index, item in enumerate(dl_queue):
             widget = DlWidget(index, item)
             widget.remove.connect(self.remove)
+            widget.move_up.connect(self.move_up)
+            widget.move_down.connect(self.move_down)
             self.layout.addWidget(widget)
+            if index + 1 == len(dl_queue):
+                widget.move_down_buttton.setDisabled(True)
 
         self.setLayout(self.layout)
 
@@ -89,5 +94,31 @@ class DlQueueWidget(QGroupBox):
         else:
             print("BUG! ", app_name)
             return
+        self.update_list.emit(self.dl_queue)
+        self.update_queue(self.dl_queue)
+
+    def move_up(self, app_name):
+        index: int
+
+        for i, item in enumerate(self.dl_queue):
+            if item[1].app_name == app_name:
+                index = i
+                break
+        else:
+            return
+        self.dl_queue.insert(index - 1, self.dl_queue.pop(index))
+        self.update_list.emit(self.dl_queue)
+        self.update_queue(self.dl_queue)
+
+    def move_down(self, app_name):
+        index: int
+
+        for i, item in enumerate(self.dl_queue):
+            if item[1].app_name == app_name:
+                index = i
+                break
+        else:
+            return
+        self.dl_queue.insert(index + 1, self.dl_queue.pop(index))
         self.update_list.emit(self.dl_queue)
         self.update_queue(self.dl_queue)
