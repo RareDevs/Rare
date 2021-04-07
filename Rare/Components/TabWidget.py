@@ -23,7 +23,7 @@ class TabWidget(QTabWidget):
         self.addTab(self.game_list, self.tr("Games"))
         self.downloadTab = DownloadTab(core, updates)
         self.addTab(self.downloadTab, "Downloads" + (" (" + str(len(updates)) + ")" if len(updates) != 0 else ""))
-        self.downloadTab.finished.connect(self.game_list.default_widget.game_list.update_list)
+        self.downloadTab.finished.connect(self.dl_finished)
         self.game_list.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
 
         self.game_list.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
@@ -47,6 +47,10 @@ class TabWidget(QTabWidget):
         self.addTab(self.settings, icon("fa.gear", color='white'), "(!)" if self.settings.about.update_available else "")
         self.setIconSize(QSize(25, 25))
         self.tabBar().setTabButton(3, self.tabBar().RightSide, TabButtonWidget(core))
+
+    def dl_finished(self):
+        self.game_list.default_widget.game_list.update_list()
+        self.setTabText(1, "Downloads")
 
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
