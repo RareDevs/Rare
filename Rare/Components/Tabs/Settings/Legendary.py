@@ -10,14 +10,15 @@ from custom_legendary.core import LegendaryCore
 logger = getLogger("LegendarySettings")
 
 
-class LegendarySettings(QWidget):
+class LegendarySettings(QGroupBox):
     def __init__(self, core: LegendaryCore):
         super(LegendarySettings, self).__init__()
+        self.setTitle(self.tr("Legendary settings"))
         self.layout = QVBoxLayout()
         self.core = core
-        self.title = QLabel("<h2>" + self.tr("Legendary settings") + "</h2>")
-        self.layout.addWidget(self.title)
-
+        #self.title = QLabel("<h2>" + self.tr("Legendary settings") + "</h2>")
+        #self.layout.addWidget(self.title)
+        self.setObjectName("group")
         # Default installation directory
         self.select_path = PathEdit(core.get_default_install_dir(), type_of_file=QFileDialog.DirectoryOnly,
                                     infotext="Default")
@@ -39,8 +40,7 @@ class LegendarySettings(QWidget):
 
         #cleanup
         self.clean_layout = QVBoxLayout()
-        self.cleanup_widget = QGroupBox()
-        self.cleanup_widget.setTitle(self.tr("Cleanup"))
+        self.cleanup_widget = QGroupBox(self.tr("Cleanup"))
         self.clean_button = QPushButton(self.tr("Remove everything"))
         self.clean_button.clicked.connect(lambda: self.cleanup(False))
         self.clean_layout.addWidget(self.clean_button)
@@ -59,20 +59,20 @@ class LegendarySettings(QWidget):
         self.core.lgd.config["Legendary"]["install_dir"] = self.select_path.text()
         if self.select_path.text() == "" and "install_dir" in self.core.lgd.config["Legendary"].keys():
             self.core.lgd.config["Legendary"].pop("install_dir")
-            logger.info("Remove install_dir section")
         else:
             logger.info("Set config install_dir to " + self.select_path.text())
         self.core.lgd.save_config()
 
     def max_worker_save(self, num_workers: str):
-        self.core.lgd.config["Legendary"]["max_workers"] = num_workers
         if num_workers == "":
-            self.core.lgd.config["Legendary"].pop("max_workers")
+            self.core.lgd.config.remove_option("Legendary", "max_workers")
+            self.core.lgd.save_config()
             return
         num_workers = int(num_workers)
         if num_workers == 0:
-            self.core.lgd.config["Legendary"].pop("max_workers")
-        logger.info("Updating config for max_workers")
+            self.core.lgd.config.remove_option("Legendary", "max_workers")
+        else:
+            self.core.lgd.config.set("Legendary", "max_workers", str(num_workers))
         self.core.lgd.save_config()
 
     def cleanup(self, keep_manifests):
@@ -92,7 +92,7 @@ class LegendarySettings(QWidget):
 
         after = self.core.lgd.get_dir_size()
         logger.info(f'Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.')
-        if cleaned := (before-after) != 0:
+        if cleaned := (before-after) > 0:
             QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {} MB").format(round(cleaned / 1024 / 1024, 3)))
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")

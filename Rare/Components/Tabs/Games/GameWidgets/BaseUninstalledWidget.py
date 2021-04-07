@@ -17,6 +17,7 @@ class BaseUninstalledWidget(QGroupBox):
         self.game = game
         self.core = core
         self.pixmap = pixmap
+        self.installing = False
 
         self.setContentsMargins(0, 0, 0, 0)
 

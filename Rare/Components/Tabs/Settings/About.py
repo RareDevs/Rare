@@ -1,6 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
+import webbrowser
+
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 
 from Rare import __version__
+from Rare.utils.utils import get_latest_version
 
 
 class About(QWidget):
@@ -13,6 +16,15 @@ class About(QWidget):
 
         self.version = QLabel("Version: " + __version__)
         self.layout.addWidget(self.version)
+        latest_tag = get_latest_version()
+        self.update_available = latest_tag != __version__
+        if latest_tag != __version__:
+            print(f"Update available: {__version__} -> {latest_tag}")
+            self.update_available = QLabel(self.tr("Update available: {} -> {}").format(__version__, latest_tag))
+            self.layout.addWidget(self.update_available)
+            self.open_browser = QPushButton(self.tr("Download latest release"))
+            self.layout.addWidget(self.open_browser)
+            self.open_browser.clicked.connect(lambda: webbrowser.open("https://github.com/Dummerle/Rare/releases/latest"))
 
         self.dev = QLabel(self.tr("Developer:") + "<a href='https://github.com/Dummerle'>Dummerle</a>")
         self.dev.setToolTip("Github")

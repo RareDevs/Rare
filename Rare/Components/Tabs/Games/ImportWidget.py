@@ -4,7 +4,8 @@ import string
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLineEdit
+from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLineEdit, \
+    QGroupBox
 from qtawesome import icon
 
 from Rare.utils import LegendaryApi
@@ -34,11 +35,13 @@ class ImportWidget(QWidget):
         self.title = QLabel("<h2>Import Game</h2")
         self.layout.addWidget(self.title)
 
-        self.import_one_game = QLabel(f"<h3>{self.tr('Import existing game from Epic Games Launcher')}</h3>")
-        self.layout.addWidget(self.import_one_game)
+        # self.import_one_game = QLabel(f"<h3>{self.tr('Import existing game from Epic Games Launcher')}</h3>")
+        self.import_one_game = QGroupBox(self.tr('Import existing game from Epic Games Launcher'))
+        self.import_one_game.setObjectName("group")
+        self.gb_layout = QVBoxLayout()
 
         self.import_game_info = QLabel(self.tr("Select path to game"))
-        self.layout.addWidget(self.import_game_info)
+        self.gb_layout.addWidget(self.import_game_info)
 
         self.override_app_name_label = QLabel(self.tr("Override app name (Only if imported game from legendary or the app could not find the app name)"))
         self.app_name_input = QLineEdit()
@@ -52,16 +55,20 @@ class ImportWidget(QWidget):
 
         self.path_edit = PathEdit(os.path.expanduser("~"), QFileDialog.DirectoryOnly)
         self.path_edit.text_edit.textChanged.connect(self.path_changed)
-        self.layout.addWidget(self.path_edit)
+        self.gb_layout.addWidget(self.path_edit)
 
-        self.layout.addWidget(self.override_app_name_label)
-        self.layout.addWidget(self.app_name_input)
+        self.gb_layout.addWidget(self.override_app_name_label)
+        self.gb_layout.addWidget(self.app_name_input)
 
         self.info_label = QLabel("")
-        self.layout.addWidget(self.info_label)
+        self.gb_layout.addWidget(self.info_label)
         self.import_button = QPushButton(self.tr("Import Game"))
-        self.layout.addWidget(self.import_button)
+        self.gb_layout.addWidget(self.import_button)
         self.import_button.clicked.connect(self.import_game)
+
+        self.import_one_game.setLayout(self.gb_layout)
+
+        self.layout.addWidget(self.import_one_game)
 
         self.layout.addStretch(1)
 
@@ -104,6 +111,7 @@ class ImportWidget(QWidget):
         if not path:
             path = self.path_edit.text()
         if not app_name:
+            # try to find app name
             if a_n := self.find_app_name(path):
                 app_name = a_n
             else:
@@ -134,7 +142,7 @@ class ImportWidget(QWidget):
                 continue
             app_name = self.find_app_name(json_path)
             if not app_name:
-                logger.warning("Could not find app name")
+                logger.warning("Could not find app name at " + game_path)
                 continue
 
             if LegendaryApi.import_game(self.core, app_name, game_path + path):
@@ -159,4 +167,4 @@ class ImportWidget(QWidget):
             QMessageBox.information(self, "Imported Games", self.tr("Successfully imported {} Games. Reloading Library").format(imported))
             self.update_list.emit()
         else:
-            QMessageBox.information(self, "Imported Games", "No Games were found")
+            QMessageBox.information(self, "Imported Games", self.tr("No Games were found"))

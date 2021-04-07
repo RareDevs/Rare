@@ -3,7 +3,7 @@ import shutil
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QComboBox, QPushButton, QCheckBox
+from PyQt5.QtWidgets import QVBoxLayout, QFileDialog, QComboBox, QPushButton, QCheckBox, QGroupBox
 
 from Rare.Components.Tabs.Settings.SettingsWidget import SettingsWidget
 from Rare.utils.QtExtensions import PathEdit
@@ -12,21 +12,16 @@ from Rare.utils.utils import get_lang, get_possible_langs
 logger = getLogger("RareSettings")
 
 
-class RareSettings(QWidget):
+class RareSettings(QGroupBox):
     def __init__(self):
         super(RareSettings, self).__init__()
+        self.setTitle(self.tr("Rare settings"))
+        self.setObjectName("group")
         self.layout = QVBoxLayout()
-        self.title = QLabel("<h2>" + self.tr("Rare settings") + "</h2>")
-        self.layout.addWidget(self.title)
         settings = QSettings()
-        img_dir = settings.value("img_dir", type=str)
-        language = settings.value("language", type=str)
-        # default settings
-        if not img_dir:
-            settings.setValue("img_dir", os.path.expanduser("~/.cache/rare/"))
-        if not language:
-            settings.setValue("language", get_lang())
-        del settings
+        img_dir = settings.value("img_dir", os.path.expanduser("~/.cache/rare/images/"), type=str)
+        language = settings.value("language", get_lang(), type=str)
+
         # select Image dir
         self.select_path = PathEdit(img_dir, type_of_file=QFileDialog.DirectoryOnly)
         self.select_path.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
@@ -37,18 +32,26 @@ class RareSettings(QWidget):
 
         # Select lang
         self.select_lang = QComboBox()
-        languages = ["English", "Deutsch"]
+        languages = ["English", "Deutsch", "Français"]
         self.select_lang.addItems(languages)
         if language in get_possible_langs():
             if language == "de":
                 self.select_lang.setCurrentIndex(1)
             elif language == "en":
                 self.select_lang.setCurrentIndex(0)
+            elif language == "fr":
+                self.select_lang.setCurrentIndex(2)
         else:
             self.select_lang.setCurrentIndex(0)
         self.lang_widget = SettingsWidget(self.tr("Language"), self.select_lang)
         self.select_lang.currentIndexChanged.connect(self.update_lang)
         self.layout.addWidget(self.lang_widget)
+
+        self.exit_to_sys_tray = QCheckBox(self.tr("Hide to System Tray Icon"))
+        self.exit_to_sys_tray.setChecked(settings.value("sys_tray", True, bool))
+        self.exit_to_sys_tray.stateChanged.connect(self.update_sys_tray)
+        self.sys_tray_widget = SettingsWidget(self.tr("Exit to System Tray Icon"), self.exit_to_sys_tray)
+        self.layout.addWidget(self.sys_tray_widget)
 
         self.game_start_accept = QCheckBox(self.tr("Confirm launch of game"))
         self.game_start_accept.stateChanged.connect(self.update_start_confirm)
@@ -58,6 +61,10 @@ class RareSettings(QWidget):
         self.layout.addStretch()
 
         self.setLayout(self.layout)
+
+    def update_sys_tray(self):
+        settings = QSettings()
+        settings.setValue("sys_tray", self.exit_to_sys_tray.isChecked())
 
     def update_start_confirm(self):
         settings = QSettings()
@@ -73,7 +80,8 @@ class RareSettings(QWidget):
             settings.setValue("language", "en")
         elif i == 1:
             settings.setValue("language", "de")
-        del settings
+        elif i == 2:
+            settings.setValue("language", "fr")
         self.lang_widget.info_text.setText(self.tr("Restart Application to activate changes"))
 
     def update_path(self):

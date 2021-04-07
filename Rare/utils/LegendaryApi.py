@@ -47,7 +47,9 @@ def launch_game(core, app_name: str, offline: bool = False, skip_version_check: 
     return process, params
 
 
-def uninstall(app_name: str, core):
+def uninstall(app_name: str, core, options=None):
+    if not options:
+        options = {"keep_files": False}
     igame = core.get_installed_game(app_name)
     try:
         # Remove DLC first so directory is empty when game uninstall runs
@@ -55,12 +57,13 @@ def uninstall(app_name: str, core):
         for dlc in dlcs:
             if (idlc := core.get_installed_game(dlc.app_name)) is not None:
                 logger.info(f'Uninstalling DLC "{dlc.app_name}"...')
-                core.uninstall_game(idlc, delete_files=True)
+                core.uninstall_game(idlc, delete_files=not options["keep_files"])
 
         logger.info(f'Removing "{igame.title}" from "{igame.install_path}"...')
-        core.uninstall_game(igame, delete_files=True, delete_root_directory=True)
+        core.uninstall_game(igame, delete_files=not options["keep_files"], delete_root_directory=True)
         logger.info('Game has been uninstalled.')
-        shutil.rmtree(igame.install_path)
+        if not options["keep_files"]:
+            shutil.rmtree(igame.install_path)
 
     except Exception as e:
         logger.warning(f'Removing game failed: {e!r}, please remove {igame.install_path} manually.')

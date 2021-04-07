@@ -37,7 +37,7 @@ class GameWidgetInstalled(BaseInstalledWidget):
 
         if self.pixmap:
             w = 200
-            self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3))
+            self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3), transformMode=Qt.SmoothTransformation)
             self.image = ClickableLabel()
             self.image.setObjectName("game_widget")
             self.image.setPixmap(self.pixmap)

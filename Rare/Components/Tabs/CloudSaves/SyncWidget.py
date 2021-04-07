@@ -1,8 +1,8 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, QLabel
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QGroupBox
 
 from Rare.Components.Dialogs.PathInputDialog import PathInputDialog
 from custom_legendary.core import LegendaryCore
@@ -37,12 +37,14 @@ class _DownloadThread(QThread):
         self.core.download_saves(self.app_name, self.latest_save.manifest_name, self.save_path, clean_dir=True)
 
 
-class SyncWidget(QWidget):
+class SyncWidget(QGroupBox):
     reload = pyqtSignal()
 
     def __init__(self, igame: InstalledGame, save, core: LegendaryCore):
-        super(SyncWidget, self).__init__()
+        super(SyncWidget, self).__init__(igame.title)
+        self.setObjectName("group")
         self.layout = QVBoxLayout()
+        self.setContentsMargins(10, 20, 10, 20)
         self.thr = None
         self.core = core
         self.save = save
@@ -70,7 +72,7 @@ class SyncWidget(QWidget):
             self.logger.info('No cloud or local savegame found.')
             return
 
-        game_title = QLabel(f"<h2>{igame.title}</h2>")
+        # game_title = QLabel(f"<h2>{igame.title}</h2>")
 
         if self.dt_local:
             local_save_date = QLabel(
@@ -124,14 +126,16 @@ class SyncWidget(QWidget):
         self.upload_button.clicked.connect(self.upload)
         self.download_button.clicked.connect(self.download)
         self.info_text = QLabel(status)
-        self.layout.addWidget(game_title)
+        # self.layout.addWidget(game_title)
         self.layout.addWidget(local_save_date)
         self.layout.addWidget(cloud_save_date)
 
         save_path_layout = QHBoxLayout()
         self.save_path_text = QLabel(igame.save_path)
+        self.save_path_text.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.save_path_text.setWordWrap(True)
         self.change_save_path = QPushButton(self.tr("Change path"))
+        self.change_save_path.setFixedWidth(100)
         self.change_save_path.clicked.connect(self.change_path)
         save_path_layout.addWidget(self.save_path_text)
         save_path_layout.addWidget(self.change_save_path)
@@ -141,7 +145,7 @@ class SyncWidget(QWidget):
         button_layout.addWidget(self.upload_button)
         button_layout.addWidget(self.download_button)
         self.layout.addLayout(button_layout)
-
+        self.layout.addStretch(1)
         self.setLayout(self.layout)
 
     def change_path(self):

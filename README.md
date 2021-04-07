@@ -69,6 +69,8 @@ There are more options to contribute.
 - If you are a designer, you can add Stylesheets or create a logo or a banner
 - You can translate the application
 
+**Note:** Pull Requests please to "dev" branch
+
 More Information is in CONTRIBUTING.md
 
 ## Images

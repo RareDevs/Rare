@@ -40,6 +40,7 @@ class GameList(QStackedWidget):
         self.icon_scrollarea.setWidgetResizable(True)
         self.icon_scrollarea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
+        self.list_scrollarea.setWidgetResizable(True)
         self.list_scrollarea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         self.info_text = self.tr("Installed Games: {}    Available Games: {}").format(
@@ -53,7 +54,7 @@ class GameList(QStackedWidget):
         self.list_layout = QVBoxLayout()
         self.list_layout.addWidget(QLabel(self.info_text))
 
-        IMAGE_DIR = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare"), str)
+        IMAGE_DIR = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images"), str)
         self.updates = []
         self.widgets = {}
 
@@ -80,7 +81,7 @@ class GameList(QStackedWidget):
             icon_widget.show_info.connect(self.show_game_info.emit)
             list_widget.show_info.connect(self.show_game_info.emit)
 
-            icon_widget.launch_signal.connect(self.launch)
+            icon_widget.finish_signal.connect(self.launch)
             icon_widget.finish_signal.connect(self.finished)
             list_widget.launch_signal.connect(self.launch)
             list_widget.finish_signal.connect(self.finished)
@@ -100,6 +101,7 @@ class GameList(QStackedWidget):
             if not game.app_name in installed:
                 uninstalled_games.append(game)
 
+        # add uninstalled games
         for game in uninstalled_games:
             if os.path.exists(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png"):
                 pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
@@ -110,15 +112,15 @@ class GameList(QStackedWidget):
                     pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
 
             else:
-                logger.warning(f"No Image found: {self.game.app_title}")
+                logger.warning(f"No Image found: {game.app_title}")
                 download_image(game, force=True)
                 pixmap = QPixmap(f"{IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
 
             icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
-            icon_widget.install_game.connect(self.install_game.emit)
+            icon_widget.install_game.connect(self.install)
 
             list_widget = ListWidgetUninstalled(self.core, game, pixmap)
-            list_widget.install_game.connect(self.install_game.emit)
+            list_widget.install_game.connect(self.install)
 
             self.icon_layout.addWidget(icon_widget)
             self.list_layout.addWidget(list_widget)
@@ -142,6 +144,14 @@ class GameList(QStackedWidget):
 
         if self.settings.value("installed_only", False, bool):
             self.installed_only(True)
+
+    def install(self, options: InstallOptions):
+        icon_widget, list_widget = self.widgets[options.app_name]
+        icon_widget.mousePressEvent = lambda e: None
+        icon_widget.installing = True
+        list_widget.install_button.setDisabled(True)
+        list_widget.installing = True
+        self.install_game.emit(options)
 
     def finished(self, app_name):
         self.widgets[app_name][0].info_text = ""

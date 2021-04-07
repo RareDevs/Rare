@@ -25,6 +25,8 @@ class BaseInstalledWidget(QGroupBox):
         self.game_running = False
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
 
+
+
         self.setContentsMargins(0, 0, 0, 0)
 
         # self.setStyleSheet("border-radius: 5px")

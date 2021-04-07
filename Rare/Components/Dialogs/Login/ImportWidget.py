@@ -88,12 +88,15 @@ class ImportWidget(QWidget):
         if os.name != "nt":
             self.core.egl.appdata_path = os.path.join(self.data_path,
                                                       f"drive_c/users/{getuser()}/Local Settings/Application Data/EpicGamesLauncher/Saved/Config/Windows")
+        try:
+            if self.core.auth_import():
+                logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")
+                self.success.emit()
+            else:
+                logger.warning("Failed to import existing session")
+        except Exception as e:
+            logger.warning(e)
 
-        if self.core.auth_import():
-            logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")
-            self.success.emit()
-        else:
-            print("Lol")
         logger.warning("Error: No valid session found")
         self.login_text.setText(self.tr("Error: No valid session found"))
         self.import_button.setText(self.tr("Import"))
