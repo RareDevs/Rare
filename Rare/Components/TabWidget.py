@@ -3,10 +3,10 @@ from PyQt5.QtWidgets import QTabWidget, QWidget
 from qtawesome import icon
 
 from Rare.Components.TabUtils import TabBar, TabButtonWidget
-from Rare.Components.Tabs.CloudSaves.CloudSaves import SyncSaves
+from Rare.Components.Tabs.CloudSaves import SyncSaves
 from Rare.Components.Tabs.Downloads.DownloadTab import DownloadTab
-from Rare.Components.Tabs.Games.GamesTab import GameTab
-from Rare.Components.Tabs.Settings.SettingsTab import SettingsTab
+from Rare.Components.Tabs.Games import GameTab
+from Rare.Components.Tabs.Settings import SettingsTab
 from Rare.utils.Models import InstallOptions
 from custom_legendary.core import LegendaryCore
 
@@ -43,7 +43,8 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
         # self.settings = SettingsTab(core)
-        self.addTab(self.settings, icon("fa.gear", color='white'), None)
+
+        self.addTab(self.settings, icon("fa.gear", color='white'), "(!)" if self.settings.about.update_available else "")
         self.setIconSize(QSize(25, 25))
         self.tabBar().setTabButton(3, self.tabBar().RightSide, TabButtonWidget(core))
 

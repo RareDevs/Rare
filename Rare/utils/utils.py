@@ -7,11 +7,11 @@ import requests
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 
-from Rare import lang_path
+from Rare import lang_path, __version__
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
-s = QSettings("Rare", "Rare")
+s = QSettings()
 IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare"), type=str)
 logger.info("IMAGE DIRECTORY: " + IMAGE_DIR)
 
@@ -118,3 +118,9 @@ def get_possible_langs():
         if i.endswith(".qm"):
             langs.append(i.split(".")[0])
     return langs
+
+
+def get_latest_version():
+    resp = requests.get("https://api.github.com/repos/Dummerle/Rare/releases/latest")
+    tag = json.loads(resp.content.decode("utf-8"))["tag_name"]
+    return tag

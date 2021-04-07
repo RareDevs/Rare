@@ -20,7 +20,7 @@ class MiniWidget(QWidget):
         self.layout.addWidget(QLabel(self.tr("Logged in as ") + username))
 
         self.open_browser = QPushButton(self.tr("Account settings"))
-        self.open_browser.clicked.connect(self.open_account)
+        self.open_browser.clicked.connect(lambda: webbrowser.open("https://www.epicgames.com/account/personal?productName=epicgames"))
         self.layout.addWidget(self.open_browser)
 
         self.logout_button = QPushButton(self.tr("Logout"))
@@ -37,5 +37,4 @@ class MiniWidget(QWidget):
             self.core.lgd.invalidate_userdata()
             QCoreApplication.exit()
 
-    def open_account(self):
-        webbrowser.open("https://www.epicgames.com/account/personal?productName=epicgames")
+
