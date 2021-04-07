@@ -19,7 +19,7 @@ class RareSettings(QGroupBox):
         self.setObjectName("group")
         self.layout = QVBoxLayout()
         settings = QSettings()
-        img_dir = settings.value("img_dir",os.path.expanduser("~/.cache/rare/images/"), type=str)
+        img_dir = settings.value("img_dir", os.path.expanduser("~/.cache/rare/images/"), type=str)
         language = settings.value("language", get_lang(), type=str)
 
         # select Image dir
@@ -32,13 +32,15 @@ class RareSettings(QGroupBox):
 
         # Select lang
         self.select_lang = QComboBox()
-        languages = ["English", "Deutsch"]
+        languages = ["English", "Deutsch", "Français"]
         self.select_lang.addItems(languages)
         if language in get_possible_langs():
             if language == "de":
                 self.select_lang.setCurrentIndex(1)
             elif language == "en":
                 self.select_lang.setCurrentIndex(0)
+            elif language == "fr":
+                self.select_lang.setCurrentIndex(2)
         else:
             self.select_lang.setCurrentIndex(0)
         self.lang_widget = SettingsWidget(self.tr("Language"), self.select_lang)
@@ -78,7 +80,8 @@ class RareSettings(QGroupBox):
             settings.setValue("language", "en")
         elif i == 1:
             settings.setValue("language", "de")
-        del settings
+        elif i == 2:
+            settings.setValue("language", "fr")
         self.lang_widget.info_text.setText(self.tr("Restart Application to activate changes"))
 
     def update_path(self):
