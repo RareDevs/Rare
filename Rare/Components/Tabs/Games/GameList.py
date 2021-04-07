@@ -83,7 +83,7 @@ class GameList(QStackedWidget):
             icon_widget.launch_signal.connect(self.launch)
             icon_widget.finish_signal.connect(self.finished)
             list_widget.launch_signal.connect(self.launch)
-            list_widget.launch_signal.connect(self.finished)
+            list_widget.finish_signal.connect(self.finished)
 
             self.icon_layout.addWidget(icon_widget)
             self.list_layout.addWidget(list_widget)
