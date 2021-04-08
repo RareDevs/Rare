@@ -24,7 +24,7 @@ class LinuxSettings(QGroupBox):
                                     infotext="Default")
         self.select_path.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
         self.save_path_button = QPushButton("Save")
-        self.save_path_button.clicked.connect(self.save_wineprefix)
+        self.save_path_button.clicked.connect(lambda: self.save_setting(self.select_path, "wine_prefix"))
         self.install_dir_widget = SettingsWidget(self.tr("Default Wine Prefix"), self.select_path,
                                                  self.save_path_button)
         self.layout.addWidget(self.install_dir_widget)
@@ -32,7 +32,7 @@ class LinuxSettings(QGroupBox):
         # Wine executable
         self.select_wine_exec = QLineEdit(self.core.lgd.config.get(self.name, "wine_executable", fallback=""))
         self.save_wine_exec = QPushButton("Save")
-        self.save_wine_exec.clicked.connect(self.save_wineexec)
+        self.save_wine_exec.clicked.connect(lambda: self.save_setting(self.select_wine_exec, "wine_executable"))
         self.install_dir_widget = SettingsWidget(self.tr("Default Wine executable"), self.select_wine_exec,
                                                  self.save_wine_exec)
         self.layout.addWidget(self.install_dir_widget)
@@ -44,28 +44,15 @@ class LinuxSettings(QGroupBox):
             self.layout.addStretch(1)
         self.setLayout(self.layout)
 
-    def save_wineprefix(self):
+    def save_setting(self, widget: QLineEdit, setting_name: str):
         if not self.name in self.core.lgd.config.sections():
-            self.core.lgd.config[self.name] = dict()
-        self.core.lgd.config[self.name]["wine_prefix"] = self.select_path.text()
-        if self.select_path.text() == "":
-            self.core.lgd.config[self.name].pop("wine_prefix")
-            logger.info("Remove wine_prefix section")
-        else:
-            logger.info("Set config of wine_prefix to " + self.select_path.text())
-        if self.core.lgd.config[self.name] == {}:
-            self.core.lgd.config.remove_section(self.name)
-        self.core.lgd.save_config()
+            self.core.lgd.config.add_section(self.name)
 
-    def save_wineexec(self):
-        if not self.name in self.core.lgd.config.sections():
-            self.core.lgd.config[self.name] = dict()
-        self.core.lgd.config[self.name]["wine_executable"] = self.select_wine_exec.text()
-        if self.select_wine_exec.text() == "":
-            self.core.lgd.config[self.name].pop("wine_executable")
-            logger.info("Remove wine executable section")
+        self.core.lgd.config.set(self.name, setting_name, widget.text())
+        if widget.text() == "":
+            self.core.lgd.config.remove_option(self.name, setting_name)
         else:
-            logger.info("Set config of wine executable to " + self.select_wine_exec.text())
+            logger.info("Set config of wine_prefix to " + widget.text())
         if self.core.lgd.config[self.name] == {}:
             self.core.lgd.config.remove_section(self.name)
         self.core.lgd.save_config()

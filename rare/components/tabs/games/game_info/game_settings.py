@@ -25,13 +25,13 @@ class GameSettings(QWidget):
         self.offline = QComboBox()
         self.offline.addItems(["unset", "true", "false"])
         self.offline_widget = SettingsWidget(self.tr("Launch Game offline"), self.offline)
-        self.offline.currentIndexChanged.connect(self.update_offline)
+        self.offline.currentIndexChanged.connect(lambda x: self.update_combobox(x, "offline"))
 
         self.skip_update = QComboBox()
         self.skip_update.addItems(["unset", "true", "false"])
         self.skip_update_widget = SettingsWidget(self.tr("Skip update check before launching"), self.skip_update)
         self.layout.addWidget(self.skip_update_widget)
-        self.skip_update.currentIndexChanged.connect(self.update_skip_update)
+        self.skip_update.currentIndexChanged.connect(lambda x: self.update_combobox(x, "skip_update_check"))
 
         self.layout.addWidget(self.offline_widget)
 
@@ -86,38 +86,21 @@ class GameSettings(QWidget):
                 self.core.lgd.config.remove_section(self.game.app_name)
         self.core.lgd.save_config()
 
-    def update_offline(self, i):
+    def update_combobox(self, i, option):
         if self.change:
             # remove section
             if i == 0:
                 if self.game.app_name in self.core.lgd.config.sections():
-                    if self.core.lgd.config.get(f"{self.game.app_name}", "offline", fallback="") != "":
-                        self.core.lgd.config.remove_option(self.game.app_name, "offline")
+                    if self.core.lgd.config.get(f"{self.game.app_name}", option, fallback="") != "":
+                        self.core.lgd.config.remove_option(self.game.app_name, option)
                 if self.core.lgd.config[self.game.app_name] == {}:
                     self.core.lgd.config.remove_section(self.game.app_name)
             elif i == 1:
                 self.core.lgd.config[self.game.app_name] = {}
-                self.core.lgd.config.set(self.game.app_name, "offline", "true")
+                self.core.lgd.config.set(self.game.app_name, option, "true")
             elif i == 2:
                 self.core.lgd.config[self.game.app_name] = {}
-                self.core.lgd.config.set(self.game.app_name, "offline", "false")
-            self.core.lgd.save_config()
-
-    def update_skip_update(self, i):
-        if self.change:
-            # remove section
-            if i == 0:
-                if self.game.app_name in self.core.lgd.config.sections():
-                    if self.core.lgd.config.get(f"{self.game.app_name}", "skip_update_check", fallback="") != "":
-                        self.core.lgd.config.remove_option(self.game.app_name, "skip_update_check")
-                if self.core.lgd.config[self.game.app_name] == {}:
-                    self.core.lgd.config.remove_section(self.game.app_name)
-            elif i == 1:
-                self.core.lgd.config[self.game.app_name] = {}
-                self.core.lgd.config.set(self.game.app_name, "skip_update_check", "true")
-            elif i == 2:
-                self.core.lgd.config[self.game.app_name] = {}
-                self.core.lgd.config.set(self.game.app_name, "skip_update_check", "false")
+                self.core.lgd.config.set(self.game.app_name, option, "false")
             self.core.lgd.save_config()
 
     def change_proton(self, i):
@@ -157,7 +140,7 @@ class GameSettings(QWidget):
                 self.linux_settings.select_wine_exec.setText("")
                 self.linux_settings.save_wineexec()
                 self.linux_settings.select_path.text_edit.setText("")
-                self.linux_settings.save_wineprefix()
+                self.linux_settings.save_setting()
 
         self.core.lgd.save_config()
 

@@ -14,13 +14,13 @@ class DxvkWidget(QGroupBox):
         super(DxvkWidget, self).__init__()
         self.core = core
         self.dxvk_settings = {
-            "fps": (False, "Fps"),
-            "gpuload": (False, self.tr("GPU usage")),
-            "memory": (False, self.tr("Used Memory")),
-            "devinfo": (False, self.tr("Device info")),
-            "version": (False, self.tr("DXVK version")),
-            "api": (False, self.tr("D3D Level of application")),
-            "frametime": (False, self.tr("Frame time graph"))
+            "fps": [False, "Fps"],
+            "gpuload": [False, self.tr("GPU usage")],
+            "memory": [False, self.tr("Used Memory")],
+            "devinfo": [False, self.tr("Device info")],
+            "version": [False, self.tr("DXVK version")],
+            "api": [False, self.tr("D3D Level of application")],
+            "frametime": [False, self.tr("Frame time graph")]
         }
         self.name = "default"
         self.layout = QVBoxLayout()
@@ -34,9 +34,7 @@ class DxvkWidget(QGroupBox):
         self.more_settings.setDisabled(not dxvk_hud == "")
         if dxvk_hud:
             for s in dxvk_hud.split(","):
-                y = list(self.dxvk_settings[s])
-                y[0] = True
-                self.dxvk_settings[s] = tuple(y)
+                self.dxvk_settings[s][0] = True
 
         self.more_settings.setPopupMode(QToolButton.InstantPopup)
         self.more_settings.setMenu(QMenu())
@@ -63,9 +61,7 @@ class DxvkWidget(QGroupBox):
         if dxvk_hud:
             self.more_settings.setDisabled(False)
             for s in dxvk_hud.split(","):
-                y = list(self.dxvk_settings[s])
-                y[0] = True
-                self.dxvk_settings[s] = tuple(y)
+                self.dxvk_settings[s][0] = True
         else:
             self.show_dxvk.setChecked(False)
             self.more_settings.setDisabled(True)
@@ -79,9 +75,7 @@ class DxvkWidget(QGroupBox):
 
             for i in self.more_settings_widget.settings:
                 if i in ["fps", "gpuload"]:
-                    lst = list(self.more_settings_widget.settings[i])
-                    lst[0] = True
-                    self.more_settings_widget.settings[i] = tuple(lst)
+                    self.more_settings_widget.settings[i][0] = True
 
             self.core.lgd.config[f"{self.name}.env"]["DXVK_HUD"] = "fps,gpuload"
             for w in self.more_settings_widget.widgets:
@@ -101,6 +95,7 @@ class DxvkWidget(QGroupBox):
 
 class DxvkMoreSettingsWidget(QWidget):
     show_dxvk = pyqtSignal(bool)
+
     def __init__(self, settings: dict, core: LegendaryCore):
         super(DxvkMoreSettingsWidget, self).__init__()
         self.layout = QVBoxLayout()
@@ -116,11 +111,9 @@ class DxvkMoreSettingsWidget(QWidget):
 
         self.setLayout(self.layout)
 
-    def change(self, signal: tuple):
+    def change(self, signal: list):
         tag, checked = signal
-        y = list(self.settings[tag])
-        y[0] = checked
-        self.settings[tag] = tuple(y)
+        self.settings[tag][0] = checked
 
         sett = []
         logger.debug(self.settings)
@@ -128,7 +121,7 @@ class DxvkMoreSettingsWidget(QWidget):
             check, _ = self.settings[i]
             if check:
                 sett.append(i)
-        if len(sett) != 0:
+        if len(sett) > 0:
             self.core.lgd.config.set(f"{self.name}.env", "DXVK_HUD", ",".join(sett))
 
         else:

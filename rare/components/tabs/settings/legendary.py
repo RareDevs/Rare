@@ -1,7 +1,9 @@
 from logging import getLogger
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton, QLineEdit, QGroupBox, QMessageBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton, QLineEdit, QGroupBox, QMessageBox, \
+    QScrollArea
 
 from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
@@ -10,15 +12,16 @@ from custom_legendary.core import LegendaryCore
 logger = getLogger("LegendarySettings")
 
 
-class LegendarySettings(QGroupBox):
+class LegendarySettings(QScrollArea):
     def __init__(self, core: LegendaryCore):
         super(LegendarySettings, self).__init__()
-        self.setTitle(self.tr("Legendary settings"))
+        self.widget = QGroupBox(self.tr("Legendary settings"))
+        self.setWidgetResizable(True)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.layout = QVBoxLayout()
         self.core = core
-        #self.title = QLabel("<h2>" + self.tr("Legendary settings") + "</h2>")
-        #self.layout.addWidget(self.title)
-        self.setObjectName("group")
+
+        self.widget.setObjectName("group")
         # Default installation directory
         self.select_path = PathEdit(core.get_default_install_dir(), type_of_file=QFileDialog.DirectoryOnly,
                                     infotext="Default")
@@ -53,7 +56,8 @@ class LegendarySettings(QGroupBox):
         self.layout.addWidget(self.cleanup_widget)
 
         self.layout.addStretch(1)
-        self.setLayout(self.layout)
+        self.widget.setLayout(self.layout)
+        self.setWidget(self.widget)
 
     def save_path(self):
         self.core.lgd.config["Legendary"]["install_dir"] = self.select_path.text()
