@@ -9,7 +9,6 @@ setuptools.setup(
     name="Rare",
     version=version,
     author="Dummerle",
-    author_email="lennardbaeumer@gmail.com",
     license="GPL-3",
     long_description=long_description,
     long_description_content_type="text/markdown",
