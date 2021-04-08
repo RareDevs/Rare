@@ -1,9 +1,7 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QTabBar, QToolButton, QMenu, QWidgetAction
+from PyQt5.QtWidgets import QTabBar, QToolButton
 from qtawesome import icon
-
-from rare.components.tabs.account import MiniWidget
 
 
 class TabBar(QTabBar):
@@ -25,14 +23,10 @@ class TabBar(QTabBar):
 
 
 class TabButtonWidget(QToolButton):
-    def __init__(self, core):
+    def __init__(self, core, button_icon: str, tool_tip: str):
         super(TabButtonWidget, self).__init__()
         self.setText("Icon")
         self.setPopupMode(QToolButton.InstantPopup)
-        self.setIcon(icon("mdi.account-circle", color="white", scale_factor=1.25))
-        self.setToolTip("Account")
+        self.setIcon(icon(button_icon, color="white", scale_factor=1.25))
+        self.setToolTip(tool_tip)
         self.setIconSize(QSize(25, 25))
-        self.setMenu(QMenu())
-        action = QWidgetAction(self)
-        action.setDefaultWidget(MiniWidget(core))
-        self.menu().addAction(action)
