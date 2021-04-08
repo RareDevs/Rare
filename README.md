@@ -12,24 +12,25 @@ recommend to make a backup. If you run into an issue, please report it by creati
 
 ### Installation via pip (recommend)
 
-Execute `pip install Rare` for all users Or `pip install Rare --user` for only one user
+Execute `pip install Rare` for all users Or `pip install Rare --user` for only one user. Then execute `rare` in your terminal or cmd
 
-**Note**: On Linux must be /home/user/.local/bin in PATH
+**Note**: On Linux must be `/home/user/.local/bin` in PATH and on Windows must be `PythonInstallationDirectory\Scripts` in PATH. 
 
 ### Windows Simple
 
-Download Rare.exe from the [releases page](https://github.com/Dummerle/Rare/releases) and place it somewhere in PATH
+Download Rare.exe from the [releases page](https://github.com/Dummerle/Rare/releases) and execute it. 
 
-**Note**
-Using the exe file could cause errors
+**Note:**
+Using the exe file could cause errors with Windows Defender or other Anti Virus
 
 ### Linux
 
 #### Arch based
 
 There are some AUR packages available:
- - [rare](https://aur.archlinux.org/packages/rare)
- - [rare-git](https://aur.archlinux.org/packages/rare-git)
+ - [rare](https://aur.archlinux.org/packages/rare) - for stable releases
+ - [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest features, which are not in a stable release
+ - [rare-dev](https://aur.archlinux.org/packages/rare-dev) - dev branch: latest development features. This could be unstable
 
 #### Debian based
 
@@ -45,17 +46,17 @@ Install via `pip`.
 
 ## Why Rare?
 
-Rare uses much less RAM than electron based apps such as [HeroicGL](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher) and EpicGL which allows the games to run better.
-Rare supports all major platforms (Windows, Linux, MacOS) unlike the alternatives.
+- Rare uses much less RAM than electron based apps such as [HeroicGL](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher) and EpicGL which allows the games to run better.
+- Rare supports all major platforms (Windows, Linux, MacOS) unlike the alternatives.
 
 ## Features
 
 - Launch, install and uninstall games
 - Authentication(Import from existing installation and via Browser)
-- Download progress bar
+- Download progress bar, queue
 - Settings (Legendary and games)
 - Sync Cloud Saves
-- Translations (English and German)
+- Translations (English, German and French)
 
 ## Planned Features
 - Offline mode
@@ -65,9 +66,9 @@ More planned features are in projects
 
 ## Contributing
 There are more options to contribute. 
-- If you can Python and PyQt you can implement new Features.
+- If you can Python and PyQt you can implement new Features (Some ideas are in Projects).
 - If you are a designer, you can add Stylesheets or create a logo or a banner
-- You can translate the application
+- You can translate the application in your language
 
 **Note:** Pull Requests please to "dev" branch
 
