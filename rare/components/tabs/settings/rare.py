@@ -11,6 +11,12 @@ from rare.utils.utils import get_lang, get_possible_langs
 
 logger = getLogger("RareSettings")
 
+languages = [
+    ("en", "English"),
+    ("de", "Deutsch"),
+    ("fr", "Français")
+]
+
 
 class RareSettings(QGroupBox):
     def __init__(self):
@@ -32,15 +38,12 @@ class RareSettings(QGroupBox):
 
         # Select lang
         self.select_lang = QComboBox()
-        languages = ["English", "Deutsch", "Français"]
-        self.select_lang.addItems(languages)
+        # languages = ["English", "Deutsch", "Français"]
+        self.select_lang.addItems([i[1] for i in languages])
         if language in get_possible_langs():
-            if language == "de":
-                self.select_lang.setCurrentIndex(1)
-            elif language == "en":
-                self.select_lang.setCurrentIndex(0)
-            elif language == "fr":
-                self.select_lang.setCurrentIndex(2)
+
+            index = [lang[0] for lang in languages].index(language)
+            self.select_lang.setCurrentIndex(index)
         else:
             self.select_lang.setCurrentIndex(0)
         self.lang_widget = SettingsWidget(self.tr("Language"), self.select_lang)
@@ -76,12 +79,8 @@ class RareSettings(QGroupBox):
 
     def update_lang(self, i: int):
         settings = QSettings()
-        if i == 0:
-            settings.setValue("language", "en")
-        elif i == 1:
-            settings.setValue("language", "de")
-        elif i == 2:
-            settings.setValue("language", "fr")
+
+        settings.setValue("language", languages[i][1])
         self.lang_widget.info_text.setText(self.tr("Restart Application to activate changes"))
 
     def update_path(self):
