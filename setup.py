@@ -24,7 +24,7 @@ setuptools.setup(
         "Operating System :: OS Independent"
     ],
     python_requires=">=3.8",
-    entry_points=dict(console_scripts=["rare=Rare.__main__:main"]),
+    entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
     install_requires=[
         "requests<3.0",
         "pillow",
