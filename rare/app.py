@@ -30,8 +30,11 @@ logger = logging.getLogger("Rare")
 
 
 class App(QApplication):
-    def __init__(self):
+    def __init__(self, args):
         super(App, self).__init__(sys.argv)
+        self.args = args
+        # add some options
+
         # init Legendary
         try:
             self.core = LegendaryCore()
@@ -92,9 +95,9 @@ class App(QApplication):
             logger.info("Show App")
 
 
-def start():
+def start(args):
     while True:
-        app = App()
+        app = App(args)
         exit_code = app.exec_()
         # if not restart
         if exit_code != -133742:

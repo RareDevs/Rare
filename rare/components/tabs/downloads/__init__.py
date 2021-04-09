@@ -211,6 +211,8 @@ class DownloadTab(QWidget):
             if self.active_game.app_name in self.update_widgets.keys():
                 self.update_widgets[self.active_game.app_name].setVisible(False)
                 self.update_widgets.pop(self.active_game.app_name)
+                if len(self.update_widgets) == 0:
+                    self.update_text.setVisible(True)
 
             self.active_game = None
 
