@@ -3,7 +3,7 @@ import os
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox, \
-    QProgressBar, QStackedWidget, QGroupBox
+    QProgressBar, QStackedWidget, QGroupBox, QScrollArea
 from qtawesome import icon
 
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
@@ -42,7 +42,7 @@ class InfoTabs(QTabWidget):
             self.parent().layout.setCurrentIndex(0)
 
 
-class GameInfo(QWidget):
+class GameInfo(QScrollArea):
     igame: InstalledGame
     game: Game
     update_list = pyqtSignal()
@@ -51,8 +51,10 @@ class GameInfo(QWidget):
 
     def __init__(self, core: LegendaryCore):
         super(GameInfo, self).__init__()
+        self.widget = QWidget()
         self.core = core
         self.layout = QVBoxLayout()
+        self.setWidgetResizable(True)
 
         # TODO More Information: Image text settings needs_verification platform
         top_layout = QHBoxLayout()
@@ -86,7 +88,6 @@ class GameInfo(QWidget):
 
         top_layout.addLayout(right_layout)
         top_layout.addStretch()
-
         self.game_actions = GameActions()
 
         self.game_actions.uninstall_button.clicked.connect(self.uninstall)
@@ -96,7 +97,8 @@ class GameInfo(QWidget):
         self.layout.addLayout(top_layout)
         self.layout.addWidget(self.game_actions)
         self.layout.addStretch()
-        self.setLayout(self.layout)
+        self.widget.setLayout(self.layout)
+        self.setWidget(self.widget)
 
     def uninstall(self):
         infos = UninstallDialog(self.game).get_information()

@@ -1,6 +1,7 @@
 import os
 
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox, QLineEdit
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox, QLineEdit, \
+    QScrollArea
 
 from rare.components.tabs.settings.linux import LinuxSettings
 from rare.components.tabs.settings.settings_widget import SettingsWidget
@@ -9,7 +10,7 @@ from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame, Game
 
 
-class GameSettings(QWidget):
+class GameSettings(QScrollArea):
     game: Game
     igame: InstalledGame
     # variable to no update when changing game
@@ -18,6 +19,8 @@ class GameSettings(QWidget):
     def __init__(self, core: LegendaryCore):
         super(GameSettings, self).__init__()
         self.core = core
+        self.widget = QWidget()
+        self.setWidgetResizable(True)
         self.layout = QVBoxLayout()
         self.title = QLabel("Error")
         self.layout.addWidget(self.title)
@@ -71,7 +74,8 @@ class GameSettings(QWidget):
         # startparams, skip_update_check
 
         self.layout.addStretch(1)
-        self.setLayout(self.layout)
+        self.widget.setLayout(self.layout)
+        self.setWidget(self.widget)
 
     def update_wrapper(self):
         wrapper = self.wrapper.text()
