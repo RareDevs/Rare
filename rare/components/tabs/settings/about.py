@@ -7,7 +7,10 @@ from rare.utils.utils import get_latest_version
 
 
 def versiontuple(v):
-    return tuple(map(int, (v.split("."))))
+    try:
+        return tuple(map(int, (v.split("."))))
+    except:
+        return tuple((9, 9, 9))  # It is a beta version and newer
 
 
 class About(QWidget):
