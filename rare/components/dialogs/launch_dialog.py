@@ -69,7 +69,9 @@ class LaunchDialog(QDialog):
         self.setLayout(self.layout)
 
     def login(self):
+        self.hide()
         if LoginDialog(core=self.core).login():
+            self.show()
             self.login_thread.start()
         else:
             exit(0)

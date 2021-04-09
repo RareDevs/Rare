@@ -6,6 +6,10 @@ from rare import __version__
 from rare.utils.utils import get_latest_version
 
 
+def versiontuple(v):
+    return tuple(map(int, (v.split("."))))
+
+
 class About(QWidget):
     def __init__(self):
         super(About, self).__init__()
@@ -17,14 +21,15 @@ class About(QWidget):
         self.version = QLabel("Version: " + __version__)
         self.layout.addWidget(self.version)
         latest_tag = get_latest_version()
-        self.update_available = latest_tag != __version__
-        if latest_tag != __version__:
+        self.update_available = versiontuple(latest_tag) > versiontuple(__version__)
+        if self.update_available:
             print(f"Update available: {__version__} -> {latest_tag}")
             self.update_available = QLabel(self.tr("Update available: {} -> {}").format(__version__, latest_tag))
             self.layout.addWidget(self.update_available)
             self.open_browser = QPushButton(self.tr("Download latest release"))
             self.layout.addWidget(self.open_browser)
-            self.open_browser.clicked.connect(lambda: webbrowser.open("https://github.com/Dummerle/Rare/releases/latest"))
+            self.open_browser.clicked.connect(
+                lambda: webbrowser.open("https://github.com/Dummerle/Rare/releases/latest"))
 
         self.dev = QLabel(self.tr("Developer:") + "<a href='https://github.com/Dummerle'>Dummerle</a>")
         self.dev.setToolTip("Github")
