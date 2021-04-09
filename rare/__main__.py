@@ -1,5 +1,7 @@
 from argparse import ArgumentParser
 from rare import __version__
+from rare.utils import singleton
+
 
 def main():
     parser = ArgumentParser()
@@ -9,6 +11,12 @@ def main():
     args = parser.parse_args()
     if args.version:
         print(__version__)
+        exit(0)
+    try:
+        # this object only allows one instance pre machine
+        me = singleton.SingleInstance()
+    except singleton.SingleInstanceException:
+        print("Rare is already running")
         exit(0)
 
     from rare.app import start
