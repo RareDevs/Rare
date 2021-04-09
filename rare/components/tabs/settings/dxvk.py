@@ -13,6 +13,7 @@ class DxvkWidget(QGroupBox):
     def __init__(self, core: LegendaryCore):
         super(DxvkWidget, self).__init__()
         self.core = core
+        self.setObjectName("settings_widget")
         self.dxvk_settings = {
             "fps": [False, "Fps"],
             "gpuload": [False, self.tr("GPU usage")],

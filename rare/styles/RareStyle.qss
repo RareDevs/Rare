@@ -30,18 +30,27 @@ QTabBar::tab:hover#main_tab_bar {
 
 }
 
-QGroupBox{
+QGroupBox {
     padding: 4px;
     margin: 8px;
 }
 
-QGroupBox#game_widget_icon{
+QGroupBox#settings_widget {
+    border: 1px solid gray;
+    font-size: 13px;
+    border-radius: 3px;
+    margin-top: 1ex;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+QGroupBox#game_widget_icon {
     border: none;
     padding: 0;
     margin: 0;
 }
 
-QGroupBox#group{
+QGroupBox#group {
     font-size: 15px;
     font-weight: bold;
     border: 1px solid white;
@@ -101,10 +110,10 @@ QCheckBox {
     color: #F0F0F0;
     background-color: none;
 }
-QCheckBox::indicator{
+
+QCheckBox::indicator {
 
 }
-
 
 
 #list_widget {
