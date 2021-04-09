@@ -49,7 +49,7 @@ class TabWidget(QTabWidget):
         self.addTab(self.settings, icon("fa.gear", color='white'), "(!)" if self.settings.about.update_available else "")
         self.setIconSize(QSize(25, 25))
         
-        store_button = TabButtonWidget(core, 'mdi.tag', 'Epic Games Store')
+        store_button = TabButtonWidget(core, 'fa.shopping-cart', 'Epic Games Store')
         store_button.pressed.connect(lambda: webbrowser.open("https://www.epicgames.com/store"))
         self.tabBar().setTabButton(3, self.tabBar().RightSide, store_button)
         
