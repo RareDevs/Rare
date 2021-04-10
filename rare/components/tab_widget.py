@@ -37,6 +37,11 @@ class TabWidget(QTabWidget):
         self.cloud_saves = SyncSaves(core)
         self.addTab(self.cloud_saves, "Cloud Saves")
 
+        self.cloud_saves.finished.connect(self.finished_sync)
+
+        self.game_list.default_widget.game_list.sync_cloud.connect(
+            lambda app_name: self.cloud_saves.sync_game(app_name, True))
+
         # Space Tab
         self.addTab(QWidget(), "")
         self.setTabEnabled(disabled_tab, False)
@@ -67,3 +72,8 @@ class TabWidget(QTabWidget):
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
         super(TabWidget, self).resizeEvent(event)
+
+    def finished_sync(self, app_name):
+        self.game_list.default_widget.game_list.widgets[app_name][0].info_text = ""
+        self.game_list.default_widget.game_list.widgets[app_name][0].info_label.setText("")
+        self.game_list.default_widget.game_list.widgets[app_name][1].info_label.setText("")

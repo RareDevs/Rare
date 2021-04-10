@@ -62,6 +62,9 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.version_label)
         self.childLayout.addWidget(self.size_label)
 
+        self.info_label = QLabel("")
+        self.childLayout.addWidget(self.info_label)
+
         self.childLayout.addStretch(1)
         self.layout.addLayout(self.childLayout)
         self.layout.addStretch(1)

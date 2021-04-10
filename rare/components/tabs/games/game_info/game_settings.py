@@ -1,18 +1,20 @@
 import os
 
+from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox, QLineEdit, \
-    QScrollArea
+    QScrollArea, QCheckBox
 
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame, Game
 from rare.components.tabs.settings.linux import LinuxSettings
 from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame, Game
 
 
 class GameSettings(QScrollArea):
     game: Game
     igame: InstalledGame
+
     # variable to no update when changing game
     change = False
 
@@ -20,6 +22,7 @@ class GameSettings(QScrollArea):
         super(GameSettings, self).__init__()
         self.core = core
         self.widget = QWidget()
+        self.settings = QSettings()
         self.setWidgetResizable(True)
         self.layout = QVBoxLayout()
         self.title = QLabel("Error")
@@ -35,6 +38,12 @@ class GameSettings(QScrollArea):
         self.skip_update_widget = SettingsWidget(self.tr("Skip update check before launching"), self.skip_update)
         self.layout.addWidget(self.skip_update_widget)
         self.skip_update.currentIndexChanged.connect(lambda x: self.update_combobox(x, "skip_update_check"))
+
+        self.cloud_sync = QCheckBox("Sync with cloud")
+        self.cloud_sync_widget = SettingsWidget(self.tr("Auto sync with cloud"), self.cloud_sync)
+        self.layout.addWidget(self.cloud_sync_widget)
+        self.cloud_sync.stateChanged.connect(lambda: self.settings.setValue(f"{self.game.app_name}/auto_sync_cloud",
+                                                                            self.cloud_sync.isChecked()))
 
         self.layout.addWidget(self.offline_widget)
 
@@ -84,7 +93,8 @@ class GameSettings(QScrollArea):
                 self.core.lgd.config[self.game.app_name] = {}
             self.core.lgd.config.set(self.game.app_name, "wrapper", wrapper)
         else:
-            if self.game.app_name in self.core.lgd.config.sections() and self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback="") != "":
+            if self.game.app_name in self.core.lgd.config.sections() and self.core.lgd.config.get(
+                    f"{self.game.app_name}", "wrapper", fallback="") != "":
                 self.core.lgd.config.remove_option(self.game.app_name, "wrapper")
             if self.core.lgd.config[self.game.app_name] == {}:
                 self.core.lgd.config.remove_section(self.game.app_name)
@@ -193,7 +203,6 @@ class GameSettings(QScrollArea):
         wrapper = self.core.lgd.config.get(self.game.app_name, "wrapper", fallback="")
         self.wrapper.setText(wrapper)
 
-
         self.title.setText(f"<h2>{self.game.app_title}</h2>")
         if os.name != "nt":
             self.linux_settings.update_game(app_name)
@@ -211,6 +220,13 @@ class GameSettings(QScrollArea):
                 self.select_proton.setCurrentIndex(0)
                 self.proton_prefix_widget.setVisible(False)
                 self.wrapper_widget.setVisible(True)
+
+        if not self.game.supports_cloud_saves:
+            self.cloud_sync_widget.setVisible(False)
+        else:
+            self.cloud_sync_widget.setVisible(True)
+            sync_cloud = self.settings.value(f"{self.game.app_name}/auto_sync_cloud", True, bool)
+            self.cloud_sync.setChecked(sync_cloud)
         self.change = True
 
 

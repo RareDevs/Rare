@@ -3,11 +3,11 @@ from logging import getLogger
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import *
 
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import SaveGameStatus
 from rare.components.dialogs.path_input_dialog import PathInputDialog
 from rare.components.tabs.cloud_saves.sync_widget import SyncWidget
 from rare.utils.extra_widgets import WaitingSpinner
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import SaveGameStatus
 
 logger = getLogger("Sync Saves")
 
@@ -25,6 +25,7 @@ class LoadThread(QThread):
 
 
 class SyncSaves(QScrollArea):
+    finished = pyqtSignal(str)
 
     def __init__(self, core: LegendaryCore):
         super(SyncSaves, self).__init__()
@@ -93,10 +94,36 @@ class SyncSaves(QScrollArea):
         self.setWidgetResizable(True)
         self.setWidget(self.widget)
 
-    def reload(self):
+    def reload(self, app_name):
+        self.finished.emit(app_name)
         self.setWidget(QWidget())
         self.load_saves()
         self.update()
+
+    def sync_game(self, app_name, from_game_finish_auto=True):
+
+        for w in self.widgets:
+            if w.igame.app_name == app_name:
+                widget = w
+                break
+        else:
+            logger.warning("An Error occurred. Game does not support cloud saves")
+            return
+
+        if widget.res == SaveGameStatus.SAME_AGE:
+            logger.info("Game is up to date")
+        elif widget.res == SaveGameStatus.LOCAL_NEWER:
+            widget.upload()
+        elif widget.res == SaveGameStatus.REMOTE_NEWER:
+            if from_game_finish_auto:
+                if QMessageBox.question(self, "Really", self.tr("You finished playing game, but Remote game is newer. "
+                                                                "Do you want to download anyway? This could remove "
+                                                                "your game progress. Please check your save path or "
+                                                                "make a backup"),
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
+                    widget.download()
+                else:
+                    logger.info("Cancel Download")
 
     def sync_all(self):
         logger.info("Sync all Games")

@@ -3,9 +3,9 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QProcess, QSettings
 from PyQt5.QtWidgets import QGroupBox, QMessageBox
 
-from rare.utils import legendary_utils
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
+from rare.utils import legendary_utils
 
 logger = getLogger("Game")
 
@@ -25,11 +25,7 @@ class BaseInstalledWidget(QGroupBox):
         self.game_running = False
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
 
-
-
         self.setContentsMargins(0, 0, 0, 0)
-
-        # self.setStyleSheet("border-radius: 5px")
 
     def launch(self, offline=False, skip_version_check=False):
         if QSettings().value("confirm_start", False, bool):
