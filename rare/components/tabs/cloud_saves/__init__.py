@@ -33,7 +33,7 @@ class SyncSaves(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.load_saves()
 
-    def load_saves(self):
+    def load_saves(self, app_name=None, auto=False):
         self.widget = QWidget()
         layout = QVBoxLayout()
         layout.addWidget(WaitingSpinner())
@@ -43,11 +43,11 @@ class SyncSaves(QScrollArea):
         self.setWidget(self.widget)
 
         self.start_thread = LoadThread(self.core)
-        self.start_thread.signal.connect(self.setup_ui)
+        self.start_thread.signal.connect(lambda x: self.setup_ui(x, app_name, auto))
         self.start_thread.start()
         self.igames = self.core.get_installed_list()
 
-    def setup_ui(self, saves: list):
+    def setup_ui(self, saves: list, app_name, auto=False):
         self.start_thread.disconnect()
         self.main_layout = QVBoxLayout()
         self.title = QLabel(
@@ -94,14 +94,19 @@ class SyncSaves(QScrollArea):
         self.setWidgetResizable(True)
         self.setWidget(self.widget)
 
-    def reload(self, app_name):
+        if auto:
+            self.save(app_name, True)
+
+    def reload(self, app_name, auto=False):
         self.finished.emit(app_name)
         self.setWidget(QWidget())
-        self.load_saves()
-        self.update()
+        self.load_saves(auto)
 
     def sync_game(self, app_name, from_game_finish_auto=True):
+        self.setWidget(QWidget())
+        self.load_saves(app_name, from_game_finish_auto)
 
+    def save(self, app_name, from_game_finish_auto=True):
         for w in self.widgets:
             if w.igame.app_name == app_name:
                 widget = w
