@@ -39,6 +39,14 @@ class GameSettings(QScrollArea):
         self.layout.addWidget(self.skip_update_widget)
         self.skip_update.currentIndexChanged.connect(lambda x: self.update_combobox(x, "skip_update_check"))
 
+        self.launch_params = QLineEdit("")
+        self.launch_params.setPlaceholderText(self.tr("Start parameter"))
+        self.launch_params_accept_button = QPushButton(self.tr("Save"))
+        self.launch_params_widget = SettingsWidget(self.tr("Launch parameters"), self.launch_params,
+                                                   self.launch_params_accept_button)
+        self.layout.addWidget(self.launch_params_widget)
+        self.launch_params_accept_button.clicked.connect(lambda: self.save_line_edit("start_params", self.launch_params.text()))
+
         self.cloud_sync = QCheckBox("Sync with cloud")
         self.cloud_sync_widget = SettingsWidget(self.tr("Auto sync with cloud"), self.cloud_sync)
         self.layout.addWidget(self.cloud_sync_widget)
@@ -48,8 +56,9 @@ class GameSettings(QScrollArea):
         self.layout.addWidget(self.offline_widget)
 
         self.wrapper = QLineEdit("")
+        self.wrapper.setPlaceholderText("Wrapper")
         self.wrapper_save_button = QPushButton(self.tr("Save"))
-        self.wrapper_save_button.clicked.connect(self.update_wrapper)
+        self.wrapper_save_button.clicked.connect(lambda: self.save_line_edit("wrapper", self.wrapper.text()))
         self.wrapper_widget = SettingsWidget(self.tr("Wrapper (e.g. optirun)"), self.wrapper, self.wrapper_save_button)
         self.layout.addWidget(self.wrapper_widget)
 
@@ -86,16 +95,15 @@ class GameSettings(QScrollArea):
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
 
-    def update_wrapper(self):
-        wrapper = self.wrapper.text()
-        if wrapper != "":
+    def save_line_edit(self, option, value):
+        if value != "":
             if not self.game.app_name in self.core.lgd.config.sections():
-                self.core.lgd.config[self.game.app_name] = {}
-            self.core.lgd.config.set(self.game.app_name, "wrapper", wrapper)
+                self.core.lgd.config.add_section(self.game.app_name)
+            self.core.lgd.config.set(self.game.app_name, option, value)
         else:
             if self.game.app_name in self.core.lgd.config.sections() and self.core.lgd.config.get(
-                    f"{self.game.app_name}", "wrapper", fallback="") != "":
-                self.core.lgd.config.remove_option(self.game.app_name, "wrapper")
+                    f"{self.game.app_name}", option, fallback="") != "":
+                self.core.lgd.config.remove_option(self.game.app_name, option)
             if self.core.lgd.config[self.game.app_name] == {}:
                 self.core.lgd.config.remove_section(self.game.app_name)
         self.core.lgd.save_config()
@@ -110,10 +118,10 @@ class GameSettings(QScrollArea):
                 if self.core.lgd.config[self.game.app_name] == {}:
                     self.core.lgd.config.remove_section(self.game.app_name)
             elif i == 1:
-                self.core.lgd.config[self.game.app_name] = {}
+                self.core.lgd.config.add_section(self.game.app_name)
                 self.core.lgd.config.set(self.game.app_name, option, "true")
             elif i == 2:
-                self.core.lgd.config[self.game.app_name] = {}
+                self.core.lgd.config.add_section(self.game.app_name)
                 self.core.lgd.config.set(self.game.app_name, option, "false")
             self.core.lgd.save_config()
 
@@ -227,6 +235,8 @@ class GameSettings(QScrollArea):
             self.cloud_sync_widget.setVisible(True)
             sync_cloud = self.settings.value(f"{self.game.app_name}/auto_sync_cloud", True, bool)
             self.cloud_sync.setChecked(sync_cloud)
+
+        self.launch_params.setText(self.core.lgd.config.get(self.game.app_name, "start_params", fallback=""))
         self.change = True
 
 
