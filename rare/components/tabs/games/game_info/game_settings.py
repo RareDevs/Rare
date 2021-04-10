@@ -1,23 +1,29 @@
 import os
 
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox, QLineEdit
+from PyQt5.QtCore import QSettings
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QFileDialog, QPushButton, QMessageBox, QLineEdit, \
+    QScrollArea, QCheckBox
 
+from custom_legendary.core import LegendaryCore
+from custom_legendary.models.game import InstalledGame, Game
 from rare.components.tabs.settings.linux import LinuxSettings
 from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame, Game
 
 
-class GameSettings(QWidget):
+class GameSettings(QScrollArea):
     game: Game
     igame: InstalledGame
+
     # variable to no update when changing game
     change = False
 
     def __init__(self, core: LegendaryCore):
         super(GameSettings, self).__init__()
         self.core = core
+        self.widget = QWidget()
+        self.settings = QSettings()
+        self.setWidgetResizable(True)
         self.layout = QVBoxLayout()
         self.title = QLabel("Error")
         self.layout.addWidget(self.title)
@@ -33,11 +39,26 @@ class GameSettings(QWidget):
         self.layout.addWidget(self.skip_update_widget)
         self.skip_update.currentIndexChanged.connect(lambda x: self.update_combobox(x, "skip_update_check"))
 
+        self.launch_params = QLineEdit("")
+        self.launch_params.setPlaceholderText(self.tr("Start parameter"))
+        self.launch_params_accept_button = QPushButton(self.tr("Save"))
+        self.launch_params_widget = SettingsWidget(self.tr("Launch parameters"), self.launch_params,
+                                                   self.launch_params_accept_button)
+        self.layout.addWidget(self.launch_params_widget)
+        self.launch_params_accept_button.clicked.connect(lambda: self.save_line_edit("start_params", self.launch_params.text()))
+
+        self.cloud_sync = QCheckBox("Sync with cloud")
+        self.cloud_sync_widget = SettingsWidget(self.tr("Auto sync with cloud"), self.cloud_sync)
+        self.layout.addWidget(self.cloud_sync_widget)
+        self.cloud_sync.stateChanged.connect(lambda: self.settings.setValue(f"{self.game.app_name}/auto_sync_cloud",
+                                                                            self.cloud_sync.isChecked()))
+
         self.layout.addWidget(self.offline_widget)
 
         self.wrapper = QLineEdit("")
+        self.wrapper.setPlaceholderText("Wrapper")
         self.wrapper_save_button = QPushButton(self.tr("Save"))
-        self.wrapper_save_button.clicked.connect(self.update_wrapper)
+        self.wrapper_save_button.clicked.connect(lambda: self.save_line_edit("wrapper", self.wrapper.text()))
         self.wrapper_widget = SettingsWidget(self.tr("Wrapper (e.g. optirun)"), self.wrapper, self.wrapper_save_button)
         self.layout.addWidget(self.wrapper_widget)
 
@@ -71,17 +92,18 @@ class GameSettings(QWidget):
         # startparams, skip_update_check
 
         self.layout.addStretch(1)
-        self.setLayout(self.layout)
+        self.widget.setLayout(self.layout)
+        self.setWidget(self.widget)
 
-    def update_wrapper(self):
-        wrapper = self.wrapper.text()
-        if wrapper != "":
+    def save_line_edit(self, option, value):
+        if value != "":
             if not self.game.app_name in self.core.lgd.config.sections():
-                self.core.lgd.config[self.game.app_name] = {}
-            self.core.lgd.config.set(self.game.app_name, "wrapper", wrapper)
+                self.core.lgd.config.add_section(self.game.app_name)
+            self.core.lgd.config.set(self.game.app_name, option, value)
         else:
-            if self.game.app_name in self.core.lgd.config.sections() and self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback="") != "":
-                self.core.lgd.config.remove_option(self.game.app_name, "wrapper")
+            if self.game.app_name in self.core.lgd.config.sections() and self.core.lgd.config.get(
+                    f"{self.game.app_name}", option, fallback="") != "":
+                self.core.lgd.config.remove_option(self.game.app_name, option)
             if self.core.lgd.config[self.game.app_name] == {}:
                 self.core.lgd.config.remove_section(self.game.app_name)
         self.core.lgd.save_config()
@@ -96,10 +118,10 @@ class GameSettings(QWidget):
                 if self.core.lgd.config[self.game.app_name] == {}:
                     self.core.lgd.config.remove_section(self.game.app_name)
             elif i == 1:
-                self.core.lgd.config[self.game.app_name] = {}
+                self.core.lgd.config.add_section(self.game.app_name)
                 self.core.lgd.config.set(self.game.app_name, option, "true")
             elif i == 2:
-                self.core.lgd.config[self.game.app_name] = {}
+                self.core.lgd.config.add_section(self.game.app_name)
                 self.core.lgd.config.set(self.game.app_name, option, "false")
             self.core.lgd.save_config()
 
@@ -189,7 +211,6 @@ class GameSettings(QWidget):
         wrapper = self.core.lgd.config.get(self.game.app_name, "wrapper", fallback="")
         self.wrapper.setText(wrapper)
 
-
         self.title.setText(f"<h2>{self.game.app_title}</h2>")
         if os.name != "nt":
             self.linux_settings.update_game(app_name)
@@ -207,6 +228,15 @@ class GameSettings(QWidget):
                 self.select_proton.setCurrentIndex(0)
                 self.proton_prefix_widget.setVisible(False)
                 self.wrapper_widget.setVisible(True)
+
+        if not self.game.supports_cloud_saves:
+            self.cloud_sync_widget.setVisible(False)
+        else:
+            self.cloud_sync_widget.setVisible(True)
+            sync_cloud = self.settings.value(f"{self.game.app_name}/auto_sync_cloud", True, bool)
+            self.cloud_sync.setChecked(sync_cloud)
+
+        self.launch_params.setText(self.core.lgd.config.get(self.game.app_name, "start_params", fallback=""))
         self.change = True
 
 

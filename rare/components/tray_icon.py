@@ -6,7 +6,7 @@ from qtawesome import icon
 class TrayIcon(QSystemTrayIcon):
     def __init__(self, parent):
         super(TrayIcon, self).__init__(parent)
-        self.setIcon(icon("ei.cogs", color="white"))
+        self.setIcon(icon("fa.gamepad", color="white"))  # TODO change icon to logo
         self.setVisible(True)
         self.setToolTip("Rare")
 

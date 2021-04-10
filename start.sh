@@ -1,2 +1,2 @@
 export PYTHONPATH=$PWD
-python3 Rare
+python3 rare

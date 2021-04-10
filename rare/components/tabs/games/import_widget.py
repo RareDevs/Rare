@@ -44,6 +44,7 @@ class ImportWidget(QWidget):
         self.gb_layout.addWidget(self.import_game_info)
 
         self.override_app_name_label = QLabel(self.tr("Override app name (Only if imported game from legendary or the app could not find the app name)"))
+        self.override_app_name_label.setWordWrap(True)
         self.app_name_input = QLineEdit()
         self.app_name_input.setFixedHeight(32)
         minilayout = QHBoxLayout()

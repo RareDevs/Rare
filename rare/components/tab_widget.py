@@ -1,8 +1,11 @@
+import webbrowser
+
 from PyQt5.QtCore import QSize
-from PyQt5.QtWidgets import QTabWidget, QWidget
+from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
 from qtawesome import icon
 
 from rare.components.tab_utils import TabBar, TabButtonWidget
+from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads.__init__ import DownloadTab
 from rare.components.tabs.games import GameTab
@@ -34,6 +37,11 @@ class TabWidget(QTabWidget):
         self.cloud_saves = SyncSaves(core)
         self.addTab(self.cloud_saves, "Cloud Saves")
 
+        self.cloud_saves.finished.connect(self.finished_sync)
+
+        self.game_list.default_widget.game_list.sync_cloud.connect(
+            lambda app_name: self.cloud_saves.sync_game(app_name, True))
+
         # Space Tab
         self.addTab(QWidget(), "")
         self.setTabEnabled(disabled_tab, False)
@@ -45,7 +53,17 @@ class TabWidget(QTabWidget):
 
         self.addTab(self.settings, icon("fa.gear", color='white'), "(!)" if self.settings.about.update_available else "")
         self.setIconSize(QSize(25, 25))
-        self.tabBar().setTabButton(3, self.tabBar().RightSide, TabButtonWidget(core))
+        
+        store_button = TabButtonWidget(core, 'fa.shopping-cart', 'Epic Games Store')
+        store_button.pressed.connect(lambda: webbrowser.open("https://www.epicgames.com/store"))
+        self.tabBar().setTabButton(3, self.tabBar().RightSide, store_button)
+        
+        account_action = QWidgetAction(self)             
+        account_action.setDefaultWidget(MiniWidget(core))
+        account_button = TabButtonWidget(core, 'mdi.account-circle', 'Account')
+        account_button.setMenu(QMenu())
+        account_button.menu().addAction(account_action)
+        self.tabBar().setTabButton(4, self.tabBar().RightSide, account_button)
 
     def dl_finished(self):
         self.game_list.default_widget.game_list.update_list()
@@ -54,3 +72,8 @@ class TabWidget(QTabWidget):
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
         super(TabWidget, self).resizeEvent(event)
+
+    def finished_sync(self, app_name):
+        self.game_list.default_widget.game_list.widgets[app_name][0].info_text = ""
+        self.game_list.default_widget.game_list.widgets[app_name][0].info_label.setText("")
+        self.game_list.default_widget.game_list.widgets[app_name][1].info_label.setText("")
