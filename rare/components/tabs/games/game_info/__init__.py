@@ -56,9 +56,9 @@ class GameInfo(QScrollArea):
         self.layout = QVBoxLayout()
         self.setWidgetResizable(True)
 
-        # TODO More Information: Image text settings needs_verification platform
         top_layout = QHBoxLayout()
 
+        # No Game at start. Game is set when clicked info
         self.image = QLabel()
         top_layout.addWidget(self.image)
 

@@ -50,7 +50,7 @@
 <context>
     <name>BaseInstalledWidget</name>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="34"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="32"/>
         <source>Do you want to launch {}</source>
         <translation>Möchtest du {} starten</translation>
     </message>
@@ -309,12 +309,12 @@
 <context>
     <name>GameList</name>
     <message>
-        <location filename="../components/tabs/games/game_list.py" line="162"/>
+        <location filename="../components/tabs/games/game_list.py" line="161"/>
         <source>Launch</source>
         <translation>Starten</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_list.py" line="177"/>
+        <location filename="../components/tabs/games/game_list.py" line="176"/>
         <source>Game running</source>
         <translation>Spiel läuft</translation>
     </message>
@@ -324,7 +324,7 @@
         <translation>Installierte Spiele: {}    Verfügbare Spiele: {}</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_list.py" line="172"/>
+        <location filename="../components/tabs/games/game_list.py" line="171"/>
         <source>Sync CLoud saves</source>
         <translation>Spielstand synchronisieren</translation>
     </message>
@@ -360,39 +360,49 @@
         <translation>Überprüfung nach Updates beim Start überspringen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="77"/>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="86"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="53"/>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="62"/>
         <source>Wrapper (e.g. optirun)</source>
         <translation>Wrapper (z.B. optirun)</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="73"/>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="82"/>
         <source>Proton Wrapper</source>
         <translation>Proton Version</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="79"/>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="88"/>
         <source>Proton prefix</source>
         <translation>Protonprefix</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="170"/>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="178"/>
         <source>No permission to create folder</source>
         <translation>Keine Berechtigung den Ordner zu erstellen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="214"/>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="222"/>
         <source>Please select path for proton prefix</source>
         <translation>Bitte wähle den Pfad zum Protonprefix</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="43"/>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="51"/>
         <source>Auto sync with cloud</source>
         <translation>Speicherstände automatisch mit der Cloud synchronisieren</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="43"/>
+        <source>Start parameter</source>
+        <translation>Start Parameter</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="45"/>
+        <source>Launch parameters</source>
+        <translation>Start Parameter</translation>
     </message>
 </context>
 <context>
@@ -709,7 +719,7 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../components/main_window.py" line="21"/>
+        <location filename="../components/main_window.py" line="29"/>
         <source>There is a download active. Do you really want to exit app?</source>
         <translation>Ein Download läuft noch. Möchtest du die App wirklich beenden?</translation>
     </message>
@@ -781,7 +791,7 @@ Installationsgröße: {} GB</translation>
         <translation>Sprache</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="85"/>
+        <location filename="../components/tabs/settings/rare.py" line="91"/>
         <source>Restart Application to activate changes</source>
         <translation>Starte die App neu um die Änderungen zu aktivieren</translation>
     </message>
@@ -805,41 +815,56 @@ Installationsgröße: {} GB</translation>
         <source>Auto sync with cloud</source>
         <translation>Speicherstände automatisch mit der Cloud synchronisieren</translation>
     </message>
+    <message>
+        <location filename="../components/tabs/settings/rare.py" line="63"/>
+        <source>Sync with cloud</source>
+        <translation>Automatisch Synchronisieren</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/settings/rare.py" line="70"/>
+        <source>Save size</source>
+        <translation>Größe Speichern</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/settings/rare.py" line="72"/>
+        <source>Save size of window after restart</source>
+        <translation>Die Fenstergröße nach dem Beenden speichern</translation>
+    </message>
 </context>
 <context>
     <name>SyncSaves</name>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="62"/>
+        <location filename="../components/tabs/cloud_saves/__init__.py" line="63"/>
         <source>Cloud Saves</source>
         <translation>Cloud Speicherstände</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="52"/>
+        <location filename="../components/tabs/cloud_saves/__init__.py" line="53"/>
         <source>Found Saves for folowing Games</source>
         <translation>Spielstände für folgende Spiele gefunden</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="62"/>
+        <location filename="../components/tabs/cloud_saves/__init__.py" line="63"/>
         <source>Your games does not support Cloud Saves</source>
         <translation>Deine Spiele unterstützen keine Online Speicherstände</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="67"/>
+        <location filename="../components/tabs/cloud_saves/__init__.py" line="68"/>
         <source>Sync all games</source>
         <translation>Alle Spiele synchronisieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="134"/>
+        <location filename="../components/tabs/cloud_saves/__init__.py" line="140"/>
         <source>Found no savepath</source>
         <translation>Kein Speicherort gefunden</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="134"/>
+        <location filename="../components/tabs/cloud_saves/__init__.py" line="140"/>
         <source>No save path was found. Please select path or skip</source>
         <translation>Kein Speicherort wurde gefunden. Wähle einen Ordner oder überspringe</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="118"/>
+        <location filename="../components/tabs/cloud_saves/__init__.py" line="124"/>
         <source>You finished playing game, but Remote game is newer. Do you want to download anyway? This could remove your game progress. Please check your save path or make a backup</source>
         <translation>Das Spiel wurde beendet, aber der Onlinespeicherstand ist aktueller. Willst du den wirklich runterladen? Dies könnte deinen Spielfortschritt zurücksetzen. Prüfe bitte den Speicherpfad oder mache ein Backup</translation>
     </message>
