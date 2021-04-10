@@ -169,7 +169,7 @@
     <message>
         <location filename="../components/tabs/downloads/__init__.py" line="201"/>
         <source>Finished Download of game {}</source>
-        <translation>Downlaod von {} abgeschlossen</translation>
+        <translation>Download von {} abgeschlossen</translation>
     </message>
     <message>
         <location filename="../components/tabs/downloads/__init__.py" line="192"/>
