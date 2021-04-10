@@ -38,7 +38,7 @@ class _DownloadThread(QThread):
 
 
 class SyncWidget(QGroupBox):
-    reload = pyqtSignal()
+    reload = pyqtSignal(str)
 
     def __init__(self, igame: InstalledGame, save, core: LegendaryCore):
         super(SyncWidget, self).__init__(igame.title)
@@ -155,7 +155,7 @@ class SyncWidget(QGroupBox):
             self.igame.save_path = path
             self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
             self.save_path_text.setText(self.igame.save_path)
-            self.reload.emit()
+            self.reload.emit(self.game.app_name)
 
     def upload(self):
         self.logger.info("Uploading Saves for game " + self.igame.title)
@@ -169,7 +169,7 @@ class SyncWidget(QGroupBox):
     def uploaded(self):
         self.info_text.setText(self.tr("Upload finished"))
         self.upload_button.setDisabled(False)
-        self.reload.emit()
+        self.reload.emit(self.game.app_name)
 
     def download(self):
         if not os.path.exists(self.igame.save_path):
@@ -187,4 +187,4 @@ class SyncWidget(QGroupBox):
         self.upload_button.setDisabled(True)
         self.download_button.setDisabled(True)
         self.download_button.setStyleSheet("QPushButton{background-color: black}")
-        self.reload.emit()
+        self.reload.emit(self.game.app_name)

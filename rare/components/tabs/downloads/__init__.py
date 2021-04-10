@@ -211,6 +211,8 @@ class DownloadTab(QWidget):
             if self.active_game.app_name in self.update_widgets.keys():
                 self.update_widgets[self.active_game.app_name].setVisible(False)
                 self.update_widgets.pop(self.active_game.app_name)
+                if len(self.update_widgets) == 0:
+                    self.update_text.setVisible(True)
 
             self.active_game = None
 
@@ -272,7 +274,11 @@ class UpdateWidget(QWidget):
         self.layout.addWidget(self.title)
 
         self.update_button = QPushButton(self.tr("Update Game"))
-        self.update_button.clicked.connect(lambda: self.update.emit(game.app_name))
+        self.update_button.clicked.connect(self.update_game)
         self.layout.addWidget(self.update_button)
 
         self.setLayout(self.layout)
+
+    def update_game(self):
+        self.update_button.setDisabled(True)
+        self.update.emit(self.game.app_name)

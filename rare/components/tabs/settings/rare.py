@@ -60,6 +60,13 @@ class RareSettings(QScrollArea):
         self.game_start_accept_widget = SettingsWidget(self.tr("Confirm launch of game"), self.game_start_accept)
         self.layout.addWidget(self.game_start_accept_widget)
 
+        self.cloud_sync = QCheckBox("Sync with cloud")
+        self.cloud_sync.setChecked(settings.value("auto_sync_cloud", True, bool))
+        self.cloud_sync_widget = SettingsWidget(self.tr("Auto sync with cloud"), self.cloud_sync)
+        self.layout.addWidget(self.cloud_sync_widget)
+        self.cloud_sync.stateChanged.connect(lambda: self.settings.setValue(f"auto_sync_cloud",
+                                                                            self.cloud_sync.isChecked()))
+
         self.layout.addStretch()
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)

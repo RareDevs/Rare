@@ -82,12 +82,12 @@ class GameWidgetInstalled(BaseInstalledWidget):
         self.setFixedWidth(self.sizeHint().width())
 
     def enterEvent(self, a0: QEvent) -> None:
-        if self.update_available:
-            self.info_label.setText(self.tr("Start game without version check"))
-        elif not self.running:
-            self.info_label.setText("Start Game")
-        else:
+        if self.game_running:
             self.info_label.setText(self.tr("Game running"))
+        elif self.update_available:
+            self.info_label.setText(self.tr("Start game without version check"))
+        else:
+            self.info_label.setText("Start Game")
 
     def leaveEvent(self, a0: QEvent) -> None:
         if self.running:
@@ -105,4 +105,11 @@ class GameWidgetInstalled(BaseInstalledWidget):
 
         # right
         elif e.button() == 2:
-            pass
+            pass  # self.showMenu(e)
+
+    """def showMenu(self, event):
+        menu = QMenu()
+        desktop_link = menu.addAction("Add Desktop link")
+        action = menu.exec_(self.mapToGlobal(event.pos()))
+        if action == desktop_link:
+            print("LOL")"""

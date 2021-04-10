@@ -41,8 +41,8 @@ class DlWidget(QWidget):
 
         self.size = QHBoxLayout()
 
-        self.size.addWidget(QLabel(self.tr("Download size: {} GB").format(dl_size / 1024 ** 3)))
-        self.size.addWidget(QLabel(self.tr("Install size: {} GB").format(install_size / 1024 ** 3)))
+        self.size.addWidget(QLabel(self.tr("Download size: {} GB").format(round(dl_size / 1024 ** 3, 2))))
+        self.size.addWidget(QLabel(self.tr("Install size: {} GB").format(round(install_size / 1024 ** 3, 2))))
         self.right_layout.addLayout(self.size)
 
         self.delete = QPushButton(self.tr("Remove Download"))
