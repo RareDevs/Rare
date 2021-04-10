@@ -50,9 +50,9 @@ class DownloadTab(QWidget):
         self.mini_layout.addWidget(self.prog_bar)
 
         self.kill_button = QPushButton(self.tr("Stop Download"))
-        # self.mini_layout.addWidget(self.kill_button)
         self.kill_button.setDisabled(True)
         self.kill_button.clicked.connect(self.stop_download)
+        self.mini_layout.addWidget(self.kill_button)
 
         self.layout.addLayout(self.mini_layout)
 
@@ -85,7 +85,7 @@ class DownloadTab(QWidget):
         self.dl_queue = dl_queue
 
     def stop_download(self):
-        self.thread.kill = True
+        self.thread.kill()
 
     def install_game(self, options: InstallOptions):
 
@@ -227,11 +227,12 @@ class DownloadTab(QWidget):
             else:
                 self.queue_widget.update_queue(self.dl_queue)
 
-        elif text == "error":
-            QMessageBox.warning(self, "warn", "Download error")
+        elif text[:5] == "error":
+            QMessageBox.warning(self, "warn", "Download error: "+text[6:])
 
         elif text == "stop":
             self.reset_infos()
+            self.active_game = None
 
     def reset_infos(self):
         self.kill_button.setDisabled(True)

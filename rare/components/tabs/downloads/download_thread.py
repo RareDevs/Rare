@@ -4,15 +4,15 @@ import subprocess
 import time
 from logging import getLogger
 from multiprocessing import Queue as MPQueue
+from queue import Empty
 
+import psutil
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
 
-from rare.utils.models import KillDownloadException
-
 from custom_legendary.core import LegendaryCore
 from custom_legendary.downloader.manager import DLManager
-from custom_legendary.models.downloading import UIUpdate
+from custom_legendary.models.downloading import UIUpdate, WriterTask
 
 logger = getLogger("Download")
 
@@ -20,7 +20,6 @@ logger = getLogger("Download")
 class DownloadThread(QThread):
     status = pyqtSignal(str)
     statistics = pyqtSignal(UIUpdate)
-    kill = False
 
     def __init__(self, dlm: DLManager, core: LegendaryCore, status_queue: MPQueue, igame, repair=False,
                  repair_file=None):
@@ -31,18 +30,74 @@ class DownloadThread(QThread):
         self.igame = igame
         self.repair = repair
         self.repair_file = repair_file
+        self._kill = False
 
     def run(self):
         start_time = time.time()
+        dl_stopped = False
         try:
 
             self.dlm.start()
             time.sleep(1)
             while self.dlm.is_alive():
-                if self.kill:
-                    # raise KillDownloadException()
-                    # TODO kill download queue, workers
-                    pass
+                if self._kill:
+                    self.status.emit("stop")
+                    logger.info("Download stopping...")
+
+                    # The code below is a temporary solution.
+                    # It should be removed once legendary supports stopping downloads more gracefully.
+
+                    self.dlm.running = False
+
+                    # send conditions to unlock threads if they aren't already
+                    for cond in self.dlm.conditions:
+                        with cond:
+                            cond.notify()
+
+                    # make sure threads are dead.
+                    for t in self.dlm.threads:
+                        t.join(timeout=5.0)
+                        if t.is_alive():
+                            logger.warning(f'Thread did not terminate! {repr(t)}')
+
+                    # clean up all the queues, otherwise this process won't terminate properly
+                    for name, q in zip(('Download jobs', 'Writer jobs', 'Download results', 'Writer results'),
+                                       (self.dlm.dl_worker_queue, self.dlm.writer_queue, self.dlm.dl_result_q, self.dlm.writer_result_q)):
+                        logger.debug(f'Cleaning up queue "{name}"')
+                        try:
+                            while True:
+                                _ = q.get_nowait()
+                        except Empty:
+                            q.close()
+                            q.join_thread()
+                        except AttributeError:
+                            logger.warning(f'Queue {name} did not close')
+
+                    if self.dlm.writer_queue:
+                        # cancel installation
+                        self.dlm.writer_queue.put_nowait(WriterTask('', kill=True))
+
+                    # forcibly kill DL workers that are not actually dead yet
+                    for child in self.dlm.children:
+                        if child.exitcode is None:
+                            child.terminate()
+
+                    if self.dlm.shared_memory:
+                        # close up shared memory
+                        self.dlm.shared_memory.close()
+                        self.dlm.shared_memory.unlink()
+                        self.dlm.shared_memory = None
+
+                    self.dlm.kill()
+
+                    # force kill any threads that are somehow still alive
+                    for proc in psutil.process_iter():
+                        # check whether the process name matches
+                        if proc.name() == 'DownloadThread':
+                            proc.kill()
+
+                    logger.info("Download stopped. It can be continued later.")
+                    dl_stopped = True
                 try:
                     self.statistics.emit(self.status_queue.get(timeout=1))
                 except queue.Empty:
@@ -50,18 +105,14 @@ class DownloadThread(QThread):
 
             self.dlm.join()
 
-        except KillDownloadException:
-            self.status.emit("stop")
-            logger.info("Downlaod can be continued later")
-            self.dlm.kill()
-            return
-
         except Exception as e:
             logger.error(f"Installation failed after {time.time() - start_time:.02f} seconds: {e}")
-            self.status.emit("error")
+            self.status.emit("error "+str(e))
             return
 
         else:
+            if dl_stopped:
+                return
             self.status.emit("dl_finished")
             end_t = time.time()
 
@@ -114,4 +165,7 @@ class DownloadThread(QThread):
 
         else:
             logger.info('Automatic installation not available on Linux.')
+
+    def kill(self):
+        self._kill = True
 
