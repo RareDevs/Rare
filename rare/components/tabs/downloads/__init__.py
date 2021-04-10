@@ -198,7 +198,7 @@ class DownloadTab(QWidget):
             else:
                 notification = Notify()
                 notification.title = self.tr("Installation finished")
-                notification.message = self.tr("Finished Download of game {}").format(self.active_game.app_name)
+                notification.message = self.tr("Finished Download of game {}").format(self.active_game.app_title)
                 notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
             logger.info("Download finished: " + self.active_game.app_title)
