@@ -26,9 +26,9 @@ class RareSettings(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
         self.layout = QVBoxLayout()
-        settings = QSettings()
-        img_dir = settings.value("img_dir", os.path.expanduser("~/.cache/rare/images/"), type=str)
-        language = settings.value("language", get_lang(), type=str)
+        self.settings = QSettings()
+        img_dir = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images/"), type=str)
+        language = self.settings.value("language", get_lang(), type=str)
         # select Image dir
         self.select_path = PathEdit(img_dir, type_of_file=QFileDialog.DirectoryOnly)
         self.select_path.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
@@ -50,43 +50,48 @@ class RareSettings(QScrollArea):
         self.layout.addWidget(self.lang_widget)
 
         self.exit_to_sys_tray = QCheckBox(self.tr("Hide to System Tray Icon"))
-        self.exit_to_sys_tray.setChecked(settings.value("sys_tray", True, bool))
-        self.exit_to_sys_tray.stateChanged.connect(lambda x: self.update_checkbox(x, "sys_tray"))
+        self.exit_to_sys_tray.setChecked(self.settings.value("sys_tray", True, bool))
+        self.exit_to_sys_tray.stateChanged.connect(lambda: self.settings.setValue("sys_tray", self.exit_to_sys_tray.isChecked()))
         self.sys_tray_widget = SettingsWidget(self.tr("Exit to System Tray Icon"), self.exit_to_sys_tray)
         self.layout.addWidget(self.sys_tray_widget)
 
         self.game_start_accept = QCheckBox(self.tr("Confirm launch of game"))
-        self.game_start_accept.stateChanged.connect(lambda x: self.update_checkbox(x, "confirm_start"))
+        self.game_start_accept.stateChanged.connect(lambda x: self.settings.setValue("confirm_start", self.game_start_accept.isChecked()))
         self.game_start_accept_widget = SettingsWidget(self.tr("Confirm launch of game"), self.game_start_accept)
         self.layout.addWidget(self.game_start_accept_widget)
 
-        self.cloud_sync = QCheckBox("Sync with cloud")
-        self.cloud_sync.setChecked(settings.value("auto_sync_cloud", True, bool))
+        self.cloud_sync = QCheckBox(self.tr("Sync with cloud"))
+        self.cloud_sync.setChecked(self.settings.value("auto_sync_cloud", True, bool))
         self.cloud_sync_widget = SettingsWidget(self.tr("Auto sync with cloud"), self.cloud_sync)
         self.layout.addWidget(self.cloud_sync_widget)
         self.cloud_sync.stateChanged.connect(lambda: self.settings.setValue(f"auto_sync_cloud",
                                                                             self.cloud_sync.isChecked()))
 
+        self.save_size = QCheckBox(self.tr("Save size"))
+        self.save_size.setChecked(self.settings.value("save_size", False, bool))
+        self.save_size_widget = SettingsWidget(self.tr("Save size of window after restart"), self.save_size)
+        self.layout.addWidget(self.save_size_widget)
+        self.save_size.stateChanged.connect(self.save_window_size)
+        self.layout.addWidget(self.save_size_widget)
+
         self.layout.addStretch()
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
 
-    def update_checkbox(self, checked, setting_name):
-        settings = QSettings()
-        settings.setValue(setting_name, checked != 0)
+    def save_window_size(self):
+        self.settings.setValue("save_size", self.save_size.isChecked())
+        self.settings.remove("window_size")
 
     def save_path(self):
         self.save_path_button.setDisabled(True)
         self.update_path()
 
     def update_lang(self, i: int):
-        settings = QSettings()
-        settings.setValue("language", languages[i][0])
+        self.settings.setValue("language", languages[i][0])
         self.lang_widget.info_text.setText(self.tr("Restart Application to activate changes"))
 
     def update_path(self):
-        settings = QSettings()
-        old_path = settings.value("img_dir", type=str)
+        old_path = self.settings.value("img_dir", type=str)
         new_path = self.select_path.text()
 
         if old_path != new_path:
@@ -99,4 +104,4 @@ class RareSettings(QScrollArea):
             for i in os.listdir(old_path):
                 shutil.move(os.path.join(old_path, i), os.path.join(new_path, i))
             os.rmdir(old_path)
-            settings.setValue("img_dir", new_path)
+            self.settings.setValue("img_dir", new_path)
