@@ -64,15 +64,14 @@ class RareSettings(QScrollArea):
         self.cloud_sync.setChecked(self.settings.value("auto_sync_cloud", True, bool))
         self.cloud_sync_widget = SettingsWidget(self.tr("Auto sync with cloud"), self.cloud_sync)
         self.layout.addWidget(self.cloud_sync_widget)
-        self.cloud_sync.stateChanged.connect(lambda: self.settings.setValue(f"auto_sync_cloud",
-                                                                            self.cloud_sync.isChecked()))
+        self.cloud_sync.stateChanged.connect(
+            lambda: self.settings.setValue(f"auto_sync_cloud", self.cloud_sync.isChecked()))
 
         self.save_size = QCheckBox(self.tr("Save size"))
         self.save_size.setChecked(self.settings.value("save_size", False, bool))
         self.save_size_widget = SettingsWidget(self.tr("Save size of window after restart"), self.save_size)
         self.layout.addWidget(self.save_size_widget)
         self.save_size.stateChanged.connect(self.save_window_size)
-        self.layout.addWidget(self.save_size_widget)
 
         self.layout.addStretch()
         self.widget.setLayout(self.layout)
