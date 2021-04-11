@@ -13,6 +13,3 @@ class InstallOptions:
         self.ignore_free_space = ignore_free_space
         self.force = force
 
-
-class KillDownloadException(Exception):
-    pass
