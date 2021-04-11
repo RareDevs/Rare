@@ -1,6 +1,4 @@
-# This workflow will upload a Python Package using Twine when a release
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
-
+ya
 name: New Release
 
 on:
@@ -63,7 +61,7 @@ jobs:
         run: cp rare/__main__.py ./
       - name: Build
         run: pyinstaller
-          --icon=rare/styles/Logo.png
+          --icon=rare/styles/Logo.ico
           --onefile
           --name Rare
           --add-data="Rare/languages/*;Rare/languages"
@@ -91,7 +89,7 @@ jobs:
           python3-requests
           python3-pyqt5
           python3-pil
-          python3-qtawesome-common
+          python3-qtawesome
           python3-setuptools
           python3-wheel
 
