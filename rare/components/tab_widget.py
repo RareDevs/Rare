@@ -1,6 +1,6 @@
 import webbrowser
 
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
 from qtawesome import icon
 
@@ -15,6 +15,9 @@ from custom_legendary.core import LegendaryCore
 
 
 class TabWidget(QTabWidget):
+
+    update_presence = pyqtSignal()
+
     def __init__(self, core: LegendaryCore):
         super(TabWidget, self).__init__()
         disabled_tab = 3
@@ -39,8 +42,7 @@ class TabWidget(QTabWidget):
 
         self.cloud_saves.finished.connect(self.finished_sync)
 
-        self.game_list.default_widget.game_list.sync_cloud.connect(
-            lambda app_name: self.cloud_saves.sync_game(app_name, True))
+        self.game_list.default_widget.game_list.game_exited.connect(self.game_finished)
 
         # Space Tab
         self.addTab(QWidget(), "")
@@ -64,6 +66,10 @@ class TabWidget(QTabWidget):
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)
         self.tabBar().setTabButton(4, self.tabBar().RightSide, account_button)
+
+    def game_finished(self, app_name):
+        self.update_presence.emit()
+        self.cloud_saves.sync_game(app_name, True)
 
     def dl_finished(self):
         self.game_list.default_widget.game_list.update_list()

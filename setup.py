@@ -33,6 +33,7 @@ setuptools.setup(
         "PyQt5",
         "QtAwesome",
         "notify-py",
-        "psutil"
+        "psutil",
+        "pypresence"
     ],
 )
