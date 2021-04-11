@@ -1,6 +1,7 @@
 import os
 import queue
 import subprocess
+import sys
 import time
 from logging import getLogger
 from multiprocessing import Queue as MPQueue
@@ -93,13 +94,16 @@ class DownloadThread(QThread):
                     # force kill any threads that are somehow still alive
                     for proc in psutil.process_iter():
                         # check whether the process name matches
-                        if proc.name() == 'DownloadThread':
+                        if sys.platform in ['linux', 'darwin'] and proc.name() == 'DownloadThread':
+                            proc.kill()
+                        elif sys.platform == 'win32' and proc.name() == 'python.exe' and proc.create_time() >= start_time:
                             proc.kill()
 
                     logger.info("Download stopped. It can be continued later.")
                     dl_stopped = True
                 try:
-                    self.statistics.emit(self.status_queue.get(timeout=1))
+                    if not dl_stopped:
+                        self.statistics.emit(self.status_queue.get(timeout=1))
                 except queue.Empty:
                     pass
 
