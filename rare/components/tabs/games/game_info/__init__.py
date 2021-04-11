@@ -11,7 +11,7 @@ from rare.components.tabs.games.game_info.game_settings import GameSettings
 from rare.utils import legendary_utils
 from rare.utils.legendary_utils import VerifyThread
 from rare.utils.extra_widgets import SideTabBar
-from rare.utils.utils import IMAGE_DIR
+from rare.utils.utils import IMAGE_DIR, get_size
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame, Game
 
@@ -168,7 +168,7 @@ class GameInfo(QScrollArea):
         self.version.setText("Version: " + self.game.app_version)
         self.dev.setText(self.tr("Developer: ") + self.game.metadata["developer"])
         self.install_size.setText(
-            self.tr("Install size: ") + str(round(self.igame.install_size / (1024 ** 3), 2)) + " GB")
+            self.tr("Install size: ") + get_size(self.igame.install_size))
         self.install_path.setText(self.tr("Install path: ") + self.igame.install_path)
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(app_name):

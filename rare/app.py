@@ -71,8 +71,6 @@ class App(QApplication):
         self.setStyleSheet(open(style_path + "RareStyle.qss").read())
         self.setWindowIcon(QIcon(style_path + "Logo.png"))
 
-        # tray icon
-
         # launch app
         self.launch_dialog = LaunchDialog(self.core)
         self.launch_dialog.start_app.connect(self.start_app)

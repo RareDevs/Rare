@@ -14,6 +14,7 @@ from custom_legendary.core import LegendaryCore
 from custom_legendary.models.downloading import UIUpdate
 from custom_legendary.models.game import Game, InstalledGame
 from custom_legendary.utils.selective_dl import games
+from rare.utils.utils import get_size
 
 logger = getLogger("Download")
 
@@ -145,6 +146,7 @@ class DownloadTab(QWidget):
         self.thread.statistics.connect(self.statistics)
         self.thread.start()
         self.kill_button.setDisabled(False)
+        self.analysis = analysis
         self.installing_game.setText(self.tr("Installing Game: ") + self.active_game.app_title)
 
     def sdl_prompt(self, app_name: str = '', title: str = '') -> list:
@@ -242,12 +244,13 @@ class DownloadTab(QWidget):
         self.time_left.setText("")
         self.cache_used.setText("")
         self.downloaded.setText("")
+        self.analysis = None
 
     def statistics(self, ui_update: UIUpdate):
         self.prog_bar.setValue(ui_update.progress)
         self.dl_speed.setText(self.tr("Download speed") + f": {ui_update.download_speed / 1024 / 1024:.02f}MB/s")
         self.cache_used.setText(self.tr("Cache used") + f": {ui_update.cache_usage / 1024 / 1024:.02f}MB")
-        self.downloaded.setText(self.tr("Downloaded") + f": {ui_update.total_downloaded / 1024 / 1024:.02f}MB")
+        self.downloaded.setText(self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
         self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
 
     def get_time(self, seconds: int) -> str:

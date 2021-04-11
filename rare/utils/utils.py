@@ -124,3 +124,10 @@ def get_latest_version():
     resp = requests.get("https://api.github.com/repos/Dummerle/Rare/releases/latest")
     tag = json.loads(resp.content.decode("utf-8"))["tag_name"]
     return tag
+
+
+def get_size(b: int) -> str:
+    for i in ['', 'K', 'M', 'G', 'T', 'P', 'E']:
+        if b < 1024:
+            return f"{b:.2f}{i}B"
+        b /= 1024
