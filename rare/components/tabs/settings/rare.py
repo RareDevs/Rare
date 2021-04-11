@@ -73,6 +73,13 @@ class RareSettings(QScrollArea):
         self.layout.addWidget(self.save_size_widget)
         self.save_size.stateChanged.connect(self.save_window_size)
 
+        self.save_size = QCheckBox(self.tr("Save size"))
+        self.save_size.setChecked(self.settings.value("save_size", False, bool))
+        self.save_size_widget = SettingsWidget(self.tr("Save size of window after restart"), self.save_size)
+        self.layout.addWidget(self.save_size_widget)
+        self.save_size.stateChanged.connect(self.save_window_size)
+        self.layout.addWidget(self.save_size_widget)
+
         self.layout.addStretch()
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
