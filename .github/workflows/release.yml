@@ -1,12 +1,9 @@
-# This workflow will upload a Python Package using Twine when a release
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
 name: New Release
 
 on:
   release:
     types: [ published ]
-  workflow_dispatch:
   
 jobs:
   pypy-deploy:
@@ -61,9 +58,10 @@ jobs:
           pip3 install pyinstaller setuptools wheel
           pip3 install -r requirements.txt
       - name: Prepare
-        run: cp Rare/__main__.py ./
+        run: cp rare/__main__.py ./
       - name: Build
         run: pyinstaller
+          --icon=rare/styles/Logo.ico
           --onefile
           --name Rare
           --add-data="Rare/languages/*;Rare/languages"
@@ -91,7 +89,7 @@ jobs:
           python3-requests
           python3-pyqt5
           python3-pil
-          python3-qtawesome-common
+          python3-qtawesome
           python3-setuptools
           python3-wheel
 
@@ -101,7 +99,7 @@ jobs:
           python3 setup.py --command-packages=stdeb.command bdist_deb
       
       - name: move file
-        run: mv deb_dist/*.deb rare.deb
+        run: mv deb_dist/*.deb Rare.deb
         
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1

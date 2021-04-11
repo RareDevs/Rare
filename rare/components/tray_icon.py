@@ -1,12 +1,12 @@
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction
-from qtawesome import icon
+from rare import style_path
 
 
 class TrayIcon(QSystemTrayIcon):
     def __init__(self, parent):
         super(TrayIcon, self).__init__(parent)
-        self.setIcon(icon("ei.cogs", color="white"))  # TODO change icon to logo
+        self.setIcon(QIcon(style_path+"Logo.png"))
         self.setVisible(True)
         self.setToolTip("Rare")
 

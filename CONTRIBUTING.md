@@ -19,7 +19,8 @@ exmples:
 Select one Card of the project and implement it or make other changes
 
 
-##Git crash-course
-To contribute fork the repository and clone **your** repo. Then make your changes, add it to git with `git add .` and upload it to Github with `git commit -m "message"` and `git push` or with your IDE. 
+## Git crash-course
+To contribute fork the repository and clone **your** repo. Then make your changes, add it to git with `git add File.xy` and upload it to GitHub with `git commit -m "message"` and `git push`.
+Some IDEs can do this automatically.
 
-If you uploaded your changes, create a pull request
+If you uploaded your changes, create a pull request to dev-branch
