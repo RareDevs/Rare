@@ -6,7 +6,6 @@ name: New Release
 on:
   release:
     types: [ published ]
-  workflow_dispatch:
   
 jobs:
   pypy-deploy:
@@ -61,9 +60,10 @@ jobs:
           pip3 install pyinstaller setuptools wheel
           pip3 install -r requirements.txt
       - name: Prepare
-        run: cp Rare/__main__.py ./
+        run: cp rare/__main__.py ./
       - name: Build
         run: pyinstaller
+          --icon=rare/styles/Logo.png
           --onefile
           --name Rare
           --add-data="Rare/languages/*;Rare/languages"
@@ -101,7 +101,7 @@ jobs:
           python3 setup.py --command-packages=stdeb.command bdist_deb
       
       - name: move file
-        run: mv deb_dist/*.deb rare.deb
+        run: mv deb_dist/*.deb Rare.deb
         
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1

@@ -10,6 +10,7 @@ setuptools.setup(
     version=version,
     author="Dummerle",
     license="GPL-3",
+    description="A gui for Legendary",
     long_description=long_description,
     long_description_content_type="text/markdown",
     include_package_data=True,
