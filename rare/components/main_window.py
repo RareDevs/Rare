@@ -27,6 +27,9 @@ class MainWindow(QMainWindow):
 
         self.tab_widget.games_tab.default_widget.game_list.game_started.connect(self.set_discord_rpc)
         self.tab_widget.delete_presence.connect(self.remove_rpc)
+        game = self.tab_widget.games_tab.default_widget.game_list.active_game
+        if game != ("", 0):
+            self.set_discord_rpc(game[0])  # Appname
 
         self.show()
 

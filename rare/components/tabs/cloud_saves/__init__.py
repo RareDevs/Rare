@@ -129,6 +129,7 @@ class SyncSaves(QScrollArea):
                     widget.download()
                 else:
                     logger.info("Cancel Download")
+        self.finished.emit(app_name)
 
     def sync_all(self):
         logger.info("Sync all Games")
