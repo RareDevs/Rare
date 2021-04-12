@@ -19,7 +19,7 @@ logger = getLogger("Download")
 
 
 class DownloadTab(QWidget):
-    finished = pyqtSignal()
+    finished = pyqtSignal(bool)
     thread: QThread
     dl_queue = []
 
@@ -139,6 +139,9 @@ class DownloadTab(QWidget):
 
     def start_installation(self, dlm, game, status_queue, igame, repair_file, options: InstallOptions, analysis):
         print("start installation", game.app_title)
+        if self.dl_queue:
+            self.dl_queue.pop(0)
+            self.queue_widget.update_queue(self.dl_queue)
         self.active_game = game
         self.thread = DownloadThread(dlm, self.core, status_queue, igame, options.repair, repair_file)
         self.thread.status.connect(self.status)
@@ -219,7 +222,7 @@ class DownloadTab(QWidget):
             for i in self.update_widgets.values():
                 i.update_button.setDisabled(False)
 
-            self.finished.emit()
+            self.finished.emit(True)
             self.reset_infos()
 
             if len(self.dl_queue) != 0:
@@ -233,6 +236,9 @@ class DownloadTab(QWidget):
         elif text == "stop":
             self.reset_infos()
             self.active_game = None
+            self.finished.emit(False)
+            if self.dl_queue:
+                self.start_installation(*self.dl_queue[0])
 
     def reset_infos(self):
         self.kill_button.setDisabled(True)

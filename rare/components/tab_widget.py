@@ -4,6 +4,7 @@ from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
 from qtawesome import icon
 
+from custom_legendary.core import LegendaryCore
 from rare.components.tab_utils import TabBar, TabButtonWidget
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
@@ -11,11 +12,9 @@ from rare.components.tabs.downloads.__init__ import DownloadTab
 from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
 from rare.utils.models import InstallOptions
-from custom_legendary.core import LegendaryCore
 
 
 class TabWidget(QTabWidget):
-
     delete_presence = pyqtSignal()
 
     def __init__(self, core: LegendaryCore):
@@ -64,7 +63,7 @@ class TabWidget(QTabWidget):
         # Download finished
         self.downloadTab.finished.connect(self.dl_finished)
         # start download
-        self.games_tab.default_widget.game_list.install_game.connect(lambda x: self.downloadTab.install_game(x))
+        self.games_tab.default_widget.game_list.install_game.connect(self.start_download)
 
         # repair game
         self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
@@ -78,8 +77,6 @@ class TabWidget(QTabWidget):
 
         self.games_tab.default_widget.game_list.game_exited.connect(self.game_finished)
 
-
-
         self.setIconSize(QSize(25, 25))
 
     # Sync game and delete dc rpc
@@ -88,10 +85,16 @@ class TabWidget(QTabWidget):
         self.cloud_saves.sync_game(app_name, True)
 
     # Update gamelist and set text of Downlaods to "Downloads"
-    def dl_finished(self):
-        self.games_tab.default_widget.game_list.update_list()
-        # Todo: len updates,  queue
-        self.setTabText(1, "Downloads")
+    def dl_finished(self, update_list):
+        if update_list:
+            self.games_tab.default_widget.game_list.update_list()
+        downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
+        self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
+
+    def start_download(self, app_name):
+        self.downloadTab.install_game(app_name)
+        downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
+        self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
 
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
