@@ -21,7 +21,8 @@ class GameList(QStackedWidget):
     install_game = pyqtSignal(InstallOptions)
     show_game_info = pyqtSignal(str)
     update_game = pyqtSignal()
-    sync_cloud = pyqtSignal(str)
+    game_exited = pyqtSignal(str)
+    game_started = pyqtSignal(str)
 
     def __init__(self, core: LegendaryCore):
         super(GameList, self).__init__()
@@ -165,12 +166,13 @@ class GameList(QStackedWidget):
                 logger.info("Auto saves disabled")
                 return
 
-            self.sync_cloud.emit(app_name)
+            self.game_exited.emit(app_name)
             self.widgets[app_name][0].info_text = self.tr("Sync CLoud saves")
             self.widgets[app_name][0].info_label.setText(self.tr("Sync CLoud saves"))
             self.widgets[app_name][1].info_label.setText(self.tr("Sync CLoud saves"))
 
     def launch(self, app_name):
+        self.game_started.emit(app_name)
         self.widgets[app_name][0].info_text = self.tr("Game running")
         self.widgets[app_name][1].launch_button.setDisabled(True)
         self.widgets[app_name][1].launch_button.setText(self.tr("Game running"))

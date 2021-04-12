@@ -1,14 +1,21 @@
+import platform
+import time
 from PyQt5.QtCore import QSettings
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
+from pypresence import Presence
+
+from custom_legendary.core import LegendaryCore
 from rare.components.tab_widget import TabWidget
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, core):
+
+    def __init__(self, core: LegendaryCore):
         super(MainWindow, self).__init__()
         settings = QSettings()
+        self.core = core
         width, height = 1200, 800
         if settings.value("save_size", False):
             width, height = settings.value("window_size", (1200, 800), tuple)
@@ -17,7 +24,24 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Rare - GUI for legendary")
         self.tab_widget = TabWidget(core)
         self.setCentralWidget(self.tab_widget)
+
+        self.tab_widget.games_tab.default_widget.game_list.game_started.connect(self.set_discord_rpc)
+        self.tab_widget.delete_presence.connect(self.remove_rpc)
+
         self.show()
+
+    def remove_rpc(self):
+        self.RPC.clear()
+        self.RPC.close()
+        del self.RPC
+
+    def set_discord_rpc(self, app_name):
+        self.RPC = Presence("830732538225360908")  # Rare app: https://discord.com/developers/applications
+        self.RPC.connect()
+        title = self.core.get_installed_game(app_name).title
+        start = str(time.time()).split(".")[0]
+        self.RPC.update(large_image="logo", details=title, large_text=title,
+                        state="via Rare on " + platform.system(), start=start)
 
     def closeEvent(self, e: QCloseEvent):
         settings = QSettings()
