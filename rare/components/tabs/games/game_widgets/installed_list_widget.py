@@ -57,6 +57,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.info)
         self.childLayout.addWidget(self.app_name_label)
         self.childLayout.addWidget(self.developer_label)
+
         #if os.name != "nt":
         #    self.childLayout.addWidget(self.wine_rating)
         self.childLayout.addWidget(self.version_label)
@@ -64,7 +65,8 @@ class InstalledListWidget(BaseInstalledWidget):
 
         self.info_label = QLabel("")
         self.childLayout.addWidget(self.info_label)
-
+        # self.childLayout.addWidget(QPushButton("Settings"))
+        self.childLayout.addWidget(QPushButton("Uninstall"))
         self.childLayout.addStretch(1)
         self.layout.addLayout(self.childLayout)
         self.layout.addStretch(1)

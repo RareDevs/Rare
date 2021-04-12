@@ -102,6 +102,6 @@ class TabWidget(QTabWidget):
 
     # Remove text "sync game"
     def finished_sync(self, app_name):
-        self.games_tab.default_widget.games_tab.widgets[app_name][0].info_text = ""
-        self.games_tab.default_widget.games_tab.widgets[app_name][0].info_label.setText("")
-        self.games_tab.default_widget.games_tab.widgets[app_name][1].info_label.setText("")
+        self.games_tab.default_widget.game_list.widgets[app_name][0].info_text = ""
+        self.games_tab.default_widget.game_list.widgets[app_name][0].info_label.setText("")
+        self.games_tab.default_widget.game_list.widgets[app_name][1].info_label.setText("")
