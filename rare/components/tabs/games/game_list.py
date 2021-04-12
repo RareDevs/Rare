@@ -25,6 +25,7 @@ class GameList(QStackedWidget):
     game_exited = pyqtSignal(str)
     game_started = pyqtSignal(str)
 
+    running_games = []
     active_game = ("", 0)
 
     def __init__(self, core: LegendaryCore):
@@ -192,6 +193,7 @@ class GameList(QStackedWidget):
         self.install_game.emit(options)
 
     def finished(self, app_name):
+        self.running_games.remove(app_name)
         self.active_game = ("", 0)
         self.widgets[app_name][0].info_text = ""
         self.widgets[app_name][0].info_label.setText("")
@@ -210,6 +212,7 @@ class GameList(QStackedWidget):
 
     def launch(self, app_name):
         self.game_started.emit(app_name)
+        self.running_games.append(app_name)
         self.widgets[app_name][0].info_text = self.tr("Game running")
         self.widgets[app_name][0].info_label.setText(self.tr("Game running"))
         self.widgets[app_name][1].launch_button.setDisabled(True)

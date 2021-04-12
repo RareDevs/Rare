@@ -1,8 +1,10 @@
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSettings, pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QCheckBox, QVBoxLayout, QComboBox
 
 
 class RPCSettings(QGroupBox):
+    update_settings = pyqtSignal()
+
     def __init__(self):
         super(RPCSettings, self).__init__()
         self.setTitle(self.tr("Discord RPC"))
@@ -15,7 +17,7 @@ class RPCSettings(QGroupBox):
         self.enable.addItems(self.enable_states)
         self.enable.setCurrentIndex(self.settings.value("rpc_enable", 0, int))
         self.layout.addWidget(self.enable)
-        self.enable.currentIndexChanged.connect(lambda i: self.settings.setValue("rpc_enable", i))
+        self.enable.currentIndexChanged.connect(self.changed)
 
         self.show_game = QCheckBox(self.tr("Show Game"))
         self.show_game.setChecked((self.settings.value("rpc_name", True, bool)))
@@ -33,3 +35,7 @@ class RPCSettings(QGroupBox):
         self.show_time.stateChanged.connect(lambda: self.settings.setValue("rpc_time", self.show_time.isChecked()))
 
         self.setLayout(self.layout)
+
+    def changed(self, i):
+        self.settings.setValue("rpc_enable", i)
+        self.update_settings.emit()
