@@ -25,9 +25,8 @@ class MainWindow(QMainWindow):
         self.tab_widget = TabWidget(core)
         self.setCentralWidget(self.tab_widget)
 
-
-        self.tab_widget.game_list.default_widget.game_list.game_started.connect(self.set_discord_rpc)
-        self.tab_widget.update_presence.connect(self.remove_rpc)
+        self.tab_widget.games_tab.default_widget.game_list.game_started.connect(self.set_discord_rpc)
+        self.tab_widget.delete_presence.connect(self.remove_rpc)
 
         self.show()
 
@@ -37,11 +36,12 @@ class MainWindow(QMainWindow):
         del self.RPC
 
     def set_discord_rpc(self, app_name):
-        self.RPC = Presence("830732538225360908")
+        self.RPC = Presence("830732538225360908")  # Rare app: https://discord.com/developers/applications
         self.RPC.connect()
         title = self.core.get_installed_game(app_name).title
         start = str(time.time()).split(".")[0]
-        self.RPC.update(large_image="logo", details=title, large_text=title, state="via Rare on " + platform.system(), start=start)
+        self.RPC.update(large_image="logo", details=title, large_text=title,
+                        state="via Rare on " + platform.system(), start=start)
 
     def closeEvent(self, e: QCloseEvent):
         settings = QSettings()
