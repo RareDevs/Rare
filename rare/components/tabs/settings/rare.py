@@ -5,6 +5,7 @@ from logging import getLogger
 from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QVBoxLayout, QFileDialog, QComboBox, QPushButton, QCheckBox, QGroupBox, QScrollArea
 
+from rare.components.tabs.settings.rpc_settings import RPCSettings
 from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import get_lang, get_possible_langs
@@ -54,6 +55,9 @@ class RareSettings(QScrollArea):
         self.exit_to_sys_tray.stateChanged.connect(lambda: self.settings.setValue("sys_tray", self.exit_to_sys_tray.isChecked()))
         self.sys_tray_widget = SettingsWidget(self.tr("Exit to System Tray Icon"), self.exit_to_sys_tray)
         self.layout.addWidget(self.sys_tray_widget)
+
+        self.rpc = RPCSettings()
+        self.layout.addWidget(self.rpc)
 
         self.game_start_accept = QCheckBox(self.tr("Confirm launch of game"))
         self.game_start_accept.stateChanged.connect(lambda x: self.settings.setValue("confirm_start", self.game_start_accept.isChecked()))
