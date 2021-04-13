@@ -74,6 +74,8 @@ class DownloadTab(QWidget):
             self.update_widgets[igame.app_name] = widget
             self.update_layout.addWidget(widget)
             widget.update.connect(self.update_game)
+            if QSettings().value("auto_update", False, bool):
+                self.update_game(igame.app_name)
 
         self.updates.setLayout(self.update_layout)
         self.layout.addWidget(self.updates)
@@ -87,7 +89,7 @@ class DownloadTab(QWidget):
     def stop_download(self):
         self.thread.kill()
 
-    def install_game(self, options: InstallOptions):
+    def install_game(self, options: InstallOptions, from_update=False):
 
         status_queue = MPQueue()
         try:
@@ -127,9 +129,9 @@ class DownloadTab(QWidget):
             return
 
         # Information
-
-        if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
-            return
+        if not from_update:
+            if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
+                return
 
         if self.active_game is None:
             self.start_installation(dlm, game, status_queue, igame, repair_file, options, analysis)
@@ -265,7 +267,7 @@ class DownloadTab(QWidget):
         if infos != 0:
             path, max_workers, force, ignore_free_space = infos
             self.install_game(InstallOptions(app_name=app_name, max_workers=max_workers, path=path,
-                                             force=force, ignore_free_space=ignore_free_space))
+                                             force=force, ignore_free_space=ignore_free_space), True)
 
 
 class UpdateWidget(QWidget):

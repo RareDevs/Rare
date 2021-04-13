@@ -26,6 +26,15 @@ class RareSettings(QScrollArea):
         self.widget.setObjectName("group")
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
+        # (option_name, group_text, checkbox_text, default
+        self.checkboxes = [("sys_tray", self.tr("Hide to System Tray Icon"), self.tr("Exit to System Tray Icon"), True),
+                           ("auto_update", self.tr("Automatically update Games on startup"), self.tr("Auto updates"), False),
+                           ("confirm_start", self.tr("Confirm launch of game"), self.tr("Confirm launch of game"), False),
+                           ("auto_sync_cloud", self.tr("Auto sync with cloud"), self.tr("Sync with cloud"), True),
+                           ("notification", self.tr("Show Notifications after Downloads"), self.tr("Show notification"), True),
+                           ("save_size", self.tr("Save size of window after restart"), self.tr("Save size"), False)
+                           ]
+
         self.layout = QVBoxLayout()
         self.settings = QSettings()
         img_dir = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images/"), type=str)
@@ -50,40 +59,13 @@ class RareSettings(QScrollArea):
         self.select_lang.currentIndexChanged.connect(self.update_lang)
         self.layout.addWidget(self.lang_widget)
 
-        self.exit_to_sys_tray = QCheckBox(self.tr("Hide to System Tray Icon"))
-        self.exit_to_sys_tray.setChecked(self.settings.value("sys_tray", True, bool))
-        self.exit_to_sys_tray.stateChanged.connect(lambda: self.settings.setValue("sys_tray", self.exit_to_sys_tray.isChecked()))
-        self.sys_tray_widget = SettingsWidget(self.tr("Exit to System Tray Icon"), self.exit_to_sys_tray)
-        self.layout.addWidget(self.sys_tray_widget)
-
         self.rpc = RPCSettings()
         self.layout.addWidget(self.rpc)
 
-        self.game_start_accept = QCheckBox(self.tr("Confirm launch of game"))
-        self.game_start_accept.stateChanged.connect(lambda x: self.settings.setValue("confirm_start", self.game_start_accept.isChecked()))
-        self.game_start_accept_widget = SettingsWidget(self.tr("Confirm launch of game"), self.game_start_accept)
-        self.layout.addWidget(self.game_start_accept_widget)
-
-        self.cloud_sync = QCheckBox(self.tr("Sync with cloud"))
-        self.cloud_sync.setChecked(self.settings.value("auto_sync_cloud", True, bool))
-        self.cloud_sync_widget = SettingsWidget(self.tr("Auto sync with cloud"), self.cloud_sync)
-        self.layout.addWidget(self.cloud_sync_widget)
-        self.cloud_sync.stateChanged.connect(
-            lambda: self.settings.setValue(f"auto_sync_cloud", self.cloud_sync.isChecked()))
-
-        self.show_notification = QCheckBox(self.tr("Show Notifications after Downloads"))
-        self.show_notification.setChecked(self.settings.value("notification", True, bool))
-        self.show_notification_widget = SettingsWidget(self.tr("Show notification"), self.show_notification)
-        self.layout.addWidget(self.show_notification_widget)
-        self.show_notification.stateChanged.connect(
-            lambda: self.settings.setValue("notification", self.show_notification.isChecked()))
-
-        self.save_size = QCheckBox(self.tr("Save size"))
-        self.save_size.setChecked(self.settings.value("save_size", False, bool))
-        self.save_size_widget = SettingsWidget(self.tr("Save size of window after restart"), self.save_size)
-        self.layout.addWidget(self.save_size_widget)
-        self.save_size.stateChanged.connect(self.save_window_size)
-        self.layout.addWidget(self.save_size_widget)
+        for option, head_text, text, default in self.checkboxes:
+            checkbox = SettingsCheckbox(option, text, default)
+            settings_widget = SettingsWidget(head_text, checkbox)
+            self.layout.addWidget(settings_widget)
 
         self.layout.addStretch()
         self.widget.setLayout(self.layout)
@@ -116,3 +98,12 @@ class RareSettings(QScrollArea):
                 shutil.move(os.path.join(old_path, i), os.path.join(new_path, i))
             os.rmdir(old_path)
             self.settings.setValue("img_dir", new_path)
+
+
+class SettingsCheckbox(QCheckBox):
+    def __init__(self, option, text, default):
+        super(SettingsCheckbox, self).__init__(text)
+        self.option = option
+        self.settings = QSettings()
+        self.setChecked(self.settings.value(option, default, bool))
+        self.stateChanged.connect(lambda: self.settings.setValue(option, self.isChecked()))
