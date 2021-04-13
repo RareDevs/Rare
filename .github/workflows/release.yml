@@ -82,16 +82,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Deps
-        run: sudo apt install 
-          python3-all
-          python3-stdeb
-          dh-python
-          python3-requests
-          python3-pyqt5
-          python3-pil
-          python3-qtawesome
-          python3-setuptools
-          python3-wheel
+        run: |
+          sudo apt install python3-all python3-stdeb dh-python python3-setuptools python3-wheel
+          sudo pip install -r requirements.txt
+
 
       - name: run python setup
         run: |

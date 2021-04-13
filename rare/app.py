@@ -77,7 +77,7 @@ class App(QApplication):
         self.launch_dialog.show()
 
     def start_app(self):
-        self.mainwindow = MainWindow(self.core)
+        self.mainwindow = MainWindow(self.core, self.args)
         self.tray_icon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(lambda: exit(0))
         self.tray_icon.start_rare.triggered.connect(self.mainwindow.show)

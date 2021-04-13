@@ -1,13 +1,14 @@
 import json
 import os
 import shutil
+import sys
 from logging import getLogger
 
 import requests
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 
-from rare import lang_path, __version__
+from rare import lang_path, __version__, style_path
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
@@ -40,13 +41,14 @@ def download_image(game, force=False):
 
     # to git picture updates
     if not os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/image.json"):
-        json_data = {"DieselGameBoxTall": None, "DieselGameBoxLogo": None}
+        json_data = {"DieselGameBoxTall": None, "DieselGameBoxLogo": None, "Thumbnail": None}
     else:
         json_data = json.load(open(f"{IMAGE_DIR}/{game.app_name}/image.json", "r"))
     # Download
     for image in game.metadata["keyImages"]:
-        if image["type"] == "DieselGameBoxTall" or image["type"] == "DieselGameBoxLogo":
-
+        if image["type"] == "DieselGameBoxTall" or image["type"] == "DieselGameBoxLogo" or image["type"] == "Thumbnail":
+            if image["type"] not in json_data.keys():
+                json_data[image["type"]] = None
             if json_data[image["type"]] != image["md5"] or not os.path.isfile(
                     f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png"):
                 # Download
@@ -131,3 +133,26 @@ def get_size(b: int) -> str:
         if b < 1024:
             return f"{b:.2f}{i}B"
         b /= 1024
+
+
+def create_desktop_link(app_name, core: LegendaryCore):
+    igame = core.get_installed_game(app_name)
+
+    # Linux
+    if os.name == "posix":
+        if os.path.exists(os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str), igame.app_name, 'Thumbnail.png')):
+            icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str), igame.app_name, 'Thumbnail.png')
+        else:
+            icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str), igame.app_name, 'DieselGameBoxTall.png')
+        with open(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"), "w") as desktop_file:
+            desktop_file.write("[Desktop Entry]\n"
+                               f"Name={igame.title}\n"
+                               f"Type=Application\n"
+                               f"Icon={icon}\n"
+                               f"Exec=rare launch {app_name}\n"
+                               "Terminal=false\n"
+                               "StartupWMClass=rare-game\n"
+                               )
+        os.chmod(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"), 0o755)
+    elif os.name == "nt":
+        logger.info("Create a shortcut is currently not supported on windows")

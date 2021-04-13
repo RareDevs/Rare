@@ -1,12 +1,14 @@
+import os
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QProcess, QSettings
-from PyQt5.QtWidgets import QGroupBox, QMessageBox
+from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt
+from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.utils import legendary_utils
+from rare.utils.utils import create_desktop_link
 
 logger = getLogger("Game")
 
@@ -28,6 +30,36 @@ class BaseInstalledWidget(QGroupBox):
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
 
         self.setContentsMargins(0, 0, 0, 0)
+
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        launch = QAction(self.tr("Launch"), self)
+        launch.triggered.connect(self.launch)
+        self.addAction(launch)
+
+        if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))\
+                or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
+            self.create_desktop = QAction(self.tr("Remove Desktop link"))
+        else:
+            self.create_desktop = QAction(self.tr("Create Desktop link"))
+
+        self.create_desktop.triggered.connect(self.create_desktop_link)
+        self.addAction(self.create_desktop)
+
+        uninstall = QAction(self.tr("Uninstall"), self)
+        uninstall.triggered.connect(self.uninstall)
+        self.addAction(uninstall)
+
+    def create_desktop_link(self):
+        if not (os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))\
+                or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk"))):
+            create_desktop_link(self.igame.app_name, self.core)
+            self.create_desktop.setText(self.tr("Remove Desktop link"))
+        else:
+            if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop")):
+                os.remove(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))
+            elif os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
+                os.remove(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk"))
+            self.create_desktop.setText(self.tr("Create Desktop link"))
 
     def launch(self, offline=False, skip_version_check=False):
         if QSettings().value("confirm_start", False, bool):

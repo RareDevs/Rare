@@ -7,8 +7,13 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("-V", "--version", action="store_true")
     parser.add_argument("-S", "--silent", action="store_true")
+    subparsers = parser.add_subparsers(title="Commands", dest="subparser")
+
+    launch_parser = subparsers.add_parser("launch")
+    launch_parser.add_argument('app_name', help='Name of the app', metavar='<App Name>')
 
     args = parser.parse_args()
+
     if args.version:
         print(__version__)
         exit(0)

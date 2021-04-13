@@ -22,15 +22,8 @@ class InstalledListWidget(BaseInstalledWidget):
         self.dev = core.get_game(self.igame.app_name).metadata["developer"]
         self.size = game.install_size
         self.launch_params = game.launch_parameters
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
 
-        launch = QAction(self.tr("Launch"), self)
-        launch.triggered.connect(self.launch)
-        self.addAction(launch)
 
-        uninstall = QAction(self.tr("Uninstall"), self)
-        uninstall.triggered.connect(self.uninstall)
-        self.addAction(uninstall)
 
         self.layout = QHBoxLayout()
 
