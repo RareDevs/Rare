@@ -36,7 +36,12 @@ def launch_game(core, app_name: str, offline: bool = False, skip_version_check: 
             if latest.build_version != game.version:
                 print("Please update game")
                 return None
-    params, cwd, env = core.get_launch_parameters(app_name=app_name, offline=offline)
+    try:
+        params, cwd, env = core.get_launch_parameters(app_name=app_name, offline=offline)
+    except Exception as e:
+        logger.error(e)
+        return 1
+
     process = QProcess()
     process.setWorkingDirectory(cwd)
     environment = QProcessEnvironment()

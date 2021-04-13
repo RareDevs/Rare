@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QGroupBox, QMessageBox
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
+from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.utils import legendary_utils
 
 logger = getLogger("Game")
@@ -14,6 +15,7 @@ class BaseInstalledWidget(QGroupBox):
     launch_signal = pyqtSignal(str)
     show_info = pyqtSignal(str)
     finish_signal = pyqtSignal(str)
+    update_list = pyqtSignal()
     proc: QProcess()
 
     def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap):
@@ -49,3 +51,11 @@ class BaseInstalledWidget(QGroupBox):
         logger.info("Game exited with exit code: " + str(exit_code))
         self.finish_signal.emit(self.game.app_name)
         self.game_running = False
+
+    def uninstall(self):
+        infos = UninstallDialog(self.game).get_information()
+        if infos == 0:
+            print("Cancel Uninstall")
+            return
+        legendary_utils.uninstall(self.game.app_name, self.core, infos)
+        self.update_list.emit()

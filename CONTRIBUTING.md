@@ -4,14 +4,14 @@
 
 ### Add translations
 
-1. Execute ```pylupdate5 $(find -name "*.py") -ts Rare/languages/{your lang (two letters)}.ts``` in project directrory
+1. Execute ```pylupdate5 $(find -name "*.py") -ts Rare/languages/{your lang (two letters)}.ts``` in project directory
 2. Modify the .ts file manually or in Qt Linguist
 3. Compile the file with ```lrelease Rare/languages/{lang}.ts```
 
 ### Add Stylesheets
 
 For this you can create a .qss file in Rare/Styles/ directory or modify the existing RareStyle.qss file. Here are some
-exmples:
+examples:
 [Qt Docs](https://doc.qt.io/qt-5/stylesheet-examples.html)
 
 ### Add features
