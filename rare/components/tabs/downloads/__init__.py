@@ -2,7 +2,7 @@ import datetime
 from logging import getLogger
 from multiprocessing import Queue as MPQueue
 
-from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtCore import QThread, pyqtSignal, Qt, QSettings
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
     QListWidget, QHBoxLayout, QGroupBox
 
@@ -193,16 +193,16 @@ class DownloadTab(QWidget):
             pass
         elif text == "finish":
             self.installing_game.setText(self.tr("Download finished. Reload library"))
-
-            try:
-                from notifypy import Notify
-            except ModuleNotFoundError:
-                logger.warning("No Notification Module found")
-            else:
-                notification = Notify()
-                notification.title = self.tr("Installation finished")
-                notification.message = self.tr("Finished Download of game {}").format(self.active_game.app_title)
-                notification.send()
+            if QSettings().value("notification", True, bool):
+                try:
+                    from notifypy import Notify
+                except ModuleNotFoundError:
+                    logger.warning("No Notification Module found")
+                else:
+                    notification = Notify()
+                    notification.title = self.tr("Installation finished")
+                    notification.message = self.tr("Finished Download of game {}").format(self.active_game.app_title)
+                    notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
             logger.info("Download finished: " + self.active_game.app_title)
 

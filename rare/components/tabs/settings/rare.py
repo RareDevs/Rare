@@ -71,11 +71,12 @@ class RareSettings(QScrollArea):
         self.cloud_sync.stateChanged.connect(
             lambda: self.settings.setValue(f"auto_sync_cloud", self.cloud_sync.isChecked()))
 
-        self.save_size = QCheckBox(self.tr("Save size"))
-        self.save_size.setChecked(self.settings.value("save_size", False, bool))
-        self.save_size_widget = SettingsWidget(self.tr("Save size of window after restart"), self.save_size)
-        self.layout.addWidget(self.save_size_widget)
-        self.save_size.stateChanged.connect(self.save_window_size)
+        self.show_notification = QCheckBox(self.tr("Show Notifications after Downloads"))
+        self.show_notification.setChecked(self.settings.value("notification", True, bool))
+        self.show_notification_widget = SettingsWidget(self.tr("Show notification"), self.show_notification)
+        self.layout.addWidget(self.show_notification_widget)
+        self.show_notification.stateChanged.connect(
+            lambda: self.settings.setValue("notification", self.show_notification.isChecked()))
 
         self.save_size = QCheckBox(self.tr("Save size"))
         self.save_size.setChecked(self.settings.value("save_size", False, bool))
