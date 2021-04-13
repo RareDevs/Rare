@@ -58,6 +58,7 @@ class DiscordRPC(QObject):
                 self.RPC.connect()
             except ConnectionRefusedError as e:
                 logger.warning("Discord is not active\n" + str(e))
+                self.RPC = None
                 return
         self.update_rpc(app_name)
 
