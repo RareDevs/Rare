@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import QProcess, pyqtSignal, Qt
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QStyle, QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QStyle, QVBoxLayout, QAction
 from qtawesome import icon
 
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
@@ -15,7 +15,6 @@ logger = getLogger("GameWidget")
 class InstalledListWidget(BaseInstalledWidget):
     proc: QProcess
     signal = pyqtSignal(str)
-    update_list = pyqtSignal()
     update_game = pyqtSignal()
 
     def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap):
@@ -23,6 +22,15 @@ class InstalledListWidget(BaseInstalledWidget):
         self.dev = core.get_game(self.igame.app_name).metadata["developer"]
         self.size = game.install_size
         self.launch_params = game.launch_parameters
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+
+        launch = QAction(self.tr("Launch"), self)
+        launch.triggered.connect(self.launch)
+        self.addAction(launch)
+
+        uninstall = QAction(self.tr("Uninstall"), self)
+        uninstall.triggered.connect(self.uninstall)
+        self.addAction(uninstall)
 
         self.layout = QHBoxLayout()
 
@@ -66,7 +74,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.info_label = QLabel("")
         self.childLayout.addWidget(self.info_label)
         # self.childLayout.addWidget(QPushButton("Settings"))
-        self.childLayout.addWidget(QPushButton("Uninstall"))
+        # self.childLayout.addWidget(QPushButton("Uninstall"))
         self.childLayout.addStretch(1)
         self.layout.addLayout(self.childLayout)
         self.layout.addStretch(1)
