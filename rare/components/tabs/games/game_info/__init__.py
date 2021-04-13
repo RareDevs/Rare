@@ -48,7 +48,6 @@ class GameInfo(QScrollArea):
     verify_game = pyqtSignal(str)
     verify_threads = {}
     action = pyqtSignal(str)
-    desktop_exists = False
 
     def __init__(self, core: LegendaryCore):
         super(GameInfo, self).__init__()
@@ -87,10 +86,6 @@ class GameInfo(QScrollArea):
         self.install_path.setTextInteractionFlags(Qt.TextSelectableByMouse)
         right_layout.addWidget(self.install_path)
 
-        self.create_desktop_link_button = QPushButton(self.tr("Create Desktop link"))
-        right_layout.addWidget(self.create_desktop_link_button)
-        self.create_desktop_link_button.clicked.connect(self.create_desktop_link)
-
         top_layout.addLayout(right_layout)
         top_layout.addStretch()
         self.game_actions = GameActions()
@@ -104,19 +99,6 @@ class GameInfo(QScrollArea):
         self.layout.addStretch()
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
-
-    def create_desktop_link(self):
-        if not self.desktop_exists:
-            create_desktop_link(self.igame.app_name, self.core)
-            self.create_desktop_link_button.setText(self.tr("Remove Desktop link"))
-            self.desktop_exists = True
-        else:
-            if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop")):
-                os.remove(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))
-            elif os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
-                os.remove(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk"))
-            self.desktop_exists = False
-            self.create_desktop_link_button.setText(self.tr("Create Desktop link"))
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')
@@ -186,13 +168,6 @@ class GameInfo(QScrollArea):
             self.game_actions.verify_widget.setCurrentIndex(1)
             self.game_actions.verify_progress_bar.setValue(
                 self.verify_threads[app_name].num / self.verify_threads[app_name].total * 100)
-        if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop")) \
-                or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
-            self.create_desktop_link_button.setText(self.tr("Remove Desktop link"))
-            self.desktop_exists = True
-        else:
-            self.create_desktop_link_button.setText(self.tr("Create Desktop link"))
-            self.desktop_exists = False
 
 
 class GameActions(QGroupBox):

@@ -137,7 +137,14 @@ def get_size(b: int) -> str:
 
 def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
     igame = core.get_installed_game(app_name)
-
+    if os.path.exists(
+            os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
+                         igame.app_name, 'Thumbnail.png')):
+        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
+                            igame.app_name, 'Thumbnail.png')
+    else:
+        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
+                            igame.app_name, 'DieselGameBoxTall.png')
     # Linux
     if os.name == "posix":
         if type_of_link == "desktop":
@@ -147,10 +154,6 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         else:
             return
 
-        if os.path.exists(os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str), igame.app_name, 'Thumbnail.png')):
-            icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str), igame.app_name, 'Thumbnail.png')
-        else:
-            icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str), igame.app_name, 'DieselGameBoxTall.png')
         with open(f"{path}{igame.title}.desktop", "w") as desktop_file:
             desktop_file.write("[Desktop Entry]\n"
                                f"Name={igame.title}\n"
@@ -161,5 +164,15 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
                                "StartupWMClass=rare-game\n"
                                )
         os.chmod(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"), 0o755)
+
+    # Windows
     elif os.name == "nt":
-        logger.info("Create a shortcut is currently not supported on windows")
+        if type_of_link == "desktop":
+            path = os.path.expanduser(f"~/Desktop/")
+        elif type_of_link == "start_menu":
+            logger.info("Startmenu link is not supported on windows")
+            return
+        else:
+            return
+        with open(path+igame.title+".bat", "w") as desktop_file:
+            desktop_file.write(f"rare launch {app_name}")

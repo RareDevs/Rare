@@ -35,16 +35,17 @@ class BaseInstalledWidget(QGroupBox):
         launch = QAction(self.tr("Launch"), self)
         launch.triggered.connect(self.launch)
         self.addAction(launch)
+
+        if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))\
+                or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
+            self.create_desktop = QAction(self.tr("Remove Desktop link"))
+        else:
+            self.create_desktop = QAction(self.tr("Create Desktop link"))
+
+        self.create_desktop.triggered.connect(lambda: self.create_desktop_link("desktop"))
+        self.addAction(self.create_desktop)
+
         if os.name == "posix":
-            if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))\
-                    or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
-                self.create_desktop = QAction(self.tr("Remove Desktop link"))
-            else:
-                self.create_desktop = QAction(self.tr("Create Desktop link"))
-
-            self.create_desktop.triggered.connect(lambda: self.create_desktop_link("desktop"))
-            self.addAction(self.create_desktop)
-
             if os.path.exists(os.path.expanduser(f"~/.local/share/applications/{self.igame.title}.desktop")):
                 self.create_start_menu = QAction(self.tr("Remove start menu link"))
             else:

@@ -76,7 +76,7 @@ class DownloadTab(QWidget):
             self.update_layout.addWidget(widget)
             widget.update.connect(self.update_game)
             if QSettings().value("auto_update", False, bool):
-                self.update_game(igame.app_name)
+                self.update_game(igame.app_name, True)
 
         self.updates.setLayout(self.update_layout)
         self.layout.addWidget(self.updates)
@@ -264,9 +264,13 @@ class DownloadTab(QWidget):
     def get_time(self, seconds: int) -> str:
         return str(datetime.timedelta(seconds=seconds))
 
-    def update_game(self, app_name: str):
+    def update_game(self, app_name: str, auto=False):
         logger.info("Update " + app_name)
-        infos = InstallDialog(app_name, self.core, True).get_information()
+        if not auto:
+            infos = InstallDialog(app_name, self.core, True).get_information()
+        else:
+            self.install_game(InstallOptions(app_name=app_name), True)
+            return
         if infos != 0:
             path, max_workers, force, ignore_free_space = infos
             self.install_game(InstallOptions(app_name=app_name, max_workers=max_workers, path=path,
