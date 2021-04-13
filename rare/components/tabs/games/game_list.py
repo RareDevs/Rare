@@ -174,7 +174,7 @@ class GameList(QStackedWidget):
     def check_for_active_game(self, igame):
         executable = igame.executable.split("/")[-1].split("\\")[-1]
         if executable.endswith(".exe"):
-            executable = executable[:-4]
+            executable = executable[:-4]  # remove .exe
 
         for i, pid in self.procs:
             if executable in i:

@@ -135,16 +135,23 @@ def get_size(b: int) -> str:
         b /= 1024
 
 
-def create_desktop_link(app_name, core: LegendaryCore):
+def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
     igame = core.get_installed_game(app_name)
 
     # Linux
     if os.name == "posix":
+        if type_of_link == "desktop":
+            path = os.path.expanduser(f"~/Desktop/")
+        elif type_of_link == "start_menu":
+            path = os.path.expanduser("~/.local/share/applications/")
+        else:
+            return
+
         if os.path.exists(os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str), igame.app_name, 'Thumbnail.png')):
             icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str), igame.app_name, 'Thumbnail.png')
         else:
             icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str), igame.app_name, 'DieselGameBoxTall.png')
-        with open(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"), "w") as desktop_file:
+        with open(f"{path}{igame.title}.desktop", "w") as desktop_file:
             desktop_file.write("[Desktop Entry]\n"
                                f"Name={igame.title}\n"
                                f"Type=Application\n"

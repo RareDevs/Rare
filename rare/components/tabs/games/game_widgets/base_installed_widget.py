@@ -35,31 +35,52 @@ class BaseInstalledWidget(QGroupBox):
         launch = QAction(self.tr("Launch"), self)
         launch.triggered.connect(self.launch)
         self.addAction(launch)
+        if os.name == "posix":
+            if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))\
+                    or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
+                self.create_desktop = QAction(self.tr("Remove Desktop link"))
+            else:
+                self.create_desktop = QAction(self.tr("Create Desktop link"))
 
-        if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))\
-                or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
-            self.create_desktop = QAction(self.tr("Remove Desktop link"))
-        else:
-            self.create_desktop = QAction(self.tr("Create Desktop link"))
+            self.create_desktop.triggered.connect(lambda: self.create_desktop_link("desktop"))
+            self.addAction(self.create_desktop)
 
-        self.create_desktop.triggered.connect(self.create_desktop_link)
-        self.addAction(self.create_desktop)
+            if os.path.exists(os.path.expanduser(f"~/.local/share/applications/{self.igame.title}.desktop")):
+                self.create_start_menu = QAction(self.tr("Remove start menu link"))
+            else:
+                self.create_start_menu = QAction(self.tr("Create start menu link"))
+
+            self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
+            self.addAction(self.create_start_menu)
 
         uninstall = QAction(self.tr("Uninstall"), self)
         uninstall.triggered.connect(self.uninstall)
         self.addAction(uninstall)
 
-    def create_desktop_link(self):
-        if not (os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))\
-                or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk"))):
-            create_desktop_link(self.igame.app_name, self.core)
-            self.create_desktop.setText(self.tr("Remove Desktop link"))
+    def create_desktop_link(self, type_of_link):
+        if type_of_link == "desktop":
+            path = os.path.expanduser(f"~/Desktop/")
+        elif type_of_link == "start_menu":
+            path = os.path.expanduser("~/.local/share/applications/")
         else:
-            if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop")):
-                os.remove(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))
-            elif os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
-                os.remove(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk"))
-            self.create_desktop.setText(self.tr("Create Desktop link"))
+            return
+        if not (os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop"))\
+                or os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.lnk"))):
+            create_desktop_link(self.igame.app_name, self.core, type_of_link)
+            if type_of_link == "desktop":
+                self.create_desktop.setText(self.tr("Remove Desktop link"))
+            elif type_of_link == "start_menu":
+                self.create_start_menu.setText(self.tr("Remove Start menu link"))
+        else:
+            if os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop")):
+                os.remove(os.path.expanduser(f"{path}{self.igame.title}.desktop"))
+            elif os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.lnk")):
+                os.remove(os.path.expanduser(f"{path}{self.igame.title}.lnk"))
+
+            if type_of_link == "desktop":
+                self.create_desktop.setText(self.tr("Create Desktop link"))
+            elif type_of_link == "start_menu":
+                self.create_start_menu.setText(self.tr("Create Start menu link"))
 
     def launch(self, offline=False, skip_version_check=False):
         if QSettings().value("confirm_start", False, bool):
