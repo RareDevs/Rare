@@ -160,9 +160,9 @@ class GameSettings(QScrollArea):
 
                 # Dont use Wine
                 self.linux_settings.select_wine_exec.setText("")
-                self.linux_settings.save_wineexec()
+                self.linux_settings.save_setting(self.linux_settings.select_wine_exec, "wine_exec")
                 self.linux_settings.select_path.text_edit.setText("")
-                self.linux_settings.save_setting()
+                self.linux_settings.save_setting(self.linux_settings.select_path, "wine_prefix")
 
         self.core.lgd.save_config()
 
