@@ -27,9 +27,9 @@ class MainWindow(QMainWindow):
 
         # Discord RPC on game launch
         self.tab_widget.games_tab.default_widget.game_list.game_started.connect(
-            lambda: self.rpc.set_discord_rpc(self.tab_widget.games_tab.default_widget.game_list.running_games))
+            lambda: self.rpc.set_discord_rpc(self.tab_widget.games_tab.default_widget.game_list.running_games[0]))
         # Remove RPC
-        self.tab_widget.delete_presence.connect(self.rpc.remove_rpc)
+        self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
         # Show RPC on changed rare_settings
         self.tab_widget.settings.rare_settings.rpc.update_settings.connect(lambda: self.rpc.changed_settings(self.tab_widget.games_tab.default_widget.game_list.running_games))
 

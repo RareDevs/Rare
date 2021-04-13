@@ -1,12 +1,15 @@
 import platform
 import time
+from logging import getLogger
 
 from PyQt5.QtCore import QObject, QSettings
+from PyQt5.QtWidgets import QMessageBox
 from pypresence import Presence
 
 from custom_legendary.core import LegendaryCore
 
 client_id = "830732538225360908"
+logger = getLogger("RPC")
 
 
 class DiscordRPC(QObject):
@@ -25,8 +28,10 @@ class DiscordRPC(QObject):
         if value == 2:
             self.remove_rpc()
             return
-        if not game_running:
+        if not game_running and value == 0:
             self.remove_rpc()
+        elif not game_running:
+            self.set_discord_rpc()
         else:
             self.set_discord_rpc(game_running[0])
 
@@ -34,9 +39,13 @@ class DiscordRPC(QObject):
         if self.settings.value("rpc_enable", 0, int) != 1:
             if not self.RPC:
                 return
-            self.RPC.close()
+            try:
+                self.RPC.close()
+            except Exception:
+                logger.warning("Already closed")
             del self.RPC
             self.RPC = None
+            logger.info("Remove RPC")
             self.state = 2
         else:
             self.state = 1
@@ -44,12 +53,16 @@ class DiscordRPC(QObject):
 
     def set_discord_rpc(self, app_name=None):
         if not self.RPC:
-            self.RPC = Presence("830732538225360908")  # Rare app: https://discord.com/developers/applications
-            self.RPC.connect()
+            try:
+                self.RPC = Presence("830732538225360908")  # Rare app: https://discord.com/developers/applications
+                self.RPC.connect()
+            except ConnectionRefusedError as e:
+                logger.warning("Discord is not active\n" + str(e))
+                return
         self.update_rpc(app_name)
 
     def update_rpc(self, app_name=None):
-        if self.settings.value("rpc_enable", 0, int) == 2:
+        if self.settings.value("rpc_enable", 0, int) == 2 or (app_name is None and self.settings.value("rpc_enable", 0) == 0):
             self.remove_rpc()
             return
         title = None

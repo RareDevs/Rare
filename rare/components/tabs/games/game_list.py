@@ -207,14 +207,14 @@ class GameList(QStackedWidget):
                 logger.info("Auto saves disabled")
                 return
 
-            self.game_exited.emit(app_name)
             self.widgets[app_name][0].info_text = self.tr("Sync CLoud saves")
             self.widgets[app_name][0].info_label.setText(self.tr("Sync CLoud saves"))
             self.widgets[app_name][1].info_label.setText(self.tr("Sync CLoud saves"))
+        self.game_exited.emit(app_name)
 
     def launch(self, app_name):
-        self.game_started.emit(app_name)
         self.running_games.append(app_name)
+        self.game_started.emit(app_name)
         self.widgets[app_name][0].info_text = self.tr("Game running")
         self.widgets[app_name][0].info_label.setText(self.tr("Game running"))
         self.widgets[app_name][1].launch_button.setDisabled(True)

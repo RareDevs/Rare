@@ -20,6 +20,7 @@ class TabWidget(QTabWidget):
     def __init__(self, core: LegendaryCore):
         super(TabWidget, self).__init__()
         disabled_tab = 3
+        self.core = core
         self.setTabBar(TabBar(disabled_tab))
 
         # Generate Tabs
@@ -82,7 +83,8 @@ class TabWidget(QTabWidget):
     # Sync game and delete dc rpc
     def game_finished(self, app_name):
         self.delete_presence.emit()
-        self.cloud_saves.sync_game(app_name, True)
+        if self.core.get_game(app_name).supports_cloud_saves:
+            self.cloud_saves.sync_game(app_name, True)
 
     # Update gamelist and set text of Downlaods to "Downloads"
     def dl_finished(self, update_list):
