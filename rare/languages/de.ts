@@ -50,9 +50,54 @@
 <context>
     <name>BaseInstalledWidget</name>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="34"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="88"/>
         <source>Do you want to launch {}</source>
         <translation>Möchtest du {} starten</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="35"/>
+        <source>Launch</source>
+        <translation>Starten</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="72"/>
+        <source>Remove Desktop link</source>
+        <translation>Desktop Verknüpfung löschen</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="82"/>
+        <source>Create Desktop link</source>
+        <translation>Desktopverknüpfung erstellen</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="50"/>
+        <source>Remove start menu link</source>
+        <translation>Startmenüverknüpfung löschen</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="52"/>
+        <source>Create start menu link</source>
+        <translation>Startmenüverknüpfung erstellen</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="57"/>
+        <source>Uninstall</source>
+        <translation>Deinstallieren</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="74"/>
+        <source>Remove Start menu link</source>
+        <translation>Startmenüverknüpfung löschen</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="84"/>
+        <source>Create Start menu link</source>
+        <translation>Startmenüverknüpfung erstellen</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="98"/>
+        <source>An error occurred while starting game. Maybe game files are missing</source>
+        <translation>Ein Fehler ist passiert. Vielleicht fehlen die Spieldateien</translation>
     </message>
 </context>
 <context>
@@ -243,32 +288,32 @@
 <context>
     <name>GameActions</name>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="183"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="181"/>
         <source>Uninstall game</source>
         <translation>Spiel deinstallieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="185"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="183"/>
         <source>Uninstall</source>
         <translation>Deinstallieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="191"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="189"/>
         <source>Verify Game</source>
         <translation>Spieldateien überprüfen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="196"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="194"/>
         <source>Verify</source>
         <translation>Überprüfen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="205"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="203"/>
         <source>Repair Game</source>
         <translation>Spiel reparieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="207"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="205"/>
         <source>Repair</source>
         <translation>Reparieren</translation>
     </message>
@@ -276,27 +321,27 @@
 <context>
     <name>GameInfo</name>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="107"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="106"/>
         <source>Repair file does not exist or game does not need a repair. Please verify game first</source>
         <translation>Reparationsdatei existiert nicht oder das Spiel braucht keine Reperatur. Bitte das spiel zuerst überprüfen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="132"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="131"/>
         <source>Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?</source>
         <translation>Überprüfung fehlgeschlagen, {} Datei(en) fehlerhaft, {} Datei(en) fehlen. Willst du das Spiel reparieren?</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="161"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="160"/>
         <source>Developer: </source>
         <translation>Entwickler: </translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="162"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="161"/>
         <source>Install size: </source>
         <translation>Größe: </translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="164"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="163"/>
         <source>Install path: </source>
         <translation>Installationsordner: </translation>
     </message>
@@ -324,7 +369,7 @@
         <translation>Installierte Spiele: {}    Verfügbare Spiele: {}</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_list.py" line="213"/>
+        <location filename="../components/tabs/games/game_list.py" line="212"/>
         <source>Sync CLoud saves</source>
         <translation>Spielstand synchronisieren</translation>
     </message>
@@ -532,17 +577,17 @@
 <context>
     <name>InfoTabs</name>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="27"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="26"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="31"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="30"/>
         <source>Game Info</source>
         <translation>Spielinfo</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="33"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="32"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
@@ -593,19 +638,19 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>InstalledListWidget</name>
     <message>
-        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="49"/>
+        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="42"/>
         <source>Launch</source>
         <translation>Starten</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="60"/>
+        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="53"/>
         <source>Developer: </source>
         <translation>Entwickler: </translation>
     </message>
     <message>
         <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="31"/>
         <source>Uninstall</source>
-        <translation>Deinstallieren</translation>
+        <translation type="obsolete">Deinstallieren</translation>
     </message>
 </context>
 <context>
@@ -724,7 +769,7 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../components/main_window.py" line="48"/>
+        <location filename="../components/main_window.py" line="57"/>
         <source>There is a download active. Do you really want to exit app?</source>
         <translation>Ein Download läuft noch. Möchtest du die App wirklich beenden?</translation>
     </message>
@@ -1033,7 +1078,7 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>TabWidget</name>
     <message>
-        <location filename="../components/tab_widget.py" line="34"/>
+        <location filename="../components/tab_widget.py" line="35"/>
         <source>Games</source>
         <translation>Spiele</translation>
     </message>
@@ -1077,7 +1122,7 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>UpdateWidget</name>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="288"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="292"/>
         <source>Update Game</source>
         <translation>Spiel updaten</translation>
     </message>

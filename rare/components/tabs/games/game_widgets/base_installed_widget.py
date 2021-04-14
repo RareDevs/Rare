@@ -95,6 +95,8 @@ class BaseInstalledWidget(QGroupBox):
                                                             skip_version_check=skip_version_check)
         except Exception as e:
             logger.error(e)
+            QMessageBox.warning(self, "Error",
+                                self.tr("An error occurred while starting game. Maybe game files are missing"))
             return
 
         if not self.proc:
