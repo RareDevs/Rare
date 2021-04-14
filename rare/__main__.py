@@ -1,3 +1,4 @@
+import os
 from argparse import ArgumentParser
 from rare import __version__
 from rare.utils import singleton
@@ -22,6 +23,15 @@ def main():
         me = singleton.SingleInstance()
     except singleton.SingleInstanceException:
         print("Rare is already running")
+
+        with open(os.path.expanduser("~/.cache/rare/lockfile"), "w") as file:
+            if args.subparser == "launch":
+                file.write("launch " + args.app_name)
+            else:
+                print("write start")
+                file.write("start")
+            file.close()
+
         exit(0)
 
     from rare.app import start

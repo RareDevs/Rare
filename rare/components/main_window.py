@@ -1,6 +1,7 @@
+import os
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSettings, QTimer
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
@@ -40,13 +41,36 @@ class MainWindow(QMainWindow):
         if game != ("", 0):
             self.rpc.set_discord_rpc(game[0])  # Appname
 
-        self.show()
         if args.subparser == "launch":
             logger.info("Launching " + self.core.get_installed_game(args.app_name).title)
             if args.app_name in self.tab_widget.games_tab.default_widget.game_list.widgets.keys():
                 self.tab_widget.games_tab.default_widget.game_list.widgets[args.app_name][1].launch()
             else:
                 logger.info(f"Could not find {args.app_name} in Games")
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timer_finished)
+        self.timer.start(1000)
+
+        self.show()
+
+    def timer_finished(self):
+        file_path = os.path.expanduser("~/.cache/rare/lockfile")
+        if os.path.exists(file_path):
+            file = open(file_path, "r")
+            action = file.read()
+            file.close()
+            if action.startswith("launch"):
+                game = action.replace("launch ", "").replace("\n", "")
+                if game in self.tab_widget.games_tab.default_widget.game_list.widgets.keys():
+                    self.tab_widget.games_tab.default_widget.game_list.widgets[game][1].launch()
+                else:
+                    logger.info(f"Could not find {game} in Games")
+
+            elif action.startswith("start"):
+                self.show()
+            os.remove(file_path)
+        self.timer.start(1000)
 
     def closeEvent(self, e: QCloseEvent):
         if self.settings.value("sys_tray", True, bool):
