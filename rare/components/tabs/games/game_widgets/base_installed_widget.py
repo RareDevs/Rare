@@ -36,7 +36,7 @@ class BaseInstalledWidget(QGroupBox):
         launch.triggered.connect(self.launch)
         self.addAction(launch)
 
-        if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop"))\
+        if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop")) \
                 or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
             self.create_desktop = QAction(self.tr("Remove Desktop link"))
         else:
@@ -65,7 +65,7 @@ class BaseInstalledWidget(QGroupBox):
             path = os.path.expanduser("~/.local/share/applications/")
         else:
             return
-        if not (os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop"))\
+        if not (os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop")) \
                 or os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.lnk"))):
             create_desktop_link(self.igame.app_name, self.core, type_of_link)
             if type_of_link == "desktop":
@@ -90,8 +90,13 @@ class BaseInstalledWidget(QGroupBox):
                 logger.info("Cancel Startup")
                 return 1
         logger.info("Launching " + self.igame.title)
-        self.proc, params = legendary_utils.launch_game(self.core, self.igame.app_name, offline,
-                                                        skip_version_check=skip_version_check)
+        try:
+            self.proc, params = legendary_utils.launch_game(self.core, self.igame.app_name, offline,
+                                                            skip_version_check=skip_version_check)
+        except Exception as e:
+            logger.error(e)
+            return
+
         if not self.proc:
             logger.error("Could not start process")
             return 1
