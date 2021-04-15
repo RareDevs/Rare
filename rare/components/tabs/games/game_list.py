@@ -178,7 +178,7 @@ class GameList(QStackedWidget):
 
         for i, pid in self.procs:
             if executable in i:
-                # Workaround for Satisfactory
+                # Workaround for Satisfactory: Check Cmdline args
                 if igame.app_name in ["CrabEA", "CrabTest"]:
                     p = psutil.Process(pid)
                     if not igame.install_path.split("/")[-1].split("\\")[-1] in " ".join(p.cmdline()):

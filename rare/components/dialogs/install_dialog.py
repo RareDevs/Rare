@@ -18,14 +18,25 @@ class InstallDialog(QDialog):
         self.form = QFormLayout()
         self.update_game = update
         self.layout.addWidget(QLabel(self.tr("<h3>Install {}</h3>").format(self.game.app_title)))
-        default_path = os.path.expanduser("~/legendary")
 
+        if self.core.lgd.config.has_option("Legendary", "install_dir"):
+            default_path = self.core.lgd.config.get("Legendary", "install_dir")
+        else:
+            default_path = os.path.expanduser("~/legendary")
         # TODO read from config
+        if not default_path:
+            default_path = os.path.expanduser("~/legendary")
         if not update:
             self.install_path_field = PathEdit(text=default_path, type_of_file=QFileDialog.DirectoryOnly)
             self.form.addRow(QLabel("Install directory"), self.install_path_field)
 
+        if self.core.lgd.config.has_option("Legendary", "max_workers"):
+            max_workers = self.core.lgd.config.get("Legendary", "max_workers")
+        else:
+            max_workers = 0
+
         self.max_workes = QSpinBox()
+        self.max_workes.setValue(int(max_workers))
         self.form.addRow(QLabel(self.tr("Max workers (0: Default)")), self.max_workes)
 
         self.force = QCheckBox()

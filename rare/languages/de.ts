@@ -172,52 +172,52 @@
         <translation>Keine Updates verfügbar</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="124"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="125"/>
         <source>Error preparing download</source>
         <translation>Fehler beim Vorbereiten des Downloads</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="129"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="130"/>
         <source>Download size is 0. Game already exists</source>
         <translation>Die Größe des Downloads ist 0. Spiel existiert bereits</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="207"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="208"/>
         <source>Installation finished</source>
         <translation>Installation abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="249"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="250"/>
         <source>Installing Game: No active download</source>
         <translation>Installierendes Spiel: Kein aktiver Download</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="259"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="260"/>
         <source>Download speed</source>
         <translation>Geschwindigkeit</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="260"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="261"/>
         <source>Cache used</source>
         <translation>Benutzter Cache</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="261"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="262"/>
         <source>Downloaded</source>
         <translation>Runtergeladen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="262"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="263"/>
         <source>Time left: </source>
         <translation>Zeit übrig: </translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="208"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="209"/>
         <source>Finished Download of game {}</source>
         <translation>Download von {} abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="199"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="200"/>
         <source>Download finished. Reload library</source>
         <translation>Download abgeschlossen. Spiele neu laden</translation>
     </message>
@@ -237,7 +237,7 @@
         <translation type="obsolete">Keine</translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="155"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="156"/>
         <source>Installing Game: </source>
         <translation>Installierendes Spiel: </translation>
     </message>
@@ -288,32 +288,32 @@
 <context>
     <name>GameActions</name>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="181"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="189"/>
         <source>Uninstall game</source>
         <translation>Spiel deinstallieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="183"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="191"/>
         <source>Uninstall</source>
         <translation>Deinstallieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="189"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="197"/>
         <source>Verify Game</source>
         <translation>Spieldateien überprüfen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="194"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="202"/>
         <source>Verify</source>
         <translation>Überprüfen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="203"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="211"/>
         <source>Repair Game</source>
         <translation>Spiel reparieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="205"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="213"/>
         <source>Repair</source>
         <translation>Reparieren</translation>
     </message>
@@ -321,27 +321,27 @@
 <context>
     <name>GameInfo</name>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="106"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="114"/>
         <source>Repair file does not exist or game does not need a repair. Please verify game first</source>
         <translation>Reparationsdatei existiert nicht oder das Spiel braucht keine Reperatur. Bitte das spiel zuerst überprüfen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="131"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="139"/>
         <source>Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?</source>
         <translation>Überprüfung fehlgeschlagen, {} Datei(en) fehlerhaft, {} Datei(en) fehlen. Willst du das Spiel reparieren?</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="160"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="168"/>
         <source>Developer: </source>
         <translation>Entwickler: </translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="161"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="169"/>
         <source>Install size: </source>
         <translation>Größe: </translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="163"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="171"/>
         <source>Install path: </source>
         <translation>Installationsordner: </translation>
     </message>
@@ -577,17 +577,17 @@
 <context>
     <name>InfoTabs</name>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="26"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="27"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="30"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="31"/>
         <source>Game Info</source>
         <translation>Spielinfo</translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="32"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="33"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
@@ -769,7 +769,7 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../components/main_window.py" line="57"/>
+        <location filename="../components/main_window.py" line="81"/>
         <source>There is a download active. Do you really want to exit app?</source>
         <translation>Ein Download läuft noch. Möchtest du die App wirklich beenden?</translation>
     </message>
@@ -1122,7 +1122,7 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>UpdateWidget</name>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="292"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="293"/>
         <source>Update Game</source>
         <translation>Spiel updaten</translation>
     </message>
