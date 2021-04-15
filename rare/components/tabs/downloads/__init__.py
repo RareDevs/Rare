@@ -77,6 +77,7 @@ class DownloadTab(QWidget):
             widget.update.connect(self.update_game)
             if QSettings().value("auto_update", False, bool):
                 self.update_game(igame.app_name, True)
+                widget.update_button.setDisabled(True)
 
         self.updates.setLayout(self.update_layout)
         self.layout.addWidget(self.updates)

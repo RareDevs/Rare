@@ -5,8 +5,10 @@ from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox, \
     QProgressBar, QStackedWidget, QGroupBox, QScrollArea
 from qtawesome import icon
+from rare.utils import legendary_utils
 
 from rare import utils
+from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.tabs.games.game_info.game_settings import GameSettings
 from rare.utils.legendary_utils import VerifyThread
 from rare.utils.extra_widgets import SideTabBar
@@ -47,7 +49,6 @@ class GameInfo(QScrollArea):
     update_list = pyqtSignal()
     verify_game = pyqtSignal(str)
     verify_threads = {}
-    action = pyqtSignal(str)
 
     def __init__(self, core: LegendaryCore):
         super(GameInfo, self).__init__()
@@ -90,7 +91,7 @@ class GameInfo(QScrollArea):
         top_layout.addStretch()
         self.game_actions = GameActions()
 
-        self.game_actions.uninstall_button.clicked.connect(lambda: self.action.emit("uninstall"))
+        self.game_actions.uninstall_button.clicked.connect(self.uninstall)
         self.game_actions.verify_button.clicked.connect(self.verify)
         self.game_actions.repair_button.clicked.connect(self.repair)
 
@@ -99,6 +100,14 @@ class GameInfo(QScrollArea):
         self.layout.addStretch()
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
+
+    def uninstall(self):
+        infos = UninstallDialog(self.game).get_information()
+        if infos == 0:
+            print("Cancel Uninstall")
+            return
+        legendary_utils.uninstall(self.game.app_name, self.core, infos)
+        self.update_list.emit()
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')

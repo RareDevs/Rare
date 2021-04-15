@@ -28,7 +28,6 @@ def main():
             if args.subparser == "launch":
                 file.write("launch " + args.app_name)
             else:
-                print("write start")
                 file.write("start")
             file.close()
 
