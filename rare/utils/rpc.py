@@ -60,6 +60,10 @@ class DiscordRPC(QObject):
                 logger.warning("Discord is not active\n" + str(e))
                 self.RPC = None
                 return
+            except FileNotFoundError as e:
+                logger.warning("File not found error\n" + str(e))
+                self.RPC = None
+                return
         self.update_rpc(app_name)
 
     def update_rpc(self, app_name=None):
