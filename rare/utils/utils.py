@@ -27,14 +27,14 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
     dlc_list = []
     for i in dlcs.values():
         dlc_list.append(i[0])
-    l = games + dlc_list
-    for i, game in enumerate(l):
+    game_list = games + dlc_list
+    for i, game in enumerate(game_list):
         try:
             download_image(game)
         except json.decoder.JSONDecodeError:
             shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
             download_image(game)
-        signal.emit(i)
+        signal.emit(i/len(game_list)*100)
 
 
 def download_image(game, force=False):
