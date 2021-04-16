@@ -2,7 +2,7 @@ import os
 
 from PyQt5.QtCore import pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QScrollArea, QWidget, QLabel, QPushButton
+from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QScrollArea, QWidget, QLabel, QPushButton, QMessageBox
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import Game
@@ -70,7 +70,10 @@ class DlcTab(QScrollArea):
         self.setWidget(self.widget)
 
     def install(self, app_name):
-        infos = InstallDialog(self.game.app_name, self.core).get_information()
+        if not self.core.is_installed(self.game.app_name):
+            QMessageBox.warning(self, "Error", self.tr("Base Game is not installed. Please install {} first").format(self.game.app_title))
+            return
+        infos = InstallDialog(self.game.app_name, self.core, True).get_information()
         if infos != 0:
             path, max_workers, force, ignore_free_space = infos
             self.install_dlc.emit(
