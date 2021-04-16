@@ -84,6 +84,7 @@ class DLCWidget(QGroupBox):
     def __init__(self, dlc: Game, installed: bool):
         super(DLCWidget, self).__init__()
         self.main_layout = QHBoxLayout()
+        self.dlc = dlc
         IMAGE_DIR = QSettings().value("img_dir", os.path.expanduser("~/.cache/rare/images"))
         if installed:
 
@@ -135,3 +136,8 @@ class DLCWidget(QGroupBox):
         self.setLayout(self.main_layout)
 
         self.layout.addStretch(1)
+
+    def install_game(self):
+        self.install_button.setDisabled(True)
+        self.install_button.setText(self.tr("Installing"))
+        self.install.emit(self.dlc.app_name)
