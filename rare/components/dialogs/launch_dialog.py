@@ -78,7 +78,7 @@ class LaunchDialog(QDialog):
 
     def launch(self):
         # self.core = core
-        self.pb_size = len(self.core.get_game_list())
+        self.pb_size = len(self.core.get_game_and_dlc_list())
         self.info_text.setText(self.tr("Downloading Images"))
         self.thread = LaunchThread(self.core, self)
         self.thread.download_progess.connect(self.update_pb)

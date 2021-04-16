@@ -13,6 +13,7 @@ class GameTab(QWidget):
         super(GameTab, self).__init__()
         self.layout = QStackedLayout()
         self.default_widget = Games(core)
+        # Signal to show info
         self.default_widget.game_list.show_game_info.connect(self.show_info)
         self.default_widget.head_bar.import_game.clicked.connect(lambda: self.layout.setCurrentIndex(2))
         self.layout.addWidget(self.default_widget)
@@ -33,7 +34,7 @@ class GameTab(QWidget):
         self.layout.setCurrentIndex(0)
 
     def show_info(self, app_name):
-        self.game_info.update_game(app_name)
+        self.game_info.update_game(app_name, self.default_widget.game_list.dlcs)
         self.game_info.setCurrentIndex(1)
         self.layout.setCurrentIndex(1)
 

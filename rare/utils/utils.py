@@ -23,8 +23,12 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
         logger.info("Create Image dir")
 
     # Download Images
-    for i, game in enumerate(sorted(core.get_game_list(), key=lambda x: x.app_title)):
-
+    games, dlcs = core.get_game_and_dlc_list()
+    dlc_list = []
+    for i in dlcs.values():
+        dlc_list.append(i[0])
+    l = games + dlc_list
+    for i, game in enumerate(l):
         try:
             download_image(game)
         except json.decoder.JSONDecodeError:
@@ -34,7 +38,7 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
 
 
 def download_image(game, force=False):
-    if force:
+    if force and os.path.exists(f"{IMAGE_DIR}/{game.app_name}"):
         shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
     if not os.path.isdir(f"{IMAGE_DIR}/" + game.app_name):
         os.mkdir(f"{IMAGE_DIR}/" + game.app_name)

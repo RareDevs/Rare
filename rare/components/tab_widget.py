@@ -65,6 +65,8 @@ class TabWidget(QTabWidget):
         self.downloadTab.finished.connect(self.dl_finished)
         # start download
         self.games_tab.default_widget.game_list.install_game.connect(self.start_download)
+        # install dlc
+        self.games_tab.game_info.dlc_tab.install_dlc.connect(self.start_download)
 
         # repair game
         self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
@@ -93,8 +95,8 @@ class TabWidget(QTabWidget):
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
 
-    def start_download(self, app_name):
-        self.downloadTab.install_game(app_name)
+    def start_download(self, options):
+        self.downloadTab.install_game(options)
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
 

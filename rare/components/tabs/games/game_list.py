@@ -116,9 +116,10 @@ class GameList(QStackedWidget):
         uninstalled_games = []
         installed = [i.app_name for i in self.core.get_installed_list()]
         # get Uninstalled games
-        for igame in sorted(self.core.get_game_list(), key=lambda x: x.app_title):
-            if not igame.app_name in installed:
-                uninstalled_games.append(igame)
+        games, self.dlcs = self.core.get_game_and_dlc_list()
+        for game in sorted(games, key=lambda x: x.app_title):
+            if not game.app_name in installed:
+                uninstalled_games.append(game)
 
         # add uninstalled games
         for igame in uninstalled_games:
@@ -129,7 +130,6 @@ class GameList(QStackedWidget):
                     logger.info(igame.app_title + " has a corrupt image.")
                     download_image(igame, force=True)
                     pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/UninstalledArt.png")
-
             else:
                 logger.warning(f"No Image found: {igame.app_title}")
                 download_image(igame, force=True)
