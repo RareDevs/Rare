@@ -4,10 +4,15 @@ from logging import getLogger
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QGroupBox
 
-from rare.components.dialogs.path_input_dialog import PathInputDialog
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame, SaveGameStatus
+from rare.components.dialogs.path_input_dialog import PathInputDialog
 
+
+def get_raw_save_path(app_name, core):
+    game = core.lgd.get_game_meta(app_name)
+    save_path = game.metadata['customAttributes'].get('CloudSaveFolder', {}).get('value')
+    return save_path
 
 class _UploadThread(QThread):
     signal = pyqtSignal()
@@ -131,6 +136,11 @@ class SyncWidget(QGroupBox):
         self.layout.addWidget(cloud_save_date)
 
         save_path_layout = QHBoxLayout()
+
+        self.raw_path = QLabel("Raw path: "+get_raw_save_path(self.game.app_name, self.core))
+        self.raw_path.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.layout.addWidget(self.raw_path)
+
         self.save_path_text = QLabel(igame.save_path)
         self.save_path_text.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.save_path_text.setWordWrap(True)
