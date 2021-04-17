@@ -78,7 +78,6 @@ class LaunchDialog(QDialog):
 
     def launch(self):
         # self.core = core
-        self.pb_size = len(self.core.get_game_list())
         self.info_text.setText(self.tr("Downloading Images"))
         self.thread = LaunchThread(self.core, self)
         self.thread.download_progess.connect(self.update_pb)
@@ -86,7 +85,7 @@ class LaunchDialog(QDialog):
         self.thread.start()
 
     def update_pb(self, i: int):
-        self.info_pb.setValue(i / self.pb_size * 100)
+        self.info_pb.setValue(i)
 
     def info(self, text: str):
         if text == "finish":

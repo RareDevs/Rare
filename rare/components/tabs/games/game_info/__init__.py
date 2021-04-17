@@ -5,6 +5,8 @@ from PyQt5.QtGui import QPixmap, QKeyEvent
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QTabWidget, QMessageBox, \
     QProgressBar, QStackedWidget, QGroupBox, QScrollArea
 from qtawesome import icon
+
+from rare.components.tabs.games.game_info.dlcs import DlcTab
 from rare.utils import legendary_utils
 
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
@@ -29,13 +31,25 @@ class InfoTabs(QTabWidget):
 
         self.info = GameInfo(core)
         self.addTab(self.info, self.tr("Game Info"))
+
         self.settings = GameSettings(core)
         self.addTab(self.settings, self.tr("Settings"))
         self.tabBar().setCurrentIndex(1)
 
-    def update_game(self, app_name):
+        self.dlc_tab = DlcTab(core)
+        self.addTab(self.dlc_tab, self.tr("DLCs"))
+
+    def update_game(self, app_name, dlcs: list):
+
         self.info.update_game(app_name)
         self.settings.update_game(app_name)
+
+        # DLC Tab: Disable if no dlcs available
+        if len(dlcs[self.core.get_game(app_name).asset_info.catalog_item_id]) == 0:
+            self.setTabEnabled(3, False)
+        else:
+            self.setTabEnabled(3, True)
+            self.dlc_tab.update_dlcs(app_name, dlcs)
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:

@@ -23,7 +23,6 @@ class InstallDialog(QDialog):
             default_path = self.core.lgd.config.get("Legendary", "install_dir")
         else:
             default_path = os.path.expanduser("~/legendary")
-        # TODO read from config
         if not default_path:
             default_path = os.path.expanduser("~/legendary")
         if not update:
@@ -63,7 +62,9 @@ class InstallDialog(QDialog):
 
         self.setLayout(self.layout)
 
-    def get_information(self):
+    def get_information(self, path=None):
+        if path:
+            self.install_path_field.text_edit.setText(path)
         self.exec_()
         return self.infos
 
