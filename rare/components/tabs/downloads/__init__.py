@@ -133,6 +133,7 @@ class DownloadTab(QWidget):
         # Information
         if not from_update:
             if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
+                self.finished.emit(False)
                 return
 
         if self.active_game is None:

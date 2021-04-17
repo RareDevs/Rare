@@ -96,9 +96,9 @@ class TabWidget(QTabWidget):
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
 
     def start_download(self, options):
-        self.downloadTab.install_game(options)
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
+        self.downloadTab.install_game(options)
 
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())

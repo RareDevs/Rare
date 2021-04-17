@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButt
 from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
 from custom_legendary.core import LegendaryCore
+from rare.utils.utils import get_size
 
 logger = getLogger("LegendarySettings")
 
@@ -96,7 +97,7 @@ class LegendarySettings(QScrollArea):
 
         after = self.core.lgd.get_dir_size()
         logger.info(f'Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.')
-        if cleaned := (before-after) > 0:
-            QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {} MB").format(round(cleaned / 1024 / 1024, 3)))
+        if (before-after) > 0:
+            QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {}").format(get_size(before-after)))
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")
