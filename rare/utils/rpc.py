@@ -67,7 +67,7 @@ class DiscordRPC(QObject):
         self.update_rpc(app_name)
 
     def update_rpc(self, app_name=None):
-        if self.settings.value("rpc_enable", 0, int) == 2 or (app_name is None and self.settings.value("rpc_enable", 0) == 0):
+        if self.settings.value("rpc_enable", 0, int) == 2 or (app_name is None and self.settings.value("rpc_enable", 0, int) == 0):
             self.remove_rpc()
             return
         title = None
