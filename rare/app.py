@@ -8,12 +8,12 @@ from PyQt5.QtCore import QSettings, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon
 
+from custom_legendary.core import LegendaryCore
 from rare import lang_path, style_path
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
 from rare.utils.utils import get_lang
-from custom_legendary.core import LegendaryCore
 
 start_time = time.strftime('%y-%m-%d--%H:%M')  # year-month-day-hour-minute
 file_name = os.path.expanduser(f"~/.cache/rare/logs/Rare_{start_time}.log")
@@ -24,7 +24,7 @@ logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',
     level=logging.INFO,
     filename=file_name,
-    )
+)
 logger = logging.getLogger("Rare")
 
 
@@ -73,11 +73,12 @@ class App(QApplication):
         # launch app
         self.launch_dialog = LaunchDialog(self.core)
         self.launch_dialog.start_app.connect(self.start_app)
-        if not args.silent:
+        if not args.silent or args.subparser == "launch":
             self.launch_dialog.show()
 
     def start_app(self):
         self.mainwindow = MainWindow(self.core, self.args)
+        self.launch_dialog.close()
         self.tray_icon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(lambda: exit(0))
         self.tray_icon.start_rare.triggered.connect(self.mainwindow.show)
@@ -85,9 +86,9 @@ class App(QApplication):
         self.mainwindow.tab_widget.downloadTab.finished.connect(lambda update: self.tray_icon.showMessage(
             self.tr("Download finished"), self.tr("Download finished. Game is playable now"),
             QSystemTrayIcon.Information, 4000) if update else None)
-        self.launch_dialog.close()
 
-        self.mainwindow.show()
+        if not self.args.silent:
+            self.mainwindow.show()
 
     def tray(self, reason):
         if reason == QSystemTrayIcon.DoubleClick:

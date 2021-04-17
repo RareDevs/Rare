@@ -1,5 +1,6 @@
 import os
 from argparse import ArgumentParser
+
 from rare import __version__
 from rare.utils import singleton
 
@@ -32,6 +33,9 @@ def main():
             file.close()
 
         exit(0)
+
+    if args.subparser == "launch":
+        args.silent = True
 
     from rare.app import start
     start(args)

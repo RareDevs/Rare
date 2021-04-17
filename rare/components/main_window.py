@@ -52,7 +52,6 @@ class MainWindow(QMainWindow):
         self.timer.timeout.connect(self.timer_finished)
         self.timer.start(1000)
 
-
     def timer_finished(self):
         file_path = os.path.expanduser("~/.cache/rare/lockfile")
         if os.path.exists(file_path):
