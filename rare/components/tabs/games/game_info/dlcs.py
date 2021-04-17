@@ -32,7 +32,7 @@ class DlcTab(QScrollArea):
         self.installed = []
         self.available = []
 
-    def update_dlcs(self, app_name, dlcs: list[Game]):
+    def update_dlcs(self, app_name, dlcs: list):
         self.installed_dlcs = [i.app_name for i in self.core.get_installed_dlc_list()]
         self.installed_dlc_widget = QGroupBox(self.tr("Installed DLCs"))
         self.installed_layout = QVBoxLayout()
