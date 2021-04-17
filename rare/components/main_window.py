@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
 
         self.setGeometry(0, 0, width, height)
         self.setWindowTitle("Rare - GUI for legendary")
-        self.tab_widget = TabWidget(core)
+        self.tab_widget = TabWidget(core, self)
         self.setCentralWidget(self.tab_widget)
 
         # Discord RPC on game launch
@@ -52,7 +52,6 @@ class MainWindow(QMainWindow):
         self.timer.timeout.connect(self.timer_finished)
         self.timer.start(1000)
 
-        self.show()
 
     def timer_finished(self):
         file_path = os.path.expanduser("~/.cache/rare/lockfile")

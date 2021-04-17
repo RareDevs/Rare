@@ -15,8 +15,8 @@ class DlcTab(QScrollArea):
     install_dlc = pyqtSignal(InstallOptions)
     game: Game
 
-    def __init__(self, core: LegendaryCore):
-        super(DlcTab, self).__init__()
+    def __init__(self, core: LegendaryCore, parent):
+        super(DlcTab, self).__init__(parent=parent)
         self.core = core
         self.widget = QGroupBox("DLCs")
         self.widget.setObjectName("group")

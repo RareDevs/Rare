@@ -28,8 +28,8 @@ class GameList(QStackedWidget):
     running_games = []
     active_game = ("", 0)
 
-    def __init__(self, core: LegendaryCore):
-        super(GameList, self).__init__()
+    def __init__(self, core: LegendaryCore, parent):
+        super(GameList, self).__init__(parent=parent)
         self.core = core
         self.setObjectName("list_widget")
 
@@ -39,10 +39,10 @@ class GameList(QStackedWidget):
         self.init_ui(icon_view)
 
     def init_ui(self, icon_view=True):
-        self.icon_scrollarea = QScrollArea()
-        self.icon_widget = QWidget()
-        self.list_scrollarea = QScrollArea()
-        self.list_widget = QWidget()
+        self.icon_scrollarea = QScrollArea(parent=self)
+        self.icon_widget = QWidget(parent=self.icon_scrollarea)
+        self.list_scrollarea = QScrollArea(parent=self)
+        self.list_widget = QWidget(parent=self.list_scrollarea)
 
         self.icon_scrollarea.setWidgetResizable(True)
         self.icon_scrollarea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -83,7 +83,10 @@ class GameList(QStackedWidget):
                 pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png")
 
             icon_widget = GameWidgetInstalled(igame, self.core, pixmap)
+            self.icon_layout.addWidget(icon_widget)
+
             list_widget = InstalledListWidget(igame, self.core, pixmap)
+            self.list_layout.addWidget(list_widget)
 
             icon_widget.show_info.connect(self.show_game_info.emit)
             list_widget.show_info.connect(self.show_game_info.emit)
@@ -95,8 +98,7 @@ class GameList(QStackedWidget):
             list_widget.finish_signal.connect(self.finished)
             list_widget.update_list.connect(lambda: self.update_list(self.settings.value("icon_view", True, bool)))
 
-            self.icon_layout.addWidget(icon_widget)
-            self.list_layout.addWidget(list_widget)
+
 
             if icon_widget.update_available:
                 self.updates.append(igame)

@@ -17,24 +17,25 @@ from rare.utils.models import InstallOptions
 class TabWidget(QTabWidget):
     delete_presence = pyqtSignal()
 
-    def __init__(self, core: LegendaryCore):
-        super(TabWidget, self).__init__()
+    def __init__(self, core: LegendaryCore, parent):
+        super(TabWidget, self).__init__(parent=parent)
         disabled_tab = 3
         self.core = core
         self.setTabBar(TabBar(disabled_tab))
 
         # Generate Tabs
-        self.games_tab = GameTab(core)
-        updates = self.games_tab.default_widget.game_list.updates
-        self.downloadTab = DownloadTab(core, updates)
-        self.cloud_saves = SyncSaves(core)
-
-        self.settings = SettingsTab(core)
-
-        # add tabs
+        self.games_tab = GameTab(core, self)
         self.addTab(self.games_tab, self.tr("Games"))
+
+        updates = self.games_tab.default_widget.game_list.updates
+        self.downloadTab = DownloadTab(core, updates, self)
         self.addTab(self.downloadTab, "Downloads" + (" (" + str(len(updates)) + ")" if len(updates) != 0 else ""))
+
+        self.cloud_saves = SyncSaves(core, self)
         self.addTab(self.cloud_saves, "Cloud Saves")
+
+        self.settings = SettingsTab(core, self)
+
         # Space Tab
         self.addTab(QWidget(), "")
         self.setTabEnabled(disabled_tab, False)

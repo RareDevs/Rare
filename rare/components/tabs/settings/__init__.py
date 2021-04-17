@@ -10,8 +10,8 @@ from rare.utils.extra_widgets import SideTabBar
 
 
 class SettingsTab(QTabWidget):
-    def __init__(self, core):
-        super(SettingsTab, self).__init__()
+    def __init__(self, core, parent):
+        super(SettingsTab, self).__init__(parent=parent)
         self.core = core
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)

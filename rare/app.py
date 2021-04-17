@@ -24,7 +24,6 @@ logging.basicConfig(
     format='[%(name)s] %(levelname)s: %(message)s',
     level=logging.INFO,
     filename=file_name,
-    filemode="w"
     )
 logger = logging.getLogger("Rare")
 
@@ -62,7 +61,7 @@ class App(QApplication):
         lang = settings.value("language", get_lang(), type=str)
         if os.path.exists(lang_path + lang + ".qm"):
             self.translator.load(lang_path + lang + ".qm")
-            logger.info("Your language is supported")
+            logger.info("Your language is supported: " + lang)
         elif not lang == "en":
             logger.info("Your language is not supported")
         self.installTranslator(self.translator)
@@ -74,7 +73,8 @@ class App(QApplication):
         # launch app
         self.launch_dialog = LaunchDialog(self.core)
         self.launch_dialog.start_app.connect(self.start_app)
-        self.launch_dialog.show()
+        if not args.silent:
+            self.launch_dialog.show()
 
     def start_app(self):
         self.mainwindow = MainWindow(self.core, self.args)
@@ -86,6 +86,8 @@ class App(QApplication):
             self.tr("Download finished"), self.tr("Download finished. Game is playable now"),
             QSystemTrayIcon.Information, 4000) if update else None)
         self.launch_dialog.close()
+
+        self.mainwindow.show()
 
     def tray(self, reason):
         if reason == QSystemTrayIcon.DoubleClick:

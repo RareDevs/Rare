@@ -18,8 +18,8 @@ class GameSettings(QScrollArea):
     # variable to no update when changing game
     change = False
 
-    def __init__(self, core: LegendaryCore):
-        super(GameSettings, self).__init__()
+    def __init__(self, core: LegendaryCore, parent):
+        super(GameSettings, self).__init__(parent=parent)
         self.core = core
         self.widget = QWidget()
         self.settings = QSettings()

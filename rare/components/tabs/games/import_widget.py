@@ -18,8 +18,8 @@ logger = getLogger("Import")
 class ImportWidget(QWidget):
     update_list = pyqtSignal()
 
-    def __init__(self, core: LegendaryCore):
-        super(ImportWidget, self).__init__()
+    def __init__(self, core: LegendaryCore, parent):
+        super(ImportWidget, self).__init__(parent=parent)
         self.core = core
         self.game_list = [i.app_name for i in self.core.get_game_list()]
 
