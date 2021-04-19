@@ -20,8 +20,8 @@ class GameWidgetInstalled(BaseInstalledWidget):
     show_info = pyqtSignal(str)
     update_game = pyqtSignal()
 
-    def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap):
-        super(GameWidgetInstalled, self).__init__(game, core, pixmap)
+    def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap, offline):
+        super(GameWidgetInstalled, self).__init__(game, core, pixmap, offline)
         self.setObjectName("game_widget_icon")
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)

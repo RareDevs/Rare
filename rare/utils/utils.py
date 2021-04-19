@@ -127,9 +127,12 @@ def get_possible_langs():
 
 
 def get_latest_version():
-    resp = requests.get("https://api.github.com/repos/Dummerle/Rare/releases/latest")
-    tag = json.loads(resp.content.decode("utf-8"))["tag_name"]
-    return tag
+    try:
+        resp = requests.get("https://api.github.com/repos/Dummerle/Rare/releases/latest")
+        tag = json.loads(resp.content.decode("utf-8"))["tag_name"]
+        return tag
+    except requests.exceptions.ConnectionError:
+        return "0.0.0"
 
 
 def get_size(b: int) -> str:

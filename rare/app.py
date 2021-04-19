@@ -1,6 +1,7 @@
 import configparser
 import logging
 import os
+import shutil
 import sys
 import time
 
@@ -31,8 +32,7 @@ logger = logging.getLogger("Rare")
 class App(QApplication):
     def __init__(self, args):
         super(App, self).__init__(sys.argv)
-        self.args = args
-        # add some options
+        self.args = args  # add some options
 
         # init Legendary
         try:
@@ -71,21 +71,24 @@ class App(QApplication):
         self.setWindowIcon(QIcon(style_path + "Logo.png"))
 
         # launch app
-        self.launch_dialog = LaunchDialog(self.core)
+        self.launch_dialog = LaunchDialog(self.core, args.offline)
         self.launch_dialog.start_app.connect(self.start_app)
+
         if not args.silent or args.subparser == "launch":
             self.launch_dialog.show()
 
-    def start_app(self):
+    def start_app(self, offline=False):
+        self.args.offline = offline
         self.mainwindow = MainWindow(self.core, self.args)
         self.launch_dialog.close()
         self.tray_icon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(lambda: exit(0))
         self.tray_icon.start_rare.triggered.connect(self.mainwindow.show)
         self.tray_icon.activated.connect(self.tray)
-        self.mainwindow.tab_widget.downloadTab.finished.connect(lambda update: self.tray_icon.showMessage(
-            self.tr("Download finished"), self.tr("Download finished. Game is playable now"),
-            QSystemTrayIcon.Information, 4000) if update else None)
+        if not offline:
+            self.mainwindow.tab_widget.downloadTab.finished.connect(lambda update: self.tray_icon.showMessage(
+                self.tr("Download finished"), self.tr("Download finished. Game is playable now"),
+                QSystemTrayIcon.Information, 4000) if update else None)
 
         if not self.args.silent:
             self.mainwindow.show()

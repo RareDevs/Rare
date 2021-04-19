@@ -28,10 +28,11 @@ class GameList(QStackedWidget):
     running_games = []
     active_game = ("", 0)
 
-    def __init__(self, core: LegendaryCore, parent):
+    def __init__(self, core: LegendaryCore, parent, offline):
         super(GameList, self).__init__(parent=parent)
         self.core = core
         self.setObjectName("list_widget")
+        self.offline = offline
 
         self.settings = QSettings()
         icon_view = self.settings.value("icon_view", True, bool)
@@ -82,10 +83,10 @@ class GameList(QStackedWidget):
                 download_image(igame, force=True)
                 pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png")
 
-            icon_widget = GameWidgetInstalled(igame, self.core, pixmap)
+            icon_widget = GameWidgetInstalled(igame, self.core, pixmap, self.offline)
             self.icon_layout.addWidget(icon_widget)
 
-            list_widget = InstalledListWidget(igame, self.core, pixmap)
+            list_widget = InstalledListWidget(igame, self.core, pixmap, self.offline)
             self.list_layout.addWidget(list_widget)
 
             icon_widget.show_info.connect(self.show_game_info.emit)
