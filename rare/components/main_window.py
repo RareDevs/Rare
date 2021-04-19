@@ -18,27 +18,28 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.settings = QSettings()
         self.core = core
-        self.rpc = DiscordRPC(core)
+        self.offline = args.offline
         width, height = 1200, 800
         if self.settings.value("save_size", False):
             width, height = self.settings.value("window_size", (1200, 800), tuple)
 
         self.setGeometry(0, 0, width, height)
         self.setWindowTitle("Rare - GUI for legendary")
-        self.tab_widget = TabWidget(core, self)
+        self.tab_widget = TabWidget(core, self, args.offline)
         self.setCentralWidget(self.tab_widget)
-
-        # Discord RPC on game launch
-        self.tab_widget.games_tab.default_widget.game_list.game_started.connect(
-            lambda: self.rpc.set_discord_rpc(self.tab_widget.games_tab.default_widget.game_list.running_games[0]))
-        # Remove RPC
-        self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
-        # Show RPC on changed rare_settings
-        self.tab_widget.settings.rare_settings.rpc.update_settings.connect(
-            lambda: self.rpc.changed_settings(self.tab_widget.games_tab.default_widget.game_list.running_games))
+        if not args.offline:
+            self.rpc = DiscordRPC(core)
+            # Discord RPC on game launch
+            self.tab_widget.games_tab.default_widget.game_list.game_started.connect(
+                lambda: self.rpc.set_discord_rpc(self.tab_widget.games_tab.default_widget.game_list.running_games[0]))
+            # Remove RPC
+            self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
+            # Show RPC on changed rare_settings
+            self.tab_widget.settings.rare_settings.rpc.update_settings.connect(
+                lambda: self.rpc.changed_settings(self.tab_widget.games_tab.default_widget.game_list.running_games))
 
         game = self.tab_widget.games_tab.default_widget.game_list.active_game
-        if game != ("", 0):
+        if game != ("", 0) and not args.offline:
             self.rpc.set_discord_rpc(game[0])  # Appname
 
         if args.subparser == "launch":
@@ -75,6 +76,8 @@ class MainWindow(QMainWindow):
             self.hide()
             e.ignore()
             return
+        elif self.offline:
+            pass
         elif self.tab_widget.downloadTab.active_game is not None:
             if not QMessageBox.question(self, "Close",
                                         self.tr("There is a download active. Do you really want to exit app?"),

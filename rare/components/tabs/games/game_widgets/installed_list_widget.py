@@ -17,8 +17,8 @@ class InstalledListWidget(BaseInstalledWidget):
     signal = pyqtSignal(str)
     update_game = pyqtSignal()
 
-    def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap):
-        super(InstalledListWidget, self).__init__(game, core, pixmap)
+    def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap, offline):
+        super(InstalledListWidget, self).__init__(game, core, pixmap, offline)
         self.dev = core.get_game(self.igame.app_name).metadata["developer"]
         self.size = game.install_size
         self.launch_params = game.launch_parameters

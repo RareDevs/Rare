@@ -8,11 +8,14 @@ from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame, SaveGameStatus
 from rare.components.dialogs.path_input_dialog import PathInputDialog
 
+logger = getLogger("Sync")
+
 
 def get_raw_save_path(app_name, core):
     game = core.lgd.get_game_meta(app_name)
     save_path = game.metadata['customAttributes'].get('CloudSaveFolder', {}).get('value')
     return save_path
+
 
 class _UploadThread(QThread):
     signal = pyqtSignal()
@@ -25,7 +28,10 @@ class _UploadThread(QThread):
         self.save_path = save_path
 
     def run(self) -> None:
-        self.core.upload_save(self.app_name, self.save_path, self.date_time)
+        try:
+            self.core.upload_save(self.app_name, self.save_path, self.date_time)
+        except Exception as e:
+            logger.error(e)
 
 
 class _DownloadThread(QThread):
@@ -39,7 +45,10 @@ class _DownloadThread(QThread):
         self.save_path = save_path
 
     def run(self) -> None:
-        self.core.download_saves(self.app_name, self.latest_save.manifest_name, self.save_path, clean_dir=True)
+        try:
+            self.core.download_saves(self.app_name, self.latest_save.manifest_name, self.save_path, clean_dir=True)
+        except Exception as e:
+            logger.error(e)
 
 
 class SyncWidget(QGroupBox):
@@ -137,7 +146,7 @@ class SyncWidget(QGroupBox):
 
         save_path_layout = QHBoxLayout()
 
-        self.raw_path = QLabel("Raw path: "+get_raw_save_path(self.game.app_name, self.core))
+        self.raw_path = QLabel("Raw path: " + get_raw_save_path(self.game.app_name, self.core))
         self.raw_path.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.layout.addWidget(self.raw_path)
 
