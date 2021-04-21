@@ -9,6 +9,7 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("-V", "--version", action="store_true")
     parser.add_argument("-S", "--silent", action="store_true")
+    parser.add_argument("--offline", action="store_true")
     subparsers = parser.add_subparsers(title="Commands", dest="subparser")
 
     launch_parser = subparsers.add_parser("launch")

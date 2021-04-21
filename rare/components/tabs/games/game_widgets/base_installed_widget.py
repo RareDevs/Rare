@@ -20,13 +20,14 @@ class BaseInstalledWidget(QGroupBox):
     update_list = pyqtSignal()
     proc: QProcess()
 
-    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap):
+    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap, offline):
         super(BaseInstalledWidget, self).__init__()
         self.igame = igame
         self.core = core
         self.game = self.core.get_game(self.igame.app_name)
         self.pixmap = pixmap
         self.game_running = False
+        self.offline = offline
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -90,6 +91,11 @@ class BaseInstalledWidget(QGroupBox):
                 logger.info("Cancel Startup")
                 return 1
         logger.info("Launching " + self.igame.title)
+        if offline or self.offline:
+            if not self.igame.can_run_offline:
+                QMessageBox.warning(self, "Offline", self.tr("Game cannot run offline. Please start game in Online mode"))
+                return
+
         try:
             self.proc, params = legendary_utils.launch_game(self.core, self.igame.app_name, offline,
                                                             skip_version_check=skip_version_check)

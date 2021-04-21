@@ -9,10 +9,10 @@ from rare.utils.extra_widgets import SelectViewWidget
 
 
 class GameTab(QWidget):
-    def __init__(self, core, parent):
+    def __init__(self, core, parent, offline):
         super(GameTab, self).__init__(parent=parent)
         self.layout = QStackedLayout()
-        self.default_widget = Games(core, self)
+        self.default_widget = Games(core, self, offline)
         # Signal to show info
         self.default_widget.game_list.show_game_info.connect(self.show_info)
         self.default_widget.head_bar.import_game.clicked.connect(lambda: self.layout.setCurrentIndex(2))
@@ -41,14 +41,14 @@ class GameTab(QWidget):
 
 
 class Games(QWidget):
-    def __init__(self, core, parent):
+    def __init__(self, core, parent, offline):
         super(Games, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
 
         self.head_bar = GameListHeadBar(self)
         self.head_bar.setObjectName("head_bar")
 
-        self.game_list = GameList(core, self)
+        self.game_list = GameList(core, self, offline)
 
         self.head_bar.search_bar.textChanged.connect(
             lambda: self.game_list.filter(self.head_bar.search_bar.text()))
