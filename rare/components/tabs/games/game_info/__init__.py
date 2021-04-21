@@ -98,6 +98,7 @@ class GameInfo(QScrollArea):
 
         self.install_path = QLabel("Error")
         self.install_path.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.install_path.setWordWrap(True)
         right_layout.addWidget(self.install_path)
 
         top_layout.addLayout(right_layout)
