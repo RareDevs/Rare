@@ -65,8 +65,10 @@ class GameList(QStackedWidget):
         self.updates = []
         self.widgets = {}
 
+        self.installed = sorted(self.core.get_installed_list(), key=lambda x: x.title)
+
         # Installed Games
-        for igame in sorted(self.core.get_installed_list(), key=lambda x: x.title):
+        for igame in self.installed:
             if os.path.exists(f"{IMAGE_DIR}/{igame.app_name}/FinalArt.png"):
                 pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/FinalArt.png")
             elif os.path.exists(f"{IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png"):
@@ -115,16 +117,16 @@ class GameList(QStackedWidget):
                 self.timer.timeout.connect(self.is_finished)
                 self.timer.start(10000)
 
-        uninstalled_games = []
+        self.uninstalled_games = []
         installed = [i.app_name for i in self.core.get_installed_list()]
         # get Uninstalled games
         games, self.dlcs = self.core.get_game_and_dlc_list()
         for game in sorted(games, key=lambda x: x.app_title):
             if not game.app_name in installed:
-                uninstalled_games.append(game)
+                self.uninstalled_games.append(game)
 
         # add uninstalled games
-        for igame in uninstalled_games:
+        for igame in self.uninstalled_games:
             if os.path.exists(f"{IMAGE_DIR}/{igame.app_name}/UninstalledArt.png"):
                 pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/UninstalledArt.png")
 
@@ -238,6 +240,22 @@ class GameList(QStackedWidget):
 
     def update_list(self, icon_view=True):
         self.settings.setValue("icon_view", icon_view)
+
+        uninstalled_games = []
+        installed = [i.app_name for i in self.core.get_installed_list()]
+        # get Uninstalled games
+        games = self.core.get_game_list(True)
+        for game in sorted(games, key=lambda x: x.app_title):
+            if not game.app_name in installed:
+                uninstalled_games.append(game.app_name)
+
+        # get new uninstalled/ installed games that changed
+        new_installed_games = list(set(installed)-set([i.app_name for i in self.installed]))
+        new_uninstalled_games = list(set(uninstalled_games)-set([i.app_name for i in self.uninstalled_games]))
+
+        if not new_uninstalled_games and not new_installed_games:
+            return
+
         self.removeWidget(self.icon_scrollarea)
         self.removeWidget(self.list_scrollarea)
         self.init_ui(icon_view)
