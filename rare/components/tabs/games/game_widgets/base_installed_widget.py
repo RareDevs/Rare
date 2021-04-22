@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt
+from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction
 
 from custom_legendary.core import LegendaryCore
@@ -108,11 +108,26 @@ class BaseInstalledWidget(QGroupBox):
         if not self.proc:
             logger.error("Could not start process")
             return 1
+        self.game_logger = getLogger(self.game.app_name)
+
         self.proc.finished.connect(self.finished)
+        self.proc.readyReadStandardOutput.connect(self.stdout)
+        self.proc.readyReadStandardError.connect(self.stderr)
         self.proc.start(params[0], params[1:])
         self.launch_signal.emit(self.igame.app_name)
         self.game_running = True
+        self.data = QByteArray()
         return 0
+
+    def stdout(self):
+        data = self.proc.readAllStandardOutput()
+        stdout = bytes(data).decode("utf-8")
+        self.game_logger.info(stdout)
+
+    def stderr(self):
+        stderr = bytes(self.proc.readAllStandardError()).decode("utf-8")
+        self.game_logger.error(stderr)
+        QMessageBox.warning(self, "Warning", stderr)
 
     def finished(self, exit_code):
         logger.info("Game exited with exit code: " + str(exit_code))

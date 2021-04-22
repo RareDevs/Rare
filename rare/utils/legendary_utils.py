@@ -39,6 +39,7 @@ def launch_game(core, app_name: str, offline: bool = False, skip_version_check: 
     params, cwd, env = core.get_launch_parameters(app_name=app_name, offline=offline)
 
     process = QProcess()
+    process.setProcessChannelMode(QProcess.MergedChannels)
     process.setWorkingDirectory(cwd)
     environment = QProcessEnvironment()
     for e in env:
