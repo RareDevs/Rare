@@ -101,8 +101,6 @@ class GameList(QStackedWidget):
             list_widget.finish_signal.connect(self.finished)
             list_widget.update_list.connect(lambda: self.update_list(self.settings.value("icon_view", True, bool)))
 
-
-
             if icon_widget.update_available:
                 self.updates.append(igame)
 
@@ -251,8 +249,8 @@ class GameList(QStackedWidget):
                 uninstalled_games.append(game.app_name)
 
         # get new uninstalled/ installed games that changed
-        new_installed_games = list(set(installed)-set([i.app_name for i in self.installed]))
-        new_uninstalled_games = list(set(uninstalled_games)-set([i.app_name for i in self.uninstalled_games]))
+        new_installed_games = list(set(installed) - set([i.app_name for i in self.installed]))
+        new_uninstalled_games = list(set(uninstalled_games) - set([i.app_name for i in self.uninstalled_games]))
 
         if not new_uninstalled_games and not new_installed_games:
             return

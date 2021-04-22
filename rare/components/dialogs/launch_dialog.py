@@ -1,13 +1,12 @@
 from logging import getLogger
 
-from requests.exceptions import ConnectionError
-
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QLabel, QProgressBar, QVBoxLayout
+from requests.exceptions import ConnectionError
 
+from custom_legendary.core import LegendaryCore
 from rare.components.dialogs.login import LoginDialog
 from rare.utils.utils import download_images
-from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Login")
 

@@ -1,3 +1,4 @@
+import logging
 import os
 from logging import getLogger
 
@@ -66,7 +67,7 @@ class BaseInstalledWidget(QGroupBox):
             path = os.path.expanduser("~/.local/share/applications/")
         else:
             return
-        if not (os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop")) \
+        if not (os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop"))
                 or os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.lnk"))):
             create_desktop_link(self.igame.app_name, self.core, type_of_link)
             if type_of_link == "desktop":
@@ -93,7 +94,8 @@ class BaseInstalledWidget(QGroupBox):
         logger.info("Launching " + self.igame.title)
         if offline or self.offline:
             if not self.igame.can_run_offline:
-                QMessageBox.warning(self, "Offline", self.tr("Game cannot run offline. Please start game in Online mode"))
+                QMessageBox.warning(self, "Offline",
+                                    self.tr("Game cannot run offline. Please start game in Online mode"))
                 return
 
         try:
@@ -127,7 +129,7 @@ class BaseInstalledWidget(QGroupBox):
     def stderr(self):
         stderr = bytes(self.proc.readAllStandardError()).decode("utf-8")
         self.game_logger.error(stderr)
-        QMessageBox.warning(self, "Warning", stderr)
+        QMessageBox.warning(self, "Warning", stderr + "\nSee ~/.cache/rare/logs/")
 
     def finished(self, exit_code):
         logger.info("Game exited with exit code: " + str(exit_code))

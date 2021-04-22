@@ -8,9 +8,9 @@ from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayo
     QGroupBox
 from qtawesome import icon
 
+from custom_legendary.core import LegendaryCore
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import PathEdit
-from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Import")
 
@@ -43,7 +43,8 @@ class ImportWidget(QWidget):
         self.import_game_info = QLabel(self.tr("Select path to game"))
         self.gb_layout.addWidget(self.import_game_info)
 
-        self.override_app_name_label = QLabel(self.tr("Override app name (Only if imported game from legendary or the app could not find the app name)"))
+        self.override_app_name_label = QLabel(
+            self.tr("Override app name (Only if imported game from legendary or the app could not find the app name)"))
         self.override_app_name_label.setWordWrap(True)
         self.app_name_input = QLineEdit()
         self.app_name_input.setFixedHeight(32)
@@ -86,9 +87,9 @@ class ImportWidget(QWidget):
 
     def app_name_changed(self, text):
         if text in self.game_list:
-            self.indicator_label.setPixmap(icon("ei.ok-sign", color="green").pixmap(16,16))
+            self.indicator_label.setPixmap(icon("ei.ok-sign", color="green").pixmap(16, 16))
         else:
-            self.indicator_label.setPixmap(icon("ei.remove-sign", color="red").pixmap(16,16))
+            self.indicator_label.setPixmap(icon("ei.remove-sign", color="red").pixmap(16, 16))
 
     def path_changed(self, path):
         if os.path.exists(path):
@@ -120,7 +121,8 @@ class ImportWidget(QWidget):
                 return
 
         if legendary_utils.import_game(self.core, app_name=app_name, path=path):
-            self.info_label.setText(self.tr("Successfully imported {}. Reload library").format(self.core.get_installed_game(app_name).title))
+            self.info_label.setText(self.tr("Successfully imported {}. Reload library").format(
+                self.core.get_installed_game(app_name).title))
             self.app_name_input.setText("")
 
             self.update_list.emit()
@@ -165,7 +167,8 @@ class ImportWidget(QWidget):
             for wine_prefix in possible_wineprefixes:
                 imported += self.auto_import_games(os.path.join(wine_prefix, "drive_c/Program Files/Epic Games/"))
         if imported > 0:
-            QMessageBox.information(self, "Imported Games", self.tr("Successfully imported {} Games. Reloading Library").format(imported))
+            QMessageBox.information(self, "Imported Games",
+                                    self.tr("Successfully imported {} Games. Reloading Library").format(imported))
             self.update_list.emit()
         else:
             QMessageBox.information(self, "Imported Games", self.tr("No Games were found"))

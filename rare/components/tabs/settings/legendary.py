@@ -2,12 +2,12 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QPushButton, QLineEdit, QGroupBox, QMessageBox, \
+from PyQt5.QtWidgets import QVBoxLayout, QFileDialog, QPushButton, QLineEdit, QGroupBox, QMessageBox, \
     QScrollArea
 
+from custom_legendary.core import LegendaryCore
 from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
-from custom_legendary.core import LegendaryCore
 from rare.utils.utils import get_size
 
 logger = getLogger("LegendarySettings")
@@ -42,7 +42,7 @@ class LegendarySettings(QScrollArea):
                                                 self.max_worker_select)
         self.layout.addWidget(self.max_worker_widget)
 
-        #cleanup
+        # cleanup
         self.clean_layout = QVBoxLayout()
         self.cleanup_widget = QGroupBox(self.tr("Cleanup"))
         self.clean_button = QPushButton(self.tr("Remove everything"))
@@ -97,7 +97,8 @@ class LegendarySettings(QScrollArea):
 
         after = self.core.lgd.get_dir_size()
         logger.info(f'Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.')
-        if (before-after) > 0:
-            QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {}").format(get_size(before-after)))
+        if (before - after) > 0:
+            QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {}").format(
+                get_size(before - after)))
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")

@@ -6,14 +6,14 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt, QSettings
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
     QListWidget, QHBoxLayout, QGroupBox
 
-from rare.components.dialogs.install_dialog import InstallInfoDialog, InstallDialog
-from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
-from rare.components.tabs.downloads.download_thread import DownloadThread
-from rare.utils.models import InstallOptions
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.downloading import UIUpdate
 from custom_legendary.models.game import Game, InstalledGame
 from custom_legendary.utils.selective_dl import games
+from rare.components.dialogs.install_dialog import InstallInfoDialog, InstallDialog
+from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
+from rare.components.tabs.downloads.download_thread import DownloadThread
+from rare.utils.models import InstallOptions
 from rare.utils.utils import get_size
 
 logger = getLogger("Download")
@@ -239,7 +239,7 @@ class DownloadTab(QWidget):
                 self.queue_widget.update_queue(self.dl_queue)
 
         elif text[:5] == "error":
-            QMessageBox.warning(self, "warn", "Download error: "+text[6:])
+            QMessageBox.warning(self, "warn", "Download error: " + text[6:])
 
         elif text == "stop":
             self.reset_infos()
@@ -262,7 +262,8 @@ class DownloadTab(QWidget):
         self.prog_bar.setValue(ui_update.progress)
         self.dl_speed.setText(self.tr("Download speed") + f": {ui_update.download_speed / 1024 / 1024:.02f}MB/s")
         self.cache_used.setText(self.tr("Cache used") + f": {ui_update.cache_usage / 1024 / 1024:.02f}MB")
-        self.downloaded.setText(self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
+        self.downloaded.setText(
+            self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
         self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
 
     def get_time(self, seconds: int) -> str:

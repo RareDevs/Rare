@@ -3,8 +3,8 @@ import os
 from PyQt5.QtWidgets import QDialog, QFormLayout, QVBoxLayout, QSpinBox, QFileDialog, QLabel, QPushButton, QHBoxLayout, \
     QCheckBox
 
-from rare.utils.extra_widgets import PathEdit
 from custom_legendary.core import LegendaryCore
+from rare.utils.extra_widgets import PathEdit
 
 
 class InstallDialog(QDialog):
@@ -107,4 +107,3 @@ class InstallInfoDialog(QDialog):
     def cancel(self):
         self.accept = False
         self.close()
-

@@ -1,16 +1,14 @@
-import os
 from logging import getLogger
 
-from PyQt5.QtCore import QEvent, pyqtSignal, QSettings, QSize, Qt
+from PyQt5.QtCore import QEvent, pyqtSignal, QSize, Qt
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import *
 from qtawesome import icon
 
-from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
-from rare.utils import legendary_utils
-from rare.utils.extra_widgets import ClickableLabel
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
+from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
+from rare.utils.extra_widgets import ClickableLabel
 
 logger = getLogger("GameWidgetInstalled")
 

@@ -28,10 +28,13 @@ class RareSettings(QScrollArea):
         self.setWidgetResizable(True)
         # (option_name, group_text, checkbox_text, default
         self.checkboxes = [("sys_tray", self.tr("Hide to System Tray Icon"), self.tr("Exit to System Tray Icon"), True),
-                           ("auto_update", self.tr("Automatically update Games on startup"), self.tr("Auto updates"), False),
-                           ("confirm_start", self.tr("Confirm launch of game"), self.tr("Confirm launch of game"), False),
+                           ("auto_update", self.tr("Automatically update Games on startup"), self.tr("Auto updates"),
+                            False),
+                           ("confirm_start", self.tr("Confirm launch of game"), self.tr("Confirm launch of game"),
+                            False),
                            ("auto_sync_cloud", self.tr("Auto sync with cloud"), self.tr("Sync with cloud"), True),
-                           ("notification", self.tr("Show Notifications after Downloads"), self.tr("Show notification"), True),
+                           ("notification", self.tr("Show Notifications after Downloads"), self.tr("Show notification"),
+                            True),
                            ("save_size", self.tr("Save size of window after restart"), self.tr("Save size"), False)
                            ]
 

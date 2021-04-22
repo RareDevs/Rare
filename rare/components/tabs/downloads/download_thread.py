@@ -63,7 +63,8 @@ class DownloadThread(QThread):
 
                     # clean up all the queues, otherwise this process won't terminate properly
                     for name, q in zip(('Download jobs', 'Writer jobs', 'Download results', 'Writer results'),
-                                       (self.dlm.dl_worker_queue, self.dlm.writer_queue, self.dlm.dl_result_q, self.dlm.writer_result_q)):
+                                       (self.dlm.dl_worker_queue, self.dlm.writer_queue, self.dlm.dl_result_q,
+                                        self.dlm.writer_result_q)):
                         logger.debug(f'Cleaning up queue "{name}"')
                         try:
                             while True:
@@ -111,7 +112,7 @@ class DownloadThread(QThread):
 
         except Exception as e:
             logger.error(f"Installation failed after {time.time() - start_time:.02f} seconds: {e}")
-            self.status.emit("error "+str(e))
+            self.status.emit("error " + str(e))
             return
 
         else:
@@ -172,4 +173,3 @@ class DownloadThread(QThread):
 
     def kill(self):
         self._kill = True
-

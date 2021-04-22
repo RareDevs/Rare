@@ -54,7 +54,7 @@ class TabWidget(QTabWidget):
         account_button = TabButtonWidget(core, 'mdi.account-circle', 'Account')
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)
-        self.tabBar().setTabButton(disabled_tab+1, self.tabBar().RightSide, account_button)
+        self.tabBar().setTabButton(disabled_tab + 1, self.tabBar().RightSide, account_button)
 
         self.addTab(self.settings, icon("fa.gear", color='white'),
                     "(!)" if self.settings.about.update_available else "")
