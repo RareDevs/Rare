@@ -14,15 +14,13 @@ def get_id(game_name):
 
     text = open(file, 'r')
     game_list = json.load(text)
-
-    #print(game_list[game_name.lower()])
+    
     return game_list[game_name.lower()]
 
 
 def test():
-    #get_id('MORDHAU')
-    get_grade(get_id(input('Type a correct game name: ')))
-    return
+    #get_grade(get_id('MORDHAU'))
+    return get_grade(get_id(input('Type a correct game name: ')))
 
 
 def upgrade_content(): # this function uploads the ids database, aka game_list.json
