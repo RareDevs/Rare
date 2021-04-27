@@ -11,6 +11,9 @@ from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 from rare import lang_path, __version__, style_path
 from custom_legendary.core import LegendaryCore
 
+import get_id
+import get_grade
+
 logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
 IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare/images"), type=str)
