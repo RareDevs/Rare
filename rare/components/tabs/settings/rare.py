@@ -1,5 +1,7 @@
 import os
 import shutil
+import subprocess
+import sys
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings, Qt
@@ -27,16 +29,17 @@ class RareSettings(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setWidgetResizable(True)
         # (option_name, group_text, checkbox_text, default
-        self.checkboxes = [("sys_tray", self.tr("Hide to System Tray Icon"), self.tr("Exit to System Tray Icon"), True),
-                           ("auto_update", self.tr("Automatically update Games on startup"), self.tr("Auto updates"),
-                            False),
-                           ("confirm_start", self.tr("Confirm launch of game"), self.tr("Confirm launch of game"),
-                            False),
-                           ("auto_sync_cloud", self.tr("Auto sync with cloud"), self.tr("Sync with cloud"), True),
-                           ("notification", self.tr("Show Notifications after Downloads"), self.tr("Show notification"),
-                            True),
-                           ("save_size", self.tr("Save size of window after restart"), self.tr("Save size"), False)
-                           ]
+        self.checkboxes = [
+            ("sys_tray", self.tr("Hide to System Tray Icon"), self.tr("Exit to System Tray Icon"), True),
+            ("auto_update", self.tr("Automatically update Games on startup"), self.tr("Auto updates"),
+             False),
+            ("confirm_start", self.tr("Confirm launch of game"), self.tr("Confirm launch of game"),
+             False),
+            ("auto_sync_cloud", self.tr("Auto sync with cloud"), self.tr("Sync with cloud"), True),
+            ("notification", self.tr("Show Notifications after Downloads"), self.tr("Show notification"),
+             True),
+            ("save_size", self.tr("Save size of window after restart"), self.tr("Save size"), False)
+        ]
 
         self.layout = QVBoxLayout()
         self.settings = QSettings()
@@ -70,9 +73,21 @@ class RareSettings(QScrollArea):
             settings_widget = SettingsWidget(head_text, checkbox)
             self.layout.addWidget(settings_widget)
 
+        self.open_log_dir = QPushButton(self.tr("Open Log directory"))
+        self.layout.addWidget(self.open_log_dir)
+        self.open_log_dir.clicked.connect(self.open_dir)
+
         self.layout.addStretch()
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
+
+    def open_dir(self):
+        logdir = os.path.expanduser("~/.cache/rare/logs")
+        if os.name == "nt":
+            os.startfile(logdir)
+        else:
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.Popen([opener, logdir])
 
     def save_window_size(self):
         self.settings.setValue("save_size", self.save_size.isChecked())
