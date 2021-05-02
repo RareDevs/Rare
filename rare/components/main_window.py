@@ -3,7 +3,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import QSettings, QTimer
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
 from custom_legendary.core import LegendaryCore
 from rare.components.tab_widget import TabWidget
@@ -23,7 +23,9 @@ class MainWindow(QMainWindow):
         if self.settings.value("save_size", False):
             width, height = self.settings.value("window_size", (1200, 800), tuple)
 
-        self.setGeometry(0, 0, width, height)
+        desktop = QApplication.desktop()
+        self.setGeometry((desktop.width() - width) / 2, (desktop.height() - height) / 2, width, height)
+
         self.setWindowTitle("Rare - GUI for legendary")
         self.tab_widget = TabWidget(core, self, args.offline)
         self.setCentralWidget(self.tab_widget)
