@@ -18,10 +18,6 @@ def get_id(game_name):
     return game_list[game_name.lower()]
 
 
-def test():
-    #get_grade(get_id('MORDHAU'))
-    return get_grade(get_id(input('Type a correct game name: ')))
-
 
 def upgrade_content(): # this function uploads the ids database, aka game_list.json
     global url
@@ -74,4 +70,5 @@ def get_grade(steam_code):
     return lista['tier']
 
 
-#test()
+def id(game_name):
+    return get_grade(get_id(game_name))
