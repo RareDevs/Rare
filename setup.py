@@ -1,74 +1,39 @@
-import sys
+import setuptools
 
-from cx_Freeze import setup, Executable
+from rare import __version__ as version
 
-import rare
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
-opts = {
-    'packages': [
-        'requests',
-        'PIL',
-        'qtawesome',
-        'notifypy',
-        'psutil',
-        'pypresence',
+setuptools.setup(
+    name="Rare",
+    version=version,
+    author="Dummerle",
+    license="GPL-3",
+    description="A gui for Legendary",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    include_package_data=True,
+    url="https://github.com/Dummerle/Rare",
+    packages=setuptools.find_packages(),
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        "Operating System :: OS Independent"
     ],
-    'zip_include_packages': [
-        'PyQt5.QtCore',
-        'PyQt5.QtGui',
-        'PyQt5.QtWidgets',
-    ],
-    'include_files': [
-        'LICENSE',
-        'README.MD',
-        'rare/styles/Logo.ico',
-    ],
-}
-
-setup_options = {'build_exe': opts}
-base = None
-name = None
-shortcutName = None
-shortcutDir = None
-bdist_msi_options = None
-
-if sys.platform == 'win32':
-    base = 'Win32GUI'
-    name = 'Rare.exe'
-    shortcut_table = [
-        ('DesktopShortcut',        # Shortcut
-         'DesktopFolder',          # Directory
-         'Rare',                   # Name
-         'TARGETDIR',              # Component
-         '[TARGETDIR]'+name,       # Target
-         None,                     # Arguments
-         'A gui for Legendary.',   # Description
-         None,                     # Hotkey
-         None,                     # Icon
-         None,                     # IconIndex
-         None,                     # ShowCmd
-         'TARGETDIR'               # Working Directory
-         )]
-    msi_data = {"Shortcut": shortcut_table}
-    bdist_msi_options = {'data': msi_data}
-    setup_options.update({"bdist_msi": bdist_msi_options})
-else:
-    name = 'Rare'
-
-setup(name = 'Rare',
-    version = rare.__version__,
-    description = 'A gui for Legendary.',
-    options = setup_options,
-    setup_requires=[
-        'cx_Freeze',
-    ],
-    executables = [
-        Executable('rare/__main__.py',
-            targetName=name,
-            icon='rare/styles/Logo.ico',
-            base=base,
-            shortcutName=shortcutName,
-            shortcutDir=shortcutDir,
-        ),
+    python_requires=">=3.8",
+    entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
+    install_requires=[
+        "requests<3.0",
+        "pillow",
+        "setuptools",
+        "wheel",
+        "PyQt5",
+        "QtAwesome",
+        "notify-py",
+        "psutil",
+        "pypresence"
     ],
 )
