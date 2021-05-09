@@ -2,7 +2,6 @@ import json
 import os
 import shutil
 import sys
-import sysconfig
 from logging import getLogger
 
 import requests
