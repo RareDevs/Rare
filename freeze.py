@@ -5,15 +5,7 @@ from cx_Freeze import setup, Executable
 from rare import __version__
 
 # Packages to include
-python_packages = [
-    "PyQt5",
-    'requests',
-    'PIL',
-    'qtawesome',
-    'notifypy',
-    'psutil',
-    'pypresence',
-]
+python_packages = []
 
 # Modules to include
 python_modules = []

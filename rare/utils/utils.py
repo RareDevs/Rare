@@ -2,11 +2,16 @@ import json
 import os
 import shutil
 import sys
+import sysconfig
 from logging import getLogger
 
 import requests
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
+
+# Windows
+if os.name == "nt":
+    from win32com.client import Dispatch
 
 from rare import lang_path, __version__, style_path
 from custom_legendary.core import LegendaryCore
@@ -164,3 +169,25 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
                                "StartupWMClass=rare-game\n"
                                )
         os.chmod(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"), 0o755)
+
+    # Windows
+    elif os.name == "nt":
+        # Target of shortcut
+        target = sys.argv[0]
+
+        # Name of link file
+        linkName = igame.title + '.lnk'
+
+        desktopFolder = os.path.expanduser('~/Desktop/')
+
+        # Path to location of link file
+        pathLink = os.path.join(desktopFolder, linkName)
+
+        # Add shortcut
+        shell = Dispatch('WScript.Shell')
+        shortcut = shell.CreateShortCut(pathLink)
+        shortcut.Targetpath = target
+        shortcut.Arguments = f'launch {app_name}'
+        shortcut.WorkingDirectory = os.getcwd()
+        shortcut.IconLocation = os.path.join(os.getcwd(), 'Logo.ico')
+        shortcut.save()
