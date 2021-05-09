@@ -28,10 +28,11 @@ class GameList(QStackedWidget):
     running_games = []
     active_game = ("", 0)
 
-    def __init__(self, core: LegendaryCore):
-        super(GameList, self).__init__()
+    def __init__(self, core: LegendaryCore, parent, offline):
+        super(GameList, self).__init__(parent=parent)
         self.core = core
         self.setObjectName("list_widget")
+        self.offline = offline
 
         self.settings = QSettings()
         icon_view = self.settings.value("icon_view", True, bool)
@@ -39,10 +40,10 @@ class GameList(QStackedWidget):
         self.init_ui(icon_view)
 
     def init_ui(self, icon_view=True):
-        self.icon_scrollarea = QScrollArea()
-        self.icon_widget = QWidget()
-        self.list_scrollarea = QScrollArea()
-        self.list_widget = QWidget()
+        self.icon_scrollarea = QScrollArea(parent=self)
+        self.icon_widget = QWidget(parent=self.icon_scrollarea)
+        self.list_scrollarea = QScrollArea(parent=self)
+        self.list_widget = QWidget(parent=self.list_scrollarea)
 
         self.icon_scrollarea.setWidgetResizable(True)
         self.icon_scrollarea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -65,8 +66,10 @@ class GameList(QStackedWidget):
         self.updates = []
         self.widgets = {}
 
+        self.installed = sorted(self.core.get_installed_list(), key=lambda x: x.title)
+
         # Installed Games
-        for igame in sorted(self.core.get_installed_list(), key=lambda x: x.title):
+        for igame in self.installed:
             if os.path.exists(f"{IMAGE_DIR}/{igame.app_name}/FinalArt.png"):
                 pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/FinalArt.png")
             elif os.path.exists(f"{IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png"):
@@ -82,8 +85,11 @@ class GameList(QStackedWidget):
                 download_image(igame, force=True)
                 pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png")
 
-            icon_widget = GameWidgetInstalled(igame, self.core, pixmap)
-            list_widget = InstalledListWidget(igame, self.core, pixmap)
+            icon_widget = GameWidgetInstalled(igame, self.core, pixmap, self.offline)
+            self.icon_layout.addWidget(icon_widget)
+
+            list_widget = InstalledListWidget(igame, self.core, pixmap, self.offline)
+            self.list_layout.addWidget(list_widget)
 
             icon_widget.show_info.connect(self.show_game_info.emit)
             list_widget.show_info.connect(self.show_game_info.emit)
@@ -94,9 +100,6 @@ class GameList(QStackedWidget):
             list_widget.launch_signal.connect(self.launch)
             list_widget.finish_signal.connect(self.finished)
             list_widget.update_list.connect(lambda: self.update_list(self.settings.value("icon_view", True, bool)))
-
-            self.icon_layout.addWidget(icon_widget)
-            self.list_layout.addWidget(list_widget)
 
             if icon_widget.update_available:
                 self.updates.append(igame)
@@ -113,15 +116,16 @@ class GameList(QStackedWidget):
                 self.timer.timeout.connect(self.is_finished)
                 self.timer.start(10000)
 
-        uninstalled_games = []
+        self.uninstalled_games = []
         installed = [i.app_name for i in self.core.get_installed_list()]
         # get Uninstalled games
-        for igame in sorted(self.core.get_game_list(), key=lambda x: x.app_title):
-            if not igame.app_name in installed:
-                uninstalled_games.append(igame)
+        games, self.dlcs = self.core.get_game_and_dlc_list()
+        for game in sorted(games, key=lambda x: x.app_title):
+            if not game.app_name in installed:
+                self.uninstalled_games.append(game)
 
         # add uninstalled games
-        for igame in uninstalled_games:
+        for igame in self.uninstalled_games:
             if os.path.exists(f"{IMAGE_DIR}/{igame.app_name}/UninstalledArt.png"):
                 pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/UninstalledArt.png")
 
@@ -129,7 +133,6 @@ class GameList(QStackedWidget):
                     logger.info(igame.app_title + " has a corrupt image.")
                     download_image(igame, force=True)
                     pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/UninstalledArt.png")
-
             else:
                 logger.warning(f"No Image found: {igame.app_title}")
                 download_image(igame, force=True)
@@ -178,7 +181,7 @@ class GameList(QStackedWidget):
 
         for i, pid in self.procs:
             if executable in i:
-                # Workaround for Satisfactory
+                # Workaround for Satisfactory: Check Cmdline args
                 if igame.app_name in ["CrabEA", "CrabTest"]:
                     p = psutil.Process(pid)
                     if not igame.install_path.split("/")[-1].split("\\")[-1] in " ".join(p.cmdline()):
@@ -236,6 +239,22 @@ class GameList(QStackedWidget):
 
     def update_list(self, icon_view=True):
         self.settings.setValue("icon_view", icon_view)
+
+        uninstalled_games = []
+        installed = [i.app_name for i in self.core.get_installed_list()]
+        # get Uninstalled games
+        games = self.core.get_game_list(True)
+        for game in sorted(games, key=lambda x: x.app_title):
+            if not game.app_name in installed:
+                uninstalled_games.append(game.app_name)
+
+        # get new uninstalled/ installed games that changed
+        new_installed_games = list(set(installed) - set([i.app_name for i in self.installed]))
+        new_uninstalled_games = list(set(uninstalled_games) - set([i.app_name for i in self.uninstalled_games]))
+
+        if not new_uninstalled_games and not new_installed_games:
+            return
+
         self.removeWidget(self.icon_scrollarea)
         self.removeWidget(self.list_scrollarea)
         self.init_ui(icon_view)

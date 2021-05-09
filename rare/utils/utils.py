@@ -28,18 +28,22 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
         logger.info("Create Image dir")
 
     # Download Images
-    for i, game in enumerate(sorted(core.get_game_list(), key=lambda x: x.app_title)):
-
+    games, dlcs = core.get_game_and_dlc_list()
+    dlc_list = []
+    for i in dlcs.values():
+        dlc_list.append(i[0])
+    game_list = games + dlc_list
+    for i, game in enumerate(game_list):
         try:
             download_image(game)
         except json.decoder.JSONDecodeError:
             shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
             download_image(game)
-        signal.emit(i)
+        signal.emit(i/len(game_list)*100)
 
 
 def download_image(game, force=False):
-    if force:
+    if force and os.path.exists(f"{IMAGE_DIR}/{game.app_name}"):
         shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
     if not os.path.isdir(f"{IMAGE_DIR}/" + game.app_name):
         os.mkdir(f"{IMAGE_DIR}/" + game.app_name)
@@ -128,9 +132,12 @@ def get_possible_langs():
 
 
 def get_latest_version():
-    resp = requests.get("https://api.github.com/repos/Dummerle/Rare/releases/latest")
-    tag = json.loads(resp.content.decode("utf-8"))["tag_name"]
-    return tag
+    try:
+        resp = requests.get("https://api.github.com/repos/Dummerle/Rare/releases/latest")
+        tag = json.loads(resp.content.decode("utf-8"))["tag_name"]
+        return tag
+    except requests.exceptions.ConnectionError:
+        return "0.0.0"
 
 
 def get_size(b: int) -> str:

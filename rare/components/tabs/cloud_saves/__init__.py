@@ -27,8 +27,8 @@ class LoadThread(QThread):
 class SyncSaves(QScrollArea):
     finished = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore):
-        super(SyncSaves, self).__init__()
+    def __init__(self, core: LegendaryCore, parent):
+        super(SyncSaves, self).__init__(parent=parent)
         self.core = core
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.load_saves()

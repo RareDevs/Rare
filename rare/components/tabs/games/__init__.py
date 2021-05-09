@@ -9,20 +9,22 @@ from rare.utils.extra_widgets import SelectViewWidget
 
 
 class GameTab(QWidget):
-    def __init__(self, core):
-        super(GameTab, self).__init__()
+    def __init__(self, core, parent, offline):
+        super(GameTab, self).__init__(parent=parent)
         self.layout = QStackedLayout()
-        self.default_widget = Games(core)
+        self.default_widget = Games(core, self, offline)
+        # Signal to show info
         self.default_widget.game_list.show_game_info.connect(self.show_info)
         self.default_widget.head_bar.import_game.clicked.connect(lambda: self.layout.setCurrentIndex(2))
         self.layout.addWidget(self.default_widget)
-        self.game_info = InfoTabs(core)
+
+        self.game_info = InfoTabs(core, self)
         self.game_info.info.update_list.connect(self.update_list)
         self.layout.addWidget(self.game_info)
 
         self.default_widget.head_bar.refresh_list.clicked.connect(self.update_list)
 
-        self.import_widget = ImportWidget(core)
+        self.import_widget = ImportWidget(core, self)
         self.layout.addWidget(self.import_widget)
         self.import_widget.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
         self.import_widget.update_list.connect(self.update_list)
@@ -33,20 +35,20 @@ class GameTab(QWidget):
         self.layout.setCurrentIndex(0)
 
     def show_info(self, app_name):
-        self.game_info.update_game(app_name)
+        self.game_info.update_game(app_name, self.default_widget.game_list.dlcs)
         self.game_info.setCurrentIndex(1)
         self.layout.setCurrentIndex(1)
 
 
 class Games(QWidget):
-    def __init__(self, core):
-        super(Games, self).__init__()
+    def __init__(self, core, parent, offline):
+        super(Games, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
 
-        self.head_bar = GameListHeadBar()
+        self.head_bar = GameListHeadBar(self)
         self.head_bar.setObjectName("head_bar")
 
-        self.game_list = GameList(core)
+        self.game_list = GameList(core, self, offline)
 
         self.head_bar.search_bar.textChanged.connect(
             lambda: self.game_list.filter(self.head_bar.search_bar.text()))
@@ -68,8 +70,8 @@ class Games(QWidget):
 
 
 class GameListHeadBar(QWidget):
-    def __init__(self):
-        super(GameListHeadBar, self).__init__()
+    def __init__(self, parent):
+        super(GameListHeadBar, self).__init__(parent=parent)
         self.layout = QHBoxLayout()
         self.installed_only = QCheckBox(self.tr("Installed only"))
         self.settings = QSettings()

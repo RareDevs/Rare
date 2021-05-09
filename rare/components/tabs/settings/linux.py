@@ -1,11 +1,11 @@
 from logging import getLogger
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QLineEdit, QGroupBox
+from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QLineEdit, QGroupBox
 
+from custom_legendary.core import LegendaryCore
 from rare.components.tabs.settings.dxvk import DxvkWidget
 from rare.components.tabs.settings.settings_widget import SettingsWidget
 from rare.utils.extra_widgets import PathEdit
-from custom_legendary.core import LegendaryCore
 
 logger = getLogger("LinuxSettings")
 

@@ -36,13 +36,10 @@ def launch_game(core, app_name: str, offline: bool = False, skip_version_check: 
             if latest.build_version != game.version:
                 print("Please update game")
                 return None
-    try:
-        params, cwd, env = core.get_launch_parameters(app_name=app_name, offline=offline)
-    except Exception as e:
-        logger.error(e)
-        return 1
+    params, cwd, env = core.get_launch_parameters(app_name=app_name, offline=offline)
 
     process = QProcess()
+    process.setProcessChannelMode(QProcess.MergedChannels)
     process.setWorkingDirectory(cwd)
     environment = QProcessEnvironment()
     for e in env:
@@ -52,10 +49,18 @@ def launch_game(core, app_name: str, offline: bool = False, skip_version_check: 
     return process, params
 
 
-def uninstall(app_name: str, core, options=None):
+def uninstall(app_name: str, core: LegendaryCore, options=None):
     if not options:
         options = {"keep_files": False}
     igame = core.get_installed_game(app_name)
+
+    # remove shortcuts link
+    if os.name == "posix":
+        if os.path.exists(os.path.expanduser(f"~/Desktop/{igame.title}.desktop")):
+            os.remove(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"))
+        if os.path.exists(os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop")):
+            os.remove(os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop"))
+
     try:
         # Remove DLC first so directory is empty when game uninstall runs
         dlcs = core.get_dlc_for_game(app_name)

@@ -90,7 +90,7 @@ jobs:
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: rare.deb
+          file: Rare.deb
           asset_name: Rare.deb
           tag: ${{ github.ref }}
           overwrite: true

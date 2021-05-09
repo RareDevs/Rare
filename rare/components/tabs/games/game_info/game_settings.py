@@ -18,8 +18,8 @@ class GameSettings(QScrollArea):
     # variable to no update when changing game
     change = False
 
-    def __init__(self, core: LegendaryCore):
-        super(GameSettings, self).__init__()
+    def __init__(self, core: LegendaryCore, parent):
+        super(GameSettings, self).__init__(parent=parent)
         self.core = core
         self.widget = QWidget()
         self.settings = QSettings()
@@ -45,7 +45,8 @@ class GameSettings(QScrollArea):
         self.launch_params_widget = SettingsWidget(self.tr("Launch parameters"), self.launch_params,
                                                    self.launch_params_accept_button)
         self.layout.addWidget(self.launch_params_widget)
-        self.launch_params_accept_button.clicked.connect(lambda: self.save_line_edit("start_params", self.launch_params.text()))
+        self.launch_params_accept_button.clicked.connect(
+            lambda: self.save_line_edit("start_params", self.launch_params.text()))
 
         self.cloud_sync = QCheckBox("Sync with cloud")
         self.cloud_sync_widget = SettingsWidget(self.tr("Auto sync with cloud"), self.cloud_sync)

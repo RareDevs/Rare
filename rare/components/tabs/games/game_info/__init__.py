@@ -6,18 +6,20 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QHBoxLayo
     QProgressBar, QStackedWidget, QGroupBox, QScrollArea
 from qtawesome import icon
 
-from rare import utils
-from rare.components.tabs.games.game_info.game_settings import GameSettings
-from rare.utils.legendary_utils import VerifyThread
-from rare.utils.extra_widgets import SideTabBar
-from rare.utils.utils import IMAGE_DIR, get_size, create_desktop_link
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame, Game
+from rare.components.dialogs.uninstall_dialog import UninstallDialog
+from rare.components.tabs.games.game_info.dlcs import DlcTab
+from rare.components.tabs.games.game_info.game_settings import GameSettings
+from rare.utils import legendary_utils
+from rare.utils.extra_widgets import SideTabBar
+from rare.utils.legendary_utils import VerifyThread
+from rare.utils.utils import IMAGE_DIR, get_size
 
 
 class InfoTabs(QTabWidget):
-    def __init__(self, core):
-        super(InfoTabs, self).__init__()
+    def __init__(self, core, parent):
+        super(InfoTabs, self).__init__(parent=parent)
         self.app_name = ""
         self.core = core
         self.setTabBar(SideTabBar())
@@ -26,15 +28,27 @@ class InfoTabs(QTabWidget):
         self.addTab(QWidget(), icon("mdi.keyboard-backspace", color="white"), self.tr("Back"))
         self.tabBarClicked.connect(lambda x: self.parent().layout.setCurrentIndex(0) if x == 0 else None)
 
-        self.info = GameInfo(core)
+        self.info = GameInfo(core, self)
         self.addTab(self.info, self.tr("Game Info"))
-        self.settings = GameSettings(core)
+
+        self.settings = GameSettings(core, self)
         self.addTab(self.settings, self.tr("Settings"))
         self.tabBar().setCurrentIndex(1)
 
-    def update_game(self, app_name):
+        self.dlc_tab = DlcTab(core, self)
+        self.addTab(self.dlc_tab, self.tr("DLCs"))
+
+    def update_game(self, app_name, dlcs: list):
+
         self.info.update_game(app_name)
         self.settings.update_game(app_name)
+
+        # DLC Tab: Disable if no dlcs available
+        if len(dlcs[self.core.get_game(app_name).asset_info.catalog_item_id]) == 0:
+            self.setTabEnabled(3, False)
+        else:
+            self.setTabEnabled(3, True)
+            self.dlc_tab.update_dlcs(app_name, dlcs)
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
@@ -47,10 +61,9 @@ class GameInfo(QScrollArea):
     update_list = pyqtSignal()
     verify_game = pyqtSignal(str)
     verify_threads = {}
-    action = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore):
-        super(GameInfo, self).__init__()
+    def __init__(self, core: LegendaryCore, parent):
+        super(GameInfo, self).__init__(parent=parent)
         self.widget = QWidget()
         self.core = core
         self.layout = QVBoxLayout()
@@ -84,13 +97,14 @@ class GameInfo(QScrollArea):
 
         self.install_path = QLabel("Error")
         self.install_path.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.install_path.setWordWrap(True)
         right_layout.addWidget(self.install_path)
 
         top_layout.addLayout(right_layout)
         top_layout.addStretch()
         self.game_actions = GameActions()
 
-        self.game_actions.uninstall_button.clicked.connect(lambda: self.action.emit("uninstall"))
+        self.game_actions.uninstall_button.clicked.connect(self.uninstall)
         self.game_actions.verify_button.clicked.connect(self.verify)
         self.game_actions.repair_button.clicked.connect(self.repair)
 
@@ -99,6 +113,14 @@ class GameInfo(QScrollArea):
         self.layout.addStretch()
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
+
+    def uninstall(self):
+        infos = UninstallDialog(self.game).get_information()
+        if infos == 0:
+            print("Cancel Uninstall")
+            return
+        legendary_utils.uninstall(self.game.app_name, self.core, infos)
+        self.update_list.emit()
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')

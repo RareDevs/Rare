@@ -2,10 +2,11 @@ from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QLabel, QProgressBar, QVBoxLayout
+from requests.exceptions import ConnectionError
 
+from custom_legendary.core import LegendaryCore
 from rare.components.dialogs.login import LoginDialog
 from rare.utils.utils import download_images
-from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Login")
 
@@ -27,7 +28,7 @@ class LaunchThread(QThread):
 
 class LoginThread(QThread):
     login = pyqtSignal()
-    start_app = pyqtSignal()
+    start_app = pyqtSignal(bool)  # offline
 
     def __init__(self, core: LegendaryCore):
         super(LoginThread, self).__init__()
@@ -38,24 +39,28 @@ class LoginThread(QThread):
         try:
             if self.core.login():
                 logger.info("You are logged in")
-                self.start_app.emit()
+                self.start_app.emit(False)
             else:
                 self.run()
         except ValueError:
             logger.info("You are not logged in. Open Login Window")
             self.login.emit()
+        except ConnectionError as e:
+            logger.warning(e)
+            self.start_app.emit(True)
 
 
 class LaunchDialog(QDialog):
-    start_app = pyqtSignal()
+    start_app = pyqtSignal(bool)
 
-    def __init__(self, core: LegendaryCore):
+    def __init__(self, core: LegendaryCore, offline):
         super(LaunchDialog, self).__init__()
         self.core = core
-        self.login_thread = LoginThread(core)
-        self.login_thread.login.connect(self.login)
-        self.login_thread.start_app.connect(self.launch)
-        self.login_thread.start()
+        if not offline:
+            self.login_thread = LoginThread(core)
+            self.login_thread.login.connect(self.login)
+            self.login_thread.start_app.connect(self.launch)
+            self.login_thread.start()
 
         self.title = QLabel("<h3>" + self.tr("Launching Rare") + "</h3>")
         self.info_pb = QProgressBar()
@@ -68,6 +73,9 @@ class LaunchDialog(QDialog):
 
         self.setLayout(self.layout)
 
+        if offline:
+            self.launch(offline)
+
     def login(self):
         self.hide()
         if LoginDialog(core=self.core).login():
@@ -76,9 +84,9 @@ class LaunchDialog(QDialog):
         else:
             exit(0)
 
-    def launch(self):
+    def launch(self, offline=False):
         # self.core = core
-        self.pb_size = len(self.core.get_game_list())
+        self.offline = offline
         self.info_text.setText(self.tr("Downloading Images"))
         self.thread = LaunchThread(self.core, self)
         self.thread.download_progess.connect(self.update_pb)
@@ -86,12 +94,12 @@ class LaunchDialog(QDialog):
         self.thread.start()
 
     def update_pb(self, i: int):
-        self.info_pb.setValue(i / self.pb_size * 100)
+        self.info_pb.setValue(i)
 
     def info(self, text: str):
         if text == "finish":
             self.info_text.setText(self.tr("Starting..."))
             self.info_pb.setValue(100)
-            self.start_app.emit()
+            self.start_app.emit(self.offline)
         else:
             self.info_text.setText(text)

@@ -14,8 +14,11 @@ class MiniWidget(QWidget):
         self.layout.addWidget(QLabel("Account"))
         username = self.core.lgd.userdata.get("display_name")
         if not username:
-            self.core.login()
-            username = self.core.lgd.userdata.get("display_name")
+            try:
+                self.core.login()
+                username = self.core.lgd.userdata.get("display_name")
+            except Exception:
+                username = "Offline"
 
         self.layout.addWidget(QLabel(self.tr("Logged in as ") + str(username)))
 

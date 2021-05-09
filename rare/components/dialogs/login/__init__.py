@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QStackedLayout, QWidget, QPushButton
 
+from custom_legendary.core import LegendaryCore
 # Login Opportunities: Browser, Import
 from rare.components.dialogs.login.browser_login import BrowserLogin
 from rare.components.dialogs.login.import_widget import ImportWidget
-from custom_legendary.core import LegendaryCore
 
 
 class LoginDialog(QDialog):

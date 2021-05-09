@@ -21,7 +21,7 @@ Execute `pip install Rare` for all users Or `pip install Rare --user` for only o
 Download Rare.exe from the [releases page](https://github.com/Dummerle/Rare/releases) and execute it. 
 
 **Note:**
-Using the exe file could cause errors with Windows Defender or other Anti Virus
+Using the exe file could cause errors with Windows Defender or other Anti Virus. Sometimes it is not possible to download games and sometimes the app crashes. In this case please use pip
 
 ### Linux
 
@@ -30,7 +30,6 @@ Using the exe file could cause errors with Windows Defender or other Anti Virus
 There are some AUR packages available:
  - [rare](https://aur.archlinux.org/packages/rare) - for stable releases
  - [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest features, which are not in a stable release
- - [rare-dev](https://aur.archlinux.org/packages/rare-dev) - dev branch: latest development features. This could be unstable
 
 #### Debian based
 
@@ -59,7 +58,6 @@ Install via `pip`.
 - Translations (English, German and French)
 
 ## Planned Features
-- Offline mode
 - More Translations (Need help)
 - More Information about Games
 More planned features are in projects
@@ -70,8 +68,6 @@ There are more options to contribute.
 - If you are a designer, you can add Stylesheets or create a logo or a banner
 - You can translate the application in your language
 
-**Note:** Pull Requests please to "dev" branch
-
 More Information is in CONTRIBUTING.md
 
 ## Images
@@ -79,4 +75,4 @@ More Information is in CONTRIBUTING.md
 ![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/Rare.png?raw=true)
 ![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/GameInfo.png?raw=true)
 ![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/RareSettings.png?raw=true)
-
+![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/RareDownloads.png?raw=true)

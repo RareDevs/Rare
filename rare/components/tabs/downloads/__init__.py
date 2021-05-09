@@ -6,14 +6,14 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt, QSettings
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
     QListWidget, QHBoxLayout, QGroupBox
 
-from rare.components.dialogs.install_dialog import InstallInfoDialog, InstallDialog
-from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
-from rare.components.tabs.downloads.download_thread import DownloadThread
-from rare.utils.models import InstallOptions
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.downloading import UIUpdate
 from custom_legendary.models.game import Game, InstalledGame
 from custom_legendary.utils.selective_dl import games
+from rare.components.dialogs.install_dialog import InstallInfoDialog, InstallDialog
+from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
+from rare.components.tabs.downloads.download_thread import DownloadThread
+from rare.utils.models import InstallOptions
 from rare.utils.utils import get_size
 
 logger = getLogger("Download")
@@ -24,36 +24,36 @@ class DownloadTab(QWidget):
     thread: QThread
     dl_queue = []
 
-    def __init__(self, core: LegendaryCore, updates: list):
-        super(DownloadTab, self).__init__()
+    def __init__(self, core: LegendaryCore, updates: list, parent):
+        super(DownloadTab, self).__init__(parent=parent)
         self.core = core
         self.layout = QVBoxLayout()
         self.active_game: Game = None
 
-        self.installing_game = QLabel(self.tr("No active Download"))
-        self.dl_speed = QLabel()
-        self.cache_used = QLabel()
-        self.downloaded = QLabel()
-        self.time_left = QLabel()
-
         self.info_layout = QGridLayout()
 
+        self.installing_game = QLabel(self.tr("No active Download"))
         self.info_layout.addWidget(self.installing_game, 0, 0)
+        self.dl_speed = QLabel()
         self.info_layout.addWidget(self.dl_speed, 0, 1)
+        self.cache_used = QLabel()
         self.info_layout.addWidget(self.cache_used, 1, 0)
+        self.downloaded = QLabel()
         self.info_layout.addWidget(self.downloaded, 1, 1)
+        self.time_left = QLabel()
         self.info_layout.addWidget(self.time_left, 2, 0)
+
         self.layout.addLayout(self.info_layout)
 
         self.mini_layout = QHBoxLayout()
         self.prog_bar = QProgressBar()
-        self.prog_bar.setMaximum(100)
         self.mini_layout.addWidget(self.prog_bar)
+        self.prog_bar.setMaximum(100)
 
         self.kill_button = QPushButton(self.tr("Stop Download"))
+        self.mini_layout.addWidget(self.kill_button)
         self.kill_button.setDisabled(True)
         self.kill_button.clicked.connect(self.stop_download)
-        self.mini_layout.addWidget(self.kill_button)
 
         self.layout.addLayout(self.mini_layout)
 
@@ -62,24 +62,27 @@ class DownloadTab(QWidget):
         self.queue_widget.update_list.connect(self.update_dl_queue)
 
         self.updates = QGroupBox(self.tr("Updates"))
-        self.updates.setObjectName("group")
+        self.layout.addWidget(self.updates)
         self.update_layout = QVBoxLayout()
+        self.updates.setLayout(self.update_layout)
+
+        self.updates.setObjectName("group")
+
         self.update_widgets = {}
 
         self.update_text = QLabel(self.tr("No updates available"))
-        self.update_text.setVisible(len(updates) == 0)
         self.update_layout.addWidget(self.update_text)
+        self.update_text.setVisible(len(updates) == 0)
 
         for igame in updates:
-            widget = UpdateWidget(core, igame)
-            self.update_widgets[igame.app_name] = widget
+            widget = UpdateWidget(core, igame, self)
             self.update_layout.addWidget(widget)
+            self.update_widgets[igame.app_name] = widget
             widget.update.connect(self.update_game)
             if QSettings().value("auto_update", False, bool):
                 self.update_game(igame.app_name, True)
+                widget.update_button.setDisabled(True)
 
-        self.updates.setLayout(self.update_layout)
-        self.layout.addWidget(self.updates)
         self.layout.addStretch(1)
 
         self.setLayout(self.layout)
@@ -132,6 +135,7 @@ class DownloadTab(QWidget):
         # Information
         if not from_update:
             if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
+                self.finished.emit(False)
                 return
 
         if self.active_game is None:
@@ -235,7 +239,7 @@ class DownloadTab(QWidget):
                 self.queue_widget.update_queue(self.dl_queue)
 
         elif text[:5] == "error":
-            QMessageBox.warning(self, "warn", "Download error: "+text[6:])
+            QMessageBox.warning(self, "warn", "Download error: " + text[6:])
 
         elif text == "stop":
             self.reset_infos()
@@ -258,7 +262,8 @@ class DownloadTab(QWidget):
         self.prog_bar.setValue(ui_update.progress)
         self.dl_speed.setText(self.tr("Download speed") + f": {ui_update.download_speed / 1024 / 1024:.02f}MB/s")
         self.cache_used.setText(self.tr("Cache used") + f": {ui_update.cache_usage / 1024 / 1024:.02f}MB")
-        self.downloaded.setText(self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
+        self.downloaded.setText(
+            self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
         self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
 
     def get_time(self, seconds: int) -> str:
@@ -280,8 +285,8 @@ class DownloadTab(QWidget):
 class UpdateWidget(QWidget):
     update = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, game: InstalledGame):
-        super(UpdateWidget, self).__init__()
+    def __init__(self, core: LegendaryCore, game: InstalledGame, parent):
+        super(UpdateWidget, self).__init__(parent=parent)
         self.core = core
         self.game = game
 

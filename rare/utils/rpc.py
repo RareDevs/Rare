@@ -2,6 +2,7 @@ import platform
 import time
 from logging import getLogger
 
+import pypresence.exceptions
 from PyQt5.QtCore import QObject, QSettings
 from PyQt5.QtWidgets import QMessageBox
 from pypresence import Presence
@@ -60,10 +61,22 @@ class DiscordRPC(QObject):
                 logger.warning("Discord is not active\n" + str(e))
                 self.RPC = None
                 return
+            except FileNotFoundError as e:
+                logger.warning("File not found error\n" + str(e))
+                self.RPC = None
+                return
+            except pypresence.exceptions.InvalidPipe as e:
+                logger.error("Is Discord running? \n" + str(e))
+                self.RPC = None
+                return
+            except Exception as e:
+                logger.error(str(e))
+                self.RPC = None
+                return
         self.update_rpc(app_name)
 
     def update_rpc(self, app_name=None):
-        if self.settings.value("rpc_enable", 0, int) == 2 or (app_name is None and self.settings.value("rpc_enable", 0) == 0):
+        if self.settings.value("rpc_enable", 0, int) == 2 or (app_name is None and self.settings.value("rpc_enable", 0, int) == 0):
             self.remove_rpc()
             return
         title = None

@@ -2,12 +2,12 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import QProcess, pyqtSignal, Qt
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QStyle, QVBoxLayout, QAction
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 from qtawesome import icon
 
-from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
+from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 
 logger = getLogger("GameWidget")
 
@@ -17,13 +17,11 @@ class InstalledListWidget(BaseInstalledWidget):
     signal = pyqtSignal(str)
     update_game = pyqtSignal()
 
-    def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap):
-        super(InstalledListWidget, self).__init__(game, core, pixmap)
+    def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap, offline):
+        super(InstalledListWidget, self).__init__(game, core, pixmap, offline)
         self.dev = core.get_game(self.igame.app_name).metadata["developer"]
         self.size = game.install_size
         self.launch_params = game.launch_parameters
-
-
 
         self.layout = QHBoxLayout()
 
@@ -59,7 +57,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.app_name_label)
         self.childLayout.addWidget(self.developer_label)
 
-        #if os.name != "nt":
+        # if os.name != "nt":
         #    self.childLayout.addWidget(self.wine_rating)
         self.childLayout.addWidget(self.version_label)
         self.childLayout.addWidget(self.size_label)

@@ -2,8 +2,8 @@ from logging import getLogger
 
 from PyQt5.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QPushButton
 
-from rare.components.tabs.games.game_widgets.base_uninstalled_widget import BaseUninstalledWidget
 from custom_legendary.core import LegendaryCore
+from rare.components.tabs.games.game_widgets.base_uninstalled_widget import BaseUninstalledWidget
 
 logger = getLogger("Game")
 
