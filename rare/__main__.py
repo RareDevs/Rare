@@ -1,4 +1,5 @@
 import os
+import sys
 from argparse import ArgumentParser
 
 from rare import __version__

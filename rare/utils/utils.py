@@ -179,15 +179,22 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
     # Windows
     elif os.name == "nt":
         # Target of shortcut
-        target = sys.argv[0]
+        if type_of_link == "desktop":
+            target_folder = os.path.expanduser('~/Desktop/')
+        elif type_of_link == "start_menu":
+            target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
+        else:
+            logger.warning("No valid type of link")
+            return
+        target = os.path.abspath(sys.argv[0])
 
         # Name of link file
         linkName = igame.title + '.lnk'
 
-        desktopFolder = os.path.expanduser('~/Desktop/')
+        image_path = QSettings("Rare", "Rare").value("img_dir", os.path.expanduser("~/.cache/rare/images"), str)
 
         # Path to location of link file
-        pathLink = os.path.join(desktopFolder, linkName)
+        pathLink = os.path.join(target_folder, linkName)
 
         # Add shortcut
         shell = Dispatch('WScript.Shell')
@@ -195,5 +202,9 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         shortcut.Targetpath = target
         shortcut.Arguments = f'launch {app_name}'
         shortcut.WorkingDirectory = os.getcwd()
-        shortcut.IconLocation = os.path.join(os.getcwd(), 'Logo.ico')
+
+        if os.path.exists(os.path.join(image_path, f"{igame.app_name}/Thumbnail.png")):
+            shortcut.IconLocation = os.path.join(image_path, f"{igame.app_name}/Thumbnail.png")
+        else:
+            shortcut.IconLocation = os.path.join(image_path, f"{igame.app_name}/DieselGameBoxTall.png")
         shortcut.save()
