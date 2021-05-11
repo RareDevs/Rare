@@ -206,5 +206,5 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
             img = Image.open(icon+".png")
             img.save(icon+".ico")
             logger.info("Create Icon")
-        shortcut.IconLocation = os.path.join(icon)
+        shortcut.IconLocation = os.path.join(icon+ ".ico")
         shortcut.save()
