@@ -152,10 +152,10 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
             os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
                          igame.app_name, 'Thumbnail.png')):
         icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
-                            igame.app_name, 'Thumbnail.png')
+                            igame.app_name, 'Thumbnail')
     else:
         icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
-                            igame.app_name, 'DieselGameBoxTall.png')
+                            igame.app_name, 'DieselGameBoxTall')
     # Linux
     if os.name == "posix":
         if type_of_link == "desktop":
@@ -169,7 +169,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
             desktop_file.write("[Desktop Entry]\n"
                                f"Name={igame.title}\n"
                                f"Type=Application\n"
-                               f"Icon={icon}\n"
+                               f"Icon={icon}.png\n"
                                f"Exec=rare launch {app_name}\n"
                                "Terminal=false\n"
                                "StartupWMClass=rare-game\n"
@@ -191,8 +191,6 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         # Name of link file
         linkName = igame.title + '.lnk'
 
-        image_path = QSettings("Rare", "Rare").value("img_dir", os.path.expanduser("~/.cache/rare/images"), str)
-
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)
 
@@ -203,8 +201,10 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         shortcut.Arguments = f'launch {app_name}'
         shortcut.WorkingDirectory = os.getcwd()
 
-        if os.path.exists(os.path.join(image_path, f"{igame.app_name}/Thumbnail.png")):
-            shortcut.IconLocation = os.path.join(image_path, f"{igame.app_name}/Thumbnail.png")
-        else:
-            shortcut.IconLocation = os.path.join(image_path, f"{igame.app_name}/DieselGameBoxTall.png")
+        # Icon
+        if not os.path.exists(icon+".ico"):
+            img = Image.open(icon+".png")
+            img.save(icon+".ico")
+            logger.info("Create Icon")
+        shortcut.IconLocation = os.path.join(icon)
         shortcut.save()
