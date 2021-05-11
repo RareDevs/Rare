@@ -8,6 +8,10 @@ import requests
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 
+# Windows
+if os.name == "nt":
+    from win32com.client import Dispatch
+
 from rare import lang_path, __version__, style_path
 from custom_legendary.core import LegendaryCore
 
@@ -174,12 +178,22 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
 
     # Windows
     elif os.name == "nt":
-        if type_of_link == "desktop":
-            path = os.path.expanduser(f"~/Desktop/")
-        elif type_of_link == "start_menu":
-            logger.info("Startmenu link is not supported on windows")
-            return
-        else:
-            return
-        with open(path+igame.title+".bat", "w") as desktop_file:
-            desktop_file.write(f"rare launch {app_name}")
+        # Target of shortcut
+        target = sys.argv[0]
+
+        # Name of link file
+        linkName = igame.title + '.lnk'
+
+        desktopFolder = os.path.expanduser('~/Desktop/')
+
+        # Path to location of link file
+        pathLink = os.path.join(desktopFolder, linkName)
+
+        # Add shortcut
+        shell = Dispatch('WScript.Shell')
+        shortcut = shell.CreateShortCut(pathLink)
+        shortcut.Targetpath = target
+        shortcut.Arguments = f'launch {app_name}'
+        shortcut.WorkingDirectory = os.getcwd()
+        shortcut.IconLocation = os.path.join(os.getcwd(), 'Logo.ico')
+        shortcut.save()

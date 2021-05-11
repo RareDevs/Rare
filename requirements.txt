@@ -5,3 +5,4 @@ QtAwesome
 notify-py
 psutil
 pypresence
+pywin32; platform_system == "Windows"
