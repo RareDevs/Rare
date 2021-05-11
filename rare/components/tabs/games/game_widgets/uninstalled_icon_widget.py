@@ -13,7 +13,6 @@ logger = getLogger("Uninstalled")
 
 
 class IconWidgetUninstalled(BaseUninstalledWidget):
-    install_game = pyqtSignal(InstallOptions)
 
     def __init__(self, game: Game, core: LegendaryCore, pixmap):
         super(IconWidgetUninstalled, self).__init__(game, core, pixmap)
@@ -42,7 +41,7 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
 
     def enterEvent(self, e):
         if not self.installing:
-            self.info_label.setText(self.tr("Install Game"))
+            self.info_label.setText(self.tr("Game Info"))
         else:
             self.info_label.setText(self.tr("Installation running"))
 

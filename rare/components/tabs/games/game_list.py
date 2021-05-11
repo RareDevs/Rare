@@ -140,10 +140,10 @@ class GameList(QStackedWidget):
                 pixmap = QPixmap(f"{IMAGE_DIR}/{igame.app_name}/UninstalledArt.png")
 
             icon_widget = IconWidgetUninstalled(igame, self.core, pixmap)
-            icon_widget.install_game.connect(self.install)
+            icon_widget.show_uninstalled_info.connect(self.install)
 
             list_widget = ListWidgetUninstalled(self.core, igame, pixmap)
-            list_widget.install_game.connect(self.install)
+            list_widget.show_uninstalled_info.connect(self.install)
 
             self.icon_layout.addWidget(icon_widget)
             self.list_layout.addWidget(list_widget)
@@ -190,13 +190,15 @@ class GameList(QStackedWidget):
                 return True, pid
         return False, 0
 
-    def install(self, options: InstallOptions):
-        icon_widget, list_widget = self.widgets[options.app_name]
-        icon_widget.mousePressEvent = lambda e: None
-        icon_widget.installing = True
-        list_widget.install_button.setDisabled(True)
-        list_widget.installing = True
-        self.install_game.emit(options)
+    def install(self, app_name):
+        self.show_uninstalled_info.emit(app_name)
+
+        # icon_widget, list_widget = self.widgets[options.app_name]
+        # icon_widget.mousePressEvent = lambda e: None
+        # icon_widget.installing = True
+        # list_widget.install_button.setDisabled(True)
+        # list_widget.installing = True
+        # self.install_game.emit(options)
 
     def finished(self, app_name):
         self.running_games.remove(app_name)

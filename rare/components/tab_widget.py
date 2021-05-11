@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
 from qtawesome import icon
 
 from custom_legendary.core import LegendaryCore
+from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tab_utils import TabBar, TabButtonWidget
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
@@ -66,10 +67,13 @@ class TabWidget(QTabWidget):
         if not offline:
             # Download finished
             self.downloadTab.finished.connect(self.dl_finished)
-            # start download
-            self.games_tab.default_widget.game_list.install_game.connect(self.start_download)
+            # show uninstalled info
+            self.games_tab.default_widget.game_list.show_uninstalled_info.connect(self.games_tab.show_uninstalled)
             # install dlc
             self.games_tab.game_info.dlc_tab.install_dlc.connect(self.start_download)
+
+            # install game
+            self.games_tab.uninstalled_info_widget.install_button.clicked.connect(self.install_game)
 
             # repair game
             self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
@@ -84,6 +88,20 @@ class TabWidget(QTabWidget):
         self.tabBarClicked.connect(lambda x: self.games_tab.layout.setCurrentIndex(0) if x == 0 else None)
         self.setIconSize(QSize(25, 25))
 
+    def install_game(self):
+        app_name = self.games_tab.uninstalled_info_widget.game.app_name
+        infos = InstallDialog(app_name, self.core).get_information()
+        if infos != 0:
+            path, max_workers, force, ignore_free_space = infos
+            options = InstallOptions(app_name=app_name, max_workers=max_workers, path=path, force=force,
+                                     ignore_free_space=ignore_free_space)
+            self.start_download(options)
+
+    def start_download(self, options):
+        downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
+        self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
+        self.downloadTab.install_game(options)
+
     # Sync game and delete dc rpc
     def game_finished(self, app_name):
         self.delete_presence.emit()
@@ -96,11 +114,6 @@ class TabWidget(QTabWidget):
             self.games_tab.default_widget.game_list.update_list()
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
-
-    def start_download(self, options):
-        downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
-        self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
-        self.downloadTab.install_game(options)
 
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())

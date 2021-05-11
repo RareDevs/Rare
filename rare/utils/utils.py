@@ -8,10 +8,12 @@ import requests
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 
+# Windows
+if os.name == "nt":
+    from win32com.client import Dispatch
+
 from rare import lang_path, __version__, style_path
 from custom_legendary.core import LegendaryCore
-
-import id
 
 logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
@@ -150,10 +152,10 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
             os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
                          igame.app_name, 'Thumbnail.png')):
         icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
-                            igame.app_name, 'Thumbnail.png')
+                            igame.app_name, 'Thumbnail')
     else:
         icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
-                            igame.app_name, 'DieselGameBoxTall.png')
+                            igame.app_name, 'DieselGameBoxTall')
     # Linux
     if os.name == "posix":
         if type_of_link == "desktop":
@@ -167,7 +169,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
             desktop_file.write("[Desktop Entry]\n"
                                f"Name={igame.title}\n"
                                f"Type=Application\n"
-                               f"Icon={icon}\n"
+                               f"Icon={icon}.png\n"
                                f"Exec=rare launch {app_name}\n"
                                "Terminal=false\n"
                                "StartupWMClass=rare-game\n"
@@ -176,12 +178,33 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
 
     # Windows
     elif os.name == "nt":
+        # Target of shortcut
         if type_of_link == "desktop":
-            path = os.path.expanduser(f"~/Desktop/")
+            target_folder = os.path.expanduser('~/Desktop/')
         elif type_of_link == "start_menu":
-            logger.info("Startmenu link is not supported on windows")
-            return
+            target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
+            logger.warning("No valid type of link")
             return
-        with open(path+igame.title+".bat", "w") as desktop_file:
-            desktop_file.write(f"rare launch {app_name}")
+        target = os.path.abspath(sys.argv[0])
+
+        # Name of link file
+        linkName = igame.title + '.lnk'
+
+        # Path to location of link file
+        pathLink = os.path.join(target_folder, linkName)
+
+        # Add shortcut
+        shell = Dispatch('WScript.Shell')
+        shortcut = shell.CreateShortCut(pathLink)
+        shortcut.Targetpath = target
+        shortcut.Arguments = f'launch {app_name}'
+        shortcut.WorkingDirectory = os.getcwd()
+
+        # Icon
+        if not os.path.exists(icon+".ico"):
+            img = Image.open(icon+".png")
+            img.save(icon+".ico")
+            logger.info("Create Icon")
+        shortcut.IconLocation = os.path.join(icon + ".ico")
+        shortcut.save()

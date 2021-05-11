@@ -48,13 +48,18 @@ class BaseInstalledWidget(QGroupBox):
         self.addAction(self.create_desktop)
 
         if os.name == "posix":
-            if os.path.exists(os.path.expanduser(f"~/.local/share/applications/{self.igame.title}.desktop")):
-                self.create_start_menu = QAction(self.tr("Remove start menu link"))
-            else:
-                self.create_start_menu = QAction(self.tr("Create start menu link"))
+            start_menu_file = os.path.expanduser(f"~/.local/share/applications/{self.igame.title}.desktop")
+        elif os.name == "nt":
+            start_menu_file = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
+        else:
+            start_menu_file = ""
+        if os.path.exists(start_menu_file):
+            self.create_start_menu = QAction(self.tr("Remove start menu link"))
+        else:
+            self.create_start_menu = QAction(self.tr("Create start menu link"))
 
-            self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
-            self.addAction(self.create_start_menu)
+        self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
+        self.addAction(self.create_start_menu)
 
         uninstall = QAction(self.tr("Uninstall"), self)
         uninstall.triggered.connect(self.uninstall)
