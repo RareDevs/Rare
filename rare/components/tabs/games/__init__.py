@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineE
 from qtawesome import icon
 
 from rare.components.tabs.games.game_info import InfoTabs
+from rare.components.tabs.games.game_info.uninstalled_info import UninstalledInfo
 from rare.components.tabs.games.game_list import GameList
 from rare.components.tabs.games.import_widget import ImportWidget
 from rare.utils.extra_widgets import SelectViewWidget
@@ -28,11 +29,20 @@ class GameTab(QWidget):
         self.layout.addWidget(self.import_widget)
         self.import_widget.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
         self.import_widget.update_list.connect(self.update_list)
+
+        self.uninstalled_info_widget = UninstalledInfo(core)
+        self.layout.addWidget(self.uninstalled_info_widget)
+        self.uninstalled_info_widget.back.clicked.connect(lambda: self.layout.setCurrentIndex(0))
+
         self.setLayout(self.layout)
 
     def update_list(self):
         self.default_widget.game_list.update_list(self.default_widget.head_bar.view.isChecked())
         self.layout.setCurrentIndex(0)
+
+    def show_uninstalled(self, app_name):
+        self.uninstalled_info_widget.update_game(app_name)
+        self.layout.setCurrentIndex(3)
 
     def show_info(self, app_name):
         self.game_info.update_game(app_name, self.default_widget.game_list.dlcs)

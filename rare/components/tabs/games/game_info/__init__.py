@@ -1,3 +1,4 @@
+import json
 import os
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -62,8 +63,18 @@ class GameInfo(QScrollArea):
     verify_game = pyqtSignal(str)
     verify_threads = {}
 
+    grade_table = json.load(open(os.path.expanduser("~/.cache/rare/game_list.json")))
+
     def __init__(self, core: LegendaryCore, parent):
         super(GameInfo, self).__init__(parent=parent)
+
+        self.ratings = {"platinum": self.tr("Platimum"),
+                        "gold": self.tr("Gold"),
+                        "silver": self.tr("Silver"),
+                        "bronze": self.tr("Bronze"),
+                        "fail": self.tr("Could not get grade from ProtonDB"),
+                        "pending": "Not enough reports"}
+
         self.widget = QWidget()
         self.core = core
         self.layout = QVBoxLayout()
@@ -87,6 +98,11 @@ class GameInfo(QScrollArea):
         self.app_name = QLabel("Error")
         self.app_name.setTextInteractionFlags(Qt.TextSelectableByMouse)
         right_layout.addWidget(self.app_name)
+
+        if os.name != "nt":
+            self.grade = QLabel("Error")
+            right_layout.addWidget(self.grade)
+            self.grade.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
         self.version = QLabel("Error")
         self.version.setTextInteractionFlags(Qt.TextSelectableByMouse)
@@ -183,6 +199,12 @@ class GameInfo(QScrollArea):
         self.install_size.setText(
             self.tr("Install size: ") + get_size(self.igame.install_size))
         self.install_path.setText(self.tr("Install path: ") + self.igame.install_path)
+
+        if os.name != "nt":
+            if grade := self.ratings.get(self.grade_table[app_name].get("grade")):
+                self.grade.setText(self.tr("ProtonDB rating: ") + grade)
+            else:
+                self.grade.setText(self.tr("ProtonDB rating: Error"))
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(app_name):
             self.game_actions.verify_widget.setCurrentIndex(0)

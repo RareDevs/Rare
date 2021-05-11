@@ -24,6 +24,7 @@ class GameList(QStackedWidget):
     update_game = pyqtSignal()
     game_exited = pyqtSignal(str)
     game_started = pyqtSignal(str)
+    show_uninstalled_info = pyqtSignal(str)
 
     running_games = []
     active_game = ("", 0)
