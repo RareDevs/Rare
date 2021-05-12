@@ -11,14 +11,15 @@ from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 # Windows
 if os.name == "nt":
     from win32com.client import Dispatch
+# Mac not supported
 
-from rare import lang_path, __version__, style_path
+
+from rare import lang_path
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
 IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare/images"), type=str)
-logger.info("IMAGE DIRECTORY: " + IMAGE_DIR)
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
@@ -38,7 +39,7 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
         except json.decoder.JSONDecodeError:
             shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
             download_image(game)
-        signal.emit(i/len(game_list)*100)
+        signal.emit(i / len(game_list) * 100)
 
 
 def download_image(game, force=False):
@@ -69,7 +70,7 @@ def download_image(game, force=False):
                     f.write(requests.get(url).content)
                     try:
                         img = Image.open(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
-                        img = img.resize((200, int(200*4/3)))
+                        img = img.resize((200, int(200 * 4 / 3)))
                         img.save(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
                     except UnidentifiedImageError as e:
                         logger.warning(e)
@@ -84,7 +85,7 @@ def download_image(game, force=False):
 
             bg = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
             uninstalledArt = bg.convert('L')
-            uninstalledArt = uninstalledArt.resize((200, int(200*4/3)))
+            uninstalledArt = uninstalledArt.resize((200, int(200 * 4 / 3)))
             uninstalledArt.save(f'{IMAGE_DIR}/{game.app_name}/UninstalledArt.png')
         elif os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png"):
             bg: Image.Image = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png")
@@ -202,9 +203,11 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
-        if not os.path.exists(icon+".ico"):
-            img = Image.open(icon+".png")
-            img.save(icon+".ico")
+        if not os.path.exists(icon + ".ico"):
+            img = Image.open(icon + ".png")
+            img.save(icon + ".ico")
             logger.info("Create Icon")
-        shortcut.IconLocation = os.path.join(icon+ ".ico")
+        shortcut.IconLocation = os.path.join(icon + ".ico")
+
+        # Save shortcut
         shortcut.save()
