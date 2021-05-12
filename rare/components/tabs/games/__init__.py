@@ -83,7 +83,8 @@ class GameListHeadBar(QWidget):
         self.filter = QComboBox()
         self.filter.addItems([self.tr("All"),
                               self.tr("Installed only"),
-                              self.tr("Offline Games")])
+                              self.tr("Offline Games"),
+                              self.tr("32 Bit Games")])
         self.filter.currentIndexChanged.connect(self.filter_changed)
         self.layout.addWidget(self.filter)
         self.layout.addStretch(1)
@@ -117,9 +118,4 @@ class GameListHeadBar(QWidget):
         self.setLayout(self.layout)
 
     def filter_changed(self, i):
-        if i == 0:
-            self.filter_changed_signal.emit("")
-        elif i == 1:
-            self.filter_changed_signal.emit("installed")
-        elif i == 2:
-            self.filter_changed_signal.emit("offline")
+        self.filter_changed_signal.emit(["", "installed", "offline", "32bit"][i])

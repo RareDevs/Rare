@@ -66,6 +66,8 @@ class GameList(QStackedWidget):
         self.updates = []
         self.widgets = {}
 
+        self.bit32 = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Win32")[0]]
+        self.mac_games = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Mac")[0]]
         self.installed = sorted(self.core.get_installed_list(), key=lambda x: x.title)
 
         # Installed Games
@@ -164,8 +166,8 @@ class GameList(QStackedWidget):
         if not icon_view:
             self.setCurrentIndex(1)
 
-        if self.settings.value("installed_only", False, bool):
-            self.filter(True)
+        if filter_games := self.settings.value("filter", "", str):
+            self.filter(filter_games)
 
     def is_finished(self):
         if psutil.pid_exists(self.active_game[1]):
@@ -241,6 +243,10 @@ class GameList(QStackedWidget):
                         w.setVisible(w.igame.can_run_offline)
                     else:
                         w.setVisible(False)
+                elif filter == "32bit":
+                    w.setVisible(w.game.app_name in self.bit32)
+                elif filter == "mac":
+                    w.setVisible(w.game.app_name in self.mac_games)
                 else:
                     # All visible
                     w.setVisible(True)
