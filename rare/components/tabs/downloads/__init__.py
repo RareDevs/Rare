@@ -297,6 +297,7 @@ class UpdateWidget(QWidget):
         self.update_button = QPushButton(self.tr("Update Game"))
         self.update_button.clicked.connect(self.update_game)
         self.layout.addWidget(self.update_button)
+        self.layout.addWidget(QLabel(self.tr("Version: ") + self.game.version + " -> " + self.core.get_asset(self.game.app_name, True).build_version))
 
         self.setLayout(self.layout)
 
