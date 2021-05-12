@@ -165,7 +165,7 @@ class GameList(QStackedWidget):
             self.setCurrentIndex(1)
 
         if self.settings.value("installed_only", False, bool):
-            self.installed_only(True)
+            self.filter(True)
 
     def is_finished(self):
         if psutil.pid_exists(self.active_game[1]):
@@ -223,7 +223,7 @@ class GameList(QStackedWidget):
         self.widgets[app_name][1].launch_button.setDisabled(True)
         self.widgets[app_name][1].launch_button.setText(self.tr("Game running"))
 
-    def filter(self, text: str):
+    def search(self, text: str):
         for t in self.widgets.values():
             for w in t:
                 if text.lower() in w.game.app_title.lower() + w.game.app_name.lower():
@@ -231,11 +231,20 @@ class GameList(QStackedWidget):
                 else:
                     w.setVisible(False)
 
-    def installed_only(self, i_o: bool):
+    def filter(self, filter="installed"):
         for t in self.widgets.values():
             for w in t:
-                w.setVisible(not (not self.core.is_installed(w.game.app_name) and i_o))
-        self.settings.setValue("installed_only", i_o)
+                if filter == "installed":
+                    w.setVisible(self.core.is_installed(w.game.app_name))
+                elif filter == "offline":
+                    if self.core.is_installed(w.game.app_name):
+                        w.setVisible(w.igame.can_run_offline)
+                    else:
+                        w.setVisible(False)
+                else:
+                    # All visible
+                    w.setVisible(True)
+        self.settings.setValue("filter", filter)
 
     def update_list(self, icon_view=True):
         self.settings.setValue("icon_view", icon_view)
