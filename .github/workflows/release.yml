@@ -59,11 +59,13 @@ jobs:
           pip3 install -r requirements.txt
       - name: Build
         run: python3 freeze.py bdist_msi
+      - name: Copy File
+        run: cp dist/*.msi Rare.msi
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: dist/Rare*.msi
+          file: Rare.msi
           asset_name: Rare.msi
           tag: ${{ github.ref }}
           overwrite: true
