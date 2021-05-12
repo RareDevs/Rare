@@ -79,10 +79,9 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.widget = QWidget()
         self.core = core
 
-        if os.name != "nt":
-            self.grade = QLabel("Error")
-            right_layout.addWidget(self.grade)
-            self.grade.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        if os.name == "nt":
+            self.lbl_grade.setVisible(False)
+            self.grade.setVisible(False)
 
         self.uninstall_button.clicked.connect(self.uninstall)
         self.verify_button.clicked.connect(self.verify)
@@ -158,10 +157,11 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.install_path.setText(self.igame.install_path)
 
         if os.name != "nt":
-            if grade := self.ratings.get(self.grade_table[app_name].get("grade")):
-                self.grade.setText(self.tr("ProtonDB rating: ") + grade)
-            else:
-                self.grade.setText(self.tr("ProtonDB rating: Error"))
+            try:
+                grade = self.ratings.get(self.grade_table[app_name].get("grade"))
+            except KeyError:
+                grade = (self.tr("Error"))
+            self.grade.setText(grade)
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(app_name):
             self.verify_widget.setCurrentIndex(0)
