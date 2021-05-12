@@ -1,10 +1,65 @@
 QWidget {
     background-color: #202225;
-    color: white;
+    color: #eee;
 }
 
 QLabel {
     background-color: transparent;
+	padding: 4px;
+}
+
+QLineEdit {
+    border: 1px solid darkslategrey;
+    border-radius: 2px;
+    background-color: #334;
+	padding: 2px;
+}
+
+QScrollBar {
+	border: 1px solid darkslategrey;
+    border-radius: 4px;
+    background-color: #334;
+	padding: 1px;
+}
+
+QScrollBar::add-line:vertical {
+    border: none;
+    background: transparent;
+    height: 0px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    border: none;
+    background: transparent;
+    height: 0px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:horizontal {
+    border: none;
+    background: transparent;
+    height: 0px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: none;
+    background: green;
+    height: 0px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::handle{
+	border: 1px solid darkslategrey;
+    background-color: gray;
+    border-radius: 4px;
+	min-height: 20px;
+	min-width: 20px;
 }
 
 QTabBar#main_tab_bar {
@@ -27,12 +82,18 @@ QTabBar::tab:selected#main_tab_bar {
 
 QTabBar::tab:hover#main_tab_bar {
     border-bottom: 2px solid black;
-
 }
 
 QGroupBox {
-    padding: 4px;
-    margin: 8px;
+    border: 1px solid gray;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 6px;
+    margin-top: 3ex;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 QGroupBox#settings_widget {
@@ -60,15 +121,21 @@ QGroupBox#group {
 
 
 QToolButton {
-    padding: 6px;
+    border: 1px solid gray;
+    border-radius: 2px;
+    background-color: #3c3f41;
+    padding: 4px;
 }
 
+QToolButton:hover {
+    background-color: #223;
+}
 
 QPushButton {
-    border: 1px solid white;
-    border-radius: 4px;
+    border: 1px solid gray;
+    border-radius: 2px;
     background-color: #3c3f41;
-    padding: 3px;
+    padding: 5px;
 }
 
 QPushButton:hover {
@@ -97,19 +164,65 @@ QPushButton:hover#menu_button {
     background-color: #334;
 }
 
-QLineEdit {
-    border: 1px solid white;
+QRadioButton {
+    background-color: none;
+	border-radius: 50%;
+}
+
+QRadioButton::indicator {
+    border: 1px solid gray;
+	border-radius: 5%;
 }
 
 QCheckBox {
-    color: #F0F0F0;
     background-color: none;
 }
 
 QCheckBox::indicator {
-
+    border: 1px solid gray;
+	border-radius: 2px;
 }
 
+QCheckBox::indicator:checked {
+  width: -20ex;
+  height: -20ex;
+  background: #5F5F80;
+  border-radius: 10px;
+  
+}
+
+QSpinBox {
+    border: 1px solid darkslategrey;
+    border-radius: 2px;
+    background-color: #334;
+	padding: 2px;
+}
+
+/*
+QCheckBox::indicator {
+    border: 1px solid gray;
+}
+*/
+
+QComboBox {
+    border: 1px solid gray;
+    border-radius: 2px;
+    background-color: #3c3f41;
+    padding: 5px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+/*
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid;
+*/
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
 
 #list_widget {
     border-top: 2px solid white;
@@ -141,13 +254,3 @@ QTabBar::tab:disabled#settings_bar {
     color: transparent;
     background-color: transparent;
 }
-
-/*
-QScrollBar:vertical{
-    border: 1px solid white;
-}
-QScrollBar::handle:vertical{
-    background-color: gray;
-    border-radius: 4px;
-}
-*/
