@@ -1,7 +1,6 @@
 import os
 from logging import getLogger
 
-import gi
 import psutil
 from PyQt5.QtCore import Qt, pyqtSignal, QSettings, QTimer
 from PyQt5.QtGui import QPixmap
