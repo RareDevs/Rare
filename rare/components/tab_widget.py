@@ -3,8 +3,10 @@ import webbrowser
 from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
 from qtawesome import icon
+from rare.utils import legendary_utils
 
 from custom_legendary.core import LegendaryCore
+from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.tab_utils import TabBar, TabButtonWidget
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
@@ -63,6 +65,9 @@ class TabWidget(QTabWidget):
         # open download tab
         self.games_tab.default_widget.game_list.update_game.connect(lambda: self.setCurrentIndex(1))
 
+        # uninstall
+        self.games_tab.game_info.info.uninstall_game.connect(self.uninstall_game)
+
         if not offline:
             # Download finished
             self.downloadTab.finished.connect(self.dl_finished)
@@ -90,10 +95,23 @@ class TabWidget(QTabWidget):
         if self.core.get_game(app_name).supports_cloud_saves:
             self.cloud_saves.sync_game(app_name, True)
 
+    def uninstall_game(self, app_name):
+        game = self.core.get_game(app_name)
+        infos = UninstallDialog(game).get_information()
+        if infos == 0:
+            return
+        legendary_utils.uninstall(game.app_name, self.core, infos)
+        if app_name in self.downloadTab.update_widgets.keys():
+            self.downloadTab.update_layout.removeWidget(self.downloadTab.update_widgets[app_name])
+            self.downloadTab.update_widgets.pop(app_name)
+            downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
+            self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
+
     # Update gamelist and set text of Downlaods to "Downloads"
+
     def dl_finished(self, update_list):
-        if update_list:
-            self.games_tab.default_widget.game_list.update_list()
+        if update_list[0]:
+            self.games_tab.default_widget.game_list.update_list(update_list[1])
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
 

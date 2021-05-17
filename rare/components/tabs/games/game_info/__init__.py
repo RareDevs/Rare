@@ -58,7 +58,8 @@ class InfoTabs(QTabWidget):
 class GameInfo(QScrollArea):
     igame: InstalledGame
     game: Game
-    update_list = pyqtSignal()
+    uninstall_game = pyqtSignal(str)
+    update_list = pyqtSignal(str)
     verify_game = pyqtSignal(str)
     verify_threads = {}
 
@@ -115,12 +116,8 @@ class GameInfo(QScrollArea):
         self.setWidget(self.widget)
 
     def uninstall(self):
-        infos = UninstallDialog(self.game).get_information()
-        if infos == 0:
-            print("Cancel Uninstall")
-            return
-        legendary_utils.uninstall(self.game.app_name, self.core, infos)
-        self.update_list.emit()
+        self.uninstall_game.emit(self.game.app_name)
+        self.update_list.emit(self.game.app_name)
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')

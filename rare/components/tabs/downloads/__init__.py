@@ -20,7 +20,7 @@ logger = getLogger("Download")
 
 
 class DownloadTab(QWidget):
-    finished = pyqtSignal(bool)
+    finished = pyqtSignal(tuple)
     thread: QThread
     dl_queue = []
 
@@ -135,7 +135,7 @@ class DownloadTab(QWidget):
         # Information
         if not from_update:
             if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
-                self.finished.emit(False)
+                self.finished.emit(False, None)
                 return
 
         if self.active_game is None:
@@ -214,23 +214,25 @@ class DownloadTab(QWidget):
             # QMessageBox.information(self, "Info", "Download finished")
             logger.info("Download finished: " + self.active_game.app_title)
 
+            app_name = self.active_game.app_name
+            self.active_game = None
+
             if self.dl_queue:
-                if self.dl_queue[0][1] == self.active_game.app_name:
+                if self.dl_queue[0][1] == app_name:
                     self.dl_queue.pop(0)
                     self.queue_widget.update_queue(self.dl_queue)
 
-            if self.active_game.app_name in self.update_widgets.keys():
-                self.update_widgets[self.active_game.app_name].setVisible(False)
-                self.update_widgets.pop(self.active_game.app_name)
+            if app_name in self.update_widgets.keys():
+                self.update_widgets[app_name].setVisible(False)
+                self.update_widgets.pop(app_name)
                 if len(self.update_widgets) == 0:
                     self.update_text.setVisible(True)
-
-            self.active_game = None
 
             for i in self.update_widgets.values():
                 i.update_button.setDisabled(False)
 
-            self.finished.emit(True)
+            self.finished.emit((True, app_name))
+
             self.reset_infos()
 
             if len(self.dl_queue) != 0:
@@ -244,7 +246,7 @@ class DownloadTab(QWidget):
         elif text == "stop":
             self.reset_infos()
             self.active_game = None
-            self.finished.emit(False)
+            self.finished.emit((False, None))
             if self.dl_queue:
                 self.start_installation(*self.dl_queue[0])
 

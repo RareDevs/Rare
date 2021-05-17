@@ -16,7 +16,7 @@ logger = getLogger("Import")
 
 
 class ImportWidget(QWidget):
-    update_list = pyqtSignal()
+    update_list = pyqtSignal(str)
 
     def __init__(self, core: LegendaryCore, parent):
         super(ImportWidget, self).__init__(parent=parent)
@@ -125,7 +125,7 @@ class ImportWidget(QWidget):
                 self.core.get_installed_game(app_name).title))
             self.app_name_input.setText("")
 
-            self.update_list.emit()
+            self.update_list.emit(app_name)
         else:
             logger.warning("Failed to import" + app_name)
             self.info_label.setText(self.tr("Failed to import {}").format(app_name))
@@ -169,6 +169,6 @@ class ImportWidget(QWidget):
         if imported > 0:
             QMessageBox.information(self, "Imported Games",
                                     self.tr("Successfully imported {} Games. Reloading Library").format(imported))
-            self.update_list.emit()
+            self.update_list.emit("")
         else:
             QMessageBox.information(self, "Imported Games", self.tr("No Games were found"))
