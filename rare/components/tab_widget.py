@@ -73,7 +73,7 @@ class TabWidget(QTabWidget):
             self.games_tab.game_info.dlc_tab.install_dlc.connect(self.start_download)
 
             # install game
-            self.games_tab.uninstalled_info_widget.install_button.clicked.connect(self.install_game)
+            self.games_tab.uninstalled_info_widget.info.install_game.connect(self.install_game)
 
             # repair game
             self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
@@ -88,8 +88,7 @@ class TabWidget(QTabWidget):
         self.tabBarClicked.connect(lambda x: self.games_tab.layout.setCurrentIndex(0) if x == 0 else None)
         self.setIconSize(QSize(25, 25))
 
-    def install_game(self):
-        app_name = self.games_tab.uninstalled_info_widget.game.app_name
+    def install_game(self, app_name):
         infos = InstallDialog(app_name, self.core).get_information()
         if infos != 0:
             path, max_workers, force, ignore_free_space = infos

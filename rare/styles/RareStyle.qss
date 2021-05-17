@@ -58,11 +58,6 @@ QGroupBox#group {
     padding: 8px;
 }
 
-QTabBar::tab:disabled {
-    color: transparent;
-    background-color: transparent;
-}
-
 
 QToolButton {
     padding: 6px;
@@ -140,6 +135,11 @@ QTabBar::tab::selected#settings_bar {
     padding: 3px;
     border-radius: 5px;
     background-color: #334;
+}
+
+QTabBar::tab:disabled#settings_bar {
+    color: transparent;
+    background-color: transparent;
 }
 
 /*

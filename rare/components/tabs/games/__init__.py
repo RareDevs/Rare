@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineE
 from qtawesome import icon
 
 from rare.components.tabs.games.game_info import InfoTabs
-from rare.components.tabs.games.game_info.uninstalled_info import UninstalledInfo
+from rare.components.tabs.games.game_info.uninstalled_info import UninstalledInfo, UninstalledTabInfo
 from rare.components.tabs.games.game_list import GameList
 from rare.components.tabs.games.import_widget import ImportWidget
 from rare.utils.extra_widgets import SelectViewWidget
@@ -30,9 +30,9 @@ class GameTab(QWidget):
         self.import_widget.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
         self.import_widget.update_list.connect(self.update_list)
 
-        self.uninstalled_info_widget = UninstalledInfo(core)
+        self.uninstalled_info_widget = UninstalledTabInfo(core, self)
         self.layout.addWidget(self.uninstalled_info_widget)
-        self.uninstalled_info_widget.back.clicked.connect(lambda: self.layout.setCurrentIndex(0))
+        # self.uninstalled_info_widget.back.clicked.connect(lambda: self.layout.setCurrentIndex(0))
 
         self.setLayout(self.layout)
 
@@ -42,6 +42,7 @@ class GameTab(QWidget):
 
     def show_uninstalled(self, app_name):
         self.uninstalled_info_widget.update_game(app_name)
+        self.uninstalled_info_widget.setCurrentIndex(1)
         self.layout.setCurrentIndex(3)
 
     def show_info(self, app_name):
