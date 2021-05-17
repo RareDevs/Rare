@@ -55,12 +55,6 @@
      <layout class="QGridLayout" name="gridLayout">
       <item row="1" column="0">
        <widget class="QCheckBox" name="auto_update">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="text">
          <string>Update games on application startup</string>
         </property>
@@ -68,12 +62,6 @@
       </item>
       <item row="2" column="0">
        <widget class="QCheckBox" name="confirm_start">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="text">
          <string>Confirm game launch</string>
         </property>
@@ -81,12 +69,6 @@
       </item>
       <item row="0" column="0">
        <widget class="QCheckBox" name="sys_tray">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="text">
          <string>Exit to System tray</string>
         </property>
@@ -94,12 +76,6 @@
       </item>
       <item row="0" column="1">
        <widget class="QCheckBox" name="notification">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="text">
          <string>Show notification on download completion</string>
         </property>
@@ -107,12 +83,6 @@
       </item>
       <item row="3" column="0">
        <widget class="QCheckBox" name="auto_sync_cloud">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="text">
          <string>Automatically sync with cloud</string>
         </property>
@@ -120,12 +90,6 @@
       </item>
       <item row="1" column="1">
        <widget class="QCheckBox" name="save_size">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="text">
          <string>Restore window size on application startup</string>
         </property>
