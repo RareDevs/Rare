@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QFileDialog, QWidget
 from rare.components.tabs.settings.rpc_settings import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils.extra_widgets import PathEdit
-from rare.utils.utils import get_lang, get_possible_langs
+from rare.utils.utils import get_lang, get_possible_langs, get_color_schemes, get_style_sheets
 
 logger = getLogger("RareSettings")
 
@@ -43,20 +43,41 @@ class RareSettings(QWidget, Ui_RareSettings):
 
         # Select Image directory
         self.img_dir = PathEdit(self.img_dir_path, file_type=QFileDialog.DirectoryOnly, save_func=self.save_path)
-        self.layout_img_dir.addWidget(self.img_dir)
+        self.img_dir_layout.addWidget(self.img_dir)
 
         # Select lang
-        self.select_lang.addItems([i[1] for i in languages])
+        self.lang_select.addItems([i[1] for i in languages])
         if language in get_possible_langs():
             index = [lang[0] for lang in languages].index(language)
-            self.select_lang.setCurrentIndex(index)
+            self.lang_select.setCurrentIndex(index)
         else:
-            self.select_lang.setCurrentIndex(0)
-        self.info_lang.setVisible(False)
-        self.select_lang.currentIndexChanged.connect(self.update_lang)
+            self.lang_select.setCurrentIndex(0)
+        self.lang_select.currentIndexChanged.connect(self.update_lang)
+
+        colors = get_color_schemes()
+        self.color_select.addItems(colors)
+        if (color := self.settings.value("color_scheme")) in colors:
+            self.color_select.setCurrentIndex(self.color_select.findText(color))
+            self.color_select.setDisabled(False)
+            self.style_select.setDisabled(True)
+        else:
+            self.color_select.setCurrentIndex(0)
+        self.color_select.currentIndexChanged.connect(self.on_color_select_changed)
+
+        styles = get_style_sheets()
+        self.style_select.addItems(styles)
+        if (style := self.settings.value("style_sheet")) in styles:
+            self.style_select.setCurrentIndex(self.style_select.findText(style))
+            self.style_select.setDisabled(False)
+            self.color_select.setDisabled(True)
+        else:
+            self.style_select.setCurrentIndex(0)
+        self.style_select.currentIndexChanged.connect(self.on_style_select_changed)
+
+        self.interface_info.setVisible(False)
 
         self.rpc = RPCSettings()
-        self.layout_rpc.addWidget(self.rpc)
+        self.rpc_layout.addWidget(self.rpc)
 
         self.init_checkboxes(self.checkboxes)
         self.sys_tray.stateChanged.connect(
@@ -83,6 +104,26 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.log_dir_clean_button.setVisible(False)
         self.log_dir_size_label.setVisible(False)
 
+    def on_color_select_changed(self, color):
+        if color:
+            self.style_select.setCurrentIndex(0)
+            self.style_select.setDisabled(True)
+            self.settings.setValue("color_scheme", self.color_select.currentText())
+        else:
+            self.settings.remove("color_scheme")
+            self.style_select.setDisabled(False)
+        self.interface_info.setVisible(True)
+
+    def on_style_select_changed(self, style):
+        if style:
+            self.color_select.setCurrentIndex(0)
+            self.color_select.setDisabled(True)
+            self.settings.setValue("style_sheet", self.style_select.currentText())
+        else:
+            self.settings.remove("style_sheet")
+            self.color_select.setDisabled(False)
+        self.interface_info.setVisible(True)
+
     def open_dir(self):
         if os.name == "nt":
             os.startfile(self.logdir)
@@ -99,7 +140,7 @@ class RareSettings(QWidget, Ui_RareSettings):
 
     def update_lang(self, i: int):
         self.settings.setValue("language", languages[i][0])
-        self.info_lang.setVisible(True)
+        self.interface_info.setVisible(True)
 
     def update_path(self):
         old_path = self.img_dir_path

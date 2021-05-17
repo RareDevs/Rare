@@ -14,7 +14,7 @@ from rare import lang_path, style_path
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
-from rare.utils.utils import get_lang
+from rare.utils.utils import get_lang, load_color_scheme
 
 start_time = time.strftime('%y-%m-%d--%H:%M')  # year-month-day-hour-minute
 file_name = os.path.expanduser(f"~/.cache/rare/logs/Rare_{start_time}.log")
@@ -68,8 +68,13 @@ class App(QApplication):
 
         # Style
         self.setStyle(QStyleFactory.create("Fusion"))
-        self.setStyleSheet(open(style_path + "RareStyle.qss").read())
-        self.setWindowIcon(QIcon(style_path + "Logo.png"))
+        if (color := settings.value("color_scheme", None)) is not None:
+            custom_palette = load_color_scheme(os.path.join(style_path, "colors", color + ".scheme"))
+            if custom_palette is not None:
+                self.setPalette(custom_palette)
+        if (style := settings.value("style_sheet", None)) is not None:
+            self.setStyleSheet(open(os.path.join(style_path, "qss", style + ".qss")).read())
+        self.setWindowIcon(QIcon(os.path.join(style_path + "Logo.png")))
 
         # launch app
         self.launch_dialog = LaunchDialog(self.core, args.offline)

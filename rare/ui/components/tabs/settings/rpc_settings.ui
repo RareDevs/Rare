@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>RPCSettings</class>
  <widget class="QGroupBox" name="RPCSettings">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>178</width>
-    <height>146</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Discord RPC</string>
   </property>
