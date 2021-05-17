@@ -1,9 +1,26 @@
+import os
+
 import setuptools
 
 from rare import __version__ as version
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
+
+requirements = [
+        "requests<3.0",
+        "pillow",
+        "setuptools",
+        "wheel",
+        "PyQt5",
+        "QtAwesome",
+        "notify-py",
+        "psutil",
+        "pypresence"
+    ]
+
+if os.name == "nt":
+    requirements.append("pywin32")
 
 setuptools.setup(
     name="Rare",
@@ -25,15 +42,5 @@ setuptools.setup(
     ],
     python_requires=">=3.8",
     entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
-    install_requires=[
-        "requests<3.0",
-        "pillow",
-        "setuptools",
-        "wheel",
-        "PyQt5",
-        "QtAwesome",
-        "notify-py",
-        "psutil",
-        "pypresence"
-    ],
+    install_requires=requirements,
 )
