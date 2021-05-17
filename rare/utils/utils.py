@@ -190,7 +190,11 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         target = os.path.abspath(sys.argv[0])
 
         # Name of link file
-        linkName = igame.title + '.lnk'
+        linkName = igame.title
+        for c in r'<>?":|\/*':
+            linkName.replace(c, "")
+
+        linkName = linkName.strip() + '.lnk'
 
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)

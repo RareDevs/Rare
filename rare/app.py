@@ -15,7 +15,7 @@ from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
 from rare.utils.utils import get_lang
 
-start_time = time.strftime('%y-%m-%d--%H:%M')  # year-month-day-hour-minute
+start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
 file_name = os.path.expanduser(f"~/.cache/rare/logs/Rare_{start_time}.log")
 if not os.path.exists(os.path.dirname(file_name)):
     os.makedirs(os.path.dirname(file_name))
