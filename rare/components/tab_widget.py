@@ -68,6 +68,9 @@ class TabWidget(QTabWidget):
         # uninstall
         self.games_tab.game_info.info.uninstall_game.connect(self.uninstall_game)
 
+        # imported
+        self.games_tab.import_widget.update_list.connect(self.game_imported)
+
         if not offline:
             # Download finished
             self.downloadTab.finished.connect(self.dl_finished)
@@ -89,6 +92,15 @@ class TabWidget(QTabWidget):
         self.tabBarClicked.connect(lambda x: self.games_tab.layout.setCurrentIndex(0) if x == 0 else None)
         self.setIconSize(QSize(25, 25))
 
+    def game_imported(self, app_name: str):
+        igame = self.core.get_installed_game(app_name)
+        if self.core.get_asset(app_name, True).build_version != igame.version:
+            self.downloadTab.add_update(igame)
+            downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
+            self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
+        self.games_tab.default_widget.game_list.update_list(app_name)
+        self.games_tab.layout.setCurrentIndex(0)
+
     # Sync game and delete dc rpc
     def game_finished(self, app_name):
         self.delete_presence.emit()
@@ -106,7 +118,7 @@ class TabWidget(QTabWidget):
             self.downloadTab.update_widgets.pop(app_name)
             downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
             self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
-
+            self.downloadTab.update_text.setVisible(len(self.downloadTab.update_widgets) == 0)
     # Update gamelist and set text of Downlaods to "Downloads"
 
     def dl_finished(self, update_list):

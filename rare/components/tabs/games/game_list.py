@@ -276,6 +276,7 @@ class GameList(QStackedWidget):
                     for w in widgets:
                         w.igame = igame
                         w.update_available = self.core.get_asset(w.game.app_name, True).build_version != igame.version
+                    widgets[0].info_label.setText("")
                     widgets[0].info_text = ""
                 # new installed
                 elif self.core.is_installed(widgets[0].game.app_name) and not isinstance(widgets[0], BaseInstalledWidget):

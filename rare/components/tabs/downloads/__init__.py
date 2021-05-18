@@ -75,17 +75,20 @@ class DownloadTab(QWidget):
         self.update_text.setVisible(len(updates) == 0)
 
         for igame in updates:
-            widget = UpdateWidget(core, igame, self)
-            self.update_layout.addWidget(widget)
-            self.update_widgets[igame.app_name] = widget
-            widget.update.connect(self.update_game)
-            if QSettings().value("auto_update", False, bool):
-                self.update_game(igame.app_name, True)
-                widget.update_button.setDisabled(True)
+            self.add_update(igame)
 
         self.layout.addStretch(1)
 
         self.setLayout(self.layout)
+
+    def add_update(self, igame: InstalledGame):
+        widget = UpdateWidget(self.core, igame, self)
+        self.update_layout.addWidget(widget)
+        self.update_widgets[igame.app_name] = widget
+        widget.update.connect(self.update_game)
+        if QSettings().value("auto_update", False, bool):
+            self.update_game(igame.app_name, True)
+            widget.update_button.setDisabled(True)
 
     def update_dl_queue(self, dl_queue):
         self.dl_queue = dl_queue
