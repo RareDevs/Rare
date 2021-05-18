@@ -28,11 +28,11 @@ class GameTab(QWidget):
         self.import_widget = ImportWidget(core, self)
         self.layout.addWidget(self.import_widget)
         self.import_widget.back_button.clicked.connect(lambda: self.layout.setCurrentIndex(0))
-        self.import_widget.update_list.connect(self.update_list)
+        # self.import_widget.update_list.connect(self.update_list)
         self.setLayout(self.layout)
 
-    def update_list(self):
-        self.default_widget.game_list.update_list(self.default_widget.head_bar.view.isChecked())
+    def update_list(self, app_name=None):
+        self.default_widget.game_list.update_list(app_name)
         self.layout.setCurrentIndex(0)
 
     def show_info(self, app_name):

@@ -14,7 +14,7 @@ logger = getLogger("GameWidgetInstalled")
 
 
 class GameWidgetInstalled(BaseInstalledWidget):
-    update_list = pyqtSignal()
+    update_list = pyqtSignal(str)
     show_info = pyqtSignal(str)
     update_game = pyqtSignal()
 

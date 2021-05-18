@@ -142,4 +142,4 @@ class BaseInstalledWidget(QGroupBox):
             print("Cancel Uninstall")
             return
         legendary_utils.uninstall(self.game.app_name, self.core, infos)
-        self.update_list.emit()
+        self.update_list.emit(self.game.app_name)
