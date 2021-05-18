@@ -175,7 +175,8 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
                                "Terminal=false\n"
                                "StartupWMClass=rare-game\n"
                                )
-        os.chmod(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"), 0o755)
+            desktop_file.close()
+        os.chmod(os.path.expanduser(f"{path}{igame.title}.desktop"), 0o755)
 
     # Windows
     elif os.name == "nt":
