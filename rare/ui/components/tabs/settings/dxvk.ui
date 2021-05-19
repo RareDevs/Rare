@@ -16,7 +16,7 @@
   <property name="title">
    <string>DXVK Settings</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="dxvk_layout">
    <item row="2" column="0" colspan="3">
     <widget class="QGroupBox" name="gb_dxvk_options">
      <property name="title">

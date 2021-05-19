@@ -68,13 +68,18 @@ class App(QApplication):
 
         # Style
         self.setStyle(QStyleFactory.create("Fusion"))
-        if (color := settings.value("color_scheme", None)) is not None:
+        if settings.value("color_scheme", None) is None and settings.value("style_sheet", None) is None:
+            settings.setValue("color_scheme", "")
+            settings.setValue("style_sheet", "RareStyle")
+        if color := settings.value("color_scheme", False):
+            settings.setValue("style_sheet", "")
             custom_palette = load_color_scheme(os.path.join(style_path, "colors", color + ".scheme"))
             if custom_palette is not None:
                 self.setPalette(custom_palette)
-        if (style := settings.value("style_sheet", None)) is not None:
+        elif style := settings.value("style_sheet", False):
+            settings.setValue("color_scheme", "")
             self.setStyleSheet(open(os.path.join(style_path, "qss", style + ".qss")).read())
-        self.setWindowIcon(QIcon(os.path.join(style_path + "Logo.png")))
+        self.setWindowIcon(QIcon(os.path.join(style_path, "Logo.png")))
 
         # launch app
         self.launch_dialog = LaunchDialog(self.core, args.offline)

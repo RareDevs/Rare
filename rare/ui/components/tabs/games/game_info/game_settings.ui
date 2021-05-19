@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Game Settings</string>
+   <string>GameSettings</string>
   </property>
   <layout class="QVBoxLayout" name="game_settings_layout">
    <item>

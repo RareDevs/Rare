@@ -6,17 +6,6 @@
    <string>RareSettings</string>
   </property>
   <layout class="QGridLayout" name="rare_layout">
-   <item row="1" column="2">
-    <layout class="QVBoxLayout" name="rpc_layout"/>
-   </item>
-   <item row="0" column="0" colspan="2" alignment="Qt::AlignTop">
-    <widget class="QGroupBox" name="img_dir_group">
-     <property name="title">
-      <string>Image Cache Directory</string>
-     </property>
-     <layout class="QVBoxLayout" name="img_dir_layout"/>
-    </widget>
-   </item>
    <item row="1" column="0" alignment="Qt::AlignTop">
     <widget class="QGroupBox" name="interface_group">
      <property name="sizePolicy">
@@ -29,31 +18,40 @@
       <string>Interface</string>
      </property>
      <layout class="QGridLayout" name="interface_layout">
-      <item row="0" column="1" alignment="Qt::AlignRight">
-       <widget class="QLabel" name="lang_label">
-        <property name="text">
-         <string>Language</string>
-        </property>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="color_select">
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
        </widget>
       </item>
-      <item row="2" column="1" alignment="Qt::AlignRight">
+      <item row="2" column="0" alignment="Qt::AlignRight">
        <widget class="QLabel" name="style_label">
         <property name="text">
          <string>Style Sheet</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1" alignment="Qt::AlignRight">
+      <item row="0" column="0" alignment="Qt::AlignRight">
+       <widget class="QLabel" name="lang_label">
+        <property name="text">
+         <string>Language</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="lang_select"/>
+      </item>
+      <item row="1" column="0" alignment="Qt::AlignRight">
        <widget class="QLabel" name="color_label">
         <property name="text">
          <string>Color Scheme</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QComboBox" name="lang_select"/>
-      </item>
-      <item row="3" column="0" colspan="4">
+      <item row="3" column="0" colspan="3">
        <widget class="QLabel" name="interface_info">
         <property name="font">
          <font>
@@ -68,7 +66,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
+      <item row="2" column="1">
        <widget class="QComboBox" name="style_select">
         <item>
          <property name="text">
@@ -78,34 +76,66 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QComboBox" name="color_select">
-        <item>
-         <property name="text">
-          <string>None</string>
-         </property>
-        </item>
-       </widget>
+       <spacer name="interface_hspacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="1" alignment="Qt::AlignTop">
+   <item row="0" column="0" alignment="Qt::AlignTop">
+    <widget class="QGroupBox" name="img_dir_group">
+     <property name="title">
+      <string>Image Cache Directory</string>
+     </property>
+     <layout class="QVBoxLayout" name="img_dir_layout"/>
+    </widget>
+   </item>
+   <item row="2" column="0" alignment="Qt::AlignTop">
     <widget class="QGroupBox" name="settings_group">
      <property name="title">
-      <string>Behaviour</string>
+      <string>Behavior</string>
      </property>
-     <layout class="QGridLayout" name="behaviour_layout">
+     <layout class="QGridLayout" name="behavior_layout">
+      <item row="2" column="1" rowspan="2">
+       <spacer name="settings_hspacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="save_size">
+        <property name="text">
+         <string>Restore window size on application startup</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="notification">
+        <property name="text">
+         <string>Show notification on download completion</string>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="0">
        <widget class="QCheckBox" name="auto_sync_cloud">
         <property name="text">
          <string>Automatically sync with cloud</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="auto_update">
-        <property name="text">
-         <string>Update games on application startup</string>
         </property>
        </widget>
       </item>
@@ -116,6 +146,13 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="auto_update">
+        <property name="text">
+         <string>Update games on application startup</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QCheckBox" name="sys_tray">
         <property name="text">
@@ -123,37 +160,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2" rowspan="4">
-       <spacer name="settings_hspacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="1">
-       <widget class="QCheckBox" name="notification">
-        <property name="text">
-         <string>Show notification on download completion</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QCheckBox" name="save_size">
-        <property name="text">
-         <string>Restore window size on application startup</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
-   <item row="0" column="2" alignment="Qt::AlignTop">
+   <item row="0" column="1" alignment="Qt::AlignTop">
     <widget class="QGroupBox" name="log_dir_group">
      <property name="title">
       <string>Logs</string>
@@ -185,6 +195,9 @@
       </item>
      </layout>
     </widget>
+   </item>
+   <item row="1" column="1">
+    <layout class="QVBoxLayout" name="rpc_layout"/>
    </item>
    <item row="2" column="1">
     <spacer name="rare_vspacer">
