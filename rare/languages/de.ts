@@ -86,12 +86,12 @@
 <context>
     <name>App</name>
     <message>
-        <location filename="../app.py" line="95"/>
+        <location filename="../app.py" line="100"/>
         <source>Download finished</source>
         <translation>Download abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../app.py" line="95"/>
+        <location filename="../app.py" line="100"/>
         <source>Download finished. Game is playable now</source>
         <translation>Downlaod abgeschlossen. Spiel kann jetzt gespielt werden</translation>
     </message>
@@ -193,6 +193,29 @@
         <location filename="../components/tabs/games/game_info/dlcs.py" line="146"/>
         <source>Installing</source>
         <translation>Installieren</translation>
+    </message>
+</context>
+<context>
+    <name>DisableSyncDialog</name>
+    <message>
+        <location filename="../components/tabs/settings/legendary.py" line="177"/>
+        <source>Do you really want to disable sync with Epic Games Store</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/settings/legendary.py" line="180"/>
+        <source>Remove metadata from installed games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/settings/legendary.py" line="186"/>
+        <source>Ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/settings/legendary.py" line="187"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Abbruch</translation>
     </message>
 </context>
 <context>
@@ -464,6 +487,19 @@
     </message>
 </context>
 <context>
+    <name>EGLSyncWidget</name>
+    <message>
+        <location filename="../components/tabs/settings/legendary.py" line="224"/>
+        <source>Export</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/settings/legendary.py" line="224"/>
+        <source>Import</source>
+        <translation type="unfinished">Importieren</translation>
+    </message>
+</context>
+<context>
     <name>GameActions</name>
     <message>
         <location filename="../components/tabs/games/game_info/__init__.py" line="225"/>
@@ -673,7 +709,7 @@
         <translation type="obsolete">Überprüfung nach Updates beim Start überspringen</translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="138"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="139"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
@@ -713,83 +749,83 @@
         <translation type="obsolete">Start Parameter</translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="128"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="129"/>
         <source>Launch parameters</source>
         <translation>Start Parameter</translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="123"/>
-        <source>Game Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="124"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="125"/>
         <source>Launch Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="134"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="135"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="135"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="136"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="136"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="137"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="129"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="130"/>
         <source>Wrapper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="130"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="131"/>
         <source>Skip update check</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="131"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="132"/>
         <source>e.g. optirun</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="133"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="134"/>
         <source>Offline mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="137"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="138"/>
         <source>parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="139"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="140"/>
         <source>Sync with cloud</source>
         <translation type="unfinished">Automatisch Synchronisieren</translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="140"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="141"/>
         <source>Linux Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="141"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="142"/>
         <source>Don&apos;t use Proton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="142"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="143"/>
         <source>Proton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="143"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="144"/>
         <source>Prefix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="124"/>
+        <source>GameSettings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1057,17 +1093,17 @@ Installationsgröße: {} GB</translation>
     <message>
         <location filename="../ui/components/tabs/settings/legendary.py" line="73"/>
         <source>Cleanup</source>
-        <translation>Aufräumen</translation>
+        <translation type="obsolete">Aufräumen</translation>
     </message>
     <message>
         <location filename="../ui/components/tabs/settings/legendary.py" line="75"/>
         <source>Remove everything</source>
-        <translation>Alles aufräumen</translation>
+        <translation type="obsolete">Alles aufräumen</translation>
     </message>
     <message>
         <location filename="../ui/components/tabs/settings/legendary.py" line="74"/>
         <source>Clean, but keep manifests</source>
-        <translation>Aufräumen, aber Manifests behalten</translation>
+        <translation type="obsolete">Aufräumen, aber Manifests behalten</translation>
     </message>
     <message>
         <location filename="../components/tabs/settings/legendary.py" line="100"/>
@@ -1075,33 +1111,33 @@ Installationsgröße: {} GB</translation>
         <translation type="obsolete">Fertig! Es wurden {} MB entfernt</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/legendary.py" line="77"/>
+        <location filename="../components/tabs/settings/legendary.py" line="164"/>
         <source>Cleanup complete! Successfully removed {}</source>
         <translation>Fertig! Es wurden {} MB entfernt</translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="68"/>
-        <source>LegendarySettings</source>
+        <location filename="../components/tabs/settings/legendary.py" line="44"/>
+        <source>EGL path is at C:ProgramDataEpicEpicGamesLauncherData</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="69"/>
-        <source>Default Installation Directory</source>
+        <location filename="../components/tabs/settings/legendary.py" line="62"/>
+        <source>Disable sync</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="70"/>
-        <source>Download Settings</source>
+        <location filename="../components/tabs/settings/legendary.py" line="95"/>
+        <source>Enable Sync</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="71"/>
-        <source>Max Workers</source>
+        <location filename="../components/tabs/settings/legendary.py" line="116"/>
+        <source>No games to export</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="72"/>
-        <source>Less is slower (0: Default)</source>
+        <location filename="../components/tabs/settings/legendary.py" line="124"/>
+        <source>No games to import</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1316,6 +1352,11 @@ Installationsgröße: {} GB</translation>
         <source>Show</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="48"/>
+        <source>DiscordRPC</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RareSettings</name>
@@ -1335,7 +1376,7 @@ Installationsgröße: {} GB</translation>
         <translation type="obsolete">Ordner für Bilder</translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="116"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="119"/>
         <source>Language</source>
         <translation>Sprache</translation>
     </message>
@@ -1400,88 +1441,88 @@ Installationsgröße: {} GB</translation>
         <translation type="obsolete">Benachrichtigung anzeigen</translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="113"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="115"/>
         <source>RareSettings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="114"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="123"/>
         <source>Image Cache Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="115"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="116"/>
         <source>Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="117"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="118"/>
         <source>Style Sheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="118"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="120"/>
         <source>Color Scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="119"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="121"/>
         <source>Restart Rare to apply.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="121"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="122"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="122"/>
-        <source>Behaviour</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="123"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="127"/>
         <source>Automatically sync with cloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="124"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="129"/>
         <source>Update games on application startup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="125"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="128"/>
         <source>Confirm game launch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="126"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="130"/>
         <source>Exit to System tray</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="127"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="126"/>
         <source>Show notification on download completion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="128"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="125"/>
         <source>Restore window size on application startup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="129"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="131"/>
         <source>Logs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="130"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="132"/>
         <source>Open Log directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="131"/>
+        <location filename="../ui/components/tabs/settings/rare.py" line="133"/>
         <source>Clean Log directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/rare.py" line="124"/>
+        <source>Behavior</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1727,6 +1768,94 @@ Installationsgröße: {} GB</translation>
         <location filename="../components/tabs/downloads/__init__.py" line="297"/>
         <source>Update Game</source>
         <translation>Spiel updaten</translation>
+    </message>
+</context>
+<context>
+    <name>legendary_settings</name>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="118"/>
+        <source>StackedWidget</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="119"/>
+        <source>Cleanup</source>
+        <translation type="unfinished">Aufräumen</translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="120"/>
+        <source>Clean, but keep manifests</source>
+        <translation type="unfinished">Aufräumen, aber Manifests behalten</translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="121"/>
+        <source>Remove everything</source>
+        <translation type="unfinished">Alles aufräumen</translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="122"/>
+        <source>EGL Sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="123"/>
+        <source>Sync Games with Store</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="124"/>
+        <source>Download Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="125"/>
+        <source>Max Workers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="126"/>
+        <source>Less is slower (0: Default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="127"/>
+        <source>Default Installation Directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="128"/>
+        <source>Back</source>
+        <translation type="unfinished">Zurück</translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="129"/>
+        <source>&lt;h2&gt;Sync Games with Epic Games Store&lt;/h2&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="130"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="131"/>
+        <source>Exportable Games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="132"/>
+        <source>Importable Games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="133"/>
+        <source>Import all Games</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/components/tabs/settings/legendary.py" line="134"/>
+        <source>Export all Games</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

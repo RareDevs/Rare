@@ -1,6 +1,8 @@
+import os.path
 from logging import getLogger
 
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedWidget
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedWidget, QVBoxLayout, QDialog, QCheckBox, QLabel, \
+    QHBoxLayout, QPushButton, QGroupBox, QWidget
 
 from custom_legendary.core import LegendaryCore
 from rare.ui.components.tabs.settings.legendary import Ui_legendary_settings
@@ -39,6 +41,26 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
 
         self.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
 
+        self.path_info.setText(self.tr(r"EGL path is at C:\ProgramData\Epic\EpicGamesLauncher\Data\Manifests"))
+        path = os.path.expanduser("~/")
+        if self.core.egl.programdata_path:
+            path = self.core.egl.programdata_path
+        else:
+            possible_wine_prefixes = [os.path.expanduser("~/.wine"),
+                                      os.path.expanduser("~/Games/epic-games-store")]
+            for i in possible_wine_prefixes:
+                if os.path.exists(p := os.path.join(i, "drive_c/ProgramData/Epic/EpicGamesLauncher/Data/Manifests")):
+                    path = p
+
+        self.path_edit = PathEdit(path, QFileDialog.DirectoryOnly, save_func=self.save_egl_path)
+        self.pathedit_placeholder.addWidget(self.path_edit)
+        if os.name != "nt":
+            self.core.lgd.config.set("Legendary", "egl_programdata")
+            self.core.egl.programdata_path = path
+
+        self.importable_widgets = []
+        self.exportable_widgets = []
+
         if self.core.egl_sync_enabled:
             self.sync_button.setText(self.tr("Disable sync"))
         else:
@@ -46,12 +68,92 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
 
         self.sync_button.clicked.connect(self.sync)
 
+        self.enable_sync_button.clicked.connect(self.enable_sync)
+        self.sync_once_button.clicked.connect(self.core.egl_sync)
+
+    def enable_sync(self):
+        if not self.core.egl.programdata_path:
+            if os.path.exists(path := self.path_edit.text()):
+                self.core.lgd.config.set("Legendary", "egl_programdata", path)
+                self.core.lgd.save_config()
+                self.core.egl.programdata_path = path
+
+        self.core.lgd.config.set('Legendary', 'egl_sync', "true")
+        self.core.egl_sync()
+        self.core.lgd.save_config()
+        self.sync_button.setText(self.tr("Disable Sync"))
+        self.enable_sync_button.setDisabled(True)
+
+    def export_all(self):
+        for w in self.exportable_widgets:
+            w.export_game()
+
+    def import_all(self):
+        for w in self.importable_widgets:
+            w.import_game()
+
+    def save_egl_path(self):
+        self.core.lgd.config.set("Legendary", "egl_programdata", self.path_edit.text())
+        self.core.egl.programdata_path = self.path_edit.text()
+        self.core.lgd.save_config()
+        self.update_egl_widget()
+
     def sync(self):
         if self.core.egl_sync_enabled:
-            # disable_sync()
-            pass
+            # disable sync
+            info = DisableSyncDialog().get_information()
+            if info[0] == 0:
+                if info[1]:
+                    self.core.lgd.config.remove_option('Legendary', 'egl_sync')
+                else:
+                    self.core.lgd.config.remove_option('Legendary', 'egl_programdata')
+                    self.core.lgd.config.remove_option('Legendary', 'egl_sync')
+                    # remove EGL GUIDs from all games, DO NOT remove .egstore folders because that would fuck things up.
+                    for igame in self.core.get_installed_list():
+                        igame.egl_guid = ''
+                        self.core.install_game(igame)
+                self.core.lgd.save_config()
+                self.sync_button.setText(self.tr("Enable Sync"))
         else:
+            # enable sync
+            self.enable_sync_button.setDisabled(False)
+            self.update_egl_widget()
             self.setCurrentIndex(1)
+
+    def update_egl_widget(self):
+        self.exportable_widgets = []
+        QWidget().setLayout(self.exportable_games.layout())
+        QWidget().setLayout(self.importable_games.layout())
+        importable_layout = QVBoxLayout()
+        self.importable_games.setLayout(importable_layout)
+        exportable_layout = QVBoxLayout()
+        self.exportable_games.setLayout(exportable_layout)
+        if not self.core.egl.programdata_path:
+            self.importable_games.setVisible(False)
+            self.exportable_games.setVisible(False)
+            self.export_all_button.setVisible(False)
+            self.import_all_button.setVisible(False)
+            return
+
+        self.importable_games.setVisible(True)
+        self.exportable_games.setVisible(True)
+        self.export_all_button.setVisible(True)
+        self.import_all_button.setVisible(True)
+
+        for igame in self.core.egl_get_exportable():
+            w = EGLSyncWidget(igame, True, self.core)
+            self.importable_widgets.append(w)
+            self.exportable_games.layout().addWidget(w)
+        if len(self.core.egl_get_exportable()) == 0:
+            self.exportable_games.layout().addWidget(QLabel(self.tr("No games to export")))
+
+        self.importable_widgets = []
+        for game in self.core.egl_get_importable():
+            w = EGLSyncWidget(game, False, self.core)
+            self.importable_widgets.append(w)
+            self.importable_games.layout().addWidget(w)
+        if len(self.core.egl_get_importable()) == 0:
+            self.importable_games.layout().addWidget(QLabel(self.tr("No games to import")))
 
     def save_path(self):
         self.core.lgd.config["Legendary"]["install_dir"] = self.install_dir.text()
@@ -96,3 +198,72 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")
 
+
+class DisableSyncDialog(QDialog):
+    info = 1, False
+
+    def __init__(self):
+        super(DisableSyncDialog, self).__init__()
+        self.layout = QVBoxLayout()
+
+        self.question = QLabel(self.tr("Do you really want to disable sync with Epic Games Store"))
+        self.layout.addWidget(self.question)
+
+        self.remove_metadata = QCheckBox(self.tr("Remove metadata from installed games"))
+        self.layout.addWidget(self.remove_metadata)
+
+        self.button_layout = QHBoxLayout()
+        self.button_layout.addStretch(1)
+
+        self.ok_button = QPushButton(self.tr("Ok"))
+        self.cancel_button = QPushButton(self.tr("Cancel"))
+
+        self.ok_button.clicked.connect(self.ok)
+        self.cancel_button.clicked.connect(self.cancel)
+
+        self.button_layout.addWidget(self.ok_button)
+        self.button_layout.addWidget(self.cancel_button)
+
+        self.layout.addStretch(1)
+        self.layout.addLayout(self.button_layout)
+
+        self.setLayout(self.layout)
+
+    def ok(self):
+        self.info = 0, self.remove_metadata.isChecked()
+        self.close()
+
+    def cancel(self):
+        self.close()
+
+    def get_information(self):
+        self.exec_()
+        return self.info
+
+
+class EGLSyncWidget(QGroupBox):
+    def __init__(self, game, export: bool, core: LegendaryCore):
+        super(EGLSyncWidget, self).__init__()
+        self.layout = QVBoxLayout()
+        self.export = export
+        self.core = core
+        self.game = game
+        if export:
+            self.app_title_label = QLabel(game.title)
+        else:
+            self.app_title_label = QLabel(game.app_title)
+        self.layout.addWidget(self.app_title_label)
+        self.button = QPushButton(self.tr("Export") if export else self.tr("Import"))
+
+        if export:
+            self.button.clicked.connect(self.export_game)
+        else:
+            self.button.clicked.connect(self.import_game)
+
+        self.layout.addWidget(self.button)
+
+    def export_game(self):
+        self.core.egl_export(self.game.app_name)
+
+    def import_game(self):
+        self.core.egl_import(self.game.app_name)
