@@ -110,7 +110,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.style_select.setDisabled(True)
             self.settings.setValue("color_scheme", self.color_select.currentText())
         else:
-            self.settings.remove("color_scheme")
+            self.settings.setValue("color_scheme", "")
             self.style_select.setDisabled(False)
         self.interface_info.setVisible(True)
 
@@ -120,7 +120,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.color_select.setDisabled(True)
             self.settings.setValue("style_sheet", self.style_select.currentText())
         else:
-            self.settings.remove("style_sheet")
+            self.settings.setValue("style_sheet", "")
             self.color_select.setDisabled(False)
         self.interface_info.setVisible(True)
 
