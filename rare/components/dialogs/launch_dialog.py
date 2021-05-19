@@ -6,7 +6,7 @@ from requests.exceptions import ConnectionError
 
 from custom_legendary.core import LegendaryCore
 from rare.components.dialogs.login import LoginDialog
-from rare.utils.utils import download_images
+from rare.utils.utils import download_images, check_grades
 
 logger = getLogger("Login")
 
@@ -23,6 +23,8 @@ class LaunchThread(QThread):
         self.action.emit("Login")
         self.action.emit(self.tr("Downloading Images"))
         download_images(self.download_progess, self.core)
+        #self.action.emit(self.tr("Read data from ProtonDB"))
+        #check_grades(self.core, self.download_progess)
         self.action.emit("finish")
 
 

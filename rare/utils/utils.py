@@ -8,6 +8,8 @@ import requests
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 
+from rare.utils.id import upgrade_content, check_time, download_ids
+
 # Windows
 if os.name == "nt":
     from win32com.client import Dispatch
@@ -38,7 +40,22 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
         except json.decoder.JSONDecodeError:
             shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
             download_image(game)
-        signal.emit(i/len(game_list)*100)
+        signal.emit(i/len(game_list)*50)
+
+
+def check_grades(core: LegendaryCore, signal):
+    games = core.get_game_list(True)
+    # upgrade_content(games, signal)
+    if not os.path.exists("~/.cache/rare/steam_ids.json"):
+        download_ids()
+
+    game_table = json.loads(open(os.path.expanduser("~/.cache/rare/game_list.json")).read())
+    for game in games:
+        if game.app_name not in game_table.keys():
+            # TODO: Find id from method; Not upgrade all
+            game_table[game.app_name] = {"grade": "pending", "id": "1234"}
+
+    json.dump(game_table, open(os.path.expanduser("~/.cache/rare/game_list.json"), "w"))
 
 
 def download_image(game, force=False):

@@ -11,6 +11,7 @@ replace_chars = ",;.:-_ "
 file = os.path.expanduser("~/.cache/rare/game_list.json")
 url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 
+
 def get_id(game_name):
     global file
 
@@ -23,10 +24,21 @@ def get_id(game_name):
     return game_list[game_name.lower()]
 
 
-def upgrade_content(games: list):  # this function uploads the ids database, aka game_list.json
+def download_ids():
+    response = requests.get(url)
+    with open(os.path.expanduser("~/.cache/rare/steam_ids.json"), "w") as f:
+        f.write(response.text)
+        f.close()
+
+
+def upgrade_content(games: list, status_signal):  # this function uploads the ids database, aka game_list.json
     global url
     global file
     response = requests.get(url)
+    with open(os.path.expanduser("~/.cache/rare/steam_ids.json"), "w") as f:
+        f.write(response.text)
+        f.close()
+
     content = json.loads(response.text)
     game_list = {}  # {CrabEA: {id: 1234, grade: platinum}, ..}
 
@@ -57,7 +69,7 @@ def upgrade_content(games: list):  # this function uploads the ids database, aka
                         game_list[i.app_name] = {}
                         game_list[i.app_name]["id"] = steam_games[game]
 
-    for game in game_list:
+    for i, game in enumerate(game_list):
         try:
             grade = get_grade(game_list[game]["id"])
         except json.decoder.JSONDecodeError as e:
@@ -66,8 +78,7 @@ def upgrade_content(games: list):  # this function uploads the ids database, aka
             print(game)  # debug
         else:
             game_list[game]["grade"] = grade
-
-    print(game_list)
+            status_signal.emit(50 + i/len(game_list)*50)
 
     # print(game_list)
 

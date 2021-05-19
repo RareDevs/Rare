@@ -53,11 +53,10 @@ class UninstalledInfo(QWidget):
     game: Game
     install_game = pyqtSignal(str)
 
-    grade_table = json.load(open(os.path.expanduser("~/.cache/rare/game_list.json")))
-
     def __init__(self, core: LegendaryCore, parent):
         super(UninstalledInfo, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
+        self.grade_table = json.load(open(os.path.expanduser("~/.cache/rare/game_list.json")))
 
         self.ratings = {"platinum": self.tr("Platinum"),
                         "gold": self.tr("Gold"),
