@@ -7,6 +7,8 @@ from logging import getLogger
 import requests
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
+from PyQt5.QtGui import QPalette, QColor
+from rare import style_path
 
 # Windows
 if os.name == "nt":
@@ -120,6 +122,77 @@ def get_lang():
     else:
         logger.info("Found locale in system config: " + QLocale.system().name().split("_")[0])
         return QLocale.system().name().split("_")[0]
+
+
+color_role_map = {
+    0: "WindowText",
+    1: "Button",
+    2: "Light",
+    3: "Midlight",
+    4: "Dark",
+    5: "Mid",
+    6: "Text",
+    7: "BrightText",
+    8: "ButtonText",
+    9: "Base",
+    10: "Window",
+    11: "Shadow",
+    12: "Highlight",
+    13: "HighlightedText",
+    14: "Link",
+    15: "LinkVisited",
+    16: "AlternateBase",
+    # 17: "NoRole",
+    18: "ToolTipBase",
+    19: "ToolTipText",
+    20: "PlaceholderText",
+    # 21: "NColorRoles",
+}
+
+color_group_map = {
+    0: "Active",
+    1: "Disabled",
+    2: "Inactive",
+}
+
+
+def load_color_scheme(path: str):
+    custom_palette = QPalette()
+    settings = QSettings(path, QSettings.IniFormat)
+    try:
+        settings.beginGroup("ColorScheme")
+        for g in color_group_map:
+            settings.beginGroup(color_group_map[g])
+            group = QPalette.ColorGroup(g)
+            for r in color_role_map:
+                role = QPalette.ColorRole(r)
+                custom_palette.setColor(group, role, QColor(settings.value(color_role_map[r])))
+            settings.endGroup()
+        settings.endGroup()
+        text_color = custom_palette.text().color()
+        text_color.setAlpha(128)
+        custom_palette.setColor(custom_palette.Active, custom_palette.PlaceholderText, text_color)
+        custom_palette.setColor(custom_palette.Inactive, custom_palette.PlaceholderText, text_color)
+        custom_palette.setColor(custom_palette.Disabled, custom_palette.PlaceholderText, text_color)
+    except:
+        custom_palette = None
+    return custom_palette
+
+
+def get_color_schemes():
+    colors = []
+    for file in os.listdir(os.path.join(style_path, "colors")):
+        if file.endswith(".scheme") and os.path.isfile(os.path.join(style_path, "colors", file)):
+            colors.append(file.replace(".scheme", ""))
+    return colors
+
+
+def get_style_sheets():
+    styles = []
+    for file in os.listdir(os.path.join(style_path, "qss")):
+        if file.endswith(".qss") and os.path.isfile(os.path.join(style_path, "qss", file)):
+            styles.append(file.replace(".qss", ""))
+    return styles
 
 
 def get_possible_langs():
