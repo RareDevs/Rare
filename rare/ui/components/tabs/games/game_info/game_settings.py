@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_GameSettings(object):
     def setupUi(self, GameSettings):
         GameSettings.setObjectName("GameSettings")
+        GameSettings.resize(759, 617)
         self.game_settings_layout = QtWidgets.QVBoxLayout(GameSettings)
         self.game_settings_layout.setObjectName("game_settings_layout")
         self.title = QtWidgets.QLabel(GameSettings)
@@ -120,7 +121,7 @@ class Ui_GameSettings(object):
 
     def retranslateUi(self, GameSettings):
         _translate = QtCore.QCoreApplication.translate
-        GameSettings.setWindowTitle(_translate("GameSettings", "Game Settings"))
+        GameSettings.setWindowTitle(_translate("GameSettings", "GameSettings"))
         self.launch_settings_groupbox.setTitle(_translate("GameSettings", "Launch Settings"))
         self.skip_update.setItemText(0, _translate("GameSettings", "Default"))
         self.skip_update.setItemText(1, _translate("GameSettings", "Yes"))
