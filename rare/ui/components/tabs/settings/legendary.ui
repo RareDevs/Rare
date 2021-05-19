@@ -158,33 +158,33 @@
     </item>
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="1">
-       <widget class="QGroupBox" name="importable_games">
-        <property name="title">
-         <string>Exportable Games</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_4"/>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QGroupBox" name="exportable_games">
         <property name="title">
-         <string>Importable Games</string>
+         <string>Exportable Games</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3"/>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="QGroupBox" name="importable_games">
+        <property name="title">
+         <string>Importable</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4"/>
+       </widget>
+      </item>
       <item row="1" column="0">
-       <widget class="QPushButton" name="import_all_button">
+       <widget class="QPushButton" name="export_all_button">
         <property name="text">
-         <string>Import all Games</string>
+         <string>Export all Games</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QPushButton" name="export_all_button">
+       <widget class="QPushButton" name="import_all_button">
         <property name="text">
-         <string>Export all Games</string>
+         <string>Import all Games</string>
         </property>
        </widget>
       </item>

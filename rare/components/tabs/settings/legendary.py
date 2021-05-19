@@ -251,7 +251,8 @@ class EGLSyncWidget(QGroupBox):
         if export:
             self.app_title_label = QLabel(game.title)
         else:
-            self.app_title_label = QLabel(game.app_title)
+            title = self.core.get_game(game.app_name).app_title
+            self.app_title_label = QLabel(title)
         self.layout.addWidget(self.app_title_label)
         self.button = QPushButton(self.tr("Export") if export else self.tr("Import"))
 
@@ -261,6 +262,7 @@ class EGLSyncWidget(QGroupBox):
             self.button.clicked.connect(self.import_game)
 
         self.layout.addWidget(self.button)
+        self.setLayout(self.layout)
 
     def export_game(self):
         self.core.egl_export(self.game.app_name)
