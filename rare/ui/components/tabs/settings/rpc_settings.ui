@@ -3,12 +3,12 @@
  <class>RPCSettings</class>
  <widget class="QGroupBox" name="RPCSettings">
   <property name="windowTitle">
-   <string>Discord RPC</string>
+   <string>DiscordRPC</string>
   </property>
   <property name="title">
    <string>Discord RPC</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="layout">
    <item row="0" column="1">
     <widget class="QComboBox" name="enable">
      <item>

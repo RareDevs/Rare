@@ -14,8 +14,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DxvkSettings(object):
     def setupUi(self, DxvkSettings):
         DxvkSettings.setObjectName("DxvkSettings")
-        self.gridLayout = QtWidgets.QGridLayout(DxvkSettings)
-        self.gridLayout.setObjectName("gridLayout")
+        self.dxvk_layout = QtWidgets.QGridLayout(DxvkSettings)
+        self.dxvk_layout.setObjectName("dxvk_layout")
         self.gb_dxvk_options = QtWidgets.QGroupBox(DxvkSettings)
         self.gb_dxvk_options.setObjectName("gb_dxvk_options")
         self.layout_dxvk_options = QtWidgets.QGridLayout(self.gb_dxvk_options)
@@ -43,7 +43,7 @@ class Ui_DxvkSettings(object):
         self.api = QtWidgets.QCheckBox(self.gb_dxvk_options)
         self.api.setObjectName("api")
         self.layout_dxvk_options.addWidget(self.api, 1, 2, 1, 1)
-        self.gridLayout.addWidget(self.gb_dxvk_options, 2, 0, 1, 3)
+        self.dxvk_layout.addWidget(self.gb_dxvk_options, 2, 0, 1, 3)
         self.lbl_show_dxvk = QtWidgets.QLabel(DxvkSettings)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -51,7 +51,7 @@ class Ui_DxvkSettings(object):
         sizePolicy.setHeightForWidth(self.lbl_show_dxvk.sizePolicy().hasHeightForWidth())
         self.lbl_show_dxvk.setSizePolicy(sizePolicy)
         self.lbl_show_dxvk.setObjectName("lbl_show_dxvk")
-        self.gridLayout.addWidget(self.lbl_show_dxvk, 0, 0, 1, 1)
+        self.dxvk_layout.addWidget(self.lbl_show_dxvk, 0, 0, 1, 1)
         self.show_dxvk = QtWidgets.QComboBox(DxvkSettings)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -63,7 +63,7 @@ class Ui_DxvkSettings(object):
         self.show_dxvk.addItem("")
         self.show_dxvk.addItem("")
         self.show_dxvk.addItem("")
-        self.gridLayout.addWidget(self.show_dxvk, 0, 1, 1, 2)
+        self.dxvk_layout.addWidget(self.show_dxvk, 0, 1, 1, 2)
 
         self.retranslateUi(DxvkSettings)
         QtCore.QMetaObject.connectSlotsByName(DxvkSettings)

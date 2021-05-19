@@ -4,7 +4,7 @@ import subprocess
 import sys
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
 from rare.components.tabs.settings.rpc_settings import RPCSettings
@@ -77,7 +77,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.interface_info.setVisible(False)
 
         self.rpc = RPCSettings()
-        self.rpc_layout.addWidget(self.rpc)
+        self.rpc_layout.addWidget(self.rpc, alignment=Qt.AlignTop)
 
         self.init_checkboxes(self.checkboxes)
         self.sys_tray.stateChanged.connect(
@@ -110,7 +110,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.style_select.setDisabled(True)
             self.settings.setValue("color_scheme", self.color_select.currentText())
         else:
-            self.settings.remove("color_scheme")
+            self.settings.setValue("color_scheme", "")
             self.style_select.setDisabled(False)
         self.interface_info.setVisible(True)
 
@@ -120,7 +120,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.color_select.setDisabled(True)
             self.settings.setValue("style_sheet", self.style_select.currentText())
         else:
-            self.settings.remove("style_sheet")
+            self.settings.setValue("style_sheet", "")
             self.color_select.setDisabled(False)
         self.interface_info.setVisible(True)
 
