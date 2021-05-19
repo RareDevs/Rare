@@ -4,7 +4,7 @@ import subprocess
 import sys
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
 from rare.components.tabs.settings.rpc_settings import RPCSettings
@@ -77,7 +77,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.interface_info.setVisible(False)
 
         self.rpc = RPCSettings()
-        self.rpc_layout.addWidget(self.rpc)
+        self.rpc_layout.addWidget(self.rpc, alignment=Qt.AlignTop)
 
         self.init_checkboxes(self.checkboxes)
         self.sys_tray.stateChanged.connect(
