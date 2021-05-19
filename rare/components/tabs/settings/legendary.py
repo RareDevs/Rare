@@ -1,16 +1,16 @@
 from logging import getLogger
 
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedWidget
 
 from custom_legendary.core import LegendaryCore
-from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
+from rare.ui.components.tabs.settings.legendary import Ui_legendary_settings
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import get_size
 
 logger = getLogger("LegendarySettings")
 
 
-class LegendarySettings(QWidget, Ui_LegendarySettings):
+class LegendarySettings(QStackedWidget, Ui_legendary_settings):
     def __init__(self, core: LegendaryCore):
         super(LegendarySettings, self).__init__()
         self.setupUi(self)
@@ -35,6 +35,23 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.clean_button_without_manifests.clicked.connect(
             lambda: self.cleanup(True)
         )
+        self.setCurrentIndex(0)
+
+        self.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
+
+        if self.core.egl_sync_enabled:
+            self.sync_button.setText(self.tr("Disable sync"))
+        else:
+            self.sync_button.setText(self.tr("Enable Sync"))
+
+        self.sync_button.clicked.connect(self.sync)
+
+    def sync(self):
+        if self.core.egl_sync_enabled:
+            # disable_sync()
+            pass
+        else:
+            self.setCurrentIndex(1)
 
     def save_path(self):
         self.core.lgd.config["Legendary"]["install_dir"] = self.install_dir.text()
@@ -78,3 +95,4 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
                 get_size(before - after)))
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")
+
