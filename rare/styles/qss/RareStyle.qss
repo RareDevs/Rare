@@ -99,10 +99,13 @@ QGroupBox {
 QGroupBox#settings_widget {
     border: 1px solid gray;
     font-size: 13px;
-    border-radius: 3px;
-    margin-top: 1ex;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    font-weight: bold;
+    border-radius: 6px;
+    margin-top: 3ex;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 QGroupBox#game_widget_icon {
@@ -112,13 +115,16 @@ QGroupBox#game_widget_icon {
 }
 
 QGroupBox#group {
-    font-size: 15px;
+    border: 1px solid gray;
+    font-size: 13px;
     font-weight: bold;
-    border: 1px solid white;
-    margin-top: 10px;
-    padding: 8px;
+    border-radius: 6px;
+    margin-top: 3ex;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
-
 
 QToolButton {
     border: 1px solid gray;
