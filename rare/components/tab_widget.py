@@ -9,7 +9,7 @@ from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tab_utils import TabBar, TabButtonWidget
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
-from rare.components.tabs.downloads.__init__ import DownloadTab
+from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
 from rare.utils.models import InstallOptions
