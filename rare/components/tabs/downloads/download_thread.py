@@ -23,10 +23,11 @@ class DownloadThread(QThread):
     statistics = pyqtSignal(UIUpdate)
 
     def __init__(self, dlm: DLManager, core: LegendaryCore, status_queue: MPQueue, igame, repair=False,
-                 repair_file=None):
+                 repair_file=None, dl_only=False):
         super(DownloadThread, self).__init__()
         self.dlm = dlm
         self.core = core
+        self.dl_only = dl_only
         self.status_queue = status_queue
         self.igame = igame
         self.repair = repair
@@ -120,24 +121,26 @@ class DownloadThread(QThread):
                 return
             self.status.emit("dl_finished")
             end_t = time.time()
-
+            logger.info(f"Download finished in {start_time-end_t}s")
             game = self.core.get_game(self.igame.app_name)
-            postinstall = self.core.install_game(self.igame)
-            if postinstall:
-                self._handle_postinstall(postinstall, self.igame)
 
-            dlcs = self.core.get_dlc_for_game(self.igame.app_name)
-            if dlcs:
-                print('The following DLCs are available for this game:')
-                for dlc in dlcs:
-                    print(f' - {dlc.app_title} (App name: {dlc.app_name}, version: {dlc.app_version})')
-                print('Manually installing DLCs works the same; just use the DLC app name instead.')
+            if not self.dl_only:
+                postinstall = self.core.install_game(self.igame)
+                if postinstall:
+                    self._handle_postinstall(postinstall, self.igame)
 
-                # install_dlcs = QMessageBox.question(self, "", "Do you want to install the prequisites", QMessageBox.Yes|QMessageBox.No) == QMessageBox.Yes
-                # TODO
-            if game.supports_cloud_saves and not game.is_dlc:
-                logger.info('This game supports cloud saves, syncing is handled by the "sync-saves" command.')
-                logger.info(f'To download saves for this game run "legendary sync-saves {game.app_name}"')
+                dlcs = self.core.get_dlc_for_game(self.igame.app_name)
+                if dlcs:
+                    print('The following DLCs are available for this game:')
+                    for dlc in dlcs:
+                        print(f' - {dlc.app_title} (App name: {dlc.app_name}, version: {dlc.app_version})')
+                    print('Manually installing DLCs works the same; just use the DLC app name instead.')
+
+                    # install_dlcs = QMessageBox.question(self, "", "Do you want to install the prequisites", QMessageBox.Yes|QMessageBox.No) == QMessageBox.Yes
+                    # TODO
+                if game.supports_cloud_saves and not game.is_dlc:
+                    logger.info('This game supports cloud saves, syncing is handled by the "sync-saves" command.')
+                    logger.info(f'To download saves for this game run "legendary sync-saves {game.app_name}"')
         old_igame = self.core.get_installed_game(game.app_name)
         if old_igame and self.repair and os.path.exists(self.repair_file):
             if old_igame.needs_verification:

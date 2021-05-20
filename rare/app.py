@@ -33,7 +33,6 @@ class App(QApplication):
     def __init__(self, args):
         super(App, self).__init__(sys.argv)
         self.args = args  # add some options
-
         # init Legendary
         try:
             self.core = LegendaryCore()
@@ -48,6 +47,11 @@ class App(QApplication):
             self.core = LegendaryCore()
         if "Legendary" not in self.core.lgd.config.sections():
             self.core.lgd.config.add_section("Legendary")
+            self.core.lgd.save_config()
+
+        # workaround if egl sync enabled, but no programdata path
+        if self.core.egl_sync_enabled and not os.path.exists(self.core.egl.programdata_path):
+            self.core.lgd.config.remove_option("Legendary", "egl-sync")
             self.core.lgd.save_config()
 
         # set Application name for settings

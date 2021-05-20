@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QDialog, QFormLayout, QVBoxLayout, QSpinBox, QFileDi
 
 from custom_legendary.core import LegendaryCore
 from rare.utils.extra_widgets import PathEdit
+from rare.utils.utils import get_size
 
 
 class InstallDialog(QDialog):
@@ -46,6 +47,10 @@ class InstallDialog(QDialog):
         self.ignore_free_space.setChecked(False)
         self.form.addRow(QLabel(self.tr("Ignore free space (Warning!)")), self.ignore_free_space)
 
+        self.download_only = QCheckBox()
+        self.download_only.setChecked(False)
+        self.form.addRow(QLabel(self.tr("Do not install game")), self.download_only)
+
         self.layout.addLayout(self.form)
 
         self.ok_btn = QPushButton("Next")
@@ -69,7 +74,11 @@ class InstallDialog(QDialog):
         return self.infos
 
     def ok(self):
-        self.infos = self.install_path_field.text() if not self.update_game else None, self.max_workes.value(), self.force.isChecked(), self.ignore_free_space.isChecked()
+        self.infos = self.install_path_field.text() if not self.update_game else None, \
+                     self.max_workes.value(), \
+                     self.force.isChecked(), \
+                     self.ignore_free_space.isChecked(), \
+                     self.download_only.isChecked()
         self.close()
 
 
@@ -80,8 +89,7 @@ class InstallInfoDialog(QDialog):
         super(InstallInfoDialog, self).__init__()
         self.layout = QVBoxLayout()
         self.infos = QLabel(self.tr(
-            "Download size: {}GB\nInstall size: {}GB").format(round(dl_size / 1024 ** 3, 2),
-                                                              round(install_size / 1024 ** 3, 2)))
+            "Download size: {}\nInstall size: {}").format(get_size(dl_size), get_size(install_size)))
         self.layout.addWidget(self.infos)
 
         self.btn_layout = QHBoxLayout()

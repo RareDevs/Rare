@@ -70,11 +70,10 @@ class TabWidget(QTabWidget):
             # show uninstalled info
             self.games_tab.default_widget.game_list.show_uninstalled_info.connect(self.games_tab.show_uninstalled)
             # install dlc
-            self.games_tab.game_info.dlc_tab.install_dlc.connect(self.start_download)
+            self.games_tab.game_info.dlc_tab.install_dlc.connect(self.install_game)
 
             # install game
             self.games_tab.uninstalled_info_widget.info.install_game.connect(self.install_game)
-
             # repair game
             self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
                 InstallOptions(app_name, core.get_installed_game(app_name).install_path, repair=True)))
@@ -88,12 +87,14 @@ class TabWidget(QTabWidget):
         self.tabBarClicked.connect(lambda x: self.games_tab.layout.setCurrentIndex(0) if x == 0 else None)
         self.setIconSize(QSize(25, 25))
 
-    def install_game(self, app_name):
-        infos = InstallDialog(app_name, self.core).get_information()
+    def install_game(self, app_name, disable_path=False):
+
+        infos = InstallDialog(app_name, self.core, disable_path).get_information()
         if infos != 0:
-            path, max_workers, force, ignore_free_space = infos
+            path, max_workers, force, ignore_free_space, dl_only = infos
             options = InstallOptions(app_name=app_name, max_workers=max_workers, path=path, force=force,
-                                     ignore_free_space=ignore_free_space)
+                                     ignore_free_space=ignore_free_space, download_only=dl_only)
+            self.setCurrentIndex(1)
             self.start_download(options)
 
     def start_download(self, options):

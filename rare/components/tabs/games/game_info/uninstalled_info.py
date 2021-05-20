@@ -93,7 +93,6 @@ class UninstalledInfo(QWidget):
         self.right_layout.addWidget(self.install_button)
         self.version = QLabel("Error")
         self.right_layout.addWidget(self.version)
-
         self.right_layout.addStretch(1)
         self.top_layout.addLayout(self.right_layout)
 
@@ -125,8 +124,10 @@ class UninstalledInfo(QWidget):
             self.image.setPixmap(pixmap)
 
         self.version.setText(self.game.asset_info.build_version)
-
-        rating = self.grade_table[app_name]["grade"]
+        try:
+            rating = self.grade_table[app_name]["grade"]
+        except KeyError:
+            rating = "fail"
         if rating not in ["fail", "pending"]:
             self.rating.setText(self.tr("Rating from ProtonDB: ") + self.ratings[rating])
         else:
