@@ -10,7 +10,7 @@ from custom_legendary.core import LegendaryCore
 from custom_legendary.models.downloading import UIUpdate
 from custom_legendary.models.game import Game, InstalledGame
 from custom_legendary.utils.selective_dl import games
-from rare.components.dialogs.install_dialog import InstallInfoDialog, InstallDialog
+from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
 from rare.utils.models import InstallOptions
@@ -130,16 +130,6 @@ class DownloadTab(QWidget):
             QMessageBox.warning(self, self.tr("Error preparing download"),
                                 str(e))
             return
-
-        if not analysis.dl_size:
-            QMessageBox.information(self, "Warning", self.tr("Download size is 0. Game already exists"))
-            return
-
-        # Information
-        if not from_update and not options.repair:
-            if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
-                self.finished.emit(False, None)
-                return
 
         if self.active_game is None:
             self.start_installation(dlm, game, status_queue, igame, repair_file, options, analysis,
@@ -284,10 +274,10 @@ class DownloadTab(QWidget):
         else:
             self.install_game(InstallOptions(app_name=app_name), True)
             return
-        if infos != 0:
+        if infos:
             path, max_workers, force, ignore_free_space, dl_only = infos
             self.install_game(InstallOptions(app_name=app_name, max_workers=max_workers, path=path,
-                                             force=force, ignore_free_space=ignore_free_space, dl_only=dl_only), True)
+                                             force=force, ignore_free_space=ignore_free_space, download_only=dl_only), True)
         else:
             self.update_widgets[app_name].update_button.setDisabled(False)
             self.update_widgets[app_name].update_with_settings.setDisabled(False)
