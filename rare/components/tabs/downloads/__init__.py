@@ -78,7 +78,7 @@ class DownloadTab(QWidget):
             widget = UpdateWidget(core, igame, self)
             self.update_layout.addWidget(widget)
             self.update_widgets[igame.app_name] = widget
-            widget.update.connect(self.update_game)
+            widget.update_signal.connect(self.update_game)
             if QSettings().value("auto_update", False, bool):
                 self.update_game(igame.app_name, True)
                 widget.update_button.setDisabled(True)
@@ -280,10 +280,13 @@ class DownloadTab(QWidget):
             path, max_workers, force, ignore_free_space = infos
             self.install_game(InstallOptions(app_name=app_name, max_workers=max_workers, path=path,
                                              force=force, ignore_free_space=ignore_free_space), True)
+        else:
+            self.update_widgets[app_name].update_button.setDisabled(False)
+            self.update_widgets[app_name].update_with_settings.setDisabled(False)
 
 
 class UpdateWidget(QWidget):
-    update = pyqtSignal(str)
+    update_signal = pyqtSignal(str, bool)
 
     def __init__(self, core: LegendaryCore, game: InstalledGame, parent):
         super(UpdateWidget, self).__init__(parent=parent)
@@ -295,11 +298,15 @@ class UpdateWidget(QWidget):
         self.layout.addWidget(self.title)
 
         self.update_button = QPushButton(self.tr("Update Game"))
-        self.update_button.clicked.connect(self.update_game)
+        self.update_button.clicked.connect(lambda: self.update_game(True))
+        self.update_with_settings = QPushButton("Update with settings")
+        self.update_with_settings.clicked.connect(lambda: self.update_game(False))
         self.layout.addWidget(self.update_button)
+        self.layout.addWidget(self.update_with_settings)
 
         self.setLayout(self.layout)
 
-    def update_game(self):
+    def update_game(self, auto: bool):
         self.update_button.setDisabled(True)
-        self.update.emit(self.game.app_name)
+        self.update_with_settings.setDisabled(True)
+        self.update_signal.emit(self.game.app_name, auto)  # True if settings
