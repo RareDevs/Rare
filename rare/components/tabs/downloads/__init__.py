@@ -145,7 +145,6 @@ class DownloadTab(QWidget):
             self.queue_widget.update_queue(self.dl_queue)
 
     def start_installation(self, dlm, game, status_queue, igame, repair_file, options: InstallOptions, analysis):
-        print("start installation", game.app_title)
         if self.dl_queue:
             self.dl_queue.pop(0)
             self.queue_widget.update_queue(self.dl_queue)
