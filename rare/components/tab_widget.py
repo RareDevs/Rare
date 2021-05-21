@@ -97,12 +97,9 @@ class TabWidget(QTabWidget):
 
     def install_game(self, app_name, disable_path=False):
 
-        infos = InstallDialog(app_name, self.core, disable_path).get_information()
-        if infos:
-            path, max_workers, force, ignore_free_space, dl_only = infos
-            options = InstallOptions(app_name=app_name, max_workers=max_workers, path=path, force=force,
-                                     ignore_free_space=ignore_free_space, download_only=dl_only)
-
+        options = InstallDialog(app_name, self.core, disable_path, parent=self).get_install_options()
+        if options:
+            self.setCurrentIndex(1)
             self.start_download(options)
 
     def start_download(self, options):

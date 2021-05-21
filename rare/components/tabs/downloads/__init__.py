@@ -29,6 +29,7 @@ class DownloadTab(QWidget):
         self.core = core
         self.layout = QVBoxLayout()
         self.active_game: Game = None
+        self.analysis = None
 
         self.info_layout = QGridLayout()
 
@@ -85,7 +86,7 @@ class DownloadTab(QWidget):
         widget = UpdateWidget(self.core, igame, self)
         self.update_layout.addWidget(widget)
         self.update_widgets[igame.app_name] = widget
-        widget.update.connect(self.update_game)
+        widget.update_signal.connect(self.update_game)
         if QSettings().value("auto_update", False, bool):
             self.update_game(igame.app_name, True)
             widget.update_button.setDisabled(True)
@@ -125,7 +126,8 @@ class DownloadTab(QWidget):
                 # disable_delta=,
                 # override_delta_manifest=,
                 # reset_sdl=,
-                sdl_prompt=self.sdl_prompt)
+                sdl_prompt=lambda app_name, title: options.sdl_list
+            )
         except Exception as e:
             QMessageBox.warning(self, self.tr("Error preparing download"),
                                 str(e))
@@ -152,44 +154,6 @@ class DownloadTab(QWidget):
         self.kill_button.setDisabled(False)
         self.analysis = analysis
         self.installing_game.setText(self.tr("Installing Game: ") + self.active_game.app_title)
-
-    def sdl_prompt(self, app_name: str = '', title: str = '') -> list:
-        sdl = QDialog()
-        sdl.setWindowTitle('Select Additional Downloads')
-
-        layout = QVBoxLayout(sdl)
-        sdl.setLayout(layout)
-
-        pack_list = QListWidget()
-        layout.addWidget(pack_list)
-
-        done = QPushButton(text='Done')
-        done.clicked.connect(sdl.accept)
-        layout.addWidget(done)
-
-        tags = ['']
-        if '__required' in games[app_name]:
-            tags.extend(games[app_name]['__required']['tags'])
-
-        # add available additional downloads to list
-        pack_list.addItems([tag + ': ' + info['name'] for tag, info in games[app_name].items() if tag != '__required'])
-
-        # enable checkboxes
-        for i in range(len(pack_list)):
-            item = pack_list.item(i)
-            item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-            item.setCheckState(Qt.Unchecked)
-
-        sdl.exec_()
-
-        # read checkboxes states
-        for i in range(len(pack_list)):
-            item = pack_list.item(i)
-            if item.checkState() == Qt.Checked:
-                tag = item.text().split(':')[0]
-                tags.extend(games[app_name][tag]['tags'])
-
-        return tags
 
     def status(self, text):
         if text == "dl_finished":
@@ -270,14 +234,12 @@ class DownloadTab(QWidget):
     def update_game(self, app_name: str, auto=False):
         logger.info("Update " + app_name)
         if not auto:
-            infos = InstallDialog(app_name, self.core, True).get_information()
+            options = InstallDialog(app_name, self.core, True).get_install_options()
         else:
             self.install_game(InstallOptions(app_name=app_name), True)
             return
-        if infos:
-            path, max_workers, force, ignore_free_space, dl_only = infos
-            self.install_game(InstallOptions(app_name=app_name, max_workers=max_workers, path=path,
-                                             force=force, ignore_free_space=ignore_free_space, download_only=dl_only), True)
+        if options:
+            self.install_game(options, True)
         else:
             self.update_widgets[app_name].update_button.setDisabled(False)
             self.update_widgets[app_name].update_with_settings.setDisabled(False)

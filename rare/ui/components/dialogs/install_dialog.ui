@@ -2,70 +2,10 @@
 <ui version="4.0">
  <class>InstallDialog</class>
  <widget class="QDialog" name="InstallDialog">
+  <property name="windowTitle">
+   <string notr="true">Rare</string>
+  </property>
   <layout class="QGridLayout" name="install_dialog_layout">
-   <item row="4" column="0" alignment="Qt::AlignRight">
-    <widget class="QLabel" name="ignore_space_label">
-     <property name="text">
-      <string>Ignore free space</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="3">
-    <widget class="QLabel" name="install_dialog_label">
-     <property name="text">
-      <string>error</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0" alignment="Qt::AlignRight">
-    <widget class="QLabel" name="download_size_label">
-     <property name="text">
-      <string>Download size</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1" colspan="2">
-    <widget class="QLabel" name="install_size_info_label">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" alignment="Qt::AlignRight">
-    <widget class="QLabel" name="install_dir_label">
-     <property name="text">
-      <string>Install directory</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2">
-    <spacer name="install_dialog_hspacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="4" column="2">
-    <widget class="QLabel" name="ignore_space_info_label">
-     <property name="font">
-      <font>
-       <italic>true</italic>
-      </font>
-     </property>
-     <property name="text">
-      <string>Use with caution!</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QCheckBox" name="force_download_check"/>
-   </item>
    <item row="3" column="0" alignment="Qt::AlignRight">
     <widget class="QLabel" name="force_download_label">
      <property name="text">
@@ -73,7 +13,7 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0" colspan="3">
+   <item row="9" column="0" colspan="3">
     <layout class="QHBoxLayout" name="button_layout">
      <item>
       <spacer name="button_hspacer">
@@ -104,18 +44,27 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="1">
-    <widget class="QSpinBox" name="max_workers_spin"/>
+   <item row="4" column="2">
+    <widget class="QLabel" name="ignore_space_info_label">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Use with caution!</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" alignment="Qt::AlignRight">
+    <widget class="QLabel" name="install_dir_label">
+     <property name="text">
+      <string>Install directory</string>
+     </property>
+    </widget>
    </item>
    <item row="4" column="1">
     <widget class="QCheckBox" name="ignore_space_check"/>
-   </item>
-   <item row="7" column="0" alignment="Qt::AlignRight">
-    <widget class="QLabel" name="install_size_label">
-     <property name="text">
-      <string>Total install size</string>
-     </property>
-    </widget>
    </item>
    <item row="2" column="2">
     <widget class="QLabel" name="max_workers_info_label">
@@ -129,36 +78,8 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1" colspan="2">
-    <layout class="QHBoxLayout" name="install_dir_layout"/>
-   </item>
-   <item row="6" column="1" colspan="2">
-    <widget class="QLabel" name="download_size_info_label">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" alignment="Qt::AlignRight">
-    <widget class="QLabel" name="max_workers_label">
-     <property name="text">
-      <string>Max workers</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" alignment="Qt::AlignRight">
-    <widget class="QLabel" name="download_only_label">
-     <property name="text">
-      <string>Download only</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QCheckBox" name="download_only_check">
-     <property name="text">
-      <string notr="true"/>
-     </property>
-    </widget>
+   <item row="2" column="1">
+    <widget class="QSpinBox" name="max_workers_spin"/>
    </item>
    <item row="5" column="2">
     <widget class="QLabel" name="download_only_info_label">
@@ -169,6 +90,110 @@
      </property>
      <property name="text">
       <string>Do not try to install.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" alignment="Qt::AlignRight">
+    <widget class="QLabel" name="install_size_label">
+     <property name="text">
+      <string>Total install size</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="2">
+    <layout class="QHBoxLayout" name="install_dir_layout"/>
+   </item>
+   <item row="3" column="2">
+    <spacer name="install_dialog_hspacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="4" column="0" alignment="Qt::AlignRight">
+    <widget class="QLabel" name="ignore_space_label">
+     <property name="text">
+      <string>Ignore free space</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" alignment="Qt::AlignRight">
+    <widget class="QLabel" name="download_only_label">
+     <property name="text">
+      <string>Download only</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" alignment="Qt::AlignRight">
+    <widget class="QLabel" name="max_workers_label">
+     <property name="text">
+      <string>Max workers</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1" colspan="2">
+    <widget class="QLabel" name="install_size_info_label">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" alignment="Qt::AlignRight">
+    <widget class="QLabel" name="download_size_label">
+     <property name="text">
+      <string>Download size</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1" colspan="2">
+    <widget class="QLabel" name="download_size_info_label">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="force_download_check"/>
+   </item>
+   <item row="0" column="0" colspan="3">
+    <widget class="QLabel" name="install_dialog_label">
+     <property name="text">
+      <string>error</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QCheckBox" name="download_only_check">
+     <property name="text">
+      <string notr="true"/>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1" colspan="2" alignment="Qt::AlignTop">
+    <widget class="QFrame" name="sdl_list_frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="sdl_list_layout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item row="6" column="0" alignment="Qt::AlignRight">
+    <widget class="QLabel" name="sdl_list_label">
+     <property name="text">
+      <string>Optional packs</string>
      </property>
     </widget>
    </item>
