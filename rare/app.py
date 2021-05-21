@@ -6,14 +6,14 @@ import time
 
 from PyQt5.QtCore import QSettings, QTranslator
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory
 
 from custom_legendary.core import LegendaryCore
 from rare import lang_path, style_path
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
-from rare.utils.utils import get_lang
+from rare.utils.utils import get_lang, load_color_scheme
 
 start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
 file_name = os.path.expanduser(f"~/.cache/rare/logs/Rare_{start_time}.log")
@@ -32,7 +32,6 @@ class App(QApplication):
     def __init__(self, args):
         super(App, self).__init__(sys.argv)
         self.args = args  # add some options
-
         # init Legendary
         try:
             self.core = LegendaryCore()
@@ -49,11 +48,21 @@ class App(QApplication):
             self.core.lgd.config.add_section("Legendary")
             self.core.lgd.save_config()
 
+        # workaround if egl sync enabled, but no programdata path
+        if self.core.egl_sync_enabled and not os.path.exists(self.core.egl.programdata_path):
+            self.core.lgd.config.remove_option("Legendary", "egl-sync")
+            self.core.lgd.save_config()
+
         # set Application name for settings
         self.mainwindow = None
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")
         settings = QSettings()
+        if os.name != "nt":
+            if args.disable_protondb:
+                settings.setValue("disable_protondb", True)
+            if args.enable_protondb:
+                settings.remove("disable_protondb")
 
         # Translator
         self.translator = QTranslator()
@@ -66,8 +75,19 @@ class App(QApplication):
         self.installTranslator(self.translator)
 
         # Style
-        self.setStyleSheet(open(style_path + "RareStyle.qss").read())
-        self.setWindowIcon(QIcon(style_path + "Logo.png"))
+        self.setStyle(QStyleFactory.create("Fusion"))
+        if settings.value("color_scheme", None) is None and settings.value("style_sheet", None) is None:
+            settings.setValue("color_scheme", "")
+            settings.setValue("style_sheet", "RareStyle")
+        if color := settings.value("color_scheme", False):
+            settings.setValue("style_sheet", "")
+            custom_palette = load_color_scheme(os.path.join(style_path, "colors", color + ".scheme"))
+            if custom_palette is not None:
+                self.setPalette(custom_palette)
+        elif style := settings.value("style_sheet", False):
+            settings.setValue("color_scheme", "")
+            self.setStyleSheet(open(os.path.join(style_path, "qss", style + ".qss")).read())
+        self.setWindowIcon(QIcon(os.path.join(style_path, "Logo.png")))
 
         # launch app
         self.launch_dialog = LaunchDialog(self.core, args.offline)

@@ -1,13 +1,12 @@
-
 name: New Release
 
 on:
   release:
     types: [ published ]
-  
+
 jobs:
   pypy-deploy:
-
+    if: "!github.event.release.prerelease"
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +28,7 @@ jobs:
           twine upload dist/*
 
   aur-publish:
+    if: "!github.event.release.prerelease"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -71,7 +71,7 @@ jobs:
           overwrite: true
 
   deb-package:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install Deps
@@ -84,10 +84,10 @@ jobs:
         run: |
           python3 setup.py sdist
           python3 setup.py --command-packages=stdeb.command bdist_deb
-      
+
       - name: move file
         run: mv deb_dist/*.deb Rare.deb
-        
+
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:

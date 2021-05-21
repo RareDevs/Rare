@@ -7,9 +7,15 @@ from rare.utils import singleton
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("-V", "--version", action="store_true")
-    parser.add_argument("-S", "--silent", action="store_true")
-    parser.add_argument("--offline", action="store_true")
+    parser.add_argument("-V", "--version", action="store_true", help="Shows version and exits")
+    parser.add_argument("-S", "--silent", action="store_true",
+                        help="Launch Rare in background. Open it from System Tray Icon")
+    parser.add_argument("--offline", action="store_true", help="Launch Rare in offline mode")
+    if os.name != "nt":
+        parser.add_argument("--disable-protondb", action="store_true", dest="disable_protondb",
+                            help="Do not download and check data from ProtonDB. Disable it, if you don't need grades")
+        parser.add_argument("--enable-protondb", action="store_true", dest="enable_protondb",
+                            help="Enable ProtonDB data, after disabled")
     subparsers = parser.add_subparsers(title="Commands", dest="subparser")
 
     launch_parser = subparsers.add_parser("launch")

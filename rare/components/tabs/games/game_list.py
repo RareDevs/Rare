@@ -25,6 +25,7 @@ class GameList(QStackedWidget):
     update_game = pyqtSignal()
     game_exited = pyqtSignal(str)
     game_started = pyqtSignal(str)
+    show_uninstalled_info = pyqtSignal(str)
 
     running_games = []
     active_game = ("", 0)
@@ -77,17 +78,19 @@ class GameList(QStackedWidget):
             self.icon_layout.addWidget(icon_widget)
             self.list_layout.addWidget(list_widget)
 
-        self.uninstalled_names = []
+        self.uninstalled_games = []
         installed = [i.app_name for i in self.core.get_installed_list()]
         # get Uninstalled games
         games, self.dlcs = self.core.get_game_and_dlc_list()
         for game in sorted(games, key=lambda x: x.app_title):
             if not game.app_name in installed:
-                self.uninstalled_names.append(game)
+                self.uninstalled_games.append(game)
 
         # add uninstalled games
-        for game in self.uninstalled_names:
+
+        for game in self.uninstalled_games:
             icon_widget, list_widget = self.add_uninstalled_widget(game)
+
             self.icon_layout.addWidget(icon_widget)
             self.list_layout.addWidget(list_widget)
 
@@ -123,10 +126,10 @@ class GameList(QStackedWidget):
             pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
 
         icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
-        icon_widget.install_game.connect(self.install)
+        icon_widget.show_uninstalled_info.connect(self.show_install_info)
 
         list_widget = ListWidgetUninstalled(self.core, game, pixmap)
-        list_widget.install_game.connect(self.install)
+        list_widget.show_uninstalled_info.connect(self.show_install_info)
 
         self.widgets[game.app_name] = (icon_widget, list_widget)
 
@@ -204,13 +207,8 @@ class GameList(QStackedWidget):
                 return True, pid
         return False, 0
 
-    def install(self, options: InstallOptions):
-        icon_widget, list_widget = self.widgets[options.app_name]
-        icon_widget.mousePressEvent = lambda e: None
-        icon_widget.installing = True
-        list_widget.install_button.setDisabled(True)
-        list_widget.installing = True
-        self.install_game.emit(options)
+    def show_install_info(self, app_name):
+        self.show_uninstalled_info.emit(app_name)
 
     def finished(self, app_name):
         self.running_games.remove(app_name)
@@ -279,7 +277,8 @@ class GameList(QStackedWidget):
                     widgets[0].info_label.setText("")
                     widgets[0].info_text = ""
                 # new installed
-                elif self.core.is_installed(widgets[0].game.app_name) and not isinstance(widgets[0], BaseInstalledWidget):
+                elif self.core.is_installed(widgets[0].game.app_name) and not isinstance(widgets[0],
+                                                                                         BaseInstalledWidget):
                     self.widgets.pop(widgets[0].game.app_name)
 
                     # QWidget().setLayout(self.icon_layout)
@@ -332,7 +331,8 @@ class GameList(QStackedWidget):
                     self.update()
 
                 # uninstalled
-                elif not self.core.is_installed(widgets[0].game.app_name) and isinstance(widgets[0], BaseInstalledWidget):
+                elif not self.core.is_installed(widgets[0].game.app_name) and isinstance(widgets[0],
+                                                                                         BaseInstalledWidget):
                     self.list_layout.removeWidget(widgets[1])
                     self.icon_layout.removeWidget(widgets[0])
 
@@ -392,5 +392,3 @@ class GameList(QStackedWidget):
                     i_widget, list_widget = self.widgets[name]
                     self.icon_layout.addWidget(i_widget)
                     self.list_layout.addWidget(list_widget)
-
-
