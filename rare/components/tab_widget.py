@@ -3,16 +3,17 @@ import webbrowser
 from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
 from qtawesome import icon
-from rare.utils import legendary_utils
 
 from custom_legendary.core import LegendaryCore
+from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.tab_utils import TabBar, TabButtonWidget
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
-from rare.components.tabs.downloads.__init__ import DownloadTab
+from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
+from rare.utils import legendary_utils
 from rare.utils.models import InstallOptions
 
 
@@ -74,11 +75,13 @@ class TabWidget(QTabWidget):
         if not offline:
             # Download finished
             self.downloadTab.finished.connect(self.dl_finished)
-            # start download
-            self.games_tab.default_widget.game_list.install_game.connect(self.start_download)
+            # show uninstalled info
+            self.games_tab.default_widget.game_list.show_uninstalled_info.connect(self.games_tab.show_uninstalled)
             # install dlc
-            self.games_tab.game_info.dlc_tab.install_dlc.connect(self.start_download)
+            self.games_tab.game_info.dlc_tab.install_dlc.connect(self.install_game)
 
+            # install game
+            self.games_tab.uninstalled_info_widget.info.install_game.connect(self.install_game)
             # repair game
             self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
                 InstallOptions(app_name, core.get_installed_game(app_name).install_path, repair=True)))
@@ -91,6 +94,21 @@ class TabWidget(QTabWidget):
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(lambda x: self.games_tab.layout.setCurrentIndex(0) if x == 0 else None)
         self.setIconSize(QSize(25, 25))
+
+    def install_game(self, app_name, disable_path=False):
+
+        infos = InstallDialog(app_name, self.core, disable_path).get_information()
+        if infos != 0:
+            path, max_workers, force, ignore_free_space, dl_only = infos
+            options = InstallOptions(app_name=app_name, max_workers=max_workers, path=path, force=force,
+                                     ignore_free_space=ignore_free_space, download_only=dl_only)
+            self.setCurrentIndex(1)
+            self.start_download(options)
+
+    def start_download(self, options):
+        downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
+        self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
+        self.downloadTab.install_game(options)
 
     def game_imported(self, app_name: str):
         igame = self.core.get_installed_game(app_name)
@@ -119,6 +137,7 @@ class TabWidget(QTabWidget):
             downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
             self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
             self.downloadTab.update_text.setVisible(len(self.downloadTab.update_widgets) == 0)
+
     # Update gamelist and set text of Downlaods to "Downloads"
 
     def dl_finished(self, update_list):
@@ -126,11 +145,6 @@ class TabWidget(QTabWidget):
             self.games_tab.default_widget.game_list.update_list(update_list[1])
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
-
-    def start_download(self, options):
-        downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
-        self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
-        self.downloadTab.install_game(options)
 
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())

@@ -64,7 +64,8 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
     elif os.name == "nt":
         if os.path.exists(os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk")):
             os.remove(os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk"))
-        elif os.path.exists(os.path.expandvars(f"%appdata%/Microsoft/Windows/Start Menu/{igame.title.split(':')[0]}.lnk")):
+        elif os.path.exists(
+                os.path.expandvars(f"%appdata%/Microsoft/Windows/Start Menu/{igame.title.split(':')[0]}.lnk")):
             os.remove(os.path.expandvars(f"%appdata%/Microsoft/Windows/Start Menu/{igame.title.split(':')[0]}.lnk"))
 
     try:

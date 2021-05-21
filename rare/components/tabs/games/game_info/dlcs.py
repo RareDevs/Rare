@@ -6,13 +6,11 @@ from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QScrollArea, QL
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import Game
-from rare.components.dialogs.install_dialog import InstallDialog
-from rare.utils.models import InstallOptions
 from rare.utils.utils import download_image
 
 
 class DlcTab(QScrollArea):
-    install_dlc = pyqtSignal(InstallOptions)
+    install_dlc = pyqtSignal(str, bool)
     game: Game
 
     def __init__(self, core: LegendaryCore, parent):
@@ -74,12 +72,7 @@ class DlcTab(QScrollArea):
             QMessageBox.warning(self, "Error", self.tr("Base Game is not installed. Please install {} first").format(
                 self.game.app_title))
             return
-        infos = InstallDialog(self.game.app_name, self.core, True).get_information()
-        if infos != 0:
-            path, max_workers, force, ignore_free_space = infos
-            self.install_dlc.emit(
-                InstallOptions(app_name=app_name, max_workers=max_workers, path=path, force=force,
-                               ignore_free_space=ignore_free_space))
+        self.install_dlc.emit(app_name, True)
 
 
 class DLCWidget(QGroupBox):

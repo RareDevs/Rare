@@ -142,18 +142,20 @@ class DownloadTab(QWidget):
                 return
 
         if self.active_game is None:
-            self.start_installation(dlm, game, status_queue, igame, repair_file, options, analysis)
+            self.start_installation(dlm, game, status_queue, igame, repair_file, options, analysis,
+                                    options.download_only)
         else:
-            self.dl_queue.append((dlm, game, status_queue, igame, repair_file, options, analysis))
+            self.dl_queue.append(
+                (dlm, game, status_queue, igame, repair_file, options, analysis, options.download_only))
             self.queue_widget.update_queue(self.dl_queue)
 
-    def start_installation(self, dlm, game, status_queue, igame, repair_file, options: InstallOptions, analysis):
-        print("start installation", game.app_title)
+    def start_installation(self, dlm, game, status_queue, igame, repair_file, options: InstallOptions, analysis,
+                           dl_only):
         if self.dl_queue:
             self.dl_queue.pop(0)
             self.queue_widget.update_queue(self.dl_queue)
         self.active_game = game
-        self.thread = DownloadThread(dlm, self.core, status_queue, igame, options.repair, repair_file)
+        self.thread = DownloadThread(dlm, self.core, status_queue, igame, options.repair, repair_file, dl_only)
         self.thread.status.connect(self.status)
         self.thread.statistics.connect(self.statistics)
         self.thread.start()
@@ -265,8 +267,9 @@ class DownloadTab(QWidget):
 
     def statistics(self, ui_update: UIUpdate):
         self.prog_bar.setValue(ui_update.progress)
-        self.dl_speed.setText(self.tr("Download speed") + f": {ui_update.download_speed / 1024 / 1024:.02f}MB/s")
-        self.cache_used.setText(self.tr("Cache used") + f": {ui_update.cache_usage / 1024 / 1024:.02f}MB")
+        self.dl_speed.setText(self.tr("Download speed") + f": {get_size(ui_update.download_speed)}/s")
+        self.cache_used.setText(
+            self.tr("Cache used") + f": {get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}")
         self.downloaded.setText(
             self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
         self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
@@ -282,13 +285,16 @@ class DownloadTab(QWidget):
             self.install_game(InstallOptions(app_name=app_name), True)
             return
         if infos != 0:
-            path, max_workers, force, ignore_free_space = infos
+            path, max_workers, force, ignore_free_space, dl_only = infos
             self.install_game(InstallOptions(app_name=app_name, max_workers=max_workers, path=path,
-                                             force=force, ignore_free_space=ignore_free_space), True)
+                                             force=force, ignore_free_space=ignore_free_space, dl_only=dl_only), True)
+        else:
+            self.update_widgets[app_name].update_button.setDisabled(False)
+            self.update_widgets[app_name].update_with_settings.setDisabled(False)
 
 
 class UpdateWidget(QWidget):
-    update = pyqtSignal(str)
+    update_signal = pyqtSignal(str, bool)
 
     def __init__(self, core: LegendaryCore, game: InstalledGame, parent):
         super(UpdateWidget, self).__init__(parent=parent)
@@ -300,12 +306,18 @@ class UpdateWidget(QWidget):
         self.layout.addWidget(self.title)
 
         self.update_button = QPushButton(self.tr("Update Game"))
-        self.update_button.clicked.connect(self.update_game)
+        self.update_button.clicked.connect(lambda: self.update_game(True))
+        self.update_with_settings = QPushButton("Update with settings")
+        self.update_with_settings.clicked.connect(lambda: self.update_game(False))
         self.layout.addWidget(self.update_button)
-        self.layout.addWidget(QLabel(self.tr("Version: ") + self.game.version + " -> " + self.core.get_asset(self.game.app_name, True).build_version))
+        self.layout.addWidget(self.update_with_settings)
+        self.layout.addWidget(QLabel(
+            self.tr("Version: ") + self.game.version + " -> " + self.core.get_asset(self.game.app_name,
+                                                                                    True).build_version))
 
         self.setLayout(self.layout)
 
-    def update_game(self):
+    def update_game(self, auto: bool):
         self.update_button.setDisabled(True)
-        self.update.emit(self.game.app_name)
+        self.update_with_settings.setDisabled(True)
+        self.update_signal.emit(self.game.app_name, auto)  # True if settings
