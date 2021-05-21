@@ -150,6 +150,7 @@ class Ui_legendary_settings(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     legendary_settings = QtWidgets.QStackedWidget()
     ui = Ui_legendary_settings()

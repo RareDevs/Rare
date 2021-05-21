@@ -104,12 +104,14 @@ class Ui_About(object):
         self.dev_label.setText(_translate("About", "Rare Developer"))
         self.license.setText(_translate("About", "GNU General Public License v3.0"))
         self.lgd_dev.setToolTip(_translate("About", "Github"))
-        self.info_text.setText(_translate("About", "This is a beta version, so you can get bugs. If you get a bug, please report it by creating an Issue on <a href=\'https://github.com/Dummerle/Rare/issues\'>Github</a>. You can also contact me on Discord (Dummerle#7419). Or you can join the <a href=\'https://discord.gg/YvmABK9YSk\'>Discord server</a>"))
+        self.info_text.setText(_translate("About",
+                                          "This is a beta version, so you can get bugs. If you get a bug, please report it by creating an Issue on <a href=\'https://github.com/Dummerle/Rare/issues\'>Github</a>. You can also contact me on Discord (Dummerle#7419). Or you can join the <a href=\'https://discord.gg/YvmABK9YSk\'>Discord server</a>"))
         self.title.setText(_translate("About", "<h2>About</h2>"))
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     About = QtWidgets.QWidget()
     ui = Ui_About()

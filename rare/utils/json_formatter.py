@@ -143,8 +143,8 @@ class QJsonModel(QtCore.QAbstractItemModel):
         """
 
         assert isinstance(document, (dict, list, tuple)), (
-            "`document` must be of dict, list or tuple, "
-            "not %s" % type(document)
+                "`document` must be of dict, list or tuple, "
+                "not %s" % type(document)
         )
 
         self.beginResetModel()
@@ -193,7 +193,6 @@ class QJsonModel(QtCore.QAbstractItemModel):
             if index.column() == 1:
                 item = index.internalPointer()
                 item.value = str(value)
-
 
                 self.dataChanged.emit(index, index, [QtCore.Qt.EditRole])
 
@@ -317,8 +316,8 @@ if __name__ == '__main__':
 
     # Sanity check
     assert (
-        json.dumps(model.json(), sort_keys=True) ==
-        json.dumps(document, sort_keys=True)
+            json.dumps(model.json(), sort_keys=True) ==
+            json.dumps(document, sort_keys=True)
     )
 
     view.show()

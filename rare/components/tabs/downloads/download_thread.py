@@ -121,7 +121,7 @@ class DownloadThread(QThread):
                 return
             self.status.emit("dl_finished")
             end_t = time.time()
-            logger.info(f"Download finished in {start_time-end_t}s")
+            logger.info(f"Download finished in {start_time - end_t}s")
             game = self.core.get_game(self.igame.app_name)
 
             if not self.dl_only:

@@ -75,7 +75,6 @@ class DownloadTab(QWidget):
         self.update_text.setVisible(len(updates) == 0)
 
         for igame in updates:
-
             self.add_update(igame)
 
         self.layout.addStretch(1)
@@ -143,12 +142,15 @@ class DownloadTab(QWidget):
                 return
 
         if self.active_game is None:
-            self.start_installation(dlm, game, status_queue, igame, repair_file, options, analysis, options.download_only)
+            self.start_installation(dlm, game, status_queue, igame, repair_file, options, analysis,
+                                    options.download_only)
         else:
-            self.dl_queue.append((dlm, game, status_queue, igame, repair_file, options, analysis, options.download_only))
+            self.dl_queue.append(
+                (dlm, game, status_queue, igame, repair_file, options, analysis, options.download_only))
             self.queue_widget.update_queue(self.dl_queue)
 
-    def start_installation(self, dlm, game, status_queue, igame, repair_file, options: InstallOptions, analysis, dl_only):
+    def start_installation(self, dlm, game, status_queue, igame, repair_file, options: InstallOptions, analysis,
+                           dl_only):
         if self.dl_queue:
             self.dl_queue.pop(0)
             self.queue_widget.update_queue(self.dl_queue)
@@ -266,7 +268,8 @@ class DownloadTab(QWidget):
     def statistics(self, ui_update: UIUpdate):
         self.prog_bar.setValue(ui_update.progress)
         self.dl_speed.setText(self.tr("Download speed") + f": {get_size(ui_update.download_speed)}/s")
-        self.cache_used.setText(self.tr("Cache used") + f": {get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}")
+        self.cache_used.setText(
+            self.tr("Cache used") + f": {get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}")
         self.downloaded.setText(
             self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
         self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
@@ -308,7 +311,9 @@ class UpdateWidget(QWidget):
         self.update_with_settings.clicked.connect(lambda: self.update_game(False))
         self.layout.addWidget(self.update_button)
         self.layout.addWidget(self.update_with_settings)
-        self.layout.addWidget(QLabel(self.tr("Version: ") + self.game.version + " -> " + self.core.get_asset(self.game.app_name, True).build_version))
+        self.layout.addWidget(QLabel(
+            self.tr("Version: ") + self.game.version + " -> " + self.core.get_asset(self.game.app_name,
+                                                                                    True).build_version))
 
         self.setLayout(self.layout)
 

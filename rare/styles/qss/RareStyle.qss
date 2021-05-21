@@ -5,21 +5,21 @@ QWidget {
 
 QLabel {
     background-color: transparent;
-	padding: 4px;
+    padding: 4px;
 }
 
 QLineEdit {
     border: 1px solid darkslategrey;
     border-radius: 2px;
     background-color: #334;
-	padding: 2px;
+    padding: 2px;
 }
 
 QScrollBar {
-	border: 1px solid darkslategrey;
+    border: 1px solid darkslategrey;
     border-radius: 4px;
     background-color: #334;
-	padding: 1px;
+    padding: 1px;
 }
 
 QScrollBar::add-line:vertical {
@@ -54,12 +54,12 @@ QScrollBar::sub-line:horizontal {
     subcontrol-origin: margin;
 }
 
-QScrollBar::handle{
-	border: 1px solid darkslategrey;
+QScrollBar::handle {
+    border: 1px solid darkslategrey;
     background-color: gray;
     border-radius: 4px;
-	min-height: 20px;
-	min-width: 20px;
+    min-height: 20px;
+    min-width: 20px;
 }
 
 QTabBar#main_tab_bar {
@@ -172,12 +172,12 @@ QPushButton:hover#menu_button {
 
 QRadioButton {
     background-color: none;
-	border-radius: 50%;
+    border-radius: 50%;
 }
 
 QRadioButton::indicator {
     border: 1px solid gray;
-	border-radius: 5%;
+    border-radius: 5%;
 }
 
 QCheckBox {
@@ -186,22 +186,22 @@ QCheckBox {
 
 QCheckBox::indicator {
     border: 1px solid gray;
-	border-radius: 2px;
+    border-radius: 2px;
 }
 
 QCheckBox::indicator:checked {
-  width: -20ex;
-  height: -20ex;
-  background: #5F5F80;
-  border-radius: 10px;
-  
+    width: -20ex;
+    height: -20ex;
+    background: #5F5F80;
+    border-radius: 10px;
+
 }
 
 QSpinBox {
     border: 1px solid darkslategrey;
     border-radius: 2px;
     background-color: #334;
-	padding: 2px;
+    padding: 2px;
 }
 
 /*
@@ -221,11 +221,11 @@ QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
     width: 15px;
-/*
-    border-left-width: 1px;
-    border-left-color: darkgray;
-    border-left-style: solid;
-*/
+    /*
+        border-left-width: 1px;
+        border-left-color: darkgray;
+        border-left-style: solid;
+    */
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
 }

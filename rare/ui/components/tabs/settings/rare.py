@@ -135,6 +135,7 @@ class Ui_RareSettings(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     RareSettings = QtWidgets.QWidget()
     ui = Ui_RareSettings()

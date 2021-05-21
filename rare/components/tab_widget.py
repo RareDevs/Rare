@@ -3,20 +3,17 @@ import webbrowser
 from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
 from qtawesome import icon
-from rare.utils import legendary_utils
 
 from custom_legendary.core import LegendaryCore
-
 from rare.components.dialogs.install_dialog import InstallDialog
-
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-
 from rare.components.tab_utils import TabBar, TabButtonWidget
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
+from rare.utils import legendary_utils
 from rare.utils.models import InstallOptions
 
 
@@ -98,7 +95,6 @@ class TabWidget(QTabWidget):
         self.tabBarClicked.connect(lambda x: self.games_tab.layout.setCurrentIndex(0) if x == 0 else None)
         self.setIconSize(QSize(25, 25))
 
-
     def install_game(self, app_name, disable_path=False):
 
         infos = InstallDialog(app_name, self.core, disable_path).get_information()
@@ -141,6 +137,7 @@ class TabWidget(QTabWidget):
             downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
             self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
             self.downloadTab.update_text.setVisible(len(self.downloadTab.update_widgets) == 0)
+
     # Update gamelist and set text of Downlaods to "Downloads"
 
     def dl_finished(self, update_list):

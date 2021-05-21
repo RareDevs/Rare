@@ -34,7 +34,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             (self.auto_sync_cloud, "auto_sync_cloud", True),
             (self.notification, "notification", True),
             (self.save_size, "save_size", False)
-       ]
+        ]
 
         self.settings = QSettings()
         self.img_dir_path = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images/"), type=str)

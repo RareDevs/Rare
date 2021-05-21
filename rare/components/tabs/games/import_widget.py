@@ -1,10 +1,9 @@
 import json
 import os
-import string
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayout, QFileDialog, QMessageBox, QLineEdit, \
+from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayout, QFileDialog, QLineEdit, \
     QGroupBox
 from qtawesome import icon
 
@@ -71,7 +70,8 @@ class ImportWidget(QWidget):
 
         self.layout.addWidget(self.import_one_game)
 
-        self.auto_import = QLabel(f"<h4>{self.tr('To import games from Epic Games Store, please enable EGL Sync in legendary settings')}</h4>")
+        self.auto_import = QLabel(
+            f"<h4>{self.tr('To import games from Epic Games Store, please enable EGL Sync in legendary settings')}</h4>")
         self.layout.addWidget(self.auto_import)
         self.layout.addStretch(1)
 

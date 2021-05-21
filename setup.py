@@ -8,16 +8,16 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-        "requests<3.0",
-        "pillow",
-        "setuptools",
-        "wheel",
-        "PyQt5",
-        "QtAwesome",
-        "notify-py",
-        "psutil",
-        "pypresence"
-    ]
+    "requests<3.0",
+    "pillow",
+    "setuptools",
+    "wheel",
+    "PyQt5",
+    "QtAwesome",
+    "notify-py",
+    "psutil",
+    "pypresence"
+]
 
 if os.name == "nt":
     requirements.append("pywin32")
