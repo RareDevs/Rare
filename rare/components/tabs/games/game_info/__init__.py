@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QTabWidget, QMessageBox
 from qtawesome import icon
 
 from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame, Game
+from custom_legendary.models.game import Game, InstalledGame
 from rare.components.tabs.games.game_info.dlcs import DlcTab
 from rare.components.tabs.games.game_info.game_settings import GameSettings
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
@@ -65,21 +65,25 @@ class GameInfo(QWidget, Ui_GameInfo):
     def __init__(self, core: LegendaryCore, parent):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
-        self.ratings = {"platinum": self.tr("Platimum"),
+        self.core = core
+
+        self.ratings = {"platinum": self.tr("Platinum"),
                         "gold": self.tr("Gold"),
                         "silver": self.tr("Silver"),
                         "bronze": self.tr("Bronze"),
-                        "fail": self.tr("Could not get grade from ProtonDB"),
-                        "pending": "Not enough reports"}
+                        "fail": self.tr("Could not get grade"),
+                        "pending": self.tr("Not enough reports")}
         if os.path.exists(p := os.path.expanduser("~/.cache/rare/game_list.json")):
             self.grade_table = json.load(open(p))
         else:
             self.grade_table = {}
-        self.widget = QWidget()
-        self.core = core
+
         if os.name == "nt":
             self.lbl_grade.setVisible(False)
             self.grade.setVisible(False)
+
+        self.game_actions_stack.setCurrentIndex(0)
+        self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
 
         self.uninstall_button.clicked.connect(self.uninstall)
         self.verify_button.clicked.connect(self.verify)
@@ -153,14 +157,15 @@ class GameInfo(QWidget, Ui_GameInfo):
 
         if os.name != "nt" and self.grade_table:
             try:
-                grade = self.ratings.get(self.grade_table[app_name].get("grade"))
+                grade = self.grade_table[app_name]["grade"]
             except KeyError:
-                grade = (self.tr("Error"))
-            self.grade.setText(grade)
+                grade = "fail"
+            self.grade.setText(self.ratings[grade])
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(app_name):
             self.verify_widget.setCurrentIndex(0)
         elif self.verify_threads.get(app_name):
             self.verify_widget.setCurrentIndex(1)
             self.verify_progress.setValue(
-                self.verify_threads[app_name].num / self.verify_threads[app_name].total * 100)
+                self.verify_threads[app_name].num / self.verify_threads[app_name].total * 100
+            )
