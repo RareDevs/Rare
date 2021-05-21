@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtCore import QThread, pyqtSignal, Qt, QSettings
 from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QGroupBox
 
 from custom_legendary.core import LegendaryCore
@@ -166,6 +166,11 @@ class SyncWidget(QGroupBox):
         self.layout.addLayout(button_layout)
         self.layout.addStretch(1)
         self.setLayout(self.layout)
+
+        if self.res == SaveGameStatus.REMOTE_NEWER:
+            settings = QSettings()
+            if settings.value(f"{igame.app_name}/auto_sync_cloud", False, bool):
+                self.download()
 
     def change_path(self):
         path = PathInputDialog("Select directory", "Select savepath. Warning: Do not change if you are not sure",

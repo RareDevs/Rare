@@ -14,12 +14,13 @@ if os.name == "nt":
     from win32com.client import Dispatch
 
 from rare import lang_path, style_path
+# Mac not supported
+
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
 IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare/images"), type=str)
-logger.info("IMAGE DIRECTORY: " + IMAGE_DIR)
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
@@ -246,7 +247,8 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
                                "Terminal=false\n"
                                "StartupWMClass=rare-game\n"
                                )
-        os.chmod(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"), 0o755)
+            desktop_file.close()
+        os.chmod(os.path.expanduser(f"{path}{igame.title}.desktop"), 0o755)
 
     # Windows
     elif os.name == "nt":
@@ -261,7 +263,12 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         target = os.path.abspath(sys.argv[0])
 
         # Name of link file
-        linkName = igame.title + '.lnk'
+
+        linkName = igame.title
+        for c in r'<>?":|\/*':
+            linkName.replace(c, "")
+
+        linkName = linkName.strip() + '.lnk'
 
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)
@@ -279,4 +286,5 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
             img.save(icon + ".ico")
             logger.info("Create Icon")
         shortcut.IconLocation = os.path.join(icon + ".ico")
+
         shortcut.save()

@@ -1,5 +1,6 @@
-from PyQt5.QtCore import QSettings, QSize
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QLineEdit, QPushButton, QStackedLayout, QLabel
+from PyQt5.QtCore import QSettings, QSize, pyqtSignal
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QStackedLayout, \
+    QLabel, QComboBox
 from qtawesome import icon
 
 from rare.components.tabs.games.game_info import InfoTabs
@@ -36,8 +37,8 @@ class GameTab(QWidget):
 
         self.setLayout(self.layout)
 
-    def update_list(self):
-        self.default_widget.game_list.update_list(self.default_widget.head_bar.view.isChecked())
+    def update_list(self, app_name=None):
+        self.default_widget.game_list.update_list(app_name)
         self.layout.setCurrentIndex(0)
 
     def show_uninstalled(self, app_name):
@@ -62,11 +63,10 @@ class Games(QWidget):
         self.game_list = GameList(core, self, offline)
 
         self.head_bar.search_bar.textChanged.connect(
-            lambda: self.game_list.filter(self.head_bar.search_bar.text()))
+            lambda: self.game_list.search(self.head_bar.search_bar.text()))
 
-        self.head_bar.installed_only.stateChanged.connect(lambda:
-                                                          self.game_list.installed_only(
-                                                              self.head_bar.installed_only.isChecked()))
+        self.head_bar.filter_changed_signal.connect(self.game_list.filter)
+
         self.layout.addWidget(self.head_bar)
         self.layout.addWidget(self.game_list)
         # self.layout.addStretch(1)
@@ -81,14 +81,23 @@ class Games(QWidget):
 
 
 class GameListHeadBar(QWidget):
+    filter_changed_signal = pyqtSignal(str)
+
     def __init__(self, parent):
         super(GameListHeadBar, self).__init__(parent=parent)
         self.layout = QHBoxLayout()
-        self.installed_only = QCheckBox(self.tr("Installed only"))
+        # self.installed_only = QCheckBox(self.tr("Installed only"))
         self.settings = QSettings()
-        self.installed_only.setChecked(self.settings.value("installed_only", False, bool))
-        self.layout.addWidget(self.installed_only)
+        # self.installed_only.setChecked(self.settings.value("installed_only", False, bool))
+        # self.layout.addWidget(self.installed_only)
 
+        self.filter = QComboBox()
+        self.filter.addItems([self.tr("All"),
+                              self.tr("Installed only"),
+                              self.tr("Offline Games"),
+                              self.tr("32 Bit Games")])
+        self.filter.currentIndexChanged.connect(self.filter_changed)
+        self.layout.addWidget(self.filter)
         self.layout.addStretch(1)
 
         self.import_game = QPushButton(icon("mdi.import", color="white"), self.tr("Import Game"))
@@ -118,3 +127,6 @@ class GameListHeadBar(QWidget):
         self.layout.addWidget(self.refresh_list)
 
         self.setLayout(self.layout)
+
+    def filter_changed(self, i):
+        self.filter_changed_signal.emit(["", "installed", "offline", "32bit"][i])

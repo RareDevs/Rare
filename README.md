@@ -41,12 +41,14 @@ Install via `pip`.
 
 ## Run from source
 1. Run `pip install -r requirements.txt` to get dependencies. If you use `pacman` you can run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-pillow`
-2. For unix operating systems run `sh start.sh`. For windows run `set PYTHONPATH=%CD% && python Rare`
+2. For unix operating systems run `sh start.sh`. For windows run `set PYTHONPATH=%CD% && python rare`
 
 ## Why Rare?
 
-- Rare uses much less RAM than electron based apps such as [HeroicGL](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher) and EpicGL which allows the games to run better.
-- Rare supports all major platforms (Windows, Linux, macOS) unlike the alternatives.
+- Rare only uses ~50MB of RAM which is much less than the electron based [HeroicGamesLauncher](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher) uses.
+- Rare supports all major platforms (Windows, Linux, Mac) unlike the alternatives. 
+  
+**Note** Mac should work too, but I have no Mac and I can't test it. 
 
 ## Features
 
@@ -60,7 +62,7 @@ Install via `pip`.
 ## Planned Features
 - More Translations (Need help)
 - More Information about Games
-More planned features are in projects
+More planned features are in [projects](https://github.com/Dummerle/Rare/projects/1)
 
 ## Contributing
 There are more options to contribute. 

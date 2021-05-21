@@ -1362,82 +1362,83 @@ Installationsgröße: {} GB</translation>
 <context>
     <name>RareSettings</name>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="25"/>
+        <location filename="../components/tabs/settings/rare.py" line="27"/>
         <source>Rare settings</source>
         <translation type="obsolete">Rare Einstellungen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="48"/>
+        <location filename="../components/tabs/settings/rare.py" line="51"/>
         <source>Save</source>
         <translation type="obsolete">Speichern</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="50"/>
+        <location filename="../components/tabs/settings/rare.py" line="53"/>
         <source>Image Directory</source>
         <translation type="obsolete">Ordner für Bilder</translation>
     </message>
     <message>
+
         <location filename="../ui/components/tabs/settings/rare.py" line="119"/>
         <source>Language</source>
         <translation>Sprache</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="87"/>
+        <location filename="../components/tabs/settings/rare.py" line="102"/>
         <source>Restart Application to activate changes</source>
         <translation type="obsolete">Starte die App neu um die Änderungen zu aktivieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="33"/>
+        <location filename="../components/tabs/settings/rare.py" line="36"/>
         <source>Confirm launch of game</source>
         <translation type="obsolete">Start des Spiels bestätigen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="30"/>
+        <location filename="../components/tabs/settings/rare.py" line="33"/>
         <source>Exit to System Tray Icon</source>
         <translation type="obsolete">Beim verlassen auf das System Tray Icon minimieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="30"/>
+        <location filename="../components/tabs/settings/rare.py" line="33"/>
         <source>Hide to System Tray Icon</source>
         <translation type="obsolete">In das System Tray Icon minimieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="35"/>
+        <location filename="../components/tabs/settings/rare.py" line="38"/>
         <source>Auto sync with cloud</source>
         <translation type="obsolete">Speicherstände automatisch mit der Cloud synchronisieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="35"/>
+        <location filename="../components/tabs/settings/rare.py" line="38"/>
         <source>Sync with cloud</source>
         <translation type="obsolete">Automatisch Synchronisieren</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="38"/>
+        <location filename="../components/tabs/settings/rare.py" line="41"/>
         <source>Save size</source>
         <translation type="obsolete">Größe Speichern</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="38"/>
+        <location filename="../components/tabs/settings/rare.py" line="41"/>
         <source>Save size of window after restart</source>
         <translation type="obsolete">Die Fenstergröße nach dem Beenden speichern</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="31"/>
+        <location filename="../components/tabs/settings/rare.py" line="34"/>
         <source>Automatically update Games on startup</source>
         <translation type="obsolete">Spiele automatisch updaten</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="31"/>
+        <location filename="../components/tabs/settings/rare.py" line="34"/>
         <source>Auto updates</source>
         <translation type="obsolete">Automatische Updates</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="36"/>
+        <location filename="../components/tabs/settings/rare.py" line="39"/>
         <source>Show Notifications after Downloads</source>
         <translation type="obsolete">Benachrichtigung nach Abschluss des Downloads anzeigen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/settings/rare.py" line="36"/>
+        <location filename="../components/tabs/settings/rare.py" line="39"/>
         <source>Show notification</source>
         <translation type="obsolete">Benachrichtigung anzeigen</translation>
     </message>
@@ -1525,6 +1526,11 @@ Installationsgröße: {} GB</translation>
         <location filename="../ui/components/tabs/settings/rare.py" line="124"/>
         <source>Behavior</source>
         <translation>Optionen</translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/settings/rare.py" line="76"/>
+        <source>Open Log directory</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1643,22 +1649,22 @@ Installationsgröße: {} GB</translation>
         <translation>Pfad ändern</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="181"/>
+        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="186"/>
         <source>Uploading...</source>
         <translation>Hochladen...</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="189"/>
+        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="194"/>
         <source>Upload finished</source>
         <translation>Hochladen abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="199"/>
+        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="204"/>
         <source>Downloading...</source>
         <translation>Runterladen...</translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="205"/>
+        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="210"/>
         <source>Download finished</source>
         <translation>Download abgeschlossen</translation>
     </message>

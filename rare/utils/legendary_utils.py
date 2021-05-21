@@ -61,6 +61,12 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
         if os.path.exists(os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop")):
             os.remove(os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop"))
 
+    elif os.name == "nt":
+        if os.path.exists(os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk")):
+            os.remove(os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk"))
+        elif os.path.exists(os.path.expandvars(f"%appdata%/Microsoft/Windows/Start Menu/{igame.title.split(':')[0]}.lnk")):
+            os.remove(os.path.expandvars(f"%appdata%/Microsoft/Windows/Start Menu/{igame.title.split(':')[0]}.lnk"))
+
     try:
         # Remove DLC first so directory is empty when game uninstall runs
         dlcs = core.get_dlc_for_game(app_name)
