@@ -154,7 +154,10 @@ class RareSettings(QWidget, Ui_RareSettings):
                 return
             logger.info("Move Images")
             for i in os.listdir(old_path):
-                shutil.move(os.path.join(old_path, i), os.path.join(new_path, i))
+                try:
+                    shutil.move(os.path.join(old_path, i), os.path.join(new_path, i))
+                except:
+                    pass
             os.rmdir(old_path)
             self.img_dir_path = new_path
             self.settings.setValue("img_dir", new_path)

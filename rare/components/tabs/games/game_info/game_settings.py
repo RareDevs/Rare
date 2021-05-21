@@ -74,6 +74,8 @@ class GameSettings(QWidget, Ui_GameSettings):
 
             self.linux_settings = LinuxAppSettings(core)
             self.linux_layout.addWidget(self.linux_settings)
+        else:
+            self.proton_groupbox.setVisible(False)
 
         # startparams, skip_update_check
 

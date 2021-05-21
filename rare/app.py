@@ -58,11 +58,11 @@ class App(QApplication):
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")
         settings = QSettings()
-
-        if args.disable_protondb:
-            settings.setValue("disable_protondb", True)
-        if args.enable_protondb:
-            settings.remove("disable_protondb")
+        if os.name != "nt":
+            if args.disable_protondb:
+                settings.setValue("disable_protondb", True)
+            if args.enable_protondb:
+                settings.remove("disable_protondb")
 
         # Translator
         self.translator = QTranslator()
