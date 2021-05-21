@@ -8,15 +8,12 @@ import requests
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 from PyQt5.QtGui import QPalette, QColor
-from rare import style_path
-
-from rare.utils.id import upgrade_content, check_time, download_ids
 
 # Windows
 if os.name == "nt":
     from win32com.client import Dispatch
 
-from rare import lang_path, __version__, style_path
+from rare import lang_path, style_path
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
@@ -42,22 +39,7 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
         except json.decoder.JSONDecodeError:
             shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
             download_image(game)
-        signal.emit(i/len(game_list)*50)
-
-
-def check_grades(core: LegendaryCore, signal):
-    games = core.get_game_list(True)
-    # upgrade_content(games, signal)
-    if not os.path.exists("~/.cache/rare/steam_ids.json"):
-        download_ids()
-
-    game_table = json.loads(open(os.path.expanduser("~/.cache/rare/game_list.json")).read())
-    for game in games:
-        if game.app_name not in game_table.keys():
-            # TODO: Find id from method; Not upgrade all
-            game_table[game.app_name] = {"grade": "pending", "id": "1234"}
-
-    json.dump(game_table, open(os.path.expanduser("~/.cache/rare/game_list.json"), "w"))
+        signal.emit(i / len(game_list) * 100)
 
 
 def download_image(game, force=False):
@@ -88,7 +70,7 @@ def download_image(game, force=False):
                     f.write(requests.get(url).content)
                     try:
                         img = Image.open(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
-                        img = img.resize((200, int(200*4/3)))
+                        img = img.resize((200, int(200 * 4 / 3)))
                         img.save(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
                     except UnidentifiedImageError as e:
                         logger.warning(e)
@@ -103,7 +85,7 @@ def download_image(game, force=False):
 
             bg = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
             uninstalledArt = bg.convert('L')
-            uninstalledArt = uninstalledArt.resize((200, int(200*4/3)))
+            uninstalledArt = uninstalledArt.resize((200, int(200 * 4 / 3)))
             uninstalledArt.save(f'{IMAGE_DIR}/{game.app_name}/UninstalledArt.png')
         elif os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png"):
             bg: Image.Image = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png")
@@ -292,9 +274,9 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
-        if not os.path.exists(icon+".ico"):
-            img = Image.open(icon+".png")
-            img.save(icon+".ico")
+        if not os.path.exists(icon + ".ico"):
+            img = Image.open(icon + ".png")
+            img.save(icon + ".ico")
             logger.info("Create Icon")
         shortcut.IconLocation = os.path.join(icon + ".ico")
         shortcut.save()

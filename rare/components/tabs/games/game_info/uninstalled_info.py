@@ -56,7 +56,11 @@ class UninstalledInfo(QWidget):
     def __init__(self, core: LegendaryCore, parent):
         super(UninstalledInfo, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
-        self.grade_table = json.load(open(os.path.expanduser("~/.cache/rare/game_list.json")))
+
+        if os.path.exists(p := os.path.expanduser("~/.cache/rare/game_list.json")):
+            self.grade_table = json.load(open(p))
+        else:
+            self.grade_table = {}
 
         self.ratings = {"platinum": self.tr("Platinum"),
                         "gold": self.tr("Gold"),
@@ -82,9 +86,9 @@ class UninstalledInfo(QWidget):
 
         self.app_name = QLabel("Error")
         self.right_layout.addWidget(self.app_name)
-
-        self.rating = QLabel("Rating: Error")
-        self.right_layout.addWidget(self.rating)
+        if os.name != "nt":
+            self.rating = QLabel("Rating: Error")
+            self.right_layout.addWidget(self.rating)
 
         self.install_button = QPushButton(self.tr("Install"))
         self.install_button.setFixedWidth(300)
@@ -124,11 +128,12 @@ class UninstalledInfo(QWidget):
             self.image.setPixmap(pixmap)
 
         self.version.setText(self.game.asset_info.build_version)
-        try:
-            rating = self.grade_table[app_name]["grade"]
-        except KeyError:
-            rating = "fail"
-        if rating not in ["fail", "pending"]:
-            self.rating.setText(self.tr("Rating from ProtonDB: ") + self.ratings[rating])
-        else:
-            self.rating.setText(self.ratings[rating])
+        if self.grade_table and (not os.name == "nt"):
+            try:
+                rating = self.grade_table[app_name]["grade"]
+            except KeyError:
+                rating = "fail"
+            if rating not in ["fail", "pending"]:
+                self.rating.setText(self.tr("Rating from ProtonDB: ") + self.ratings[rating])
+            else:
+                self.rating.setText(self.ratings[rating])

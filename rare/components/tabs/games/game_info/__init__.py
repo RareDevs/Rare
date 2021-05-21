@@ -63,8 +63,6 @@ class GameInfo(QWidget, Ui_GameInfo):
     verify_game = pyqtSignal(str)
     verify_threads = {}
 
-    grade_table = json.load(open(os.path.expanduser("~/.cache/rare/game_list.json")))
-
     def __init__(self, core: LegendaryCore, parent):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
@@ -74,7 +72,10 @@ class GameInfo(QWidget, Ui_GameInfo):
                         "bronze": self.tr("Bronze"),
                         "fail": self.tr("Could not get grade from ProtonDB"),
                         "pending": "Not enough reports"}
-
+        if os.path.exists(p := os.path.expanduser("~/.cache/rare/game_list.json")):
+            self.grade_table = json.load(open(p))
+        else:
+            self.grade_table = {}
         self.widget = QWidget()
         self.core = core
         if os.name == "nt":
@@ -155,7 +156,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.install_size.setText(get_size(self.igame.install_size))
         self.install_path.setText(self.igame.install_path)
 
-        if os.name != "nt":
+        if os.name != "nt" and self.grade_table:
             try:
                 grade = self.ratings.get(self.grade_table[app_name].get("grade"))
             except KeyError:
