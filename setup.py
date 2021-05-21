@@ -16,7 +16,8 @@ requirements = [
     "QtAwesome",
     "notify-py",
     "psutil",
-    "pypresence"
+    "pypresence",
+    'pywin32; platform_system == "Windows"'
 ]
 
 if os.name == "nt":

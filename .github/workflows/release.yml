@@ -6,7 +6,7 @@ on:
 
 jobs:
   pypy-deploy:
-
+    if: "!github.event.release.prerelease"
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +28,7 @@ jobs:
           twine upload dist/*
 
   aur-publish:
+    if: "!github.event.release.prerelease"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
