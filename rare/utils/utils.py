@@ -157,7 +157,7 @@ color_group_map = {
 
 
 def load_color_scheme(path: str):
-    custom_palette = QPalette()
+    palette = QPalette()
     settings = QSettings(path, QSettings.IniFormat)
     try:
         settings.beginGroup("ColorScheme")
@@ -166,17 +166,16 @@ def load_color_scheme(path: str):
             group = QPalette.ColorGroup(g)
             for r in color_role_map:
                 role = QPalette.ColorRole(r)
-                custom_palette.setColor(group, role, QColor(settings.value(color_role_map[r])))
+                color = settings.value(color_role_map[r], None)
+                if color is not None:
+                    palette.setColor(group, role, QColor(color))
+                else:
+                    palette.setColor(group, role, palette.color(QPalette.Active, role))
             settings.endGroup()
         settings.endGroup()
-        text_color = custom_palette.text().color()
-        text_color.setAlpha(128)
-        custom_palette.setColor(custom_palette.Active, custom_palette.PlaceholderText, text_color)
-        custom_palette.setColor(custom_palette.Inactive, custom_palette.PlaceholderText, text_color)
-        custom_palette.setColor(custom_palette.Disabled, custom_palette.PlaceholderText, text_color)
     except:
-        custom_palette = None
-    return custom_palette
+        palette = None
+    return palette
 
 
 def get_color_schemes():
