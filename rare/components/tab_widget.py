@@ -83,7 +83,7 @@ class TabWidget(QTabWidget):
             # install game
             self.games_tab.uninstalled_info_widget.info.install_game.connect(self.install_game)
             # repair game
-            self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
+            self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.start_download(
                 InstallOptions(app_name, core.get_installed_game(app_name).install_path, repair=True)))
 
             # Finished sync
@@ -102,12 +102,13 @@ class TabWidget(QTabWidget):
             path, max_workers, force, ignore_free_space, dl_only = infos
             options = InstallOptions(app_name=app_name, max_workers=max_workers, path=path, force=force,
                                      ignore_free_space=ignore_free_space, download_only=dl_only)
-            self.setCurrentIndex(1)
+
             self.start_download(options)
 
     def start_download(self, options):
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
+        self.setCurrentIndex(1)
         self.downloadTab.install_game(options)
 
     def game_imported(self, app_name: str):

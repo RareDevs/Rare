@@ -136,7 +136,7 @@ class DownloadTab(QWidget):
             return
 
         # Information
-        if not from_update:
+        if not from_update and not options.repair:
             if not InstallInfoDialog(dl_size=analysis.dl_size, install_size=analysis.install_size).get_accept():
                 self.finished.emit(False, None)
                 return
