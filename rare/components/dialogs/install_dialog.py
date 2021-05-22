@@ -24,7 +24,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.game = self.core.get_game(app_name)
         self.update_game = update
 
-        self.threadpool = QThreadPool.globalInstance()
+        self.threadpool = QThreadPool(self)
+        self.threadpool.setMaxThreadCount(1)
 
         header = self.tr("Update") if update else self.tr("Install")
         self.install_dialog_label.setText(f"<h3>{header} \"{self.game.app_title}\"</h3>")
