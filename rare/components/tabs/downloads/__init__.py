@@ -234,7 +234,8 @@ class DownloadTab(QWidget):
     def update_game(self, app_name: str, auto=False):
         logger.info("Update " + app_name)
         if not auto:
-            options = InstallDialog(app_name, self.core, True).get_install_options()
+            dialog = InstallDialog(app_name, self.core, update=True, parent=self)
+            options = dialog.get_install_options()
         else:
             self.install_game(InstallOptions(app_name=app_name), True)
             return

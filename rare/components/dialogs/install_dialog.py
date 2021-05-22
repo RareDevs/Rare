@@ -1,6 +1,6 @@
 import os
 
-from PyQt5.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox
 
 from custom_legendary.core import LegendaryCore
@@ -15,7 +15,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
     options = False
 
     def __init__(self, app_name, core: LegendaryCore, update=False, parent=None):
-        super(InstallDialog, self).__init__(parent=parent)
+        super(InstallDialog, self).__init__(parent)
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setupUi(self)
 
         self.core = core
@@ -52,11 +53,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.max_workers_spin.setValue(int(max_workers))
 
         self.sdl_list_checks = list()
-        self.tags = list()
+        self.tags = ['']
         try:
             for key, info in games[app_name].items():
                 cb = QDataCheckBox(info['name'], info['tags'])
-                cb.stateChanged.connect(self.on_sdl_checkbox_changed)
                 if key == '__required':
                     self.tags.extend(info['tags'])
                     cb.setChecked(True)
@@ -64,6 +64,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                 self.sdl_list_layout.addWidget(cb)
                 self.sdl_list_checks.append(cb)
             self.sdl_list_frame.resize(self.sdl_list_frame.minimumSize())
+            for cb in self.sdl_list_checks:
+                cb.stateChanged.connect(self.on_sdl_checkbox_changed)
         except KeyError:
             self.sdl_list_frame.setVisible(False)
             self.sdl_list_label.setVisible(False)
@@ -96,7 +98,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.threadpool.start(info_worker)
 
     def on_sdl_checkbox_changed(self):
-        self.tags = list()
+        self.tags = ['']
         for cb in self.sdl_list_checks:
             if data := cb.isChecked():
                 self.tags.extend(data)

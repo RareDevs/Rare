@@ -5,7 +5,7 @@ class InstallOptions:
     def __init__(self, app_name: str, path: str = os.path.expanduser("~/legendary"),
                  max_workers: int = os.cpu_count() * 2, repair: bool = False,
                  download_only: bool = False, ignore_free_space: bool = False, force: bool = False,
-                 sdl_list: list = list()
+                 sdl_list: list = ['']
                  ):
         self.app_name = app_name
         self.path = path
