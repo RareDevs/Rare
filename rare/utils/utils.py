@@ -218,8 +218,58 @@ def get_size(b: int) -> str:
         b /= 1024
 
 
+def create_rare_desktop_link(type_of_link):
+    # Linux
+    if os.name == "posix":
+        if type_of_link == "desktop":
+            path = os.path.expanduser(f"~/Desktop/")
+        elif type_of_link == "start_menu":
+            path = os.path.expanduser("~/.local/share/applications/")
+        else:
+            return
+
+        with open(f"{path}Rare.desktop", "w") as desktop_file:
+            desktop_file.write("[Desktop Entry]\n"
+                               f"Name=Rare\n"
+                               f"Type=Application\n"
+                               f"Icon={os.path.join(style_path, 'Logo.png')}\n"
+                               f"Exec={os.path.abspath(sys.argv[0])}\n"
+                               "Terminal=false\n"
+                               "StartupWMClass=rare\n"
+                               )
+            desktop_file.close()
+        os.chmod(os.path.expanduser(f"{path}Rare.desktop"), 0o755)
+
+    elif os.name == "nt":
+        # Target of shortcut
+        if type_of_link == "desktop":
+            target_folder = os.path.expanduser('~/Desktop/')
+        elif type_of_link == "start_menu":
+            target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
+        else:
+            logger.warning("No valid type of link")
+            return
+        linkName = "Rare.lnk"
+
+        # Path to location of link file
+        pathLink = os.path.join(target_folder, linkName)
+
+        # Add shortcut
+        shell = Dispatch('WScript.Shell')
+        shortcut = shell.CreateShortCut(pathLink)
+        shortcut.Targetpath = os.path.abspath(sys.argv[0])
+        shortcut.Arguments = ""
+        shortcut.WorkingDirectory = os.getcwd()
+
+        # Icon
+        shortcut.IconLocation = os.path.join(style_path, "Logo.ico")
+
+        shortcut.save()
+
+
 def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
     igame = core.get_installed_game(app_name)
+
     if os.path.exists(
             os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
                          igame.app_name, 'Thumbnail.png')):
