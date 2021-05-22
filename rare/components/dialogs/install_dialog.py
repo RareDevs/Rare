@@ -7,7 +7,7 @@ from custom_legendary.core import LegendaryCore
 from custom_legendary.utils.selective_dl import games
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
-from rare.utils.models import InstallOptions
+from rare.utils.models import InstallOptionsModel
 from rare.utils.utils import get_size
 
 
@@ -108,13 +108,13 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.get_install_info(self.app_name, path, self.tags)
 
     def on_install_button_clicked(self):
-        self.options = InstallOptions(
+        self.options = InstallOptionsModel(
             app_name=self.app_name,
             path=self.install_dir_edit.text() if not self.update_game else None,
             max_workers=self.max_workers_spin.value(),
             force=self.force_download_check.isChecked(),
             ignore_free_space=self.ignore_space_check.isChecked(),
-            download_only=self.download_only_check.isChecked(),
+            dl_only=self.download_only_check.isChecked(),
             sdl_list=self.tags
         )
         self.threadpool.clear()

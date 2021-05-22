@@ -4,7 +4,6 @@ import subprocess
 import sys
 import time
 from logging import getLogger
-from multiprocessing import Queue as MPQueue
 from queue import Empty
 
 import psutil
@@ -12,8 +11,8 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
 
 from custom_legendary.core import LegendaryCore
-from custom_legendary.downloader.manager import DLManager
 from custom_legendary.models.downloading import UIUpdate, WriterTask
+from rare.utils.models import InstallQueueItemModel
 
 logger = getLogger("Download")
 
@@ -22,16 +21,15 @@ class DownloadThread(QThread):
     status = pyqtSignal(str)
     statistics = pyqtSignal(UIUpdate)
 
-    def __init__(self, dlm: DLManager, core: LegendaryCore, status_queue: MPQueue, igame, repair=False,
-                 repair_file=None, dl_only=False):
+    def __init__(self, core: LegendaryCore, queue_item: InstallQueueItemModel):
         super(DownloadThread, self).__init__()
-        self.dlm = dlm
+        self.dlm = queue_item.download.dlmanager
         self.core = core
-        self.dl_only = dl_only
-        self.status_queue = status_queue
-        self.igame = igame
-        self.repair = repair
-        self.repair_file = repair_file
+        self.dl_only = queue_item.options.dl_only
+        self.status_queue = queue_item.queue
+        self.igame = queue_item.download.igame
+        self.repair = queue_item.download.repair
+        self.repair_file = queue_item.download.repair_file
         self._kill = False
 
     def run(self):

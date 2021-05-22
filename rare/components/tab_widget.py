@@ -14,7 +14,7 @@ from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
 from rare.utils import legendary_utils
-from rare.utils.models import InstallOptions
+from rare.utils.models import InstallOptionsModel
 
 
 class TabWidget(QTabWidget):
@@ -84,7 +84,7 @@ class TabWidget(QTabWidget):
             self.games_tab.uninstalled_info_widget.info.install_game.connect(self.install_game)
             # repair game
             self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.start_download(
-                InstallOptions(app_name, core.get_installed_game(app_name).install_path, repair=True)))
+                InstallOptionsModel(app_name, core.get_installed_game(app_name).install_path, repair=True)))
 
             # Finished sync
             self.cloud_saves.finished.connect(self.finished_sync)

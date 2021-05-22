@@ -2,18 +2,17 @@ import datetime
 from logging import getLogger
 from multiprocessing import Queue as MPQueue
 
-from PyQt5.QtCore import QThread, pyqtSignal, Qt, QSettings
-from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, QDialog, \
-    QListWidget, QHBoxLayout, QGroupBox
+from PyQt5.QtCore import QThread, pyqtSignal, QSettings
+from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, \
+    QHBoxLayout, QGroupBox
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.downloading import UIUpdate
 from custom_legendary.models.game import Game, InstalledGame
-from custom_legendary.utils.selective_dl import games
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
-from rare.utils.models import InstallOptions
+from rare.utils.models import InstallOptionsModel, InstallDownloadModel, InstallQueueItemModel
 from rare.utils.utils import get_size
 
 logger = getLogger("Download")
@@ -97,15 +96,15 @@ class DownloadTab(QWidget):
     def stop_download(self):
         self.thread.kill()
 
-    def install_game(self, options: InstallOptions, from_update=False):
+    def install_game(self, options: InstallOptionsModel):
 
         status_queue = MPQueue()
         try:
-            dlm, analysis, game, igame, repair, repair_file = self.core.prepare_download(
+            download = InstallDownloadModel(*self.core.prepare_download(
                 app_name=options.app_name,
                 base_path=options.path,
                 force=options.force,
-                no_install=options.download_only,
+                no_install=options.dl_only,
                 status_q=status_queue,
                 # max_shm=,
                 max_workers=options.max_workers,
@@ -127,32 +126,31 @@ class DownloadTab(QWidget):
                 # override_delta_manifest=,
                 # reset_sdl=,
                 sdl_prompt=lambda app_name, title: options.sdl_list
-            )
+            ))
         except Exception as e:
             QMessageBox.warning(self, self.tr("Error preparing download"),
                                 str(e))
             return
 
+        queue_item = InstallQueueItemModel(status_queue, download, options)
+
         if self.active_game is None:
-            self.start_installation(dlm, game, status_queue, igame, repair_file, options, analysis,
-                                    options.download_only)
+            self.start_installation(queue_item)
         else:
-            self.dl_queue.append(
-                (dlm, game, status_queue, igame, repair_file, options, analysis, options.download_only))
+            self.dl_queue.append(queue_item)
             self.queue_widget.update_queue(self.dl_queue)
 
-    def start_installation(self, dlm, game, status_queue, igame, repair_file, options: InstallOptions, analysis,
-                           dl_only):
+    def start_installation(self, queue_item: InstallQueueItemModel):
         if self.dl_queue:
             self.dl_queue.pop(0)
             self.queue_widget.update_queue(self.dl_queue)
-        self.active_game = game
-        self.thread = DownloadThread(dlm, self.core, status_queue, igame, options.repair, repair_file, dl_only)
+        self.active_game = queue_item.download.game
+        self.thread = DownloadThread(self.core, queue_item)
         self.thread.status.connect(self.status)
         self.thread.statistics.connect(self.statistics)
         self.thread.start()
         self.kill_button.setDisabled(False)
-        self.analysis = analysis
+        self.analysis = queue_item.download.analysis
         self.installing_game.setText(self.tr("Installing Game: ") + self.active_game.app_title)
 
     def status(self, text):
@@ -177,7 +175,7 @@ class DownloadTab(QWidget):
             self.active_game = None
 
             if self.dl_queue:
-                if self.dl_queue[0][1] == app_name:
+                if self.dl_queue[0].download.game.app_name == app_name:
                     self.dl_queue.pop(0)
                     self.queue_widget.update_queue(self.dl_queue)
 
@@ -195,7 +193,7 @@ class DownloadTab(QWidget):
             self.reset_infos()
 
             if len(self.dl_queue) != 0:
-                self.start_installation(*self.dl_queue[0])
+                self.start_installation(self.dl_queue[0])
             else:
                 self.queue_widget.update_queue(self.dl_queue)
 
@@ -207,7 +205,7 @@ class DownloadTab(QWidget):
             self.active_game = None
             self.finished.emit((False, None))
             if self.dl_queue:
-                self.start_installation(*self.dl_queue[0])
+                self.start_installation(self.dl_queue[0])
 
     def reset_infos(self):
         self.kill_button.setDisabled(True)
@@ -237,10 +235,10 @@ class DownloadTab(QWidget):
             dialog = InstallDialog(app_name, self.core, update=True, parent=self)
             options = dialog.get_install_options()
         else:
-            self.install_game(InstallOptions(app_name=app_name), True)
+            self.install_game(InstallOptionsModel(app_name=app_name))
             return
         if options:
-            self.install_game(options, True)
+            self.install_game(options)
         else:
             self.update_widgets[app_name].update_button.setDisabled(False)
             self.update_widgets[app_name].update_with_settings.setDisabled(False)
