@@ -49,9 +49,10 @@ class App(QApplication):
             self.core.lgd.save_config()
 
         # workaround if egl sync enabled, but no programdata path
-        if self.core.egl_sync_enabled and not os.path.exists(self.core.egl.programdata_path):
-            self.core.lgd.config.remove_option("Legendary", "egl-sync")
-            self.core.lgd.save_config()
+        if self.core.egl_sync_enabled and self.core.egl.programdata_path is not None:
+            if not os.path.exists(self.core.egl.programdata_path):
+                self.core.lgd.config.remove_option("Legendary", "egl-sync")
+                self.core.lgd.save_config()
 
         # set Application name for settings
         self.mainwindow = None
