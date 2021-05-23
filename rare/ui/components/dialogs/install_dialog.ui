@@ -36,6 +36,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="verify_button">
+       <property name="text">
+        <string>Verify</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="install_button">
        <property name="text">
         <string>Install</string>

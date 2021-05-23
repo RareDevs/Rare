@@ -27,6 +27,9 @@ class Ui_InstallDialog(object):
         self.cancel_button = QtWidgets.QPushButton(InstallDialog)
         self.cancel_button.setObjectName("cancel_button")
         self.button_layout.addWidget(self.cancel_button)
+        self.verify_button = QtWidgets.QPushButton(InstallDialog)
+        self.verify_button.setObjectName("verify_button")
+        self.button_layout.addWidget(self.verify_button)
         self.install_button = QtWidgets.QPushButton(InstallDialog)
         self.install_button.setObjectName("install_button")
         self.button_layout.addWidget(self.install_button)
@@ -115,6 +118,7 @@ class Ui_InstallDialog(object):
         _translate = QtCore.QCoreApplication.translate
         self.force_download_label.setText(_translate("InstallDialog", "Force download"))
         self.cancel_button.setText(_translate("InstallDialog", "Cancel"))
+        self.verify_button.setText(_translate("InstallDialog", "Verify"))
         self.install_button.setText(_translate("InstallDialog", "Install"))
         self.ignore_space_info_label.setText(_translate("InstallDialog", "Use with caution!"))
         self.install_dir_label.setText(_translate("InstallDialog", "Install directory"))
