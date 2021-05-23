@@ -14,7 +14,7 @@ from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
 from rare.utils import legendary_utils
-from rare.utils.models import InstallOptionsModel
+from rare.utils.models import InstallQueueItemModel, InstallOptionsModel
 
 
 class TabWidget(QTabWidget):
@@ -96,11 +96,12 @@ class TabWidget(QTabWidget):
         self.setIconSize(QSize(25, 25))
 
     def install_game(self, app_name, disable_path=False):
-        dialog = InstallDialog(app_name, self.core, disable_path, parent=self)
-        options = dialog.get_install_options()
-        if options:
+        download_item = InstallQueueItemModel(options=InstallOptionsModel(app_name=app_name))
+        dialog = InstallDialog(self.core, download_item, update=disable_path, parent=self)
+        download_item = dialog.get_download_item()
+        if download_item:
             self.setCurrentIndex(1)
-            self.start_download(options)
+            self.start_download(download_item)
 
     def start_download(self, options):
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1

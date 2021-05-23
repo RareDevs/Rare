@@ -23,10 +23,10 @@ class DownloadThread(QThread):
 
     def __init__(self, core: LegendaryCore, queue_item: InstallQueueItemModel):
         super(DownloadThread, self).__init__()
-        self.dlm = queue_item.download.dlmanager
         self.core = core
+        self.dlm = queue_item.download.dlmanager
         self.dl_only = queue_item.options.dl_only
-        self.status_queue = queue_item.queue
+        self.status_q = queue_item.status_q
         self.igame = queue_item.download.igame
         self.repair = queue_item.download.repair
         self.repair_file = queue_item.download.repair_file
@@ -103,7 +103,7 @@ class DownloadThread(QThread):
                     dl_stopped = True
                 try:
                     if not dl_stopped:
-                        self.statistics.emit(self.status_queue.get(timeout=1))
+                        self.statistics.emit(self.status_q.get(timeout=1))
                 except queue.Empty:
                     pass
 

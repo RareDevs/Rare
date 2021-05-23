@@ -1,6 +1,5 @@
 import datetime
 from logging import getLogger
-from multiprocessing import Queue as MPQueue
 
 from PyQt5.QtCore import QThread, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, \
@@ -12,7 +11,7 @@ from custom_legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
-from rare.utils.models import InstallOptionsModel, InstallDownloadModel, InstallQueueItemModel
+from rare.utils.models import InstallOptionsModel, InstallQueueItemModel
 from rare.utils.utils import get_size
 
 logger = getLogger("Download")
@@ -96,44 +95,7 @@ class DownloadTab(QWidget):
     def stop_download(self):
         self.thread.kill()
 
-    def install_game(self, options: InstallOptionsModel):
-
-        status_queue = MPQueue()
-        try:
-            download = InstallDownloadModel(*self.core.prepare_download(
-                app_name=options.app_name,
-                base_path=options.path,
-                force=options.force,
-                no_install=options.dl_only,
-                status_q=status_queue,
-                # max_shm=,
-                max_workers=options.max_workers,
-                # game_folder=,
-                # disable_patching=,
-                # override_manifest=,
-                # override_old_manifest=,
-                # override_base_url=,
-                # platform_override=,
-                # file_prefix_filter=,
-                # file_exclude_filter=,
-                # file_install_tag=,
-                # dl_optimizations=,
-                # dl_timeout=,
-                repair=options.repair,
-                # repair_use_latest=,
-                ignore_space_req=options.ignore_free_space,
-                # disable_delta=,
-                # override_delta_manifest=,
-                # reset_sdl=,
-                sdl_prompt=lambda app_name, title: options.sdl_list
-            ))
-        except Exception as e:
-            QMessageBox.warning(self, self.tr("Error preparing download"),
-                                str(e))
-            return
-
-        queue_item = InstallQueueItemModel(status_queue, download, options)
-
+    def install_game(self, queue_item: InstallQueueItemModel):
         if self.active_game is None:
             self.start_installation(queue_item)
         else:
@@ -231,14 +193,11 @@ class DownloadTab(QWidget):
 
     def update_game(self, app_name: str, auto=False):
         logger.info("Update " + app_name)
-        if not auto:
-            dialog = InstallDialog(app_name, self.core, update=True, parent=self)
-            options = dialog.get_install_options()
-        else:
-            self.install_game(InstallOptionsModel(app_name=app_name))
-            return
-        if options:
-            self.install_game(options)
+        download_item = InstallQueueItemModel(options=InstallOptionsModel(app_name=app_name))
+        dialog = InstallDialog(self.core, download_item, update=True, parent=self)
+        download_item = dialog.get_download_item(silent=auto)
+        if download_item:
+            self.install_game(download_item)
         else:
             self.update_widgets[app_name].update_button.setDisabled(False)
             self.update_widgets[app_name].update_with_settings.setDisabled(False)
