@@ -18,7 +18,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
     def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel, update=False, parent=None):
         super(InstallDialog, self).__init__(parent)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
         self.setupUi(self)
 
         self.core = core
@@ -118,6 +118,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.download_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
         self.install_size_info_label.setText(message)
         self.install_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
+        self.cancel_button.setEnabled(False)
         self.verify_button.setEnabled(False)
         self.install_button.setEnabled(False)
         self.options_changed = False
@@ -165,6 +166,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.download_size_info_label.setText("Error")
             self.install_size_info_label.setText("Error")
         self.verify_button.setEnabled(self.options_changed)
+        self.cancel_button.setEnabled(True)
         self.sdl_list_frame.setEnabled(True)
 
     def closeEvent(self, a0: QCloseEvent) -> None:
