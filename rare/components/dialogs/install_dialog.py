@@ -118,7 +118,6 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.download_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
         self.install_size_info_label.setText(message)
         self.install_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
-        self.cancel_button.setEnabled(False)
         self.verify_button.setEnabled(False)
         self.install_button.setEnabled(False)
         self.options_changed = False
@@ -135,6 +134,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.get_options()
 
     def on_cancel_button_clicked(self):
+        self.threadpool.waitForDone()
         self.dl_item.download = None
         self.threadpool.clear()
         self.close()
@@ -165,11 +165,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.download_size_info_label.setText("Error")
             self.install_size_info_label.setText("Error")
         self.verify_button.setEnabled(self.options_changed)
-        self.cancel_button.setEnabled(True)
         self.sdl_list_frame.setEnabled(True)
 
     def closeEvent(self, a0: QCloseEvent) -> None:
-        self.threadpool.waitForDone()
         self.on_cancel_button_clicked()
 
 
