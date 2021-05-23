@@ -42,7 +42,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
         self.install_dir_edit = PathEdit(text=default_path,
                                          file_type=QFileDialog.DirectoryOnly,
-                                         edit_func=self.on_install_dir_text_changed)
+                                         edit_func=self.get_download_info)
         self.install_dir_layout.addWidget(self.install_dir_edit)
 
         if update:
@@ -54,6 +54,11 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         else:
             max_workers = 0
         self.max_workers_spin.setValue(int(max_workers))
+        self.max_workers_spin.valueChanged.connect(self.get_download_info)
+
+        self.force_download_check.stateChanged.connect(self.get_download_info)
+        self.ignore_space_check.stateChanged.connect(self.get_download_info)
+        self.download_only_check.stateChanged.connect(self.get_download_info)
 
         self.sdl_list_checks = list()
         try:
@@ -67,7 +72,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                 self.sdl_list_checks.append(cb)
             self.sdl_list_frame.resize(self.sdl_list_frame.minimumSize())
             for cb in self.sdl_list_checks:
-                cb.stateChanged.connect(self.on_sdl_checkbox_changed)
+                cb.stateChanged.connect(self.get_download_info)
         except KeyError:
             self.sdl_list_frame.setVisible(False)
             self.sdl_list_label.setVisible(False)
@@ -82,11 +87,11 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.setFixedSize(self.size())
 
     def get_options(self):
-        self.dl_item.options.path = self.install_dir_edit.text() if not self.update_game else None
+        self.dl_item.options.base_path = self.install_dir_edit.text() if not self.update_game else None
         self.dl_item.options.max_workers = self.max_workers_spin.value()
         self.dl_item.options.force = self.force_download_check.isChecked()
         self.dl_item.options.ignore_space_req = self.ignore_space_check.isChecked()
-        self.dl_item.options.dl_only = self.download_only_check.isChecked()
+        self.dl_item.options.no_install = self.download_only_check.isChecked()
         self.dl_item.options.sdl_list = ['']
         for cb in self.sdl_list_checks:
             if data := cb.isChecked():
@@ -109,18 +114,11 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
         self.install_button.setEnabled(False)
         self.sdl_list_frame.setEnabled(False)
+        self.get_options()
         info_worker = InstallInfoWorker(self.core, self.dl_item)
         info_worker.setAutoDelete(True)
         info_worker.signals.finished.connect(self.on_worker_finished)
         self.threadpool.start(info_worker)
-
-    def on_sdl_checkbox_changed(self):
-        self.get_options()
-        self.get_download_info()
-
-    def on_install_dir_text_changed(self):
-        self.get_options()
-        self.get_download_info()
 
     def on_install_button_clicked(self):
         self.threadpool.clear()
@@ -171,9 +169,9 @@ class InstallInfoWorker(QRunnable):
         try:
             download = InstallDownloadModel(*self.core.prepare_download(
                 app_name=self.dl_item.options.app_name,
-                base_path=self.dl_item.options.path,
+                base_path=self.dl_item.options.base_path,
                 force=self.dl_item.options.force,
-                no_install=self.dl_item.options.dl_only,
+                no_install=self.dl_item.options.no_install,
                 status_q=self.dl_item.status_q,
                 # max_shm=,
                 max_workers=self.dl_item.options.max_workers,

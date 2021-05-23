@@ -25,7 +25,7 @@ class DownloadThread(QThread):
         super(DownloadThread, self).__init__()
         self.core = core
         self.dlm = queue_item.download.dlmanager
-        self.dl_only = queue_item.options.dl_only
+        self.no_install = queue_item.options.no_install
         self.status_q = queue_item.status_q
         self.igame = queue_item.download.igame
         self.repair = queue_item.download.repair
@@ -122,7 +122,7 @@ class DownloadThread(QThread):
             logger.info(f"Download finished in {start_time - end_t}s")
             game = self.core.get_game(self.igame.app_name)
 
-            if not self.dl_only:
+            if not self.no_install:
                 postinstall = self.core.install_game(self.igame)
                 if postinstall:
                     self._handle_postinstall(postinstall, self.igame)

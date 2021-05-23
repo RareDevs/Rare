@@ -2,15 +2,15 @@ import os
 
 
 class InstallOptionsModel:
-    def __init__(self, app_name: str, path: str = os.path.expanduser("~/legendary"),
-                 max_workers: int = os.cpu_count() * 2, repair: bool = False, dl_only: bool = False,
+    def __init__(self, app_name: str, base_path: str = os.path.expanduser("~/legendary"),
+                 max_workers: int = os.cpu_count() * 2, repair: bool = False, no_install: bool = False,
                  ignore_space_req: bool = False, force: bool = False, sdl_list: list = ['']
                  ):
         self.app_name = app_name
-        self.path = path
+        self.base_path = base_path
         self.max_workers = max_workers
         self.repair = repair
-        self.dl_only = dl_only
+        self.no_install = no_install
         self.ignore_space_req = ignore_space_req
         self.force = force
         self.sdl_list = sdl_list
