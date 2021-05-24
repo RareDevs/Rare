@@ -46,27 +46,34 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Update AUR package
 
-  cx-freeze-windows:
+  pyinstaller-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9.5'
+          python-version: '3.8'
       - name: Install python deps
         run: |
-          pip3 install cx_Freeze setuptools wheel
+          pip3 install pyinstaller setuptools wheel
           pip3 install -r requirements.txt
+      - name: Prepare
+        run: cp rare/__main__.py ./
       - name: Build
-        run: python3 freeze.py bdist_msi
-      - name: Copy File
-        run: cp dist/*.msi Rare.msi
+        run: pyinstaller
+          --icon=rare/styles/Logo.ico
+          --onefile
+          --name Rare
+          --add-data="rare/languages/*;rare/languages"
+          --add-data="rare/styles/*;rare/styles"
+          --windowed
+          __main__.py
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.msi
-          asset_name: Rare.msi
+          file: dist/Rare.exe
+          asset_name: Rare.exe
           tag: ${{ github.ref }}
           overwrite: true
 
