@@ -166,6 +166,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)
+        if self.silent:
+            self.close()
 
     def on_worker_failed(self, message: str):
         error_text = self.tr("Error")
@@ -174,14 +176,14 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         QMessageBox.critical(self, self.windowTitle(), message)
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)
-
-    def on_worker_finished(self):
-        self.worker_running = False
         if self.silent:
             self.close()
 
+    def on_worker_finished(self):
+        self.worker_running = False
+
     # lk: happens when close() is called, also when top right 'X' is pressed.
-    # lk: reject any events not coming from the buttons in case the wm
+    # lk: reject any events not coming from the buttons in case the WM
     # lk: doesn't honor the window hints
     def closeEvent(self, a0: QCloseEvent) -> None:
         if self.reject_close:
