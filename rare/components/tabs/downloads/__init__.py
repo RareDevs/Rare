@@ -193,14 +193,17 @@ class DownloadTab(QWidget):
 
     def update_game(self, app_name: str, auto=False):
         logger.info("Update " + app_name)
-        download_item = InstallQueueItemModel(options=InstallOptionsModel(app_name=app_name))
-        dialog = InstallDialog(self.core, download_item, update=True, parent=self)
-        download_item = dialog.get_download_item(silent=auto)
+        install_dialog = InstallDialog(self.core,
+                                       InstallQueueItemModel(options=InstallOptionsModel(app_name=app_name)),
+                                       update=True, silent=auto, parent=self)
+        install_dialog.result_ready.connect(self.on_install_dialog_closed)
+
+    def on_install_dialog_closed(self, download_item: InstallQueueItemModel):
         if download_item:
             self.install_game(download_item)
         else:
-            self.update_widgets[app_name].update_button.setDisabled(False)
-            self.update_widgets[app_name].update_with_settings.setDisabled(False)
+            self.update_widgets[download_item.options.app_name].update_button.setDisabled(False)
+            self.update_widgets[download_item.options.app_name].update_with_settings.setDisabled(False)
 
 
 class UpdateWidget(QWidget):

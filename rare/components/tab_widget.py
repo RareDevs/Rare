@@ -96,9 +96,12 @@ class TabWidget(QTabWidget):
         self.setIconSize(QSize(25, 25))
 
     def install_game(self, app_name, disable_path=False):
-        download_item = InstallQueueItemModel(options=InstallOptionsModel(app_name=app_name))
-        dialog = InstallDialog(self.core, download_item, update=disable_path, parent=self)
-        download_item = dialog.get_download_item()
+        install_dialog = InstallDialog(self.core,
+                                       InstallQueueItemModel(options=InstallOptionsModel(app_name=app_name)),
+                                       update=disable_path, parent=self)
+        install_dialog.result_ready.connect(self.on_install_dialog_closed)
+
+    def on_install_dialog_closed(self, download_item: InstallQueueItemModel):
         if download_item:
             self.setCurrentIndex(1)
             self.start_download(download_item)

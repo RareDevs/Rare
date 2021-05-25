@@ -3,7 +3,7 @@ from multiprocessing import Queue as MPQueue
 
 from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox
+from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QMessageBox
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.utils.selective_dl import games
@@ -14,19 +14,21 @@ from rare.utils.utils import get_size
 
 
 class InstallDialog(QDialog, Ui_InstallDialog):
+    result_ready = pyqtSignal(InstallQueueItemModel)
 
-    def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel, update=False, parent=None):
+    def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel, update=False, silent=False, parent=None):
         super(InstallDialog, self).__init__(parent)
+        self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
-        self.setupUi(self)
 
         self.core = core
         self.dl_item = dl_item
         self.dl_item.status_q = MPQueue()
         self.app_name = self.dl_item.options.app_name
         self.game = self.core.get_game(self.app_name)
-        self.update_game = update
+        self.update = update
+        self.silent = silent
 
         self.threadpool = QThreadPool(self)
         self.threadpool.setMaxThreadCount(1)
@@ -44,10 +46,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
         self.install_dir_edit = PathEdit(text=default_path,
                                          file_type=QFileDialog.DirectoryOnly,
-                                         edit_func=self.on_option_widget_changed)
+                                         edit_func=self.option_changed)
         self.install_dir_layout.addWidget(self.install_dir_edit)
 
-        if update:
+        if self.update:
             self.install_dir_label.setVisible(False)
             self.install_dir_edit.setVisible(False)
 
@@ -56,11 +58,11 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         else:
             max_workers = 0
         self.max_workers_spin.setValue(int(max_workers))
-        self.max_workers_spin.valueChanged.connect(self.on_option_widget_changed)
+        self.max_workers_spin.valueChanged.connect(self.option_changed)
 
-        self.force_download_check.stateChanged.connect(self.on_option_widget_changed)
-        self.ignore_space_check.stateChanged.connect(self.on_option_widget_changed)
-        self.download_only_check.stateChanged.connect(self.on_option_widget_changed)
+        self.force_download_check.stateChanged.connect(self.option_changed)
+        self.ignore_space_check.stateChanged.connect(self.option_changed)
+        self.download_only_check.stateChanged.connect(self.option_changed)
 
         self.sdl_list_checks = list()
         try:
@@ -74,26 +76,32 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                 self.sdl_list_checks.append(cb)
             self.sdl_list_frame.resize(self.sdl_list_frame.minimumSize())
             for cb in self.sdl_list_checks:
-                cb.stateChanged.connect(self.on_option_widget_changed)
+                cb.stateChanged.connect(self.option_changed)
         except KeyError:
             self.sdl_list_frame.setVisible(False)
             self.sdl_list_label.setVisible(False)
 
-        self.get_options()
-        self.get_download_info()
+        self.install_button.setEnabled(False)
 
-        self.cancel_button.clicked.connect(self.on_cancel_button_clicked)
-        self.verify_button.clicked.connect(self.get_download_info)
-        self.install_button.clicked.connect(self.on_install_button_clicked)
+        self.cancel_button.clicked.connect(self.cancel_clicked)
+        self.verify_button.clicked.connect(self.verify_clicked)
+        self.install_button.clicked.connect(self.install_clicked)
 
         self.options_changed = False
         self.worker_running = False
+        self.reject_close = True
 
         self.resize(self.minimumSize())
         self.setFixedSize(self.size())
 
+        if self.silent:
+            self.reject_close = False
+            self.get_download_info()
+        else:
+            self.show()
+
     def get_options(self):
-        self.dl_item.options.base_path = self.install_dir_edit.text() if not self.update_game else None
+        self.dl_item.options.base_path = self.install_dir_edit.text() if not self.update else None
         self.dl_item.options.max_workers = self.max_workers_spin.value()
         self.dl_item.options.force = self.force_download_check.isChecked()
         self.dl_item.options.ignore_space_req = self.ignore_space_check.isChecked()
@@ -103,16 +111,17 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             if data := cb.isChecked():
                 self.dl_item.options.sdl_list.extend(data)
 
-    def get_download_item(self, path=None, silent=False):
-        if path:
-            self.install_dir_edit.setText(path)
-        if silent:
-            self.threadpool.waitForDone()
-        else:
-            self.exec_()
-        return self.dl_item
-
     def get_download_info(self):
+        self.dl_item.download = None
+        info_worker = InstallInfoWorker(self.core, self.dl_item)
+        info_worker.setAutoDelete(True)
+        info_worker.signals.result.connect(self.on_worker_result)
+        info_worker.signals.failed.connect(self.on_worker_failed)
+        info_worker.signals.finished.connect(self.on_worker_finished)
+        self.worker_running = True
+        self.threadpool.start(info_worker)
+
+    def verify_clicked(self):
         message = self.tr("Updating...")
         self.download_size_info_label.setText(message)
         self.download_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
@@ -122,59 +131,72 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.verify_button.setEnabled(False)
         self.install_button.setEnabled(False)
         self.options_changed = False
-        self.worker_running = True
-        info_worker = InstallInfoWorker(self.core, self.dl_item)
-        info_worker.setAutoDelete(True)
-        info_worker.signals.finished.connect(self.on_worker_finished)
-        self.threadpool.start(info_worker)
+        self.get_options()
+        self.get_download_info()
 
-    def on_option_widget_changed(self):
+    def option_changed(self):
         self.options_changed = True
         self.install_button.setEnabled(False)
         self.verify_button.setEnabled(not self.worker_running)
-        self.get_options()
 
-    def on_cancel_button_clicked(self):
-        self.threadpool.waitForDone()
+    def cancel_clicked(self):
         self.dl_item.download = None
-        self.threadpool.clear()
+        self.reject_close = False
         self.close()
 
-    def on_install_button_clicked(self):
-        self.threadpool.clear()
+    def install_clicked(self):
+        self.reject_close = False
         self.close()
 
-    def on_worker_finished(self, dl_item: InstallQueueItemModel):
+    def on_worker_result(self, dl_item: InstallDownloadModel):
+        self.dl_item.download = dl_item
         # TODO: Check available size and act accordingly
         # TODO:     (show message in label | color it | disable install unless ignore)
         # TODO: Find a way to get the installation size delta and show it
-        self.worker_running = False
-        if dl_item:
-            self.dl_item = dl_item
-            download_size = self.dl_item.download.analysis.dl_size
-            install_size = self.dl_item.download.analysis.install_size
-            if download_size:
-                self.download_size_info_label.setText("{}".format(get_size(download_size)))
-                self.download_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
-                self.install_button.setEnabled(not self.options_changed)
-            else:
-                self.install_size_info_label.setText(self.tr("Game already installed"))
-                self.install_size_info_label.setStyleSheet("font-style: italics; font-weight: normal")
-            self.install_size_info_label.setText("{}".format(get_size(install_size)))
-            self.install_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
+        download_size = self.dl_item.download.analysis.dl_size
+        install_size = self.dl_item.download.analysis.install_size
+        if download_size:
+            self.download_size_info_label.setText("{}".format(get_size(download_size)))
+            self.download_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
+            self.install_button.setEnabled(not self.options_changed)
         else:
-            self.download_size_info_label.setText("Error")
-            self.install_size_info_label.setText("Error")
+            self.install_size_info_label.setText(self.tr("Game already installed"))
+            self.install_size_info_label.setStyleSheet("font-style: italics; font-weight: normal")
+        self.install_size_info_label.setText("{}".format(get_size(install_size)))
+        self.install_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)
-        self.sdl_list_frame.setEnabled(True)
 
+    def on_worker_failed(self, message: str):
+        error_text = self.tr("Error")
+        self.download_size_info_label.setText(error_text)
+        self.install_size_info_label.setText(error_text)
+        QMessageBox.critical(self, self.windowTitle(), message)
+        self.verify_button.setEnabled(self.options_changed)
+        self.cancel_button.setEnabled(True)
+
+    def on_worker_finished(self):
+        self.worker_running = False
+        if self.silent:
+            self.close()
+
+    # lk: happens when close() is called, also when top right 'X' is pressed.
+    # lk: reject any events not coming from the buttons in case the wm
+    # lk: doesn't honor the window hints
     def closeEvent(self, a0: QCloseEvent) -> None:
-        self.on_cancel_button_clicked()
+        if self.reject_close:
+            a0.ignore()
+        else:
+            self.threadpool.clear()
+            self.threadpool.waitForDone()
+            self.result_ready.emit(self.dl_item)
+            a0.accept()
 
 
 class InstallInfoWorkerSignals(QObject):
-    finished = pyqtSignal(InstallQueueItemModel)
+    result = pyqtSignal(InstallDownloadModel)
+    failed = pyqtSignal(str)
+    finished = pyqtSignal()
 
 
 class InstallInfoWorker(QRunnable):
@@ -215,11 +237,10 @@ class InstallInfoWorker(QRunnable):
                 # reset_sdl=,
                 sdl_prompt=lambda app_name, title: self.dl_item.options.sdl_list
             ))
-            self.dl_item.download = download
-        except:
-            self.dl_item.download = None
-        self.signals.finished.emit(self.dl_item)
-        return
+            self.signals.result.emit(download)
+        except RuntimeError as e:
+            self.signals.failed.emit(str(e))
+        self.signals.finished.emit()
 
 
 class QDataCheckBox(QCheckBox):

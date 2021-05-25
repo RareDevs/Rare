@@ -9,7 +9,7 @@
    <item row="3" column="0" alignment="Qt::AlignRight">
     <widget class="QLabel" name="force_download_label">
      <property name="text">
-      <string>Force download</string>
+      <string>Force redownload</string>
      </property>
     </widget>
    </item>
@@ -146,8 +146,13 @@
    </item>
    <item row="8" column="1" colspan="2">
     <widget class="QLabel" name="install_size_info_label">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
-      <string/>
+      <string>Click verify...</string>
      </property>
     </widget>
    </item>
@@ -160,8 +165,13 @@
    </item>
    <item row="7" column="1" colspan="2">
     <widget class="QLabel" name="download_size_info_label">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
-      <string/>
+      <string>Click verify...</string>
      </property>
     </widget>
    </item>
