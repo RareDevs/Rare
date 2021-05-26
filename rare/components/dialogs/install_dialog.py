@@ -94,6 +94,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.resize(self.minimumSize())
         self.setFixedSize(self.size())
 
+    def execute(self):
         if self.silent:
             self.reject_close = False
             self.get_download_info()

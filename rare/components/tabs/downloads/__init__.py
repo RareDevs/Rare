@@ -197,6 +197,7 @@ class DownloadTab(QWidget):
                                        InstallQueueItemModel(options=InstallOptionsModel(app_name=app_name)),
                                        update=True, silent=auto, parent=self)
         install_dialog.result_ready.connect(self.on_install_dialog_closed)
+        install_dialog.execute()
 
     def on_install_dialog_closed(self, download_item: InstallQueueItemModel):
         if download_item:
