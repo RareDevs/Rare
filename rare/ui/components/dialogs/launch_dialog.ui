@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>LaunchDialog</class>
-    <widget class="QDialog" name="LaunchDialog">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>400</width>
-                <height>168</height>
-            </rect>
-        </property>
-        <property name="windowTitle">
-            <string>Dialog</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-                <widget class="QLabel" name="title_label">
-                    <property name="text">
-                        <string>&lt;h2&gt;Launching Rare&lt;/h2&gt;</string>
-                    </property>
-                </widget>
-            </item>
-            <item>
-                <widget class="QProgressBar" name="image_prog_bar">
-                    <property name="value">
-                        <number>0</number>
-                    </property>
-                </widget>
-            </item>
-            <item>
-                <widget class="QLabel" name="image_info">
-                    <property name="text">
-                        <string>Downloading images</string>
-                    </property>
-                </widget>
-            </item>
-            <item>
-                <widget class="QProgressBar" name="steam_prog_bar">
-                    <property name="value">
-                        <number>0</number>
-                    </property>
-                </widget>
-            </item>
-            <item>
-                <widget class="QLabel" name="steam_info">
-                    <property name="text">
-                        <string>Getting Steam grades</string>
-                    </property>
-                </widget>
-            </item>
-        </layout>
+ <class>LaunchDialog</class>
+ <widget class="QDialog" name="LaunchDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>168</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Launching Rare</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="title_label">
+     <property name="text">
+      <string>&lt;h2&gt;Launching Rare&lt;/h2&gt;</string>
+     </property>
     </widget>
-    <resources/>
-    <connections/>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="image_prog_bar">
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="image_info">
+     <property name="text">
+      <string>Downloading images</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="steam_prog_bar">
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="steam_info">
+     <property name="text">
+      <string>Getting Steam grades</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

@@ -152,6 +152,9 @@ class PathEdit(QWidget, Ui_PathEdit):
     def text(self):
         return self.text_edit.text()
 
+    def setText(self, text: str):
+        self.text_edit.setText(text)
+
     def save(self):
         self.save_func()
         self.save_path_button.setDisabled(True)

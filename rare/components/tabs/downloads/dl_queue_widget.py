@@ -4,6 +4,8 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QWidget
 from qtawesome import icon
 
+from rare.utils.models import InstallQueueItemModel
+
 logger = getLogger("QueueWidget")
 
 
@@ -12,9 +14,9 @@ class DlWidget(QWidget):
     move_down = pyqtSignal(str)  # app_name
     remove = pyqtSignal(str)  # app_name
 
-    def __init__(self, index, item):
+    def __init__(self, index, queue_item: InstallQueueItemModel):
         super(DlWidget, self).__init__()
-        self.app_name = item[1].app_name
+        self.app_name = queue_item.download.game.app_name
         self.layout = QHBoxLayout()
 
         self.left_layout = QVBoxLayout()
@@ -33,11 +35,11 @@ class DlWidget(QWidget):
         self.layout.addLayout(self.left_layout)
 
         self.right_layout = QVBoxLayout()
-        self.title = QLabel(item[1].app_title)
+        self.title = QLabel(queue_item.download.game.app_title)
         self.right_layout.addWidget(self.title)
 
-        dl_size = item[-1].dl_size
-        install_size = item[-1].install_size
+        dl_size = queue_item.download.analysis.dl_size
+        install_size = queue_item.download.analysis.install_size
 
         self.size = QHBoxLayout()
 
@@ -69,7 +71,7 @@ class DlQueueWidget(QGroupBox):
         self.setLayout(self.layout)
 
     def update_queue(self, dl_queue: list):
-        logger.info("Update Queue " + ", ".join(i[1].app_title for i in dl_queue))
+        logger.info("Update Queue " + ", ".join(i.download.game.app_title for i in dl_queue))
         self.dl_queue = dl_queue
         self.setLayout(QVBoxLayout())
         QWidget().setLayout(self.layout)
@@ -93,7 +95,7 @@ class DlQueueWidget(QGroupBox):
 
     def remove(self, app_name):
         for index, i in enumerate(self.dl_queue):
-            if i[1].app_name == app_name:
+            if i.download.game.app_name == app_name:
                 self.dl_queue.pop(index)
                 break
         else:
@@ -106,7 +108,7 @@ class DlQueueWidget(QGroupBox):
         index: int
 
         for i, item in enumerate(self.dl_queue):
-            if item[1].app_name == app_name:
+            if item.download.game.app_name == app_name:
                 index = i
                 break
         else:
@@ -120,7 +122,7 @@ class DlQueueWidget(QGroupBox):
         index: int
 
         for i, item in enumerate(self.dl_queue):
-            if item[1].app_name == app_name:
+            if item.download.game.app_name == app_name:
                 index = i
                 break
         else:

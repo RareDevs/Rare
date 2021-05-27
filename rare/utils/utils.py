@@ -157,7 +157,7 @@ color_group_map = {
 
 
 def load_color_scheme(path: str):
-    custom_palette = QPalette()
+    palette = QPalette()
     settings = QSettings(path, QSettings.IniFormat)
     try:
         settings.beginGroup("ColorScheme")
@@ -166,17 +166,16 @@ def load_color_scheme(path: str):
             group = QPalette.ColorGroup(g)
             for r in color_role_map:
                 role = QPalette.ColorRole(r)
-                custom_palette.setColor(group, role, QColor(settings.value(color_role_map[r])))
+                color = settings.value(color_role_map[r], None)
+                if color is not None:
+                    palette.setColor(group, role, QColor(color))
+                else:
+                    palette.setColor(group, role, palette.color(QPalette.Active, role))
             settings.endGroup()
         settings.endGroup()
-        text_color = custom_palette.text().color()
-        text_color.setAlpha(128)
-        custom_palette.setColor(custom_palette.Active, custom_palette.PlaceholderText, text_color)
-        custom_palette.setColor(custom_palette.Inactive, custom_palette.PlaceholderText, text_color)
-        custom_palette.setColor(custom_palette.Disabled, custom_palette.PlaceholderText, text_color)
     except:
-        custom_palette = None
-    return custom_palette
+        palette = None
+    return palette
 
 
 def get_color_schemes():
@@ -219,8 +218,58 @@ def get_size(b: int) -> str:
         b /= 1024
 
 
+def create_rare_desktop_link(type_of_link):
+    # Linux
+    if os.name == "posix":
+        if type_of_link == "desktop":
+            path = os.path.expanduser(f"~/Desktop/")
+        elif type_of_link == "start_menu":
+            path = os.path.expanduser("~/.local/share/applications/")
+        else:
+            return
+
+        with open(f"{path}Rare.desktop", "w") as desktop_file:
+            desktop_file.write("[Desktop Entry]\n"
+                               f"Name=Rare\n"
+                               f"Type=Application\n"
+                               f"Icon={os.path.join(style_path, 'Logo.png')}\n"
+                               f"Exec={os.path.abspath(sys.argv[0])}\n"
+                               "Terminal=false\n"
+                               "StartupWMClass=rare\n"
+                               )
+            desktop_file.close()
+        os.chmod(os.path.expanduser(f"{path}Rare.desktop"), 0o755)
+
+    elif os.name == "nt":
+        # Target of shortcut
+        if type_of_link == "desktop":
+            target_folder = os.path.expanduser('~/Desktop/')
+        elif type_of_link == "start_menu":
+            target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
+        else:
+            logger.warning("No valid type of link")
+            return
+        linkName = "Rare.lnk"
+
+        # Path to location of link file
+        pathLink = os.path.join(target_folder, linkName)
+
+        # Add shortcut
+        shell = Dispatch('WScript.Shell')
+        shortcut = shell.CreateShortCut(pathLink)
+        shortcut.Targetpath = os.path.abspath(sys.argv[0])
+        shortcut.Arguments = ""
+        shortcut.WorkingDirectory = os.getcwd()
+
+        # Icon
+        shortcut.IconLocation = os.path.join(style_path, "Logo.ico")
+
+        shortcut.save()
+
+
 def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
     igame = core.get_installed_game(app_name)
+
     if os.path.exists(
             os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
                          igame.app_name, 'Thumbnail.png')):

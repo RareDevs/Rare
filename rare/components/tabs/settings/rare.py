@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QFileDialog, QWidget
 
 from rare.components.tabs.settings.rpc_settings import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
+from rare.utils import utils
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import get_lang, get_possible_langs, get_color_schemes, get_style_sheets
 
@@ -99,10 +100,58 @@ class RareSettings(QWidget, Ui_RareSettings):
             lambda: self.settings.setValue("save_size", self.save_size.isChecked())
         )
 
+        if os.name == "posix":
+            self.desktop_file = os.path.expanduser("~/Desktop/Rare.desktop")
+            self.start_menu_link = os.path.expanduser("~/.local/share/applications/Rare.desktop")
+        elif os.name == "nt":
+            self.desktop_file = os.path.expanduser("~/Desktop/Rare.lnk")
+            self.start_menu_link = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
+        else:
+            self.desktop_file = ""
+            self.start_menu_link = ""
+
+        if os.path.exists(self.desktop_file):
+            self.desktop_link.setText(self.tr("Remove desktop link"))
+        if os.path.exists(self.start_menu_link):
+            self.startmenu_link.setText(self.tr("Remove start menu link"))
+
+        self.desktop_link.clicked.connect(self.create_desktop_link)
+        self.startmenu_link.clicked.connect(self.create_start_menu_link)
+
         self.log_dir_open_button.clicked.connect(self.open_dir)
+        self.log_dir_clean_button.clicked.connect(self.clean_logdir)
+
+        logdir = os.path.expanduser("~/.cache/rare/logs")
+        # get size of logdir
+        size = 0
+        for i in os.listdir(logdir):
+            size += os.path.getsize(os.path.join(logdir, i))
+
+        self.log_dir_size_label.setText(utils.get_size(size))
         # TODO: Implement
-        self.log_dir_clean_button.setVisible(False)
-        self.log_dir_size_label.setVisible(False)
+        # self.log_dir_clean_button.setVisible(False)
+        # self.log_dir_size_label.setVisible(False)
+
+    def clean_logdir(self):
+        for i in os.listdir(os.path.expanduser("~/.cache/rare/logs")):
+            os.remove(os.path.expanduser("~/.cache/rare/logs/") + i)
+        self.log_dir_size_label.setText("0KB")
+
+    def create_start_menu_link(self):
+        if not os.path.exists(self.start_menu_link):
+            utils.create_rare_desktop_link("start_menu")
+            self.startmenu_link.setText(self.tr("Remove start menu link"))
+        else:
+            os.remove(self.start_menu_link)
+            self.startmenu_link.setText(self.tr("Create start menu link"))
+
+    def create_desktop_link(self):
+        if not os.path.exists(self.desktop_file):
+            utils.create_rare_desktop_link("start_menu")
+            self.desktop_link.setText(self.tr("Remove Desktop link"))
+        else:
+            os.remove(self.desktop_file)
+            self.desktop_link.setText(self.tr("Create desktop link"))
 
     def on_color_select_changed(self, color):
         if color:

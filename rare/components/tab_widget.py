@@ -14,7 +14,7 @@ from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
 from rare.utils import legendary_utils
-from rare.utils.models import InstallOptions
+from rare.utils.models import InstallQueueItemModel, InstallOptionsModel
 
 
 class TabWidget(QTabWidget):
@@ -83,8 +83,8 @@ class TabWidget(QTabWidget):
             # install game
             self.games_tab.uninstalled_info_widget.info.install_game.connect(self.install_game)
             # repair game
-            self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.downloadTab.install_game(
-                InstallOptions(app_name, core.get_installed_game(app_name).install_path, repair=True)))
+            self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.start_download(
+                InstallOptionsModel(app_name, core.get_installed_game(app_name).install_path, repair=True)))
 
             # Finished sync
             self.cloud_saves.finished.connect(self.finished_sync)
@@ -96,18 +96,21 @@ class TabWidget(QTabWidget):
         self.setIconSize(QSize(25, 25))
 
     def install_game(self, app_name, disable_path=False):
+        install_dialog = InstallDialog(self.core,
+                                       InstallQueueItemModel(options=InstallOptionsModel(app_name=app_name)),
+                                       update=disable_path, parent=self)
+        install_dialog.result_ready.connect(self.on_install_dialog_closed)
+        install_dialog.execute()
 
-        infos = InstallDialog(app_name, self.core, disable_path).get_information()
-        if infos != 0:
-            path, max_workers, force, ignore_free_space, dl_only = infos
-            options = InstallOptions(app_name=app_name, max_workers=max_workers, path=path, force=force,
-                                     ignore_free_space=ignore_free_space, download_only=dl_only)
+    def on_install_dialog_closed(self, download_item: InstallQueueItemModel):
+        if download_item:
             self.setCurrentIndex(1)
-            self.start_download(options)
+            self.start_download(download_item)
 
     def start_download(self, options):
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
+        self.setCurrentIndex(1)
         self.downloadTab.install_game(options)
 
     def game_imported(self, app_name: str):
