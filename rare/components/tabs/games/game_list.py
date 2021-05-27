@@ -13,14 +13,14 @@ from rare.components.tabs.games.game_widgets.installed_list_widget import Instal
 from rare.components.tabs.games.game_widgets.uninstalled_icon_widget import IconWidgetUninstalled
 from rare.components.tabs.games.game_widgets.uninstalled_list_widget import ListWidgetUninstalled
 from rare.utils.extra_widgets import FlowLayout
-from rare.utils.models import InstallOptions
+from rare.utils.models import InstallOptionsModel
 from rare.utils.utils import download_image
 
 logger = getLogger("Game list")
 
 
 class GameList(QStackedWidget):
-    install_game = pyqtSignal(InstallOptions)
+    install_game = pyqtSignal(InstallOptionsModel)
     show_game_info = pyqtSignal(str)
     update_game = pyqtSignal()
     game_exited = pyqtSignal(str)
