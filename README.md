@@ -56,16 +56,16 @@ Install via `pip`.
   based [HeroicGamesLauncher](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher) uses.
 - Rare supports all major platforms (Windows, Linux, Mac) unlike the alternatives.
 
-**Note** Mac should work too, but I have no Mac and I can't test it.
-
 ## Features
 
 - Launch, install and uninstall games
-- Authentication(Import from existing installation and via Browser)
-- Download progress bar, queue
+- Authentication(Import from existing installation or via Browser)
+- Download progress bar and queue
 - Settings (Legendary and games)
 - Sync Cloud Saves
 - Translations (English, German and French)
+- Create desktop shortcut for each game (Note: not supported on Mac yet)
+- Display rating from [ProtonDB](https://www.protondb.com/) for each game
 
 ## Planned Features
 
