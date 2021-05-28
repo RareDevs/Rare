@@ -1,96 +1,96 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QStackedLayout, QWidget, QPushButton
+from dataclasses import dataclass
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QWidget, QPushButton
 from custom_legendary.core import LegendaryCore
-# Login Opportunities: Browser, Import
+
 from rare.components.dialogs.login.browser_login import BrowserLogin
-from rare.components.dialogs.login.import_widget import ImportWidget
+from rare.components.dialogs.login.import_login import ImportLogin
+# Login Opportunities: Browser, Import
+from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
 
 
-class LoginDialog(QDialog):
+@dataclass
+class LoginPages:
+    login: int
+    browser: int
+    import_egl: int
+    success: int
+
+
+class LoginDialog(QDialog, Ui_LoginDialog):
     logged_in: bool = False
+    pages = LoginPages(0, 1, 2, 3)
 
-    def __init__(self, core: LegendaryCore):
-        super(LoginDialog, self).__init__()
+    def __init__(self, core: LegendaryCore, parent=None):
+        super(LoginDialog, self).__init__(parent=parent)
+        self.setupUi(self)
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
 
         self.core = core
-        self.setWindowTitle("Rare - Login")
-        self.setFixedWidth(350)
-        self.setFixedHeight(450)
 
-        self.init_ui()
+        self.browser_page = BrowserLogin(self.core, self.login_stack)
+        self.login_stack.insertWidget(self.pages.browser, self.browser_page)
+        self.browser_page.success.connect(self.login_successful)
+        self.browser_page.changed.connect(
+            lambda: self.next_button.setEnabled(self.browser_page.is_valid())
+        )
+        self.import_page = ImportLogin(self.core, self.login_stack)
+        self.login_stack.insertWidget(self.pages.import_egl, self.import_page)
+        self.import_page.success.connect(self.login_successful)
+        self.import_page.changed.connect(
+            lambda: self.next_button.setEnabled(self.import_page.is_valid())
+        )
 
-    def init_ui(self):
-        self.layout = QStackedLayout()
+        self.next_button.setEnabled(False)
+        self.back_button.setEnabled(False)
 
-        self.landing_widget = QWidget()
-        self.landing_layout = QVBoxLayout()
+        self.login_browser_radio.clicked.connect(lambda: self.next_button.setEnabled(True))
+        self.login_import_radio.clicked.connect(lambda: self.next_button.setEnabled(True))
+        self.exit_button.clicked.connect(self.close)
+        self.back_button.clicked.connect(self.back_clicked)
+        self.next_button.clicked.connect(self.next_clicked)
 
-        self.title = QLabel(f"<h1>{self.tr('Welcome to Rare')}</h1>")
-        self.landing_layout.addWidget(self.title)
-        self.info_text = QLabel(self.tr("Select one option to Login"))
-        self.landing_layout.addWidget(self.info_text)
+        self.login_stack.setCurrentIndex(self.pages.login)
 
-        self.browser_login = OptionWidget(self.tr("Use Browser"),
-                                          self.tr("This opens your default browser. Login and copy the text"))
+        self.resize(self.minimumSizeHint())
+        self.setFixedSize(self.size())
 
-        self.landing_layout.addWidget(self.browser_login)
-        self.browser_login.button.clicked.connect(lambda: self.layout.setCurrentIndex(1))
+    def back_clicked(self):
+        self.back_button.setEnabled(False)
+        self.next_button.setEnabled(True)
+        self.login_stack.setCurrentIndex(self.pages.login)
 
-        self.import_login = OptionWidget("Import from existing installation",
-                                         "Import an existing login session from an Epic Games Launcher installation. You will get logged out there")
-        self.import_login.button.clicked.connect(lambda: self.layout.setCurrentIndex(2))
-        self.landing_layout.addWidget(self.import_login)
-
-        self.close_button = QPushButton("Exit App")
-        self.close_button.clicked.connect(self.close)
-        self.landing_layout.addWidget(self.close_button)
-
-        self.landing_widget.setLayout(self.landing_layout)
-        self.layout.addWidget(self.landing_widget)
-
-        self.browser_widget = BrowserLogin(self.core)
-        self.browser_widget.success.connect(self.success)
-        self.browser_widget.back.clicked.connect(lambda: self.layout.setCurrentIndex(0))
-        self.layout.addWidget(self.browser_widget)
-
-        self.import_widget = ImportWidget(self.core)
-        self.import_widget.back.clicked.connect(lambda: self.layout.setCurrentIndex(0))
-        self.import_widget.success.connect(self.success)
-        self.layout.addWidget(self.import_widget)
-
-        self.layout.addWidget(LoginSuccessfulWidget())
-
-        self.setLayout(self.layout)
+    def next_clicked(self):
+        if self.login_stack.currentIndex() == self.pages.login:
+            if self.login_browser_radio.isChecked():
+                self.login_stack.setCurrentIndex(self.pages.browser)
+                self.next_button.setEnabled(False)
+            if self.login_import_radio.isChecked():
+                self.login_stack.setCurrentIndex(self.pages.import_egl)
+                self.next_button.setEnabled(self.import_page.is_valid())
+            self.back_button.setEnabled(True)
+        elif self.login_stack.currentIndex() == self.pages.browser:
+            self.browser_page.do_login()
+        elif self.login_stack.currentIndex() == self.pages.import_egl:
+            self.import_page.do_login()
+        else:
+            self.close()
 
     def login(self):
         self.exec_()
         return self.logged_in
 
-    def success(self):
+    def login_successful(self):
         if self.core.login():
             self.logged_in = True
-            self.layout.setCurrentIndex(3)
-            # time.sleep(1)
-        self.close()
-
-
-class OptionWidget(QWidget):
-    def __init__(self, btn_text: str, info_text: str):
-        super(OptionWidget, self).__init__()
-        self.layout = QVBoxLayout()
-        self.text = QLabel(info_text)
-        self.text.setWordWrap(True)
-        self.button = QPushButton(btn_text)
-
-        self.layout.addWidget(self.button)
-        self.layout.addWidget(self.text)
-
-        self.setLayout(self.layout)
-
-
-class LoginSuccessfulWidget(QWidget):
-    def __init__(self):
-        super(LoginSuccessfulWidget, self).__init__()
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(QLabel("Login Successful"))
-        self.setLayout(self.layout)
+            self.welcome_label.setText(
+                self.welcome_label.text().replace("</h1>", f", {self.core.lgd.userdata['displayName']}</h1>")
+            )
+            self.exit_button.setVisible(False)
+            self.back_button.setVisible(False)
+            self.login_stack.setCurrentIndex(self.pages.success)
+        else:
+            self.next_button.setEnabled(False)
+            self.logged_in = False
