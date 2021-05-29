@@ -4,7 +4,6 @@ import subprocess
 import sys
 import time
 from logging import getLogger
-from multiprocessing import Queue as MPQueue
 from queue import Empty
 
 import psutil
@@ -12,8 +11,8 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
 
 from custom_legendary.core import LegendaryCore
-from custom_legendary.downloader.manager import DLManager
 from custom_legendary.models.downloading import UIUpdate, WriterTask
+from rare.utils.models import InstallQueueItemModel
 
 logger = getLogger("Download")
 
@@ -22,16 +21,15 @@ class DownloadThread(QThread):
     status = pyqtSignal(str)
     statistics = pyqtSignal(UIUpdate)
 
-    def __init__(self, dlm: DLManager, core: LegendaryCore, status_queue: MPQueue, igame, repair=False,
-                 repair_file=None, dl_only=False):
+    def __init__(self, core: LegendaryCore, queue_item: InstallQueueItemModel):
         super(DownloadThread, self).__init__()
-        self.dlm = dlm
         self.core = core
-        self.dl_only = dl_only
-        self.status_queue = status_queue
-        self.igame = igame
-        self.repair = repair
-        self.repair_file = repair_file
+        self.dlm = queue_item.download.dlmanager
+        self.no_install = queue_item.options.no_install
+        self.status_q = queue_item.status_q
+        self.igame = queue_item.download.igame
+        self.repair = queue_item.download.repair
+        self.repair_file = queue_item.download.repair_file
         self._kill = False
 
     def run(self):
@@ -105,7 +103,7 @@ class DownloadThread(QThread):
                     dl_stopped = True
                 try:
                     if not dl_stopped:
-                        self.statistics.emit(self.status_queue.get(timeout=1))
+                        self.statistics.emit(self.status_q.get(timeout=1))
                 except queue.Empty:
                     pass
 
@@ -124,7 +122,7 @@ class DownloadThread(QThread):
             logger.info(f"Download finished in {start_time - end_t}s")
             game = self.core.get_game(self.igame.app_name)
 
-            if not self.dl_only:
+            if not self.no_install:
                 postinstall = self.core.install_game(self.igame)
                 if postinstall:
                     self._handle_postinstall(postinstall, self.igame)

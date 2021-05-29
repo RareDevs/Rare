@@ -13,14 +13,14 @@ from rare.components.tabs.games.game_widgets.installed_list_widget import Instal
 from rare.components.tabs.games.game_widgets.uninstalled_icon_widget import IconWidgetUninstalled
 from rare.components.tabs.games.game_widgets.uninstalled_list_widget import ListWidgetUninstalled
 from rare.utils.extra_widgets import FlowLayout
-from rare.utils.models import InstallOptions
+from rare.utils.models import InstallOptionsModel
 from rare.utils.utils import download_image
 
 logger = getLogger("Game list")
 
 
 class GameList(QStackedWidget):
-    install_game = pyqtSignal(InstallOptions)
+    install_game = pyqtSignal(InstallOptionsModel)
     show_game_info = pyqtSignal(str)
     update_game = pyqtSignal()
     game_exited = pyqtSignal(str)
@@ -346,14 +346,14 @@ class GameList(QStackedWidget):
         else:
             installed_names = [i.app_name for i in self.core.get_installed_list()]
             # get Uninstalled games
-            uninstalled_games = []
+            uninstalled_names = []
             games = self.core.get_game_list(True)
             for game in sorted(games, key=lambda x: x.app_title):
                 if not game.app_name in installed_names:
-                    uninstalled_games.append(game.app_name)
+                    uninstalled_names.append(game.app_name)
 
             new_installed_games = list(set(installed_names) - set([i.app_name for i in self.installed]))
-            new_uninstalled_games = list(set(uninstalled_games) - set([i.app_name for i in self.uninstalled_names]))
+            new_uninstalled_games = list(set(uninstalled_names) - set([i.app_name for i in self.uninstalled_games]))
 
             if (not new_uninstalled_games) and (not new_installed_games):
                 return
@@ -388,7 +388,7 @@ class GameList(QStackedWidget):
                 for game in sorted(games, key=lambda x: x.app_title):
                     if not game.app_name in installed_names:
                         self.uninstalled_names.append(game)
-                for name in uninstalled_games:
+                for name in uninstalled_names:
                     i_widget, list_widget = self.widgets[name]
                     self.icon_layout.addWidget(i_widget)
                     self.list_layout.addWidget(list_widget)

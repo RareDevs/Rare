@@ -1,15 +1,17 @@
 import json
 import os
 
-from PyQt5.QtCore import pyqtSignal, QSettings, Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QKeyEvent
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTabWidget, QTreeView
+from PyQt5.QtWidgets import QWidget, QTabWidget, QTreeView
 from qtawesome import icon
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import Game
+from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.json_formatter import QJsonModel
+from rare.utils.utils import IMAGE_DIR
 
 
 class UninstalledTabInfo(QTabWidget):
@@ -18,7 +20,6 @@ class UninstalledTabInfo(QTabWidget):
         self.app_name = ""
         self.core = core
         self.setTabBar(SideTabBar())
-
         self.setTabPosition(QTabWidget.West)
 
         self.addTab(QWidget(), icon("mdi.keyboard-backspace", color="white"), self.tr("Back"))
@@ -49,69 +50,44 @@ class UninstalledTabInfo(QTabWidget):
             self.parent().layout.setCurrentIndex(0)
 
 
-class UninstalledInfo(QWidget):
+class UninstalledInfo(QWidget, Ui_GameInfo):
     game: Game
     install_game = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, parent):
+    def __init__(self, core: LegendaryCore, parent=None):
         super(UninstalledInfo, self).__init__(parent=parent)
-        self.layout = QVBoxLayout()
-
-        if os.path.exists(p := os.path.expanduser("~/.cache/rare/game_list.json")):
-            self.grade_table = json.load(open(p))
-        else:
-            self.grade_table = {}
+        self.setupUi(self)
+        self.core = core
 
         self.ratings = {"platinum": self.tr("Platinum"),
                         "gold": self.tr("Gold"),
                         "silver": self.tr("Silver"),
                         "bronze": self.tr("Bronze"),
-                        "fail": self.tr("Could not get grade from ProtonDB"),
-                        "pending": "Not enough reports"}
+                        "fail": self.tr("Could not get grade"),
+                        "pending": self.tr("Not enough reports")}
+        if os.path.exists(p := os.path.expanduser("~/.cache/rare/game_list.json")):
+            self.grade_table = json.load(open(p))
+        else:
+            self.grade_table = {}
 
-        self.core = core
+        if os.name == "nt":
+            self.lbl_grade.setVisible(False)
+            self.grade.setVisible(False)
 
-        self.settings = QSettings()
+        self.install_size.setEnabled(False)
+        self.lbl_install_size.setEnabled(False)
+        self.install_path.setEnabled(False)
+        self.lbl_install_path.setEnabled(False)
 
-        self.top_layout = QHBoxLayout()
-        left_layout = QVBoxLayout()
-        self.image = QLabel()
-        left_layout.addWidget(self.image)
-        left_layout.addStretch(1)
-        self.top_layout.addLayout(left_layout)
-        self.right_layout = QVBoxLayout()
+        self.game_actions_stack.setCurrentIndex(1)
+        self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
 
-        self.title = QLabel("Error")
-        self.right_layout.addWidget(self.title)
-
-        self.app_name = QLabel("Error")
-        self.right_layout.addWidget(self.app_name)
-        if os.name != "nt":
-            self.rating = QLabel("Rating: Error")
-            self.right_layout.addWidget(self.rating)
-
-        self.install_button = QPushButton(self.tr("Install"))
-        self.install_button.setFixedWidth(300)
-        self.install_button.setStyleSheet("""background-color: #090""")
         self.install_button.clicked.connect(lambda: self.install_game.emit(self.game.app_name))
-        self.right_layout.addWidget(self.install_button)
-        self.version = QLabel("Error")
-        self.right_layout.addWidget(self.version)
-        self.right_layout.addStretch(1)
-        self.top_layout.addLayout(self.right_layout)
-
-        self.top_layout.addStretch(1)
-        self.layout.addLayout(self.top_layout)
-
-        self.setLayout(self.layout)
 
     def update_game(self, app_name):
         self.game = self.core.get_game(app_name)
 
-        self.title.setText(f"<h2>{self.game.app_title}</h2>")
-        self.app_name.setText("Appname: " + app_name)
-
-        IMAGE_DIR = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images"), str)
+        self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
         if os.path.exists(f"{IMAGE_DIR}/{self.game.app_name}/FinalArt.png"):
             pixmap = QPixmap(f"{IMAGE_DIR}/{self.game.app_name}/FinalArt.png")
@@ -127,13 +103,15 @@ class UninstalledInfo(QWidget):
             pixmap = pixmap.scaled(w, int(w * 4 / 3))
             self.image.setPixmap(pixmap)
 
-        self.version.setText(self.game.asset_info.build_version)
-        if self.grade_table and (not os.name == "nt"):
+        self.app_name.setText(self.game.app_name)
+        self.version.setText(self.game.app_version)
+        self.dev.setText(self.game.metadata["developer"])
+        self.install_size.setText("N/A")
+        self.install_path.setText("N/A")
+
+        if os.name != "nt" and self.grade_table:
             try:
-                rating = self.grade_table[app_name]["grade"]
+                grade = self.grade_table[app_name]["grade"]
             except KeyError:
-                rating = "fail"
-            if rating not in ["fail", "pending"]:
-                self.rating.setText(self.tr("Rating from ProtonDB: ") + self.ratings[rating])
-            else:
-                self.rating.setText(self.ratings[rating])
+                grade = "fail"
+            self.grade.setText(self.ratings[grade])

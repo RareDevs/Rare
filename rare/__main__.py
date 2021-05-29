@@ -1,8 +1,10 @@
+#!/usr/bin/python
+
 import os
 from argparse import ArgumentParser
 
 from rare import __version__
-from rare.utils import singleton
+from rare.utils import singleton, utils
 
 
 def main():
@@ -16,12 +18,24 @@ def main():
                             help="Do not download and check data from ProtonDB. Disable it, if you don't need grades")
         parser.add_argument("--enable-protondb", action="store_true", dest="enable_protondb",
                             help="Enable ProtonDB data, after disabled")
+
+    parser.add_argument("--desktop-shortcut", action="store_true", dest="desktop_shortcut",
+                        help="Use this, if there is no link on desktop to start Rare")
+    parser.add_argument("--startmenu-shortcut", action="store_true", dest="startmenu_shortcut",
+                        help="Use this, if there is no link in start menu to launch Rare")
     subparsers = parser.add_subparsers(title="Commands", dest="subparser")
 
     launch_parser = subparsers.add_parser("launch")
     launch_parser.add_argument('app_name', help='Name of the app', metavar='<App Name>')
 
     args = parser.parse_args()
+
+    if args.desktop_shortcut:
+        utils.create_rare_desktop_link("desktop")
+        print("Link created")
+    if args.startmenu_shortcut:
+        utils.create_rare_desktop_link("start_menu")
+        print("link created")
 
     if args.version:
         print(__version__)
