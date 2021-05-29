@@ -241,7 +241,7 @@ class InstallInfoWorker(QRunnable):
                 sdl_prompt=lambda app_name, title: self.dl_item.options.sdl_list
             ))
             self.signals.result.emit(download)
-        except RuntimeError as e:
+        except Exception as e:
             self.signals.failed.emit(str(e))
         self.signals.finished.emit()
 

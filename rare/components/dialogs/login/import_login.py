@@ -3,7 +3,7 @@ from getpass import getuser
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QFileDialog
 from custom_legendary.core import LegendaryCore
 
 from rare.ui.components.dialogs.login.import_login import Ui_ImportLogin
@@ -46,19 +46,27 @@ class ImportLogin(QWidget, Ui_ImportLogin):
                 self.status_label.setText(self.tr("Select the Wine prefix you want to import."))
             else:
                 self.status_label.setText(self.tr("Could not any EGL Program Data."))
+
+        self.prefix_tool.clicked.connect(self.prefix_path)
         self.prefix_combo.editTextChanged.connect(self.changed.emit)
 
     def get_wine_prefixes(self):
         possible_prefixes = [
             os.path.expanduser("~/.wine"),
             os.path.expanduser("~/Games/epic-games-store"),
-            os.path.expanduser("~/Wine/Stores")
         ]
         prefixes = []
         for prefix in possible_prefixes:
             if os.path.exists(os.path.join(prefix, self.appdata_path)):
                 prefixes.append(prefix)
         return prefixes
+
+    def prefix_path(self):
+        prefix_dialog = QFileDialog(self, self.tr("Choose path"), os.path.expanduser("~/"))
+        prefix_dialog.setFileMode(QFileDialog.DirectoryOnly)
+        if prefix_dialog.exec_():
+            names = prefix_dialog.selectedFiles()
+            self.prefix_combo.setCurrentText(names[0])
 
     def is_valid(self):
         if os.name == "nt":
