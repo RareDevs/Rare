@@ -35,7 +35,7 @@ class _UploadThread(QThread):
 
 
 class _DownloadThread(QThread):
-    signal = pyqtSignal()
+    signal = pyqtSignal(bool)
 
     def __init__(self, app_name, latest_save, save_path, core: LegendaryCore):
         super(_DownloadThread, self).__init__()
@@ -49,6 +49,9 @@ class _DownloadThread(QThread):
             self.core.download_saves(self.app_name, self.latest_save.manifest_name, self.save_path, clean_dir=True)
         except Exception as e:
             logger.error(e)
+            self.signal.emit(False)
+        else:
+            self.signal.emit(True)
 
 
 class SyncWidget(QGroupBox):
@@ -203,12 +206,16 @@ class SyncWidget(QGroupBox):
         self.logger.info("Downloading Saves for game " + self.igame.title)
         self.info_text.setText(self.tr("Downloading..."))
         self.thr = _DownloadThread(self.igame.app_name, self.save, self.igame.save_path, self.core)
-        self.thr.finished.connect(self.downloaded)
+        self.thr.signal.connect(self.downloaded)
         self.thr.start()
 
-    def downloaded(self):
-        self.info_text.setText(self.tr("Download finished"))
-        self.upload_button.setDisabled(True)
-        self.download_button.setDisabled(True)
-        self.download_button.setStyleSheet("QPushButton{background-color: black}")
-        self.reload.emit(self.game.app_name)
+    def downloaded(self, success):
+        if success:
+            self.info_text.setText(self.tr("Download finished"))
+            self.upload_button.setDisabled(True)
+            self.download_button.setDisabled(True)
+            self.download_button.setStyleSheet("QPushButton{background-color: black}")
+            self.reload.emit(self.game.app_name)
+        else:
+            self.info_text.setText("Error while downloading save")
+            self.download_button.setStyleSheet("QPushButton{background-color: black}")

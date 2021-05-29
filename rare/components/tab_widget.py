@@ -143,6 +143,7 @@ class TabWidget(QTabWidget):
     def dl_finished(self, update_list):
         if update_list[0]:
             self.games_tab.default_widget.game_list.update_list(update_list[1])
+            self.cloud_saves.reload(update_list[1])
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
 
