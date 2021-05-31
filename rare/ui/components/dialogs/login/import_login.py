@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ImportLogin(object):
     def setupUi(self, ImportLogin):
         ImportLogin.setObjectName("ImportLogin")
-        ImportLogin.resize(246, 117)
+        ImportLogin.resize(503, 173)
         ImportLogin.setWindowTitle("ImportLogin")
         self.import_layout = QtWidgets.QGridLayout(ImportLogin)
         self.import_layout.setObjectName("import_layout")
@@ -67,7 +67,7 @@ class Ui_ImportLogin(object):
         _translate = QtCore.QCoreApplication.translate
         self.info_label.setText(_translate("ImportLogin", "You will get logged out from EGL in the process."))
         self.title_label.setText(_translate("ImportLogin", "Import existing session from EGL"))
-        self.prefix_label.setText(_translate("ImportLogin", "Select prefix"))
+        self.prefix_label.setText(_translate("ImportLogin", "Select path"))
         self.prefix_tool.setText(_translate("ImportLogin", "Browse"))
 
 

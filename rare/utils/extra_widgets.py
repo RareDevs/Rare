@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, Q
     QStyleOptionTab, QStylePainter, QTabBar
 from qtawesome import icon
 
-from rare import style_path
+from rare import resources_path
 from rare.ui.utils.pathedit import Ui_PathEdit
 
 
@@ -213,7 +213,7 @@ class WaitingSpinner(QLabel):
             margin-left: auto;
             margin-right: auto;
         """)
-        self.movie = QMovie(os.path.join(style_path, "loader.gif"))
+        self.movie = QMovie(os.path.join(resources_path, "images", "loader.gif"))
         self.setMovie(self.movie)
         self.movie.start()
 

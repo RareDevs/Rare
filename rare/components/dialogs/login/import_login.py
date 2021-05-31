@@ -27,25 +27,28 @@ class ImportLogin(QWidget, Ui_ImportLogin):
 
         self.core = core
 
+        self.text_egl_found = self.tr("Found EGL Program Data. Click 'Next' to import them.")
+        self.text_egl_notfound = self.tr("Could not find EGL Program Data. ")
+
         if os.name == "nt":
             if not self.core.egl.appdata_path and os.path.exists(self.egl_data_path):
                 self.core.egl.appdata_path = self.appdata_path
             if not self.core.egl.appdata_path:
-                self.status_label.setText(self.tr("Could not find EGL Program Data."))
+                self.status_label.setText(self.text_egl_notfound)
             else:
-                self.status_label.setText(self.tr("Found EGL Program Data. Click 'Next' to import them."))
+                self.status_label.setText(self.text_egl_found)
                 self.found = True
         else:
-            self.info_label.setText(
-                self.tr(
-                    "Please select the Wine prefix where Epic Games Launcher is installed. ") + self.info_label.text()
+            self.info_label.setText(self.tr(
+                "Please select the Wine prefix"
+                " where Epic Games Launcher is installed. ") + self.info_label.text()
             )
             prefixes = self.get_wine_prefixes()
             if len(prefixes):
                 self.prefix_combo.addItems(prefixes)
                 self.status_label.setText(self.tr("Select the Wine prefix you want to import."))
             else:
-                self.status_label.setText(self.tr("Could not any EGL Program Data."))
+                self.status_label.setText(self.text_egl_notfound)
 
         self.prefix_tool.clicked.connect(self.prefix_path)
         self.prefix_combo.editTextChanged.connect(self.changed.emit)
@@ -86,6 +89,7 @@ class ImportLogin(QWidget, Ui_ImportLogin):
                 self.success.emit()
             else:
                 self.status_label.setText(self.tr("Login failed."))
-                logger.warning("Failed to import existing session")
+                logger.warning("Failed to import existing session.")
         except Exception as e:
-            logger.warning(e)
+            self.status_label.setText(self.tr("Login failed. ") + str(e))
+            logger.warning("Failed to import existing session: " + str(e))

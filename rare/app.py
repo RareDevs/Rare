@@ -3,13 +3,14 @@ import logging
 import os
 import sys
 import time
+import importlib
 
-from PyQt5.QtCore import QSettings, QTranslator
+from PyQt5.QtCore import QSettings, QTranslator, QFile, QIODevice, QTextStream
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory
 
 from custom_legendary.core import LegendaryCore
-from rare import lang_path, style_path
+from rare import languages_path, resources_path
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
@@ -67,8 +68,8 @@ class App(QApplication):
         # Translator
         self.translator = QTranslator()
         lang = settings.value("language", get_lang(), type=str)
-        if os.path.exists(lang_path + lang + ".qm"):
-            self.translator.load(lang_path + lang + ".qm")
+        if os.path.exists(languages_path + lang + ".qm"):
+            self.translator.load(languages_path + lang + ".qm")
             logger.info("Your language is supported: " + lang)
         elif not lang == "en":
             logger.info("Your language is not supported")
@@ -81,13 +82,20 @@ class App(QApplication):
             settings.setValue("style_sheet", "RareStyle")
         if color := settings.value("color_scheme", False):
             settings.setValue("style_sheet", "")
-            custom_palette = load_color_scheme(os.path.join(style_path, "colors", color + ".scheme"))
+            custom_palette = load_color_scheme(os.path.join(resources_path, "colors", color + ".scheme"))
             if custom_palette is not None:
                 self.setPalette(custom_palette)
         elif style := settings.value("style_sheet", False):
             settings.setValue("color_scheme", "")
-            self.setStyleSheet(open(os.path.join(style_path, "qss", style + ".qss")).read())
-        self.setWindowIcon(QIcon(os.path.join(style_path, "Logo.png")))
+            stylesheet = open(os.path.join(resources_path, "stylesheets", style, "stylesheet.qss")).read()
+            self.setStyleSheet(stylesheet.replace("@path@", os.path.join(resources_path, "stylesheets", style, '')))
+            # lk: for qresources stylesheets, not an ideal solution for modability,
+            # lk: too many extra steps and I don't like binary files in git, even as strings.
+            # importlib.import_module("rare.resources.stylesheets." + style)
+            # resource = QFile(f":/{style}/stylesheet.qss")
+            # resource.open(QIODevice.ReadOnly)
+            # self.setStyleSheet(QTextStream(resource).readAll())
+        self.setWindowIcon(QIcon(os.path.join(resources_path, "images", "Rare.png")))
 
         # launch app
         self.launch_dialog = LaunchDialog(self.core, args.offline)

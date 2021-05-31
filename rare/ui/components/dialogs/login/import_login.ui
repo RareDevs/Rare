@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>246</width>
-    <height>117</height>
+    <width>503</width>
+    <height>173</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -58,7 +58,7 @@
    <item row="1" column="0">
     <widget class="QLabel" name="prefix_label">
      <property name="text">
-      <string>Select prefix</string>
+      <string>Select path</string>
      </property>
     </widget>
    </item>
