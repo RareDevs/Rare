@@ -18,7 +18,7 @@ def get_raw_save_path(app_name, core):
 
 
 class _UploadThread(QThread):
-    signal = pyqtSignal()
+    signal = pyqtSignal(bool)
 
     def __init__(self, app_name, date_time, save_path, core: LegendaryCore):
         super(_UploadThread, self).__init__()
@@ -30,8 +30,10 @@ class _UploadThread(QThread):
     def run(self) -> None:
         try:
             self.core.upload_save(self.app_name, self.save_path, self.date_time)
+            self.signal.emit(True)
         except Exception as e:
             logger.error(e)
+            self.signal.emit(False)
 
 
 class _DownloadThread(QThread):
@@ -47,11 +49,10 @@ class _DownloadThread(QThread):
     def run(self) -> None:
         try:
             self.core.download_saves(self.app_name, self.latest_save.manifest_name, self.save_path, clean_dir=True)
+            self.signal.emit(True)
         except Exception as e:
             logger.error(e)
             self.signal.emit(False)
-        else:
-            self.signal.emit(True)
 
 
 class SyncWidget(QGroupBox):
@@ -193,8 +194,12 @@ class SyncWidget(QGroupBox):
         self.thr.finished.connect(self.uploaded)
         self.thr.start()
 
-    def uploaded(self):
-        self.info_text.setText(self.tr("Upload finished"))
+    def uploaded(self, success):
+        if success:
+            self.info_text.setText(self.tr("Upload finished"))
+
+        else:
+            self.info_text.setText(self.tr("Upload failed"))
         self.upload_button.setDisabled(False)
         self.reload.emit(self.game.app_name)
 
