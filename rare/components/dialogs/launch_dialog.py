@@ -2,7 +2,7 @@ import json
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal, QSettings
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QDialog
 from requests.exceptions import ConnectionError
 
@@ -94,8 +94,9 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
     start_app = pyqtSignal(bool)
     finished = False
 
-    def __init__(self, core: LegendaryCore, offline):
-        super(LaunchDialog, self).__init__()
+    def __init__(self, core: LegendaryCore, offline, parent=None):
+        super(LaunchDialog, self).__init__(parent)
+        self.setAttribute(Qt.WA_DeleteOnClose)
         self.setupUi(self)
         if os.name == "nt":
             self.finished = True

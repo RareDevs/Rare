@@ -60,6 +60,22 @@ QScrollBar {
     background-color: #333344;
     selection-background-color: darkslategray;
 }
+QLineEdit,
+QTextEdit,
+QTimeEdit,
+QDateEdit,
+QDateTimeEdit,
+QComboBox
+QSpinBox,
+QDoubleSpinBox,
+QProgressBar,
+QPushButton {
+    height: 17px;
+}
+QToolButton {
+    height: 14px;
+}
+
 QComboBox {
     background-color: #3c3f41;
 }
@@ -190,6 +206,24 @@ QPushButton#menu_button {
 QPushButton:hover#menu_button {
     background-color: #334;
 }
+QPushButton#install_button {
+    background-color: #090;
+}
+QPushButton::hover#install_button {
+    background-color: #060;
+}
+QPushButton::disabled#install_button {
+    background-color: #020;
+}
+QPushButton#uninstall_button {
+    background-color: #900;
+}
+QPushButton::hover#uninstall_button {
+    background-color: #600;
+}
+QPushButton::disabled#uninstall_button {
+    background-color: #200;
+}
 
 QGroupBox,
 QCheckBox,
@@ -280,20 +314,22 @@ QTabBar#main_tab_bar {
 }
 
 QTabBar::tab#main_tab_bar {
+    border-top: 2px solid transparent;
     border-bottom: none;
 }
 
 QTabBar::tab#main_tab_bar {
     border-bottom: none;
-    padding: 5px
+    padding: 5px;
 }
 
 QTabBar::tab:selected#main_tab_bar {
-    background-color: gray;
+    background-color: #202225;
+    border-top: 2px solid darkslateblue;
 }
 
 QTabBar::tab:hover#main_tab_bar {
-    border-bottom: 2px solid black;
+    border-top: 2px solid darkslateblue;
 }
 
 QTabBar::tab#settings_bar {
