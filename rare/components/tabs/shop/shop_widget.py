@@ -6,7 +6,7 @@ from json import JSONDecodeError
 
 import requests
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt, pyqtSignal, QUrl, QByteArray, QJsonDocument, QJsonParseError, QObjectCleanupHandler, \
+from PyQt5.QtCore import Qt, pyqtSignal, QUrl, QByteArray, QJsonDocument, QJsonParseError, \
     QStringListModel
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
