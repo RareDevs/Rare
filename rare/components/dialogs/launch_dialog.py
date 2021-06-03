@@ -2,7 +2,7 @@ import json
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal, QSettings
+from PyQt5.QtCore import QThread, pyqtSignal, QSettings, Qt
 from PyQt5.QtWidgets import QDialog
 from requests.exceptions import ConnectionError
 
@@ -97,6 +97,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
     def __init__(self, core: LegendaryCore, offline):
         super(LaunchDialog, self).__init__()
         self.setupUi(self)
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
         if os.name == "nt":
             self.finished = True
             self.steam_info.setVisible(False)

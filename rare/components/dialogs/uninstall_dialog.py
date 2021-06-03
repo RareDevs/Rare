@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QCheckBox, QFormLayout, QHBoxLayout, QPushButton
 from qtawesome import icon
 
@@ -9,6 +10,7 @@ class UninstallDialog(QDialog):
         super(UninstallDialog, self).__init__()
         self.setWindowTitle("Uninstall Game")
         self.info = 0
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.layout = QVBoxLayout()
         self.info_text = QLabel(self.tr("Do you really want to uninstall {}").format(game.app_title))
         self.layout.addWidget(self.info_text)

@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QStackedLayout, QWidget, QPushButton
 
 from custom_legendary.core import LegendaryCore
@@ -16,7 +17,7 @@ class LoginDialog(QDialog):
         self.setWindowTitle("Rare - Login")
         self.setFixedWidth(350)
         self.setFixedHeight(450)
-
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.init_ui()
 
     def init_ui(self):
