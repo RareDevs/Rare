@@ -13,6 +13,7 @@ from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
+from rare.components.tabs.shop import Shop
 from rare.utils import legendary_utils
 from rare.utils.models import InstallQueueItemModel, InstallOptionsModel
 
@@ -22,7 +23,7 @@ class TabWidget(QTabWidget):
 
     def __init__(self, core: LegendaryCore, parent, offline):
         super(TabWidget, self).__init__(parent=parent)
-        disabled_tab = 3 if not offline else 1
+        disabled_tab = 4 if not offline else 1
         self.core = core
         self.setTabBar(TabBar(disabled_tab))
 
@@ -37,6 +38,9 @@ class TabWidget(QTabWidget):
 
             self.cloud_saves = SyncSaves(core, self)
             self.addTab(self.cloud_saves, "Cloud Saves")
+
+            self.store = Shop()
+            self.addTab(self.store, self.tr("Store"))
 
         self.settings = SettingsTab(core, self)
 
@@ -92,8 +96,14 @@ class TabWidget(QTabWidget):
         self.games_tab.default_widget.game_list.game_exited.connect(self.game_finished)
 
         # Open game list on click on Games tab button
-        self.tabBarClicked.connect(lambda x: self.games_tab.layout.setCurrentIndex(0) if x == 0 else None)
+        self.tabBarClicked.connect(self.mouse_clicked)
         self.setIconSize(QSize(25, 25))
+
+    def mouse_clicked(self, tab_num):
+        if tab_num == 0:
+            self.games_tab.layout.setCurrentIndex(0)
+        if tab_num == 3:
+            self.store.load()
 
     def install_game(self, app_name, disable_path=False):
         install_dialog = InstallDialog(self.core,

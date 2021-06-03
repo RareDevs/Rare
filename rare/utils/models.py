@@ -34,3 +34,51 @@ class InstallQueueItemModel:
 
     def __bool__(self):
         return (self.status_q is not None) and (self.download is not None) and (self.options is not None)
+
+
+class ShopGame:
+    # TODO: Copyrights etc
+    def __init__(self, title: str = "", image_urls: dict = None, social_links: dict = None,
+                 langs: list = None, reqs: list = None, publisher: str = "", developer: str = ""):
+        self.title = title
+        self.image_urls = image_urls
+        self.links = []
+        if social_links:
+            for item in social_links:
+                if item.startswith("link"):
+                    self.links.append(tuple((item.replace("link", ""), social_links[item])))
+        else:
+            self.links = []
+        self.languages = langs
+        self.reqs = reqs  # {"Betriebssystem":win7, processor:i9 9900k, ram...}; Note: name from language
+        self.publisher = publisher
+        self.developer = developer
+
+    @classmethod
+    def from_json(cls, data: dict):
+        if isinstance(data, list):
+            for product in data:
+                if product["_title"] == "home":
+                    data = product
+                    break
+        tmp = cls()
+        tmp.title = data.get("productName", "undefined")
+        tmp.img_urls = {
+            "DieselImage": data["data"]["about"]["image"]["src"],
+            "banner": data["data"]["hero"]["backgroundImageUrl"]
+        }
+        links = data["data"]["socialLinks"]
+        tmp.links = []
+        for item in links:
+            if item.startswith("link"):
+                tmp.links.append(tuple((item.replace("link", ""), links[item])))
+        tmp.available_voice_langs = data["data"]["requirements"]["languages"]
+        tmp.reqs = {}
+        for system in data["data"]["requirements"]["systems"]:
+            tmp.reqs[system] = {}
+            for i in system:
+                tmp.reqs[i[system]["title"]] = tuple((i[system]["minimum"], i[system]["recommend"]))
+
+        tmp.publisher = data["data"]["meta"].get("publisher", "undefined")
+        tmp.developer = data["data"]["meta"].get("developer", "undefined")
+        return tmp

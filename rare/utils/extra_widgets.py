@@ -114,13 +114,6 @@ class FlowLayout(QLayout):
             return parent.spacing()
 
 
-class ClickableLabel(QLabel):
-    clicked = pyqtSignal()
-
-    def __init__(self):
-        super(ClickableLabel, self).__init__()
-
-
 class PathEdit(QWidget, Ui_PathEdit):
     def __init__(self,
                  text: str = "",
