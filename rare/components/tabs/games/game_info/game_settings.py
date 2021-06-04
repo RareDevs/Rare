@@ -14,7 +14,8 @@ def find_proton_wrappers():
     possible_proton_wrappers = []
     compatibilitytools_dirs = [
         os.path.expanduser("~/.steam/steam/steamapps/common"),
-        "/usr/share/steam/compatibilitytools.d"
+        "/usr/share/steam/compatibilitytools.d",
+        os.path.expanduser("~/.steam/compatibilitytools.d")
     ]
     for c in compatibilitytools_dirs:
         if os.path.exists(c):
