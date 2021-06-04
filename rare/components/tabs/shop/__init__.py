@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QStackedWidget, QWidget, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QStackedWidget
 
 from rare.components.tabs.shop.shop_info import ShopGameInfo
 from rare.components.tabs.shop.shop_widget import ShopWidget
@@ -6,6 +6,7 @@ from rare.components.tabs.shop.shop_widget import ShopWidget
 
 class Shop(QStackedWidget):
     init = False
+
     def __init__(self):
         super(Shop, self).__init__()
 
@@ -14,6 +15,7 @@ class Shop(QStackedWidget):
 
         self.info = ShopGameInfo()
         self.addWidget(self.info)
+        self.info.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
 
         self.shop.show_info.connect(self.show_info)
 
@@ -21,7 +23,6 @@ class Shop(QStackedWidget):
         if not self.init:
             self.init = True
             self.shop.load()
-
 
     def show_info(self, slug):
         self.info.update_game(slug)

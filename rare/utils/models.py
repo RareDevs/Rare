@@ -64,21 +64,21 @@ class ShopGame:
         tmp = cls()
         tmp.title = data.get("productName", "undefined")
         tmp.img_urls = {
-            "DieselImage": data["data"]["about"]["image"]["src"],
-            "banner": data["data"]["hero"]["backgroundImageUrl"]
+            "DieselImage": data["pages"][0]["data"]["about"]["image"]["src"],
+            "banner": data["pages"][0]["data"]["hero"]["backgroundImageUrl"]
         }
-        links = data["data"]["socialLinks"]
+        links = data["pages"][0]["data"]["socialLinks"]
         tmp.links = []
         for item in links:
             if item.startswith("link"):
                 tmp.links.append(tuple((item.replace("link", ""), links[item])))
-        tmp.available_voice_langs = data["data"]["requirements"]["languages"]
-        tmp.reqs = {}
-        for system in data["data"]["requirements"]["systems"]:
-            tmp.reqs[system] = {}
+        tmp.available_voice_langs = data["pages"][0]["data"]["requirements"]["languages"]
+        tmp.reqs = []
+        """for system in data["pages"][0]["data"]["requirements"]["systems"]:
+            tmp.reqs.append({"name": system, "value": []})
             for i in system:
-                tmp.reqs[i[system]["title"]] = tuple((i[system]["minimum"], i[system]["recommend"]))
-
-        tmp.publisher = data["data"]["meta"].get("publisher", "undefined")
-        tmp.developer = data["data"]["meta"].get("developer", "undefined")
+                tmp.reqs[system].append(tuple((i[system]["minimum"], i[system]["recommend"])))
+        """
+        tmp.publisher = data["pages"][0]["data"]["meta"].get("publisher", "undefined")
+        tmp.developer = data["pages"][0]["data"]["meta"].get("developer", "undefined")
         return tmp
