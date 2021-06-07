@@ -3,11 +3,14 @@ from dataclasses import dataclass
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog
 from custom_legendary.core import LegendaryCore
+from logging import getLogger
 
 from rare.components.dialogs.login.browser_login import BrowserLogin
 from rare.components.dialogs.login.import_login import ImportLogin
 # Login Opportunities: Browser, Import
 from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
+
+logger = getLogger("Login")
 
 
 @dataclass
@@ -83,14 +86,18 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         return self.logged_in
 
     def login_successful(self):
-        if self.core.login():
-            self.logged_in = True
-            self.welcome_label.setText(
-                self.welcome_label.text().replace("</h1>", f", {self.core.lgd.userdata['displayName']}</h1>")
-            )
-            self.exit_button.setVisible(False)
-            self.back_button.setVisible(False)
-            self.login_stack.setCurrentIndex(self.pages.success)
-        else:
+        try:
+            if self.core.login():
+                self.logged_in = True
+                self.welcome_label.setText(
+                    self.welcome_label.text().replace("</h1>", f", {self.core.lgd.userdata['displayName']}</h1>")
+                )
+                self.exit_button.setVisible(False)
+                self.back_button.setVisible(False)
+                self.login_stack.setCurrentIndex(self.pages.success)
+            else:
+                raise ValueError("Login failed.")
+        except ValueError as e:
+            logger.error(str(e))
             self.next_button.setEnabled(False)
             self.logged_in = False
