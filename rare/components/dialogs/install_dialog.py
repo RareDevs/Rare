@@ -171,7 +171,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.close()
 
     def on_worker_failed(self, message: str):
-        error_text = self.tr("Error")
+        error_text = self.tr("Error, check selected options.")
         self.download_size_info_label.setText(error_text)
         self.install_size_info_label.setText(error_text)
         QMessageBox.critical(self, self.windowTitle(), message)
