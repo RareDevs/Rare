@@ -8,7 +8,7 @@ $secondary_border = darkslategrey;
 
 * { background-color: #202225; }
 * { color: #eeeeee; }
-* { border-color: darkslateblue; }
+* { border-color: #483d8b; }
 *::disabled,
 *::drop-down:disabled {
     color: #43474d;
@@ -56,9 +56,9 @@ QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
 QScrollBar {
-    border-color: darkslategray;
+    border-color: #2f4f4f;
     background-color: #333344;
-    selection-background-color: darkslategray;
+    selection-background-color: #2f4f4f;
 }
 QLineEdit,
 QTextEdit,
@@ -75,13 +75,15 @@ QPushButton {
 QToolButton {
     height: 14px;
 }
-
+QFrame[frameShape="6"] {
+    border-radius: 4px;
+}
 QComboBox {
     background-color: #3c3f41;
 }
 *::item:selected,
 QComboBox QAbstractItemView {
-    selection-background-color: darkslategray;
+    selection-background-color: #2f4f4f;
 }
 *::drop-down,
 *::drop-down:editable,
@@ -96,14 +98,14 @@ QComboBox QAbstractItemView {
 }
 *::drop-down {
     subcontrol-position: top right;
-    border-color: darkslateblue;
-    border-left-color: #5246a0; /* darkslateblue lighter */
+    border-color: #483d8b;
+    border-left-color: #5246a0; /* #483d8b lighter */
 }
 
 *::drop-down:editable,
 *::up-button ,
 *::down-button {
-    border-color: darkslategray;
+    border-color: #2f4f4f;
     background-color: #3c3f41;
 }
 *::drop-down,
@@ -131,7 +133,7 @@ QProgressBar {
 QProgressBar::chunk {
     width: 9.5%;
     margin: 0.5%;
-    background-color: darkslategray;
+    background-color: #2f4f4f;
 }
 QScrollBar {
     border-radius: 6px;
@@ -233,7 +235,7 @@ QRadioButton {
 QGroupBox::indicator,
 QCheckBox::indicator,
 QRadioButton::indicator {
-    border-color: darkslategray;
+    border-color: #2f4f4f;
     border-width: 1px;
     border-style: solid;
 }
@@ -325,11 +327,11 @@ QTabBar::tab#main_tab_bar {
 
 QTabBar::tab:selected#main_tab_bar {
     background-color: #202225;
-    border-top: 2px solid darkslateblue;
+    border-top: 2px solid #483d8b;
 }
 
 QTabBar::tab:hover#main_tab_bar {
-    border-top: 2px solid darkslateblue;
+    border-top: 2px solid #483d8b;
 }
 
 QTabBar::tab#settings_bar {
@@ -341,7 +343,7 @@ QTabBar::tab:hover#settings_bar {
 }
 
 QTabBar::tab::selected#settings_bar {
-    background-color: darkslategray;
+    background-color: #2f4f4f;
 }
 
 QTabBar::tab:disabled#settings_bar {
