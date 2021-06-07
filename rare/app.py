@@ -5,7 +5,7 @@ import sys
 import time
 import importlib
 
-from PyQt5.QtCore import QSettings, QTranslator, QFile, QIODevice, QTextStream
+from PyQt5.QtCore import QSettings, QTranslator, Qt, QFile, QIODevice, QTextStream
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory
 
@@ -49,13 +49,21 @@ class App(QApplication):
             self.core.lgd.config.add_section("Legendary")
             self.core.lgd.save_config()
 
-        # workaround if egl sync enabled, but no programdata path
-        if self.core.egl_sync_enabled and not os.path.exists(self.core.egl.programdata_path):
-            self.core.lgd.config.remove_option("Legendary", "egl-sync")
-            self.core.lgd.save_config()
+        # workaround if egl sync enabled, but no programdata_path
+        # programdata_path might be unset if logging in through the browser
+        if self.core.egl_sync_enabled:
+            if self.core.egl.programdata_path is None:
+                self.core.lgd.config.remove_option("Legendary", "egl_sync")
+                self.core.lgd.save_config()
+            else:
+                if not os.path.exists(self.core.egl.programdata_path):
+                    self.core.lgd.config.remove_option("Legendary", "egl_sync")
+                    self.core.lgd.save_config()
 
         # set Application name for settings
         self.mainwindow = None
+        self.tray_icon = None
+        self.launch_dialog = None
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")
         settings = QSettings()
@@ -99,17 +107,20 @@ class App(QApplication):
 
         # launch app
         self.launch_dialog = LaunchDialog(self.core, args.offline)
+        self.launch_dialog.quit_app.connect(self.launch_dialog.close)
+        self.launch_dialog.quit_app.connect(lambda ec: exit(ec))
         self.launch_dialog.start_app.connect(self.start_app)
+        self.launch_dialog.start_app.connect(self.launch_dialog.close)
 
         if not args.silent or args.subparser == "launch":
-            self.launch_dialog.show()
+            self.launch_dialog.login()
 
     def start_app(self, offline=False):
         self.args.offline = offline
         self.mainwindow = MainWindow(self.core, self.args)
-        self.launch_dialog.close()
+        self.mainwindow.quit_app.connect(self.exit_app)
         self.tray_icon = TrayIcon(self)
-        self.tray_icon.exit_action.triggered.connect(lambda: exit(0))
+        self.tray_icon.exit_action.triggered.connect(self.exit_app)
         self.tray_icon.start_rare.triggered.connect(self.mainwindow.show)
         self.tray_icon.activated.connect(self.tray)
         if not offline:
@@ -125,13 +136,21 @@ class App(QApplication):
             self.mainwindow.show()
             logger.info("Show App")
 
+    def exit_app(self, exit_code=0):
+        if self.tray_icon is not None:
+            self.tray_icon.deleteLater()
+        if self.mainwindow is not None:
+            self.mainwindow.close()
+        self.processEvents()
+        self.exit(exit_code)
+
 
 def start(args):
     while True:
         app = App(args)
         exit_code = app.exec_()
         # if not restart
-        if exit_code != -133742:
-            break
         # restart app
         del app
+        if exit_code != -133742:
+            break

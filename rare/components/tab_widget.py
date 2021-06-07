@@ -18,6 +18,7 @@ from rare.utils.models import InstallQueueItemModel, InstallOptionsModel
 
 
 class TabWidget(QTabWidget):
+    quit_app = pyqtSignal(int)
     delete_presence = pyqtSignal()
 
     def __init__(self, core: LegendaryCore, parent, offline):
@@ -52,8 +53,10 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
 
+        self.mini_widget = MiniWidget(core)
+        self.mini_widget.quit_app.connect(self.quit_app.emit)
         account_action = QWidgetAction(self)
-        account_action.setDefaultWidget(MiniWidget(core))
+        account_action.setDefaultWidget(self.mini_widget)
         account_button = TabButtonWidget(core, 'mdi.account-circle', 'Account')
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)
