@@ -1,5 +1,5 @@
 import os
-
+from custom_legendary.models.downloading import ConditionCheckResult
 
 class InstallOptionsModel:
     def __init__(self, app_name: str, base_path: str = os.path.expanduser("~/legendary"),
@@ -17,13 +17,14 @@ class InstallOptionsModel:
 
 
 class InstallDownloadModel:
-    def __init__(self, dlmanager, analysis, game, igame, repair: bool, repair_file: str):
+    def __init__(self, dlmanager, analysis, game, igame, repair: bool, repair_file: str, res: ConditionCheckResult):
         self.dlmanager = dlmanager
         self.analysis = analysis
         self.game = game
         self.igame = igame
         self.repair = repair
         self.repair_file = repair_file
+        self.res = res
 
 
 class InstallQueueItemModel:

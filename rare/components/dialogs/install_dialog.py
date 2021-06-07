@@ -53,6 +53,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.install_dir_label.setVisible(False)
             self.install_dir_edit.setVisible(False)
 
+        self.warn_label.setVisible(False)
+        self.warn_message.setVisible(False)
+
         if self.core.lgd.config.has_option("Legendary", "max_workers"):
             max_workers = self.core.lgd.config.get("Legendary", "max_workers")
         else:
@@ -167,6 +170,11 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)
+
+        if dl_item.res.warnings:
+            self.warn_label.setVisible(True)
+            self.warn_message.setText("\n".join(str(i) for i in dl_item.res.warnings))
+            self.warn_message.setVisible(True)
         if self.silent:
             self.close()
 
@@ -240,7 +248,10 @@ class InstallInfoWorker(QRunnable):
                 # reset_sdl=,
                 sdl_prompt=lambda app_name, title: self.dl_item.options.sdl_list
             ))
-            self.signals.result.emit(download)
+            if not download.res.failures:
+                self.signals.result.emit(download)
+            else:
+                self.signals.failed.emit("\n".join(str(i) for i in download.res.failures))
         except RuntimeError as e:
             self.signals.failed.emit(str(e))
         self.signals.finished.emit()
