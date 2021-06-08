@@ -96,7 +96,10 @@ class App(QApplication):
         elif style := settings.value("style_sheet", False):
             settings.setValue("color_scheme", "")
             stylesheet = open(os.path.join(resources_path, "stylesheets", style, "stylesheet.qss")).read()
-            self.setStyleSheet(stylesheet.replace("@path@", os.path.join(resources_path, "stylesheets", style, '')))
+            style_resource_path = os.path.join(resources_path, "stylesheets", style, "")
+            if os.name == "nt":
+                style_resource_path = style_resource_path.replace('\\', '/')
+            self.setStyleSheet(stylesheet.replace("@path@", style_resource_path))
             # lk: for qresources stylesheets, not an ideal solution for modability,
             # lk: too many extra steps and I don't like binary files in git, even as strings.
             # importlib.import_module("rare.resources.stylesheets." + style)
