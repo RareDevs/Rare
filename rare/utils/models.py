@@ -39,7 +39,8 @@ class InstallQueueItemModel:
 class ShopGame:
     # TODO: Copyrights etc
     def __init__(self, title: str = "", image_urls: dict = None, social_links: dict = None,
-                 langs: list = None, reqs: list = None, publisher: str = "", developer: str = ""):
+                 langs: list = None, reqs: list = None, publisher: str = "", developer: str = "",
+                 price: str = ""):
         self.title = title
         self.image_urls = image_urls
         self.links = []
@@ -53,32 +54,42 @@ class ShopGame:
         self.reqs = reqs  # {"Betriebssystem":win7, processor:i9 9900k, ram...}; Note: name from language
         self.publisher = publisher
         self.developer = developer
+        self.price = price
 
     @classmethod
-    def from_json(cls, data: dict):
-        if isinstance(data, list):
-            for product in data:
+    def from_json(cls, api_data: dict, search_data: dict):
+        print(api_data)
+        if isinstance(api_data, list):
+            for product in api_data:
                 if product["_title"] == "home":
-                    data = product
+                    api_data = product
+                    print("home")
                     break
+
         tmp = cls()
-        tmp.title = data.get("productName", "undefined")
-        tmp.img_urls = {
+        tmp.title = api_data.get("productName", "undefined")
+        """tmp.img_urls = {
             "DieselImage": data["pages"][0]["data"]["about"]["image"]["src"],
             "banner": data["pages"][0]["data"]["hero"]["backgroundImageUrl"]
-        }
-        links = data["pages"][0]["data"]["socialLinks"]
+        }"""
+        links = api_data["pages"][0]["data"]["socialLinks"]
         tmp.links = []
         for item in links:
             if item.startswith("link"):
                 tmp.links.append(tuple((item.replace("link", ""), links[item])))
-        tmp.available_voice_langs = data["pages"][0]["data"]["requirements"]["languages"]
+        tmp.available_voice_langs = api_data["pages"][0]["data"]["requirements"]["languages"]
         tmp.reqs = []
-        """for system in data["pages"][0]["data"]["requirements"]["systems"]:
-            tmp.reqs.append({"name": system, "value": []})
-            for i in system:
-                tmp.reqs[system].append(tuple((i[system]["minimum"], i[system]["recommend"])))
-        """
-        tmp.publisher = data["pages"][0]["data"]["meta"].get("publisher", "undefined")
-        tmp.developer = data["pages"][0]["data"]["meta"].get("developer", "undefined")
+        for i, system in enumerate(api_data["pages"][0]["data"]["requirements"]["systems"]):
+            tmp.reqs.append({"name": system["systemType"], "value": []})
+            for req in system["details"]:
+                tmp.reqs[i]["value"].append(tuple((req["minimum"], req["recommended"])))
+
+        tmp.publisher = api_data["pages"][0]["data"]["meta"].get("publisher", "undefined")
+        tmp.developer = api_data["pages"][0]["data"]["meta"].get("developer", "undefined")
+        tmp.price = {
+            "normal": search_data["price"]["totalPrice"]["originalPrice"]
+        }
+        if price := search_data["price"]["totalPrice"].get("discountPrice"):
+            tmp.price["discount"] = price
+
         return tmp

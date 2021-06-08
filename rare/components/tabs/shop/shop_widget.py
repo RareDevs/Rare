@@ -18,7 +18,8 @@ from rare.utils.utils import get_lang
 
 
 class ShopWidget(QWidget, Ui_ShopWidget):
-    show_info = pyqtSignal(str)
+    show_info = pyqtSignal(list)
+    show_game = pyqtSignal(dict)
     free_game_widgets = []
 
     def __init__(self):
@@ -32,12 +33,16 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.completer = QCompleter()
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.search.setCompleter(self.completer)
-        self.search.returnPressed.connect(self.show_game)
+        self.search.returnPressed.connect(self.show_search_result)
         self.data = []
 
     def load(self):
-        if not os.path.exists(p := os.path.expanduser(f"~/.cache/rare/cache/")):
-            os.makedirs(p)
+        if p := os.getenv("XDG_CACHE_HOME"):
+            self.path = p
+        else:
+            self.path = os.path.expanduser("~/.cache/rare/cache/")
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
         url = "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions"
         self.free_game_request = self.manager.get(QNetworkRequest(QUrl(url)))
         self.free_game_request.readyRead.connect(self.add_free_games)
@@ -50,8 +55,8 @@ class ShopWidget(QWidget, Ui_ShopWidget):
             if self.free_game_request.error() == QNetworkReply.NoError:
                 try:
                     free_games = json.loads(self.free_game_request.readAll().data().decode())
+                    print(free_games)
                 except JSONDecodeError:
-                    print(self.free_game_request.readAll().data().decode())
                     return
             else:
                 return
@@ -68,7 +73,8 @@ class ShopWidget(QWidget, Ui_ShopWidget):
             try:
                 # parse datetime
                 end_date = datetime.datetime.strptime(
-                    game["promotions"].get("promotionalOffers", game["promotions"].get("upcomingPromotionalOffers"))[0]["promotionalOffers"][0]["endDate"],
+                    game["promotions"].get("promotionalOffers", game["promotions"].get("upcomingPromotionalOffers"))[0][
+                        "promotionalOffers"][0]["endDate"],
                     '%Y-%m-%dT%H:%M:%S.%fZ')
                 start_date = datetime.datetime.strptime(
                     game["promotions"].get("promotionalOffers", game["promotions"].get("upcomingPromotionalOffers"))[0][
@@ -89,21 +95,21 @@ class ShopWidget(QWidget, Ui_ShopWidget):
                 coming_free_games.append(game)
 
         for free_game in free_games_now:
-            w = GameWidget(free_game)
-            w.show_info.connect(self.show_info)
+            w = GameWidget(free_game, self.path)
+            w.show_info.connect(lambda x: self.search_games(x, True))
             self.free_game_now.layout().addWidget(w)
             self.free_game_widgets.append(w)
             self.free_game_group_box_2.setMinimumHeight(200)
 
         for free_game in coming_free_games:
-            w = GameWidget(free_game)
+            w = GameWidget(free_game, self.path)
             if free_game["title"] != "Mystery Game":
                 w.show_info.connect(self.show_info)
             self.comming_free_game.layout().addWidget(w)
             self.free_game_widgets.append(w)
         self.free_games_stack.setCurrentIndex(0)
 
-    def search_games(self, text):
+    def search_games(self, text, show_direct=False):
         if text == "":
             self.search_results.setVisible(False)
         else:
@@ -123,11 +129,9 @@ class ShopWidget(QWidget, Ui_ShopWidget):
             request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
             self.search_request = self.manager.post(request, payload)
             # self.search_request = self.manager.post(QNetworkRequest(QUrl("https://www.epicgames.com/graphql")), payload)
-            self.search_request.readyRead.connect(self.show_search_results)
-            self.search_request.finished.connect(
-                self.search_request.deleteLater if self.search_request else None)
+            self.search_request.finished.connect(lambda: self.show_search_results(show_direct))
 
-    def show_search_results(self):
+    def show_search_results(self, show_direct=False):
         if self.search_request:
             if self.search_request.error() == QNetworkReply.NoError:
                 error = QJsonParseError()
@@ -138,72 +142,68 @@ class ShopWidget(QWidget, Ui_ShopWidget):
                     logging.error(error.errorString())
                     self.search_results.setVisible(False)
                     return
-                #response = .decode(encoding="utf-8")
-                #print(response)
-                #results = json.loads(response)
+                # response = .decode(encoding="utf-8")
+                # print(response)
+                # results = json.loads(response)
             else:
                 return
         else:
             return
         self.data = data
+        if show_direct:
+            self.show_search_result(True)
+            return
         titles = [i.get("title") for i in data]
         model = QStringListModel()
         model.setStringList(titles)
         self.completer.setModel(model)
-        self.completer.popup()
+        # self.completer.popup()
         # self.search_results.setLayout(layout)
         # self.search_results.setVisible(True)
+        if self.search_request:
+            self.search_request.deleteLater()
 
-    def show_game(self):
-        if self.data:
-            slug = self.data[0].get("productSlug")
-            self.show_info.emit(slug)
-
-
-class SearchResultItem(QWidget):
-    def __init__(self, json_info):
-        super(SearchResultItem, self).__init__()
-        self.layout = QHBoxLayout()
-        self.title = QLabel(json_info.get("title", "undefined"))
-        self.layout.addWidget(self.title)
-        self.slug = json_info.get("productSlug", "undefined")
-
-        self.setLayout(self.layout)
+    def show_search_result(self, show_direct=False):
+        if not show_direct:
+            if self.data:
+                self.show_info.emit(self.data)
+        else:
+            self.show_game.emit(self.data[0])
 
 
 class GameWidget(QWidget):
     show_info = pyqtSignal(str)
 
-    def __init__(self, json_info):
+    def __init__(self, json_info, path: str):
         super(GameWidget, self).__init__()
         self.layout = QVBoxLayout()
         self.image = QLabel()
         self.slug = json_info["productSlug"]
-        if not os.path.exists(path := os.path.expanduser(f"~/.cache/rare/cache/{json_info['title']}.png")):
+        self.title = json_info["title"]
+        if not os.path.exists(p := os.path.join(path, f"{json_info['title']}.png")):
             for img in json_info["keyImages"]:
                 if json_info["title"] != "Mystery Game":
                     if img["type"] == "DieselStoreFrontWide":
-                        with open(path, "wb") as img_file:
+                        with open(p, "wb") as img_file:
                             content = requests.get(img["url"]).content
                             img_file.write(content)
                             break
                 else:
                     if img["type"] == "VaultClosed":
-                        with open(path, "wb") as img_file:
+                        with open(p, "wb") as img_file:
                             content = requests.get(img["url"]).content
                             img_file.write(content)
                             break
             else:
                 print("No image found")
         width = 300
-        self.image.setPixmap(QPixmap(os.path.expanduser(f"~/.cache/rare/cache/{json_info['title']}.png"))
+        self.image.setPixmap(QPixmap(os.path.join(path, f"{json_info['title']}.png"))
                              .scaled(width, int(width * 9 / 16), transformMode=Qt.SmoothTransformation))
         self.layout.addWidget(self.image)
 
-        self.title = QLabel(json_info["title"])
-        self.layout.addWidget(self.title)
-
+        self.title_label = QLabel(json_info["title"])
+        self.layout.addWidget(self.title_label)
         self.setLayout(self.layout)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
-        self.show_info.emit(self.slug)
+        self.show_info.emit(self.title)
