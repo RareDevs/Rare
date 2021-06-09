@@ -1,17 +1,19 @@
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea, QGroupBox
 
 
 class SearchResults(QScrollArea):
     show_info = pyqtSignal(dict)
 
+    # TODO nice look
     def __init__(self):
         super(SearchResults, self).__init__()
         self.widget = QWidget()
         self.layout = QVBoxLayout()
         self.widget.setLayout(self.layout)
         self.setWidget(self.widget)
+        self.setWidgetResizable(True)
 
     def show_results(self, results: list):
         QVBoxLayout().addWidget(self.widget)
@@ -28,13 +30,14 @@ class SearchResults(QScrollArea):
         self.setWidget(self.widget)
 
 
-class _SearchResultItem(QWidget):
+class _SearchResultItem(QGroupBox):
     res: dict
     show_info = pyqtSignal(dict)
 
     def __init__(self, result: dict):
         super(_SearchResultItem, self).__init__()
         self.layout = QHBoxLayout()
+
         self.res = result
         self.title = QLabel(self.res["title"])
         self.layout.addWidget(self.title)

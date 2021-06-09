@@ -24,10 +24,27 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="image">
-       <property name="text">
-        <string>TextLabel</string>
+      <widget class="QStackedWidget" name="image_stack">
+       <property name="currentIndex">
+        <number>0</number>
        </property>
+       <widget class="QWidget" name="page">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="image">
+           <property name="minimumSize">
+            <size>
+             <width>240</width>
+             <height>320</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
      <item>
@@ -69,6 +86,26 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="open_store_button">
+         <property name="text">
+          <string>Buy Game in Epic Games Store</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </item>
      <item>
@@ -87,10 +124,11 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="open_store_button">
-     <property name="text">
-      <string>Buy Game in Epic Games Store</string>
+    <widget class="QGroupBox" name="req_group_box">
+     <property name="title">
+      <string>Requirements</string>
      </property>
+     <layout class="QGridLayout" name="gridLayout_2"/>
     </widget>
    </item>
    <item>

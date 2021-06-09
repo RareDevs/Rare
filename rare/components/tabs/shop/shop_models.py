@@ -1,5 +1,3 @@
-
-
 class _ImageUrlModel:
     def __init__(self, front_tall: str = "", offer_image_tall: str = "",
                  thumbnail: str = "", front_wide: str = ""):
@@ -26,8 +24,8 @@ class _ImageUrlModel:
 class ShopGame:
     # TODO: Copyrights etc
     def __init__(self, title: str = "", image_urls: _ImageUrlModel = None, social_links: dict = None,
-                 langs: list = None, reqs: list = None, publisher: str = "", developer: str = "",
-                 original_price: str = "", discount_price: str=""):
+                 langs: list = None, reqs: dict = None, publisher: str = "", developer: str = "",
+                 original_price: str = "", discount_price: str = ""):
         self.title = title
         self.image_urls = image_urls
         self.links = []
@@ -64,11 +62,11 @@ class ShopGame:
             if item.startswith("link"):
                 tmp.links.append(tuple((item.replace("link", ""), links[item])))
         tmp.available_voice_langs = api_data["data"]["requirements"]["languages"]
-        tmp.reqs = []
+        tmp.reqs = {}
         for i, system in enumerate(api_data["data"]["requirements"]["systems"]):
-            tmp.reqs.append({"name": system["systemType"], "value": []})
+            tmp.reqs[system["systemType"]] = {}
             for req in system["details"]:
-                tmp.reqs[i]["value"].append(tuple((req["minimum"], req["recommended"])))
+                tmp.reqs[system["systemType"]][req["title"]] = (req["minimum"], req["recommended"])
 
         tmp.publisher = api_data["data"]["meta"].get("publisher", "undefined")
         tmp.developer = api_data["data"]["meta"].get("developer", "undefined")
