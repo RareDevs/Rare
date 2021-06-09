@@ -39,6 +39,9 @@ class Ui_shop_info(object):
         self.price.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.price.setObjectName("price")
         self.verticalLayout_2.addWidget(self.price)
+        self.discount_price = QtWidgets.QLabel(shop_info)
+        self.discount_price.setObjectName("discount_price")
+        self.verticalLayout_2.addWidget(self.discount_price)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
@@ -60,6 +63,7 @@ class Ui_shop_info(object):
         self.title.setText(_translate("shop_info", "Error"))
         self.dev.setText(_translate("shop_info", "TextLabel"))
         self.price.setText(_translate("shop_info", "TextLabel"))
+        self.discount_price.setText(_translate("shop_info", "TextLabel"))
         self.open_store_button.setText(_translate("shop_info", "Buy Game in Epic Games Store"))
 
 
