@@ -34,10 +34,14 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.dev.setText(self.tr("Loading"))
         self.image.setPixmap(QPixmap())
         self.data = data
+        is_bundle = False
+        for i in data["categories"]:
+            if "bundles" in i.get("path", ""):
+                is_bundle = True
 
         # init API request
         locale = QLocale.system().name().split("_")[0]
-        url = f"https://store-content.ak.epicgames.com/api/{locale}/content/products/{slug}"
+        url = f"https://store-content.ak.epicgames.com/api/{locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
         # game = api_utils.get_product(slug, locale)
         self.request = self.manager.get(QNetworkRequest(QUrl(url)))
         self.request.finished.connect(self.data_received)
@@ -55,6 +59,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                     logging.info(self.slug, error.errorString())
                     return
             else:
+                logger.error("Data failed")
                 return
         else:
             return
@@ -88,3 +93,4 @@ class ShopGameInfo(QWidget, Ui_shop_info):
 
     def button_clicked(self):
         webbrowser.open("https://www.epicgames.com/store/de/p/" + self.slug)
+

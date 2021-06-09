@@ -46,6 +46,7 @@ class ShopGame:
 
     @classmethod
     def from_json(cls, api_data: dict, search_data: dict):
+        print(api_data)
         if isinstance(api_data, list):
             for product in api_data:
                 if product["_title"] == "home":
@@ -53,22 +54,24 @@ class ShopGame:
                     break
 
         tmp = cls()
-        tmp.title = api_data.get("productName", "undefined")
+        if "pages" in api_data.keys():
+            api_data = api_data["pages"][0]
+        tmp.title = api_data.get("productName", api_data.get("_title", "fail"))
         tmp.image_urls = _ImageUrlModel.from_json(search_data["keyImages"])
-        links = api_data["pages"][0]["data"]["socialLinks"]
+        links = api_data["data"]["socialLinks"]
         tmp.links = []
         for item in links:
             if item.startswith("link"):
                 tmp.links.append(tuple((item.replace("link", ""), links[item])))
-        tmp.available_voice_langs = api_data["pages"][0]["data"]["requirements"]["languages"]
+        tmp.available_voice_langs = api_data["data"]["requirements"]["languages"]
         tmp.reqs = []
-        for i, system in enumerate(api_data["pages"][0]["data"]["requirements"]["systems"]):
+        for i, system in enumerate(api_data["data"]["requirements"]["systems"]):
             tmp.reqs.append({"name": system["systemType"], "value": []})
             for req in system["details"]:
                 tmp.reqs[i]["value"].append(tuple((req["minimum"], req["recommended"])))
 
-        tmp.publisher = api_data["pages"][0]["data"]["meta"].get("publisher", "undefined")
-        tmp.developer = api_data["pages"][0]["data"]["meta"].get("developer", "undefined")
+        tmp.publisher = api_data["data"]["meta"].get("publisher", "undefined")
+        tmp.developer = api_data["data"]["meta"].get("developer", "undefined")
         tmp.price = search_data['price']['totalPrice']['fmtPrice']['originalPrice']
         tmp.discount_price = search_data['price']['totalPrice']['fmtPrice']['discountPrice']
 
