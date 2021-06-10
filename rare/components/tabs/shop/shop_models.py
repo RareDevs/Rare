@@ -36,7 +36,7 @@ class ShopGame:
         else:
             self.links = []
         self.languages = langs
-        self.reqs = reqs  # {"Betriebssystem":win7, processor:i9 9900k, ram...}; Note: name from language
+        self.reqs = reqs
         self.publisher = publisher
         self.developer = developer
         self.price = original_price
@@ -44,7 +44,6 @@ class ShopGame:
 
     @classmethod
     def from_json(cls, api_data: dict, search_data: dict):
-        print(api_data)
         if isinstance(api_data, list):
             for product in api_data:
                 if product["_title"] == "home":
@@ -66,8 +65,10 @@ class ShopGame:
         for i, system in enumerate(api_data["data"]["requirements"]["systems"]):
             tmp.reqs[system["systemType"]] = {}
             for req in system["details"]:
-                tmp.reqs[system["systemType"]][req["title"]] = (req["minimum"], req["recommended"])
-
+                try:
+                    tmp.reqs[system["systemType"]][req["title"]] = (req["minimum"], req["recommended"])
+                except KeyError:
+                    pass
         tmp.publisher = api_data["data"]["meta"].get("publisher", "undefined")
         tmp.developer = api_data["data"]["meta"].get("developer", "undefined")
         tmp.price = search_data['price']['totalPrice']['fmtPrice']['originalPrice']

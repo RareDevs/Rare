@@ -13,7 +13,7 @@ class SearchResults(QWidget):
     def __init__(self):
         super(SearchResults, self).__init__()
         self.main_layout = QVBoxLayout()
-        self.back_button = QPushButton()
+        self.back_button = QPushButton(self.tr("Back"))
         self.main_layout.addWidget(self.back_button)
         self.main_layout.addWidget(self.back_button)
         self.result_area = QScrollArea()

@@ -1,5 +1,3 @@
-import webbrowser
-
 from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
 from qtawesome import icon
@@ -26,32 +24,23 @@ class TabWidget(QTabWidget):
         disabled_tab = 4 if not offline else 1
         self.core = core
         self.setTabBar(TabBar(disabled_tab))
-
         # Generate Tabs
         self.games_tab = GameTab(core, self, offline)
         self.addTab(self.games_tab, self.tr("Games"))
-
         if not offline:
             updates = self.games_tab.default_widget.game_list.updates
             self.downloadTab = DownloadTab(core, updates, self)
             self.addTab(self.downloadTab, "Downloads" + (" (" + str(len(updates)) + ")" if len(updates) != 0 else ""))
-
             self.cloud_saves = SyncSaves(core, self)
             self.addTab(self.cloud_saves, "Cloud Saves")
-
             self.store = Shop()
-            self.addTab(self.store, self.tr("Store"))
-
+            self.addTab(self.store, self.tr("Store (Beta)"))
         self.settings = SettingsTab(core, self)
 
         # Space Tab
         self.addTab(QWidget(), "")
         self.setTabEnabled(disabled_tab, False)
-        # Buttons
-        store_button = TabButtonWidget(core, 'fa.shopping-cart', 'Epic Games Store')
-        store_button.pressed.connect(lambda: webbrowser.open("https://www.epicgames.com/store"))
-        self.tabBar().setTabButton(disabled_tab, self.tabBar().RightSide, store_button)
-
+        # Button
         self.account = QWidget()
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
@@ -151,8 +140,7 @@ class TabWidget(QTabWidget):
             self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
             self.downloadTab.update_text.setVisible(len(self.downloadTab.update_widgets) == 0)
 
-    # Update gamelist and set text of Downlaods to "Downloads"
-
+    # Update gamelist and set text of Downloads to "Downloads"
     def dl_finished(self, update_list):
         if update_list[0]:
             self.games_tab.default_widget.game_list.update_list(update_list[1])

@@ -22,17 +22,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="search_results">
-     <property name="title">
-      <string>Search results</string>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="free_game_group_box_2">
+    <widget class="QGroupBox" name="free_game_group_box">
      <property name="title">
       <string>Free Games</string>
      </property>
@@ -40,35 +30,15 @@
       <item>
        <widget class="QStackedWidget" name="free_games_stack">
         <property name="currentIndex">
-         <number>0</number>
+         <number>-1</number>
         </property>
-        <widget class="QWidget" name="free_games_page">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QGroupBox" name="free_game_now">
-            <property name="title">
-             <string>Free Game</string>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout"/>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="comming_free_game">
-            <property name="title">
-             <string>Comming Free Game</string>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-           </widget>
-          </item>
-         </layout>
-        </widget>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="games_groupbox_2">
+    <widget class="QGroupBox" name="games_groupbox">
      <property name="title">
       <string>Other nice games</string>
      </property>
