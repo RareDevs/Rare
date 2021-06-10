@@ -13,7 +13,7 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QCompleter
 
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
-from rare.utils.extra_widgets import WaitingSpinner
+from rare.utils.extra_widgets import WaitingSpinner, ImageLabel
 from rare.utils.utils import get_lang
 
 
@@ -55,7 +55,6 @@ class ShopWidget(QWidget, Ui_ShopWidget):
             if self.free_game_request.error() == QNetworkReply.NoError:
                 try:
                     free_games = json.loads(self.free_game_request.readAll().data().decode())
-                    print(free_games)
                 except JSONDecodeError:
                     return
             else:
@@ -177,7 +176,15 @@ class GameWidget(QWidget):
     def __init__(self, json_info, path: str):
         super(GameWidget, self).__init__()
         self.layout = QVBoxLayout()
-        self.image = QLabel()
+        self.image = ImageLabel()
+        for img in json_info["keyImages"]:
+            if img["type"] in ["DieselStoreFrontWide", "VaultClosed"]:
+                width = 300
+                self.image.update_image(img["url"], json_info["title"], (width, int(width * 9 / 16)))
+                break
+        else:
+            print("No image found")
+
         self.slug = json_info["productSlug"]
         self.title = json_info["title"]
         if not os.path.exists(p := os.path.join(path, f"{json_info['title']}.png")):

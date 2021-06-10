@@ -24,15 +24,6 @@ class Ui_shop_info(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.image_stack = QtWidgets.QStackedWidget(shop_info)
         self.image_stack.setObjectName("image_stack")
-        self.page = QtWidgets.QWidget()
-        self.page.setObjectName("page")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.page)
-        self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.image = QtWidgets.QLabel(self.page)
-        self.image.setMinimumSize(QtCore.QSize(240, 320))
-        self.image.setObjectName("image")
-        self.verticalLayout_3.addWidget(self.image)
-        self.image_stack.addWidget(self.page)
         self.horizontalLayout.addWidget(self.image_stack)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -69,14 +60,13 @@ class Ui_shop_info(object):
         self.verticalLayout.addItem(spacerItem2)
 
         self.retranslateUi(shop_info)
-        self.image_stack.setCurrentIndex(0)
+        self.image_stack.setCurrentIndex(-1)
         QtCore.QMetaObject.connectSlotsByName(shop_info)
 
     def retranslateUi(self, shop_info):
         _translate = QtCore.QCoreApplication.translate
         shop_info.setWindowTitle(_translate("shop_info", "Form"))
         self.back_button.setText(_translate("shop_info", "Back"))
-        self.image.setText(_translate("shop_info", "TextLabel"))
         self.title.setText(_translate("shop_info", "Error"))
         self.dev.setText(_translate("shop_info", "TextLabel"))
         self.price.setText(_translate("shop_info", "TextLabel"))

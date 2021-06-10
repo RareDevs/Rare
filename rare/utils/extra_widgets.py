@@ -1,7 +1,8 @@
 import os
 
-from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal
-from PyQt5.QtGui import QMovie
+from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QUrl
+from PyQt5.QtGui import QMovie, QPixmap
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
     QStyleOptionTab, QStylePainter, QTabBar
 from qtawesome import icon
@@ -250,3 +251,41 @@ class SelectViewWidget(QWidget):
         self.list_view.setIcon(icon("fa5s.list", color="orange"))
         self.icon_view = True
         self.toggled.emit()
+
+
+class ImageLabel(QLabel):
+
+    def __init__(self):
+        super(ImageLabel, self).__init__()
+        path = os.path.expanduser("~/.cache/rare/cache")
+        if p := os.environ.get("XDG_CACHE_HOME"):
+            path = p
+        self.path = path
+        self.manager = QNetworkAccessManager()
+
+    def update_image(self, url, name, size: tuple = (240, 320)):
+        self.setFixedSize(*size)
+        self.img_size = size
+        self.name = name
+        for c in r'<>?":|\/* ':
+            self.name = self.name.replace(c, "")
+        if not os.path.exists(os.path.join(self.path, self.name+".png")):
+            self.request = self.manager.get(QNetworkRequest(QUrl(url)))
+            self.request.finished.connect(self.image_ready)
+        else:
+            self.show_image()
+
+    def image_ready(self):
+        if self.request:
+            if self.request.error() == QNetworkReply.NoError:
+                with open(os.path.join(self.path, self.name + ".png"), "wb") as file:
+                    file.write(self.request.readAll().data())
+                    file.close()
+                self.show_image()
+        else:
+            return
+
+    def show_image(self):
+        self.image = QPixmap(os.path.join(self.path, self.name + ".png")).scaled(*self.img_size,
+                                                                                 transformMode=Qt.SmoothTransformation)
+        self.setPixmap(self.image)
