@@ -43,11 +43,14 @@ class InfoTabs(QTabWidget):
         self.settings.update_game(app_name)
 
         # DLC Tab: Disable if no dlcs available
-        if len(dlcs[self.core.get_game(app_name).asset_info.catalog_item_id]) == 0:
-            self.setTabEnabled(3, False)
+        if dlcs:
+            if len(dlcs[self.core.get_game(app_name).asset_info.catalog_item_id]) == 0:
+                self.setTabEnabled(3, False)
+            else:
+                self.setTabEnabled(3, True)
+                self.dlc_tab.update_dlcs(app_name, dlcs)
         else:
-            self.setTabEnabled(3, True)
-            self.dlc_tab.update_dlcs(app_name, dlcs)
+            self.setTabEnabled(3, False)
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:

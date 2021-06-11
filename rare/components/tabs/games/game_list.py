@@ -67,9 +67,12 @@ class GameList(QStackedWidget):
         self.IMAGE_DIR = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images"), str)
         self.updates = []
         self.widgets = {}
-
-        self.bit32 = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Win32")[0]]
-        self.mac_games = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Mac")[0]]
+        if not self.offline:
+            self.bit32 = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Win32")[0]]
+            self.mac_games = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Mac")[0]]
+        else:
+            self.bit32 = []
+            self.mac_games = []
         self.installed = sorted(self.core.get_installed_list(), key=lambda x: x.title)
 
         # Installed Games
@@ -77,22 +80,24 @@ class GameList(QStackedWidget):
             icon_widget, list_widget = self.add_installed_widget(igame)
             self.icon_layout.addWidget(icon_widget)
             self.list_layout.addWidget(list_widget)
+        if not self.offline:
+            self.uninstalled_games = []
+            installed = [i.app_name for i in self.core.get_installed_list()]
+            # get Uninstalled games
+            games, self.dlcs = self.core.get_game_and_dlc_list(update_assets=not self.offline)
+            for game in sorted(games, key=lambda x: x.app_title):
+                if not game.app_name in installed:
+                    self.uninstalled_games.append(game)
 
-        self.uninstalled_games = []
-        installed = [i.app_name for i in self.core.get_installed_list()]
-        # get Uninstalled games
-        games, self.dlcs = self.core.get_game_and_dlc_list()
-        for game in sorted(games, key=lambda x: x.app_title):
-            if not game.app_name in installed:
-                self.uninstalled_games.append(game)
+            # add uninstalled games
 
-        # add uninstalled games
+            for game in self.uninstalled_games:
+                icon_widget, list_widget = self.add_uninstalled_widget(game)
 
-        for game in self.uninstalled_games:
-            icon_widget, list_widget = self.add_uninstalled_widget(game)
-
-            self.icon_layout.addWidget(icon_widget)
-            self.list_layout.addWidget(list_widget)
+                self.icon_layout.addWidget(icon_widget)
+                self.list_layout.addWidget(list_widget)
+        else:
+            self.dlcs = []
 
         self.icon_parent_layout.addLayout(self.icon_layout)
         self.icon_parent_layout.addStretch(1)
@@ -254,7 +259,7 @@ class GameList(QStackedWidget):
                         w.setVisible(w.igame.can_run_offline)
                     else:
                         w.setVisible(False)
-                elif filter == "32bit":
+                elif filter == "32bit" and self.bit32:
                     w.setVisible(w.game.app_name in self.bit32)
                 elif filter == "mac":
                     w.setVisible(w.game.app_name in self.mac_games)

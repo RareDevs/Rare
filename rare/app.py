@@ -91,7 +91,11 @@ class App(QApplication):
 
         # launch app
         self.launch_dialog = LaunchDialog(self.core, args.offline)
-        self.launch_dialog.start_app.connect(self.start_app)
+        # workaround
+        if self.launch_dialog.offline:
+            self.start_app(True)
+        else:
+            self.launch_dialog.start_app.connect(self.start_app)
 
         if not args.silent or args.subparser == "launch":
             self.launch_dialog.show()

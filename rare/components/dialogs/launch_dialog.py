@@ -145,6 +145,10 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
                 self.steam_info.setVisible(False)
                 self.steam_prog_bar.setVisible(False)
 
+        else:
+            self.finished = True
+            self.finish()
+
     def update_steam_prog_bar(self, value):
         self.steam_prog_bar.setValue(value)
 
