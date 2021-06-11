@@ -12,19 +12,16 @@ creating an issue on github or on Discord: https://discord.gg/YvmABK9YSk
 
 ### Installation via pip (recommend)
 
-Execute `pip install Rare` for all users Or `pip install Rare --user` for only one user. Then execute `rare` in your
-terminal or cmd
+Execute `pip install Rare` for all users Or `pip install Rare --user` for only one user. 
+
+Linux: execute `rare` in your terminal. 
+
+Windows: execute `pythonw -m rare` in cmd
+
+It is possible to create a desktop link, or a start menu link. Execute the command above with `--desktop-shortcut` or `--startmenu-shortcut` option
 
 **Note**: On Linux must be `/home/user/.local/bin` in PATH and on Windows must be `PythonInstallationDirectory\Scripts`
 in PATH.
-
-### Windows Simple
-
-Download Rare.exe from the [releases page](https://github.com/Dummerle/Rare/releases) and execute it.
-
-**Note:**
-Using the exe file could cause errors with Windows Defender or other Anti Virus. Sometimes it is not possible to
-download games and sometimes the app crashes. In this case please use pip
 
 ### Linux
 

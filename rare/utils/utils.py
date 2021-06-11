@@ -205,7 +205,7 @@ def get_possible_langs():
 def get_latest_version():
     try:
         resp = requests.get("https://api.github.com/repos/Dummerle/Rare/releases/latest")
-        tag = json.loads(resp.content.decode("utf-8"))["tag_name"]
+        tag = resp.json()["tag_name"]
         return tag
     except requests.exceptions.ConnectionError:
         return "0.0.0"
@@ -254,11 +254,15 @@ def create_rare_desktop_link(type_of_link):
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)
 
+        exexutable = sys.executable
+        if "python.exe" in exexutable:
+            exexutable = exexutable.replace("python.exe", "pythonw.exe")
+
         # Add shortcut
         shell = Dispatch('WScript.Shell')
         shortcut = shell.CreateShortCut(pathLink)
-        shortcut.Targetpath = os.path.abspath(sys.argv[0])
-        shortcut.Arguments = ""
+        shortcut.Targetpath = exexutable
+        shortcut.Arguments = os.path.abspath(sys.argv[0])
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
@@ -325,8 +329,8 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         # Add shortcut
         shell = Dispatch('WScript.Shell')
         shortcut = shell.CreateShortCut(pathLink)
-        shortcut.Targetpath = target
-        shortcut.Arguments = f'launch {app_name}'
+        shortcut.Targetpath = sys.executable
+        shortcut.Arguments = f'{target} launch {app_name}'
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
