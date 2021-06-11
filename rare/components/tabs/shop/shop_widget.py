@@ -129,13 +129,11 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.free_game_request.deleteLater()
 
     def search_games(self, text, show_direct=False):
-        if text == "":
-            self.search_results.setVisible(False)
-        else:
+        if text != "":
             locale = get_lang()
             payload = json.dumps({
                 "query": query,
-                "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base", "count": 10,
+                "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base", "count": 20,
                               "country": "DE", "keywords": text, "locale": locale, "sortDir": "DESC",
                               "allowCountries": locale.upper(),
                               "start": 0, "tag": "", "withMapping": False, "withPrice": True}
@@ -154,7 +152,6 @@ class ShopWidget(QWidget, Ui_ShopWidget):
                     data = json.loads(json_data.toJson().data().decode())["data"]["Catalog"]["searchStore"]["elements"]
                 else:
                     logging.error(error.errorString())
-                    self.search_results.setVisible(False)
                     return
                 # response = .decode(encoding="utf-8")
                 # print(response)
@@ -172,8 +169,6 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         model.setStringList(titles)
         self.completer.setModel(model)
         # self.completer.popup()
-        # self.search_results.setLayout(layout)
-        # self.search_results.setVisible(True)
         if self.search_request:
             self.search_request.deleteLater()
 

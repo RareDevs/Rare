@@ -269,7 +269,12 @@ class ImageLabel(QLabel):
         self.name = name
         for c in r'<>?":|\/* ':
             self.name = self.name.replace(c, "")
-        if not os.path.exists(os.path.join(self.path, self.name+".png")):
+        if self.img_size[0] > self.img_size[1]:
+            name_extension = "wide"
+        else:
+            name_extension = "tall"
+        self.name = f"{self.name}_{name_extension}.png"
+        if not os.path.exists(os.path.join(self.path, self.name)):
             self.request = self.manager.get(QNetworkRequest(QUrl(url)))
             self.request.finished.connect(self.image_ready)
         else:
@@ -278,7 +283,8 @@ class ImageLabel(QLabel):
     def image_ready(self):
         if self.request:
             if self.request.error() == QNetworkReply.NoError:
-                with open(os.path.join(self.path, self.name + ".png"), "wb") as file:
+
+                with open(os.path.join(self.path, self.name), "wb") as file:
                     file.write(self.request.readAll().data())
                     file.close()
                 self.show_image()
@@ -286,6 +292,6 @@ class ImageLabel(QLabel):
             return
 
     def show_image(self):
-        self.image = QPixmap(os.path.join(self.path, self.name + ".png")).scaled(*self.img_size,
+        self.image = QPixmap(os.path.join(self.path, self.name)).scaled(*self.img_size,
                                                                                  transformMode=Qt.SmoothTransformation)
         self.setPixmap(self.image)
