@@ -67,12 +67,13 @@ class _SearchResultItem(QGroupBox):
         price = result['price']['totalPrice']['fmtPrice']['originalPrice']
         discount_price = result['price']['totalPrice']['fmtPrice']['discountPrice']
         price_layout = QHBoxLayout()
-        price = QLabel(price)
-        price_layout.addWidget(price)
+        price_label = QLabel(price)
+        price_layout.addWidget(price_label)
+
         if price != discount_price:
             font = QFont()
             font.setStrikeOut(True)
-            price.setFont(font)
+            price_label.setFont(font)
             price_layout.addWidget(QLabel(discount_price))
         # self.discount_price = QLabel(f"{self.tr('Discount price: ')}{discount_price}")
         self.layout.addLayout(price_layout)

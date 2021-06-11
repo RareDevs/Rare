@@ -259,7 +259,7 @@ class ImageLabel(QLabel):
         super(ImageLabel, self).__init__()
         path = os.path.expanduser("~/.cache/rare/cache")
         if p := os.environ.get("XDG_CACHE_HOME"):
-            path = p
+            path = os.path.join(p, "rare", "cache")
         self.path = path
         self.manager = QNetworkAccessManager()
 

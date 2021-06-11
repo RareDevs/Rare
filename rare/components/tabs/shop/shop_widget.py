@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QUrl, QJsonDocument, QJsonParseError, \
     QStringListModel
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QCompleter, QGroupBox, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QCompleter, QGroupBox, QHBoxLayout, QScrollArea
 
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
 from rare.utils.extra_widgets import WaitingSpinner, ImageLabel, FlowLayout
@@ -18,13 +18,14 @@ from rare.utils.utils import get_lang
 
 
 # noinspection PyAttributeOutsideInit,PyBroadException
-class ShopWidget(QWidget, Ui_ShopWidget):
+class ShopWidget(QScrollArea, Ui_ShopWidget):
     show_info = pyqtSignal(list)
     show_game = pyqtSignal(dict)
     free_game_widgets = []
 
     def __init__(self):
         super(ShopWidget, self).__init__()
+        self.setWidgetResizable(True)
         self.setupUi(self)
         self.manager = QNetworkAccessManager()
         self.free_games_widget = QWidget()
@@ -44,6 +45,8 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.search.returnPressed.connect(self.show_search_result)
         self.data = []
 
+        self.games_groupbox.setLayout(FlowLayout())
+
     def load(self):
         if p := os.getenv("XDG_CACHE_HOME"):
             self.path = p
@@ -55,7 +58,12 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.free_game_request = self.manager.get(QNetworkRequest(QUrl(url)))
         self.free_game_request.finished.connect(self.add_free_games)
 
-        # free_games = api_utils.get_free_games()
+        game_list = ["Satisfactory", "Among Us", "Star Wars Jedi Fallen Order", "Watch Dogs", "Subnautica Below Zero"]
+        # TODO read from api
+        for game in game_list:
+            w = GameWidget.from_request(game, self.path)
+            self.games_groupbox.layout().addWidget(w)
+            w.show_info.connect(self.show_game.emit)
 
     def add_free_games(self):
         if self.free_game_request:
@@ -111,14 +119,14 @@ class ShopWidget(QWidget, Ui_ShopWidget):
                 coming_free_games.append(game)
 
         for free_game in free_games_now:
-            w = GameWidget(free_game, self.path)
+            w = GameWidget(self.path, free_game)
             w.show_info.connect(self.show_game.emit)
             self.free_games_now.layout().addWidget(w)
             self.free_game_widgets.append(w)
 
         self.free_games_now.layout().addStretch(1)
         for free_game in coming_free_games:
-            w = GameWidget(free_game, self.path)
+            w = GameWidget(self.path, free_game)
             if free_game["title"] != "Mystery Game":
                 w.show_info.connect(self.show_game.emit)
             self.coming_free_games.layout().addWidget(w)
@@ -188,8 +196,14 @@ class ShopWidget(QWidget, Ui_ShopWidget):
 class GameWidget(QWidget):
     show_info = pyqtSignal(dict)
 
-    def __init__(self, json_info, path: str):
+    def __init__(self, path, json_info=None):
         super(GameWidget, self).__init__()
+        if json_info:
+            self.init_ui(json_info, path)
+        self.path = path
+
+    def init_ui(self, json_info, path):
+        self.path = path
         self.layout = QVBoxLayout()
         self.image = ImageLabel()
         self.json_info = json_info
@@ -203,7 +217,7 @@ class GameWidget(QWidget):
 
         self.slug = json_info["productSlug"]
         self.title = json_info["title"]
-        if not os.path.exists(p := os.path.join(path, f"{json_info['title']}.png")):
+        if not os.path.exists(p := os.path.join(self.path, f"{json_info['title']}.png")):
             for img in json_info["keyImages"]:
                 if json_info["title"] != "Mystery Game":
                     if img["type"] == "DieselStoreFrontWide":
@@ -220,16 +234,55 @@ class GameWidget(QWidget):
             else:
                 print("No image found")
         width = 300
-        self.image.setPixmap(QPixmap(os.path.join(path, f"{json_info['title']}.png"))
+        self.image.setPixmap(QPixmap(os.path.join(self.path, f"{json_info['title']}.png"))
                              .scaled(width, int(width * 9 / 16), transformMode=Qt.SmoothTransformation))
         self.layout.addWidget(self.image)
 
         self.title_label = QLabel(json_info["title"])
+        self.title_label.setWordWrap(True)
         self.layout.addWidget(self.title_label)
         self.setLayout(self.layout)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.show_info.emit(self.json_info)
+
+    @classmethod
+    def from_request(cls, name, path):
+        c = cls(path)
+        c.manager = QNetworkAccessManager()
+        c.request = c.manager.get(QNetworkRequest())
+
+        locale = get_lang()
+        payload = json.dumps({
+            "query": query,
+            "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base", "count": 1,
+                          "country": "DE", "keywords": name, "locale": locale, "sortDir": "DESC",
+                          "allowCountries": locale.upper(),
+                          "start": 0, "tag": "", "withMapping": False, "withPrice": True}
+        }).encode()
+        request = QNetworkRequest(QUrl("https://www.epicgames.com/graphql"))
+        request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
+        c.search_request = c.manager.post(request, payload)
+        c.search_request.finished.connect(lambda: c.handle_response(path))
+        return c
+
+    def handle_response(self, path):
+        if self.search_request:
+            if self.search_request.error() == QNetworkReply.NoError:
+                error = QJsonParseError()
+                json_data = QJsonDocument.fromJson(self.search_request.readAll().data(), error)
+                if QJsonParseError.NoError == error.error:
+                    data = json.loads(json_data.toJson().data().decode())["data"]["Catalog"]["searchStore"][
+                        "elements"][0]
+                    self.init_ui(data, path)
+                else:
+                    logging.error(error.errorString())
+                    return
+
+            else:
+                return
+        else:
+            return
 
 
 query = "query searchStoreQuery($allowCountries: String, $category: String, $count: Int, $country: String!, " \
