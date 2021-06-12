@@ -44,6 +44,8 @@ class ShopGame:
 
     @classmethod
     def from_json(cls, api_data: dict, search_data: dict):
+        print(api_data)
+        print(search_data)
         if isinstance(api_data, list):
             for product in api_data:
                 if product["_title"] == "home":
@@ -53,7 +55,7 @@ class ShopGame:
         tmp = cls()
         if "pages" in api_data.keys():
             api_data = api_data["pages"][0]
-        tmp.title = api_data.get("productName", api_data.get("_title", "fail"))
+        tmp.title = search_data.get("title", "Fail")
         tmp.image_urls = _ImageUrlModel.from_json(search_data["keyImages"])
         links = api_data["data"]["socialLinks"]
         tmp.links = []
@@ -69,8 +71,12 @@ class ShopGame:
                     tmp.reqs[system["systemType"]][req["title"]] = (req["minimum"], req["recommended"])
                 except KeyError:
                     pass
-        tmp.publisher = api_data["data"]["meta"].get("publisher", "undefined")
-        tmp.developer = api_data["data"]["meta"].get("developer", "undefined")
+        tmp.publisher = api_data["data"]["meta"].get("publisher", "")
+        tmp.developer = api_data["data"]["meta"].get("developer", "")
+        if not tmp.developer:
+            for i in search_data["customAttributes"]:
+                if i["key"] == "developerName":
+                    tmp.developer = i["value"]
         tmp.price = search_data['price']['totalPrice']['fmtPrice']['originalPrice']
         tmp.discount_price = search_data['price']['totalPrice']['fmtPrice']['discountPrice']
 

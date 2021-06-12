@@ -72,7 +72,6 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         else:
             return
         self.game = ShopGame.from_json(game, self.data)
-        # print(game)
         self.title.setText(self.game.title)
 
         self.price.setText(self.game.price)
