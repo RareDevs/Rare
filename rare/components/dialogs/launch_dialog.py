@@ -94,9 +94,10 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
     start_app = pyqtSignal(bool)
     finished = False
 
-    def __init__(self, core: LegendaryCore, offline):
+    def __init__(self, core: LegendaryCore, offline: bool = False):
         super(LaunchDialog, self).__init__()
         self.setupUi(self)
+        self.offline = offline
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         if os.name == "nt":
             self.finished = True
