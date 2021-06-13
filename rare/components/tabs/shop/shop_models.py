@@ -44,8 +44,6 @@ class ShopGame:
 
     @classmethod
     def from_json(cls, api_data: dict, search_data: dict):
-        print(api_data)
-        print(search_data)
         if isinstance(api_data, list):
             for product in api_data:
                 if product["_title"] == "home":

@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>RareSettings</class>
  <widget class="QWidget" name="RareSettings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>544</width>
+    <height>532</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>RareSettings</string>
   </property>
@@ -38,6 +46,20 @@
       <string>Behavior</string>
      </property>
      <layout class="QGridLayout" name="behavior_layout">
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="notification">
+        <property name="text">
+         <string>Show notification on download completion</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="auto_update">
+        <property name="text">
+         <string>Update games on application startup</string>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="1" rowspan="2">
        <spacer name="settings_hspacer">
         <property name="orientation">
@@ -58,13 +80,6 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="notification">
-        <property name="text">
-         <string>Show notification on download completion</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="0">
        <widget class="QCheckBox" name="auto_sync_cloud">
         <property name="text">
@@ -79,17 +94,17 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="auto_update">
-        <property name="text">
-         <string>Update games on application startup</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QCheckBox" name="sys_tray">
         <property name="text">
          <string>Exit to System tray</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QCheckBox" name="image_cache">
+        <property name="text">
+         <string>Cache images in store</string>
         </property>
        </widget>
       </item>

@@ -4,10 +4,9 @@ import logging
 import os
 from json import JSONDecodeError
 
-import requests
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, pyqtSignal, QUrl, QJsonDocument, QJsonParseError, \
-    QStringListModel
+    QStringListModel, QSettings
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QCompleter, QGroupBox, QHBoxLayout, QScrollArea
@@ -16,12 +15,16 @@ from rare.ui.components.tabs.store.store import Ui_ShopWidget
 from rare.utils.extra_widgets import WaitingSpinner, ImageLabel, FlowLayout
 from rare.utils.utils import get_lang
 
+logger = logging.getLogger("Shop")
+
 
 # noinspection PyAttributeOutsideInit,PyBroadException
 class ShopWidget(QScrollArea, Ui_ShopWidget):
     show_info = pyqtSignal(list)
     show_game = pyqtSignal(dict)
     free_game_widgets = []
+    active_search_request = False
+    next_search = ""
 
     def __init__(self):
         super(ShopWidget, self).__init__()
@@ -137,19 +140,24 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.free_game_request.deleteLater()
 
     def search_games(self, text, show_direct=False):
-        if text != "":
-            locale = get_lang()
-            payload = json.dumps({
-                "query": query,
-                "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base", "count": 20,
-                              "country": "DE", "keywords": text, "locale": locale, "sortDir": "DESC",
-                              "allowCountries": locale.upper(),
-                              "start": 0, "tag": "", "withMapping": False, "withPrice": True}
-            }).encode()
-            request = QNetworkRequest(QUrl("https://www.epicgames.com/graphql"))
-            request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
-            self.search_request = self.manager.post(request, payload)
-            self.search_request.finished.connect(lambda: self.show_search_results(show_direct))
+        if not self.active_search_request:
+            if text != "":
+                locale = get_lang()
+                payload = json.dumps({
+                    "query": query,
+                    "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base",
+                                  "count": 20,
+                                  "country": locale.upper(), "keywords": text, "locale": locale, "sortDir": "DESC",
+                                  "allowCountries": locale.upper(),
+                                  "start": 0, "tag": "", "withMapping": False, "withPrice": True}
+                }).encode()
+                request = QNetworkRequest(QUrl("https://www.epicgames.com/graphql"))
+                request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
+                self.search_request = self.manager.post(request, payload)
+                self.search_request.finished.connect(lambda: self.show_search_results(show_direct))
+
+        else:
+            self.next_search = text
 
     def show_search_results(self, show_direct=False):
         if self.search_request:
@@ -158,27 +166,24 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 json_data = QJsonDocument.fromJson(self.search_request.readAll().data(), error)
                 if QJsonParseError.NoError == error.error:
                     data = json.loads(json_data.toJson().data().decode())["data"]["Catalog"]["searchStore"]["elements"]
+                    self.data = data
+                    if show_direct:
+                        self.show_search_result(True)
+                        return
+                    titles = [i.get("title") for i in data]
+                    model = QStringListModel()
+                    model.setStringList(titles)
+                    self.completer.setModel(model)
+                    # self.completer.popup()
+                    if self.search_request:
+                        self.search_request.deleteLater()
                 else:
                     logging.error(error.errorString())
-                    return
                 # response = .decode(encoding="utf-8")
                 # print(response)
                 # results = json.loads(response)
-            else:
-                return
-        else:
-            return
-        self.data = data
-        if show_direct:
-            self.show_search_result(True)
-            return
-        titles = [i.get("title") for i in data]
-        model = QStringListModel()
-        model.setStringList(titles)
-        self.completer.setModel(model)
-        # self.completer.popup()
-        if self.search_request:
-            self.search_request.deleteLater()
+
+        self.search_games(self.next_search)
 
     def show_search_result(self, show_direct=False):
         if not show_direct:
@@ -198,6 +203,7 @@ class GameWidget(QWidget):
 
     def __init__(self, path, json_info=None):
         super(GameWidget, self).__init__()
+        self.manager = QNetworkAccessManager()
         if json_info:
             self.init_ui(json_info, path)
         self.path = path
@@ -207,41 +213,53 @@ class GameWidget(QWidget):
         self.layout = QVBoxLayout()
         self.image = ImageLabel()
         self.json_info = json_info
+        self.slug = json_info["productSlug"]
+        self.width = 300
+        self.title = json_info["title"]
         for img in json_info["keyImages"]:
             if img["type"] in ["DieselStoreFrontWide", "VaultClosed"]:
-                width = 300
-                self.image.update_image(img["url"], json_info["title"], (width, int(width * 9 / 16)))
+                if img["type"] == "VaultClosed" and self.title != "Mystery Game":
+                    continue
+                self.image.update_image(img["url"], json_info["title"], (self.width, int(self.width * 9 / 16)))
                 break
         else:
             print("No image found")
 
-        self.slug = json_info["productSlug"]
-        self.title = json_info["title"]
-        if not os.path.exists(p := os.path.join(self.path, f"{json_info['title']}.png")):
+        save = QSettings().value("cache_images", True, bool)
+        if os.path.exists(p := os.path.join(self.path, f"{json_info['title']}_wide.png")) and save:
+            self.image.setPixmap(QPixmap(p)
+                                 .scaled(self.width, int(self.width * 9 / 16), transformMode=Qt.SmoothTransformation))
+        else:
             for img in json_info["keyImages"]:
-                if json_info["title"] != "Mystery Game":
-                    if img["type"] == "DieselStoreFrontWide":
-                        with open(p, "wb") as img_file:
-                            content = requests.get(img["url"]).content
-                            img_file.write(content)
-                            break
-                else:
-                    if img["type"] == "VaultClosed":
-                        with open(p, "wb") as img_file:
-                            content = requests.get(img["url"]).content
-                            img_file.write(content)
-                            break
+                if img["type"] in ["DieselStoreFrontWide", "VaultClosed"]:
+                    if img["type"] == "VaultClosed" and self.title != "Mystery Game":
+                        continue
+                    self.image_request = self.manager.get(QNetworkRequest(QUrl(img["url"])))
+                    self.image_request.finished.connect(lambda: self.image_ready(save))
+                    break
             else:
-                print("No image found")
-        width = 300
-        self.image.setPixmap(QPixmap(os.path.join(self.path, f"{json_info['title']}.png"))
-                             .scaled(width, int(width * 9 / 16), transformMode=Qt.SmoothTransformation))
+                # No image found
+                logger.error(f"No image found for {self.title}")
+
         self.layout.addWidget(self.image)
 
         self.title_label = QLabel(json_info["title"])
         self.title_label.setWordWrap(True)
         self.layout.addWidget(self.title_label)
         self.setLayout(self.layout)
+
+    def image_ready(self, save: bool):
+        if self.image_request:
+            if self.image_request.error() == QNetworkReply.NoError:
+                data = self.image_request.readAll().data()
+                if save:
+                    with open(os.path.join(self.path, f"{self.title}_wide.png"), "wb") as file:
+                        file.write(data)
+                        file.close()
+                pixmap = QPixmap()
+                pixmap.loadFromData(data)
+                self.image.setPixmap(pixmap.scaled(self.width, int(self.width * 9 / 16),
+                                                   transformMode=Qt.SmoothTransformation))
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.show_info.emit(self.json_info)

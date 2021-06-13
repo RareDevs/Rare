@@ -34,7 +34,8 @@ class RareSettings(QWidget, Ui_RareSettings):
             (self.confirm_start, "confirm_start", False),
             (self.auto_sync_cloud, "auto_sync_cloud", True),
             (self.notification, "notification", True),
-            (self.save_size, "save_size", False)
+            (self.save_size, "save_size", False),
+            (self.image_cache, "cache_images", True)
         ]
 
         self.settings = QSettings()
@@ -98,6 +99,9 @@ class RareSettings(QWidget, Ui_RareSettings):
         )
         self.save_size.stateChanged.connect(
             lambda: self.settings.setValue("save_size", self.save_size.isChecked())
+        )
+        self.image_cache.stateChanged.connect(
+            lambda: self.settings.setValue("cache_images", self.image_cache.isChecked())
         )
 
         if os.name == "posix":
