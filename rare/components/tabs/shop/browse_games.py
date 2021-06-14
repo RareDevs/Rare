@@ -19,6 +19,8 @@ class BrowseGames(QWidget, Ui_browse_games):
     show_game = pyqtSignal(dict)
     price = ""
     platform = (False, False)
+    request_active = False
+    next_request = ()
 
     def __init__(self, path):
         super(BrowseGames, self).__init__()
@@ -48,10 +50,15 @@ class BrowseGames(QWidget, Ui_browse_games):
             lambda: self.prepare_request(platform=(self.win_cb.isChecked(), self.mac_cb.isChecked())))
 
     def prepare_request(self, price: str = None, platform: tuple = None):
+
         if price is not None:
             self.price = price
         if platform is not None:
             self.platform = platform
+
+        if self.request_active:
+            self.next_request = (self.price, self.platform)
+            return
 
         locale = get_lang()
         self.stack.setCurrentIndex(2)
@@ -80,10 +87,12 @@ class BrowseGames(QWidget, Ui_browse_games):
 
         request = QNetworkRequest(QUrl("https://www.epicgames.com/graphql"))
         request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
+        self.request_active = True
         self.game_request = self.manager.post(request, json.dumps(payload).encode("utf-8"))
         self.game_request.finished.connect(self.show_games)
 
     def show_games(self):
+
         if self.game_request:
             if self.game_request.error() == QNetworkReply.NoError:
                 error = QJsonParseError()
@@ -105,13 +114,23 @@ class BrowseGames(QWidget, Ui_browse_games):
                             self.games_widget.layout().addWidget(w)
                             w.show_info.connect(self.show_game.emit)
                         self.stack.setCurrentIndex(0)
+
+                        self.request_active = False
+                        if self.next_request:
+                            self.prepare_request(*self.next_request)
+                            self.next_request = ()
+
                         return
 
                 else:
-                    logger.info(self.slug, error.errorString())
+                    logger.error(error.errorString())
             else:
-                print(self.game_request.errorString())
-        self.stack.setCurrentIndex(1)
+                logger.error(self.game_request.errorString())
+        if self.next_request:
+            self.prepare_request(*self.next_request)
+            self.next_request = ()
+        else:
+            self.stack.setCurrentIndex(1)
 
 
 game_query = "query searchStoreQuery($allowCountries: String, $category: String, $count: Int, $country: String!, " \

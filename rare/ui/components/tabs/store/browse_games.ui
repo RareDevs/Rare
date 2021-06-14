@@ -15,207 +15,177 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
-    <widget class="QGroupBox" name="games_gb">
-     <property name="title">
-      <string>Games</string>
+    <widget class="QStackedWidget" name="stack">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item>
-       <widget class="QStackedWidget" name="stack">
-        <property name="currentIndex">
-         <number>1</number>
-        </property>
-        <widget class="QWidget" name="games_page">
-         <layout class="QVBoxLayout" name="verticalLayout_5">
-          <item>
-           <widget class="QScrollArea" name="games">
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>394</width>
-               <height>306</height>
-              </rect>
-             </property>
-            </widget>
-           </widget>
-          </item>
-         </layout>
+     <widget class="QWidget" name="games_page">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QScrollArea" name="games">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>462</width>
+            <height>503</height>
+           </rect>
+          </property>
+         </widget>
         </widget>
-        <widget class="QWidget" name="error">
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QLabel" name="error_label">
-            <property name="text">
-             <string>An error occured</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="error">
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QLabel" name="error_label">
+         <property name="text">
+          <string>An error occured</string>
+         </property>
         </widget>
-       </widget>
-      </item>
-     </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="filter_gb">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
+    <widget class="QScrollArea" name="filter_scroll">
      <property name="maximumSize">
       <size>
        <width>200</width>
        <height>16777215</height>
       </size>
      </property>
-     <property name="title">
-      <string>Filter</string>
+     <property name="widgetResizable">
+      <bool>true</bool>
      </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-     <property name="checkable">
-      <bool>false</bool>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QScrollArea" name="filter_scroll">
-        <property name="widgetResizable">
-         <bool>true</bool>
-        </property>
-        <widget class="QWidget" name="scroll_widget">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>174</width>
-           <height>479</height>
-          </rect>
+     <widget class="QWidget" name="scroll_widget">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>198</width>
+        <height>521</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QGroupBox" name="price_gb">
+         <property name="title">
+          <string>Price</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QGroupBox" name="price_gb">
-            <property name="title">
-             <string>Price</string>
+           <widget class="QRadioButton" name="clear_price">
+            <property name="text">
+             <string>Clear price filter</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <widget class="QRadioButton" name="clear_price">
-               <property name="text">
-                <string>Clear price filter</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="free_button">
-               <property name="text">
-                <string>Free</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="under10">
-               <property name="text">
-                <string>Under 10</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="under20">
-               <property name="text">
-                <string>Under 20</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="under30">
-               <property name="text">
-                <string>Under 30</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="above">
-               <property name="text">
-                <string>14.99 and above</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="on_discount">
-               <property name="text">
-                <string>Discount</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="platform_gb">
-            <property name="title">
-             <string>Platform</string>
+           <widget class="QRadioButton" name="free_button">
+            <property name="text">
+             <string>Free</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_7">
-             <item>
-              <widget class="QCheckBox" name="win_cb">
-               <property name="text">
-                <string>Windows</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="mac_cb">
-               <property name="text">
-                <string>Mac</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
           <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+           <widget class="QRadioButton" name="under10">
+            <property name="text">
+             <string>Under 10</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="under20">
+            <property name="text">
+             <string>Under 20</string>
             </property>
-           </spacer>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="under30">
+            <property name="text">
+             <string>Under 30</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="above">
+            <property name="text">
+             <string>14.99 and above</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="on_discount">
+            <property name="text">
+             <string>Discount</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
-       </widget>
-      </item>
-     </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="platform_gb">
+         <property name="title">
+          <string>Platform</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QCheckBox" name="win_cb">
+            <property name="text">
+             <string>Windows</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="mac_cb">
+            <property name="text">
+             <string>Mac</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
