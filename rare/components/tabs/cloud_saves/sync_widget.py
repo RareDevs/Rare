@@ -70,7 +70,7 @@ class SyncWidget(QGroupBox):
         self.game = self.core.get_game(igame.app_name)
         self.igame = igame
         self.has_save_path = True
-        if not igame.save_path:
+        if not igame.save_path or igame.save_path is None:
             try:
                 save_path = self.core.get_save_path(igame.app_name)
             except Exception as e:
