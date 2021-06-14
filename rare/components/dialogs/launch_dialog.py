@@ -117,6 +117,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.image_thread = ImageThread(self.core, self)
             self.image_thread.download_progess.connect(self.update_image_progbar)
             self.image_thread.finished.connect(self.finish)
+            self.image_thread.finished.connect(lambda: self.image_info.setText(self.tr("Ready")))
             self.image_thread.finished.connect(self.image_thread.quit)
             self.image_thread.finished.connect(self.image_thread.deleteLater)
             self.image_thread.start()
@@ -126,6 +127,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
                 self.steam_thread.progress.connect(self.update_steam_prog_bar)
                 self.steam_thread.action.connect(lambda x: self.steam_info.setText(x))
                 self.steam_thread.finished.connect(self.finish)
+                self.steam_thread.finished.connect(lambda: self.steam_info.setText(self.tr("Ready")))
                 self.steam_thread.finished.connect(self.steam_thread.quit)
                 self.steam_thread.finished.connect(self.steam_thread.deleteLater)
                 self.steam_thread.start()
@@ -139,8 +141,6 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
     def update_image_progbar(self, i: int):
         self.image_prog_bar.setValue(i)
-        if i == 100:
-            self.image_info.setText(self.tr("Ready"))
 
     def finish(self):
         if self.completed:
