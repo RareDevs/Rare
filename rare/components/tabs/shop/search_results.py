@@ -67,7 +67,7 @@ class _SearchResultItem(QGroupBox):
         price = result['price']['totalPrice']['fmtPrice']['originalPrice']
         discount_price = result['price']['totalPrice']['fmtPrice']['discountPrice']
         price_layout = QHBoxLayout()
-        price_label = QLabel(price)
+        price_label = QLabel(price if price != "0" else self.tr("Free"))
         price_layout.addWidget(price_label)
 
         if price != discount_price:

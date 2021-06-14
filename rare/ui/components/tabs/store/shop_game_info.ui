@@ -53,6 +53,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="owned_label">
+         <property name="text">
+          <string>You already own this game</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="price">
          <property name="text">
           <string>TextLabel</string>

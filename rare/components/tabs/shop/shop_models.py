@@ -63,7 +63,10 @@ class ShopGame:
         tmp.available_voice_langs = api_data["data"]["requirements"].get("languages", "Failed")
         tmp.reqs = {}
         for i, system in enumerate(api_data["data"]["requirements"]["systems"]):
-            tmp.reqs[system["systemType"]] = {}
+            try:
+                tmp.reqs[system["systemType"]] = {}
+            except KeyError:
+                continue
             for req in system["details"]:
                 try:
                     tmp.reqs[system["systemType"]][req["title"]] = (req["minimum"], req["recommended"])

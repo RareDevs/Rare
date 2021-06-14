@@ -20,9 +20,10 @@ class ShopGameInfo(QWidget, Ui_shop_info):
     data: dict
 
     # TODO Design
-    def __init__(self):
+    def __init__(self, installed_titles: list):
         super(ShopGameInfo, self).__init__()
         self.setupUi(self)
+        self.installed = installed_titles
         self.open_store_button.clicked.connect(self.button_clicked)
         self.image = ImageLabel()
         self.image_stack.addWidget(self.image)
@@ -38,6 +39,12 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             slug = slug.replace("/home", "")
         self.slug = slug
         self.title.setText(data["title"])
+        if data["namespace"] in self.installed:
+            self.open_store_button.setText(self.tr("Show Game on Epic Page"))
+            self.owned_label.setVisible(True)
+        else:
+            self.open_store_button.setText(self.tr("Buy Game in Epic Games Store"))
+            self.owned_label.setVisible(False)
 
         self.dev.setText(self.tr("Loading"))
         self.image.setPixmap(QPixmap())
@@ -73,8 +80,10 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             return
         self.game = ShopGame.from_json(game, self.data)
         self.title.setText(self.game.title)
-
-        self.price.setText(self.game.price)
+        if self.game.price != "0":
+            self.price.setText(self.game.price)
+        else:
+            self.price.setText(self.tr("Free"))
         if self.game.price != self.game.discount_price:
             self.discount_price.setText(self.game.discount_price)
             self.discount_price.setVisible(True)
@@ -90,7 +99,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.req_group_box.layout().addWidget(min_label, 0, 1)
         self.req_group_box.layout().addWidget(rec_label, 0, 2)
 
-        for i, (key, value) in enumerate(self.game.reqs["Windows"].items()):
+        for i, (key, value) in enumerate(self.game.reqs.get("Windows", {}).items()):
             self.req_group_box.layout().addWidget(QLabel(key), i + 1, 0)
             min_label = QLabel(value[0])
             min_label.setWordWrap(True)

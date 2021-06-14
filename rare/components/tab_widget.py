@@ -33,7 +33,7 @@ class TabWidget(QTabWidget):
             self.addTab(self.downloadTab, "Downloads" + (" (" + str(len(updates)) + ")" if len(updates) != 0 else ""))
             self.cloud_saves = SyncSaves(core, self)
             self.addTab(self.cloud_saves, "Cloud Saves")
-            self.store = Shop()
+            self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
         self.settings = SettingsTab(core, self)
 
