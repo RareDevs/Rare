@@ -22,7 +22,7 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
 
         self.core = core
 
-        self.open_button.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(self.login_url)))
+        self.open_button.clicked.connect(self.open_browser)
         self.sid_edit.textChanged.connect(self.changed.emit)
 
     def is_valid(self):
@@ -44,3 +44,6 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
                 logger.warning("Failed to login through browser")
         except Exception as e:
             logger.warning(e)
+
+    def open_browser(self):
+        QDesktopServices.openUrl(QUrl(self.login_url))
