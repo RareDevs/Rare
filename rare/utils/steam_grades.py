@@ -47,15 +47,12 @@ def upgrade_all(games, progress: pyqtSignal = None):
     ids = load_json()
     data = {}
     for i, (title, app_name) in enumerate(games):
-        title = title.replace("Early Access", "").replace("Experimental", "").strip()
+
         data[app_name] = {}
-
         steam_id = get_steam_id(title, ids)
-
         data[app_name] = {
             "steam_id": steam_id,
             "grade": get_grade(steam_id)}
-
         if progress:
             progress.emit(int(i / len(games) * 100))
 
@@ -64,7 +61,7 @@ def upgrade_all(games, progress: pyqtSignal = None):
         f.close()
 
 
-def get_steam_id(title: str, json_data=None):
+def get_steam_id(title: str, json_data: dict = None):
     title = title.replace("Early Access", "").replace("Experimental", "").strip()
     if not json_data:
         if not os.path.exists(p := os.path.expanduser("~/.cache/rare/steam_ids.json")):
@@ -81,7 +78,10 @@ def get_steam_id(title: str, json_data=None):
             ids = json.loads(open(os.path.expanduser("~/.cache/rare/steam_ids.json"), "r").read())
     else:
         ids = json_data
-    steam_name = difflib.get_close_matches(title, ids.keys(), n=1)
+    if title in ids.keys():
+        steam_name = [title]
+    else:
+        steam_name = difflib.get_close_matches(title, ids.keys(), n=1)
     if steam_name:
         return ids[steam_name[0]]
     else:

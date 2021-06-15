@@ -77,12 +77,16 @@ class SyncWidget(QGroupBox):
                 self.logger.error(e)
                 return
             if '%' in save_path or '{' in save_path:
-                status = self.tr("Path not found")
+                # status = self.tr("Path not found")
                 self.logger.info("Could not find save path")
+                igame.save_path = ""
+
             else:
                 igame.save_path = save_path
 
-        if not os.path.exists(igame.save_path):
+            self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
+
+        if igame.save_path and not os.path.exists(igame.save_path):
             os.makedirs(igame.save_path)
 
         self.res, (self.dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, save)

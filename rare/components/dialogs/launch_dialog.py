@@ -54,7 +54,7 @@ class SteamThread(QThread):
                     "grade": grade
                 }
             if not grades[game.app_name].get("steam_id"):
-                grades[game.app_name]["steam_id"] = steam_grades.get_steam_id(game.app_title)
+                grades[game.app_name]["steam_id"] = steam_grades.get_steam_id(game.app_title, ids)
             if not grades[game.app_name].get("grade"):
                 grades[game.app_name]["grade"] = steam_grades.get_grade(game.app_title)
 
