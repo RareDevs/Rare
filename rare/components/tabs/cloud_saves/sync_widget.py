@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal, Qt, QSettings
-from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QGroupBox
+from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QGroupBox, QMessageBox
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame, SaveGameStatus
@@ -84,10 +84,12 @@ class SyncWidget(QGroupBox):
             else:
                 igame.save_path = save_path
 
-            self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
-
+        if not igame.save_path:
+            igame.save_path = os.path.expanduser(f"~/{igame.app_name}/")
+            QMessageBox.warning(self, "Savepath error", self.tr("Please edit save path of game {} manually in Cload saves tab").format(igame.title))
         if igame.save_path and not os.path.exists(igame.save_path):
             os.makedirs(igame.save_path)
+        self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
 
         self.res, (self.dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, save)
         if self.res == SaveGameStatus.NO_SAVE:
