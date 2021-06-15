@@ -86,11 +86,11 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.core.lgd.config.add_section(self.game.app_name)
             self.core.lgd.config.set(self.game.app_name, option, value)
         else:
-            if self.game.app_name in self.core.lgd.config.sections() and self.core.lgd.config.get(
+            if self.core.lgd.config.has_section(self.game.app_name) and self.core.lgd.config.get(
                     f"{self.game.app_name}", option, fallback=None) is not None:
                 self.core.lgd.config.remove_option(self.game.app_name, option)
-            if not self.core.lgd.config[self.game.app_name]:
-                self.core.lgd.config.remove_section(self.game.app_name)
+                if not self.core.lgd.config[self.game.app_name]:
+                    self.core.lgd.config.remove_section(self.game.app_name)
         self.core.lgd.save_config()
         self.sender().setEnabled(False)
 
