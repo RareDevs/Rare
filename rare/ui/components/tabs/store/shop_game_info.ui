@@ -77,6 +77,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="tags">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="open_store_button">
          <property name="text">
           <string>Buy Game in Epic Games Store</string>

@@ -121,7 +121,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 self.dev.setText(self.game.developer)
         except KeyError:
             pass
-
+        self.tags.setText(", ".join(self.game.tags))
         # self.price.setText(self.game.price)
 
         self.request.deleteLater()

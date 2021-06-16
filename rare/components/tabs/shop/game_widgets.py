@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from rare.utils.extra_widgets import ImageLabel
 from rare.utils.utils import get_lang
 
+logger = logging.getLogger("GameWidgets")
+
 
 class GameWidget(QWidget):
     show_info = pyqtSignal(dict)
@@ -38,7 +40,8 @@ class GameWidget(QWidget):
                 self.image.update_image(img["url"], json_info["title"], (self.width, int(self.width * 9 / 16)))
                 break
         else:
-            print(json_info["keyImages"])
+            logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
+            # print(json_info["keyImages"])
 
         save = QSettings().value("cache_images", True, bool)
         if os.path.exists(p := os.path.join(self.path, f"{json_info['title']}_wide.png")) and save:
@@ -54,7 +57,7 @@ class GameWidget(QWidget):
                     break
             else:
                 # No image found
-                logging.error(f"No image found for {self.title}")
+                logger.error(f"No image found for {self.title}")
 
         self.layout.addWidget(self.image)
 

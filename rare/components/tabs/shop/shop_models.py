@@ -25,7 +25,7 @@ class ShopGame:
     # TODO: Copyrights etc
     def __init__(self, title: str = "", image_urls: _ImageUrlModel = None, social_links: dict = None,
                  langs: list = None, reqs: dict = None, publisher: str = "", developer: str = "",
-                 original_price: str = "", discount_price: str = ""):
+                 original_price: str = "", discount_price: str = "", tags: list = None):
         self.title = title
         self.image_urls = image_urls
         self.links = []
@@ -41,6 +41,7 @@ class ShopGame:
         self.developer = developer
         self.price = original_price
         self.discount_price = discount_price
+        self.tags = tags
 
     @classmethod
     def from_json(cls, api_data: dict, search_data: dict):
@@ -80,5 +81,6 @@ class ShopGame:
                     tmp.developer = i["value"]
         tmp.price = search_data['price']['totalPrice']['fmtPrice']['originalPrice']
         tmp.discount_price = search_data['price']['totalPrice']['fmtPrice']['discountPrice']
+        tmp.tags = [i.replace("_", " ").capitalize() for i in api_data["data"]["meta"].get("tags", [])]
 
         return tmp
