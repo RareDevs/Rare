@@ -1,7 +1,10 @@
+import io
 import json
 import logging
 import os
 
+from PIL import Image
+from PIL.ImageQt import ImageQt
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal, QSettings, Qt, QUrl, QJsonParseError, QJsonDocument
 from PyQt5.QtGui import QPixmap
@@ -29,6 +32,15 @@ class GameWidget(QWidget):
         self.path = path
         self.layout = QVBoxLayout()
         self.image = ImageLabel()
+        self.layout.addWidget(self.image)
+
+        self.title_label = QLabel(json_info["title"])
+        self.title_label.setWordWrap(True)
+        self.layout.addWidget(self.title_label)
+
+        for c in r'<>?":|\/*':
+            json_info["title"] = json_info["title"].replace(c, "")
+
         self.json_info = json_info
         self.slug = json_info["productSlug"]
 
@@ -59,25 +71,20 @@ class GameWidget(QWidget):
                 # No image found
                 logger.error(f"No image found for {self.title}")
 
-        self.layout.addWidget(self.image)
-
-        self.title_label = QLabel(json_info["title"])
-        self.title_label.setWordWrap(True)
-        self.layout.addWidget(self.title_label)
         self.setLayout(self.layout)
 
     def image_ready(self, save: bool):
         if self.image_request:
             if self.image_request.error() == QNetworkReply.NoError:
                 data = self.image_request.readAll().data()
+                image: Image.Image = Image.open(io.BytesIO(data))
+                image = image.resize((self.width, int(self.width * 9 / 16)))
+
                 if save:
-                    with open(os.path.join(self.path, f"{self.title}_wide.png"), "wb") as file:
-                        file.write(data)
-                        file.close()
+                    image.save(os.path.join(self.path, self.json_info["title"] + "_wide.png"), format="png")
                 pixmap = QPixmap()
-                pixmap.loadFromData(data)
-                self.image.setPixmap(pixmap.scaled(self.width, int(self.width * 9 / 16),
-                                                   transformMode=Qt.SmoothTransformation))
+                pixmap.fromImage(ImageQt(image))
+                self.image.setPixmap(pixmap)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.show_info.emit(self.json_info)

@@ -1,6 +1,9 @@
+import io
 import os
 
-from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QUrl
+from PIL import Image
+from PIL.ImageQt import ImageQt
+from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QUrl, QSettings
 from PyQt5.QtGui import QMovie, QPixmap
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
@@ -284,10 +287,15 @@ class ImageLabel(QLabel):
         if self.request:
             if self.request.error() == QNetworkReply.NoError:
 
-                with open(os.path.join(self.path, self.name), "wb") as file:
-                    file.write(self.request.readAll().data())
-                    file.close()
-                self.show_image()
+                data = self.request.readAll().data()
+                image: Image.Image = Image.open(io.BytesIO(data))
+                image = image.resize((self.img_size[0], self.img_size[1]))
+
+                if QSettings().value("cache_images", True, bool):
+                    image.save(os.path.join(self.path, self.name), format="png")
+                pixmap = QPixmap()
+                pixmap.fromImage(ImageQt(image))
+                self.setPixmap(pixmap)
         else:
             return
 

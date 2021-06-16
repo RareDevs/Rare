@@ -5,8 +5,9 @@ import random
 
 from PyQt5.QtCore import QUrl, pyqtSignal, QJsonParseError, QJsonDocument
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply, QNetworkAccessManager
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QLabel
 
+from rare.components.tabs.shop.constants import game_query, Constants
 from rare.components.tabs.shop.game_widgets import GameWidget
 from rare.ui.components.tabs.store.browse_games import Ui_browse_games
 from rare.utils.extra_widgets import FlowLayout, WaitingSpinner
@@ -18,9 +19,10 @@ logger = logging.getLogger("BrowseGames")
 class BrowseGames(QWidget, Ui_browse_games):
     show_game = pyqtSignal(dict)
     price = ""
-    platform = (False, False)
+    tags = []
+    types = []
     request_active = False
-    next_request = ()
+    next_request = False
 
     def __init__(self, path):
         super(BrowseGames, self).__init__()
@@ -44,20 +46,41 @@ class BrowseGames(QWidget, Ui_browse_games):
         self.above.toggled.connect(lambda: self.prepare_request("<price>[1499,]") if self.above.isChecked() else None)
         self.on_discount.toggled.connect(lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None)
 
-        self.win_cb.toggled.connect(
-            lambda: self.prepare_request(platform=(self.win_cb.isChecked(), self.mac_cb.isChecked())))
-        self.mac_cb.toggled.connect(
-            lambda: self.prepare_request(platform=(self.win_cb.isChecked(), self.mac_cb.isChecked())))
+        constants = Constants()
 
-    def prepare_request(self, price: str = None, platform: tuple = None):
+        for groupbox, variables in [(self.genre_gb, constants.categories),
+                                    (self.platform_gb, constants.platforms),
+                                    (self.others_gb, constants.others)]:
+
+            for text, tag in variables:
+                checkbox = CheckBox(text, tag)
+                checkbox.activated.connect(lambda x: self.prepare_request(added_tag=x))
+                checkbox.deactivated.connect(lambda x: self.prepare_request(removed_tag=x))
+                groupbox.layout().addWidget(checkbox)
+
+        for text, tag in constants.types:
+            checkbox = CheckBox(text, tag)
+            checkbox.activated.connect(lambda x: self.prepare_request(added_type=x))
+            checkbox.deactivated.connect(lambda x: self.prepare_request(removed_type=x))
+            self.type_gb.layout().addWidget(checkbox)
+
+    def prepare_request(self, price: str = None, added_tag: int = 0, removed_tag: int = 0,
+                        added_type: str = "", removed_type: str = ""):
 
         if price is not None:
             self.price = price
-        if platform is not None:
-            self.platform = platform
+        if added_tag != 0:
+            self.tags.append(added_tag)
+        if removed_tag != 0 and removed_tag in self.tags:
+            self.tags.remove(removed_tag)
+
+        if added_type:
+            self.types.append(added_type)
+        if removed_type and removed_type in self.types:
+            self.types.remove(removed_type)
 
         if self.request_active:
-            self.next_request = (self.price, self.platform)
+            self.next_request = True
             return
 
         locale = get_lang()
@@ -78,12 +101,10 @@ class BrowseGames(QWidget, Ui_browse_games):
         elif self.price == "sale":
             payload["variables"]["onSale"] = True
 
-        if self.platform[0]:
-            payload["variables"]["tag"] = "9547"
-            if self.platform[1]:
-                payload["variables"]["tag"] += "|10719"
-        elif self.platform[1]:
-            payload["variables"]["tag"] = "10719"
+        payload["variables"]["tag"] = "|".join(self.tags)
+
+        if self.types:
+            payload["variables"]["category"] = "|".join(self.types)
 
         request = QNetworkRequest(QUrl("https://www.epicgames.com/graphql"))
         request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
@@ -92,7 +113,6 @@ class BrowseGames(QWidget, Ui_browse_games):
         self.game_request.finished.connect(self.show_games)
 
     def show_games(self):
-
         if self.game_request:
             if self.game_request.error() == QNetworkReply.NoError:
                 error = QJsonParseError()
@@ -107,17 +127,23 @@ class BrowseGames(QWidget, Ui_browse_games):
                         self.stack.setCurrentIndex(1)
                     else:
                         QWidget().setLayout(self.games_widget.layout())
-                        self.games_widget.setLayout(FlowLayout())
+                        if games:
+                            self.games_widget.setLayout(FlowLayout())
 
-                        for game in games:
-                            w = GameWidget(self.path, game, 275)
-                            self.games_widget.layout().addWidget(w)
-                            w.show_info.connect(self.show_game.emit)
+                            for game in games:
+                                w = GameWidget(self.path, game, 275)
+                                self.games_widget.layout().addWidget(w)
+                                w.show_info.connect(self.show_game.emit)
+
+                        else:
+                            self.games_widget.setLayout(QVBoxLayout())
+                            self.games_widget.layout().addWidget(
+                                QLabel(self.tr("Could not get games matching the filter")))
+                            self.games_widget.layout().addStretch(1)
                         self.stack.setCurrentIndex(0)
-
                         self.request_active = False
                         if self.next_request:
-                            self.prepare_request(*self.next_request)
+                            self.prepare_request()
                             self.next_request = ()
 
                         return
@@ -127,40 +153,24 @@ class BrowseGames(QWidget, Ui_browse_games):
             else:
                 logger.error(self.game_request.errorString())
         if self.next_request:
-            self.prepare_request(*self.next_request)
-            self.next_request = ()
+            self.prepare_request()
+            self.next_request = False
         else:
             self.stack.setCurrentIndex(1)
 
 
-game_query = "query searchStoreQuery($allowCountries: String, $category: String, $count: Int, $country: String!, " \
-             "$keywords: String, $locale: String, $namespace: String, $withMapping: Boolean = false, $itemNs: String, " \
-             "$sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String, $withPrice: Boolean " \
-             "= false, $withPromotions: Boolean = false, $priceRange: String, $freeGame: Boolean, $onSale: Boolean, " \
-             "$effectiveDate: String) {\n  Catalog {\n    searchStore(\n      allowCountries: $allowCountries\n      " \
-             "category: $category\n      count: $count\n      country: $country\n      keywords: $keywords\n      " \
-             "locale: $locale\n      namespace: $namespace\n      itemNs: $itemNs\n      sortBy: $sortBy\n      " \
-             "sortDir: $sortDir\n      releaseDate: $releaseDate\n      start: $start\n      tag: $tag\n      " \
-             "priceRange: $priceRange\n      freeGame: $freeGame\n      onSale: $onSale\n      effectiveDate: " \
-             "$effectiveDate\n    ) {\n      elements {\n        title\n        id\n        namespace\n        " \
-             "description\n        effectiveDate\n        keyImages {\n          type\n          url\n        }\n     " \
-             "   currentPrice\n        seller {\n          id\n          name\n        }\n        productSlug\n       " \
-             " urlSlug\n        url\n        tags {\n          id\n        }\n        items {\n          id\n         " \
-             " namespace\n        }\n        customAttributes {\n          key\n          value\n        }\n        " \
-             "categories {\n          path\n        }\n        catalogNs @include(if: $withMapping) {\n          " \
-             "mappings(pageType: \"productHome\") {\n            pageSlug\n            pageType\n          }\n        " \
-             "}\n        offerMappings @include(if: $withMapping) {\n          pageSlug\n          pageType\n        " \
-             "}\n        price(country: $country) @include(if: $withPrice) {\n          totalPrice {\n            " \
-             "discountPrice\n            originalPrice\n            voucherDiscount\n            discount\n           " \
-             " currencyCode\n            currencyInfo {\n              decimals\n            }\n            fmtPrice(" \
-             "locale: $locale) {\n              originalPrice\n              discountPrice\n              " \
-             "intermediatePrice\n            }\n          }\n          lineOffers {\n            appliedRules {\n     " \
-             "         id\n              endDate\n              discountSetting {\n                discountType\n     " \
-             "         }\n            }\n          }\n        }\n        promotions(category: $category) @include(if: " \
-             "$withPromotions) {\n          promotionalOffers {\n            promotionalOffers {\n              " \
-             "startDate\n              endDate\n              discountSetting {\n                discountType\n       " \
-             "         discountPercentage\n              }\n            }\n          }\n          " \
-             "upcomingPromotionalOffers {\n            promotionalOffers {\n              startDate\n              " \
-             "endDate\n              discountSetting {\n                discountType\n                " \
-             "discountPercentage\n              }\n            }\n          }\n        }\n      }\n      paging {\n   " \
-             "     count\n        total\n      }\n    }\n  }\n}\n "
+class CheckBox(QCheckBox):
+    activated = pyqtSignal(str)
+    deactivated = pyqtSignal(str)
+
+    def __init__(self, text, tag):
+        super(CheckBox, self).__init__(text)
+        self.tag = tag
+
+        self.toggled.connect(self.handle_toggle)
+
+    def handle_toggle(self):
+        if self.isChecked():
+            self.activated.emit(self.tag)
+        else:
+            self.deactivated.emit(self.tag)

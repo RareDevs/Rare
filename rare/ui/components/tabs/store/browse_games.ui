@@ -148,37 +148,46 @@
          </layout>
         </widget>
        </item>
-       <item>
-        <widget class="QGroupBox" name="platform_gb">
-         <property name="title">
-          <string>Platform</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <widget class="QCheckBox" name="win_cb">
-            <property name="text">
-             <string>Windows</string>
-            </property>
-           </widget>
+              <widget class="QGroupBox" name="genre_gb">
+                  <property name="title">
+                      <string>Genre</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout"/>
+              </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="mac_cb">
-            <property name="text">
-             <string>Mac</string>
-            </property>
-           </widget>
+              <widget class="QGroupBox" name="type_gb">
+                  <property name="title">
+                      <string>Type</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_8"/>
+              </widget>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
+          <item>
+              <widget class="QGroupBox" name="platform_gb">
+                  <property name="title">
+                      <string>Platform</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_7"/>
+              </widget>
+          </item>
+          <item>
+              <widget class="QGroupBox" name="others_gb">
+                  <property name="title">
+                      <string>Other Tags</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_4"/>
+              </widget>
+          </item>
+          <item>
+              <spacer name="verticalSpacer">
+                  <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                      <size>
+                          <width>20</width>
            <height>40</height>
           </size>
          </property>

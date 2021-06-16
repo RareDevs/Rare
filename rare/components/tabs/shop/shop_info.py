@@ -96,17 +96,20 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         min_label.setFont(bold_font)
         rec_label = QLabel(self.tr("Recommend"))
         rec_label.setFont(bold_font)
-        self.req_group_box.layout().addWidget(min_label, 0, 1)
-        self.req_group_box.layout().addWidget(rec_label, 0, 2)
 
-        for i, (key, value) in enumerate(self.game.reqs.get("Windows", {}).items()):
-            self.req_group_box.layout().addWidget(QLabel(key), i + 1, 0)
-            min_label = QLabel(value[0])
-            min_label.setWordWrap(True)
-            self.req_group_box.layout().addWidget(min_label, i + 1, 1)
-            rec_label = QLabel(value[1])
-            rec_label.setWordWrap(True)
-            self.req_group_box.layout().addWidget(rec_label, i + 1, 2)
+        if self.game.reqs:
+            self.req_group_box.layout().addWidget(min_label, 0, 1)
+            self.req_group_box.layout().addWidget(rec_label, 0, 2)
+            for i, (key, value) in enumerate(self.game.reqs.get("Windows", {}).items()):
+                self.req_group_box.layout().addWidget(QLabel(key), i + 1, 0)
+                min_label = QLabel(value[0])
+                min_label.setWordWrap(True)
+                self.req_group_box.layout().addWidget(min_label, i + 1, 1)
+                rec_label = QLabel(value[1])
+                rec_label.setWordWrap(True)
+                self.req_group_box.layout().addWidget(rec_label, i + 1, 2)
+        else:
+            self.req_group_box.layout().addWidget(QLabel(self.tr("Could not get requirements")))
 
         self.image.update_image(self.game.image_urls.front_tall, self.game.title, (240, 320))
 
