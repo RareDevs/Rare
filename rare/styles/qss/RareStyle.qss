@@ -170,6 +170,10 @@ QPushButton:hover#menu_button {
     background-color: #334;
 }
 
+QPushButton#success{
+    background-color: lime;
+}
+
 QRadioButton {
     background-color: none;
     border-radius: 50%;
