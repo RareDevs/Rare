@@ -1,12 +1,12 @@
 import os
 
 from PyQt5.QtWidgets import QStackedWidget, QTabWidget
-from custom_legendary.core import LegendaryCore
 
+from custom_legendary.core import LegendaryCore
+from rare.components.tabs.shop.browse_games import BrowseGames
 from rare.components.tabs.shop.search_results import SearchResults
 from rare.components.tabs.shop.shop_info import ShopGameInfo
 from rare.components.tabs.shop.shop_widget import ShopWidget
-from rare.components.tabs.shop.browse_games import BrowseGames
 
 
 class Shop(QStackedWidget):
@@ -28,6 +28,7 @@ class Shop(QStackedWidget):
         self.store_tabs = QTabWidget()
         self.store_tabs.addTab(self.shop, self.tr("Games"))
         self.store_tabs.addTab(self.browse_games, self.tr("Browse"))
+        self.store_tabs.tabBarClicked.connect(lambda x: self.browse_games.load() if x == 1 else None)
 
         self.addWidget(self.store_tabs)
 
@@ -48,7 +49,7 @@ class Shop(QStackedWidget):
         if not self.init:
             self.init = True
             self.shop.load()
-            self.browse_games.prepare_request()
+            # self.browse_games.prepare_request()
 
     def show_game_info(self, data):
         self.info.update_game(data)

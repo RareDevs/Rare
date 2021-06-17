@@ -64,6 +64,9 @@ class BrowseGames(QWidget, Ui_browse_games):
             checkbox.deactivated.connect(lambda x: self.prepare_request(removed_type=x))
             self.type_gb.layout().addWidget(checkbox)
 
+    def load(self):
+        self.prepare_request()
+
     def prepare_request(self, price: str = None, added_tag: int = 0, removed_tag: int = 0,
                         added_type: str = "", removed_type: str = ""):
 
