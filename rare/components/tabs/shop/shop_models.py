@@ -63,7 +63,6 @@ class ShopGame:
                 tmp.links.append(tuple((item.replace("link", ""), links[item])))
         tmp.available_voice_langs = api_data["data"]["requirements"].get("languages", "Failed")
         tmp.reqs = {}
-        print(api_data["data"]["requirements"])
         for i, system in enumerate(api_data["data"]["requirements"].get("systems", [])):
             try:
                 tmp.reqs[system["systemType"]] = {}

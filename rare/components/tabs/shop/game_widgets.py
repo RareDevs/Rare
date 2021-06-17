@@ -1,13 +1,9 @@
-import io
+import json
 import json
 import logging
-import os
 
-from PIL import Image
-from PIL.ImageQt import ImageQt
 from PyQt5 import QtGui
-from PyQt5.QtCore import pyqtSignal, QSettings, Qt, QUrl, QJsonParseError, QJsonDocument
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import pyqtSignal, QUrl, QJsonParseError, QJsonDocument
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 
@@ -55,36 +51,7 @@ class GameWidget(QWidget):
             logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
             # print(json_info["keyImages"])
 
-        save = QSettings().value("cache_images", True, bool)
-        if os.path.exists(p := os.path.join(self.path, f"{json_info['title']}_wide.png")) and save:
-            self.image.setPixmap(QPixmap(p)
-                                 .scaled(self.width, int(self.width * 9 / 16), transformMode=Qt.SmoothTransformation))
-        else:
-            for img in json_info["keyImages"]:
-                if img["type"] in ["DieselStoreFrontWide", "VaultClosed"]:
-                    if img["type"] == "VaultClosed" and self.title != "Mystery Game":
-                        continue
-                    self.image_request = self.manager.get(QNetworkRequest(QUrl(img["url"])))
-                    self.image_request.finished.connect(lambda: self.image_ready(save))
-                    break
-            else:
-                # No image found
-                logger.error(f"No image found for {self.title}")
-
         self.setLayout(self.layout)
-
-    def image_ready(self, save: bool):
-        if self.image_request:
-            if self.image_request.error() == QNetworkReply.NoError:
-                data = self.image_request.readAll().data()
-                image: Image.Image = Image.open(io.BytesIO(data))
-                image = image.resize((self.width, int(self.width * 9 / 16)))
-
-                if save:
-                    image.save(os.path.join(self.path, self.json_info["title"] + "_wide.png"), format="png")
-                pixmap = QPixmap()
-                pixmap.fromImage(ImageQt(image))
-                self.image.setPixmap(pixmap)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.show_info.emit(self.json_info)

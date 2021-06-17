@@ -1,8 +1,8 @@
 import io
 import os
+from logging import getLogger
 
 from PIL import Image
-from PIL.ImageQt import ImageQt
 from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QUrl, QSettings
 from PyQt5.QtGui import QMovie, QPixmap
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
@@ -13,6 +13,7 @@ from qtawesome import icon
 from rare import style_path
 from rare.ui.utils.pathedit import Ui_PathEdit
 
+logger = getLogger("ExtraWidgets")
 
 class FlowLayout(QLayout):
     def __init__(self, parent=None, margin=-1, hspacing=-1, vspacing=-1):
@@ -284,18 +285,24 @@ class ImageLabel(QLabel):
             self.show_image()
 
     def image_ready(self):
+        self.setPixmap(QPixmap())
         if self.request:
             if self.request.error() == QNetworkReply.NoError:
-
                 data = self.request.readAll().data()
                 image: Image.Image = Image.open(io.BytesIO(data))
                 image = image.resize((self.img_size[0], self.img_size[1]))
 
                 if QSettings().value("cache_images", True, bool):
                     image.save(os.path.join(self.path, self.name), format="png")
+                byte_array = io.BytesIO()
+                image.save(byte_array, format="PNG")
+                # pixmap = QPixmap.fromImage(ImageQt(image))
                 pixmap = QPixmap()
-                pixmap.fromImage(ImageQt(image))
+                pixmap.loadFromData(byte_array.getvalue())
+                # pixmap = QPixmap.fromImage(ImageQt.ImageQt(image))
                 self.setPixmap(pixmap)
+            else:
+                logger.error(self.request.errorString())
         else:
             return
 
