@@ -1,5 +1,4 @@
 import json
-import json
 import logging
 
 from PyQt5 import QtGui
