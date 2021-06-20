@@ -29,7 +29,7 @@ class ImportWidget(QWidget):
         self.layout.addWidget(self.infoText)
         self.import_button = QPushButton(self.tr("Import"))
         self.data_path = ""
-        if os.name == "nt":
+        if platform.system() == "Windows":
 
             if not self.core.egl.appdata_path and os.path.exists(
                     os.path.expandvars("%LOCALAPPDATA%/EpicGamesLauncher/Saved/Config/Windows")):
@@ -85,7 +85,7 @@ class ImportWidget(QWidget):
     def import_login_data(self):
         self.import_button.setText(self.tr("Loading..."))
         self.import_button.setDisabled(True)
-        if os.name != "nt":
+        if platform.system() != "Windows":
             self.core.egl.appdata_path = os.path.join(self.data_path,
                                                       f"drive_c/users/{getuser()}/Local Settings/Application Data/EpicGamesLauncher/Saved/Config/Windows")
         try:

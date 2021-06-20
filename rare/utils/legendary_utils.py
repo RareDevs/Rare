@@ -1,4 +1,5 @@
 import os
+import platform
 import shutil
 from logging import getLogger
 from sys import stdout
@@ -55,13 +56,13 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
     igame = core.get_installed_game(app_name)
 
     # remove shortcuts link
-    if os.name == "posix":
+    if platform.system() == "Linux":
         if os.path.exists(os.path.expanduser(f"~/Desktop/{igame.title}.desktop")):
             os.remove(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"))
         if os.path.exists(os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop")):
             os.remove(os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop"))
 
-    elif os.name == "nt":
+    elif platform.system() == "Windows":
         if os.path.exists(os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk")):
             os.remove(os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk"))
         elif os.path.exists(

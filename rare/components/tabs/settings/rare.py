@@ -1,4 +1,5 @@
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -100,10 +101,10 @@ class RareSettings(QWidget, Ui_RareSettings):
             lambda: self.settings.setValue("save_size", self.save_size.isChecked())
         )
 
-        if os.name == "posix":
+        if platform.system() == "Linux":
             self.desktop_file = os.path.expanduser("~/Desktop/Rare.desktop")
             self.start_menu_link = os.path.expanduser("~/.local/share/applications/Rare.desktop")
-        elif os.name == "nt":
+        elif platform.system() == "Windows":
             self.desktop_file = os.path.expanduser("~/Desktop/Rare.lnk")
             self.start_menu_link = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
@@ -174,7 +175,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.interface_info.setVisible(True)
 
     def open_dir(self):
-        if os.name == "nt":
+        if platform.system() == "Windows":
             os.startfile(self.logdir)
         else:
             opener = "open" if sys.platform == "darwin" else "xdg-open"

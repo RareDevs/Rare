@@ -1,4 +1,5 @@
 import os.path
+import platform
 from logging import getLogger
 
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedWidget, QVBoxLayout, QDialog, QCheckBox, QLabel, \
@@ -54,7 +55,7 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
 
         self.path_edit = PathEdit(path, QFileDialog.DirectoryOnly, save_func=self.save_egl_path)
         self.pathedit_placeholder.addWidget(self.path_edit)
-        if os.name != "nt":
+        if platform.system() != "Windows":
             self.core.lgd.config.set("Legendary", "egl_programdata")
             self.core.egl.programdata_path = path
 

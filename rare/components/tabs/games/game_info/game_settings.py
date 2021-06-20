@@ -1,4 +1,5 @@
 import os
+import platform
 
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox
@@ -64,7 +65,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         )
         self.wrapper_button.setEnabled(False)
 
-        if os.name != "nt":
+        if platform.system() != "Windows":
             self.possible_proton_wrappers = find_proton_wrappers()
 
             self.proton_wrapper.addItems(self.possible_proton_wrappers)
@@ -200,7 +201,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.wrapper.setText(wrapper)
 
         self.title.setText(f"<h2>{self.game.app_title}</h2>")
-        if os.name != "nt":
+        if platform.system() != "Windows":
             self.linux_settings.update_game(app_name)
             self.linux_settings.dxvk.update_settings(app_name)
             proton = self.core.lgd.config.get(f"{app_name}", "wrapper", fallback="").replace('"', "")

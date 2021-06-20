@@ -1,4 +1,5 @@
 import os
+import platform
 import queue
 import subprocess
 import sys
@@ -158,7 +159,7 @@ class DownloadThread(QThread):
     def _handle_postinstall(self, postinstall, igame):
         print('This game lists the following prequisites to be installed:')
         print(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
-        if os.name == 'nt':
+        if platform.system() == "Windows":
             if QMessageBox.question(self, "", "Do you want to install the prequisites",
                                     QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
                 self.core.prereq_installed(igame.app_name)

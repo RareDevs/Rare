@@ -1,5 +1,6 @@
 import json
 import os
+import platform
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QKeyEvent
@@ -70,7 +71,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         else:
             self.grade_table = {}
 
-        if os.name == "nt":
+        if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
             self.grade.setVisible(False)
 
@@ -109,7 +110,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.install_size.setText("N/A")
         self.install_path.setText("N/A")
 
-        if os.name != "nt" and self.grade_table:
+        if platform.system() != "Windows" and self.grade_table:
             try:
                 grade = self.grade_table[app_name]["grade"]
             except KeyError:

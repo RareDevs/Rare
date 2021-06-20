@@ -1,5 +1,6 @@
 import json
 import os
+import platform
 from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal, QSettings, Qt
@@ -99,7 +100,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         self.setupUi(self)
         self.offline = offline
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        if os.name == "nt":
+        if platform.system() == "Windows":
             self.finished = True
             self.steam_info.setVisible(False)
             self.steam_prog_bar.setVisible(False)
@@ -135,7 +136,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.img_thread.finished.connect(self.finish)
             self.img_thread.start()
             # not disabled and not windows
-            if (not QSettings().value("disable_protondb", False, bool)) and (not os.name == "nt"):
+            if (not QSettings().value("disable_protondb", False, bool)) and (not platform.system() == "Windows"):
                 self.steam_thread = SteamThread(self.core, self)
                 self.steam_thread.progress.connect(self.update_steam_prog_bar)
                 self.steam_thread.action.connect(lambda x: self.steam_info.setText(x))

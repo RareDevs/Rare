@@ -1,5 +1,6 @@
 import json
 import os
+import platform
 import shutil
 import sys
 from logging import getLogger
@@ -10,7 +11,8 @@ from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
 from PyQt5.QtGui import QPalette, QColor
 
 # Windows
-if os.name == "nt":
+
+if platform.system() == "Windows":
     from win32com.client import Dispatch
 
 from rare import lang_path, style_path
@@ -220,7 +222,7 @@ def get_size(b: int) -> str:
 
 def create_rare_desktop_link(type_of_link):
     # Linux
-    if os.name == "posix":
+    if platform.system() == "Linux":
         if type_of_link == "desktop":
             path = os.path.expanduser(f"~/Desktop/")
         elif type_of_link == "start_menu":
@@ -240,7 +242,7 @@ def create_rare_desktop_link(type_of_link):
             desktop_file.close()
         os.chmod(os.path.expanduser(f"{path}Rare.desktop"), 0o755)
 
-    elif os.name == "nt":
+    elif platform.system() == "Windows":
         # Target of shortcut
         if type_of_link == "desktop":
             target_folder = os.path.expanduser('~/Desktop/')
@@ -271,7 +273,7 @@ def create_rare_desktop_link(type_of_link):
         shortcut.save()
 
 
-def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
+def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -> bool:
     igame = core.get_installed_game(app_name)
 
     if os.path.exists(
@@ -283,14 +285,15 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
                             igame.app_name, 'DieselGameBoxTall')
     # Linux
-    if os.name == "posix":
+    if platform.system() == "Linux":
         if type_of_link == "desktop":
             path = os.path.expanduser(f"~/Desktop/")
         elif type_of_link == "start_menu":
             path = os.path.expanduser("~/.local/share/applications/")
         else:
-            return
-
+            return False
+        if not os.path.exists(path):
+            return False
         with open(f"{path}{igame.title}.desktop", "w") as desktop_file:
             desktop_file.write("[Desktop Entry]\n"
                                f"Name={igame.title}\n"
@@ -302,9 +305,10 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
                                )
             desktop_file.close()
         os.chmod(os.path.expanduser(f"{path}{igame.title}.desktop"), 0o755)
+        return True
 
     # Windows
-    elif os.name == "nt":
+    elif platform.system() == "Windows":
         # Target of shortcut
         if type_of_link == "desktop":
             target_folder = os.path.expanduser('~/Desktop/')
@@ -312,7 +316,10 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
             target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
             logger.warning("No valid type of link")
-            return
+            return False
+        if not os.path.exists(target_folder):
+            return False
+
         target = os.path.abspath(sys.argv[0])
 
         # Name of link file
@@ -341,3 +348,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         shortcut.IconLocation = os.path.join(icon + ".ico")
 
         shortcut.save()
+        return True
+
+    elif platform.system() == "Darwin":
+        return False

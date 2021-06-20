@@ -1,4 +1,5 @@
 import os
+import platform
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
@@ -46,9 +47,9 @@ class BaseInstalledWidget(QGroupBox):
         self.create_desktop.triggered.connect(lambda: self.create_desktop_link("desktop"))
         self.addAction(self.create_desktop)
 
-        if os.name == "posix":
+        if platform.system() == "Linux":
             start_menu_file = os.path.expanduser(f"~/.local/share/applications/{self.igame.title}.desktop")
-        elif os.name == "nt":
+        elif platform.system() == "Windows":
             start_menu_file = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
             start_menu_file = ""
@@ -73,7 +74,8 @@ class BaseInstalledWidget(QGroupBox):
             return
         if not (os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop"))
                 or os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.lnk"))):
-            create_desktop_link(self.igame.app_name, self.core, type_of_link)
+            if not create_desktop_link(self.igame.app_name, self.core, type_of_link):
+                return
             if type_of_link == "desktop":
                 self.create_desktop.setText(self.tr("Remove Desktop link"))
             elif type_of_link == "start_menu":
