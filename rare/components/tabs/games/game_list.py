@@ -38,6 +38,16 @@ class GameList(QStackedWidget):
 
         self.settings = QSettings()
         icon_view = self.settings.value("icon_view", True, bool)
+        self.procs = []
+        for proc in psutil.process_iter():
+            try:
+                self.procs.append((proc.name(), proc.pid))
+            except psutil.ZombieProcess:
+                continue
+            except psutil.NoSuchProcess:
+                continue
+            except Exception:
+                continue
         self.procs = [(proc.name(), proc.pid) for proc in psutil.process_iter()]
         self.init_ui(icon_view)
 
