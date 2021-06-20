@@ -48,7 +48,6 @@ class GameList(QStackedWidget):
                 continue
             except Exception:
                 continue
-        self.procs = [(proc.name(), proc.pid) for proc in psutil.process_iter()]
         self.init_ui(icon_view)
 
     def init_ui(self, icon_view=True):
