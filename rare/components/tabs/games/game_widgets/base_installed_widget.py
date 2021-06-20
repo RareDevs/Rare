@@ -66,6 +66,10 @@ class BaseInstalledWidget(QGroupBox):
         self.addAction(uninstall)
 
     def create_desktop_link(self, type_of_link):
+        if platform.system() not in ["Windows", "Linux"]:
+            QMessageBox.warning(self, "Warning",
+                                f"Create a Desktop link is currently not supported on {platform.system()}")
+            return
         if type_of_link == "desktop":
             path = os.path.expanduser(f"~/Desktop/")
         elif type_of_link == "start_menu":
