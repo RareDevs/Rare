@@ -19,12 +19,14 @@ start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
 file_name = os.path.expanduser(f"~/.cache/rare/logs/Rare_{start_time}.log")
 if not os.path.exists(os.path.dirname(file_name)):
     os.makedirs(os.path.dirname(file_name))
-
-logging.basicConfig(
-    format='[%(name)s] %(levelname)s: %(message)s',
-    level=logging.INFO,
-    filename=file_name,
-)
+if "--debug" in sys.argv:
+    logging.basicConfig(format='[%(name)s] %(levelname)s: %(message)s', level=logging.INFO)
+else:
+    logging.basicConfig(
+        format='[%(name)s] %(levelname)s: %(message)s',
+        level=logging.INFO,
+        filename=file_name,
+    )
 logger = logging.getLogger("Rare")
 
 
