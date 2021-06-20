@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget, QCompleter, QGroupBox, QHBoxLayout, QScroll
 
 from rare.components.tabs.shop.game_widgets import GameWidget
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
-from rare.utils.extra_widgets import WaitingSpinner, FlowLayout
+from rare.utils.extra_widgets import WaitingSpinner, FlowLayout, ButtonLineEdit
 from rare.utils.utils import get_lang
 
 logger = logging.getLogger("Shop")
@@ -40,12 +40,20 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.free_games_widget.layout().addWidget(self.coming_free_games)
         self.free_games_stack.addWidget(WaitingSpinner())
         self.free_games_stack.addWidget(self.free_games_widget)
-        self.search.textChanged.connect(self.search_games)
+
         self.completer = QCompleter()
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)
-        self.search.setCompleter(self.completer)
-        self.search.returnPressed.connect(self.show_search_result)
+
         self.data = []
+
+        self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Games"))
+        self.scrollAreaWidgetContents.layout().insertWidget(0, self.search_bar)
+
+        self.search_bar.textChanged.connect(self.search_games)
+
+        self.search_bar.setCompleter(self.completer)
+        self.search_bar.returnPressed.connect(self.show_search_result)
+        self.search_bar.buttonClicked.connect(self.show_search_result)
 
         self.games_groupbox.setLayout(FlowLayout())
         self.games_groupbox.setVisible(False)

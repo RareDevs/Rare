@@ -30,13 +30,6 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QLineEdit" name="search">
-         <property name="placeholderText">
-          <string>Search Games</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QGroupBox" name="free_game_group_box">
          <property name="title">
           <string>Free Games</string>

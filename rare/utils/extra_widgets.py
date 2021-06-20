@@ -7,13 +7,14 @@ from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QUrl, QSettings
 from PyQt5.QtGui import QMovie, QPixmap
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
-    QStyleOptionTab, QStylePainter, QTabBar
+    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton
 from qtawesome import icon
 
 from rare import style_path
 from rare.ui.utils.pathedit import Ui_PathEdit
 
 logger = getLogger("ExtraWidgets")
+
 
 class FlowLayout(QLayout):
     def __init__(self, parent=None, margin=-1, hspacing=-1, vspacing=-1):
@@ -308,5 +309,32 @@ class ImageLabel(QLabel):
 
     def show_image(self):
         self.image = QPixmap(os.path.join(self.path, self.name)).scaled(*self.img_size,
-                                                                                 transformMode=Qt.SmoothTransformation)
+                                                                        transformMode=Qt.SmoothTransformation)
         self.setPixmap(self.image)
+
+
+class ButtonLineEdit(QLineEdit):
+    buttonClicked = pyqtSignal()
+
+    def __init__(self, icon_name, placeholder_text: str, parent=None):
+        super(ButtonLineEdit, self).__init__(parent)
+
+        self.button = QToolButton(self)
+        self.button.setIcon(icon(icon_name, color="white"))
+        self.button.setStyleSheet('border: 0px; padding: 0px;')
+        self.button.setCursor(Qt.ArrowCursor)
+        self.button.clicked.connect(self.buttonClicked.emit)
+
+        frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
+        buttonSize = self.button.sizeHint()
+
+        self.setStyleSheet('QLineEdit {padding-right: %dpx; }' % (buttonSize.width() + frameWidth + 1))
+        self.setMinimumSize(max(self.minimumSizeHint().width(), buttonSize.width() + frameWidth * 2 + 2),
+                            max(self.minimumSizeHint().height(), buttonSize.height() + frameWidth * 2 + 2))
+
+    def resizeEvent(self, event):
+        buttonSize = self.button.sizeHint()
+        frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
+        self.button.move(self.rect().right() - frameWidth - buttonSize.width(),
+                         (self.rect().bottom() - buttonSize.height() + 1) / 2)
+        super(ButtonLineEdit, self).resizeEvent(event)
