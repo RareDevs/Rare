@@ -35,7 +35,7 @@ There are some AUR packages available:
 #### Debian based
 
 There is a `.deb` package available from
-the [releases page](https://github.com/Dummerle/Rare/releases): `sudo dpkg –i Rare.deb`
+the [releases page](https://github.com/Dummerle/Rare/releases): `sudo apt install ./Rare.deb`
 
 #### Other
 
