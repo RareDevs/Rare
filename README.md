@@ -85,3 +85,4 @@ More Information is in CONTRIBUTING.md
 ![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/GameInfo.png?raw=true)
 ![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/RareSettings.png?raw=true)
 ![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/RareDownloads.png?raw=true)
+![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/Settings.png?raw=true)
