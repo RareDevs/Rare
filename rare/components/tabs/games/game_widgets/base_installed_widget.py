@@ -30,7 +30,7 @@ class BaseInstalledWidget(QGroupBox):
         self.game_running = False
         self.offline = offline
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
-
+        self.data = QByteArray()
         self.setContentsMargins(0, 0, 0, 0)
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -128,16 +128,16 @@ class BaseInstalledWidget(QGroupBox):
         self.proc.start(params[0], params[1:])
         self.launch_signal.emit(self.igame.app_name)
         self.game_running = True
-        self.data = QByteArray()
+
         return 0
 
     def stdout(self):
         data = self.proc.readAllStandardOutput()
-        stdout = bytes(data).decode("utf-8")
+        stdout = bytes(data).decode("utf-8", errors="ignore")
         self.game_logger.info(stdout)
 
     def stderr(self):
-        stderr = bytes(self.proc.readAllStandardError()).decode("utf-8")
+        stderr = bytes(self.proc.readAllStandardError()).decode("utf-8", errors="ignore")
         self.game_logger.error(stderr)
         QMessageBox.warning(self, "Warning", stderr + "\nSee ~/.cache/rare/logs/")
 
