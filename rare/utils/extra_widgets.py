@@ -324,7 +324,7 @@ class ButtonLineEdit(QLineEdit):
         self.button.setStyleSheet('border: 0px; padding: 0px;')
         self.button.setCursor(Qt.ArrowCursor)
         self.button.clicked.connect(self.buttonClicked.emit)
-
+        self.setPlaceholderText(placeholder_text)
         frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
         buttonSize = self.button.sizeHint()
 

@@ -18,6 +18,7 @@ logger = logging.getLogger("BrowseGames")
 
 class BrowseGames(QWidget, Ui_browse_games):
     show_game = pyqtSignal(dict)
+    init = False
     price = ""
     tags = []
     types = []
@@ -65,7 +66,9 @@ class BrowseGames(QWidget, Ui_browse_games):
             self.type_gb.layout().addWidget(checkbox)
 
     def load(self):
-        self.prepare_request()
+        if not self.init:
+            self.prepare_request()
+            self.init = True
 
     def prepare_request(self, price: str = None, added_tag: int = 0, removed_tag: int = 0,
                         added_type: str = "", removed_type: str = ""):

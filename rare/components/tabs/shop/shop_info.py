@@ -47,6 +47,8 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.owned_label.setVisible(False)
 
         self.dev.setText(self.tr("Loading"))
+        self.price.setText(self.tr("Loading"))
+        self.title.setText(self.tr("Loading"))
         self.image.setPixmap(QPixmap())
         self.data = data
         is_bundle = False

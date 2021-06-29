@@ -150,11 +150,13 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
                 self.search_request = self.manager.post(request, payload)
                 self.search_request.finished.connect(lambda: self.show_search_results(show_direct))
+                self.active_search_request = True
 
         else:
             self.next_search = text
 
     def show_search_results(self, show_direct=False):
+        self.active_search_request = False
         if self.search_request:
             try:
                 if self.search_request.error() == QNetworkReply.NoError:
@@ -166,14 +168,14 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                         self.data = data
                         if show_direct:
                             self.show_search_result(True)
-                            return
-                        titles = [i.get("title") for i in data]
-                        model = QStringListModel()
-                        model.setStringList(titles)
-                        self.completer.setModel(model)
-                        # self.completer.popup()
-                        if self.search_request:
-                            self.search_request.deleteLater()
+                        else:
+                            titles = [i.get("title") for i in data]
+                            model = QStringListModel()
+                            model.setStringList(titles)
+                            self.completer.setModel(model)
+                            # self.completer.popup()
+                            if self.search_request:
+                                self.search_request.deleteLater()
                     else:
                         logging.error(error.errorString())
                     # response = .decode(encoding="utf-8")
@@ -181,13 +183,13 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                     # results = json.loads(response)
             except RuntimeError:
                 return
-
-        self.search_games(self.next_search)
+        if self.next_search:
+            self.search_games(self.next_search)
+            self.next_search = ""
 
     def show_search_result(self, show_direct=False):
         if not show_direct:
-            if self.data:
-                self.show_info.emit(self.data)
+            self.show_info.emit(self.data)
         else:
             try:
                 result = self.data[0]

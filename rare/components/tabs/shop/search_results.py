@@ -9,7 +9,6 @@ from rare.utils.extra_widgets import ImageLabel, FlowLayout
 class SearchResults(QWidget):
     show_info = pyqtSignal(dict)
 
-    # TODO nice look
     def __init__(self):
         super(SearchResults, self).__init__()
         self.main_layout = QVBoxLayout()
@@ -32,10 +31,13 @@ class SearchResults(QWidget):
         QVBoxLayout().addWidget(self.widget)
         self.widget = QWidget()
         self.layout = FlowLayout()
-        for res in results:
-            w = _SearchResultItem(res)
-            w.show_info.connect(self.show_info.emit)
-            self.layout.addWidget(w)
+        if not results:
+            self.layout.addWidget(QLabel(self.tr("No results found")))
+        else:
+            for res in results:
+                w = _SearchResultItem(res)
+                w.show_info.connect(self.show_info.emit)
+                self.layout.addWidget(w)
         self.widget.setLayout(self.layout)
         self.result_area.setWidget(self.widget)
 
