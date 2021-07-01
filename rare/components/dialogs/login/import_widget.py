@@ -1,6 +1,7 @@
-import os
 from getpass import getuser
 from logging import getLogger
+import os
+import platform
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QButtonGroup, QRadioButton
