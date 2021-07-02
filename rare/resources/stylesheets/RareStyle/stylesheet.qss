@@ -226,6 +226,9 @@ QPushButton::hover#uninstall_button {
 QPushButton::disabled#uninstall_button {
     background-color: #200;
 }
+QPushButton#success{
+    background-color: lime;
+}
 
 QGroupBox,
 QCheckBox,
