@@ -118,6 +118,10 @@ class Ui_RareSettings(object):
         self.img_dir_group.setObjectName("img_dir_group")
         self.img_dir_layout = QtWidgets.QVBoxLayout(self.img_dir_group)
         self.img_dir_layout.setObjectName("img_dir_layout")
+        self.label = QtWidgets.QLabel(self.img_dir_group)
+        self.label.setWordWrap(True)
+        self.label.setObjectName("label")
+        self.img_dir_layout.addWidget(self.label)
         self.rare_layout.addWidget(self.img_dir_group, 0, 0, 1, 1, QtCore.Qt.AlignTop)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.rare_layout.addItem(spacerItem2, 3, 0, 1, 2)
@@ -150,6 +154,8 @@ class Ui_RareSettings(object):
         self.lang_label.setText(_translate("RareSettings", "Language"))
         self.color_label.setText(_translate("RareSettings", "Color Scheme"))
         self.img_dir_group.setTitle(_translate("RareSettings", "Image Cache Directory"))
+        self.label.setText(_translate("RareSettings",
+                                      "To change image directory, edit XDG_DATA_HOME variable. To change cache directory edit XDG_CACHE_HOME variable"))
 
 
 if __name__ == "__main__":

@@ -14,14 +14,14 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 if os.name == "nt":
     from win32com.client import Dispatch
 
-from rare import lang_path, style_path
+from rare import lang_path, style_path, data_dir
 # Mac not supported
 
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
-IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare/images"), type=str)
+IMAGE_DIR = s.value("img_dir", os.path.join(data_dir, "images"), type=str)
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
@@ -272,12 +272,12 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
     igame = core.get_installed_game(app_name)
 
     if os.path.exists(
-            os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
+            os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.join(data_dir, 'images'), str),
                          igame.app_name, 'Thumbnail.png')):
-        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
+        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.join(data_dir, 'images'), str),
                             igame.app_name, 'Thumbnail')
     else:
-        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
+        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.join('images'), str),
                             igame.app_name, 'DieselGameBoxTall')
     # Linux
     if os.name == "posix":

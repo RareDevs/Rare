@@ -6,6 +6,7 @@ from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
 from custom_legendary.core import LegendaryCore
+from rare import data_dir
 from rare.components.tab_widget import TabWidget
 from rare.utils.rpc import DiscordRPC
 
@@ -56,7 +57,7 @@ class MainWindow(QMainWindow):
         self.timer.start(1000)
 
     def timer_finished(self):
-        file_path = os.path.expanduser("~/.cache/rare/lockfile")
+        file_path = os.path.join(data_dir, "lockfile")
         if os.path.exists(file_path):
             file = open(file_path, "r")
             action = file.read()

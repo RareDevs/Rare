@@ -1,8 +1,7 @@
-import os
-
 from PyQt5.QtWidgets import QStackedWidget, QTabWidget
 
 from custom_legendary.core import LegendaryCore
+from rare import cache_dir
 from rare.components.tabs.shop.browse_games import BrowseGames
 from rare.components.tabs.shop.search_results import SearchResults
 from rare.components.tabs.shop.shop_info import ShopGameInfo
@@ -15,15 +14,9 @@ class Shop(QStackedWidget):
     def __init__(self, core: LegendaryCore):
         super(Shop, self).__init__()
         self.core = core
-        if p := os.getenv("XDG_CACHE_HOME"):
-            self.path = p
-        else:
-            self.path = os.path.expanduser("~/.cache/rare/cache/")
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
 
-        self.shop = ShopWidget(self.path)
-        self.browse_games = BrowseGames(self.path)
+        self.shop = ShopWidget(cache_dir)
+        self.browse_games = BrowseGames(cache_dir)
 
         self.store_tabs = QTabWidget()
         self.store_tabs.addTab(self.shop, self.tr("Games"))

@@ -5,12 +5,12 @@ import sys
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings, Qt
-from PyQt5.QtWidgets import QFileDialog, QWidget
+from PyQt5.QtWidgets import QWidget
 
+from rare import cache_dir, data_dir
 from rare.components.tabs.settings.rpc_settings import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
-from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import get_lang, get_possible_langs, get_color_schemes, get_style_sheets
 
 logger = getLogger("RareSettings")
@@ -39,13 +39,13 @@ class RareSettings(QWidget, Ui_RareSettings):
         ]
 
         self.settings = QSettings()
-        self.img_dir_path = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images/"), type=str)
+        self.img_dir_path = self.settings.value("img_dir", os.path.join(data_dir, "images"), type=str)
         language = self.settings.value("language", get_lang(), type=str)
-        self.logdir = os.path.expanduser("~/.cache/rare/logs")
+        self.logdir = os.path.join(cache_dir, "logs")
 
         # Select Image directory
-        self.img_dir = PathEdit(self.img_dir_path, file_type=QFileDialog.DirectoryOnly, save_func=self.save_path)
-        self.img_dir_layout.addWidget(self.img_dir)
+        # self.img_dir = PathEdit(self.img_dir_path, file_type=QFileDialog.DirectoryOnly, save_func=self.save_path)
+        # self.img_dir_layout.addWidget(self.img_dir)
 
         # Select lang
         self.lang_select.addItems([i[1] for i in languages])
@@ -125,7 +125,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.log_dir_open_button.clicked.connect(self.open_dir)
         self.log_dir_clean_button.clicked.connect(self.clean_logdir)
 
-        logdir = os.path.expanduser("~/.cache/rare/logs")
+        logdir = os.path.join(cache_dir, "logs")
         # get size of logdir
         size = 0
         for i in os.listdir(logdir):
@@ -137,8 +137,8 @@ class RareSettings(QWidget, Ui_RareSettings):
         # self.log_dir_size_label.setVisible(False)
 
     def clean_logdir(self):
-        for i in os.listdir(os.path.expanduser("~/.cache/rare/logs")):
-            os.remove(os.path.expanduser("~/.cache/rare/logs/") + i)
+        for i in os.listdir(os.path.join(cache_dir, "logs")):
+            os.remove(os.path.join(cache_dir, "logs/") + i)
         self.log_dir_size_label.setText("0KB")
 
     def create_start_menu_link(self):

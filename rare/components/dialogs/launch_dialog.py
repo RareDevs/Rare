@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QDialog
 from requests.exceptions import ConnectionError
 
 from custom_legendary.core import LegendaryCore
+from rare import data_dir, cache_dir
 from rare.components.dialogs.login import LoginDialog
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils import steam_grades
@@ -37,14 +38,14 @@ class SteamThread(QThread):
 
     def run(self) -> None:
         gamelist = self.core.get_game_list(True)
-        if not os.path.exists(os.path.expanduser("~/.cache/rare/game_list.json")):
+        if not os.path.exists(os.path.join(data_dir, "game_list.json")):
             self.action.emit(self.tr("Getting data from ProtonDB"))
             steam_grades.upgrade_all([(i.app_title, i.app_name) for i in gamelist], self.progress)
         self.progress.emit(99)
 
         self.action.emit(self.tr("Checking Games for data"))
-        grades = json.load(open(os.path.expanduser("~/.cache/rare/game_list.json")))
-        ids = json.load(open(os.path.expanduser("~/.cache/rare/steam_ids.json")))
+        grades = json.load(open(os.path.join(data_dir, "game_list.json")))
+        ids = json.load(open(os.path.join(cache_dir, "steam_ids.json")))
         for game in gamelist:
             if not grades.get(game.app_name):
                 steam_id = steam_grades.get_steam_id(game.app_title, ids)
@@ -58,7 +59,7 @@ class SteamThread(QThread):
             if not grades[game.app_name].get("grade"):
                 grades[game.app_name]["grade"] = steam_grades.get_grade(game.app_title)
 
-        with open(os.path.expanduser("~/.cache/rare/game_list.json"), "w") as f:
+        with open(os.path.join(data_dir, "game_list.json"), "w") as f:
             f.write(json.dumps(grades))
             f.close()
 
@@ -121,7 +122,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
     def launch(self, offline=False):
         # self.core = core
-        if not os.path.exists(p := os.path.expanduser("~/.cache/rare/images")):
+        if not os.path.exists(p := QSettings().value("img_dir", os.path.join(data_dir, "images"))):
             os.makedirs(p)
         self.offline = offline
 

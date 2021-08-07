@@ -231,10 +231,23 @@
    </item>
    <item row="0" column="0" alignment="Qt::AlignTop">
     <widget class="QGroupBox" name="img_dir_group">
-     <property name="title">
-      <string>Image Cache Directory</string>
-     </property>
-     <layout class="QVBoxLayout" name="img_dir_layout"/>
+        <property name="title">
+            <string>Image Cache Directory</string>
+        </property>
+        <layout class="QVBoxLayout" name="img_dir_layout">
+            <item>
+                <widget class="QLabel" name="label">
+                    <property name="text">
+                        <string>To change image directory, edit XDG_DATA_HOME variable. To change cache directory edit
+                            XDG_CACHE_HOME variable
+                        </string>
+                    </property>
+                    <property name="wordWrap">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </item>
+        </layout>
     </widget>
    </item>
    <item row="3" column="0" colspan="2">

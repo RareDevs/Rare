@@ -8,6 +8,7 @@ from qtawesome import icon
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import Game
+from rare import data_dir
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.json_formatter import QJsonModel
@@ -65,7 +66,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
                         "bronze": self.tr("Bronze"),
                         "fail": self.tr("Could not get grade"),
                         "pending": self.tr("Not enough reports")}
-        if os.path.exists(p := os.path.expanduser("~/.cache/rare/game_list.json")):
+        if os.path.exists(p := os.path.join(data_dir, "game_list.json")):
             self.grade_table = json.load(open(p))
         else:
             self.grade_table = {}

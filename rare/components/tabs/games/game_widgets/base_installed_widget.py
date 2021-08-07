@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
+from rare import cache_dir
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.utils import legendary_utils
 from rare.utils.utils import create_desktop_link
@@ -133,7 +134,7 @@ class BaseInstalledWidget(QGroupBox):
     def stderr(self):
         stderr = bytes(self.proc.readAllStandardError()).decode("utf-8")
         self.game_logger.error(stderr)
-        QMessageBox.warning(self, "Warning", stderr + "\nSee ~/.cache/rare/logs/")
+        QMessageBox.warning(self, "Warning", stderr + f"\nSee {cache_dir}/logs/")
 
     def finished(self, exit_code):
         logger.info("Game exited with exit code: " + str(exit_code))

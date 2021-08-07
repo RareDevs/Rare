@@ -7,6 +7,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QScrollArea, QWidget, QLabel, QVBoxLayout, QStackedWidget
 
 from custom_legendary.core import LegendaryCore
+from rare import data_dir
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 from rare.components.tabs.games.game_widgets.installed_icon_widget import GameWidgetInstalled
 from rare.components.tabs.games.game_widgets.installed_list_widget import InstalledListWidget
@@ -64,7 +65,7 @@ class GameList(QStackedWidget):
         self.list_layout = QVBoxLayout()
         self.list_layout.addWidget(QLabel(self.info_text))
 
-        self.IMAGE_DIR = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images"), str)
+        self.IMAGE_DIR = self.settings.value("img_dir", os.path.join(data_dir, "images"), str)
         self.updates = []
         self.widgets = {}
 

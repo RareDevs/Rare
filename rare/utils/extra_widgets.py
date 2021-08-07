@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, Q
     QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton
 from qtawesome import icon
 
-from rare import style_path
+from rare import style_path, cache_dir
 from rare.ui.utils.pathedit import Ui_PathEdit
 from rare.utils.utils import QtRequestManager
 
@@ -262,10 +262,7 @@ class ImageLabel(QLabel):
 
     def __init__(self):
         super(ImageLabel, self).__init__()
-        path = os.path.expanduser("~/.cache/rare/cache")
-        if p := os.environ.get("XDG_CACHE_HOME"):
-            path = os.path.join(p, "rare", "cache")
-        self.path = path
+        self.path = cache_dir
         self.manager = QtRequestManager("bytes")
         self.manager.data_ready.connect(self.image_ready)
 

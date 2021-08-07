@@ -6,9 +6,11 @@ from datetime import date
 import requests
 from PyQt5.QtCore import pyqtSignal
 
+from rare import data_dir, cache_dir
+
 replace_chars = ",;.:-_ "
 
-file = os.path.expanduser("~/.cache/rare/game_list.json")
+file = os.path.join(data_dir, "game_list.json")
 url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 
 
@@ -28,7 +30,7 @@ def get_grade(steam_code):
 
 
 def load_json() -> dict:
-    if not os.path.exists(p := os.path.expanduser("~/.cache/rare/steam_ids.json")):
+    if not os.path.exists(p := os.path.join(cache_dir, "steam_ids.json")):
         response = requests.get(url)
         steam_ids = json.loads(response.text)["applist"]["apps"]
         ids = {}
@@ -40,7 +42,7 @@ def load_json() -> dict:
             f.close()
         return ids
     else:
-        return json.loads(open(os.path.expanduser("~/.cache/rare/steam_ids.json"), "r").read())
+        return json.loads(open(os.path.join(cache_dir, "steam_ids.json"), "r").read())
 
 
 def upgrade_all(games, progress: pyqtSignal = None):
@@ -59,7 +61,7 @@ def upgrade_all(games, progress: pyqtSignal = None):
         if progress:
             progress.emit(int(i / len(games) * 100))
 
-    with open(os.path.expanduser("~/.cache/rare/game_list.json"), "w") as f:
+    with open(os.path.join(data_dir, "game_list.json"), "w") as f:
         f.write(json.dumps(data))
         f.close()
 
@@ -67,7 +69,7 @@ def upgrade_all(games, progress: pyqtSignal = None):
 def get_steam_id(title: str, json_data=None):
     title = title.replace("Early Access", "").replace("Experimental", "").strip()
     if not json_data:
-        if not os.path.exists(p := os.path.expanduser("~/.cache/rare/steam_ids.json")):
+        if not os.path.exists(p := os.path.join(cache_dir, "steam_ids.json")):
             response = requests.get(url)
             ids = {}
             steam_ids = json.loads(response.text)["applist"]["apps"]
@@ -78,7 +80,7 @@ def get_steam_id(title: str, json_data=None):
                 f.write(json.dumps(steam_ids))
                 f.close()
         else:
-            ids = json.loads(open(os.path.expanduser("~/.cache/rare/steam_ids.json"), "r").read())
+            ids = json.loads(open(os.path.join(cache_dir, "steam_ids.json"), "r").read())
     else:
         ids = json_data
     steam_name = difflib.get_close_matches(title, ids.keys(), n=1)
