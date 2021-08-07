@@ -1,16 +1,13 @@
-import json
 import logging
 import webbrowser
 
-from PyQt5.QtCore import QUrl, QJsonDocument, QJsonParseError
 from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWidgets import QWidget, QLabel
 
 from rare.components.tabs.shop.shop_models import ShopGame
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
 from rare.utils.extra_widgets import WaitingSpinner, ImageLabel
-from rare.utils.utils import get_lang
+from rare.utils.utils import get_lang, QtRequestManager
 
 logger = logging.getLogger("ShopInfo")
 
@@ -28,7 +25,8 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.image = ImageLabel()
         self.image_stack.addWidget(self.image)
         self.image_stack.addWidget(WaitingSpinner())
-        self.manager = QNetworkAccessManager()
+        self.manager = QtRequestManager("json")
+        self.manager.data_ready.connect(self.data_received)
 
     def update_game(self, data: dict):
         self.image_stack.setCurrentIndex(1)
@@ -60,25 +58,9 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         locale = get_lang()
         url = f"https://store-content.ak.epicgames.com/api/{locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
         # game = api_utils.get_product(slug, locale)
-        self.request = self.manager.get(QNetworkRequest(QUrl(url)))
-        self.request.finished.connect(self.data_received)
+        self.manager.get(url)
 
-    def data_received(self):
-        if self.request:
-            if self.request.error() == QNetworkReply.NoError:
-                error = QJsonParseError()
-                json_data = QJsonDocument.fromJson(self.request.readAll().data(), error)
-
-                if error.error == error.NoError:
-                    game = json.loads(json_data.toJson().data().decode())
-                else:
-                    logging.info(self.slug, error.errorString())
-                    return
-            else:
-                logger.error("Data failed")
-                return
-        else:
-            return
+    def data_received(self, game):
         self.game = ShopGame.from_json(game, self.data)
         self.title.setText(self.game.title)
         self.price.setFont(QFont())
@@ -133,7 +115,6 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             pass
         self.tags.setText(", ".join(self.game.tags))
         # self.price.setText(self.game.price)
-        self.request.deleteLater()
 
     def button_clicked(self):
         webbrowser.open("https://www.epicgames.com/store/de/p/" + self.slug)

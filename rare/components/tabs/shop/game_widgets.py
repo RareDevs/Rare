@@ -1,13 +1,13 @@
-import json
 import logging
 
 from PyQt5 import QtGui
-from PyQt5.QtCore import pyqtSignal, QUrl, QJsonParseError, QJsonDocument
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtNetwork import QNetworkAccessManager
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 
+from rare.components.tabs.shop.constants import search_query
 from rare.utils.extra_widgets import ImageLabel
-from rare.utils.utils import get_lang
+from rare.utils.utils import get_lang, QtRequestManager
 
 logger = logging.getLogger("GameWidgets")
 
@@ -19,12 +19,11 @@ class GameWidget(QWidget):
         super(GameWidget, self).__init__()
         self.manager = QNetworkAccessManager()
         self.width = width
+        self.path = path
         if json_info:
-            self.init_ui(json_info, path)
-        self.path = path
+            self.init_ui(json_info)
 
-    def init_ui(self, json_info, path):
-        self.path = path
+    def init_ui(self, json_info):
         self.layout = QVBoxLayout()
         self.image = ImageLabel()
         self.layout.addWidget(self.image)
@@ -58,69 +57,21 @@ class GameWidget(QWidget):
     @classmethod
     def from_request(cls, name, path):
         c = cls(path)
-        c.manager = QNetworkAccessManager()
-        c.request = c.manager.get(QNetworkRequest())
-
+        c.manager = QtRequestManager("json")
+        c.manager.data_ready.connect(c.handle_response)
         locale = get_lang()
-        payload = json.dumps({
-            "query": query,
+        payload = {
+            "query": search_query,
             "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base", "count": 1,
                           "country": "DE", "keywords": name, "locale": locale, "sortDir": "DESC",
                           "allowCountries": locale.upper(),
                           "start": 0, "tag": "", "withMapping": False, "withPrice": True}
-        }).encode()
-        request = QNetworkRequest(QUrl("https://www.epicgames.com/graphql"))
-        request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
-        c.search_request = c.manager.post(request, payload)
-        c.search_request.finished.connect(lambda: c.handle_response(path))
+        }
+        c.manager.post("https://www.epicgames.com/graphql", payload)
+        c.search_request.da.connect(lambda: c.handle_response(path))
         return c
 
-    def handle_response(self, path):
-        if self.search_request:
-            if self.search_request.error() == QNetworkReply.NoError:
-                error = QJsonParseError()
-                json_data = QJsonDocument.fromJson(self.search_request.readAll().data(), error)
-                if QJsonParseError.NoError == error.error:
-                    data = json.loads(json_data.toJson().data().decode())["data"]["Catalog"]["searchStore"][
-                        "elements"][0]
-                    self.init_ui(data, path)
-                else:
-                    logging.error(error.errorString())
-                    return
+    def handle_response(self, data):
 
-            else:
-                return
-        else:
-            return
-
-
-query = "query searchStoreQuery($allowCountries: String, $category: String, $count: Int, $country: String!, " \
-        "$keywords: String, $locale: String, $namespace: String, $withMapping: Boolean = false, $itemNs: String, " \
-        "$sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String, $withPrice: Boolean = " \
-        "false, $withPromotions: Boolean = false, $priceRange: String, $freeGame: Boolean, $onSale: Boolean, " \
-        "$effectiveDate: String) {\n  Catalog {\n    searchStore(\n      allowCountries: $allowCountries\n      " \
-        "category: $category\n      count: $count\n      country: $country\n      keywords: $keywords\n      locale: " \
-        "$locale\n      namespace: $namespace\n      itemNs: $itemNs\n      sortBy: $sortBy\n      sortDir: " \
-        "$sortDir\n      releaseDate: $releaseDate\n      start: $start\n      tag: $tag\n      priceRange: " \
-        "$priceRange\n      freeGame: $freeGame\n      onSale: $onSale\n      effectiveDate: $effectiveDate\n    ) {" \
-        "\n      elements {\n        title\n        id\n        namespace\n        description\n        " \
-        "effectiveDate\n        keyImages {\n          type\n          url\n        }\n        currentPrice\n        " \
-        "seller {\n          id\n          name\n        }\n        productSlug\n        urlSlug\n        url\n       " \
-        " tags {\n          id\n        }\n        items {\n          id\n          namespace\n        }\n        " \
-        "customAttributes {\n          key\n          value\n        }\n        categories {\n          path\n        " \
-        "}\n        catalogNs @include(if: $withMapping) {\n          mappings(pageType: \"productHome\") {\n         " \
-        "   pageSlug\n            pageType\n          }\n        }\n        offerMappings @include(if: $withMapping) " \
-        "{\n          pageSlug\n          pageType\n        }\n        price(country: $country) @include(if: " \
-        "$withPrice) {\n          totalPrice {\n            discountPrice\n            originalPrice\n            " \
-        "voucherDiscount\n            discount\n            currencyCode\n            currencyInfo {\n              " \
-        "decimals\n            }\n            fmtPrice(locale: $locale) {\n              originalPrice\n              " \
-        "discountPrice\n              intermediatePrice\n            }\n          }\n          lineOffers {\n         " \
-        "   appliedRules {\n              id\n              endDate\n              discountSetting {\n                " \
-        "discountType\n              }\n            }\n          }\n        }\n        promotions(category: " \
-        "$category) @include(if: $withPromotions) {\n          promotionalOffers {\n            promotionalOffers {\n " \
-        "             startDate\n              endDate\n              discountSetting {\n                " \
-        "discountType\n                discountPercentage\n              }\n            }\n          }\n          " \
-        "upcomingPromotionalOffers {\n            promotionalOffers {\n              startDate\n              " \
-        "endDate\n              discountSetting {\n                discountType\n                discountPercentage\n " \
-        "             }\n            }\n          }\n        }\n      }\n      paging {\n        count\n        " \
-        "total\n      }\n    }\n  }\n}\n "
+        data = data["data"]["Catalog"]["searchStore"]["elements"][0]
+        self.init_ui(data)

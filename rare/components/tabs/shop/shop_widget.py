@@ -1,24 +1,22 @@
 import datetime
-import json
 import logging
-from json import JSONDecodeError
 
-from PyQt5.QtCore import Qt, pyqtSignal, QUrl, QJsonDocument, QJsonParseError, \
-    QStringListModel
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+from PyQt5.QtCore import Qt, pyqtSignal, QStringListModel
+from PyQt5.QtNetwork import QNetworkAccessManager
 from PyQt5.QtWidgets import QWidget, QCompleter, QGroupBox, QHBoxLayout, QScrollArea
 
+from rare.components.tabs.shop.constants import search_query
 from rare.components.tabs.shop.game_widgets import GameWidget
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
 from rare.utils.extra_widgets import WaitingSpinner, FlowLayout, ButtonLineEdit
-from rare.utils.utils import get_lang
+from rare.utils.utils import QtRequestManager, get_lang
 
 logger = logging.getLogger("Shop")
 
 
 # noinspection PyAttributeOutsideInit,PyBroadException
 class ShopWidget(QScrollArea, Ui_ShopWidget):
-    show_info = pyqtSignal(list)
+    show_info = pyqtSignal(str)
     show_game = pyqtSignal(dict)
     free_game_widgets = []
     active_search_request = False
@@ -49,31 +47,40 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Games"))
         self.scrollAreaWidgetContents.layout().insertWidget(0, self.search_bar)
 
-        self.search_bar.textChanged.connect(self.search_games)
+        # self.search_bar.textChanged.connect(self.search_games)
 
         self.search_bar.setCompleter(self.completer)
-        self.search_bar.returnPressed.connect(self.show_search_result)
-        self.search_bar.buttonClicked.connect(self.show_search_result)
+        self.search_bar.returnPressed.connect(self.show_search_results)
+        self.search_bar.buttonClicked.connect(self.show_search_results)
 
         self.games_groupbox.setLayout(FlowLayout())
         self.games_groupbox.setVisible(False)
 
+        self.search_request_manager = QtRequestManager("json")
+        self.search_request_manager.data_ready.connect(self.set_completer)
+
+        self.search_bar.textChanged.connect(self.load_completer)
+
+    def load_completer(self, text):
+        if text != "":
+            locale = get_lang()
+            payload = {
+                "query": search_query,
+                "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base",
+                              "count": 20,
+                              "country": locale.upper(), "keywords": text, "locale": locale, "sortDir": "DESC",
+                              "allowCountries": locale.upper(),
+                              "start": 0, "tag": "", "withMapping": False, "withPrice": True}
+            }
+            self.search_request_manager.post("https://www.epicgames.com/graphql", payload)
+
     def load(self):
         url = "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions"
-        self.free_game_request = self.manager.get(QNetworkRequest(QUrl(url)))
-        self.free_game_request.finished.connect(self.add_free_games)
+        self.free_game_request_manager = QtRequestManager("json")
+        self.free_game_request_manager.get(url)
+        self.free_game_request_manager.data_ready.connect(self.add_free_games)
 
-    def add_free_games(self):
-        if self.free_game_request:
-            if self.free_game_request.error() == QNetworkReply.NoError:
-                try:
-                    free_games = json.loads(self.free_game_request.readAll().data().decode())
-                except JSONDecodeError:
-                    return
-            else:
-                return
-        else:
-            return
+    def add_free_games(self, free_games):
         free_games = free_games["data"]["Catalog"]["searchStore"]["elements"]
         date = datetime.datetime.now()
         free_games_now = []
@@ -132,100 +139,13 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.coming_free_games.layout().addStretch(1)
         # self.coming_free_games.setFixedWidth(int(40 + len(coming_free_games) * 300))
         self.free_games_stack.setCurrentIndex(1)
-        self.free_game_request.deleteLater()
 
-    def search_games(self, text, show_direct=False):
-        if not self.active_search_request:
-            if text != "":
-                locale = get_lang()
-                payload = json.dumps({
-                    "query": query,
-                    "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base",
-                                  "count": 20,
-                                  "country": locale.upper(), "keywords": text, "locale": locale, "sortDir": "DESC",
-                                  "allowCountries": locale.upper(),
-                                  "start": 0, "tag": "", "withMapping": False, "withPrice": True}
-                }).encode()
-                request = QNetworkRequest(QUrl("https://www.epicgames.com/graphql"))
-                request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
-                self.search_request = self.manager.post(request, payload)
-                self.search_request.finished.connect(lambda: self.show_search_results(show_direct))
-                self.active_search_request = True
+    def set_completer(self, search_data):
+        search_data = search_data["data"]["Catalog"]["searchStore"]["elements"]
+        titles = [i.get("title") for i in search_data]
+        model = QStringListModel()
+        model.setStringList(titles)
+        self.completer.setModel(model)
 
-        else:
-            self.next_search = text
-
-    def show_search_results(self, show_direct=False):
-        self.active_search_request = False
-        if self.search_request:
-            try:
-                if self.search_request.error() == QNetworkReply.NoError:
-                    error = QJsonParseError()
-                    json_data = QJsonDocument.fromJson(self.search_request.readAll().data(), error)
-                    if QJsonParseError.NoError == error.error:
-                        data = json.loads(json_data.toJson().data().decode())["data"]["Catalog"]["searchStore"][
-                            "elements"]
-                        self.data = data
-                        if show_direct:
-                            self.show_search_result(True)
-                        else:
-                            titles = [i.get("title") for i in data]
-                            model = QStringListModel()
-                            model.setStringList(titles)
-                            self.completer.setModel(model)
-                            # self.completer.popup()
-                            if self.search_request:
-                                self.search_request.deleteLater()
-                    else:
-                        logging.error(error.errorString())
-                    # response = .decode(encoding="utf-8")
-                    # print(response)
-                    # results = json.loads(response)
-            except RuntimeError:
-                return
-        if self.next_search:
-            self.search_games(self.next_search)
-            self.next_search = ""
-
-    def show_search_result(self, show_direct=False):
-        if not show_direct:
-            self.show_info.emit(self.data)
-        else:
-            try:
-                result = self.data[0]
-            except IndexError:
-                print("error")
-                return
-            self.show_game.emit(result)
-
-
-query = "query searchStoreQuery($allowCountries: String, $category: String, $count: Int, $country: String!, " \
-        "$keywords: String, $locale: String, $namespace: String, $withMapping: Boolean = false, $itemNs: String, " \
-        "$sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String, $withPrice: Boolean = " \
-        "false, $withPromotions: Boolean = false, $priceRange: String, $freeGame: Boolean, $onSale: Boolean, " \
-        "$effectiveDate: String) {\n  Catalog {\n    searchStore(\n      allowCountries: $allowCountries\n      " \
-        "category: $category\n      count: $count\n      country: $country\n      keywords: $keywords\n      locale: " \
-        "$locale\n      namespace: $namespace\n      itemNs: $itemNs\n      sortBy: $sortBy\n      sortDir: " \
-        "$sortDir\n      releaseDate: $releaseDate\n      start: $start\n      tag: $tag\n      priceRange: " \
-        "$priceRange\n      freeGame: $freeGame\n      onSale: $onSale\n      effectiveDate: $effectiveDate\n    ) {" \
-        "\n      elements {\n        title\n        id\n        namespace\n        description\n        " \
-        "effectiveDate\n        keyImages {\n          type\n          url\n        }\n        currentPrice\n        " \
-        "seller {\n          id\n          name\n        }\n        productSlug\n        urlSlug\n        url\n       " \
-        " tags {\n          id\n        }\n        items {\n          id\n          namespace\n        }\n        " \
-        "customAttributes {\n          key\n          value\n        }\n        categories {\n          path\n        " \
-        "}\n        catalogNs @include(if: $withMapping) {\n          mappings(pageType: \"productHome\") {\n         " \
-        "   pageSlug\n            pageType\n          }\n        }\n        offerMappings @include(if: $withMapping) " \
-        "{\n          pageSlug\n          pageType\n        }\n        price(country: $country) @include(if: " \
-        "$withPrice) {\n          totalPrice {\n            discountPrice\n            originalPrice\n            " \
-        "voucherDiscount\n            discount\n            currencyCode\n            currencyInfo {\n              " \
-        "decimals\n            }\n            fmtPrice(locale: $locale) {\n              originalPrice\n              " \
-        "discountPrice\n              intermediatePrice\n            }\n          }\n          lineOffers {\n         " \
-        "   appliedRules {\n              id\n              endDate\n              discountSetting {\n                " \
-        "discountType\n              }\n            }\n          }\n        }\n        promotions(category: " \
-        "$category) @include(if: $withPromotions) {\n          promotionalOffers {\n            promotionalOffers {\n " \
-        "             startDate\n              endDate\n              discountSetting {\n                " \
-        "discountType\n                discountPercentage\n              }\n            }\n          }\n          " \
-        "upcomingPromotionalOffers {\n            promotionalOffers {\n              startDate\n              " \
-        "endDate\n              discountSetting {\n                discountType\n                discountPercentage\n " \
-        "             }\n            }\n          }\n        }\n      }\n      paging {\n        count\n        " \
-        "total\n      }\n    }\n  }\n}\n "
+    def show_search_results(self):
+        self.show_info.emit(self.search_bar.text())

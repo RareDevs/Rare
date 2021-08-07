@@ -1,17 +1,15 @@
 import datetime
-import json
 import logging
 import random
 
-from PyQt5.QtCore import QUrl, pyqtSignal, QJsonParseError, QJsonDocument
-from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply, QNetworkAccessManager
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QLabel
 
 from rare.components.tabs.shop.constants import game_query, Constants
 from rare.components.tabs.shop.game_widgets import GameWidget
 from rare.ui.components.tabs.store.browse_games import Ui_browse_games
 from rare.utils.extra_widgets import FlowLayout, WaitingSpinner
-from rare.utils.utils import get_lang
+from rare.utils.utils import get_lang, QtRequestManager
 
 logger = logging.getLogger("BrowseGames")
 
@@ -22,8 +20,6 @@ class BrowseGames(QWidget, Ui_browse_games):
     price = ""
     tags = []
     types = []
-    request_active = False
-    next_request = False
 
     def __init__(self, path):
         super(BrowseGames, self).__init__()
@@ -32,7 +28,8 @@ class BrowseGames(QWidget, Ui_browse_games):
         self.games_widget = QWidget()
         self.games_widget.setLayout(FlowLayout())
         self.games.setWidget(self.games_widget)
-        self.manager = QNetworkAccessManager()
+        self.manager = QtRequestManager("json")
+        self.manager.data_ready.connect(self.show_games)
 
         self.stack.addWidget(WaitingSpinner())
 
@@ -85,10 +82,6 @@ class BrowseGames(QWidget, Ui_browse_games):
         if removed_type and removed_type in self.types:
             self.types.remove(removed_type)
 
-        if self.request_active:
-            self.next_request = True
-            return
-
         locale = get_lang()
         self.stack.setCurrentIndex(2)
         date = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.{str(random.randint(0, 999)).zfill(3)}Z]"
@@ -112,57 +105,26 @@ class BrowseGames(QWidget, Ui_browse_games):
         if self.types:
             payload["variables"]["category"] = "|".join(self.types)
 
-        request = QNetworkRequest(QUrl("https://www.epicgames.com/graphql"))
-        request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
-        self.request_active = True
-        self.game_request = self.manager.post(request, json.dumps(payload).encode("utf-8"))
-        self.game_request.finished.connect(self.show_games)
+        self.manager.post("https://www.epicgames.com/graphql", payload)
 
-    def show_games(self):
-        if self.game_request:
-            if self.game_request.error() == QNetworkReply.NoError:
-                error = QJsonParseError()
-                json_data = QJsonDocument.fromJson(self.game_request.readAll().data(), error)
+    def show_games(self, data):
+        data = data["data"]["Catalog"]["searchStore"]["elements"]
+        QWidget().setLayout(self.games_widget.layout())
 
-                if error.error == error.NoError:
-                    try:
-                        games = json.loads(json_data.toJson().data().decode())["data"]["Catalog"]["searchStore"][
-                            "elements"]
-                    except TypeError as e:
-                        logger.error("Type Error: " + str(e))
-                        self.stack.setCurrentIndex(1)
-                    else:
-                        QWidget().setLayout(self.games_widget.layout())
-                        if games:
-                            self.games_widget.setLayout(FlowLayout())
+        if data:
+            self.games_widget.setLayout(FlowLayout())
 
-                            for game in games:
-                                w = GameWidget(self.path, game, 275)
-                                self.games_widget.layout().addWidget(w)
-                                w.show_info.connect(self.show_game.emit)
+            for game in data:
+                w = GameWidget(self.path, game, 275)
+                self.games_widget.layout().addWidget(w)
+                w.show_info.connect(self.show_game.emit)
 
-                        else:
-                            self.games_widget.setLayout(QVBoxLayout())
-                            self.games_widget.layout().addWidget(
-                                QLabel(self.tr("Could not get games matching the filter")))
-                            self.games_widget.layout().addStretch(1)
-                        self.stack.setCurrentIndex(0)
-                        self.request_active = False
-                        if self.next_request:
-                            self.prepare_request()
-                            self.next_request = ()
-
-                        return
-
-                else:
-                    logger.error(error.errorString())
-            else:
-                logger.error(self.game_request.errorString())
-        if self.next_request:
-            self.prepare_request()
-            self.next_request = False
         else:
-            self.stack.setCurrentIndex(1)
+            self.games_widget.setLayout(QVBoxLayout())
+            self.games_widget.layout().addWidget(
+                QLabel(self.tr("Could not get games matching the filter")))
+            self.games_widget.layout().addStretch(1)
+        self.stack.setCurrentIndex(0)
 
 
 class CheckBox(QCheckBox):

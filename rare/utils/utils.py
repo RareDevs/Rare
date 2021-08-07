@@ -6,8 +6,9 @@ from logging import getLogger
 
 import requests
 from PIL import Image, UnidentifiedImageError
-from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
+from PyQt5.QtCore import pyqtSignal, QLocale, QSettings, QObject, QUrl, QJsonParseError, QJsonDocument
 from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 
 # Windows
 if os.name == "nt":
@@ -336,3 +337,85 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         shortcut.IconLocation = os.path.join(icon + ".ico")
 
         shortcut.save()
+
+
+class QtRequestManager(QObject):
+    data_ready = pyqtSignal(object)
+    request = None
+    request_active = False
+
+    def __init__(self, type: str = "json", queue=False):
+        super(QtRequestManager, self).__init__()
+        self.manager = QNetworkAccessManager()
+        self.type = type
+        self.queue = queue
+        if self.queue:
+            self.next_request = []
+        else:
+            self.next_request = ["", tuple(())]
+
+    def post(self, url: str, payload: dict):
+        if not self.request_active:
+            request = QNetworkRequest(QUrl(url))
+            request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
+
+            payload = json.dumps(payload).encode("utf-8")
+
+            self.request = self.manager.post(request, payload)
+            self.request_active = True
+            self.request.finished.connect(self.prepare_data)
+
+        else:
+            if self.queue:
+                self.next_request.append(["post", (url, payload)])
+            else:
+                self.next_request = ["post", (url, payload)]
+
+    def get(self, url: str):
+        if not self.request_active:
+            self.request_active = True
+            self.request = self.manager.get(QNetworkRequest(QUrl(url)))
+            self.request.finished.connect(self.prepare_data)
+        else:
+            if self.queue:
+                self.next_request.append(["get", (url,)])
+            else:
+                self.next_request = ["get", (url,)]
+
+    def prepare_data(self):
+        self.request_active = False
+        data = {} if self.type == "json" else b""
+        if self.request:
+            try:
+                if self.request.error() == QNetworkReply.NoError:
+                    if self.type == "json":
+                        error = QJsonParseError()
+                        json_data = QJsonDocument.fromJson(self.request.readAll().data(), error)
+                        if QJsonParseError.NoError == error.error:
+                            data = json.loads(json_data.toJson().data().decode())
+
+                        else:
+                            logger.error(error.errorString())
+                    else:
+                        data = self.request.readAll().data()
+
+            except RuntimeError as e:
+                logger.error(str(e))
+        self.data_ready.emit(data)
+        self.request.deleteLater()
+
+        if self.queue:
+            if self.next_request:
+                if self.next_request[0][0] == "post":
+                    self.post(*self.next_request[0][1])
+                else:
+                    self.get(self.next_request[0][1][0])
+                self.next_request.pop(0)
+        else:
+            if method := self.next_request[0]:
+                if method == "post":
+                    self.post(*self.next_request[1])
+                    self.next_request = ["", ()]
+                else:
+                    self.get(self.next_request[1][0])
+                    self.next_request = ["", ()]

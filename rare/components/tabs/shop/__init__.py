@@ -41,7 +41,7 @@ class Shop(QStackedWidget):
         self.info.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
 
         self.search_results.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
-        self.shop.show_info.connect(self.show_info)
+        self.shop.show_info.connect(self.show_search_results)
         self.shop.show_game.connect(self.show_game_info)
         self.browse_games.show_game.connect(self.show_game_info)
 
@@ -55,6 +55,6 @@ class Shop(QStackedWidget):
         self.info.update_game(data)
         self.setCurrentIndex(2)
 
-    def show_info(self, data):
-        self.search_results.show_results(data)
+    def show_search_results(self, text: str):
+        self.search_results.load_results(text)
         self.setCurrentIndex(1)

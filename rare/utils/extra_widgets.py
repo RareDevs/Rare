@@ -3,15 +3,15 @@ import os
 from logging import getLogger
 
 from PIL import Image
-from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QUrl, QSettings
+from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QSettings
 from PyQt5.QtGui import QMovie, QPixmap
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
     QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton
 from qtawesome import icon
 
 from rare import style_path
 from rare.ui.utils.pathedit import Ui_PathEdit
+from rare.utils.utils import QtRequestManager
 
 logger = getLogger("ExtraWidgets")
 
@@ -266,7 +266,8 @@ class ImageLabel(QLabel):
         if p := os.environ.get("XDG_CACHE_HOME"):
             path = os.path.join(p, "rare", "cache")
         self.path = path
-        self.manager = QNetworkAccessManager()
+        self.manager = QtRequestManager("bytes")
+        self.manager.data_ready.connect(self.image_ready)
 
     def update_image(self, url, name, size: tuple = (240, 320)):
         self.setFixedSize(*size)
@@ -280,32 +281,26 @@ class ImageLabel(QLabel):
             name_extension = "tall"
         self.name = f"{self.name}_{name_extension}.png"
         if not os.path.exists(os.path.join(self.path, self.name)):
-            self.request = self.manager.get(QNetworkRequest(QUrl(url)))
-            self.request.finished.connect(self.image_ready)
+            self.manager.get(url)
+            # self.request.finished.connect(self.image_ready)
         else:
             self.show_image()
 
-    def image_ready(self):
+    def image_ready(self, data):
         self.setPixmap(QPixmap())
-        if self.request:
-            if self.request.error() == QNetworkReply.NoError:
-                data = self.request.readAll().data()
-                image: Image.Image = Image.open(io.BytesIO(data))
-                image = image.resize((self.img_size[0], self.img_size[1]))
 
-                if QSettings().value("cache_images", True, bool):
-                    image.save(os.path.join(self.path, self.name), format="png")
-                byte_array = io.BytesIO()
-                image.save(byte_array, format="PNG")
-                # pixmap = QPixmap.fromImage(ImageQt(image))
-                pixmap = QPixmap()
-                pixmap.loadFromData(byte_array.getvalue())
-                # pixmap = QPixmap.fromImage(ImageQt.ImageQt(image))
-                self.setPixmap(pixmap)
-            else:
-                logger.error(self.request.errorString())
-        else:
-            return
+        image: Image.Image = Image.open(io.BytesIO(data))
+        image = image.resize((self.img_size[0], self.img_size[1]))
+
+        if QSettings().value("cache_images", True, bool):
+            image.save(os.path.join(self.path, self.name), format="png")
+        byte_array = io.BytesIO()
+        image.save(byte_array, format="PNG")
+        # pixmap = QPixmap.fromImage(ImageQt(image))
+        pixmap = QPixmap()
+        pixmap.loadFromData(byte_array.getvalue())
+        # pixmap = QPixmap.fromImage(ImageQt.ImageQt(image))
+        self.setPixmap(pixmap)
 
     def show_image(self):
         self.image = QPixmap(os.path.join(self.path, self.name)).scaled(*self.img_size,
