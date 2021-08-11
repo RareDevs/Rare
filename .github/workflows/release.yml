@@ -5,10 +5,9 @@ on:
     types: [ published ]
 
 jobs:
-  pypy-deploy:
+  pypi-deploy:
     if: "!github.event.release.prerelease"
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -72,5 +71,36 @@ jobs:
           asset_name: Rare.deb
           tag: ${{ github.ref }}
           overwrite: true
+
+  appimage:
+    if: "!github.event.release.prerelease"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: install Deps
+        run: |
+          sudo apt update
+          sudo apt install python3 python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev fakeroot strace fuse
+
+      - name: install appimage-builder
+        run: |
+          sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
+          sudo chmod +x /usr/local/bin/appimagetool
+          sudo pip3 install appimage-builder
+      - name: Build Appimage
+        run: |
+          cd build
+          appimage-builder --skip-test
+          mv Rare-*.AppImage Rare.AppImage
+
+      - name: Upload to GitHub
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Rare.AppImage
+          asset_name: Rare.AppImage
+          tag: ${{ github.ref }}
+          overwrite: true
+
       
     
