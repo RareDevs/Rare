@@ -1,0 +1,77 @@
+# appimage-builder recipe see https://appimage-builder.readthedocs.io for details
+
+version: 1
+
+script:
+  # Remove any previous build
+  - rm -rf AppDir Rare  | true
+  # Make usr and icons dirs
+  - mkdir -p AppDir/usr/src
+  - mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps/
+  - git clone https://github.com/Dummerle/Rare
+  - cp -r Rare/rare AppDir/usr/src/rare
+  - cp -r Rare/custom_legendary AppDir/usr/src/
+  - cp AppDir/usr/src/rare/__main__.py AppDir/usr/src/__main__.py
+  - cp AppDir/usr/src/rare/styles/Logo.png AppDir/usr/share/icons/hicolor/256x256/apps/
+  # Install application dependencies
+  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir -r Rare/requirements.txt
+
+
+AppDir:
+
+  path: AppDir
+  app_info:
+    id: org.dummerle.rare
+    name: Rare
+    icon: Logo
+    version: 1.5.0
+    exec: usr/bin/python3
+    exec_args: "$APPDIR/usr/src/__main__.py $@"
+  apt:
+    arch: amd64
+    sources:
+      - sourceline: 'deb http://archive.ubuntu.com/ubuntu/ groovy-updates main
+'
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3b4fe6acc0b21f32'
+
+    include:
+      - python3
+      - python3-pkg-resources
+    exclude: [ ]
+
+  runtime:
+    env:
+      # Set python home
+      # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONHOME
+      PYTHONHOME: '${APPDIR}/usr'
+      # Path to the site-packages dir or other modules dirs
+      # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH
+      PYTHONPATH: '${APPDIR}/usr/lib/python3.8/site-packages'
+
+
+AppImage:
+  arch: x86_64
+  update-information: 'gh-releases-zsync|Dummerle|Rare|latest|Rare-*x86_64.AppImage.zsync'
+
+
+  test:
+    fedora:
+      image: appimagecrafters/tests-env:fedora-30
+      command: ./AppRun
+      use_host_x: true
+    debian:
+      image: appimagecrafters/tests-env:debian-stable
+      command: ./AppRun
+      use_host_x: true
+    arch:
+      image: appimagecrafters/tests-env:archlinux-latest
+      command: ./AppRun
+      use_host_x: true
+    centos:
+      image: appimagecrafters/tests-env:centos-7
+      command: ./AppRun
+      use_host_x: true
+    ubuntu:
+      image: appimagecrafters/tests-env:ubuntu-xenial
+      command: ./AppRun
+      use_host_x: true
