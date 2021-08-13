@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
+from rare.components.extra.Console import ConsoleWindow
 from rare.utils import legendary_utils
 from rare.utils.utils import create_desktop_link
 
@@ -32,6 +33,7 @@ class BaseInstalledWidget(QGroupBox):
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
         self.data = QByteArray()
         self.setContentsMargins(0, 0, 0, 0)
+        self.settings = QSettings()
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         launch = QAction(self.tr("Launch"), self)
@@ -114,17 +116,26 @@ class BaseInstalledWidget(QGroupBox):
         except Exception as e:
             logger.error(e)
             QMessageBox.warning(self, "Error",
-                                self.tr("An error occurred while starting game. Maybe game files are missing"))
+                                str(e))
             return
 
         if not self.proc:
             logger.error("Could not start process")
             return 1
-        self.game_logger = getLogger(self.game.app_name)
-
         self.proc.finished.connect(self.finished)
-        self.proc.readyReadStandardOutput.connect(self.stdout)
-        self.proc.readyReadStandardError.connect(self.stderr)
+
+        if self.settings.value("show_console", False, bool):
+            self.console = ConsoleWindow()
+            self.console.show()
+            self.proc.readyReadStandardOutput.connect(lambda: self.console.log(
+                bytes(self.proc.readAllStandardOutput()).decode("utf-8", errors="ignore")))
+            self.proc.readyReadStandardError.connect(lambda: self.console.error(
+                bytes(self.proc.readAllStandardOutput()).decode("utf-8", errors="ignore")))
+
+        else:
+            self.proc.readyReadStandardOutput.connect(self.stdout)
+            self.proc.readyReadStandardError.connect(self.stderr)
+
         self.proc.start(params[0], params[1:])
         self.launch_signal.emit(self.igame.app_name)
         self.game_running = True
@@ -134,17 +145,19 @@ class BaseInstalledWidget(QGroupBox):
     def stdout(self):
         data = self.proc.readAllStandardOutput()
         stdout = bytes(data).decode("utf-8", errors="ignore")
-        self.game_logger.info(stdout)
+        print(stdout)
 
     def stderr(self):
         stderr = bytes(self.proc.readAllStandardError()).decode("utf-8", errors="ignore")
-        self.game_logger.error(stderr)
-        QMessageBox.warning(self, "Warning", stderr + "\nSee ~/.cache/rare/logs/")
+        print(stderr)
+        # QMessageBox.warning(self, "Warning", stderr + "\nSee ~/.cache/rare/logs/")
 
     def finished(self, exit_code):
         logger.info("Game exited with exit code: " + str(exit_code))
         self.finish_signal.emit(self.game.app_name)
         self.game_running = False
+        if self.settings.value("show_console", False, bool):
+            self.console.log(f"Game exited with code: {exit_code}")
 
     def uninstall(self):
         infos = UninstallDialog(self.game).get_information()
