@@ -12,6 +12,7 @@ from custom_legendary.models.game import Game
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.json_formatter import QJsonModel
+from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import IMAGE_DIR
 
 
@@ -60,16 +61,9 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.setupUi(self)
         self.core = core
 
-        self.ratings = {"platinum": self.tr("Platinum"),
-                        "gold": self.tr("Gold"),
-                        "silver": self.tr("Silver"),
-                        "bronze": self.tr("Bronze"),
-                        "fail": self.tr("Could not get grade"),
-                        "pending": self.tr("Not enough reports")}
-        if os.path.exists(p := os.path.expanduser("~/.cache/rare/game_list.json")):
-            self.grade_table = json.load(open(p))
-        else:
-            self.grade_table = {}
+        if platform.system() != "Windows":
+            self.steam_worker = SteamWorker(self.core)
+            self.steam_worker.rating_signal.connect(self.grade.setText)
 
         if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
@@ -110,9 +104,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.install_size.setText("N/A")
         self.install_path.setText("N/A")
 
-        if platform.system() != "Windows" and self.grade_table:
-            try:
-                grade = self.grade_table[app_name]["grade"]
-            except KeyError:
-                grade = "fail"
-            self.grade.setText(self.ratings[grade])
+        if platform.system() != "Windows":
+            self.grade.setText(self.tr("Loading"))
+            self.steam_worker.set_app_name(app_name)
+            self.steam_worker.start()

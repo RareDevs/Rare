@@ -1,4 +1,3 @@
-import json
 import os
 import platform
 
@@ -14,6 +13,7 @@ from rare.components.tabs.games.game_info.game_settings import GameSettings
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.legendary_utils import VerifyThread
+from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import IMAGE_DIR, get_size
 
 
@@ -58,6 +58,7 @@ class InfoTabs(QTabWidget):
             self.parent().layout.setCurrentIndex(0)
 
 
+
 class GameInfo(QWidget, Ui_GameInfo):
     igame: InstalledGame
     game: Game
@@ -71,20 +72,13 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.setupUi(self)
         self.core = core
 
-        self.ratings = {"platinum": self.tr("Platinum"),
-                        "gold": self.tr("Gold"),
-                        "silver": self.tr("Silver"),
-                        "bronze": self.tr("Bronze"),
-                        "fail": self.tr("Could not get grade"),
-                        "pending": self.tr("Not enough reports")}
-        if os.path.exists(p := os.path.expanduser("~/.cache/rare/game_list.json")):
-            self.grade_table = json.load(open(p))
-        else:
-            self.grade_table = {}
-
         if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
             self.grade.setVisible(False)
+
+        if platform.system() != "Windows":
+            self.steam_worker = SteamWorker(self.core)
+            self.steam_worker.rating_signal.connect(self.grade.setText)
 
         self.game_actions_stack.setCurrentIndex(0)
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
@@ -159,12 +153,10 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.install_size.setText(get_size(self.igame.install_size))
         self.install_path.setText(self.igame.install_path)
 
-        if platform.system() != "Windows" and self.grade_table:
-            try:
-                grade = self.grade_table[app_name]["grade"]
-            except KeyError:
-                grade = "fail"
-            self.grade.setText(self.ratings[grade])
+        if platform.system() != "Windows":
+            self.grade.setText(self.tr("Loading"))
+            self.steam_worker.set_app_name(app_name)
+            self.steam_worker.start()
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(app_name):
             self.verify_widget.setCurrentIndex(0)

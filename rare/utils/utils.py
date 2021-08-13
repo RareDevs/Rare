@@ -15,14 +15,14 @@ from PyQt5.QtGui import QPalette, QColor
 if platform.system() == "Windows":
     from win32com.client import Dispatch
 
-from rare import lang_path, style_path
+from rare import lang_path, style_path, data_dir
 # Mac not supported
 
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
-IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare/images"), type=str)
+IMAGE_DIR = os.path.join(data_dir, "images")
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
