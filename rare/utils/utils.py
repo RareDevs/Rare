@@ -15,14 +15,14 @@ from PyQt5.QtGui import QPalette, QColor
 if platform.system() == "Windows":
     from win32com.client import Dispatch
 
-from rare import lang_path, style_path, data_dir
+from rare import languages_path, resources_path
 # Mac not supported
 
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
-IMAGE_DIR = os.path.join(data_dir, "images")
+IMAGE_DIR = s.value("img_dir", os.path.expanduser("~/.cache/rare/images"), type=str)
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
@@ -79,14 +79,14 @@ def download_image(game, force=False):
                         logger.warning(e)
 
     # scale and grey
-    if not os.path.isfile(f'{IMAGE_DIR}/' + game.app_name + '/UninstalledArt.png'):
+    if not os.path.exists(os.path.join(IMAGE_DIR, game.app_name + '/UninstalledArt.png')):
 
-        if os.path.isfile(f'{IMAGE_DIR}/' + game.app_name + '/DieselGameBoxTall.png'):
+        if os.path.exists(os.path.join(IMAGE_DIR, f"{game.app_name}/DieselGameBoxTall.png")):
             # finalArt = Image.open(f'{IMAGE_DIR}/' + game.app_name + '/DieselGameBoxTall.png')
             # finalArt.save(f'{IMAGE_DIR}/{game.app_name}/FinalArt.png')
             # And same with the grayscale one
 
-            bg = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
+            bg = Image.open(os.path.join(IMAGE_DIR, f"{game.app_name}/DieselGameBoxTall.png"))
             uninstalledArt = bg.convert('L')
             uninstalledArt = uninstalledArt.resize((200, int(200 * 4 / 3)))
             uninstalledArt.save(f'{IMAGE_DIR}/{game.app_name}/UninstalledArt.png')
@@ -182,23 +182,23 @@ def load_color_scheme(path: str):
 
 def get_color_schemes():
     colors = []
-    for file in os.listdir(os.path.join(style_path, "colors")):
-        if file.endswith(".scheme") and os.path.isfile(os.path.join(style_path, "colors", file)):
+    for file in os.listdir(os.path.join(resources_path, "colors")):
+        if file.endswith(".scheme") and os.path.isfile(os.path.join(resources_path, "colors", file)):
             colors.append(file.replace(".scheme", ""))
     return colors
 
 
 def get_style_sheets():
     styles = []
-    for file in os.listdir(os.path.join(style_path, "qss")):
-        if file.endswith(".qss") and os.path.isfile(os.path.join(style_path, "qss", file)):
-            styles.append(file.replace(".qss", ""))
+    for folder in os.listdir(os.path.join(resources_path, "stylesheets")):
+        if os.path.isfile(os.path.join(resources_path, "stylesheets", folder, "stylesheet.qss")):
+            styles.append(folder)
     return styles
 
 
 def get_possible_langs():
     langs = ["en"]
-    for i in os.listdir(lang_path):
+    for i in os.listdir(languages_path):
         if i.endswith(".qm"):
             langs.append(i.split(".")[0])
     return langs
@@ -234,7 +234,7 @@ def create_rare_desktop_link(type_of_link):
             desktop_file.write("[Desktop Entry]\n"
                                f"Name=Rare\n"
                                f"Type=Application\n"
-                               f"Icon={os.path.join(style_path, 'Logo.png')}\n"
+                               f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
                                f"Exec={os.path.abspath(sys.argv[0])}\n"
                                "Terminal=false\n"
                                "StartupWMClass=rare\n"
@@ -268,7 +268,7 @@ def create_rare_desktop_link(type_of_link):
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
-        shortcut.IconLocation = os.path.join(style_path, "Logo.ico")
+        shortcut.IconLocation = os.path.join(resources_path, "images", "Rare.ico")
 
         shortcut.save()
 
@@ -305,7 +305,6 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
                                )
             desktop_file.close()
         os.chmod(os.path.expanduser(f"{path}{igame.title}.desktop"), 0o755)
-        return True
 
     # Windows
     elif platform.system() == "Windows":

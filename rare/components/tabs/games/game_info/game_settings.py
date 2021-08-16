@@ -118,9 +118,6 @@ class GameSettings(QWidget, Ui_GameSettings):
         if self.change:
             # Dont use Proton
             if i == 0:
-                self.proton_prefix.setEnabled(False)
-                self.wrapper_widget.setEnabled(True)
-                self.linux_settings.wine_groupbox.setEnabled(True)
                 if f"{self.game.app_name}" in self.core.lgd.config.sections():
                     if self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback=False):
                         self.core.lgd.config.remove_option(self.game.app_name, "wrapper")
@@ -133,6 +130,13 @@ class GameSettings(QWidget, Ui_GameSettings):
                         self.core.lgd.config.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH")
                     if not self.core.lgd.config[self.game.app_name + ".env"]:
                         self.core.lgd.config.remove_section(self.game.app_name + ".env")
+                self.proton_prefix.setEnabled(False)
+                # lk: TODO: This has to be fixed properly.
+                # lk: It happens because of the widget update. Mask it for now behind disabling the save button
+                self.wrapper.setText(self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback=""))
+                self.wrapper_button.setDisabled(True)
+                self.wrapper_widget.setEnabled(True)
+                self.linux_settings.wine_groupbox.setEnabled(True)
             else:
                 self.proton_prefix.setEnabled(True)
                 self.wrapper_widget.setEnabled(False)

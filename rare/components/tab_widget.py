@@ -18,6 +18,7 @@ from rare.utils.models import InstallQueueItemModel, InstallOptionsModel
 
 
 class TabWidget(QTabWidget):
+    quit_app = pyqtSignal(int)
     delete_presence = pyqtSignal()
 
     def __init__(self, core: LegendaryCore, parent, offline):
@@ -52,8 +53,10 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
 
+        self.mini_widget = MiniWidget(core)
+        self.mini_widget.quit_app.connect(self.quit_app.emit)
         account_action = QWidgetAction(self)
-        account_action.setDefaultWidget(MiniWidget(core))
+        account_action.setDefaultWidget(self.mini_widget)
         account_button = TabButtonWidget(core, 'mdi.account-circle', 'Account')
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)
@@ -78,13 +81,22 @@ class TabWidget(QTabWidget):
             # show uninstalled info
             self.games_tab.default_widget.game_list.show_uninstalled_info.connect(self.games_tab.show_uninstalled)
             # install dlc
-            self.games_tab.game_info.dlc_tab.install_dlc.connect(self.install_game)
+            self.games_tab.game_info.dlc_tab.install_dlc.connect(
+                lambda app_name, update: self.install_game(
+                    InstallOptionsModel(app_name=app_name),
+                    update=update))
 
             # install game
-            self.games_tab.uninstalled_info_widget.info.install_game.connect(self.install_game)
+            self.games_tab.uninstalled_info_widget.info.install_game.connect(
+                lambda app_name: self.install_game(
+                    InstallOptionsModel(app_name=app_name)))
             # repair game
-            self.games_tab.game_info.info.verify_game.connect(lambda app_name: self.start_download(
-                InstallOptionsModel(app_name, core.get_installed_game(app_name).install_path, repair=True)))
+            self.games_tab.game_info.info.verify_game.connect(
+                lambda app_name: self.install_game(
+                    InstallOptionsModel(app_name=app_name,
+                                        base_path=core.get_installed_game(app_name).install_path,
+                                        repair=True),
+                    silent=True))
 
             # Finished sync
             self.cloud_saves.finished.connect(self.finished_sync)
@@ -95,10 +107,11 @@ class TabWidget(QTabWidget):
         self.tabBarClicked.connect(lambda x: self.games_tab.layout.setCurrentIndex(0) if x == 0 else None)
         self.setIconSize(QSize(25, 25))
 
-    def install_game(self, app_name, disable_path=False):
+    # TODO; maybe pass InstallOptionsModel only, not split arguments
+    def install_game(self, options: InstallOptionsModel, update=False, silent=False):
         install_dialog = InstallDialog(self.core,
-                                       InstallQueueItemModel(options=InstallOptionsModel(app_name=app_name)),
-                                       update=disable_path, parent=self)
+                                       InstallQueueItemModel(options=options),
+                                       update=update, silent=silent, parent=self)
         install_dialog.result_ready.connect(self.on_install_dialog_closed)
         install_dialog.execute()
 
@@ -107,11 +120,11 @@ class TabWidget(QTabWidget):
             self.setCurrentIndex(1)
             self.start_download(download_item)
 
-    def start_download(self, options):
+    def start_download(self, download_item: InstallQueueItemModel):
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
         self.setCurrentIndex(1)
-        self.downloadTab.install_game(options)
+        self.downloadTab.install_game(download_item)
 
     def game_imported(self, app_name: str):
         igame = self.core.get_installed_game(app_name)

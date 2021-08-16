@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, QTimer
+from PyQt5.QtCore import Qt, QSettings, QTimer, pyqtSignal
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
@@ -13,9 +13,11 @@ logger = getLogger("Window")
 
 
 class MainWindow(QMainWindow):
+    quit_app = pyqtSignal(int)
 
     def __init__(self, core: LegendaryCore, args):
         super(MainWindow, self).__init__()
+        self.setAttribute(Qt.WA_DeleteOnClose)
         self.settings = QSettings()
         self.core = core
         self.offline = args.offline
@@ -28,6 +30,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Rare - GUI for legendary")
         self.tab_widget = TabWidget(core, self, args.offline)
+        self.tab_widget.quit_app.connect(self.quit_app.emit)
         self.setCentralWidget(self.tab_widget)
         if not args.offline:
             self.rpc = DiscordRPC(core)

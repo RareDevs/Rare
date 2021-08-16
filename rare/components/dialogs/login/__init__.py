@@ -1,10 +1,9 @@
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QStackedLayout, QWidget, QPushButton
 
 from custom_legendary.core import LegendaryCore
 # Login Opportunities: Browser, Import
 from rare.components.dialogs.login.browser_login import BrowserLogin
-from rare.components.dialogs.login.import_widget import ImportWidget
+from rare.components.dialogs.login.import_login import ImportLogin
 
 
 class LoginDialog(QDialog):
@@ -17,7 +16,7 @@ class LoginDialog(QDialog):
         self.setWindowTitle("Rare - Login")
         self.setFixedWidth(350)
         self.setFixedHeight(450)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
+
         self.init_ui()
 
     def init_ui(self):
@@ -54,7 +53,7 @@ class LoginDialog(QDialog):
         self.browser_widget.back.clicked.connect(lambda: self.layout.setCurrentIndex(0))
         self.layout.addWidget(self.browser_widget)
 
-        self.import_widget = ImportWidget(self.core)
+        self.import_widget = ImportLogin(self.core)
         self.import_widget.back.clicked.connect(lambda: self.layout.setCurrentIndex(0))
         self.import_widget.success.connect(self.success)
         self.layout.addWidget(self.import_widget)

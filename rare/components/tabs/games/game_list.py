@@ -151,19 +151,19 @@ class GameList(QStackedWidget):
         return icon_widget, list_widget
 
     def add_installed_widget(self, igame):
-        if os.path.exists(f"{self.IMAGE_DIR}/{igame.app_name}/FinalArt.png"):
-            pixmap = QPixmap(f"{self.IMAGE_DIR}/{igame.app_name}/FinalArt.png")
-        elif os.path.exists(f"{self.IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png"):
+        if os.path.exists(os.path.join(self.IMAGE_DIR, igame.app_name, "FinalArt.png")):
+            pixmap = QPixmap(os.path.exists(os.path.join(self.IMAGE_DIR, igame.app_name, "FinalArt.png")))
+        elif os.path.exists(os.path.join(self.IMAGE_DIR, igame.app_name, "DieselGameBoxTall.png")):
             pixmap = QPixmap(f"{self.IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png")
-        elif os.path.exists(f"{self.IMAGE_DIR}/{igame.app_name}/DieselGameBoxLogo.png"):
-            pixmap = QPixmap(f"{self.IMAGE_DIR}/{igame.app_name}/DieselGameBoxLogo.png")
+        elif os.path.exists(os.path.join(self.IMAGE_DIR, igame.app_name, "DieselGameBoxLogo.png")):
+            pixmap = QPixmap(os.path.join(self.IMAGE_DIR, igame.app_name, "DieselGameBoxLogo.png"))
         else:
             logger.warning(f"No Image found: {igame.title}")
-            pixmap = None
+            pixmap = QPixmap()
 
         if pixmap.isNull():
             logger.info(igame.title + " has a corrupt image.")
-            download_image(igame, force=True)
+            download_image(self.core.get_game(igame.app_name), force=True)
             pixmap = QPixmap(f"{self.IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png")
 
         icon_widget = GameWidgetInstalled(igame, self.core, pixmap, self.offline)

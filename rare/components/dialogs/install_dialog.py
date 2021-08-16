@@ -169,12 +169,6 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)
-
-        if dl_item.res.warnings:
-            self.warn_label.setVisible(True)
-            self.warn_message.setText("\n".join(str(i) for i in dl_item.res.warnings))
-            self.warn_message.setVisible(True)
-
         if self.silent:
             self.close()
 
@@ -252,7 +246,7 @@ class InstallInfoWorker(QRunnable):
                 self.signals.result.emit(download)
             else:
                 self.signals.failed.emit("\n".join(str(i) for i in download.res.failures))
-        except RuntimeError as e:
+        except Exception as e:
             self.signals.failed.emit(str(e))
         self.signals.finished.emit()
 
