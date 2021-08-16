@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_LoginDialog(object):
     def setupUi(self, LoginDialog):
         LoginDialog.setObjectName("LoginDialog")
-        LoginDialog.resize(492, 311)
+        LoginDialog.resize(498, 311)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -103,7 +103,7 @@ class Ui_LoginDialog(object):
         self.dialog_layout.addLayout(self.button_layout)
 
         self.retranslateUi(LoginDialog)
-        self.login_stack.setCurrentIndex(0)
+        self.login_stack.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(LoginDialog)
 
     def retranslateUi(self, LoginDialog):
@@ -115,7 +115,8 @@ class Ui_LoginDialog(object):
         self.login_import_label.setText(_translate("LoginDialog", "Import from Epic Games Launcher"))
         self.login_import_radio.setText(_translate("LoginDialog", "Import"))
         self.login_browser_radio.setText(_translate("LoginDialog", "Browser"))
-        self.success_label.setText(_translate("LoginDialog", "<h2>Login Succeful!</h2>"))
+        self.success_label.setText(_translate("LoginDialog",
+                                              "<html><head/><body><h2 style=\" margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:x-large; font-weight:600;\">Login Successful!</span></h2></body></html>"))
         self.exit_button.setText(_translate("LoginDialog", "Exit"))
         self.back_button.setText(_translate("LoginDialog", "Back"))
         self.next_button.setText(_translate("LoginDialog", "Next"))
@@ -123,7 +124,6 @@ class Ui_LoginDialog(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     LoginDialog = QtWidgets.QDialog()
     ui = Ui_LoginDialog()

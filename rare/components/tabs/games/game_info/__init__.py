@@ -130,11 +130,9 @@ class GameInfo(QWidget, Ui_GameInfo):
     def update_game(self, app_name):
         self.game = self.core.get_game(app_name)
         self.igame = self.core.get_installed_game(app_name)
-
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
         pixmap = get_pixmap(app_name)
-
         w = 200
         pixmap = pixmap.scaled(w, int(w * 4 / 3))
         self.image.setPixmap(pixmap)

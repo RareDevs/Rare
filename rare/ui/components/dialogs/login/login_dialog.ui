@@ -6,7 +6,7 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>492</width>
+                <width>498</width>
                 <height>311</height>
             </rect>
         </property>
@@ -77,7 +77,7 @@
                         <enum>QFrame::Raised</enum>
                     </property>
                     <property name="currentIndex">
-                        <number>0</number>
+                        <number>1</number>
                     </property>
                     <widget class="QWidget" name="login_page">
                         <property name="enabled">
@@ -167,7 +167,11 @@
                             <item>
                                 <widget class="QLabel" name="success_label">
                                     <property name="text">
-                                        <string>&lt;h2&gt;Login Succeful!&lt;/h2&gt;</string>
+                                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h2 style=&quot;
+                                            margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px;
+                                            -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot;
+                                            font-size:x-large; font-weight:600;&quot;&gt;Login Successful!&lt;/span&gt;&lt;/h2&gt;&lt;/body&gt;&lt;/html&gt;
+                                        </string>
                                     </property>
                                 </widget>
                             </item>
