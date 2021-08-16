@@ -2,7 +2,7 @@ import json
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal, QSettings
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QDialog
 from requests.exceptions import ConnectionError
 
@@ -66,81 +66,73 @@ class SteamThread(QThread):
         self.progress.emit(100)
 
 
-class LoginThread(QThread):
-    login = pyqtSignal()
-    start_app = pyqtSignal(bool)  # offline
-
-    def __init__(self, core: LegendaryCore):
-        super(LoginThread, self).__init__()
-        self.core = core
-
-    def run(self):
-        logger.info("Try if you are logged in")
-        try:
-            if self.core.login():
-                logger.info("You are logged in")
-                self.start_app.emit(False)
-            else:
-                self.run()
-        except ValueError:
-            logger.info("You are not logged in. Open Login Window")
-            self.login.emit()
-        except ConnectionError as e:
-            logger.warning(e)
-            self.start_app.emit(True)
-
-
 class LaunchDialog(QDialog, Ui_LaunchDialog):
+    quit_app = pyqtSignal(int)
     start_app = pyqtSignal(bool)
-    finished = False
+    completed = False
 
-    def __init__(self, core: LegendaryCore, offline):
-        super(LaunchDialog, self).__init__()
+    def __init__(self, core: LegendaryCore, offline=False, parent=None):
+        super(LaunchDialog, self).__init__(parent=parent)
         self.setupUi(self)
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.core = core
+        self.offline = offline
+        self.image_thread = None
+        self.steam_thread = None
         if os.name == "nt":
-            self.finished = True
+            self.completed = True
             self.steam_info.setVisible(False)
             self.steam_prog_bar.setVisible(False)
-        self.core = core
-        if not offline:
-            self.login_thread = LoginThread(core)
-            self.login_thread.login.connect(self.login)
-            self.login_thread.start_app.connect(self.launch)
-            self.login_thread.start()
-
-        else:
-            self.launch(offline)
 
     def login(self):
-        self.hide()
-        if LoginDialog(core=self.core).login():
-            self.show()
-            self.login_thread.start()
-        else:
-            exit(0)
+        do_launch = True
+        try:
+            if self.offline:
+                pass
+            else:
+                if self.core.login():
+                    logger.info("You are logged in")
+                else:
+                    raise ValueError("You are not logged in. Open Login Window")
+        except ValueError as e:
+            logger.info(str(e))
+            do_launch = LoginDialog(core=self.core, parent=self).login()
+        except ConnectionError as e:
+            logger.warning(e)
+            self.offline = True
+        finally:
+            if do_launch:
+                self.show()
+                self.launch()
+            else:
+                self.quit_app.emit(0)
 
-    def launch(self, offline=False):
+    def launch(self):
         # self.core = core
         if not os.path.exists(p := os.path.expanduser("~/.cache/rare/images")):
             os.makedirs(p)
-        self.offline = offline
 
-        if not offline:
-
+        if not self.offline:
             self.image_info.setText(self.tr("Downloading Images"))
-            self.img_thread = ImageThread(self.core, self)
-            self.img_thread.download_progess.connect(self.update_image_progbar)
-            self.img_thread.finished.connect(self.finish)
-            self.img_thread.start()
+            self.image_thread = ImageThread(self.core, self)
+            self.image_thread.download_progess.connect(self.update_image_progbar)
+            self.image_thread.finished.connect(self.finish)
+            self.image_thread.finished.connect(lambda: self.image_info.setText(self.tr("Ready")))
+            self.image_thread.finished.connect(self.image_thread.quit)
+            self.image_thread.finished.connect(self.image_thread.deleteLater)
+            self.image_thread.start()
             # not disabled and not windows
             if (not QSettings().value("disable_protondb", False, bool)) and (not os.name == "nt"):
                 self.steam_thread = SteamThread(self.core, self)
                 self.steam_thread.progress.connect(self.update_steam_prog_bar)
                 self.steam_thread.action.connect(lambda x: self.steam_info.setText(x))
                 self.steam_thread.finished.connect(self.finish)
+                self.steam_thread.finished.connect(lambda: self.steam_info.setText(self.tr("Ready")))
+                self.steam_thread.finished.connect(self.steam_thread.quit)
+                self.steam_thread.finished.connect(self.steam_thread.deleteLater)
                 self.steam_thread.start()
             else:
-                self.finished = True
+                self.completed = True
                 self.steam_info.setVisible(False)
                 self.steam_prog_bar.setVisible(False)
 
@@ -151,10 +143,10 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         self.image_prog_bar.setValue(i)
 
     def finish(self):
-        if self.finished:
+        if self.completed:
             self.image_info.setText(self.tr("Starting..."))
             self.image_prog_bar.setValue(100)
             self.steam_prog_bar.setValue(100)
             self.start_app.emit(self.offline)
         else:
-            self.finished = True
+            self.completed = True

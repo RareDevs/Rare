@@ -171,7 +171,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.close()
 
     def on_worker_failed(self, message: str):
-        error_text = self.tr("Error")
+        error_text = self.tr("Error, check selected options.")
         self.download_size_info_label.setText(error_text)
         self.install_size_info_label.setText(error_text)
         QMessageBox.critical(self, self.windowTitle(), message)
@@ -241,7 +241,7 @@ class InstallInfoWorker(QRunnable):
                 sdl_prompt=lambda app_name, title: self.dl_item.options.sdl_list
             ))
             self.signals.result.emit(download)
-        except RuntimeError as e:
+        except Exception as e:
             self.signals.failed.emit(str(e))
         self.signals.finished.emit()
 

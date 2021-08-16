@@ -1,5 +1,5 @@
 include README.md
 include rare/languages/*.qm
-include rare/styles/*
-include rare/styles/qss/*
-include rare/styles/colors/*
+include rare/resources/images/*
+recursive-include rare/resources/stylesheets/* *
+include rare/resources/colors/*

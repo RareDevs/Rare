@@ -46,7 +46,7 @@ else:
 src_files += [
     'LICENSE',
     'README.md',
-    'rare/styles/Logo.ico',
+    'rare/resources/images/Rare.ico',
 ]
 
 # Dependencies are automatically detected, but it might need fine tuning.
@@ -65,7 +65,7 @@ setup(name='Rare',
       executables=[
           Executable('rare/__main__.py',
                      targetName=name,
-                     icon='rare/styles/Logo.ico',
+                     icon='rare/resources/images/Rare.ico',
                      base=base,
                      shortcutName=shortcutName,
                      shortcutDir=shortcutDir,

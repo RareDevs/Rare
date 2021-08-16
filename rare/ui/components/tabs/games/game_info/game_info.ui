@@ -250,7 +250,7 @@
        <property name="currentIndex">
         <number>0</number>
        </property>
-       <widget class="QWidget" name="installed_page" native="true">
+       <widget class="QWidget" name="installed_page">
         <layout class="QVBoxLayout" name="installed_layout">
          <property name="leftMargin">
           <number>0</number>
@@ -333,7 +333,7 @@
          <item>
           <widget class="QPushButton" name="uninstall_button">
            <property name="styleSheet">
-            <string notr="true">background-color: #900</string>
+            <string notr="true"/>
            </property>
            <property name="text">
             <string>Uninstall Game</string>
@@ -347,7 +347,7 @@
          <item>
           <widget class="QPushButton" name="install_button">
            <property name="styleSheet">
-            <string notr="true">background-color: #090</string>
+            <string notr="true"/>
            </property>
            <property name="text">
             <string>Install Game</string>
