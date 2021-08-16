@@ -297,53 +297,12 @@ class GameList(QStackedWidget):
                     self.widgets.pop(widgets[0].game.app_name)
 
                     # QWidget().setLayout(self.icon_layout)
-                    icon_layout = FlowLayout()
 
-                    # QWidget().setLayout(self.list_layout)
-                    list_layout = QVBoxLayout()
 
                     igame = self.core.get_installed_game(app_name)
                     self.add_installed_widget(igame)
 
-                    for igame in sorted(self.core.get_installed_list(), key=lambda x: x.title):
-                        i_widget, l_widget = self.widgets[igame.app_name]
-                        icon_layout.addWidget(i_widget)
-                        list_layout.addWidget(l_widget)
-
-                    self.uninstalled_names = []
-                    installed_names = [i.app_name for i in self.core.get_installed_list()]
-                    # get Uninstalled games
-                    games, self.dlcs = self.core.get_game_and_dlc_list()
-                    for game in sorted(games, key=lambda x: x.app_title):
-                        if not game.app_name in installed_names:
-                            self.uninstalled_names.append(game)
-                    for game in self.uninstalled_names:
-                        i_widget, list_widget = self.widgets[game.app_name]
-                        icon_layout.addWidget(i_widget)
-                        list_layout.addWidget(list_widget)
-
-                    QWidget().setLayout(self.icon_layout)
-                    QWidget().setLayout(self.list_layout)
-
-                    self.icon_widget = QWidget()
-                    self.list_widget = QWidget()
-
-                    self.icon_widget.setLayout(icon_layout)
-                    self.list_widget.setLayout(list_layout)
-
-                    self.list_scrollarea.setWidget(QWidget())
-                    self.icon_scrollarea.setWidget(QWidget())
-
-                    self.icon_scrollarea.setWidget(self.icon_widget)
-                    self.list_scrollarea.setWidget(self.list_widget)
-
-                    self.icon_layout = icon_layout
-                    self.list_layout = list_layout
-
-                    self.icon_widget.setLayout(self.icon_layout)
-                    self.list_widget.setLayout(self.list_layout)
-
-                    self.update()
+                    self._update_games()
 
                 # uninstalled
                 elif not self.core.is_installed(widgets[0].game.app_name) and isinstance(widgets[0],
@@ -356,8 +315,8 @@ class GameList(QStackedWidget):
                     game = self.core.get_game(app_name, True)
                     self.add_uninstalled_widget(game)
 
-                    self.icon_layout.addWidget(self.widgets[app_name][0])
-                    self.list_layout.addWidget(self.widgets[app_name][1])
+                    self._update_games()
+
         else:
             installed_names = [i.app_name for i in self.core.get_installed_list()]
             # get Uninstalled games
@@ -407,3 +366,49 @@ class GameList(QStackedWidget):
                     i_widget, list_widget = self.widgets[name]
                     self.icon_layout.addWidget(i_widget)
                     self.list_layout.addWidget(list_widget)
+
+    def _update_games(self):
+        # new layouts to remove from old layout
+        icon_layout = FlowLayout()
+        # QWidget().setLayout(self.list_layout)
+        list_layout = QVBoxLayout()
+
+        for igame in sorted(self.core.get_installed_list(), key=lambda x: x.title):
+            i_widget, l_widget = self.widgets[igame.app_name]
+            icon_layout.addWidget(i_widget)
+            list_layout.addWidget(l_widget)
+
+        self.uninstalled_names = []
+        installed_names = [i.app_name for i in self.core.get_installed_list()]
+        # get Uninstalled games
+        games, self.dlcs = self.core.get_game_and_dlc_list()
+        for game in sorted(games, key=lambda x: x.app_title):
+            if not game.app_name in installed_names:
+                self.uninstalled_names.append(game)
+        for game in self.uninstalled_names:
+            i_widget, list_widget = self.widgets[game.app_name]
+            icon_layout.addWidget(i_widget)
+            list_layout.addWidget(list_widget)
+
+        QWidget().setLayout(self.icon_layout)
+        QWidget().setLayout(self.list_layout)
+
+        self.icon_widget = QWidget()
+        self.list_widget = QWidget()
+
+        self.icon_widget.setLayout(icon_layout)
+        self.list_widget.setLayout(list_layout)
+
+        self.list_scrollarea.setWidget(QWidget())
+        self.icon_scrollarea.setWidget(QWidget())
+
+        self.icon_scrollarea.setWidget(self.icon_widget)
+        self.list_scrollarea.setWidget(self.list_widget)
+
+        self.icon_layout = icon_layout
+        self.list_layout = list_layout
+
+        self.icon_widget.setLayout(self.icon_layout)
+        self.list_widget.setLayout(self.list_layout)
+
+        self.update()

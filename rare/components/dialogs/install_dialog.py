@@ -95,7 +95,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.reject_close = True
 
         self.resize(self.minimumSize())
-        self.setFixedSize(self.size())
+        # self.setFixedSize(self.size())
+
+        self.verify_clicked()
 
     def execute(self):
         if self.silent:
@@ -154,9 +156,6 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
     def on_worker_result(self, dl_item: InstallDownloadModel):
         self.dl_item.download = dl_item
-        # TODO: Check available size and act accordingly
-        # TODO:     (show message in label | color it | disable install unless ignore)
-        # TODO: Find a way to get the installation size delta and show it
         download_size = self.dl_item.download.analysis.dl_size
         install_size = self.dl_item.download.analysis.install_size
         if download_size:
@@ -175,6 +174,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.warn_label.setVisible(True)
             self.warn_message.setText("\n".join(str(i) for i in dl_item.res.warnings))
             self.warn_message.setVisible(True)
+
         if self.silent:
             self.close()
 

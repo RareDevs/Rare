@@ -147,8 +147,6 @@ class DownloadTab(QWidget):
                 if len(self.update_widgets) == 0:
                     self.update_text.setVisible(True)
 
-            for i in self.update_widgets.values():
-                i.update_button.setDisabled(False)
 
             self.finished.emit((True, app_name))
 
@@ -165,7 +163,7 @@ class DownloadTab(QWidget):
         elif text == "stop":
             self.reset_infos()
             self.active_game = None
-            self.finished.emit((False, None))
+            self.finished.emit((False, ""))
             if self.dl_queue:
                 self.start_installation(self.dl_queue[0])
 

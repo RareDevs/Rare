@@ -110,9 +110,10 @@ class App(QApplication):
         self.tray_icon.start_rare.triggered.connect(self.mainwindow.show)
         self.tray_icon.activated.connect(self.tray)
         if not offline:
-            self.mainwindow.tab_widget.downloadTab.finished.connect(lambda update: self.tray_icon.showMessage(
-                self.tr("Download finished"), self.tr("Download finished. Game is playable now"),
-                QSystemTrayIcon.Information, 4000) if update else None)
+            self.mainwindow.tab_widget.downloadTab.finished.connect(lambda x: self.tray_icon.showMessage(
+                self.tr("Download finished"),
+                self.tr("Download finished. {} is playable now").format(self.core.get_game(x[1]).app_title),
+                QSystemTrayIcon.Information, 4000) if x[0] else None)
 
         if not self.args.silent:
             self.mainwindow.show()
