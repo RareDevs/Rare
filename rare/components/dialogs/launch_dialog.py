@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QDialog
 from requests.exceptions import ConnectionError
 
 from custom_legendary.core import LegendaryCore
+from rare import image_dir
 from rare.components.dialogs.login import LoginDialog
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.utils import download_images
@@ -62,8 +63,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
     def launch(self):
         # self.core = core
-        if not os.path.exists(p := os.path.expanduser("~/.cache/rare/images")):
-            os.makedirs(p)
+        if not os.path.exists(image_dir):
+            os.makedirs(image_dir)
 
         if not self.offline:
             self.image_info.setText(self.tr("Downloading Images"))

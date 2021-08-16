@@ -3,7 +3,7 @@ import os
 import platform
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap, QKeyEvent
+from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTabWidget, QTreeView
 from qtawesome import icon
 
@@ -13,7 +13,7 @@ from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.json_formatter import QJsonModel
 from rare.utils.steam_grades import SteamWorker
-from rare.utils.utils import IMAGE_DIR
+from rare.utils.utils import get_pixmap
 
 
 class UninstalledTabInfo(QTabWidget):
@@ -84,19 +84,10 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
 
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
-        if os.path.exists(f"{IMAGE_DIR}/{self.game.app_name}/FinalArt.png"):
-            pixmap = QPixmap(f"{IMAGE_DIR}/{self.game.app_name}/FinalArt.png")
-        elif os.path.exists(f"{IMAGE_DIR}/{self.game.app_name}/DieselGameBoxTall.png"):
-            pixmap = QPixmap(f"{IMAGE_DIR}/{self.game.app_name}/DieselGameBoxTall.png")
-        elif os.path.exists(f"{IMAGE_DIR}/{self.game.app_name}/DieselGameBoxLogo.png"):
-            pixmap = QPixmap(f"{IMAGE_DIR}/{self.game.app_name}/DieselGameBoxLogo.png")
-        else:
-            # logger.warning(f"No Image found: {self.game.title}")
-            pixmap = None
-        if pixmap:
-            w = 200
-            pixmap = pixmap.scaled(w, int(w * 4 / 3))
-            self.image.setPixmap(pixmap)
+        pixmap = get_pixmap(app_name)
+        w = 200
+        pixmap = pixmap.scaled(w, int(w * 4 / 3))
+        self.image.setPixmap(pixmap)
 
         self.app_name.setText(self.game.app_name)
         self.version.setText(self.game.app_version)

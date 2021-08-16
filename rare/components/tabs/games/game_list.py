@@ -1,13 +1,10 @@
-import os
 from logging import getLogger
 
 import psutil
 from PyQt5.QtCore import Qt, pyqtSignal, QSettings, QTimer
-from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QScrollArea, QWidget, QLabel, QVBoxLayout, QStackedWidget
 
 from custom_legendary.core import LegendaryCore
-from rare import data_dir
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 from rare.components.tabs.games.game_widgets.installed_icon_widget import GameWidgetInstalled
 from rare.components.tabs.games.game_widgets.installed_list_widget import InstalledListWidget
@@ -15,7 +12,7 @@ from rare.components.tabs.games.game_widgets.uninstalled_icon_widget import Icon
 from rare.components.tabs.games.game_widgets.uninstalled_list_widget import ListWidgetUninstalled
 from rare.utils.extra_widgets import FlowLayout
 from rare.utils.models import InstallOptionsModel
-from rare.utils.utils import download_image
+from rare.utils.utils import download_image, get_uninstalled_pixmap, get_pixmap
 
 logger = getLogger("Game list")
 
@@ -74,7 +71,6 @@ class GameList(QStackedWidget):
         self.list_layout = QVBoxLayout()
         self.list_layout.addWidget(QLabel(self.info_text))
 
-        self.IMAGE_DIR = os.path.join(data_dir, "images")
         self.updates = []
         self.widgets = {}
         if not self.offline:
@@ -128,17 +124,11 @@ class GameList(QStackedWidget):
             self.filter(filter_games)
 
     def add_uninstalled_widget(self, game):
-        if os.path.exists(f"{self.IMAGE_DIR}/{game.app_name}/UninstalledArt.png"):
-            pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
-
-            if pixmap.isNull():
-                logger.info(game.app_title + " has a corrupt image.")
-                download_image(game, force=True)
-                pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
-        else:
-            logger.warning(f"No Image found: {game.app_title}")
+        pixmap = get_uninstalled_pixmap(game.app_name)
+        if pixmap.isNull():
+            logger.info(game.app_title + " has a corrupt image. Reloading...")
             download_image(game, force=True)
-            pixmap = QPixmap(f"{self.IMAGE_DIR}/{game.app_name}/UninstalledArt.png")
+            pixmap = get_uninstalled_pixmap(game.app_name)
 
         icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
         icon_widget.show_uninstalled_info.connect(self.show_install_info)
@@ -151,20 +141,12 @@ class GameList(QStackedWidget):
         return icon_widget, list_widget
 
     def add_installed_widget(self, igame):
-        if os.path.exists(os.path.join(self.IMAGE_DIR, igame.app_name, "FinalArt.png")):
-            pixmap = QPixmap(os.path.exists(os.path.join(self.IMAGE_DIR, igame.app_name, "FinalArt.png")))
-        elif os.path.exists(os.path.join(self.IMAGE_DIR, igame.app_name, "DieselGameBoxTall.png")):
-            pixmap = QPixmap(f"{self.IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png")
-        elif os.path.exists(os.path.join(self.IMAGE_DIR, igame.app_name, "DieselGameBoxLogo.png")):
-            pixmap = QPixmap(os.path.join(self.IMAGE_DIR, igame.app_name, "DieselGameBoxLogo.png"))
-        else:
-            logger.warning(f"No Image found: {igame.title}")
-            pixmap = QPixmap()
+        pixmap = get_pixmap(igame.app_name)
 
         if pixmap.isNull():
             logger.info(igame.title + " has a corrupt image.")
             download_image(self.core.get_game(igame.app_name), force=True)
-            pixmap = QPixmap(f"{self.IMAGE_DIR}/{igame.app_name}/DieselGameBoxTall.png")
+            pixmap = get_pixmap(igame.app_name)
 
         icon_widget = GameWidgetInstalled(igame, self.core, pixmap, self.offline)
         # self.icon_layout.addWidget(icon_widget)
@@ -297,7 +279,6 @@ class GameList(QStackedWidget):
                     self.widgets.pop(widgets[0].game.app_name)
 
                     # QWidget().setLayout(self.icon_layout)
-
 
                     igame = self.core.get_installed_game(app_name)
                     self.add_installed_widget(igame)

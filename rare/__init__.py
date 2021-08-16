@@ -24,3 +24,5 @@ else:
     data_dir = os.path.expanduser("~/.local/share/rare/")
 if not os.path.exists(data_dir):
     os.makedirs(data_dir)
+
+image_dir = os.path.join(data_dir, "images")
