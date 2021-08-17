@@ -3,7 +3,7 @@ from dataclasses import field, dataclass
 from multiprocessing import Queue
 
 from custom_legendary.downloader.manager import DLManager
-from custom_legendary.models.downloading import AnalysisResult
+from custom_legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from custom_legendary.models.game import Game, InstalledGame
 
 
@@ -27,6 +27,7 @@ class InstallDownloadModel:
     igame: InstalledGame
     repair: bool
     repair_file: str
+    res: ConditionCheckResult
 
 
 @dataclass

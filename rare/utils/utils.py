@@ -229,7 +229,7 @@ def create_rare_desktop_link(type_of_link):
         else:
             return
 
-        with open(f"{path}Rare.desktop", "w") as desktop_file:
+        with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
             desktop_file.write("[Desktop Entry]\n"
                                f"Name=Rare\n"
                                f"Type=Application\n"
@@ -239,7 +239,7 @@ def create_rare_desktop_link(type_of_link):
                                "StartupWMClass=rare\n"
                                )
             desktop_file.close()
-        os.chmod(os.path.expanduser(f"{path}Rare.desktop"), 0o755)
+        os.chmod(os.path.expanduser(os.path.join(path, "Rare.desktop")), 0o755)
 
     elif platform.system() == "Windows":
         # Target of shortcut

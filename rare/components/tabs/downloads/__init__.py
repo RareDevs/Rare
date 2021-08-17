@@ -147,7 +147,6 @@ class DownloadTab(QWidget):
                 if len(self.update_widgets) == 0:
                     self.update_text.setVisible(True)
 
-
             self.finished.emit((True, app_name))
 
             self.reset_infos()
