@@ -16,7 +16,7 @@ class InstallOptionsModel:
     no_install: bool = False
     ignore_space_req: bool = False
     force: bool = False
-    sdl_list: list[str] = field(default_factory=lambda: [''])
+    sdl_list: list = field(default_factory=lambda: [''])
 
 
 @dataclass
