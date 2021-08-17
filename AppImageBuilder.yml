@@ -11,7 +11,7 @@ script:
   - cp -r Rare/rare AppDir/usr/src/rare
   - cp -r Rare/custom_legendary AppDir/usr/src/
   - cp AppDir/usr/src/rare/__main__.py AppDir/usr/src/__main__.py
-  - cp AppDir/usr/src/rare/styles/Logo.png AppDir/usr/share/icons/hicolor/256x256/apps/
+  - cp AppDir/usr/src/rare/resources/Logo.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
   - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir -r Rare/requirements.txt
 

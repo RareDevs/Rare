@@ -26,25 +26,6 @@ jobs:
           python setup.py sdist bdist_wheel
           twine upload dist/*
 
-  aur-publish:
-    if: "!github.event.release.prerelease"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Generate PKGBUILD
-        run:
-          ./.github/GenPKG.sh
-
-      - name: Upload
-        uses: KSXGitHub/github-actions-deploy-aur@v2.2.3
-        with:
-          pkgname: rare
-          pkgbuild: ./.github/rare/PKGBUILD
-          commit_username: Dummerle
-          commit_email: ${{ secrets.MAIL }}
-          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: Update AUR package
-
   deb-package:
     runs-on: ubuntu-latest
     steps:
@@ -53,7 +34,6 @@ jobs:
         run: |
           sudo apt install python3-all python3-stdeb dh-python python3-setuptools python3-wheel
           sudo pip install -r requirements.txt
-
 
       - name: run python setup
         run: |
@@ -87,11 +67,16 @@ jobs:
           sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
           sudo chmod +x /usr/local/bin/appimagetool
           sudo pip3 install appimage-builder
+      - name: Prepare Build directory
+        run: |
+          mkdir build
+          cp AppImageBuilder.yml build/
+          cd build
+
       - name: Build Appimage
         run: |
-          cd build
           appimage-builder --skip-test
-          mv Rare-*.AppImage Rare.AppImage
+          mv Rare-*.AppImage ../Rare.AppImage
 
       - name: Upload to GitHub
         uses: svenstaro/upload-release-action@2.2.1
