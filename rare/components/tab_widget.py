@@ -96,7 +96,8 @@ class TabWidget(QTabWidget):
                     InstallOptionsModel(app_name=app_name,
                                         base_path=core.get_installed_game(app_name).install_path,
                                         repair=True),
-                    silent=True))
+                    silent=True)
+            )
 
             # Finished sync
             self.cloud_saves.finished.connect(self.finished_sync)

@@ -7,6 +7,7 @@ from custom_legendary.models.downloading import AnalysisResult
 from custom_legendary.models.game import Game, InstalledGame
 
 
+@dataclass
 class InstallOptionsModel:
     app_name: str
     base_path: str = os.path.expanduser("~/legendary")
