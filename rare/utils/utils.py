@@ -223,18 +223,22 @@ def create_rare_desktop_link(type_of_link):
     # Linux
     if platform.system() == "Linux":
         if type_of_link == "desktop":
-            path = os.path.expanduser(f"~/Desktop/")
+            path = os.path.expanduser("~/Desktop/")
         elif type_of_link == "start_menu":
             path = os.path.expanduser("~/.local/share/applications/")
         else:
             return
 
+        if p := os.environ.get("APPIMAGE"):
+            executable = p
+        else:
+            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
         with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
             desktop_file.write("[Desktop Entry]\n"
                                f"Name=Rare\n"
                                f"Type=Application\n"
                                f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
-                               f"Exec={os.path.abspath(sys.argv[0])}\n"
+                               f"Exec={executable}\n"
                                "Terminal=false\n"
                                "StartupWMClass=rare\n"
                                )
@@ -293,12 +297,16 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
             return False
         if not os.path.exists(path):
             return False
+        if p := os.environ.get("APPIMAGE"):
+            executable = p
+        else:
+            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
         with open(f"{path}{igame.title}.desktop", "w") as desktop_file:
             desktop_file.write("[Desktop Entry]\n"
                                f"Name={igame.title}\n"
                                f"Type=Application\n"
                                f"Icon={icon}.png\n"
-                               f"Exec=rare launch {app_name}\n"
+                               f"Exec={executable} launch {app_name}\n"
                                "Terminal=false\n"
                                "StartupWMClass=rare-game\n"
                                )

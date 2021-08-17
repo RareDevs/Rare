@@ -1,10 +1,9 @@
 # appimage-builder recipe see https://appimage-builder.readthedocs.io for details
 version: 1
 
-
 script:
   # Remove any previous build
-  - rm -rf AppDir Rare  | true
+  - rm -rf AppDir Rare | true
   # Make usr and icons dirs
   - mkdir -p AppDir/usr/src
   - mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps/
@@ -15,7 +14,6 @@ script:
   - cp AppDir/usr/src/rare/styles/Logo.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
   - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir -r Rare/requirements.txt
-
 
 AppDir:
   path: AppDir

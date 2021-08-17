@@ -135,7 +135,7 @@ class RareSettings(QWidget, Ui_RareSettings):
 
     def create_desktop_link(self):
         if not os.path.exists(self.desktop_file):
-            utils.create_rare_desktop_link("start_menu")
+            utils.create_rare_desktop_link("desktop")
             self.desktop_link.setText(self.tr("Remove Desktop link"))
         else:
             os.remove(self.desktop_file)
