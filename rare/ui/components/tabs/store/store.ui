@@ -46,10 +46,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="games_groupbox">
-         <property name="title">
-          <string>Other nice games</string>
-         </property>
+        <widget class="QGroupBox" name="wishlist_gb">
+            <property name="title">
+                <string>Discounts from your wishlist</string>
+            </property>
         </widget>
        </item>
        <item>

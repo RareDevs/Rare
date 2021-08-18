@@ -2,8 +2,9 @@ import logging
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QFont
 from PyQt5.QtNetwork import QNetworkAccessManager
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 
 from rare.components.tabs.shop.constants import search_query
 from rare.utils.extra_widgets import ImageLabel
@@ -28,7 +29,7 @@ class GameWidget(QWidget):
         self.image = ImageLabel()
         self.layout.addWidget(self.image)
 
-        self.title_label = QLabel(json_info["title"])
+        self.title_label = QLabel(json_info.get("title"))
         self.title_label.setWordWrap(True)
         self.layout.addWidget(self.title_label)
 
@@ -75,3 +76,22 @@ class GameWidget(QWidget):
 
         data = data["data"]["Catalog"]["searchStore"]["elements"][0]
         self.init_ui(data)
+
+
+class GameWidgetDiscount(GameWidget):
+    def __init__(self, *args, **kwargs):
+        super(GameWidgetDiscount, self).__init__(*args, **kwargs)
+
+        h_layout = QHBoxLayout()
+        self.layout.addLayout(h_layout)
+
+        price = args[1]['price']['totalPrice']['fmtPrice']['originalPrice']
+        discount_price = args[1]['price']['totalPrice']['fmtPrice']['discountPrice']
+
+        price_label = QLabel(price)
+
+        font = QFont()
+        font.setStrikeOut(True)
+        price_label.setFont(font)
+        h_layout.addWidget(QLabel(discount_price if discount_price != "0" else self.tr("Free")))
+        h_layout.addWidget(price_label)

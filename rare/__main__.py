@@ -14,11 +14,6 @@ def main():
                         help="Launch Rare in background. Open it from System Tray Icon")
     parser.add_argument("--debug", action="store_true", help="Launch in debug mode")
     parser.add_argument("--offline", action="store_true", help="Launch Rare in offline mode")
-    if os.name != "nt":
-        parser.add_argument("--disable-protondb", action="store_true", dest="disable_protondb",
-                            help="Do not download and check data from ProtonDB. Disable it, if you don't need grades")
-        parser.add_argument("--enable-protondb", action="store_true", dest="enable_protondb",
-                            help="Enable ProtonDB data, after disabled")
 
     parser.add_argument("--desktop-shortcut", action="store_true", dest="desktop_shortcut",
                         help="Use this, if there is no link on desktop to start Rare")

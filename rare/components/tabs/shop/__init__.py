@@ -15,7 +15,7 @@ class Shop(QStackedWidget):
         super(Shop, self).__init__()
         self.core = core
 
-        self.shop = ShopWidget(cache_dir)
+        self.shop = ShopWidget(cache_dir, core)
         self.browse_games = BrowseGames(cache_dir)
 
         self.store_tabs = QTabWidget()

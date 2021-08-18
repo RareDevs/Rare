@@ -5,8 +5,9 @@ from PyQt5.QtCore import Qt, pyqtSignal, QStringListModel
 from PyQt5.QtNetwork import QNetworkAccessManager
 from PyQt5.QtWidgets import QWidget, QCompleter, QGroupBox, QHBoxLayout, QScrollArea
 
-from rare.components.tabs.shop.constants import search_query
-from rare.components.tabs.shop.game_widgets import GameWidget
+from custom_legendary.core import LegendaryCore
+from rare.components.tabs.shop.constants import search_query, wishlist_query
+from rare.components.tabs.shop.game_widgets import GameWidget, GameWidgetDiscount
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
 from rare.utils.extra_widgets import WaitingSpinner, FlowLayout, ButtonLineEdit
 from rare.utils.utils import QtRequestManager, get_lang
@@ -22,11 +23,12 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
     active_search_request = False
     next_search = ""
 
-    def __init__(self, path):
+    def __init__(self, path, core: LegendaryCore):
         super(ShopWidget, self).__init__()
         self.setWidgetResizable(True)
         self.setupUi(self)
         self.path = path
+        self.core = core
         self.manager = QNetworkAccessManager()
         self.free_games_widget = QWidget()
         self.free_games_widget.setLayout(FlowLayout())
@@ -53,23 +55,24 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.search_bar.returnPressed.connect(self.show_search_results)
         self.search_bar.buttonClicked.connect(self.show_search_results)
 
-        self.games_groupbox.setLayout(FlowLayout())
-        self.games_groupbox.setVisible(False)
-
         self.search_request_manager = QtRequestManager("json")
         self.search_request_manager.data_ready.connect(self.set_completer)
 
         self.search_bar.textChanged.connect(self.load_completer)
+        self.wishlist_gb.setLayout(FlowLayout())
+        self.wishlist_gb.setVisible(False)
+        self.locale = get_lang()
 
     def load_completer(self, text):
         if text != "":
-            locale = get_lang()
+
             payload = {
                 "query": search_query,
                 "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base",
                               "count": 20,
-                              "country": locale.upper(), "keywords": text, "locale": locale, "sortDir": "DESC",
-                              "allowCountries": locale.upper(),
+                              "country": self.locale.upper(), "keywords": text, "locale": self.locale,
+                              "sortDir": "DESC",
+                              "allowCountries": self.locale.upper(),
                               "start": 0, "tag": "", "withMapping": False, "withPrice": True}
             }
             self.search_request_manager.post("https://www.epicgames.com/graphql", payload)
@@ -78,9 +81,37 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         url = "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions"
         self.free_game_request_manager = QtRequestManager("json")
         self.free_game_request_manager.get(url)
-        self.free_game_request_manager.data_ready.connect(self.add_free_games)
+        self.free_game_request_manager.data_ready.connect(
+            self.add_free_games)
+
+        self.wishlist_manager = QtRequestManager("json")
+        self.wishlist_manager.data_ready.connect(self.add_wishlist)
+
+        wish_list_url = "https://www.epicgames.com/graphql"
+        self.wishlist_manager.post(wish_list_url,
+                                   payload={
+                                       "query": wishlist_query,
+                                       "variables": {
+                                           "country": self.locale.upper(),
+                                           "locale": self.locale
+                                       }
+                                   },
+                                   headers={"Authorization": self.core.egs.session.headers["Authorization"]})
+
+    def add_wishlist(self, wishlist):
+        wishlist = wishlist["data"]["Wishlist"]["wishlistItems"]["elements"]
+        discounts = 0
+        for game in wishlist:
+            if game["offer"]["price"]["totalPrice"]["discount"] > 0:
+                w = GameWidgetDiscount(self.path, game["offer"])
+                w.show_info.connect(self.show_game.emit)
+                self.wishlist_gb.layout().addWidget(w)
+                discounts += 1
+        if discounts != 0:
+            self.wishlist_gb.setVisible(True)
 
     def add_free_games(self, free_games):
+        self.free_game_request_manager.deleteLater()
         free_games = free_games["data"]["Catalog"]["searchStore"]["elements"]
         date = datetime.datetime.now()
         free_games_now = []

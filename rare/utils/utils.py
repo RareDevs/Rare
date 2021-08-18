@@ -354,12 +354,15 @@ class QtRequestManager(QObject):
         else:
             self.next_request = ["", tuple(())]
 
-    def post(self, url: str, payload: dict):
+    def post(self, url: str, payload: dict, headers: dict = None):
         if not self.request_active:
             request = QNetworkRequest(QUrl(url))
             request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
 
             payload = json.dumps(payload).encode("utf-8")
+            if headers is not None:
+                for key, value in headers.items():
+                    request.setRawHeader(key.encode(), value.encode())
 
             self.request = self.manager.post(request, payload)
             self.request_active = True

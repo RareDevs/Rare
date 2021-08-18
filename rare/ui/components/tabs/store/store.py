@@ -33,9 +33,9 @@ class Ui_ShopWidget(object):
         self.free_games_stack.setObjectName("free_games_stack")
         self.verticalLayout_2.addWidget(self.free_games_stack)
         self.verticalLayout_3.addWidget(self.free_game_group_box)
-        self.games_groupbox = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
-        self.games_groupbox.setObjectName("games_groupbox")
-        self.verticalLayout_3.addWidget(self.games_groupbox)
+        self.wishlist_gb = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.wishlist_gb.setObjectName("wishlist_gb")
+        self.verticalLayout_3.addWidget(self.wishlist_gb)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_3.addItem(spacerItem)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
@@ -49,7 +49,7 @@ class Ui_ShopWidget(object):
         _translate = QtCore.QCoreApplication.translate
         ShopWidget.setWindowTitle(_translate("ShopWidget", "Form"))
         self.free_game_group_box.setTitle(_translate("ShopWidget", "Free Games"))
-        self.games_groupbox.setTitle(_translate("ShopWidget", "Other nice games"))
+        self.wishlist_gb.setTitle(_translate("ShopWidget", "Discounts from your wishlist"))
 
 
 if __name__ == "__main__":
