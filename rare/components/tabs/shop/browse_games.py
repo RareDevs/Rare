@@ -5,11 +5,12 @@ import random
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QLabel
 
-from rare.components.tabs.shop.constants import game_query, Constants
+from rare.components.tabs.shop.constants import Constants
 from rare.components.tabs.shop.game_widgets import GameWidget
+from rare.components.tabs.shop.shop_models import BrowseModel
 from rare.ui.components.tabs.store.browse_games import Ui_browse_games
 from rare.utils.extra_widgets import FlowLayout, WaitingSpinner
-from rare.utils.utils import get_lang, QtRequestManager
+from rare.utils.utils import get_lang
 
 logger = logging.getLogger("BrowseGames")
 
@@ -21,15 +22,14 @@ class BrowseGames(QWidget, Ui_browse_games):
     tags = []
     types = []
 
-    def __init__(self, path):
+    def __init__(self, path, api_core):
         super(BrowseGames, self).__init__()
         self.setupUi(self)
+        self.api_core = api_core
         self.path = path
         self.games_widget = QWidget()
         self.games_widget.setLayout(FlowLayout())
         self.games.setWidget(self.games_widget)
-        self.manager = QtRequestManager("json")
-        self.manager.data_ready.connect(self.show_games)
 
         self.stack.addWidget(WaitingSpinner())
 
@@ -85,30 +85,16 @@ class BrowseGames(QWidget, Ui_browse_games):
         locale = get_lang()
         self.stack.setCurrentIndex(2)
         date = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.{str(random.randint(0, 999)).zfill(3)}Z]"
-        payload = {"variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base",
-                                 "count": 30, "country": locale.upper(), "keywords": "", "locale": locale,
-                                 "sortDir": "DESC", "allowCountries": locale.upper(), "start": 0, "tag": "",
-                                 "withMapping": True, "withPrice": True,
-                                 "releaseDate": date, "effectiveDate": date
-                                 },
-                   "query": game_query}
 
-        if self.price == "free":
-            payload["variables"]["freeGame"] = True
-        elif self.price.startswith("<price>"):
-            payload["variables"]["priceRange"] = price.replace("<price>", "")
-        elif self.price == "sale":
-            payload["variables"]["onSale"] = True
-
-        payload["variables"]["tag"] = "|".join(self.tags)
+        browse_model = BrowseModel(locale=locale, date=date, count=30, price=self.price)
+        browse_model.tag = "|".join(self.tags)
 
         if self.types:
-            payload["variables"]["category"] = "|".join(self.types)
+            browse_model.category = "|".join(self.types)
 
-        self.manager.post("https://www.epicgames.com/graphql", payload)
+        self.api_core.browse_games(browse_model, self.show_games)
 
     def show_games(self, data):
-        data = data["data"]["Catalog"]["searchStore"]["elements"]
         QWidget().setLayout(self.games_widget.layout())
 
         if data:

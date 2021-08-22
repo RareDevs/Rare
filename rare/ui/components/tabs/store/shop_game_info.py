@@ -51,6 +51,9 @@ class Ui_shop_info(object):
         self.open_store_button = QtWidgets.QPushButton(shop_info)
         self.open_store_button.setObjectName("open_store_button")
         self.verticalLayout_2.addWidget(self.open_store_button)
+        self.wishlist_button = QtWidgets.QPushButton(shop_info)
+        self.wishlist_button.setObjectName("wishlist_button")
+        self.verticalLayout_2.addWidget(self.wishlist_button)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_2.addItem(spacerItem)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
@@ -80,6 +83,7 @@ class Ui_shop_info(object):
         self.discount_price.setText(_translate("shop_info", "TextLabel"))
         self.tags.setText(_translate("shop_info", "TextLabel"))
         self.open_store_button.setText(_translate("shop_info", "Buy Game in Epic Games Store"))
+        self.wishlist_button.setText(_translate("shop_info", "Add to wishlist"))
         self.req_group_box.setTitle(_translate("shop_info", "Requirements"))
 
 

@@ -6,9 +6,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtNetwork import QNetworkAccessManager
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 
-from rare.components.tabs.shop.constants import search_query
 from rare.utils.extra_widgets import ImageLabel
-from rare.utils.utils import get_lang, QtRequestManager
 
 logger = logging.getLogger("GameWidgets")
 
@@ -56,20 +54,9 @@ class GameWidget(QWidget):
         self.show_info.emit(self.json_info)
 
     @classmethod
-    def from_request(cls, name, path):
+    def from_request(cls, name, path, shop_api):
         c = cls(path)
-        c.manager = QtRequestManager("json")
-        c.manager.data_ready.connect(c.handle_response)
-        locale = get_lang()
-        payload = {
-            "query": search_query,
-            "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base", "count": 1,
-                          "country": "DE", "keywords": name, "locale": locale, "sortDir": "DESC",
-                          "allowCountries": locale.upper(),
-                          "start": 0, "tag": "", "withMapping": False, "withPrice": True}
-        }
-        c.manager.post("https://www.epicgames.com/graphql", payload)
-        c.search_request.da.connect(lambda: c.handle_response(path))
+        shop_api.search_game(name, c.handle_response)
         return c
 
     def handle_response(self, data):

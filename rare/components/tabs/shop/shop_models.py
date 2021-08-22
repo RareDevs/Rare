@@ -1,3 +1,10 @@
+import datetime
+import random
+from dataclasses import dataclass
+
+from rare.utils.utils import get_lang
+
+
 class _ImageUrlModel:
     def __init__(self, front_tall: str = "", offer_image_tall: str = "",
                  thumbnail: str = "", front_wide: str = ""):
@@ -25,7 +32,8 @@ class ShopGame:
     # TODO: Copyrights etc
     def __init__(self, title: str = "", image_urls: _ImageUrlModel = None, social_links: dict = None,
                  langs: list = None, reqs: dict = None, publisher: str = "", developer: str = "",
-                 original_price: str = "", discount_price: str = "", tags: list = None):
+                 original_price: str = "", discount_price: str = "", tags: list = None, namespace: str = "",
+                 offer_id: str = ""):
         self.title = title
         self.image_urls = image_urls
         self.links = []
@@ -42,6 +50,8 @@ class ShopGame:
         self.price = original_price
         self.discount_price = discount_price
         self.tags = tags
+        self.namespace = namespace
+        self.offer_id = offer_id
 
     @classmethod
     def from_json(cls, api_data: dict, search_data: dict):
@@ -50,10 +60,9 @@ class ShopGame:
                 if product["_title"] == "home":
                     api_data = product
                     break
-
-        tmp = cls()
         if "pages" in api_data.keys():
             api_data = api_data["pages"][0]
+        tmp = cls()
         tmp.title = search_data.get("title", "Fail")
         tmp.image_urls = _ImageUrlModel.from_json(search_data["keyImages"])
         links = api_data["data"]["socialLinks"]
@@ -82,5 +91,47 @@ class ShopGame:
         tmp.price = search_data['price']['totalPrice']['fmtPrice']['originalPrice']
         tmp.discount_price = search_data['price']['totalPrice']['fmtPrice']['discountPrice']
         tmp.tags = [i.replace("_", " ").capitalize() for i in api_data["data"]["meta"].get("tags", [])]
+        tmp.namespace = search_data["namespace"]
+        tmp.offer_id = search_data["id"]
 
         return tmp
+
+
+@dataclass
+class BrowseModel:
+    category: str = "games/edition/base|bundles/games|editors|software/edition/base"
+    count: int = 30
+    locale: str = get_lang()
+    keywords: str = ""
+    sortDir: str = "DESC"
+    start: int = 0
+    tag: str = ""
+    withMapping: bool = True
+    withPrice: bool = True
+    date: str = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.{str(random.randint(0, 999)).zfill(3)}Z]"
+    price: str = ""
+
+    @property
+    def __dict__(self):
+        payload = {"category": self.category,
+                   "count": self.count,
+                   "country": self.locale.upper(),
+                   "keywords": self.keywords,
+                   "locale": self.locale,
+                   "sortDir": self.sortDir,
+                   "allowCountries": self.locale.upper(),
+                   "start": self.start,
+                   "tag": self.tag,
+                   "withMapping": self.withMapping,
+                   "withPrice": self.withPrice,
+                   "releaseDate": self.date,
+                   "effectiveDate": self.date,
+                   }
+
+        if self.price == "free":
+            payload["freeGame"] = True
+        elif self.price.startswith("<price>"):
+            payload["priceRange"] = self.price.replace("<price>", "")
+        elif self.price == "sale":
+            payload["onSale"] = True
+        return payload

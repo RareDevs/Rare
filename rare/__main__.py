@@ -8,6 +8,7 @@ from rare.utils import singleton, utils
 
 
 def main():
+    # CLI Options
     parser = ArgumentParser()
     parser.add_argument("-V", "--version", action="store_true", help="Shows version and exits")
     parser.add_argument("-S", "--silent", action="store_true",
@@ -37,7 +38,7 @@ def main():
         print(__version__)
         exit(0)
     try:
-        # this object only allows one instance pre machine
+        # this object only allows one instance per machine
         me = singleton.SingleInstance()
     except singleton.SingleInstanceException:
         print("Rare is already running")
@@ -54,6 +55,8 @@ def main():
     if args.subparser == "launch":
         args.silent = True
 
+    # start app
+    # Import start now, to not import everything
     from rare.app import start
     start(args)
 

@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QLabel
 from rare.components.tabs.shop.shop_models import ShopGame
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
 from rare.utils.extra_widgets import WaitingSpinner, ImageLabel
-from rare.utils.utils import get_lang, QtRequestManager
+from rare.utils.utils import get_lang
 
 logger = logging.getLogger("ShopInfo")
 
@@ -17,26 +17,43 @@ class ShopGameInfo(QWidget, Ui_shop_info):
     data: dict
 
     # TODO Design
-    def __init__(self, installed_titles: list):
+    def __init__(self, installed_titles: list, api_core):
         super(ShopGameInfo, self).__init__()
         self.setupUi(self)
+        self.api_core = api_core
         self.installed = installed_titles
         self.open_store_button.clicked.connect(self.button_clicked)
         self.image = ImageLabel()
         self.image_stack.addWidget(self.image)
         self.image_stack.addWidget(WaitingSpinner())
-        self.manager = QtRequestManager("json")
-        self.manager.data_ready.connect(self.data_received)
+
+        self.locale = get_lang()
+        self.wishlist_button.clicked.connect(self.add_to_wishlist)
+        self.in_wishlist = False
+        self.wishlist = []
+
+    def handle_wishlist_update(self, data):
+        self.wishlist = [i["offer"]["title"] for i in data]
+        if self.title_str in self.wishlist:
+            self.in_wishlist = True
+            self.wishlist_button.setVisible(True)
+            self.wishlist_button.setText(self.tr("Remove from Wishlist"))
+        else:
+            self.in_wishlist = False
+            self.wishlist_button.setVisible(False)
 
     def update_game(self, data: dict):
         self.image_stack.setCurrentIndex(1)
+        self.title.setText(data["title"])
+        self.title_str = data["title"]
+        self.api_core.get_wishlist(self.handle_wishlist_update)
         for i in reversed(range(self.req_group_box.layout().count())):
             self.req_group_box.layout().itemAt(i).widget().setParent(None)
         slug = data["productSlug"]
         if "/home" in slug:
             slug = slug.replace("/home", "")
         self.slug = slug
-        self.title.setText(data["title"])
+
         if data["namespace"] in self.installed:
             self.open_store_button.setText(self.tr("Show Game on Epic Page"))
             self.owned_label.setVisible(True)
@@ -46,7 +63,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
 
         self.dev.setText(self.tr("Loading"))
         self.price.setText(self.tr("Loading"))
-        self.title.setText(self.tr("Loading"))
+        # self.title.setText(self.tr("Loading"))
         self.image.setPixmap(QPixmap())
         self.data = data
         is_bundle = False
@@ -55,10 +72,18 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 is_bundle = True
 
         # init API request
-        locale = get_lang()
-        url = f"https://store-content.ak.epicgames.com/api/{locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
-        # game = api_utils.get_product(slug, locale)
-        self.manager.get(url)
+        self.api_core.get_game(slug, is_bundle, self.data_received)
+
+    def add_to_wishlist(self):
+        if not self.in_wishlist:
+            return
+            self.api_core.add_to_wishlist(self.game.namespace, self.game.offer_id,
+                                          lambda success: self.wishlist_button.setText(self.tr("Remove from wishlist"))
+                                          if success else self.wishlist_button.setText("Something goes wrong"))
+        else:
+            self.api_core.remove_from_wishlist(self.game.namespace, self.game.offer_id,
+                                               lambda success: self.wishlist_button.setVisible(False)
+                                               if success else self.wishlist_button.setText("Something goes wrong"))
 
     def data_received(self, game):
         self.game = ShopGame.from_json(game, self.data)
@@ -103,9 +128,6 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.image.update_image(self.game.image_urls.front_tall, self.game.title, (240, 320))
 
         self.image_stack.setCurrentIndex(0)
-        # self.image_request = self.manager.get(QNetworkRequest(QUrl(self.game.image_urls.offer_image_tall)))
-        # self.image_request.finished.connect(self.image_loaded)
-
         try:
             if isinstance(self.game.developer, list):
                 self.dev.setText(", ".join(self.game.developer))
@@ -114,7 +136,12 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         except KeyError:
             pass
         self.tags.setText(", ".join(self.game.tags))
-        # self.price.setText(self.game.price)
+        self.price.setText(self.game.price)
+
+    def add_wishlist_items(self, wishlist):
+        wishlist = wishlist["data"]["Wishlist"]["wishlistItems"]["elements"]
+        for game in wishlist:
+            self.wishlist.append(game["offer"]["title"])
 
     def button_clicked(self):
         webbrowser.open("https://www.epicgames.com/store/de/p/" + self.slug)

@@ -4,17 +4,16 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea, QGroupBox, QPushButton, \
     QStackedWidget
 
-from rare.components.tabs.shop.constants import search_query
 from rare.utils.extra_widgets import ImageLabel, FlowLayout, WaitingSpinner
-from rare.utils.utils import QtRequestManager, get_lang
 
 
 class SearchResults(QStackedWidget):
     show_info = pyqtSignal(dict)
 
-    def __init__(self):
+    def __init__(self, api_core):
         super(SearchResults, self).__init__()
         self.search_result_widget = QWidget()
+        self.api_core = api_core
         self.addWidget(self.search_result_widget)
         self.main_layout = QVBoxLayout()
         self.back_button = QPushButton(self.tr("Back"))
@@ -30,9 +29,6 @@ class SearchResults(QStackedWidget):
         self.layout = FlowLayout()
         self.widget.setLayout(self.layout)
 
-        self.search_manager = QtRequestManager("json")
-        self.search_manager.data_ready.connect(self.show_results)
-
         self.search_result_widget.setLayout(self.main_layout)
 
         self.addWidget(WaitingSpinner())
@@ -41,16 +37,7 @@ class SearchResults(QStackedWidget):
     def load_results(self, text: str):
         self.setCurrentIndex(1)
         if text != "":
-            locale = get_lang()
-            payload = {
-                "query": search_query,
-                "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base",
-                              "count": 20,
-                              "country": locale.upper(), "keywords": text, "locale": locale, "sortDir": "DESC",
-                              "allowCountries": locale.upper(),
-                              "start": 0, "tag": "", "withMapping": False, "withPrice": True}
-            }
-            self.search_manager.post("https://www.epicgames.com/graphql", payload)
+            self.api_core.search_game(text, self.show_results)
 
     def show_results(self, results: dict):
         results = results["data"]["Catalog"]["searchStore"]["elements"]

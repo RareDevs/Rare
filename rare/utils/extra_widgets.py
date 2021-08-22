@@ -11,7 +11,7 @@ from qtawesome import icon
 
 from rare import style_path, cache_dir
 from rare.ui.utils.pathedit import Ui_PathEdit
-from rare.utils.utils import QtRequestManager
+from rare.utils.qt_requests import QtRequestManager
 
 logger = getLogger("ExtraWidgets")
 
@@ -264,7 +264,6 @@ class ImageLabel(QLabel):
         super(ImageLabel, self).__init__()
         self.path = cache_dir
         self.manager = QtRequestManager("bytes")
-        self.manager.data_ready.connect(self.image_ready)
 
     def update_image(self, url, name, size: tuple = (240, 320)):
         self.setFixedSize(*size)
@@ -278,14 +277,16 @@ class ImageLabel(QLabel):
             name_extension = "tall"
         self.name = f"{self.name}_{name_extension}.png"
         if not os.path.exists(os.path.join(self.path, self.name)):
-            self.manager.get(url)
+            self.manager.get(url, self.image_ready)
             # self.request.finished.connect(self.image_ready)
         else:
             self.show_image()
 
     def image_ready(self, data):
-        self.setPixmap(QPixmap())
-
+        try:
+            self.setPixmap(QPixmap())
+        except RuntimeError:
+            return
         image: Image.Image = Image.open(io.BytesIO(data))
         image = image.resize((self.img_size[0], self.img_size[1]))
 
