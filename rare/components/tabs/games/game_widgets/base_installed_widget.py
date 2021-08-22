@@ -1,4 +1,5 @@
 import os
+import platform
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
@@ -8,6 +9,7 @@ from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
 from rare import cache_dir
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
+from rare.components.extra.Console import ConsoleWindow
 from rare.utils import legendary_utils
 from rare.utils.utils import create_desktop_link
 
@@ -30,8 +32,9 @@ class BaseInstalledWidget(QGroupBox):
         self.game_running = False
         self.offline = offline
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
-
+        self.data = QByteArray()
         self.setContentsMargins(0, 0, 0, 0)
+        self.settings = QSettings()
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         launch = QAction(self.tr("Launch"), self)
@@ -47,9 +50,9 @@ class BaseInstalledWidget(QGroupBox):
         self.create_desktop.triggered.connect(lambda: self.create_desktop_link("desktop"))
         self.addAction(self.create_desktop)
 
-        if os.name == "posix":
+        if platform.system() == "Linux":
             start_menu_file = os.path.expanduser(f"~/.local/share/applications/{self.igame.title}.desktop")
-        elif os.name == "nt":
+        elif platform.system() == "Windows":
             start_menu_file = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
             start_menu_file = ""
@@ -66,6 +69,10 @@ class BaseInstalledWidget(QGroupBox):
         self.addAction(uninstall)
 
     def create_desktop_link(self, type_of_link):
+        if platform.system() not in ["Windows", "Linux"]:
+            QMessageBox.warning(self, "Warning",
+                                f"Create a Desktop link is currently not supported on {platform.system()}")
+            return
         if type_of_link == "desktop":
             path = os.path.expanduser(f"~/Desktop/")
         elif type_of_link == "start_menu":
@@ -74,7 +81,8 @@ class BaseInstalledWidget(QGroupBox):
             return
         if not (os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop"))
                 or os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.lnk"))):
-            create_desktop_link(self.igame.app_name, self.core, type_of_link)
+            if not create_desktop_link(self.igame.app_name, self.core, type_of_link):
+                return
             if type_of_link == "desktop":
                 self.create_desktop.setText(self.tr("Remove Desktop link"))
             elif type_of_link == "start_menu":
@@ -109,37 +117,50 @@ class BaseInstalledWidget(QGroupBox):
         except Exception as e:
             logger.error(e)
             QMessageBox.warning(self, "Error",
-                                self.tr("An error occurred while starting game. Maybe game files are missing"))
+                                str(e))
             return
 
         if not self.proc:
             logger.error("Could not start process")
             return 1
-        self.game_logger = getLogger(self.game.app_name)
-
         self.proc.finished.connect(self.finished)
-        self.proc.readyReadStandardOutput.connect(self.stdout)
-        self.proc.readyReadStandardError.connect(self.stderr)
+
+        if self.settings.value("show_console", False, bool):
+            self.console = ConsoleWindow()
+            self.console.show()
+            self.proc.readyReadStandardOutput.connect(lambda: self.console.log(
+                bytes(self.proc.readAllStandardOutput()).decode("utf-8", errors="ignore")))
+            self.proc.readyReadStandardError.connect(lambda: self.console.error(
+                bytes(self.proc.readAllStandardOutput()).decode("utf-8", errors="ignore")))
+
+        else:
+            self.proc.readyReadStandardOutput.connect(self.stdout)
+            self.proc.readyReadStandardError.connect(self.stderr)
+
         self.proc.start(params[0], params[1:])
         self.launch_signal.emit(self.igame.app_name)
         self.game_running = True
-        self.data = QByteArray()
+
         return 0
 
     def stdout(self):
         data = self.proc.readAllStandardOutput()
-        stdout = bytes(data).decode("utf-8")
-        self.game_logger.info(stdout)
+        stdout = bytes(data).decode("utf-8", errors="ignore")
+        print(stdout)
 
     def stderr(self):
-        stderr = bytes(self.proc.readAllStandardError()).decode("utf-8")
-        self.game_logger.error(stderr)
-        QMessageBox.warning(self, "Warning", stderr + f"\nSee {cache_dir}/logs/")
+        stderr = bytes(self.proc.readAllStandardError()).decode("utf-8", errors="ignore")
+        print(stderr)
+        logger.error(stderr)
+        # QMessageBox.warning(self, "Warning", stderr + "\nSee ~/.cache/rare/logs/")
+
 
     def finished(self, exit_code):
         logger.info("Game exited with exit code: " + str(exit_code))
         self.finish_signal.emit(self.game.app_name)
         self.game_running = False
+        if self.settings.value("show_console", False, bool):
+            self.console.log(f"Game exited with code: {exit_code}")
 
     def uninstall(self):
         infos = UninstallDialog(self.game).get_information()

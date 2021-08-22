@@ -1,12 +1,14 @@
 import webbrowser
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel, QPushButton
 
 from custom_legendary.core import LegendaryCore
 
 
 class MiniWidget(QWidget):
+    quit_app = pyqtSignal(int)
+
     def __init__(self, core: LegendaryCore):
         super(MiniWidget, self).__init__()
         self.layout = QVBoxLayout()
@@ -39,5 +41,4 @@ class MiniWidget(QWidget):
 
         if reply == QMessageBox.Yes:
             self.core.lgd.invalidate_userdata()
-            # restart app
-            QCoreApplication.instance().exit(-133742)  # restart exit code
+            self.quit_app.emit(-133742)  # restart exit code

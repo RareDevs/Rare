@@ -526,7 +526,7 @@ class LegendaryCLI:
         status_queue = MPQueue()
         logger.info('Preparing download...')
         try:
-            dlm, analysis, game, igame, repair, repair_file = self.core.prepare_download(
+            dlm, analysis, game, igame, repair, repair_file, res = self.core.prepare_download(
                 app_name=args.app_name,
                 base_path=args.base_path,
                 force=args.force,
@@ -555,6 +555,15 @@ class LegendaryCLI:
         except Exception as e:
             logger.fatal(e)
             exit(1)
+
+        if res.failures:
+            for i in res.failures:
+                logger.fatal(i)
+            exit(1)
+
+        if res.warnings:
+            for warn in res.warnings:
+                logger.warning(warn)
 
         logger.info(f'Install size: {analysis.install_size / 1024 / 1024:.02f} MiB')
         compression = (1 - (analysis.dl_size / analysis.uncompressed_dl_size)) * 100

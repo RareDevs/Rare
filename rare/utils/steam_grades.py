@@ -4,14 +4,60 @@ import os
 from datetime import date
 
 import requests
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal
+
+from custom_legendary.core import LegendaryCore
+from rare import cache_dir, data_dir
 
 from rare import data_dir, cache_dir
 
 replace_chars = ",;.:-_ "
 
-file = os.path.join(data_dir, "game_list.json")
+file = os.path.join(cache_dir, "game_list.json")
 url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
+
+
+class SteamWorker(QThread):
+    app_name = ""
+    rating_signal = pyqtSignal(str)
+
+    def __init__(self, core: LegendaryCore):
+        super(SteamWorker, self).__init__()
+        self.core = core
+        self.ratings = {"platinum": self.tr("Platinum"),
+                        "gold": self.tr("Gold"),
+                        "silver": self.tr("Silver"),
+                        "bronze": self.tr("Bronze"),
+                        "fail": self.tr("Could not get grade"),
+                        "pending": self.tr("Could not get grade")
+                        }
+
+    def set_app_name(self, app_name: str):
+        self.app_name = app_name
+
+    def run(self) -> None:
+        self.rating_signal.emit(self.ratings[get_rating(self.app_name, self.core)])
+
+
+def get_rating(app_name: str, core: LegendaryCore):
+    if os.path.exists(p := os.path.join(data_dir, "steam_ids.json")):
+        grades = json.load(open(p))
+    else:
+        grades = {}
+
+    if not grades.get(app_name):
+        steam_id = get_steam_id(core.get_game(app_name).app_title)
+        grade = get_grade(steam_id)
+        grades[app_name] = {
+            "steam_id": steam_id,
+            "grade": grade
+        }
+        with open(os.path.join(data_dir, "steam_ids.json"), "w") as f:
+            f.write(json.dumps(grades))
+            f.close()
+        return grade
+    else:
+        return grades[app_name].get("grade")
 
 
 # you should iniciate the module with the game's steam code
@@ -30,73 +76,47 @@ def get_grade(steam_code):
 
 
 def load_json() -> dict:
-    if not os.path.exists(p := os.path.join(cache_dir, "steam_ids.json")):
+    if not os.path.exists(file):
+
         response = requests.get(url)
         steam_ids = json.loads(response.text)["applist"]["apps"]
         ids = {}
         for game in steam_ids:
             ids[game["name"]] = game["appid"]
 
-        with open(os.path.expanduser(p), "w") as f:
+        with open(file, "w") as f:
             f.write(json.dumps(ids))
             f.close()
         return ids
     else:
-        return json.loads(open(os.path.join(cache_dir, "steam_ids.json"), "r").read())
+        return json.loads(open(file, "r").read())
 
 
-def upgrade_all(games, progress: pyqtSignal = None):
-    ids = load_json()
-    data = {}
-    for i, (title, app_name) in enumerate(games):
-        title = title.replace("Early Access", "").replace("Experimental", "").strip()
-        data[app_name] = {}
-
-        steam_id = get_steam_id(title, ids)
-
-        data[app_name] = {
-            "steam_id": steam_id,
-            "grade": get_grade(steam_id)}
-
-        if progress:
-            progress.emit(int(i / len(games) * 100))
-
-    with open(os.path.join(data_dir, "game_list.json"), "w") as f:
-        f.write(json.dumps(data))
-        f.close()
-
-
-def get_steam_id(title: str, json_data=None):
+def get_steam_id(title: str):
+    # workarounds for satisfactory
     title = title.replace("Early Access", "").replace("Experimental", "").strip()
-    if not json_data:
-        if not os.path.exists(p := os.path.join(cache_dir, "steam_ids.json")):
-            response = requests.get(url)
-            ids = {}
-            steam_ids = json.loads(response.text)["applist"]["apps"]
-            for game in steam_ids:
-                ids[game["name"]] = game["appid"]
+    if not os.path.exists(file):
+        response = requests.get(url)
+        ids = {}
+        steam_ids = json.loads(response.text)["applist"]["apps"]
+        for game in steam_ids:
+            ids[game["name"]] = game["appid"]
 
-            with open(os.path.expanduser(p), "w") as f:
-                f.write(json.dumps(steam_ids))
-                f.close()
-        else:
-            ids = json.loads(open(os.path.join(cache_dir, "steam_ids.json"), "r").read())
+        with open(file, "w") as f:
+            f.write(json.dumps(ids))
+            f.close()
     else:
-        ids = json_data
-    steam_name = difflib.get_close_matches(title, ids.keys(), n=1)
+        ids = json.loads(open(file, "r").read())
+    if title in ids.keys():
+        steam_name = [title]
+
+    else:
+        steam_name = difflib.get_close_matches(title, ids.keys(), n=1)
     if steam_name:
         return ids[steam_name[0]]
     else:
         return 0
-    # print(x)
 
-    # for game in steam_ids:
-    #     num = difflib.SequenceMatcher(None, game["name"], title).ratio()
-    #     if num > most_similar[2] and num > 0.5:
-    #         most_similar = (game["appid"], game["name"], num)
-    # print(time.time()-t)
-    # name = difflib.get_close_matches(steam_ids.keys(), title)
-    # return most_similar
 
 
 def check_time():  # this function check if it's time to update

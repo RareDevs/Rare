@@ -1,4 +1,4 @@
-import os
+import platform
 
 from PyQt5.QtWidgets import QTabWidget
 
@@ -18,7 +18,7 @@ class SettingsTab(QTabWidget):
         self.rare_settings = RareSettings()
         self.addTab(self.rare_settings, "Rare")
         self.addTab(LegendarySettings(core), "Legendary")
-        if os.name != "nt":
+        if platform.system() != "Windows":
             self.addTab(LinuxSettings(core), "Linux")
         self.about = About()
 

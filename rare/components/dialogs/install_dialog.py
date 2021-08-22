@@ -53,6 +53,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.install_dir_label.setVisible(False)
             self.install_dir_edit.setVisible(False)
 
+        self.warn_label.setVisible(False)
+        self.warn_message.setVisible(False)
+
         if self.core.lgd.config.has_option("Legendary", "max_workers"):
             max_workers = self.core.lgd.config.get("Legendary", "max_workers")
         else:
@@ -92,7 +95,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.reject_close = True
 
         self.resize(self.minimumSize())
-        self.setFixedSize(self.size())
+        # self.setFixedSize(self.size())
+
+        self.verify_clicked()
 
     def execute(self):
         if self.silent:
@@ -151,9 +156,6 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
     def on_worker_result(self, dl_item: InstallDownloadModel):
         self.dl_item.download = dl_item
-        # TODO: Check available size and act accordingly
-        # TODO:     (show message in label | color it | disable install unless ignore)
-        # TODO: Find a way to get the installation size delta and show it
         download_size = self.dl_item.download.analysis.dl_size
         install_size = self.dl_item.download.analysis.install_size
         if download_size:
@@ -240,8 +242,11 @@ class InstallInfoWorker(QRunnable):
                 # reset_sdl=,
                 sdl_prompt=lambda app_name, title: self.dl_item.options.sdl_list
             ))
-            self.signals.result.emit(download)
-        except RuntimeError as e:
+            if not download.res.failures:
+                self.signals.result.emit(download)
+            else:
+                self.signals.failed.emit("\n".join(str(i) for i in download.res.failures))
+        except Exception as e:
             self.signals.failed.emit(str(e))
         self.signals.finished.emit()
 

@@ -1,4 +1,5 @@
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -35,6 +36,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             (self.auto_sync_cloud, "auto_sync_cloud", True),
             (self.notification, "notification", True),
             (self.save_size, "save_size", False),
+            (self.log_games, "show_console", False),
             (self.image_cache, "cache_images", True)
         ]
 
@@ -81,33 +83,18 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.rpc = RPCSettings()
         self.rpc_layout.addWidget(self.rpc, alignment=Qt.AlignTop)
 
-        self.init_checkboxes(self.checkboxes)
-        self.sys_tray.stateChanged.connect(
-            lambda: self.settings.setValue("sys_tray", self.sys_tray.isChecked())
-        )
-        self.auto_update.stateChanged.connect(
-            lambda: self.settings.setValue("auto_update", self.auto_update.isChecked())
-        )
-        self.confirm_start.stateChanged.connect(
-            lambda: self.settings.setValue("confirm_start", self.confirm_start.isChecked())
-        )
-        self.auto_sync_cloud.stateChanged.connect(
-            lambda: self.settings.setValue("auto_sync_cloud", self.auto_sync_cloud.isChecked())
-        )
-        self.notification.stateChanged.connect(
-            lambda: self.settings.setValue("notification", self.notification.isChecked())
-        )
-        self.save_size.stateChanged.connect(
-            lambda: self.settings.setValue("save_size", self.save_size.isChecked())
-        )
-        self.image_cache.stateChanged.connect(
-            lambda: self.settings.setValue("cache_images", self.image_cache.isChecked())
-        )
+        for cb in self.checkboxes:
+            widget, option, default = cb
+            widget.setChecked(self.settings.value(option, default, bool))
+            widget.stateChanged.connect(
+                lambda: self.settings.setValue(option, widget.isChecked())
+            )
 
-        if os.name == "posix":
+        if platform.system() == "Linux":
+
             self.desktop_file = os.path.expanduser("~/Desktop/Rare.desktop")
             self.start_menu_link = os.path.expanduser("~/.local/share/applications/Rare.desktop")
-        elif os.name == "nt":
+        elif platform.system() == "Windows":
             self.desktop_file = os.path.expanduser("~/Desktop/Rare.lnk")
             self.start_menu_link = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
@@ -132,7 +119,6 @@ class RareSettings(QWidget, Ui_RareSettings):
             size += os.path.getsize(os.path.join(logdir, i))
 
         self.log_dir_size_label.setText(utils.get_size(size))
-        # TODO: Implement
         # self.log_dir_clean_button.setVisible(False)
         # self.log_dir_size_label.setVisible(False)
 
@@ -151,7 +137,7 @@ class RareSettings(QWidget, Ui_RareSettings):
 
     def create_desktop_link(self):
         if not os.path.exists(self.desktop_file):
-            utils.create_rare_desktop_link("start_menu")
+            utils.create_rare_desktop_link("desktop")
             self.desktop_link.setText(self.tr("Remove Desktop link"))
         else:
             os.remove(self.desktop_file)
@@ -178,7 +164,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.interface_info.setVisible(True)
 
     def open_dir(self):
-        if os.name == "nt":
+        if platform.system() == "Windows":
             os.startfile(self.logdir)
         else:
             opener = "open" if sys.platform == "darwin" else "xdg-open"
@@ -214,8 +200,3 @@ class RareSettings(QWidget, Ui_RareSettings):
             os.rmdir(old_path)
             self.img_dir_path = new_path
             self.settings.setValue("img_dir", new_path)
-
-    def init_checkboxes(self, checkboxes):
-        for cb in checkboxes:
-            widget, option, default = cb
-            widget.setChecked(self.settings.value(option, default, bool))

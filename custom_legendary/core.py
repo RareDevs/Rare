@@ -1000,16 +1000,7 @@ class LegendaryCore:
         if res.warnings or res.failures:
             self.log.info('Installation requirements check returned the following results:')
 
-        if res.warnings:
-            for warn in sorted(res.warnings):
-                self.log.warning(warn)
-
-        if res.failures:
-            for msg in sorted(res.failures):
-                self.log.fatal(msg)
-            raise RuntimeError('Installation cannot proceed, exiting.')
-
-        return dlm, anlres, game, igame, repair, repair_file
+        return dlm, anlres, game, igame, repair, repair_file, res
 
     @staticmethod
     def check_installation_conditions(analysis: AnalysisResult,

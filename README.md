@@ -12,19 +12,16 @@ creating an issue on github or on Discord: https://discord.gg/YvmABK9YSk
 
 ### Installation via pip (recommend)
 
-Execute `pip install Rare` for all users Or `pip install Rare --user` for only one user. Then execute `rare` in your
-terminal or cmd
+Execute `pip install Rare` for all users Or `pip install Rare --user` for only one user. 
+
+Linux: execute `rare` in your terminal. 
+
+Windows: execute `pythonw -m rare` in cmd
+
+It is possible to create a desktop link, or a start menu link. Execute the command above with `--desktop-shortcut` or `--startmenu-shortcut` option
 
 **Note**: On Linux must be `/home/user/.local/bin` in PATH and on Windows must be `PythonInstallationDirectory\Scripts`
 in PATH.
-
-### Windows Simple
-
-Download Rare.exe from the [releases page](https://github.com/Dummerle/Rare/releases) and execute it.
-
-**Note:**
-Using the exe file could cause errors with Windows Defender or other Anti Virus. Sometimes it is not possible to
-download games and sometimes the app crashes. In this case please use pip
 
 ### Linux
 
@@ -38,7 +35,7 @@ There are some AUR packages available:
 #### Debian based
 
 There is a `.deb` package available from
-the [releases page](https://github.com/Dummerle/Rare/releases): `sudo dpkg –i Rare.deb`
+the [releases page](https://github.com/Dummerle/Rare/releases): `sudo apt install ./Rare.deb`
 
 #### Other
 
@@ -56,16 +53,16 @@ Install via `pip`.
   based [HeroicGamesLauncher](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher) uses.
 - Rare supports all major platforms (Windows, Linux, Mac) unlike the alternatives.
 
-**Note** Mac should work too, but I have no Mac and I can't test it.
-
 ## Features
 
 - Launch, install and uninstall games
-- Authentication(Import from existing installation and via Browser)
-- Download progress bar, queue
+- Authentication(Import from existing installation or via Browser)
+- Download progress bar and queue
 - Settings (Legendary and games)
 - Sync Cloud Saves
 - Translations (English, German and French)
+- Create desktop shortcut for each game (Note: not supported on Mac yet)
+- Display rating from [ProtonDB](https://www.protondb.com/) for each game
 
 ## Planned Features
 
@@ -88,3 +85,4 @@ More Information is in CONTRIBUTING.md
 ![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/GameInfo.png?raw=true)
 ![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/RareSettings.png?raw=true)
 ![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/RareDownloads.png?raw=true)
+![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/Settings.png?raw=true)

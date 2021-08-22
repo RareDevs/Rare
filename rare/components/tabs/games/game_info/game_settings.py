@@ -1,4 +1,5 @@
 import os
+import platform
 
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox
@@ -14,7 +15,9 @@ def find_proton_wrappers():
     possible_proton_wrappers = []
     compatibilitytools_dirs = [
         os.path.expanduser("~/.steam/steam/steamapps/common"),
-        "/usr/share/steam/compatibilitytools.d"
+        "/usr/share/steam/compatibilitytools.d",
+        os.path.expanduser("~/.steam/compatibilitytools.d"),
+        os.path.expanduser("~/.steam/root/compatibilitytools.d")
     ]
     for c in compatibilitytools_dirs:
         if os.path.exists(c):
@@ -63,7 +66,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         )
         self.wrapper_button.setEnabled(False)
 
-        if os.name != "nt":
+        if platform.system() != "Windows":
             self.possible_proton_wrappers = find_proton_wrappers()
 
             self.proton_wrapper.addItems(self.possible_proton_wrappers)
@@ -85,11 +88,11 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.core.lgd.config.add_section(self.game.app_name)
             self.core.lgd.config.set(self.game.app_name, option, value)
         else:
-            if self.game.app_name in self.core.lgd.config.sections() and self.core.lgd.config.get(
+            if self.core.lgd.config.has_section(self.game.app_name) and self.core.lgd.config.get(
                     f"{self.game.app_name}", option, fallback=None) is not None:
                 self.core.lgd.config.remove_option(self.game.app_name, option)
-            if not self.core.lgd.config[self.game.app_name]:
-                self.core.lgd.config.remove_section(self.game.app_name)
+                if not self.core.lgd.config[self.game.app_name]:
+                    self.core.lgd.config.remove_section(self.game.app_name)
         self.core.lgd.save_config()
         self.sender().setEnabled(False)
 
@@ -115,9 +118,6 @@ class GameSettings(QWidget, Ui_GameSettings):
         if self.change:
             # Dont use Proton
             if i == 0:
-                self.proton_prefix.setEnabled(False)
-                self.wrapper_widget.setEnabled(True)
-                self.linux_settings.wine_groupbox.setEnabled(True)
                 if f"{self.game.app_name}" in self.core.lgd.config.sections():
                     if self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback=False):
                         self.core.lgd.config.remove_option(self.game.app_name, "wrapper")
@@ -130,6 +130,13 @@ class GameSettings(QWidget, Ui_GameSettings):
                         self.core.lgd.config.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH")
                     if not self.core.lgd.config[self.game.app_name + ".env"]:
                         self.core.lgd.config.remove_section(self.game.app_name + ".env")
+                self.proton_prefix.setEnabled(False)
+                # lk: TODO: This has to be fixed properly.
+                # lk: It happens because of the widget update. Mask it for now behind disabling the save button
+                self.wrapper.setText(self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback=""))
+                self.wrapper_button.setDisabled(True)
+                self.wrapper_widget.setEnabled(True)
+                self.linux_settings.wine_groupbox.setEnabled(True)
             else:
                 self.proton_prefix.setEnabled(True)
                 self.wrapper_widget.setEnabled(False)
@@ -199,7 +206,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.wrapper.setText(wrapper)
 
         self.title.setText(f"<h2>{self.game.app_title}</h2>")
-        if os.name != "nt":
+        if platform.system() != "Windows":
             self.linux_settings.update_game(app_name)
             self.linux_settings.dxvk.update_settings(app_name)
             proton = self.core.lgd.config.get(f"{app_name}", "wrapper", fallback="").replace('"', "")

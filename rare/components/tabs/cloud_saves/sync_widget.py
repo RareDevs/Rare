@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal, Qt, QSettings
-from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QGroupBox
+from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QGroupBox, QMessageBox
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame, SaveGameStatus
@@ -77,13 +77,19 @@ class SyncWidget(QGroupBox):
                 self.logger.error(e)
                 return
             if '%' in save_path or '{' in save_path:
-                status = self.tr("Path not found")
+                # status = self.tr("Path not found")
                 self.logger.info("Could not find save path")
+                igame.save_path = ""
+
             else:
                 igame.save_path = save_path
 
-        if not os.path.exists(igame.save_path):
+        if not igame.save_path:
+            igame.save_path = os.path.expanduser(f"~/{igame.app_name}/")
+            QMessageBox.warning(self, "Savepath error", self.tr("Please edit save path of game {} manually in Cload saves tab").format(igame.title))
+        if igame.save_path and not os.path.exists(igame.save_path):
             os.makedirs(igame.save_path)
+        self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
 
         self.res, (self.dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, save)
         if self.res == SaveGameStatus.NO_SAVE:
@@ -110,9 +116,7 @@ class SyncWidget(QGroupBox):
         elif self.res == SaveGameStatus.REMOTE_NEWER:
             status = self.tr("Cloud save is newer")
             self.download_button = QPushButton(self.tr("Download Cloud saves"))
-            self.download_button.setStyleSheet("""
-                           QPushButton{ background-color: lime}
-                       """)
+            self.download_button.setObjectName("success")
             self.upload_button = QPushButton(self.tr("Upload Saves"))
             self.logger.info(f'Cloud save for "{igame.title}" is newer:')
             self.logger.info(f'- Cloud save date: {dt_remote.strftime("%Y-%m-%d %H:%M:%S")}')
@@ -126,9 +130,7 @@ class SyncWidget(QGroupBox):
         elif self.res == SaveGameStatus.LOCAL_NEWER:
             status = self.tr("Local save is newer")
             self.upload_button = QPushButton(self.tr("Upload saves"))
-            self.upload_button.setStyleSheet("""
-                           QPushButton{ background-color: lime}
-                       """)
+            self.download_button.setObjectName("success")
             self.download_button = QPushButton(self.tr("Download saves"))
             self.logger.info(f'Local save for "{igame.title}" is newer')
             if dt_remote:

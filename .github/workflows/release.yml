@@ -5,10 +5,9 @@ on:
     types: [ published ]
 
 jobs:
-  pypy-deploy:
+  pypi-deploy:
     if: "!github.event.release.prerelease"
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -27,49 +26,6 @@ jobs:
           python setup.py sdist bdist_wheel
           twine upload dist/*
 
-  aur-publish:
-    if: "!github.event.release.prerelease"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Generate PKGBUILD
-        run:
-          ./.github/GenPKG.sh
-
-      - name: Upload
-        uses: KSXGitHub/github-actions-deploy-aur@v2.2.3
-        with:
-          pkgname: rare
-          pkgbuild: ./.github/rare/PKGBUILD
-          commit_username: Dummerle
-          commit_email: ${{ secrets.MAIL }}
-          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: Update AUR package
-
-  cx-freeze-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9.5'
-      - name: Install python deps
-        run: |
-          pip3 install cx_Freeze setuptools wheel
-          pip3 install -r requirements.txt
-      - name: Build
-        run: python3 freeze.py bdist_msi
-      - name: Copy File
-        run: cp dist/*.msi Rare.msi
-      - name: Upload files to GitHub
-        uses: svenstaro/upload-release-action@2.2.1
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.msi
-          asset_name: Rare.msi
-          tag: ${{ github.ref }}
-          overwrite: true
-
   deb-package:
     runs-on: ubuntu-latest
     steps:
@@ -78,7 +34,6 @@ jobs:
         run: |
           sudo apt install python3-all python3-stdeb dh-python python3-setuptools python3-wheel
           sudo pip install -r requirements.txt
-
 
       - name: run python setup
         run: |
@@ -96,5 +51,41 @@ jobs:
           asset_name: Rare.deb
           tag: ${{ github.ref }}
           overwrite: true
+
+  appimage:
+    if: "!github.event.release.prerelease"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: install Deps
+        run: |
+          sudo apt update
+          sudo apt install python3 python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev fakeroot strace fuse
+
+      - name: install appimage-builder
+        run: |
+          sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
+          sudo chmod +x /usr/local/bin/appimagetool
+          sudo pip3 install appimage-builder
+      - name: Prepare Build directory
+        run: |
+          mkdir build
+          cp AppImageBuilder.yml build/
+          cd build
+
+      - name: Build Appimage
+        run: |
+          appimage-builder --skip-test
+          mv Rare-*.AppImage ../Rare.AppImage
+
+      - name: Upload to GitHub
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Rare.AppImage
+          asset_name: Rare.AppImage
+          tag: ${{ github.ref }}
+          overwrite: true
+
       
     

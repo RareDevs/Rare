@@ -46,8 +46,6 @@ class InstalledListWidget(BaseInstalledWidget):
         self.info.setFixedWidth(80)
 
         self.launch_button.clicked.connect(self.launch)
-        if os.name != "nt":
-            self.wine_rating = QLabel("Wine Rating: " + self.get_rating())
         self.developer_label = QLabel(self.tr("Developer: ") + self.dev)
         self.version_label = QLabel("Version: " + str(self.igame.version))
         self.size_label = QLabel(f"{self.tr('Installed size')}: {round(self.size / (1024 ** 3), 2)} GB")
@@ -57,8 +55,6 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.app_name_label)
         self.childLayout.addWidget(self.developer_label)
 
-        # if os.name != "nt":
-        #    self.childLayout.addWidget(self.wine_rating)
         self.childLayout.addWidget(self.version_label)
         self.childLayout.addWidget(self.size_label)
 
@@ -74,6 +70,3 @@ class InstalledListWidget(BaseInstalledWidget):
     def launch(self):
         if not self.game_running:
             super(InstalledListWidget, self).launch(skip_version_check=self.update_available)
-
-    def get_rating(self) -> str:
-        return "gold"  # TODO

@@ -1,8 +1,8 @@
-import json
 import os
+import platform
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap, QKeyEvent
+from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTabWidget, QMessageBox
 from qtawesome import icon
 
@@ -14,7 +14,8 @@ from rare.components.tabs.games.game_info.game_settings import GameSettings
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.legendary_utils import VerifyThread
-from rare.utils.utils import IMAGE_DIR, get_size
+from rare.utils.steam_grades import SteamWorker
+from rare.utils.utils import get_size, get_pixmap
 
 
 class InfoTabs(QTabWidget):
@@ -44,15 +45,19 @@ class InfoTabs(QTabWidget):
         self.settings.update_game(app_name)
 
         # DLC Tab: Disable if no dlcs available
-        if len(dlcs[self.core.get_game(app_name).asset_info.catalog_item_id]) == 0:
-            self.setTabEnabled(3, False)
+        if dlcs:
+            if len(dlcs[self.core.get_game(app_name).asset_info.catalog_item_id]) == 0:
+                self.setTabEnabled(3, False)
+            else:
+                self.setTabEnabled(3, True)
+                self.dlc_tab.update_dlcs(app_name, dlcs)
         else:
-            self.setTabEnabled(3, True)
-            self.dlc_tab.update_dlcs(app_name, dlcs)
+            self.setTabEnabled(3, False)
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
             self.parent().layout.setCurrentIndex(0)
+
 
 
 class GameInfo(QWidget, Ui_GameInfo):
@@ -68,6 +73,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.setupUi(self)
         self.core = core
 
+
         self.ratings = {"platinum": self.tr("Platinum"),
                         "gold": self.tr("Gold"),
                         "silver": self.tr("Silver"),
@@ -79,9 +85,13 @@ class GameInfo(QWidget, Ui_GameInfo):
         else:
             self.grade_table = {}
 
-        if os.name == "nt":
+        if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
             self.grade.setVisible(False)
+
+        if platform.system() != "Windows":
+            self.steam_worker = SteamWorker(self.core)
+            self.steam_worker.rating_signal.connect(self.grade.setText)
 
         self.game_actions_stack.setCurrentIndex(0)
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
@@ -133,22 +143,12 @@ class GameInfo(QWidget, Ui_GameInfo):
     def update_game(self, app_name):
         self.game = self.core.get_game(app_name)
         self.igame = self.core.get_installed_game(app_name)
-
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
-        if os.path.exists(f"{IMAGE_DIR}/{self.game.app_name}/FinalArt.png"):
-            pixmap = QPixmap(f"{IMAGE_DIR}/{self.game.app_name}/FinalArt.png")
-        elif os.path.exists(f"{IMAGE_DIR}/{self.game.app_name}/DieselGameBoxTall.png"):
-            pixmap = QPixmap(f"{IMAGE_DIR}/{self.game.app_name}/DieselGameBoxTall.png")
-        elif os.path.exists(f"{IMAGE_DIR}/{self.game.app_name}/DieselGameBoxLogo.png"):
-            pixmap = QPixmap(f"{IMAGE_DIR}/{self.game.app_name}/DieselGameBoxLogo.png")
-        else:
-            # logger.warning(f"No Image found: {self.game.title}")
-            pixmap = None
-        if pixmap:
-            w = 200
-            pixmap = pixmap.scaled(w, int(w * 4 / 3))
-            self.image.setPixmap(pixmap)
+        pixmap = get_pixmap(app_name)
+        w = 200
+        pixmap = pixmap.scaled(w, int(w * 4 / 3))
+        self.image.setPixmap(pixmap)
 
         self.app_name.setText(self.game.app_name)
         self.version.setText(self.game.app_version)
@@ -156,12 +156,10 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.install_size.setText(get_size(self.igame.install_size))
         self.install_path.setText(self.igame.install_path)
 
-        if os.name != "nt" and self.grade_table:
-            try:
-                grade = self.grade_table[app_name]["grade"]
-            except KeyError:
-                grade = "fail"
-            self.grade.setText(self.ratings[grade])
+        if platform.system() != "Windows":
+            self.grade.setText(self.tr("Loading"))
+            self.steam_worker.set_app_name(app_name)
+            self.steam_worker.start()
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(app_name):
             self.verify_widget.setCurrentIndex(0)

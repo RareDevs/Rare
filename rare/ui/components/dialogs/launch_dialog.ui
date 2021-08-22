@@ -35,20 +35,6 @@
      </property>
     </widget>
    </item>
-   <item>
-    <widget class="QProgressBar" name="steam_prog_bar">
-     <property name="value">
-      <number>0</number>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="steam_info">
-     <property name="text">
-      <string>Getting Steam grades</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>

@@ -1,9 +1,11 @@
 import os
+import platform
 import shutil
 from logging import getLogger
 from sys import stdout
 
 from PyQt5.QtCore import QProcess, QProcessEnvironment, QThread, pyqtSignal
+from PyQt5.QtWidgets import QMessageBox
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import VerifyResult
@@ -55,13 +57,13 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
     igame = core.get_installed_game(app_name)
 
     # remove shortcuts link
-    if os.name == "posix":
+    if platform.system() == "Linux":
         if os.path.exists(os.path.expanduser(f"~/Desktop/{igame.title}.desktop")):
             os.remove(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"))
         if os.path.exists(os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop")):
             os.remove(os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop"))
 
-    elif os.name == "nt":
+    elif platform.system() == "Windows":
         if os.path.exists(os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk")):
             os.remove(os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk"))
         elif os.path.exists(
@@ -116,23 +118,30 @@ class VerifyThread(QThread):
 
         logger.info(f'Verifying "{igame.title}" version "{manifest.meta.build_version}"')
         repair_file = []
-        for result, path, result_hash in validate_files(igame.install_path, file_list):
-            self.status.emit((self.num, self.total, self.app_name))
-            self.num += 1
+        try:
+            for result, path, result_hash in validate_files(igame.install_path, file_list):
+                self.status.emit((self.num, self.total, self.app_name))
+                self.num += 1
 
-            if result == VerifyResult.HASH_MATCH:
-                repair_file.append(f'{result_hash}:{path}')
-                continue
-            elif result == VerifyResult.HASH_MISMATCH:
-                logger.error(f'File does not match hash: "{path}"')
-                repair_file.append(f'{result_hash}:{path}')
-                failed.append(path)
-            elif result == VerifyResult.FILE_MISSING:
-                logger.error(f'File is missing: "{path}"')
-                missing.append(path)
-            else:
-                logger.error(f'Other failure (see log), treating file as missing: "{path}"')
-                missing.append(path)
+                if result == VerifyResult.HASH_MATCH:
+                    repair_file.append(f'{result_hash}:{path}')
+                    continue
+                elif result == VerifyResult.HASH_MISMATCH:
+                    logger.error(f'File does not match hash: "{path}"')
+                    repair_file.append(f'{result_hash}:{path}')
+                    failed.append(path)
+                elif result == VerifyResult.FILE_MISSING:
+                    logger.error(f'File is missing: "{path}"')
+                    missing.append(path)
+                else:
+                    logger.error(f'Other failure (see log), treating file as missing: "{path}"')
+                    missing.append(path)
+        except OSError as e:
+            QMessageBox.warning(None, "Error", self.tr("Path does not exist"))
+            logger.error(str(e))
+        except ValueError as e:
+            QMessageBox.warning(None, "Error", self.tr("No files to validate"))
+            logger.error(str(e))
 
         stdout.write(f'Verification progress: {self.num}/{self.total} ({self.num * 100 / self.total:.01f}%)\t\n')
 
@@ -148,7 +157,7 @@ class VerifyThread(QThread):
             self.summary.emit((0, 0, self.app_name))
 
         else:
-            logger.error(f'Verification failed, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
+            logger.error(f'Verification finished, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
             self.summary.emit((len(failed), len(missing), self.app_name))
 
 

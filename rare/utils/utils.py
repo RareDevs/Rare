@@ -1,5 +1,6 @@
 import json
 import os
+import platform
 import shutil
 import sys
 from logging import getLogger
@@ -7,25 +8,26 @@ from logging import getLogger
 import requests
 from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtGui import QPalette, QColor, QPixmap
 
 # Windows
-if os.name == "nt":
+
+if platform.system() == "Windows":
     from win32com.client import Dispatch
 
-from rare import lang_path, style_path, data_dir
+from rare import languages_path, resources_path, image_dir
 # Mac not supported
 
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
-IMAGE_DIR = s.value("img_dir", os.path.join(data_dir, "images"), type=str)
+
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
-    if not os.path.isdir(IMAGE_DIR):
-        os.makedirs(IMAGE_DIR)
+    if not os.path.isdir(image_dir):
+        os.makedirs(image_dir)
         logger.info("Create Image dir")
 
     # Download Images
@@ -38,60 +40,60 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
         try:
             download_image(game)
         except json.decoder.JSONDecodeError:
-            shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
+            shutil.rmtree(f"{image_dir}/{game.app_name}")
             download_image(game)
         signal.emit(i / len(game_list) * 100)
 
 
 def download_image(game, force=False):
-    if force and os.path.exists(f"{IMAGE_DIR}/{game.app_name}"):
-        shutil.rmtree(f"{IMAGE_DIR}/{game.app_name}")
-    if not os.path.isdir(f"{IMAGE_DIR}/" + game.app_name):
-        os.mkdir(f"{IMAGE_DIR}/" + game.app_name)
+    if force and os.path.exists(f"{image_dir}/{game.app_name}"):
+        shutil.rmtree(f"{image_dir}/{game.app_name}")
+    if not os.path.isdir(f"{image_dir}/" + game.app_name):
+        os.mkdir(f"{image_dir}/" + game.app_name)
 
     # to git picture updates
-    if not os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/image.json"):
+    if not os.path.isfile(f"{image_dir}/{game.app_name}/image.json"):
         json_data = {"DieselGameBoxTall": None, "DieselGameBoxLogo": None, "Thumbnail": None}
     else:
-        json_data = json.load(open(f"{IMAGE_DIR}/{game.app_name}/image.json", "r"))
+        json_data = json.load(open(f"{image_dir}/{game.app_name}/image.json", "r"))
     # Download
     for image in game.metadata["keyImages"]:
         if image["type"] == "DieselGameBoxTall" or image["type"] == "DieselGameBoxLogo" or image["type"] == "Thumbnail":
             if image["type"] not in json_data.keys():
                 json_data[image["type"]] = None
             if json_data[image["type"]] != image["md5"] or not os.path.isfile(
-                    f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png"):
+                    f"{image_dir}/{game.app_name}/{image['type']}.png"):
                 # Download
                 json_data[image["type"]] = image["md5"]
-                # os.remove(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
-                json.dump(json_data, open(f"{IMAGE_DIR}/{game.app_name}/image.json", "w"))
+                # os.remove(f"{image_dir}/{game.app_name}/{image['type']}.png")
+                json.dump(json_data, open(f"{image_dir}/{game.app_name}/image.json", "w"))
                 logger.info(f"Download Image for Game: {game.app_title}")
                 url = image["url"]
-                with open(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png", "wb") as f:
+                with open(f"{image_dir}/{game.app_name}/{image['type']}.png", "wb") as f:
                     f.write(requests.get(url).content)
                     try:
-                        img = Image.open(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
+                        img = Image.open(f"{image_dir}/{game.app_name}/{image['type']}.png")
                         img = img.resize((200, int(200 * 4 / 3)))
-                        img.save(f"{IMAGE_DIR}/{game.app_name}/{image['type']}.png")
+                        img.save(f"{image_dir}/{game.app_name}/{image['type']}.png")
                     except UnidentifiedImageError as e:
                         logger.warning(e)
 
     # scale and grey
-    if not os.path.isfile(f'{IMAGE_DIR}/' + game.app_name + '/UninstalledArt.png'):
+    if not os.path.exists(os.path.join(image_dir, game.app_name + '/UninstalledArt.png')):
 
-        if os.path.isfile(f'{IMAGE_DIR}/' + game.app_name + '/DieselGameBoxTall.png'):
-            # finalArt = Image.open(f'{IMAGE_DIR}/' + game.app_name + '/DieselGameBoxTall.png')
-            # finalArt.save(f'{IMAGE_DIR}/{game.app_name}/FinalArt.png')
+        if os.path.exists(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png")):
+            # finalArt = Image.open(f'{image_dir}/' + game.app_name + '/DieselGameBoxTall.png')
+            # finalArt.save(f'{image_dir}/{game.app_name}/FinalArt.png')
             # And same with the grayscale one
 
-            bg = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png")
+            bg = Image.open(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png"))
             uninstalledArt = bg.convert('L')
             uninstalledArt = uninstalledArt.resize((200, int(200 * 4 / 3)))
-            uninstalledArt.save(f'{IMAGE_DIR}/{game.app_name}/UninstalledArt.png')
-        elif os.path.isfile(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png"):
-            bg: Image.Image = Image.open(f"{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png")
+            uninstalledArt.save(f'{image_dir}/{game.app_name}/UninstalledArt.png')
+        elif os.path.isfile(f"{image_dir}/{game.app_name}/DieselGameBoxLogo.png"):
+            bg: Image.Image = Image.open(f"{image_dir}/{game.app_name}/DieselGameBoxLogo.png")
             bg = bg.resize((int(bg.size[1] * 3 / 4), bg.size[1]))
-            logo = Image.open(f'{IMAGE_DIR}/{game.app_name}/DieselGameBoxLogo.png').convert('RGBA')
+            logo = Image.open(f'{image_dir}/{game.app_name}/DieselGameBoxLogo.png').convert('RGBA')
             wpercent = ((bg.size[0] * (3 / 4)) / float(logo.size[0]))
             hsize = int((float(logo.size[1]) * float(wpercent)))
             logo = logo.resize((int(bg.size[0] * (3 / 4)), hsize), Image.ANTIALIAS)
@@ -102,16 +104,16 @@ def download_image(game, force=False):
             # finalArt = bg.copy()
             # finalArt.paste(logo, (pasteX, pasteY), logo)
             # Write out the file
-            # finalArt.save(f'{IMAGE_DIR}/' + game.app_name + '/FinalArt.png')
+            # finalArt.save(f'{image_dir}/' + game.app_name + '/FinalArt.png')
             logoCopy = logo.copy()
             logoCopy.putalpha(int(256 * 3 / 4))
             logo.paste(logoCopy, logo)
             uninstalledArt = bg.copy()
             uninstalledArt.paste(logo, (pasteX, pasteY), logo)
             uninstalledArt = uninstalledArt.convert('L')
-            uninstalledArt.save(f'{IMAGE_DIR}/' + game.app_name + '/UninstalledArt.png')
+            uninstalledArt.save(f'{image_dir}/' + game.app_name + '/UninstalledArt.png')
         else:
-            logger.warning(f"File {IMAGE_DIR}/{game.app_name}/DieselGameBoxTall.png doesn't exist")
+            logger.warning(f"File {image_dir}/{game.app_name}/DieselGameBoxTall.png doesn't exist")
 
 
 def get_lang():
@@ -180,23 +182,23 @@ def load_color_scheme(path: str):
 
 def get_color_schemes():
     colors = []
-    for file in os.listdir(os.path.join(style_path, "colors")):
-        if file.endswith(".scheme") and os.path.isfile(os.path.join(style_path, "colors", file)):
+    for file in os.listdir(os.path.join(resources_path, "colors")):
+        if file.endswith(".scheme") and os.path.isfile(os.path.join(resources_path, "colors", file)):
             colors.append(file.replace(".scheme", ""))
     return colors
 
 
 def get_style_sheets():
     styles = []
-    for file in os.listdir(os.path.join(style_path, "qss")):
-        if file.endswith(".qss") and os.path.isfile(os.path.join(style_path, "qss", file)):
-            styles.append(file.replace(".qss", ""))
+    for folder in os.listdir(os.path.join(resources_path, "stylesheets")):
+        if os.path.isfile(os.path.join(resources_path, "stylesheets", folder, "stylesheet.qss")):
+            styles.append(folder)
     return styles
 
 
 def get_possible_langs():
     langs = ["en"]
-    for i in os.listdir(lang_path):
+    for i in os.listdir(languages_path):
         if i.endswith(".qm"):
             langs.append(i.split(".")[0])
     return langs
@@ -205,7 +207,7 @@ def get_possible_langs():
 def get_latest_version():
     try:
         resp = requests.get("https://api.github.com/repos/Dummerle/Rare/releases/latest")
-        tag = json.loads(resp.content.decode("utf-8"))["tag_name"]
+        tag = resp.json()["tag_name"]
         return tag
     except requests.exceptions.ConnectionError:
         return "0.0.0"
@@ -220,27 +222,31 @@ def get_size(b: int) -> str:
 
 def create_rare_desktop_link(type_of_link):
     # Linux
-    if os.name == "posix":
+    if platform.system() == "Linux":
         if type_of_link == "desktop":
-            path = os.path.expanduser(f"~/Desktop/")
+            path = os.path.expanduser("~/Desktop/")
         elif type_of_link == "start_menu":
             path = os.path.expanduser("~/.local/share/applications/")
         else:
             return
 
-        with open(f"{path}Rare.desktop", "w") as desktop_file:
+        if p := os.environ.get("APPIMAGE"):
+            executable = p
+        else:
+            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
+        with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
             desktop_file.write("[Desktop Entry]\n"
                                f"Name=Rare\n"
                                f"Type=Application\n"
-                               f"Icon={os.path.join(style_path, 'Logo.png')}\n"
-                               f"Exec={os.path.abspath(sys.argv[0])}\n"
+                               f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
+                               f"Exec={executable}\n"
                                "Terminal=false\n"
                                "StartupWMClass=rare\n"
                                )
             desktop_file.close()
-        os.chmod(os.path.expanduser(f"{path}Rare.desktop"), 0o755)
+        os.chmod(os.path.expanduser(os.path.join(path, "Rare.desktop")), 0o755)
 
-    elif os.name == "nt":
+    elif platform.system() == "Windows":
         # Target of shortcut
         if type_of_link == "desktop":
             target_folder = os.path.expanduser('~/Desktop/')
@@ -254,20 +260,24 @@ def create_rare_desktop_link(type_of_link):
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)
 
+        exexutable = sys.executable
+        if "python.exe" in exexutable:
+            exexutable = exexutable.replace("python.exe", "pythonw.exe")
+
         # Add shortcut
         shell = Dispatch('WScript.Shell')
         shortcut = shell.CreateShortCut(pathLink)
-        shortcut.Targetpath = os.path.abspath(sys.argv[0])
-        shortcut.Arguments = ""
+        shortcut.Targetpath = exexutable
+        shortcut.Arguments = os.path.abspath(sys.argv[0])
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
-        shortcut.IconLocation = os.path.join(style_path, "Logo.ico")
+        shortcut.IconLocation = os.path.join(resources_path, "images", "Rare.ico")
 
         shortcut.save()
 
 
-def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
+def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -> bool:
     igame = core.get_installed_game(app_name)
 
     if os.path.exists(
@@ -279,20 +289,25 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.join('images'), str),
                             igame.app_name, 'DieselGameBoxTall')
     # Linux
-    if os.name == "posix":
+    if platform.system() == "Linux":
         if type_of_link == "desktop":
             path = os.path.expanduser(f"~/Desktop/")
         elif type_of_link == "start_menu":
             path = os.path.expanduser("~/.local/share/applications/")
         else:
-            return
-
+            return False
+        if not os.path.exists(path):
+            return False
+        if p := os.environ.get("APPIMAGE"):
+            executable = p
+        else:
+            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
         with open(f"{path}{igame.title}.desktop", "w") as desktop_file:
             desktop_file.write("[Desktop Entry]\n"
                                f"Name={igame.title}\n"
                                f"Type=Application\n"
                                f"Icon={icon}.png\n"
-                               f"Exec=rare launch {app_name}\n"
+                               f"Exec={executable} launch {app_name}\n"
                                "Terminal=false\n"
                                "StartupWMClass=rare-game\n"
                                )
@@ -300,7 +315,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         os.chmod(os.path.expanduser(f"{path}{igame.title}.desktop"), 0o755)
 
     # Windows
-    elif os.name == "nt":
+    elif platform.system() == "Windows":
         # Target of shortcut
         if type_of_link == "desktop":
             target_folder = os.path.expanduser('~/Desktop/')
@@ -308,7 +323,10 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
             target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
             logger.warning("No valid type of link")
-            return
+            return False
+        if not os.path.exists(target_folder):
+            return False
+
         target = os.path.abspath(sys.argv[0])
 
         # Name of link file
@@ -324,8 +342,8 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         # Add shortcut
         shell = Dispatch('WScript.Shell')
         shortcut = shell.CreateShortCut(pathLink)
-        shortcut.Targetpath = target
-        shortcut.Arguments = f'launch {app_name}'
+        shortcut.Targetpath = sys.executable
+        shortcut.Arguments = f'{target} launch {app_name}'
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
@@ -336,4 +354,26 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop"):
         shortcut.IconLocation = os.path.join(icon + ".ico")
 
         shortcut.save()
+        return True
+
+    elif platform.system() == "Darwin":
+        return False
+
+
+def get_pixmap(app_name: str) -> QPixmap:
+    for img in ["FinalArt.png", "DieselGameBoxTall.png", "DieselGameBoxLogo.png"]:
+        if os.path.exists(image := os.path.join(image_dir, app_name, img)):
+            pixmap = QPixmap(image)
+            break
+    else:
+        pixmap = QPixmap()
+    return pixmap
+
+
+def get_uninstalled_pixmap(app_name: str) -> QPixmap:
+    if os.path.exists(image := os.path.join(image_dir, app_name, "UninstalledArt.png")):
+        pixmap = QPixmap(image)
+    else:
+        pixmap = QPixmap()
+    return pixmap
 
