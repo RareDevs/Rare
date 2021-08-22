@@ -9,6 +9,7 @@ from qtawesome import icon
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import Game
+from rare import data_dir
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.json_formatter import QJsonModel
@@ -66,6 +67,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
             self.steam_worker.rating_signal.connect(self.grade.setText)
 
         if platform.system() == "Windows":
+
             self.lbl_grade.setVisible(False)
             self.grade.setVisible(False)
 

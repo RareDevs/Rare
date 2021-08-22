@@ -24,6 +24,7 @@ logger = getLogger("Utils")
 s = QSettings("Rare", "Rare")
 
 
+
 def download_images(signal: pyqtSignal, core: LegendaryCore):
     if not os.path.isdir(image_dir):
         os.makedirs(image_dir)
@@ -280,12 +281,12 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
     igame = core.get_installed_game(app_name)
 
     if os.path.exists(
-            os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
+            os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.join(data_dir, 'images'), str),
                          igame.app_name, 'Thumbnail.png')):
-        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
+        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.join(data_dir, 'images'), str),
                             igame.app_name, 'Thumbnail')
     else:
-        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
+        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.join('images'), str),
                             igame.app_name, 'DieselGameBoxTall')
     # Linux
     if platform.system() == "Linux":
@@ -329,7 +330,6 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
         target = os.path.abspath(sys.argv[0])
 
         # Name of link file
-
         linkName = igame.title
         for c in r'<>?":|\/*':
             linkName.replace(c, "")
@@ -376,3 +376,4 @@ def get_uninstalled_pixmap(app_name: str) -> QPixmap:
     else:
         pixmap = QPixmap()
     return pixmap
+

@@ -144,3 +144,39 @@ class VerifyResult(Enum):
     HASH_MISMATCH = 1
     FILE_MISSING = 2
     OTHER_ERROR = 3
+
+
+x = {'title': 'Frostpunk',
+     'id': 'b43c1e1e0ca14b6784b323c59c751136', 'namespace': 'd5241c76f178492ea1540fce45616757',
+     'description': 'Frostpunk', 'effectiveDate': '2099-01-01T00:00:00.000Z', 'offerType': 'OTHERS', 'expiryDate': None,
+     'status': 'ACTIVE', 'isCodeRedemptionOnly': True, 'keyImages': [{'type': 'VaultClosed',
+                                                                      'url': 'https://cdn1.epicgames.com/d5241c76f178492ea1540fce45616757/offer/EpicVault_Clean_OPEN_V10_LightsON-1920x1080-75e6d0636a6083944570a1c6f94ead4f.png'},
+                                                                     {'type': 'DieselStoreFrontWide',
+                                                                      'url': 'https://cdn1.epicgames.com/salesEvent/salesEvent/EGS_Frostpunk_wide_2560x1440-ef2f4d458120af0839dde35b1a022828'},
+                                                                     {'type': 'DieselStoreFrontTall',
+                                                                      'url': 'https://cdn1.epicgames.com/salesEvent/salesEvent/EGS_Frostpunk_Tall_1200x1600-c71dc27cfe505c6c662c49011b36a0c5'}],
+     'seller': {'id': 'o-ufmrk5furrrxgsp5tdngefzt5rxdcn', 'name': 'Epic Dev Test Account'}, 'productSlug': 'frostpunk',
+     'urlSlug': 'free-games-06', 'url': None,
+     'items': [{'id': '8341d7c7e4534db7848cc428aa4cbe5a', 'namespace': 'd5241c76f178492ea1540fce45616757'}],
+     'customAttributes': [{'key': 'com.epicgames.app.freegames.vault.close', 'value': '[]'},
+                          {'key': 'com.epicgames.app.blacklist', 'value': '[]'},
+                          {'key': 'com.epicgames.app.freegames.vault.slug',
+                           'value': 'news/the-epic-mega-sale-returns-for-2021'},
+                          {'key': 'publisherName', 'value': '11 bit studios'}, {'key': 'dupe', 'value': '[]'},
+                          {'key': 'com.epicgames.app.freegames.vault.open', 'value': '[]'},
+                          {'key': 'developerName', 'value': '11 bit studios'},
+                          {'key': 'com.epicgames.app.productSlug', 'value': 'frostpunk'}],
+     'categories': [{'path': 'freegames/vaulted'}, {'path': 'freegames'}, {'path': 'games'}, {'path': 'applications'}],
+     'tags': [], 'price': {'totalPrice': {'discountPrice': 0, 'originalPrice': 0, 'voucherDiscount': 0, 'discount': 0,
+                                          'currencyCode': 'USD', 'currencyInfo': {'decimals': 2},
+                                          'fmtPrice': {'originalPrice': '0', 'discountPrice': '0',
+                                                       'intermediatePrice': '0'}},
+                           'lineOffers': [{'appliedRules': []}]}, 'promotions': {'promotionalOffers': [],
+                                                                                 'upcomingPromotionalOffers': [{
+                                                                                                                   'promotionalOffers': [
+                                                                                                                       {
+                                                                                                                           'startDate': '2021-06-03T15:00:00.000Z',
+                                                                                                                           'endDate': '2021-06-10T15:00:00.000Z',
+                                                                                                                           'discountSetting': {
+                                                                                                                               'discountType': 'PERCENTAGE',
+                                                                                                                               'discountPercentage': 0}}]}]}}
