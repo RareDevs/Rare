@@ -9,8 +9,7 @@ from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, Q
     QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton
 from qtawesome import icon
 
-from rare import resources_path
-
+from rare import resources_path, cache_dir
 from rare.ui.utils.pathedit import Ui_PathEdit
 from rare.utils.qt_requests import QtRequestManager
 
