@@ -1,7 +1,7 @@
 import webbrowser
 
 from PyQt5.QtCore import QSize, pyqtSignal
-from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
+from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 from qtawesome import icon
 
 from custom_legendary.core import LegendaryCore
@@ -107,6 +107,12 @@ class TabWidget(QTabWidget):
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(lambda x: self.games_tab.layout.setCurrentIndex(0) if x == 0 else None)
         self.setIconSize(QSize(25, 25))
+
+        # shortcuts
+        QShortcut("Alt+1", self).activated.connect(lambda: self.setCurrentIndex(0))
+        QShortcut("Alt+2", self).activated.connect(lambda: self.setCurrentIndex(1))
+        QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(2))
+        QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(5))
 
     # TODO; maybe pass InstallOptionsModel only, not split arguments
     def install_game(self, options: InstallOptionsModel, update=False, silent=False):
