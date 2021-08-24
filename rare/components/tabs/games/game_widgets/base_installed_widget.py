@@ -7,9 +7,8 @@ from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
-from rare import cache_dir
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.extra.Console import ConsoleWindow
+from rare.components.extra.console import ConsoleWindow
 from rare.utils import legendary_utils
 from rare.utils.utils import create_desktop_link
 

@@ -53,17 +53,6 @@ class GameWidget(QWidget):
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.show_info.emit(self.json_info)
 
-    @classmethod
-    def from_request(cls, name, path, shop_api):
-        c = cls(path)
-        shop_api.search_game(name, c.handle_response)
-        return c
-
-    def handle_response(self, data):
-
-        data = data["data"]["Catalog"]["searchStore"]["elements"][0]
-        self.init_ui(data)
-
 
 class GameWidgetDiscount(GameWidget):
     def __init__(self, *args, **kwargs):

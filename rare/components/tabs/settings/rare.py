@@ -37,7 +37,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             (self.notification, "notification", True),
             (self.save_size, "save_size", False),
             (self.log_games, "show_console", False),
-            (self.image_cache, "cache_images", True)
+            # (self.image_cache, "cache_images", True)
         ]
 
         self.settings = QSettings()

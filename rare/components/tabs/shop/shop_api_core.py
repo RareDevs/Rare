@@ -60,7 +60,7 @@ class ShopApiCore(QObject):
         self.manager.post(graphql_url, payload, lambda data: self._handle_search(data, handle_func))
 
     def _handle_search(self, data, handle_func):
-        handle_func(data)
+        handle_func(data["data"]["Catalog"]["searchStore"]["elements"])
 
     def browse_games(self, browse_model: BrowseModel, handle_func):
         if self.browse_active:

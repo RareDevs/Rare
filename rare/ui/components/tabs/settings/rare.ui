@@ -2,16 +2,24 @@
 <ui version="4.0">
  <class>RareSettings</class>
  <widget class="QWidget" name="RareSettings">
-  <property name="windowTitle">
-   <string>RareSettings</string>
-  </property>
-  <layout class="QGridLayout" name="rare_layout">
-   <item row="1" column="1">
-    <layout class="QVBoxLayout" name="rpc_layout"/>
-   </item>
-   <item row="2" column="1" alignment="Qt::AlignTop">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
+     <property name="geometry">
+         <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>544</width>
+             <height>532</height>
+         </rect>
+     </property>
+     <property name="windowTitle">
+         <string>RareSettings</string>
+     </property>
+     <layout class="QGridLayout" name="rare_layout">
+         <item row="1" column="1">
+             <layout class="QVBoxLayout" name="rpc_layout"/>
+         </item>
+         <item row="2" column="1" alignment="Qt::AlignTop">
+             <widget class="QGroupBox" name="groupBox">
+                 <property name="title">
       <string>Shortcuts</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -37,63 +45,70 @@
      <property name="title">
       <string>Behavior</string>
      </property>
-     <layout class="QGridLayout" name="behavior_layout">
-      <item row="2" column="1" rowspan="2">
-       <spacer name="settings_hspacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="5" column="0">
-       <widget class="QCheckBox" name="save_size">
-        <property name="text">
-         <string>Restore window size on application startup</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="notification">
-        <property name="text">
-         <string>Show notification on download completion</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="auto_sync_cloud">
-        <property name="text">
-         <string>Automatically sync with cloud</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="confirm_start">
-        <property name="text">
-         <string>Confirm game launch</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="auto_update">
-        <property name="text">
-         <string>Update games on application startup</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="sys_tray">
-        <property name="text">
-         <string>Exit to System tray</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+        <layout class="QGridLayout" name="behavior_layout">
+            <item row="2" column="0">
+                <widget class="QCheckBox" name="confirm_start">
+                    <property name="text">
+                        <string>Confirm game launch</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="2" column="1" rowspan="2">
+                <spacer name="settings_hspacer">
+                    <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+            <item row="3" column="0">
+                <widget class="QCheckBox" name="auto_sync_cloud">
+                    <property name="text">
+                        <string>Automatically sync with cloud</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="0" column="0">
+                <widget class="QCheckBox" name="sys_tray">
+                    <property name="text">
+                        <string>Exit to System tray</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="5" column="0">
+                <widget class="QCheckBox" name="save_size">
+                    <property name="text">
+                        <string>Restore window size on application startup</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="4" column="0">
+                <widget class="QCheckBox" name="notification">
+                    <property name="text">
+                        <string>Show notification on download completion</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="1" column="0">
+                <widget class="QCheckBox" name="auto_update">
+                    <property name="text">
+                        <string>Update games on application startup</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="6" column="0">
+                <widget class="QCheckBox" name="log_games">
+                    <property name="text">
+                        <string>Open console for game output</string>
+                    </property>
+                </widget>
+            </item>
+        </layout>
     </widget>
    </item>
    <item row="0" column="1" alignment="Qt::AlignTop">

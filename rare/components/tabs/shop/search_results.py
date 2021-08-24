@@ -40,7 +40,6 @@ class SearchResults(QStackedWidget):
             self.api_core.search_game(text, self.show_results)
 
     def show_results(self, results: dict):
-        results = results["data"]["Catalog"]["searchStore"]["elements"]
         QVBoxLayout().addWidget(self.widget)
         self.widget = QWidget()
         self.layout = FlowLayout()

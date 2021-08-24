@@ -77,9 +77,9 @@ class ShopGameInfo(QWidget, Ui_shop_info):
     def add_to_wishlist(self):
         if not self.in_wishlist:
             return
-            self.api_core.add_to_wishlist(self.game.namespace, self.game.offer_id,
-                                          lambda success: self.wishlist_button.setText(self.tr("Remove from wishlist"))
-                                          if success else self.wishlist_button.setText("Something goes wrong"))
+            # self.api_core.add_to_wishlist(self.game.namespace, self.game.offer_id,
+            #                             lambda success: self.wishlist_button.setText(self.tr("Remove from wishlist"))
+            #                              if success else self.wishlist_button.setText("Something goes wrong"))
         else:
             self.api_core.remove_from_wishlist(self.game.namespace, self.game.offer_id,
                                                lambda success: self.wishlist_button.setVisible(False)
