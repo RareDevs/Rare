@@ -89,11 +89,11 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.game = ShopGame.from_json(game, self.data)
         self.title.setText(self.game.title)
         self.price.setFont(QFont())
-        if self.game.price != "0":
-            self.price.setText(self.game.price)
-        else:
+        print(type(self.game.price))
+        if self.game.price == "0" or self.game.price == 0:
             self.price.setText(self.tr("Free"))
-
+        else:
+            self.price.setText(self.game.price)
         if self.game.price != self.game.discount_price:
             font = QFont()
             font.setStrikeOut(True)
@@ -136,7 +136,6 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         except KeyError:
             pass
         self.tags.setText(", ".join(self.game.tags))
-        self.price.setText(self.game.price)
 
     def add_wishlist_items(self, wishlist):
         wishlist = wishlist["data"]["Wishlist"]["wishlistItems"]["elements"]

@@ -44,7 +44,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.free_widget.layout().addWidget(self.free_games_now)
         self.coming_free_games = QGroupBox(self.tr("Free Games next week"))
         self.coming_free_games.setLayout(QHBoxLayout())
-        self.free_game_group_box.layout().addWidget(self.coming_free_games)
+        self.free_widget.layout().addWidget(self.coming_free_games)
         self.free_stack.addWidget(WaitingSpinner())
         self.free_stack.setCurrentIndex(1)
 
