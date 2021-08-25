@@ -1,5 +1,6 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QStackedWidget, QMessageBox
+from qtawesome import icon
 
 from rare.components.tabs.shop import ShopApiCore
 from rare.components.tabs.shop.game_widgets import WishlistWidget
@@ -16,13 +17,14 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
         self.api_core = api_core
         self.setupUi(self)
         self.addWidget(WaitingSpinner())
-        # self.setContentsMargins(100, 0, 100, 0)
         self.setCurrentIndex(1)
         self.wishlist = []
         self.widgets = []
 
         self.sort_cb.currentIndexChanged.connect(lambda i: self.set_wishlist(self.wishlist, i))
         self.filter_cb.currentIndexChanged.connect(self.set_filter)
+        self.reload_button.clicked.connect(self.update_wishlist)
+        self.reload_button.setIcon(icon("fa.refresh", color="white"))
 
     def update_wishlist(self):
         self.setCurrentIndex(1)
@@ -65,12 +67,18 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
         elif sort == 2:
             sorted_list = sorted(wishlist, key=lambda x: x["offer"]["seller"]["name"])
         elif sort == 3:
-            sorted_list = sorted(wishlist, key=lambda x: 1 - (
+            sorted_list = sorted(wishlist, reverse=True, key=lambda x: 1 - (
                     x["offer"]["price"]["totalPrice"]["discountPrice"] / x["offer"]["price"]["totalPrice"][
                 "originalPrice"]))
         else:
             sorted_list = wishlist
         self.widgets.clear()
+
+        if len(sorted_list) == 0:
+            self.no_games_label.setVisible(True)
+        else:
+            self.no_games_label.setVisible(False)
+
         for game in sorted_list:
             w = WishlistWidget(game["offer"])
             self.widgets.append(w)

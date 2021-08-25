@@ -104,7 +104,7 @@ class Ui_ShopWidget(object):
         self.above = QtWidgets.QRadioButton(self.price_gb)
         self.above.setObjectName("above")
         self.verticalLayout_9.addWidget(self.above)
-        self.on_discount = QtWidgets.QRadioButton(self.price_gb)
+        self.on_discount = QtWidgets.QCheckBox(self.price_gb)
         self.on_discount.setObjectName("on_discount")
         self.verticalLayout_9.addWidget(self.on_discount)
         self.verticalLayout_2.addWidget(self.price_gb)

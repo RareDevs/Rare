@@ -40,7 +40,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.update_games_allowed = True
 
         self.free_games_now = QGroupBox(self.tr("Now Free"))
-        self.free_games_now.setLayout(QHBoxLayout())
+        self.free_games_now.setLayout(FlowLayout())
         self.free_widget.layout().addWidget(self.free_games_now)
         self.coming_free_games = QGroupBox(self.tr("Free Games next week"))
         self.coming_free_games.setLayout(QHBoxLayout())
@@ -96,6 +96,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 self.discount_widget.layout().addWidget(w)
                 discounts += 1
         self.discounts_gb.setVisible(discounts > 0)
+        self.discount_stack.setCurrentIndex(0)
 
     def add_free_games(self, free_games):
         date = datetime.datetime.now()
@@ -146,7 +147,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             self.free_games_now.layout().addWidget(w)
             self.free_game_widgets.append(w)
 
-        self.free_games_now.layout().addStretch(1)
+        # self.free_games_now.layout().addStretch(1)
 
         # free games next week
         for free_game in coming_free_games:
@@ -171,8 +172,8 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.under30.toggled.connect(
             lambda: self.prepare_request("<price>[0, 3000)") if self.under30.isChecked() else None)
         self.above.toggled.connect(lambda: self.prepare_request("<price>[1499,]") if self.above.isChecked() else None)
-        self.on_discount.toggled.connect(lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None)
-
+        # self.on_discount.toggled.connect(lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None)
+        self.on_discount.toggled.connect(lambda: self.prepare_request())
         constants = Constants()
 
         self.checkboxes = []
@@ -201,12 +202,13 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.update_games_allowed = True
         self.prepare_request("")
 
-    def prepare_request(self, price: str = "", added_tag: int = 0, removed_tag: int = 0,
+    def prepare_request(self, price: str = None, added_tag: int = 0, removed_tag: int = 0,
                         added_type: str = "", removed_type: str = ""):
         if not self.update_games_allowed:
             return
+        if price is not None:
+            self.price = price
 
-        self.price = price
         if added_tag != 0:
             self.tags.append(added_tag)
         if removed_tag != 0 and removed_tag in self.tags:
@@ -216,7 +218,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             self.types.append(added_type)
         if removed_type and removed_type in self.types:
             self.types.remove(removed_type)
-        if (self.types or self.price) or self.tags:
+        if (self.types or self.price) or self.tags or self.on_discount.isChecked():
             self.free_game_group_box.setVisible(False)
             self.discounts_gb.setVisible(False)
         else:
@@ -228,12 +230,13 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.game_stack.setCurrentIndex(1)
         date = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.{str(random.randint(0, 999)).zfill(3)}Z]"
 
-        browse_model = BrowseModel(locale=locale, date=date, count=20, price=self.price)
+        browse_model = BrowseModel(locale=locale, date=date, count=20, price=self.price,
+                                   onSale=self.on_discount.isChecked())
         browse_model.tag = "|".join(self.tags)
 
         if self.types:
             browse_model.category = "|".join(self.types)
-
+        print(browse_model.__dict__)
         self.api_core.browse_games(browse_model, self.show_games)
 
     def show_games(self, data):

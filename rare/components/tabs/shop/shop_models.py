@@ -113,6 +113,7 @@ class BrowseModel:
     withPrice: bool = True
     date: str = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.{str(random.randint(0, 999)).zfill(3)}Z]"
     price: str = ""
+    onSale: bool = False
 
     @property
     def __dict__(self):
@@ -135,6 +136,6 @@ class BrowseModel:
             payload["freeGame"] = True
         elif self.price.startswith("<price>"):
             payload["priceRange"] = self.price.replace("<price>", "")
-        elif self.price == "sale":
+        if self.onSale:
             payload["onSale"] = True
         return payload

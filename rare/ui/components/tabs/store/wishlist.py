@@ -62,6 +62,15 @@ class Ui_Wishlist(object):
         self.horizontalLayout.addWidget(self.filter_cb)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)
+        self.reload_button = QtWidgets.QPushButton(self.scroll_widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.reload_button.sizePolicy().hasHeightForWidth())
+        self.reload_button.setSizePolicy(sizePolicy)
+        self.reload_button.setText("")
+        self.reload_button.setObjectName("reload_button")
+        self.horizontalLayout.addWidget(self.reload_button)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.list_layout = QtWidgets.QVBoxLayout()
         self.list_layout.setObjectName("list_layout")
@@ -87,7 +96,7 @@ class Ui_Wishlist(object):
         self.sort_cb.setItemText(1, _translate("Wishlist", "Price"))
         self.sort_cb.setItemText(2, _translate("Wishlist", "Developer"))
         self.sort_cb.setItemText(3, _translate("Wishlist", "Discount"))
-        self.filter_label.setText(_translate("Wishlist", "Filter: "))
+        self.filter_label.setText(_translate("Wishlist", "Filter:"))
         self.filter_cb.setItemText(0, _translate("Wishlist", "None"))
         self.filter_cb.setItemText(1, _translate("Wishlist", "Discount"))
         self.no_games_label.setText(_translate("Wishlist", "No games matching your filter"))
@@ -95,7 +104,6 @@ class Ui_Wishlist(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     Wishlist = QtWidgets.QStackedWidget()
     ui = Ui_Wishlist()

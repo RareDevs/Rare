@@ -2,14 +2,14 @@
 <ui version="4.0">
  <class>ShopWidget</class>
  <widget class="QWidget" name="ShopWidget">
-  <property name="geometry">
-      <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>850</width>
-          <height>572</height>
-      </rect>
-  </property>
+     <property name="geometry">
+         <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>850</width>
+             <height>572</height>
+         </rect>
+     </property>
      <property name="windowTitle">
          <string>Form</string>
      </property>
@@ -165,7 +165,7 @@
                                                              </widget>
                                                          </item>
                                                          <item>
-                                                             <widget class="QRadioButton" name="on_discount">
+                                                             <widget class="QCheckBox" name="on_discount">
                                                                  <property name="text">
                                                                      <string>Discount</string>
                                                                  </property>
