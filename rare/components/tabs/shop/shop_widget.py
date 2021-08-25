@@ -39,7 +39,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.locale = get_lang()
         self.update_games_allowed = True
 
-        self.free_games_now = QGroupBox(self.tr("Free Games"))
+        self.free_games_now = QGroupBox(self.tr("Now Free"))
         self.free_games_now.setLayout(QHBoxLayout())
         self.free_widget.layout().addWidget(self.free_games_now)
         self.coming_free_games = QGroupBox(self.tr("Free Games next week"))
@@ -88,6 +88,8 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.discount_widget.setLayout(FlowLayout())
         discounts = 0
         for game in wishlist:
+            if not game:
+                continue
             if game["offer"]["price"]["totalPrice"]["discount"] > 0:
                 w = GameWidgetDiscount(self.path, game["offer"])
                 w.show_info.connect(self.show_game.emit)

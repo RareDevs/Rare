@@ -5,13 +5,14 @@ from dataclasses import dataclass
 from rare.utils.utils import get_lang
 
 
-class _ImageUrlModel:
+class ImageUrlModel:
     def __init__(self, front_tall: str = "", offer_image_tall: str = "",
-                 thumbnail: str = "", front_wide: str = ""):
+                 thumbnail: str = "", front_wide: str = "", offer_image_wide: str = ""):
         self.front_tall = front_tall
         self.offer_image_tall = offer_image_tall
         self.thumbnail = thumbnail
         self.front_wide = front_wide
+        self.offer_image_wide = offer_image_wide
 
     @classmethod
     def from_json(cls, json_data: list):
@@ -25,12 +26,14 @@ class _ImageUrlModel:
                 tmp.front_wide = item["url"]
             elif item["type"] == "OfferImageTall":
                 tmp.offer_image_tall = item["url"]
+            elif item["type"] == "OfferImageWide":
+                tmp.offer_image_wide = item["url"]
         return tmp
 
 
 class ShopGame:
     # TODO: Copyrights etc
-    def __init__(self, title: str = "", image_urls: _ImageUrlModel = None, social_links: dict = None,
+    def __init__(self, title: str = "", image_urls: ImageUrlModel = None, social_links: dict = None,
                  langs: list = None, reqs: dict = None, publisher: str = "", developer: str = "",
                  original_price: str = "", discount_price: str = "", tags: list = None, namespace: str = "",
                  offer_id: str = ""):
@@ -64,7 +67,7 @@ class ShopGame:
             api_data = api_data["pages"][0]
         tmp = cls()
         tmp.title = search_data.get("title", "Fail")
-        tmp.image_urls = _ImageUrlModel.from_json(search_data["keyImages"])
+        tmp.image_urls = ImageUrlModel.from_json(search_data["keyImages"])
         links = api_data["data"]["socialLinks"]
         tmp.links = []
         for item in links:

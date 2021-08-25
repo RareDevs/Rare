@@ -2,6 +2,7 @@ import io
 import os
 from logging import getLogger
 
+import PIL
 from PIL import Image
 from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QSettings
 from PyQt5.QtGui import QMovie, QPixmap
@@ -287,10 +288,14 @@ class ImageLabel(QLabel):
             self.setPixmap(QPixmap())
         except RuntimeError:
             return
-        image: Image.Image = Image.open(io.BytesIO(data))
+        try:
+            image: Image.Image = Image.open(io.BytesIO(data))
+        except PIL.UnidentifiedImageError:
+            print(self.name)
+            return
         image = image.resize((self.img_size[0], self.img_size[1]))
 
-        if QSettings().value("cache_images", True, bool):
+        if QSettings().value("cache_images", False, bool):
             image.save(os.path.join(self.path, self.name), format="png")
         byte_array = io.BytesIO()
         image.save(byte_array, format="PNG")
