@@ -21,6 +21,7 @@ class DownloadTab(QWidget):
     finished = pyqtSignal(tuple)
     thread: QThread
     dl_queue = []
+    dl_status = pyqtSignal(int)
 
     def __init__(self, core: LegendaryCore, updates: list, parent):
         super(DownloadTab, self).__init__(parent=parent)
@@ -184,6 +185,7 @@ class DownloadTab(QWidget):
         self.downloaded.setText(
             self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
         self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
+        self.dl_status.emit(int(100 * ui_update.total_downloaded / self.analysis.dl_size))
 
     def get_time(self, seconds: int) -> str:
         return str(datetime.timedelta(seconds=seconds))

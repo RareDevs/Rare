@@ -114,6 +114,9 @@ class TabWidget(QTabWidget):
         QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(2))
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(5))
 
+        self.downloadTab.dl_status.connect(
+            self.games_tab.default_widget.game_list.installing_widget.image_widget.set_status)
+
     # TODO; maybe pass InstallOptionsModel only, not split arguments
     def install_game(self, options: InstallOptionsModel, update=False, silent=False):
         install_dialog = InstallDialog(self.core,
@@ -132,6 +135,7 @@ class TabWidget(QTabWidget):
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
         self.setCurrentIndex(1)
         self.downloadTab.install_game(download_item)
+        self.games_tab.default_widget.game_list.start_download(download_item.options.app_name)
 
     def game_imported(self, app_name: str):
         igame = self.core.get_installed_game(app_name)
@@ -167,6 +171,7 @@ class TabWidget(QTabWidget):
         if update_list[0]:
             self.games_tab.default_widget.game_list.update_list(update_list[1])
             self.cloud_saves.reload(update_list[1])
+        self.games_tab.default_widget.game_list.installing_widget.setVisible(False)
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
 

@@ -8,6 +8,7 @@ from custom_legendary.core import LegendaryCore
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 from rare.components.tabs.games.game_widgets.installed_icon_widget import GameWidgetInstalled
 from rare.components.tabs.games.game_widgets.installed_list_widget import InstalledListWidget
+from rare.components.tabs.games.game_widgets.installing_game_widget import InstallingGameWidget
 from rare.components.tabs.games.game_widgets.uninstalled_icon_widget import IconWidgetUninstalled
 from rare.components.tabs.games.game_widgets.uninstalled_list_widget import ListWidgetUninstalled
 from rare.utils.extra_widgets import FlowLayout
@@ -33,7 +34,7 @@ class GameList(QStackedWidget):
         self.core = core
         self.setObjectName("list_widget")
         self.offline = offline
-
+        self.installing_widget = InstallingGameWidget(self.core.get_game("CrabEA"))
         self.settings = QSettings()
         icon_view = self.settings.value("icon_view", True, bool)
         self.procs = []
@@ -81,6 +82,10 @@ class GameList(QStackedWidget):
             self.mac_games = []
         self.installed = sorted(self.core.get_installed_list(), key=lambda x: x.title)
 
+        self.installing_widget = InstallingGameWidget(self.core.get_game("CrabEA"))
+        self.icon_layout.addWidget(self.installing_widget)
+        self.installing_widget.setVisible(False)
+
         # Installed Games
         for igame in self.installed:
             icon_widget, list_widget = self.add_installed_widget(igame)
@@ -122,6 +127,10 @@ class GameList(QStackedWidget):
 
         if filter_games := self.settings.value("filter", "", str):
             self.filter(filter_games)
+
+    def start_download(self, app_name):
+        self.installing_widget.set_game(self.core.get_game(app_name))
+        self.installing_widget.setVisible(True)
 
     def add_uninstalled_widget(self, game):
         pixmap = get_uninstalled_pixmap(game.app_name)
@@ -347,6 +356,7 @@ class GameList(QStackedWidget):
                     i_widget, list_widget = self.widgets[name]
                     self.icon_layout.addWidget(i_widget)
                     self.list_layout.addWidget(list_widget)
+        self.installing_widget.setVisible(False)
 
     def _update_games(self):
         # new layouts to remove from old layout
@@ -354,6 +364,7 @@ class GameList(QStackedWidget):
         # QWidget().setLayout(self.list_layout)
         list_layout = QVBoxLayout()
 
+        icon_layout.addWidget(self.installing_widget)
         for igame in sorted(self.core.get_installed_list(), key=lambda x: x.title):
             i_widget, l_widget = self.widgets[igame.app_name]
             icon_layout.addWidget(i_widget)
