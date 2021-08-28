@@ -14,7 +14,7 @@ from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.legendary_utils import VerifyThread
 from rare.utils.steam_grades import SteamWorker
-from rare.utils.utils import get_size, get_pixmap, get_icon_color
+from rare.utils.utils import get_size, get_pixmap
 
 
 class InfoTabs(QTabWidget):
@@ -25,7 +25,7 @@ class InfoTabs(QTabWidget):
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
 
-        self.addTab(QWidget(), icon("mdi.keyboard-backspace", color=get_icon_color()), self.tr("Back"))
+        self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
         self.tabBarClicked.connect(lambda x: self.parent().layout.setCurrentIndex(0) if x == 0 else None)
 
         self.info = GameInfo(core, self)
@@ -56,7 +56,6 @@ class InfoTabs(QTabWidget):
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
             self.parent().layout.setCurrentIndex(0)
-
 
 
 class GameInfo(QWidget, Ui_GameInfo):

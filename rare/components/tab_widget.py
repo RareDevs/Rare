@@ -15,7 +15,6 @@ from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
 from rare.utils import legendary_utils
 from rare.utils.models import InstallQueueItemModel, InstallOptionsModel
-from rare.utils.utils import get_icon_color
 
 
 class TabWidget(QTabWidget):
@@ -63,7 +62,7 @@ class TabWidget(QTabWidget):
         account_button.menu().addAction(account_action)
         self.tabBar().setTabButton(disabled_tab + 1, self.tabBar().RightSide, account_button)
 
-        self.addTab(self.settings, icon("fa.gear", color=get_icon_color()),
+        self.addTab(self.settings, icon("fa.gear"),
                     "(!)" if self.settings.about.update_available else "")
 
         # Signals

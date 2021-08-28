@@ -3,8 +3,6 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QTabBar, QToolButton
 from qtawesome import icon
 
-from rare.utils.utils import get_icon_color
-
 
 class TabBar(QTabBar):
     def __init__(self, expanded):
@@ -29,6 +27,6 @@ class TabButtonWidget(QToolButton):
         super(TabButtonWidget, self).__init__()
         self.setText("Icon")
         self.setPopupMode(QToolButton.InstantPopup)
-        self.setIcon(icon(button_icon, color=get_icon_color(), scale_factor=1.25))
+        self.setIcon(icon(button_icon, scale_factor=1.25))
         self.setToolTip(tool_tip)
         self.setIconSize(QSize(25, 25))

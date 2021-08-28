@@ -13,7 +13,7 @@ from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.json_formatter import QJsonModel
 from rare.utils.steam_grades import SteamWorker
-from rare.utils.utils import get_pixmap, get_icon_color
+from rare.utils.utils import get_pixmap
 
 
 class UninstalledTabInfo(QTabWidget):
@@ -24,7 +24,7 @@ class UninstalledTabInfo(QTabWidget):
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
 
-        self.addTab(QWidget(), icon("mdi.keyboard-backspace", color=get_icon_color()), self.tr("Back"))
+        self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
         self.tabBarClicked.connect(lambda x: self.parent().layout.setCurrentIndex(0) if x == 0 else None)
 
         self.info = UninstalledInfo(core, self)

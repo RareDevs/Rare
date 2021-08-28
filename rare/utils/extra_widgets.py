@@ -8,7 +8,6 @@ from qtawesome import icon
 
 from rare import resources_path
 from rare.ui.utils.pathedit import Ui_PathEdit
-from rare.utils.utils import get_icon_color
 
 
 class FlowLayout(QLayout):
@@ -230,9 +229,9 @@ class SelectViewWidget(QWidget):
         self.list_view = QPushButton()
         if icon_view:
             self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="orange"))
-            self.list_view.setIcon(icon("fa5s.list", color=get_icon_color()))
+            self.list_view.setIcon(icon("fa5s.list"))
         else:
-            self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color=get_icon_color()))
+            self.icon_view_button.setIcon(icon("mdi.view-grid-outline"))
             self.list_view.setIcon(icon("fa5s.list", color="orange"))
 
         self.icon_view_button.clicked.connect(self.icon)
@@ -249,12 +248,12 @@ class SelectViewWidget(QWidget):
 
     def icon(self):
         self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="orange"))
-        self.list_view.setIcon(icon("fa5s.list", color=get_icon_color()))
+        self.list_view.setIcon(icon("fa5s.list"))
         self.icon_view = False
         self.toggled.emit()
 
     def list(self):
-        self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color=get_icon_color()))
+        self.icon_view_button.setIcon(icon("mdi.view-grid-outline"))
         self.list_view.setIcon(icon("fa5s.list", color="orange"))
         self.icon_view = True
         self.toggled.emit()

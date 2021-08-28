@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QLabel, QHBoxLayout, QPushBu
 from qtawesome import icon
 
 from rare.utils.models import InstallQueueItemModel
-from rare.utils.utils import get_icon_color
 
 logger = getLogger("QueueWidget")
 
@@ -21,14 +20,14 @@ class DlWidget(QWidget):
         self.layout = QHBoxLayout()
 
         self.left_layout = QVBoxLayout()
-        self.move_up_button = QPushButton(icon("fa.arrow-up", color=get_icon_color()), "")
+        self.move_up_button = QPushButton(icon("fa.arrow-up"), "")
         if index == 0:
             self.move_up_button.setDisabled(True)
         self.move_up_button.clicked.connect(lambda: self.move_up.emit(self.app_name))
         self.move_up_button.setFixedWidth(20)
         self.left_layout.addWidget(self.move_up_button)
 
-        self.move_down_buttton = QPushButton(icon("fa.arrow-down", color=get_icon_color()), "")
+        self.move_down_buttton = QPushButton(icon("fa.arrow-down"), "")
         self.move_down_buttton.clicked.connect(lambda: self.move_down.emit(self.app_name))
         self.left_layout.addWidget(self.move_down_buttton)
         self.move_down_buttton.setFixedWidth(20)

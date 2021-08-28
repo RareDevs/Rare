@@ -8,7 +8,6 @@ from rare.components.tabs.games.game_info.uninstalled_info import UninstalledInf
 from rare.components.tabs.games.game_list import GameList
 from rare.components.tabs.games.import_widget import ImportWidget
 from rare.utils.extra_widgets import SelectViewWidget
-from rare.utils.utils import get_icon_color
 
 
 class GameTab(QWidget):
@@ -101,7 +100,7 @@ class GameListHeadBar(QWidget):
         self.layout.addWidget(self.filter)
         self.layout.addStretch(1)
 
-        self.import_game = QPushButton(icon("mdi.import", color=get_icon_color()), self.tr("Import Game"))
+        self.import_game = QPushButton(icon("mdi.import"), self.tr("Import Game"))
         self.layout.addWidget(self.import_game)
 
         self.layout.addStretch(1)
@@ -110,7 +109,7 @@ class GameListHeadBar(QWidget):
         self.search_bar.setObjectName("search_bar")
         self.search_bar.setFrame(False)
         icon_label = QLabel()
-        icon_label.setPixmap(icon("fa.search", color=get_icon_color()).pixmap(QSize(20, 20)))
+        icon_label.setPixmap(icon("fa.search").pixmap(QSize(20, 20)))
         self.layout.addWidget(icon_label)
         self.search_bar.setMinimumWidth(200)
         self.search_bar.setPlaceholderText(self.tr("Search Game"))
@@ -123,7 +122,7 @@ class GameListHeadBar(QWidget):
         self.layout.addWidget(self.view)
         self.layout.addStretch(1)
         self.refresh_list = QPushButton()
-        self.refresh_list.setIcon(icon("fa.refresh", color=get_icon_color()))  # Reload icon
+        self.refresh_list.setIcon(icon("fa.refresh"))  # Reload icon
         self.layout.addWidget(self.refresh_list)
 
         self.setLayout(self.layout)

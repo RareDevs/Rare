@@ -86,7 +86,9 @@ class SyncWidget(QGroupBox):
 
         if not igame.save_path:
             igame.save_path = os.path.expanduser(f"~/{igame.app_name}/")
-            QMessageBox.warning(self, "Savepath error", self.tr("Please edit save path of game {} manually in Cload saves tab").format(igame.title))
+            QMessageBox.warning(self, "Savepath error",
+                                self.tr("Please edit save path of game {} manually in Cload saves tab").format(
+                                    igame.title))
         if igame.save_path and not os.path.exists(igame.save_path):
             os.makedirs(igame.save_path)
         self.core.lgd.set_installed_game(self.igame.app_name, self.igame)

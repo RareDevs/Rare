@@ -114,7 +114,6 @@ def get_steam_id(title: str):
         return 0
 
 
-
 def check_time():  # this function check if it's time to update
     global file
     text = open(file, 'r')

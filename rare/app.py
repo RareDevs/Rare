@@ -4,8 +4,9 @@ import os
 import sys
 import time
 
+import qtawesome
 from PyQt5.QtCore import QSettings, QTranslator
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory
 
 from custom_legendary.core import LegendaryCore
@@ -87,6 +88,7 @@ class App(QApplication):
             custom_palette = load_color_scheme(os.path.join(resources_path, "colors", color + ".scheme"))
             if custom_palette is not None:
                 self.setPalette(custom_palette)
+                qtawesome.set_defaults(color=custom_palette.color(QPalette.Text))
         elif style := settings.value("style_sheet", False):
             settings.setValue("color_scheme", "")
             stylesheet = open(os.path.join(resources_path, "stylesheets", style, "stylesheet.qss")).read()
@@ -94,6 +96,7 @@ class App(QApplication):
             if os.name == "nt":
                 style_resource_path = style_resource_path.replace('\\', '/')
             self.setStyleSheet(stylesheet.replace("@path@", style_resource_path))
+            qtawesome.set_defaults(color="white")
             # lk: for qresources stylesheets, not an ideal solution for modability,
             # lk: too many extra steps and I don't like binary files in git, even as strings.
             # importlib.import_module("rare.resources.stylesheets." + style)
