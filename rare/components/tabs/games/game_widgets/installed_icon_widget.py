@@ -9,6 +9,7 @@ from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 from rare.utils.extra_widgets import ClickableLabel
+from rare.utils.utils import get_icon_color
 
 logger = getLogger("GameWidgetInstalled")
 
@@ -51,7 +52,7 @@ class GameWidgetInstalled(BaseInstalledWidget):
 
         # Info Button
         self.menu_btn = QPushButton()
-        self.menu_btn.setIcon(icon("ei.info-circle", color="white"))
+        self.menu_btn.setIcon(icon("ei.info-circle", color=get_icon_color()))
         # self.menu_btn.setObjectName("installed_menu_button")
         self.menu_btn.setIconSize(QSize(18, 18))
         self.menu_btn.enterEvent = lambda x: self.info_label.setText("Information")

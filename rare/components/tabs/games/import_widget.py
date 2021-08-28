@@ -10,6 +10,7 @@ from qtawesome import icon
 from custom_legendary.core import LegendaryCore
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import PathEdit
+from rare.utils.utils import get_icon_color
 
 logger = getLogger("Import")
 
@@ -23,7 +24,7 @@ class ImportWidget(QWidget):
         self.game_list = [i.app_name for i in self.core.get_game_list()]
 
         self.main_layout = QHBoxLayout()
-        self.back_button = QPushButton(icon("mdi.keyboard-backspace", color="white"), self.tr("Back"))
+        self.back_button = QPushButton(icon("mdi.keyboard-backspace", color=get_icon_color()), self.tr("Back"))
         self.right_layout = QVBoxLayout()
         self.right_layout.addWidget(self.back_button)
         self.right_layout.addStretch(1)

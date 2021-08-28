@@ -6,12 +6,11 @@ import sys
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings, Qt
-from PyQt5.QtWidgets import QFileDialog, QWidget
+from PyQt5.QtWidgets import QWidget
 
 from rare.components.tabs.settings.rpc_settings import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
-from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import get_lang, get_possible_langs, get_color_schemes, get_style_sheets
 
 logger = getLogger("RareSettings")
@@ -43,10 +42,6 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.img_dir_path = self.settings.value("img_dir", os.path.expanduser("~/.cache/rare/images/"), type=str)
         language = self.settings.value("language", get_lang(), type=str)
         self.logdir = os.path.expanduser("~/.cache/rare/logs")
-
-        # Select Image directory
-        self.img_dir = PathEdit(self.img_dir_path, file_type=QFileDialog.DirectoryOnly, save_func=self.save_path)
-        self.img_dir_layout.addWidget(self.img_dir)
 
         # Select lang
         self.lang_select.addItems([i[1] for i in languages])

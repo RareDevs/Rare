@@ -1,4 +1,3 @@
-import os
 from logging import getLogger
 
 from PyQt5.QtCore import QProcess, pyqtSignal, Qt
@@ -8,6 +7,7 @@ from qtawesome import icon
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
+from rare.utils.utils import get_icon_color
 
 logger = getLogger("GameWidget")
 
@@ -34,7 +34,7 @@ class InstalledListWidget(BaseInstalledWidget):
             self.image.setPixmap(self.pixmap)
             self.layout.addWidget(self.image)
 
-        play_icon = icon("ei.play", color="white")
+        play_icon = icon("ei.play", color=get_icon_color())
         self.title_widget = QLabel(f"<h1>{self.igame.title}</h1>")
         self.app_name_label = QLabel(self.igame.app_name)
         self.launch_button = QPushButton(play_icon, self.tr("Launch"))

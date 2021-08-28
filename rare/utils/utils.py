@@ -23,7 +23,7 @@ from rare import languages_path, resources_path, image_dir
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
-s = QSettings("Rare", "Rare")
+settings = QSettings("Rare", "Rare")
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
@@ -412,3 +412,20 @@ def text_color_for_background(background: Tuple[int, int, int]) -> Tuple[int,
         return 255, 255, 255
     else:
         return 0, 0, 0
+
+
+def get_icon_color() -> str:
+    if settings.value("color_scheme") in [
+        "Adapta-Nokto", "Arc-Dark", "Arc-Darker", "Darker", "Rare", "Numix-Dark"
+    ]:
+        return "white"
+    elif settings.value("style_sheet") in [
+        "RareStyle"
+    ]:
+        return "white"
+    elif settings.value("color_scheme") in [
+        "Airy", "Dusk", "Zukitre"
+    ]:
+        return "black"
+    else:
+        return "white"
