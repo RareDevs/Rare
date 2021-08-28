@@ -102,7 +102,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.discount_price.setVisible(True)
         else:
             self.discount_price.setVisible(False)
-        # print(self.game.reqs)
+
         bold_font = QFont()
         bold_font.setBold(True)
         min_label = QLabel(self.tr("Minimum"))

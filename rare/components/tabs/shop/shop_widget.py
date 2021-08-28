@@ -236,7 +236,6 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
         if self.types:
             browse_model.category = "|".join(self.types)
-        print(browse_model.__dict__)
         self.api_core.browse_games(browse_model, self.show_games)
 
     def show_games(self, data):
