@@ -8,7 +8,6 @@ from qtawesome import icon
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import InstalledGame
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
-from rare.utils.extra_widgets import ClickableLabel
 
 logger = getLogger("GameWidgetInstalled")
 
@@ -36,7 +35,7 @@ class GameWidgetInstalled(BaseInstalledWidget):
         if self.pixmap:
             w = 200
             self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3), transformMode=Qt.SmoothTransformation)
-            self.image = ClickableLabel()
+            self.image = QLabel()
             self.image.setObjectName("game_widget")
             self.image.setPixmap(self.pixmap)
             self.layout.addWidget(self.image)

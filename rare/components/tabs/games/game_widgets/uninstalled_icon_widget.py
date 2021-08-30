@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import QVBoxLayout, QLabel
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import Game
 from rare.components.tabs.games.game_widgets.base_uninstalled_widget import BaseUninstalledWidget
-from rare.utils.extra_widgets import ClickableLabel
 
 logger = getLogger("Uninstalled")
 
@@ -19,7 +18,7 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
         if self.pixmap:
             w = 200
             self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3))
-            self.image = ClickableLabel()
+            self.image = QLabel()
             self.image.setPixmap(self.pixmap)
             self.layout.addWidget(self.image)
 

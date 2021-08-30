@@ -81,6 +81,8 @@ class FlowLayout(QLayout):
         lineheight = 0
         for item in self._items:
             widget = item.widget()
+            if not widget.isVisible():
+                continue
             hspace = self.horizontalSpacing()
             if hspace == -1:
                 hspace = widget.style().layoutSpacing(
@@ -112,13 +114,6 @@ class FlowLayout(QLayout):
             return parent.style().pixelMetric(pm, None, parent)
         else:
             return parent.spacing()
-
-
-class ClickableLabel(QLabel):
-    clicked = pyqtSignal()
-
-    def __init__(self):
-        super(ClickableLabel, self).__init__()
 
 
 class PathEdit(QWidget, Ui_PathEdit):

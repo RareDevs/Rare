@@ -87,6 +87,13 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
     except Exception as e:
         logger.warning(f'Removing game failed: {e!r}, please remove {igame.install_path} manually.')
 
+    logger.info("Removing sections in config file")
+    if core.lgd.config.has_section(app_name):
+        core.lgd.config.remove_section(app_name)
+    if core.lgd.config.has_section(app_name + ".env"):
+        core.lgd.config.remove_section(app_name + ".env")
+    core.lgd.save_config()
+
 
 class VerifyThread(QThread):
     status = pyqtSignal(tuple)
