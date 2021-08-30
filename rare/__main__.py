@@ -34,7 +34,7 @@ def main():
 
     if args.version:
         print(__version__)
-        exit(0)
+        return
     try:
         # this object only allows one instance pre machine
         me = singleton.SingleInstance()
@@ -47,11 +47,14 @@ def main():
             else:
                 file.write("start")
             file.close()
-
-        exit(0)
+        return
 
     if args.subparser == "launch":
         args.silent = True
+
+    # fix error in cx_freeze
+    import multiprocessing
+    multiprocessing.freeze_support()
 
     from rare.app import start
     start(args)

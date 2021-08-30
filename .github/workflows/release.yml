@@ -87,5 +87,35 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
 
-      
-    
+  cx_freeze:
+    runs-on: "windows-latest"
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Dependencies
+        run: pip3 install -r requirements.txt
+
+      - name: cx_freeze
+        run: pip3 install --upgrade cx_freeze
+
+      - name: prepare Files
+        run: mv rare/__main__.py rare/Rare.py
+
+      - name: Build
+        run: python freeze.py bdist_msi
+
+      - name: Rename File
+        run: mv dist/* dist/Rare.msi
+
+      - name: Upload to GitHub
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/Rare.msi
+          asset_name: Rare.msi
+          tag: ${{ github.ref }}
+          overwrite: true
