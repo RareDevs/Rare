@@ -1,6 +1,6 @@
 import os
 
-__version__ = "1.5.0"
+__version__ = "1.6.0"
 
 resources_path = os.path.join(os.path.dirname(__file__), "resources")
 languages_path = os.path.join(os.path.dirname(__file__), "languages")
