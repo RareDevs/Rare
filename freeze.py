@@ -12,7 +12,6 @@ requirements = [
     "wheel",
     "PyQt5",
     "qtawesome",
-    "notifypy",
     "psutil",
     "pypresence",
     'win32com'

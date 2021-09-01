@@ -42,7 +42,7 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
 
         self.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
 
-        self.path_info.setText(self.tr(r"EGL path is at C:\ProgramData\Epic\EpicGamesLauncher\Data\Manifests"))
+        self.path_info.setText(self.tr("EGL path is at C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Manifests"))
         path = os.path.expanduser("~/")
         if self.core.egl.programdata_path:
             path = self.core.egl.programdata_path

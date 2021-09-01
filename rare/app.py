@@ -71,8 +71,8 @@ class App(QApplication):
         # Translator
         self.translator = QTranslator()
         lang = settings.value("language", get_lang(), type=str)
-        if os.path.exists(languages_path + lang + ".qm"):
-            self.translator.load(languages_path + lang + ".qm")
+        if os.path.exists(p := os.path.join(languages_path, lang + ".qm")):
+            self.translator.load(p)
             logger.info("Your language is supported: " + lang)
         elif not lang == "en":
             logger.info("Your language is not supported")
@@ -89,6 +89,7 @@ class App(QApplication):
             if custom_palette is not None:
                 self.setPalette(custom_palette)
                 qtawesome.set_defaults(color=custom_palette.color(QPalette.Text))
+
         elif style := settings.value("style_sheet", False):
             settings.setValue("color_scheme", "")
             stylesheet = open(os.path.join(resources_path, "stylesheets", style, "stylesheet.qss")).read()
@@ -127,7 +128,8 @@ class App(QApplication):
             self.mainwindow.tab_widget.downloadTab.finished.connect(lambda x: self.tray_icon.showMessage(
                 self.tr("Download finished"),
                 self.tr("Download finished. {} is playable now").format(self.core.get_game(x[1]).app_title),
-                QSystemTrayIcon.Information, 4000) if x[0] else None)
+                QSystemTrayIcon.Information, 4000) if (
+                        x[0] and QSettings().value("notification", True, bool)) else None)
 
         if not self.args.silent:
             self.mainwindow.show()
