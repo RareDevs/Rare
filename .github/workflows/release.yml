@@ -76,7 +76,7 @@ jobs:
       - name: Build Appimage
         run: |
           appimage-builder --skip-test
-          mv Rare-*.AppImage ../Rare.AppImage
+          mv Rare-*.AppImage Rare.AppImage
 
       - name: Upload to GitHub
         uses: svenstaro/upload-release-action@2.2.1
@@ -100,7 +100,7 @@ jobs:
         run: pip3 install -r requirements.txt
 
       - name: cx_freeze
-        run: pip3 install --upgrade cx_freeze
+        run: pip3 install --upgrade cx_freeze wheel
 
       - name: prepare Files
         run: mv rare/__main__.py rare/Rare.py
