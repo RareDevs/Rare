@@ -95,7 +95,8 @@ class GameListHeadBar(QWidget):
         self.filter.addItems([self.tr("All"),
                               self.tr("Installed only"),
                               self.tr("Offline Games"),
-                              self.tr("32 Bit Games")])
+                              self.tr("32 Bit Games"),
+                              self.tr("Installable Games")])
         self.filter.currentIndexChanged.connect(self.filter_changed)
         self.layout.addWidget(self.filter)
         self.layout.addStretch(1)
@@ -128,4 +129,4 @@ class GameListHeadBar(QWidget):
         self.setLayout(self.layout)
 
     def filter_changed(self, i):
-        self.filter_changed_signal.emit(["", "installed", "offline", "32bit"][i])
+        self.filter_changed_signal.emit(["", "installed", "offline", "32bit", "installable"][i])

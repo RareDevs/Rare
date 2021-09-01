@@ -36,7 +36,10 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
     dlc_list = []
     for i in dlcs.values():
         dlc_list.append(i[0])
-    game_list = games + dlc_list
+
+    no_assets = core.get_non_asset_library_items()[0]
+
+    game_list = games + dlc_list + no_assets
     for i, game in enumerate(game_list):
         try:
             download_image(game)

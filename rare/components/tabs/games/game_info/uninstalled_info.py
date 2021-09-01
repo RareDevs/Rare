@@ -45,7 +45,10 @@ class UninstalledTabInfo(QTabWidget):
     def update_game(self, app_name):
         self.info.update_game(app_name)
         self.model.clear()
-        self.model.load(json.load(open(os.path.expanduser(f"~/.config/legendary/metadata/{app_name}.json"), "r")))
+        try:
+            self.model.load(json.load(open(os.path.expanduser(f"~/.config/legendary/metadata/{app_name}.json"), "r")))
+        except:  # ignore if no metadata
+            pass
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
@@ -61,6 +64,8 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.setupUi(self)
         self.core = core
 
+        self.no_install_label.setVisible(False)
+
         if platform.system() != "Windows":
             self.steam_worker = SteamWorker(self.core)
             self.steam_worker.rating_signal.connect(self.grade.setText)
@@ -68,6 +73,8 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
             self.grade.setVisible(False)
+
+        self.non_asset_games = [i.app_name for i in self.core.get_non_asset_library_items()[0]]
 
         self.install_size.setEnabled(False)
         self.lbl_install_size.setEnabled(False)
@@ -81,6 +88,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
 
     def update_game(self, app_name):
         self.game = self.core.get_game(app_name)
+
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
         pixmap = get_pixmap(app_name)
@@ -93,6 +101,13 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.dev.setText(self.game.metadata["developer"])
         self.install_size.setText("N/A")
         self.install_path.setText("N/A")
+
+        if app_name in self.non_asset_games:
+            self.no_install_label.setVisible(True)
+            self.install_button.setEnabled(False)
+        else:
+            self.no_install_label.setVisible(False)
+            self.install_button.setEnabled(True)
 
         if platform.system() != "Windows":
             self.grade.setText(self.tr("Loading"))

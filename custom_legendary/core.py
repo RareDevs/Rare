@@ -293,6 +293,37 @@ class LegendaryCore:
     def _get_installed_game(self, app_name) -> InstalledGame:
         return self.lgd.get_installed_game(app_name)
 
+    def get_non_asset_library_items(self, skip_ue=True) -> (List[Game], Dict[str, List[Game]]):
+        """
+        Gets a list of Games without assets for installation, for instance Games delivered via
+        third-party stores that do not have assets for installation
+        :param skip_ue: Ingore Unreal Marketplace entries
+        :return: List of Games and DLC that do not have assets
+        """
+        _ret = []
+        _dlc = defaultdict(list)
+        # get all the appnames we have to ignore
+        ignore = set(i.app_name for i in self.get_assets())
+
+        for libitem in self.egs.get_library_items():
+            if libitem['namespace'] == 'ue' and skip_ue:
+                continue
+            if libitem['appName'] in ignore:
+                continue
+
+            game = self.lgd.get_game_meta(libitem['appName'])
+            if not game:
+                eg_meta = self.egs.get_game_info(libitem['namespace'], libitem['catalogItemId'])
+                game = Game(app_name=libitem['appName'], app_version=None,
+                            app_title=eg_meta['title'], asset_info=None, metadata=eg_meta)
+            self.lgd.set_game_meta(game.app_name, game)
+            if game.is_dlc:
+                _dlc[game.metadata['mainGameItem']['id']].append(game)
+            elif not any(i['path'] == 'mods' for i in game.metadata.get('categories', [])):
+                _ret.append(game)
+
+        return _ret, _dlc
+
     def get_launch_parameters(self, app_name: str, offline: bool = False,
                               user: str = None, extra_args: list = None,
                               wine_bin: str = None, wine_pfx: str = None,

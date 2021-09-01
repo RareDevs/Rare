@@ -1,5 +1,7 @@
 from cx_Freeze import setup, Executable
 
+from rare import __version__
+
 # Dependencies are automatically detected, but it might need fine tuning.
 # "packages": ["os"] is used as example only
 
@@ -26,7 +28,7 @@ base = "Win32GUI"
 
 setup(
     name="Rare",
-    version="1.5.0",
+    version=__version__,
     description="A GUI for Legendary",
     options={"build_exe": build_exe_options},
     shortcutName="Rare",

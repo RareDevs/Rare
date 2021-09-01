@@ -2,16 +2,24 @@
 <ui version="4.0">
  <class>GameInfo</class>
  <widget class="QWidget" name="GameInfo">
-  <property name="windowTitle">
-   <string>Game Info</string>
-  </property>
-  <layout class="QGridLayout" name="layout_game_info">
-   <item row="2" column="1">
-    <layout class="QGridLayout" name="layout_game_info_form">
-     <property name="leftMargin">
-      <number>6</number>
+     <property name="geometry">
+         <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>571</width>
+             <height>326</height>
+         </rect>
      </property>
-     <property name="topMargin">
+     <property name="windowTitle">
+         <string>Game Info</string>
+     </property>
+     <layout class="QGridLayout" name="layout_game_info">
+         <item row="2" column="1">
+             <layout class="QGridLayout" name="layout_game_info_form">
+                 <property name="leftMargin">
+                     <number>6</number>
+                 </property>
+                 <property name="topMargin">
       <number>6</number>
      </property>
      <property name="rightMargin">
@@ -248,29 +256,29 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+           <number>1</number>
        </property>
-       <widget class="QWidget" name="installed_page">
-           <layout class="QVBoxLayout" name="installed_layout">
-               <property name="leftMargin">
-                   <number>0</number>
-               </property>
-               <property name="topMargin">
-                   <number>0</number>
-               </property>
-               <property name="rightMargin">
-                   <number>0</number>
-               </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QStackedWidget" name="verify_widget">
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <widget class="QWidget" name="page_verify_button">
-            <layout class="QVBoxLayout" name="layout_verify_button">
+          <widget class="QWidget" name="installed_page">
+              <layout class="QVBoxLayout" name="installed_layout">
+                  <property name="leftMargin">
+                      <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                      <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                      <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                      <number>0</number>
+                  </property>
+                  <item>
+                      <widget class="QStackedWidget" name="verify_widget">
+                          <property name="currentIndex">
+                              <number>0</number>
+                          </property>
+                          <widget class="QWidget" name="page_verify_button">
+                              <layout class="QVBoxLayout" name="layout_verify_button">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -343,18 +351,28 @@
         </layout>
        </widget>
        <widget class="QWidget" name="uninstalled_page">
-        <layout class="QVBoxLayout" name="uninstalled_layout">
-         <item>
-          <widget class="QPushButton" name="install_button">
-           <property name="styleSheet">
-               <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>Install Game</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+           <layout class="QVBoxLayout" name="uninstalled_layout">
+               <item>
+                   <widget class="QPushButton" name="install_button">
+                       <property name="styleSheet">
+                           <string notr="true"/>
+                       </property>
+                       <property name="text">
+                           <string>Install Game</string>
+                       </property>
+                   </widget>
+               </item>
+               <item>
+                   <widget class="QLabel" name="no_install_label">
+                       <property name="text">
+                           <string>It is not possible to install the Game. It could be from a third party store</string>
+                       </property>
+                       <property name="wordWrap">
+                           <bool>true</bool>
+                       </property>
+                   </widget>
+               </item>
+           </layout>
        </widget>
       </widget>
      </item>
