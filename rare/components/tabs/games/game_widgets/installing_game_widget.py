@@ -7,26 +7,25 @@ from rare.utils.utils import get_pixmap, get_uninstalled_pixmap, optimal_text_ba
 
 
 class InstallingGameWidget(QGroupBox):
-    def __init__(self, game: Game):
+    def __init__(self):
         super(InstallingGameWidget, self).__init__()
         self.setObjectName("game_widget_icon")
 
         self.setLayout(QVBoxLayout())
 
-        self.pixmap = get_pixmap(game.app_name)
+        self.pixmap = QPixmap()
         w = 200
-        self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3), transformMode=Qt.SmoothTransformation)
-
-        self.image_widget = PaintWidget(self.pixmap, game.app_name)
+        # self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3), transformMode=Qt.SmoothTransformation)
+        self.image_widget = PaintWidget()
         self.image_widget.setFixedSize(w, int(w * 4 / 3))
         self.layout().addWidget(self.image_widget)
 
-        self.title_label = QLabel(f"<h4>{game.app_title}</h4>")
+        self.title_label = QLabel(f"<h4>Error</h4>")
         self.title_label.setAutoFillBackground(False)
         self.title_label.setWordWrap(True)
         self.title_label.setFixedWidth(175)
         minilayout = QHBoxLayout()
-        self.title_label.setObjectName("game_widget")
+        self.setObjectName("game_widget")
         minilayout.addWidget(self.title_label)
         self.layout().addLayout(minilayout)
 
@@ -39,9 +38,8 @@ class InstallingGameWidget(QGroupBox):
 
 
 class PaintWidget(QWidget):
-    def __init__(self, image: QPixmap, app_name):
+    def __init__(self):
         super(PaintWidget, self).__init__()
-        self.set_game(image, app_name)
 
     def set_game(self, pixmap: QPixmap, app_name):
         self.image = pixmap

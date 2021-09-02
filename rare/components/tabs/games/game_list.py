@@ -34,7 +34,7 @@ class GameList(QStackedWidget):
         self.core = core
         self.setObjectName("list_widget")
         self.offline = offline
-        self.installing_widget = InstallingGameWidget(self.core.get_game("CrabEA"))
+        self.installing_widget = InstallingGameWidget()
         self.settings = QSettings()
         icon_view = self.settings.value("icon_view", True, bool)
         self.procs = []
@@ -83,7 +83,7 @@ class GameList(QStackedWidget):
             self.mac_games = []
         self.installed = sorted(self.core.get_installed_list(), key=lambda x: x.title)
 
-        self.installing_widget = InstallingGameWidget(self.core.get_game("CrabEA"))
+        self.installing_widget = InstallingGameWidget()
         self.icon_layout.addWidget(self.installing_widget)
         self.installing_widget.setVisible(False)
 
