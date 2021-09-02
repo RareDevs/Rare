@@ -32,6 +32,6 @@ setup(
     options={"build_exe": build_exe_options},
     shortcutName="Rare",
     shortcutDir="DesktopFolder",
-    executables=[Executable("rare/__main__.py",
+    executables=[Executable("rare/Rare.py",  # no __main__.py, for gh release
                             base=base, icon="rare/resources/images/Rare.ico")]
 )
