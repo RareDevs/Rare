@@ -27,6 +27,6 @@ class TabButtonWidget(QToolButton):
         super(TabButtonWidget, self).__init__()
         self.setText("Icon")
         self.setPopupMode(QToolButton.InstantPopup)
-        self.setIcon(icon(button_icon, color="white", scale_factor=1.25))
+        self.setIcon(icon(button_icon, scale_factor=1.25))
         self.setToolTip(tool_tip)
         self.setIconSize(QSize(25, 25))

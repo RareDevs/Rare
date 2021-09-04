@@ -27,7 +27,7 @@ class InfoTabs(QTabWidget):
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
 
-        self.addTab(QWidget(), icon("mdi.keyboard-backspace", color="white"), self.tr("Back"))
+        self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
         self.tabBarClicked.connect(lambda x: self.parent().layout.setCurrentIndex(0) if x == 0 else None)
 
         self.info = GameInfo(core, self)
@@ -58,7 +58,6 @@ class InfoTabs(QTabWidget):
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
             self.parent().layout.setCurrentIndex(0)
-
 
 
 class GameInfo(QWidget, Ui_GameInfo):

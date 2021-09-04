@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QSize, pyqtSignal
-from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction
+from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 from qtawesome import icon
 
 from custom_legendary.core import LegendaryCore
@@ -55,7 +55,7 @@ class TabWidget(QTabWidget):
         account_button.menu().addAction(account_action)
         self.tabBar().setTabButton(disabled_tab + 1, self.tabBar().RightSide, account_button)
 
-        self.addTab(self.settings, icon("fa.gear", color='white'),
+        self.addTab(self.settings, icon("fa.gear"),
                     "(!)" if self.settings.about.update_available else "")
 
         # Signals
@@ -100,12 +100,22 @@ class TabWidget(QTabWidget):
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
         self.setIconSize(QSize(25, 25))
+
+        # shortcuts
+        QShortcut("Alt+1", self).activated.connect(lambda: self.setCurrentIndex(0))
+        QShortcut("Alt+2", self).activated.connect(lambda: self.setCurrentIndex(1))
+        QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(2))
+        QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(5))
+
+        self.downloadTab.dl_status.connect(
+            self.games_tab.default_widget.game_list.installing_widget.image_widget.set_status)
+
     def mouse_clicked(self, tab_num):
         if tab_num == 0:
             self.games_tab.layout.setCurrentIndex(0)
         if tab_num == 3:
-            self.store.load()
-            
+            self.store.load()  
+  
     # TODO; maybe pass InstallOptionsModel only, not split arguments
     def install_game(self, options: InstallOptionsModel, update=False, silent=False):
 
@@ -125,6 +135,7 @@ class TabWidget(QTabWidget):
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
         self.setCurrentIndex(1)
         self.downloadTab.install_game(download_item)
+        self.games_tab.default_widget.game_list.start_download(download_item.options.app_name)
 
     def game_imported(self, app_name: str):
         igame = self.core.get_installed_game(app_name)
@@ -159,6 +170,7 @@ class TabWidget(QTabWidget):
         if update_list[0]:
             self.games_tab.default_widget.game_list.update_list(update_list[1])
             self.cloud_saves.reload(update_list[1])
+        self.games_tab.default_widget.game_list.installing_widget.setVisible(False)
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
 

@@ -21,6 +21,7 @@ class DownloadTab(QWidget):
     finished = pyqtSignal(tuple)
     thread: QThread
     dl_queue = []
+    dl_status = pyqtSignal(int)
 
     def __init__(self, core: LegendaryCore, updates: list, parent):
         super(DownloadTab, self).__init__(parent=parent)
@@ -120,16 +121,6 @@ class DownloadTab(QWidget):
             pass
         elif text == "finish":
             self.installing_game.setText(self.tr("Download finished. Reload library"))
-            if QSettings().value("notification", True, bool):
-                try:
-                    from notifypy import Notify
-                except ModuleNotFoundError:
-                    logger.warning("No Notification Module found")
-                else:
-                    notification = Notify()
-                    notification.title = self.tr("Installation finished")
-                    notification.message = self.tr("Finished Download of game {}").format(self.active_game.app_title)
-                    notification.send()
             # QMessageBox.information(self, "Info", "Download finished")
             logger.info("Download finished: " + self.active_game.app_title)
 
@@ -184,6 +175,7 @@ class DownloadTab(QWidget):
         self.downloaded.setText(
             self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
         self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
+        self.dl_status.emit(int(100 * ui_update.total_downloaded / self.analysis.dl_size))
 
     def get_time(self, seconds: int) -> str:
         return str(datetime.timedelta(seconds=seconds))

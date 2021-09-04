@@ -76,7 +76,7 @@ jobs:
       - name: Build Appimage
         run: |
           appimage-builder --skip-test
-          mv Rare-*.AppImage ../Rare.AppImage
+          mv Rare-*.AppImage Rare.AppImage
 
       - name: Upload to GitHub
         uses: svenstaro/upload-release-action@2.2.1
@@ -87,5 +87,65 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
 
-      
-    
+  cx_freeze:
+    runs-on: "windows-latest"
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Dependencies
+        run: pip3 install -r requirements.txt
+
+      - name: cx_freeze
+        run: pip3 install --upgrade cx_freeze wheel
+
+      - name: prepare Files
+        run: mv rare/__main__.py rare/Rare.py
+
+      - name: Build
+        run: python freeze.py bdist_msi
+
+      - name: Rename File
+        run: mv dist/* dist/Rare.msi
+
+      - name: Upload to GitHub
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/Rare.msi
+          asset_name: Rare.msi
+          tag: ${{ github.ref }}
+          overwrite: true
+
+  mac_os:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Rare Dependencies
+        run: pip install -r requirements.txt
+
+      - name: install pyinstaller
+        run: pip install pyinstaller
+
+      - name: copy files
+        run: mv rare/__main__.py __main__.py
+
+      - name: run pyinstaller
+        run: pyinstaller -F --name Rare --add-data "rare/languages/*:rare/languages" --add-data "rare/resources/colors/*:rare/resources/colors" --add-data "rare/resources/images/*:rare/resources/images/" --add-data "rare/resources/stylesheets/RareStyle/*:rare/resources/stylesheets/RareStyle/" --windowed --icon rare/resources/images/Rare.icns __main__.py
+
+      - name: upload to GitHub
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/Rare.app
+          asset_name: Rare_MacOS.app
+          tag: ${{ github.ref }}
+          overwrite: true

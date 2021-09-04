@@ -2,9 +2,8 @@
 
 ## A frontend for legendary, the open source Epic Games Launcher alternative
 
-Rare is a GUI for Legendary, a command line aternative to Epic Games launcher. It is currently considered beta software.
-You will probably run into issues, so it is recommend to make a backup. If you run into an issue, please report it by
-creating an issue on github or on Discord: https://discord.gg/YvmABK9YSk
+Rare is a GUI for Legendary, a command line alternative to Epic Games launcher. If you run into an issue, please report
+it by creating an issue on GitHub or on Discord: https://discord.gg/YvmABK9YSk
 
 ![Discord Shield](https://discordapp.com/api/guilds/826881530310819914/widget.png?style=shield)
 
@@ -12,13 +11,14 @@ creating an issue on github or on Discord: https://discord.gg/YvmABK9YSk
 
 ### Installation via pip (recommend)
 
-Execute `pip install Rare` for all users Or `pip install Rare --user` for only one user. 
+Execute `pip install Rare` for all users Or `pip install Rare --user` for only one user.
 
-Linux: execute `rare` in your terminal. 
+Linux: execute `rare` in your terminal.
 
 Windows: execute `pythonw -m rare` in cmd
 
-It is possible to create a desktop link, or a start menu link. Execute the command above with `--desktop-shortcut` or `--startmenu-shortcut` option
+It is possible to create a desktop link, or a start menu link. Execute the command above with `--desktop-shortcut`
+or `--startmenu-shortcut` option
 
 **Note**: On Linux must be `/home/user/.local/bin` in PATH and on Windows must be `PythonInstallationDirectory\Scripts`
 in PATH.
@@ -32,16 +32,16 @@ There are some AUR packages available:
 - [rare](https://aur.archlinux.org/packages/rare) - for stable releases
 - [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest features, which are not in a stable release
 
-#### Debian based
-
-There is a `.deb` package available from
-the [releases page](https://github.com/Dummerle/Rare/releases): `sudo apt install ./Rare.deb`
-
 #### Other
 
 Install via `pip`.
 
-## Run from source
+### Packages
+
+In [releases page](https://github.com/Dummerle/Rare/releases) are AppImages for Linux and a msi file for windows
+available
+
+### Run from source
 
 1. Run `pip install -r requirements.txt` to get dependencies. If you use `pacman` you can
    run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-pillow`

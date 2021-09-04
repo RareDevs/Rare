@@ -1,9 +1,11 @@
 import json
+import math
 import os
 import platform
 import shutil
 import sys
 from logging import getLogger
+from typing import Tuple
 
 import requests
 from PIL import Image, UnidentifiedImageError
@@ -21,7 +23,7 @@ from rare import languages_path, resources_path, image_dir
 from custom_legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
-s = QSettings("Rare", "Rare")
+settings = QSettings("Rare", "Rare")
 
 
 
@@ -35,7 +37,10 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
     dlc_list = []
     for i in dlcs.values():
         dlc_list.append(i[0])
-    game_list = games + dlc_list
+
+    no_assets = core.get_non_asset_library_items()[0]
+
+    game_list = games + dlc_list + no_assets
     for i, game in enumerate(game_list):
         try:
             download_image(game)
@@ -376,4 +381,39 @@ def get_uninstalled_pixmap(app_name: str) -> QPixmap:
     else:
         pixmap = QPixmap()
     return pixmap
+
+
+
+def optimal_text_background(image: list) -> Tuple[int, int, int]:
+    """
+    Finds an optimal background color for text on the image by calculating the
+    average color of the image and inverting it.
+
+    The image list is supposed to be a one-dimensional list of arbitrary length
+    containing RGB tuples, ranging from 0 to 255.
+    """
+    # cursed, I know
+    average = map(lambda value: value / len(image), map(sum, zip(*image)))
+    inverted = map(lambda value: 255 - value, average)
+    return tuple(inverted)
+
+
+def text_color_for_background(background: Tuple[int, int, int]) -> Tuple[int,
+                                                                         int,
+                                                                         int]:
+    """
+    Calculates whether a black or white text color would fit better for the
+    given background, and returns that color. This is done by calculating the
+    luminance and simple comparing of bounds
+    """
+    # see https://alienryderflex.com/hsp.html
+    (red, green, blue) = background
+    luminance = math.sqrt(
+        0.299 * red ** 2 +
+        0.587 * green ** 2 +
+        0.114 * blue ** 2)
+    if luminance < 127:
+        return 255, 255, 255
+    else:
+        return 0, 0, 0
 

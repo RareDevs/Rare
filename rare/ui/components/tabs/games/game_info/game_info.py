@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_GameInfo(object):
     def setupUi(self, GameInfo):
         GameInfo.setObjectName("GameInfo")
+        GameInfo.resize(571, 326)
         self.layout_game_info = QtWidgets.QGridLayout(GameInfo)
         self.layout_game_info.setObjectName("layout_game_info")
         self.layout_game_info_form = QtWidgets.QGridLayout()
@@ -182,15 +183,20 @@ class Ui_GameInfo(object):
         self.install_button.setStyleSheet("")
         self.install_button.setObjectName("install_button")
         self.uninstalled_layout.addWidget(self.install_button)
+        self.no_install_label = QtWidgets.QLabel(self.uninstalled_page)
+        self.no_install_label.setWordWrap(True)
+        self.no_install_label.setObjectName("no_install_label")
+        self.uninstalled_layout.addWidget(self.no_install_label)
         self.game_actions_stack.addWidget(self.uninstalled_page)
-        self.layout_game_info_form.addWidget(self.game_actions_stack, 6, 1, 1, 1, QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.layout_game_info_form.addWidget(self.game_actions_stack, 6, 1, 1, 1,
+                                             QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.layout_game_info.addLayout(self.layout_game_info_form, 2, 1, 1, 1)
         self.image = QtWidgets.QLabel(GameInfo)
         self.image.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.image.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.image.setText("")
         self.image.setObjectName("image")
-        self.layout_game_info.addWidget(self.image, 2, 0, 1, 1, QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.layout_game_info.addWidget(self.image, 2, 0, 1, 1, QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.game_title = QtWidgets.QLabel(GameInfo)
         self.game_title.setText("error")
         self.game_title.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
@@ -198,7 +204,7 @@ class Ui_GameInfo(object):
         self.layout_game_info.addWidget(self.game_title, 0, 0, 1, 3)
 
         self.retranslateUi(GameInfo)
-        self.game_actions_stack.setCurrentIndex(0)
+        self.game_actions_stack.setCurrentIndex(1)
         self.verify_widget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(GameInfo)
 
@@ -216,6 +222,8 @@ class Ui_GameInfo(object):
         self.repair_button.setText(_translate("GameInfo", "Repair Instalation"))
         self.uninstall_button.setText(_translate("GameInfo", "Uninstall Game"))
         self.install_button.setText(_translate("GameInfo", "Install Game"))
+        self.no_install_label.setText(
+            _translate("GameInfo", "It is not possible to install the Game. It could be from a third party store"))
 
 
 if __name__ == "__main__":

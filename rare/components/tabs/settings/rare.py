@@ -45,6 +45,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         language = self.settings.value("language", get_lang(), type=str)
         self.logdir = os.path.join(cache_dir, "logs")
 
+
         # Select Image directory
         # self.img_dir = PathEdit(self.img_dir_path, file_type=QFileDialog.DirectoryOnly, save_func=self.save_path)
         # self.img_dir_layout.addWidget(self.img_dir)

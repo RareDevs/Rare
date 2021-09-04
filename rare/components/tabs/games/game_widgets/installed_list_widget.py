@@ -1,4 +1,3 @@
-import os
 from logging import getLogger
 
 from PyQt5.QtCore import QProcess, pyqtSignal, Qt
@@ -34,7 +33,7 @@ class InstalledListWidget(BaseInstalledWidget):
             self.image.setPixmap(self.pixmap)
             self.layout.addWidget(self.image)
 
-        play_icon = icon("ei.play", color="white")
+        play_icon = icon("ei.play")
         self.title_widget = QLabel(f"<h1>{self.igame.title}</h1>")
         self.app_name_label = QLabel(self.igame.app_name)
         self.launch_button = QPushButton(play_icon, self.tr("Launch"))

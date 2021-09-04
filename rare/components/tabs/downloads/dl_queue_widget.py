@@ -20,14 +20,14 @@ class DlWidget(QWidget):
         self.layout = QHBoxLayout()
 
         self.left_layout = QVBoxLayout()
-        self.move_up_button = QPushButton(icon("fa.arrow-up", color="white"), "")
+        self.move_up_button = QPushButton(icon("fa.arrow-up"), "")
         if index == 0:
             self.move_up_button.setDisabled(True)
         self.move_up_button.clicked.connect(lambda: self.move_up.emit(self.app_name))
         self.move_up_button.setFixedWidth(20)
         self.left_layout.addWidget(self.move_up_button)
 
-        self.move_down_buttton = QPushButton(icon("fa.arrow-down", color="white"), "")
+        self.move_down_buttton = QPushButton(icon("fa.arrow-down"), "")
         self.move_down_buttton.clicked.connect(lambda: self.move_down.emit(self.app_name))
         self.left_layout.addWidget(self.move_down_buttton)
         self.move_down_buttton.setFixedWidth(20)

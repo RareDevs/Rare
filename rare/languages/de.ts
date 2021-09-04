@@ -68,15 +68,67 @@
         <source>Rare Developer</source>
         <translation>Rare Entwickler</translation>
     </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/about.py" line="105"/>
-        <source>GNU General Public License v3.0</source>
-        <translation>GNU General Public License v3.0</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/about.py" line="107"/>
-        <source>This is a beta version, so you can get bugs. If you get a bug, please report it by creating an Issue on &lt;a href=&apos;https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt;. You can also contact me on Discord (Dummerle#7419). Or you can join the &lt;a href=&apos;https://discord.gg/YvmABK9YSk&apos;&gt;Discord server&lt;/a&gt;</source>
-        <translation>Dies ist eine Betaversion, also können Bugs und andere Unschönheiten auftreten. Falls ein Bug auftritt, bitte auf &lt;a href=&apos;https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt; melden oder auf Discord. (Dummerle#7419). Ein Rare &lt;a href=&apos;https://discord.gg/YvmABK9YSk&apos;&gt;Discord server&lt;/a&gt; existiert ebenfalls</translation>
+< message >
+<location filename = "../ui/components/tabs/settings/about.py"
+line = "105" / >
+    <source>GNU
+General
+Public
+License
+v3
+.0 < /source>
+< translation > GNU
+General
+Public
+License
+v3
+.0 < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/about.py"
+line = "107" / >
+    <source>This
+is
+a
+beta
+version, so
+you
+can
+get
+bugs.If
+you
+get
+a
+bug, please
+report
+it
+by
+creating
+an
+Issue
+on &lt; a
+href =
+&
+apos;
+https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt;. You can also contact me on Discord (Dummerle#7419). Or you can join the &lt;a href=&apos;https://discord.gg/YvmABK9YSk&apos;&gt;Discord server&lt;/a&gt;</source>
+    <translation>Dies
+ist
+eine
+Betaversion, also
+können
+Bugs
+und
+andere
+Unschönheiten
+auftreten.Falls
+ein
+Bug
+auftritt, bitte
+auf &lt; a
+href =
+&
+apos;
+https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt; melden oder auf Discord. (Dummerle#7419). Ein Rare &lt;a href=&apos;https://discord.gg/YvmABK9YSk&apos;&gt;Discord server&lt;/a&gt; existiert ebenfalls</translation>
     </message>
     < message >
     <location filename = "../ui/components/tabs/settings/about.py"
@@ -91,7 +143,7 @@ translation >
 <name>App < /name>
 < message >
 <location filename = "../app.py"
-line = "130" / >
+line = "127" / >
     <source>Download
 finished < /source>
 < translation > Download
@@ -99,23 +151,7 @@ abgeschlossen < /translation>
 < /message>
 < message >
 <location filename = "../app.py"
-line = "108" / >
-    <source>Download
-finished.Game
-is
-playable
-now < /source>
-< translation
-type = "obsolete" > Downlaod
-abgeschlossen.Spiel
-kann
-jetzt
-gespielt
-werden < /translation>
-< /message>
-< message >
-<location filename = "../app.py"
-line = "130" / >
+line = "127" / >
     <source>Download
 finished.
 {
@@ -124,16 +160,87 @@ is
 playable
 now < /source>
 < translation > Download
-abgeschlossen.Du
-kannst
+abgeschlossen.
 {
 }
+kann
 jetzt
-spielen < /translation>
+gespielt
+werden < /translation>
 < /message>
 < /context>
 < context >
 <name>BaseInstalledWidget < /name>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "39" / >
+<source>Launch < /source>
+< translation > Starten < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "86" / >
+    <source>Remove
+Desktop
+link < /source>
+< translation > Desktopverknüpfung
+löschen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "96" / >
+    <source>Create
+Desktop
+link < /source>
+< translation > Desktopverknüpfung
+erstellen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "59" / >
+    <source>Remove
+start
+menu
+link < /source>
+< translation > Startmenüvernküfpung
+löschen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "61" / >
+    <source>Create
+start
+menu
+link < /source>
+< translation > Startmenüvernküfpung
+erstellen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "66" / >
+<source>Uninstall < /source>
+< translation > Deinstallieren < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "88" / >
+    <source>Remove
+Start
+menu
+link < /source>
+< translation > Startmenüvernküfpung
+löschen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "98" / >
+    <source>Create
+Start
+menu
+link < /source>
+< translation > Startmenüvernküfpung
+erstellen < /translation>
+< /message>
 < message >
 <location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
 line = "102" / >
@@ -153,97 +260,6 @@ starten < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "39" / >
-<source>Launch < /source>
-< translation > Starten < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "86" / >
-    <source>Remove
-Desktop
-link < /source>
-< translation > Desktop
-Verknüpfung
-löschen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "96" / >
-    <source>Create
-Desktop
-link < /source>
-< translation > Desktopverknüpfung
-erstellen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "59" / >
-    <source>Remove
-start
-menu
-link < /source>
-< translation > Startmenüverknüpfung
-löschen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "61" / >
-    <source>Create
-start
-menu
-link < /source>
-< translation > Startmenüverknüpfung
-erstellen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "66" / >
-<source>Uninstall < /source>
-< translation > Deinstallieren < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "88" / >
-    <source>Remove
-Start
-menu
-link < /source>
-< translation > Startmenüverknüpfung
-löschen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "98" / >
-    <source>Create
-Start
-menu
-link < /source>
-< translation > Startmenüverknüpfung
-erstellen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "110" / >
-    <source>An
-error
-occurred
-while starting game.Maybe
-game
-files
-are
-missing < /source>
-< translation
-type = "obsolete" > Ein
-Fehler
-ist
-passiert.Vielleicht
-fehlen
-die
-Spieldateien < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
 line = "109" / >
     <source>Game
 cannot
@@ -257,98 +273,23 @@ kann
 nicht
 offline
 gestartet
-werden.Starte
-die
-App
+werden.Bitte
+das
+Spiel
 im
-Online
-Mode
-neu < /translation>
+Onlinemodus
+starten < /translation>
 < /message>
 < /context>
 < context >
 <name>BrowserLogin < /name>
 < message >
-<location filename = "../components/dialogs/login/browser_login.py"
-line = "24" / >
-    <source>Opens
-a
-browser.You
-login
-and
-copy
-the
-json
-code in the
-field
-below.Click &lt; a
-href =
-&
-apos;
-{
-}
-&
-apos;
-&gt;
-here &lt; /a&gt; to open Browser</s
-ource >
-<translation type = "obsolete" > Öffnet
-den
-Browser.Einloggen
-und
-den
-Text in das
-untere
-Feld
-kopieren.Drücke
-Click &lt; a
-href =
-&
-apos;
-{
-}
-&
-apos;
-&gt;
-hier &lt; /a&gt; um den Browser zu öffnen</
-translation >
-</message>
-< message >
-<location filename = "../ui/components/dialogs/login/browser_login.py"
-line = "58" / >
-    <source>Insert
-SID
-here < /source>
-< translation > Den
-Text
-hier
-einfügen < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/login/browser_login.py"
-line = "37" / >
-    <source>Login < /source>
-    < translation
-type = "obsolete" > Einloggen < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/login/browser_login.py"
-line = "44" / >
-    <source>Loading
-...
-</source>
-< translation
-type = "obsolete" > Laden
-...
-</translation>
-< /message>
-< message >
 <location filename = "../ui/components/dialogs/login/browser_login.py"
 line = "56" / >
     <source>Open
 Browser < /source>
-< translation > Browser
-öffnen < /translation>
+< translation > Öffne
+Browser < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/login/browser_login.py"
@@ -358,7 +299,17 @@ through
 browser < /source>
 < translation > Im
 Browser
-anmelden < /translation>
+einloggen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/dialogs/login/browser_login.py"
+line = "58" / >
+    <source>Insert
+SID
+here < /source>
+< translation > SID
+hier
+einfügen < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/login/browser_login.py"
@@ -380,18 +331,17 @@ input
 above. < /source>
 < translation > Drücke
 den
-Button
+Knopf
 um
 den
 Browser
 zu
-öffnen.Nach
-dem
-Einloggen
-füge
+öffnen.Danach
 die
-SID
-ein. < /translation>
+SID in das
+Feld
+oben
+einfügen. < /translation>
 < /message>
 < message >
 <location filename = "../components/dialogs/login/browser_login.py"
@@ -421,8 +371,7 @@ line = "14" / >
 output
 to
 file < /source>
-< translation > In
-eine
+< translation > Ausgabe in eine
 Datei
 speichern < /translation>
 < /message>
@@ -442,15 +391,26 @@ line = "124" / >
 < translation > Installieren < /translation>
 < /message>
 < message >
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="129"/>
-        <source>Installed. Uninstalling DLCs is not supported</source>
-        <translation>Installiert. Das Deinstallieren von DLCs wird nicht unterstützt</translation>
+<location filename = "../components/tabs/games/game_info/dlcs.py"
+line = "129" / >
+    <source>Installed.Uninstalling
+DLCs
+is
+not
+supported < /source>
+< translation > Installiert.Das
+Deinstallieren
+von
+DLCs
+ist
+nicht
+unterstützt < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/games/game_info/dlcs.py"
 line = "139" / >
 <source>Installing < /source>
-< translation > Installieren < /translation>
+< translation > Installiert < /translation>
 < /message>
 < /context>
 < context >
@@ -476,19 +436,20 @@ dem
 Epic
 Games
 Store
-deaktivieren ? </translation>
+stoppen < /translation>
 < /message>
 < message >
-<location filename = "../components/tabs/settings/legendary.py" line = "213" / >
+<location filename = "../components/tabs/settings/legendary.py"
+line = "213" / >
     <source>Remove
 metadata
 from
 installed
 games < /source>
 < translation > Metadaten
-von
-den
-Spielen
+der
+installieren
+Spiele
 löschen < /translation>
 < /message>
 < message >
@@ -501,7 +462,7 @@ line = "219" / >
 <location filename = "../components/tabs/settings/legendary.py"
 line = "220" / >
 <source>Cancel < /source>
-< translation > Abbruch < /translation>
+< translation > Schließen < /translation>
 < /message>
 < /context>
 < context >
@@ -520,8 +481,8 @@ line = "81" / >
     <source>No
 downloads in queue < /source>
 < translation > Keine
-eingereihten
-Downloads < /translation>
+Downloads
+eingereiht < /translation>
 < /message>
 < /context>
 < context >
@@ -533,8 +494,9 @@ line = "46" / >
 size: {
 }
 GB < /source>
-< translation > Download
-Größe: {
+< translation > Downloadgröße
+:
+{
 }
 GB < /translation>
 < /message>
@@ -545,8 +507,9 @@ line = "47" / >
 size: {
 }
 GB < /source>
-< translation > Installierte
-Größe: {
+< translation > Installationsgröße
+:
+{
 }
 GB < /translation>
 < /message>
@@ -556,7 +519,7 @@ line = "50" / >
     <source>Remove
 Download < /source>
 < translation > Download
-löschen < /translation>
+entfernen < /translation>
 < /message>
 < /context>
 < context >
@@ -568,21 +531,37 @@ line = "35" / >
 DLCs < /source>
 < translation > Installierte
 DLCs < /translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="37"/>
-        <source>Available DLCs</source>
-        <translation>Verfügbare DLCs</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="56"/>
-        <source>No DLCs are installed</source>
-        <translation>Keine DLCs sind installiert</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="58"/>
-        <source>No DLCs are available</source>
-        <translation>Keine weiteren DLCs verfügbar</translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/dlcs.py"
+line = "37" / >
+    <source>Available
+DLCs < /source>
+< translation > Verrfügbare
+DLCs < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/dlcs.py"
+line = "56" / >
+    <source>No
+DLCs
+are
+installed < /source>
+< translation > Keine
+DLCs
+sind
+installiert < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/dlcs.py"
+line = "58" / >
+    <source>No
+DLCs
+are
+available < /source>
+< translation > Keine
+DLCs
+verfügbar < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/games/game_info/dlcs.py"
@@ -601,17 +580,16 @@ ist
 nicht
 installiert.Bitte
 installiere
-zuerst
 {
 }
-</translation>
+zuerst < /translation>
 < /message>
 < /context>
 < context >
 <name>DownloadTab < /name>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "34" / >
+line = "35" / >
     <source>No
 active
 Download < /source>
@@ -621,15 +599,21 @@ Download < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "52" / >
+line = "53" / >
     <source>Stop
 Download < /source>
 < translation > Download
-anhalten < /translation>
+stoppen < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "72" / >
+line = "64" / >
+<source>Updates < /source>
+< translation > Updates < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "73" / >
     <source>No
 updates
 available < /source>
@@ -639,41 +623,24 @@ verfügbar < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "130" / >
-    <source>Error
-preparing
-download < /source>
-< translation
-type = "obsolete" > Fehler
-beim
-Vorbereiten
-des
-Downloads < /translation>
+line = "117" / >
+    <source>Installing
+Game: </source>
+< translation > Installierendes
+Spiel: </translation>
 < /message>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "135" / >
+line = "123" / >
     <source>Download
-size
-is
-0.
-Game
-already
-exists < /source>
-< translation
-type = "obsolete" > Die
-Größe
-des
-Downloads
-ist
-0.
-Spiel
-existiert
-bereits < /translation>
+finished.Reload
+library < /source>
+< translation > Download
+abgeschlossen < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "130" / >
+line = "131" / >
     <source>Installation
 finished < /source>
 < translation > Installation
@@ -681,48 +648,7 @@ abgeschlossen < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "172" / >
-    <source>Installing
-Game: No
-active
-download < /source>
-< translation > Installierendes
-Spiel: Kein
-aktiver
-Download < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/downloads/__init__.py"
-line = "182" / >
-    <source>Download
-speed < /source>
-< translation > Geschwindigkeit < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/downloads/__init__.py"
-line = "183" / >
-    <source>Cache
-used < /source>
-< translation > Benutzter
-Cache < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/downloads/__init__.py"
-line = "185" / >
-<source>Downloaded < /source>
-< translation > Runtergeladen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/downloads/__init__.py"
-line = "187" / >
-    <source>Time
-left: </source>
-< translation > Zeit
-übrig: </translation>
-< /message>
-< message >
-<location filename = "../components/tabs/downloads/__init__.py"
-line = "131" / >
+line = "132" / >
     <source>Finished
 Download
 of
@@ -738,53 +664,44 @@ abgeschlossen < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "122" / >
-    <source>Download
-finished.Reload
-library < /source>
-< translation > Download
-abgeschlossen.Spiele
-neu
-laden < /translation>
-< /message>
-< message >
-<location filename = "../Components/Tabs/Downloads/DownloadTab.py"
-line = "332" / >
-    <source>Download
-queue: Empty < /source>
-< translation
-type = "obsolete" > Anschließende
-Downloads: Keine < /translation>
-< /message>
-< message >
-<location filename = "../Components/Tabs/Downloads/DownloadTab.py"
-line = "238" / >
-    <source>Download
-queue: </source>
-< translation
-type = "obsolete" > Anschließende
-Downloads: </translation>
-< /message>
-< message >
-<location filename = "../Components/Tabs/Downloads/DownloadTab.py"
-line = "238" / >
-    <source>Empty < /source>
-    < translation
-type = "obsolete" > Keine < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/downloads/__init__.py"
-line = "116" / >
+line = "172" / >
     <source>Installing
-Game: </source>
+Game: No
+active
+download < /source>
 < translation > Installierendes
-Spiel: </translation>
+Spiel: ein
+aktiver
+Download < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "63" / >
-<source>Updates < /source>
-< translation > Updates < /translation>
+line = "182" / >
+    <source>Download
+speed < /source>
+< translation > Downloadgeschwindigkeit < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "183" / >
+    <source>Cache
+used < /source>
+< translation > Benutzter
+Cache < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "185" / >
+<source>Downloaded < /source>
+< translation > Heruntergeladen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "187" / >
+    <source>Time
+left: </source>
+< translation > Zeit
+übrig: </translation>
 < /message>
 < /context>
 < context >
@@ -793,58 +710,88 @@ line = "63" / >
 <location filename = "../ui/components/tabs/settings/dxvk.py"
 line = "73" / >
     <source>DxvkSettings < /source>
-    < translation > Dxvk
+    < translation > DXVK
 Einstellungen < /translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="74"/>
-        <source>DXVK Settings</source>
-        <translation>DXVK Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="75"/>
-        <source>DXVK HUD Options</source>
-        <translation>DXVK HUD Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="76"/>
-        <source>DXVK Version</source>
-        <translation>DVVK Version</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="77"/>
-        <source>FPS</source>
-        <translation>FPS</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="78"/>
-        <source>Memory Usage</source>
-        <translation>RAM Verbrauch</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="79"/>
-        <source>Device Info</source>
-        <translation>Geräteinfo</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="80"/>
-        <source>GPU Usage</source>
-        <translation>GPU Verbrauch</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="81"/>
-        <source>Frame Time graph</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="82"/>
-        <source>D3D Version</source>
-        <translation>D3D Version</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="83"/>
-        <source>Show HUD</source>
-        <translation>Zeige HUD</translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "74" / >
+    <source>DXVK
+Settings < /source>
+< translation > DXVK
+Einstellungen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "75" / >
+    <source>DXVK
+HUD
+Options < /source>
+< translation > DXVK
+HUD
+Einstellungen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "76" / >
+    <source>DXVK
+Version < /source>
+< translation > DXVK
+Version < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "77" / >
+<source>FPS < /source>
+< translation > FPS < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "78" / >
+    <source>Memory
+Usage < /source>
+< translation > RAM
+Nutzung < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "79" / >
+    <source>Device
+Info < /source>
+< translation > Geräteinfo < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "80" / >
+    <source>GPU
+Usage < /source>
+< translation > GPU
+Verbrauch < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "81" / >
+    <source>Frame
+Time
+graph < /source>
+< translation > Bildzeit
+Graph < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "82" / >
+    <source>D3D
+Version < /source>
+< translation > D3D
+Version < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "83" / >
+    <source>Show
+HUD < /source>
+< translation > Zeige
+HUD < /translation>
     </message>
     <message>
         <location filename="../ui/components/tabs/settings/dxvk.py" line="84"/>
@@ -852,9 +799,9 @@ Einstellungen < /translation>
         <translation>System Standard</translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="85"/>
-        <source>Hidden</source>
-        <translation>Versteckt</translation>
+        <location filename="../ui/components/tabs/settings/dxvk.py" line= "85" / >
+<source>Hidden < /source>
+< translation > Verbergen < /translation>
     </message>
     <message>
         <location filename="../ui/components/tabs/settings/dxvk.py" line="86"/>
@@ -862,42 +809,67 @@ Einstellungen < /translation>
         <translation>Sichtbar</translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="87"/>
-        <source>Custom Options</source>
-        <translation>Eigene Einstellungen</translation>
-    </message>
-</context>
-<context>
-    <name>DxvkWidget</name>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="105"/>
-        <source>GPU usage</source>
-        <translation>GPU nutzung</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="106"/>
-        <source>Used Memory</source>
-        <translation>Benutzter Speicher</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="107"/>
-        <source>Device info</source>
-        <translation>Geräteinfo</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="108"/>
-        <source>DXVK version</source>
-        <translation>DXVK Version</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="109"/>
-        <source>D3D Level of application</source>
-        <translation>D3D Level des Spiels</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="110"/>
-        <source>Frame time graph</source>
-        <translation>Graph über die Frametime</translation>
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "87" / >
+    <source>Custom
+Options < /source>
+< translation > Eigene
+Einstellungen < /translation>
+< /message>
+< /context>
+< context >
+<name>DxvkWidget < /name>
+< message >
+<location filename = "../components/tabs/settings/dxvk.py"
+line = "105" / >
+    <source>GPU
+usage < /source>
+< translation > GPU
+Nutzung < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/settings/dxvk.py"
+line = "106" / >
+    <source>Used
+Memory < /source>
+< translation > Benutzter
+RAM < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/settings/dxvk.py"
+line = "107" / >
+    <source>Device
+info < /source>
+< translation > Geräteinfo < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/settings/dxvk.py"
+line = "108" / >
+    <source>DXVK
+version < /source>
+< translation > DXVK
+Version < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/settings/dxvk.py"
+line = "109" / >
+    <source>D3D
+Level
+of
+application < /source>
+< translation > D3D
+Level
+der
+App < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/settings/dxvk.py"
+line = "110" / >
+    <source>Frame
+time
+graph < /source>
+< translation > Bildzeit
+Graph < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/settings/dxvk.py"
@@ -924,49 +896,130 @@ line = "258" / >
 < /message>
 < /context>
 < context >
-<name>GameActions < /name>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "225" / >
-    <source>Uninstall
-game < /source>
-< translation
-type = "obsolete" > Spiel
-deinstallieren < /translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="227"/>
-        <source>Uninstall</source>
-        <translation type="obsolete">Deinstallieren</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="233"/>
-        <source>Verify Game</source>
-        <translation type="obsolete">Spieldateien überprüfen</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="238"/>
-        <source>Verify</source>
-        <translation type="obsolete">Überprüfen</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="247"/>
-        <source>Repair Game</source>
-        <translation type="obsolete">Spiel reparieren</translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "249" / >
-    <source>Repair < /source>
-    < translation
-type = "obsolete" > Reparieren < /translation>
-< /message>
-< /context>
-< context >
 <name>GameInfo < /name>
 < message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "213" / >
+    <source>Game
+Info < /source>
+< translation > Spielinfo < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "214" / >
+<source>Developer < /source>
+< translation > Entwickler < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "215" / >
+    <source>Installation
+Path < /source>
+< translation > Installationspfad < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "216" / >
+    <source>Installation
+Size < /source>
+< translation > Installationsgröße < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "217" / >
+<source>Version < /source>
+< translation > Version < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "218" / >
+    <source>Application
+Name < /source>
+< translation > App
+Name < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "219" / >
+<source>Actions < /source>
+< translation > Aktionen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "220" / >
+    <source>ProtonDB
+Grade < /source>
+< translation > ProtonDB
+Wertung < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "221" / >
+    <source>Verify
+Installation < /source>
+< translation > Installation
+überprüfen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "222" / >
+    <source>Repair
+Instalation < /source>
+< translation > Spiel
+reparieren < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "223" / >
+    <source>Uninstall
+Game < /source>
+< translation > Spiel
+deinstallieren < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "224" / >
+    <source>Install
+Game < /source>
+< translation > Spiel
+installieren < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "225" / >
+    <source>It
+is
+not
+possible
+to
+install
+the
+Game.It
+could
+be
+from
+a
+third
+party
+store < /source>
+< translation > Es
+ist
+nicht
+möglich
+das
+Spiel
+zu
+installieren.Es
+ist
+wahrscheinlich
+aus
+einem
+anderen
+Store < /translation>
+< /message>
+< message >
 <location filename = "../components/tabs/games/game_info/__init__.py"
-line = "97" / >
+line = "96" / >
     <source>Repair
 file
 does
@@ -983,22 +1036,20 @@ verify
 game
 first < /source>
 < translation > Reparationsdatei
-existiert
 nicht
+gefunden
 oder
 das
 Spiel
 braucht
-keine
+eine
 Reperatur.Bitte
-das
-spiel
 zuerst
 überprüfen < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/games/game_info/__init__.py"
-line = "122" / >
+line = "121" / >
     <source>Verification
 failed, {}
 file(s)
@@ -1012,201 +1063,15 @@ to
 repair
 them ? </source>
     < translation > Überprüfung fehlgeschlagen, {}
+Datei(en), {}
 Datei(en)
-fehlerhaft, {}
-Datei(en)
-fehlen.Willst
+fehlen.Möchtest
 du
-das
-Spiel
-reparieren ? </translation>
+diese
+Reparieren ? </translation>
 < /message>
 < message >
-<location filename = "../components/tabs/games/game_info/__init__.py" line = "198" / >
-    <source>Developer
-:
-</source>
-< translation
-type = "obsolete" > Entwickler
-:
-</translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "199" / >
-        <source>Install size: </source>
-        <translation type="obsolete">Größe: </translation>
-    </message>
-    <message>
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "201" / >
-    <source>Install
-path: </source>
-< translation
-type = "obsolete" > Installationsordner
-:
-</translation>
-< /message>
-< message >
-<location filename = "../Components/Tabs/Games/GameInfo/GameInfo.py"
-line = "98" / >
-    <source>Are
-you
-sure
-to
-uninstall
-{
-}
-</source>
-< translation
-type = "obsolete" > Möchtest
-du
-{
-}
-wirklich
-deinstallieren < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "207" / >
-    <source>Game
-Info < /source>
-< translation > Spielinfo < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "208" / >
-<source>Developer < /source>
-< translation > Entwickler < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "209" / >
-    <source>Installation
-Path < /source>
-< translation > Installationspfad < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "210" / >
-    <source>Installation
-Size < /source>
-< translation > Größe
-der
-Installation < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "217" / >
-    <source>Uninstall
-Game < /source>
-< translation > Spiel
-deinstallieren < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "215" / >
-    <source>Verify
-Installation < /source>
-< translation > Dateien
-überprüfen < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "216" / >
-    <source>Repair
-Instalation < /source>
-< translation > Reparieren < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "211" / >
-<source>Version < /source>
-< translation > Version < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "212" / >
-    <source>Application
-Name < /source>
-< translation > Appname < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "213" / >
-<source>Actions < /source>
-< translation > Aktionen < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "214" / >
-    <source>ProtonDB
-Grade < /source>
-< translation > ProtonDB
-Wertung < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "68" / >
-    <source>Platimum < /source>
-    < translation
-type = "obsolete" > Platin < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "69" / >
-    <source>Gold < /source>
-    < translation
-type = "obsolete" > Gold < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "70" / >
-    <source>Silver < /source>
-    < translation
-type = "obsolete" > Silber < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "71" / >
-    <source>Bronze < /source>
-    < translation
-type = "obsolete" > Bronze < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "72" / >
-    <source>Could
-not
-get
-grade
-from
-ProtonDB < /source>
-< translation
-type = "obsolete" > Konnte
-nicht
-die
-Wertung
-finden < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "158" / >
-    <source>Error < /source>
-    < translation
-type = "obsolete" > Fehler < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/games/game_info/game_info.py"
-line = "218" / >
-    <source>Install
-Game < /source>
-< translation > Spiel
-installieren < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/__init__.py"
-line = "147" / >
+<location filename = "../components/tabs/games/game_info/__init__.py" line = "146" / >
 <source>Loading < /source>
 < translation > Laden < /translation>
 < /message>
@@ -1215,21 +1080,7 @@ line = "147" / >
 <name>GameList < /name>
 < message >
 <location filename = "../components/tabs/games/game_list.py"
-line = "216" / >
-<source>Launch < /source>
-< translation > Starten < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_list.py"
-line = "234" / >
-    <source>Game
-running < /source>
-< translation > Spiel
-läuft < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_list.py"
-line = "63" / >
+line = "64" / >
     <source>Installed
 Games: {
 }
@@ -1247,12 +1098,26 @@ Spiele: {
 < /message>
 < message >
 <location filename = "../components/tabs/games/game_list.py"
-line = "225" / >
+line = "226" / >
+<source>Launch < /source>
+< translation > Starten < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_list.py"
+line = "235" / >
     <source>Sync
 CLoud
 saves < /source>
-< translation > Spielstand
+< translation > Cloud
 synchronisieren < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_list.py"
+line = "244" / >
+    <source>Game
+running < /source>
+< translation > Spiel
+läuft < /translation>
 < /message>
 < /context>
 < context >
@@ -1260,75 +1125,181 @@ synchronisieren < /translation>
 < message >
 <location filename = "../components/tabs/games/__init__.py"
 line = "95" / >
+<source>All < /source>
+< translation > Alle < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/__init__.py"
+line = "95" / >
     <source>Installed
 only < /source>
 < translation > Nur
-Installierte < /translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/__init__.py" line="103"/>
-        <source>Import Game</source>
-        <translation>Spiel importieren</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/__init__.py" line="115"/>
-        <source>Search Game</source>
-        <translation>Spiel suchen</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/__init__.py" line="95"/>
-        <source>All</source>
-        <translation>Alle</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/__init__.py" line="95"/>
-        <source>Offline Games</source>
-        <translation>Offline Spiele</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/__init__.py" line="95"/>
-        <source>32 Bit Games</source>
-        <translation>32 Bit Spiele</translation>
-    </message>
-</context>
-<context>
-    <name>GameSettings</name>
-    <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="33"/>
-        <source>Launch Game offline</source>
-        <translation type="obsolete">Spiel offline starten</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="38"/>
-        <source>Skip update check before launching</source>
-        <translation type="obsolete">Überprüfung nach Updates beim Start überspringen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="139"/>
-        <source>Save</source>
-        <translation>Speichern</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="63"/>
-        <source>Wrapper (e.g. optirun)</source>
-        <translation type="obsolete">Wrapper (z.B. optirun)</translation>
-    </message>
-    <message>
-<location filename = "../components/tabs/games/game_info/game_settings.py"
-line = "83" / >
-    <source>Proton
-Wrapper < /source>
-< translation
-type = "obsolete" > Proton
-Version < /translation>
+installierte < /translation>
 < /message>
 < message >
-<location filename = "../components/tabs/games/game_info/game_settings.py"
-line = "89" / >
-    <source>Proton
-prefix < /source>
-< translation
-type = "obsolete" > Protonprefix < /translation>
+<location filename = "../components/tabs/games/__init__.py"
+line = "95" / >
+    <source>Offline
+Games < /source>
+< translation > Offline
+Spiele < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/__init__.py"
+line = "95" / >
+    <source>32
+Bit
+Games < /source>
+< translation > 32
+Bit
+Spiele < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/__init__.py"
+line = "95" / >
+    <source>Installable
+Games < /source>
+< translation > Installierbare
+Spieler < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/__init__.py"
+line = "104" / >
+    <source>Import
+Game < /source>
+< translation > Spiel
+importieren < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/__init__.py"
+line = "116" / >
+    <source>Search
+Game < /source>
+< translation > Spiel
+suchen < /translation>
+< /message>
+< /context>
+< context >
+<name>GameSettings < /name>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "124" / >
+<source>GameSettings < /source>
+< translation > Spieleinstellungen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "125" / >
+    <source>Launch
+Settings < /source>
+< translation > Start
+Einstellungen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "135" / >
+<source>Default < /source>
+< translation > Standard < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "136" / >
+<source>Yes < /source>
+< translation > Ja < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "137" / >
+<source>No < /source>
+< translation > Nein < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "129" / >
+    <source>Launch
+parameters < /source>
+< translation > Start
+Parameter < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "130" / >
+<source>Wrapper < /source>
+< translation > Wrapper < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "131" / >
+    <source>Skip
+update
+check < /source>
+< translation > Überspringe
+Updateüberprüfung < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "132" / >
+<source>e.g.optirun < /source>
+< translation > Z.B.Optirun < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "139" / >
+<source>Save < /source>
+< translation > Speichern < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "134" / >
+    <source>Offline
+mode < /source>
+< translation > Offlienmodus < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "138" / >
+<source>parameters < /source>
+< translation > Parameter < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "140" / >
+    <source>Sync
+with cloud < /source>
+< translation > Mit der
+Cloud
+Synchronisieren < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "141" / >
+    <source>Linux
+Settings < /source>
+< translation > Linux
+Einstellungen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "142" / >
+    <source>Don & apos;
+t
+use
+Proton < /source>
+< translation > Kein
+Proton
+benutzen < /translation>
+    </message>
+    <message>
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "143" / >
+<source>Proton < /source>
+< translation > Proton < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "144" / >
+<source>Prefix < /source>
+< translation > Prefix < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/games/game_info/game_settings.py"
@@ -1340,6 +1311,7 @@ create
 folder < /source>
 < translation > Keine
 Berechtigung
+um
 den
 Ordner
 zu
@@ -1352,152 +1324,62 @@ line = "216" / >
 select
 path
 for proton prefix < /source>
-< translation > Bitte
-wähle
-den
-Pfad
-zum
-Protonprefix < /translation>
+< translation > Pfad
+für
+das
+Proton
+Prefix
+auswählen < /translation>
+< /message>
+< /context>
+< context >
+<name>GameWidgetInstalled < /name>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "33" / >
+    <source>Update
+available < /source>
+< translation > Update
+verfügbar < /translation>
 < /message>
 < message >
-<location filename = "../components/tabs/games/game_info/game_settings.py"
-line = "52" / >
-    <source>Auto
-sync
-with cloud < /source>
-< translation type = "obsolete" > Speicherstände
-automatisch
-mit
-der
-Cloud
-synchronisieren < /translation>
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "91" / >
+    <source>Game
+running < /source>
+< translation > Spiel
+läuft < /translation>
 < /message>
 < message >
-<location filename = "../components/tabs/games/game_info/game_settings.py"
-line = "43" / >
-        <source>Start parameter</source>
-        <translation type="obsolete">Start Parameter</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="129"/>
-        <source>Launch parameters</source>
-        <translation>Start Parameter</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="125"/>
-        <source>Launch Settings</source>
-        <translation>Starteinstellungen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="135"/>
-        <source>Default</source>
-        <translation>Standard</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="136"/>
-        <source>Yes</source>
-        <translation>Ja</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="137"/>
-        <source>No</source>
-        <translation>Nein</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="130"/>
-        <source>Wrapper</source>
-        <translation>Wrapper</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="131"/>
-        <source>Skip update check</source>
-        <translation>Updateüberprüfung überspringen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="132"/>
-        <source>e.g. optirun</source>
-        <translation>Z.B. Optirun</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="134"/>
-        <source>Offline mode</source>
-        <translation>Offline Modus</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="138"/>
-        <source>parameters</source>
-        <translation>Parameter</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="140"/>
-        <source>Sync with cloud</source>
-        <translation>Automatisch Synchronisieren</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="141"/>
-        <source>Linux Settings</source>
-        <translation>Linux Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="142"/>
-        <source>Don&apos;t use Proton</source>
-        <translation>Kein Proton benutzen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="143"/>
-        <source>Proton</source>
-        <translation>Proton</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="144"/>
-        <source>Prefix</source>
-        <translation>Prefix</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="124"/>
-        <source>GameSettings</source>
-        <translation>Spieleinstellungen</translation>
-    </message>
-</context>
-<context>
-    <name>GameWidgetInstalled</name>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="34"/>
-        <source>Update available</source>
-        <translation>Update verfügbar</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="86"/>
-        <source>Start game without version check</source>
-        <translation>Ohne Updateüberprüfung starten</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="92"/>
-        <source>Game running</source>
-        <translation>Spiel läuft</translation>
-    </message>
-</context>
-<context>
-    <name>IconWidgetUninstalled</name>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="45"/>
-        <source>Install Game</source>
-        <translation type="obsolete">Spiel installieren</translation>
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "85" / >
+    <source>Start
+game
+without
+version
+check < /source>
+< translation > Spiel
+ohne
+Updateüberprüfung
+starten < /translation>
+< /message>
+< /context>
+< context >
+<name>IconWidgetUninstalled < /name>
+< message >
+<location filename = "../components/tabs/games/game_widgets/uninstalled_icon_widget.py"
+line = "41" / >
+    <source>Game
+Info < /source>
+< translation > Spielinfo < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/games/game_widgets/uninstalled_icon_widget.py"
-line = "44" / >
+line = "43" / >
     <source>Installation
 running < /source>
 < translation > Installation
 läuft < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/uninstalled_icon_widget.py"
-line = "42" / >
-    <source>Game
-Info < /source>
-< translation > Spielinfo < /translation>
 < /message>
 < /context>
 < context >
@@ -1528,11 +1410,12 @@ existing
 session
 from
 EGL < /source>
-< translation > Aus
-einer
-existierenden
-EGL
+< translation > Eine
+existierende
 Sitzung
+aus
+dem
+EGL
 importieren < /translation>
 < /message>
 < message >
@@ -1564,8 +1447,8 @@ import them
 </source>
 < translation > EGL
 Daten
-gefunden.Drücke & apos;
-Weiter & apos;
+gefunden.Drücke
+Weiter
 um
 diese
 zu
@@ -1582,7 +1465,8 @@ Program
 Data. < /source>
 < translation > Konnte
 keine
-EGL - Daten
+EGL
+Daten
 finden. < /translation>
 < /message>
 < message >
@@ -1600,7 +1484,6 @@ Launcher
 is
 installed. < /source>
 < translation > Wähle
-das
 Wineprefix, wo
 der
 Epic
@@ -1654,7 +1537,7 @@ line = "81" / >
 line = "91" / >
     <source>Login
 failed. < /source>
-< translation > Einloggen
+< translation > Login
 fehlgeschlagen. < /translation>
 < /message>
 < message >
@@ -1662,103 +1545,36 @@ fehlgeschlagen. < /translation>
 line = "94" / >
     <source>Login
 failed. < /source>
-< translation > Einloggen
+< translation > Login
 fehlgeschlagen. < /translation>
 < /message>
 < /context>
 < context >
 <name>ImportWidget < /name>
 < message >
-<location filename = "../components/dialogs/login/import_widget.py"
-line = "102" / >
-    <source>Import < /source>
-    < translation
-type = "obsolete" > Importieren < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/login/import_widget.py"
-line = "39" / >
-    <source>Could
-not
-find
-EGL
-program
-data < /source>
-< translation
-type = "obsolete" > Konnte
-nicht
-die
-EGL
-Dateien
-finden < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/login/import_widget.py"
-line = "42" / >
-    <source>Found
-EGL
-program
-Data.Do
-you
-want
-to
-import them
-
-? </source>
-    < translation type = "obsolete" > EGL
-Dateien
-gefunden.Willst
-du
-sie
-importieren ? </translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/login/import_widget.py" line = "51" / >
-    <source>Could
-not
-find
-any
-Epic
-Games
-login
-data < /source>
-< translation
-type = "obsolete" > Konnte
-keine
-Logindaten
-finden < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/login/import_widget.py"
-line = "86" / >
-    <source>Loading
-...
-</source>
-< translation
-type = "obsolete" > Laden
-...
-</translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/login/import_widget.py"
-line = "101" / >
-    <source>Error
-:
-No
-valid
-session
-found < /source>
-< translation
-type = "obsolete" > Keine
-valide
-Session
-gefunden < /translation>
-< /message>
-< message >
 <location filename = "../components/tabs/games/import_widget.py"
 line = "26" / >
 <source>Back < /source>
 < translation > Zurück < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/import_widget.py"
+line = "38" / >
+    <source>Import
+existing
+game
+from
+Epic
+Games
+Launcher < /source>
+< translation > Aus
+einer
+existierenden
+Epic
+Games
+Launcher
+Sitzung
+importieren < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/games/import_widget.py"
@@ -1768,60 +1584,9 @@ path
 to
 game < /source>
 < translation > Wähle
-den
 Pfad
 zum
 Spiel < /translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="65"/>
-        <source>Import Game</source>
-        <translation>Spiel importieren</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="78"/>
-        <source>Import all games from Epic Games Launcher</source>
-        <translation type="obsolete">Alle Spiele aus dem Epic Games Launcher importieren</translation>
-    </message>
-    <message>
-        <location filename="../Components/Tabs/Games/ImportWidget.py" line="116"/>
-        <source>Successfully imported {} Games</source>
-        <translation type="obsolete">{} Spiele erfolgreich importiert</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="46"/>
-        <source>Override app name (Only if imported game from legendary or the app could not find the app name)</source>
-        <translation type="obsolete">App Name überschreiben (Nur falls das Spiel von Legendary importiert wird oder der App Name nicht gefunden wird</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="114"/>
-        <source>Could not find app name</source>
-        <translation>Konnte den Appnamen nicht finden</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="118"/>
-        <source>Successfully imported {}. Reload library</source>
-        <translation>Erfolgreich {} importiert. Spiele neu laden</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="125"/>
-        <source>Failed to import {}</source>
-        <translation>{} Konnte nicht importiert werden</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="169"/>
-        <source>Successfully imported {} Games. Reloading Library</source>
-        <translation type="obsolete">Erfolgreich {} Spiele importiert. Spiele neu laden</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="38"/>
-        <source>Import existing game from Epic Games Launcher</source>
-        <translation>Ein bereits existierendes Spiel aus dem Epic Games Launcher importieren</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="173"/>
-        <source>No Games were found</source>
-        <translation type="obsolete">Keine Spiele wurden gefunden</translation>
 < /message>
 < message >
 <location filename = "../components/tabs/games/import_widget.py"
@@ -1841,13 +1606,62 @@ name
 < translation > Appnamen
 überschreiben.(Nur
 wenn
-dieser
+der
+Appname
 nicht
 gefunden
-werden
-kann
+wird
 )
 </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/import_widget.py"
+line = "65" / >
+    <source>Import
+Game < /source>
+< translation > Spiel
+importieren < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/import_widget.py"
+line = "114" / >
+    <source>Could
+not
+find
+app
+name < /source>
+< translation > Konnte
+nicht
+den
+Appnamen
+finden < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/import_widget.py"
+line = "118" / >
+    <source>Successfully
+imported
+{
+}
+.
+Reload
+library < /source>
+< translation > {}
+Erfolgreich
+importiert.Spiele
+neu
+laden < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/import_widget.py"
+line = "125" / >
+    <source>Failed
+to
+import {}
+
+</source>
+< translation > Importieren
+fehlgeschlagen < /translation>
 < /message>
 < /context>
 < context >
@@ -1881,79 +1695,11 @@ line = "39" / >
 < context >
 <name>InstallDialog < /name>
 < message >
-<location filename = "../components/dialogs/install_dialog.py"
-line = "40" / >
-    <source>Max
-workers(0
-:
-Default
-)
-</source>
-< translation
-type = "obsolete" > Maximale
-Anzahl
-Downloadprozessen(Standard
-:
-0
-)
-</translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/install_dialog.py"
-line = "21" / >
-    <source>&lt;h3&gt;Install
-{
-}
-&lt;/h3&gt;</s
-ource >
-<translation type = "obsolete" > &lt;h3&gt;Installiere
-{
-}
-&lt;/h3&gt;</
-translation >
-</message>
-< message >
-<location filename = "../components/dialogs/install_dialog.py"
-line = "44" / >
-    <source>Force
-download < /source>
-< translation
-type = "obsolete" > Download
-erzwingen < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/install_dialog.py"
-line = "48" / >
-    <source>Ignore
-free
-space(Warning!) < /source>
-< translation
-type = "obsolete" > Freien
-Speicherplatz
-ignorieren(Achtung!) < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/install_dialog.py"
-line = "52" / >
-    <source>Do
-not
-install
-game < /source>
-< translation
-type = "obsolete" > Das
-Spiel
-nicht
-installieren < /translation>
-< /message>
-< message >
 <location filename = "../ui/components/dialogs/install_dialog.py"
 line = "131" / >
     <source>Install
 directory < /source>
-< translation > Ordner
-für
-die
-Installation < /translation>
+< translation > Installationsordner < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/install_dialog.py"
@@ -1969,7 +1715,7 @@ line = "133" / >
     <source>Optional
 packs < /source>
 < translation > Optionale
-Packs < /translation>
+Dateien < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/install_dialog.py"
@@ -1995,9 +1741,8 @@ line = "136" / >
     <source>Total
 install
 size < /source>
-< translation > Größe
-der
-Installation < /translation>
+< translation > Gesamte
+Installationsgröße < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/install_dialog.py"
@@ -2007,7 +1752,9 @@ not
 try
 to
 install. < /source>
-< translation > Nicht
+< translation > Das
+Spiel
+nicht
 installieren. < /translation>
 < /message>
 < message >
@@ -2049,17 +1796,15 @@ ignorieren < /translation>
 line = "141" / >
     <source>Download
 size < /source>
-< translation > Download
-Größe < /translation>
+< translation > Downloadgröße < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/install_dialog.py"
 line = "142" / >
     <source>Force
 redownload < /source>
-< translation > Erzwinge
-neuen
-Download < /translation>
+< translation > Download
+erzwingen < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/install_dialog.py"
@@ -2075,14 +1820,13 @@ line = "144" / >
     <source>Max
 workers < /source>
 < translation > Maximale
-Anzahl
 Prozesse < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/install_dialog.py"
 line = "146" / >
 <source>Cancel < /source>
-< translation > Abbruch < /translation>
+< translation > Schließen < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/install_dialog.py"
@@ -2114,7 +1858,7 @@ line = "131" / >
     <source>Updating
 ...
 </source>
-< translation > Updaten
+< translation > Aktualisieren
 ...
 </translation>
 < /message>
@@ -2137,86 +1881,22 @@ line = "176" / >
 < /message>
 < /context>
 < context >
-<name>InstallInfoDialog < /name>
-< message >
-<location filename = "../components/dialogs/install_dialog.py"
-line = "82" / >
-    <source>Download
-size: {
-}
-GB
-Install
-size: {
-}
-GB < /source>
-< translation
-type = "obsolete" > Downloadgröße
-:
-{
-}
-GB
-Installationsgröße: {
-}
-GB < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/install_dialog.py"
-line = "96" / >
-    <source>Install < /source>
-    < translation
-type = "obsolete" > Installieren < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/install_dialog.py"
-line = "98" / >
-    <source>Cancel < /source>
-    < translation
-type = "obsolete" > Abbruch < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/install_dialog.py"
-line = "91" / >
-    <source>Download
-size: {
-}
-Install
-size: {
-}
-</source>
-< translation
-type = "obsolete" > Download
-Größe: {
-}
-Installierte
-Größe: {
-}
-</translation>
-< /message>
-< /context>
-< context >
 <name>InstalledListWidget < /name>
 < message >
 <location filename = "../components/tabs/games/game_widgets/installed_list_widget.py"
-line = "40" / >
+line = "39" / >
 <source>Launch < /source>
 < translation > Starten < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/games/game_widgets/installed_list_widget.py"
-line = "49" / >
+line = "48" / >
     <source>Developer
 :
 </source>
 < translation > Entwickler
 :
 </translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_widgets/installed_list_widget.py"
-line = "31" / >
-    <source>Uninstall < /source>
-    < translation
-type = "obsolete" > Deinstallieren < /translation>
 < /message>
 < /context>
 < context >
@@ -2228,38 +1908,6 @@ line = "36" / >
 Rare < /source>
 < translation > Starte
 Rare < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/launch_dialog.py"
-line = "69" / >
-    <source>Logging in </source>
-    < translation
-type = "obsolete" > Einloggen < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/launch_dialog.py"
-line = "70" / >
-    <source>Downloading
-Images < /source>
-< translation > Bilder
-runterladen < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/launch_dialog.py"
-line = "85" / >
-    <source>Starting
-...
-</source>
-< translation > Starten
-...
-</translation>
-< /message>
-< message >
-<location filename = "../ui/components/dialogs/launch_dialog.py"
-line = "43" / >
-    <source>Dialog < /source>
-    < translation
-type = "obsolete" > Dialog < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/launch_dialog.py"
@@ -2280,14 +1928,12 @@ images < /source>
 herunterladen < /translation>
 < /message>
 < message >
-<location filename = "../ui/components/dialogs/launch_dialog.py"
-line = "46" / >
-    <source>Getting
-Steam
-grades < /source>
-< translation
-type = "obsolete" > Lade
-Steamdaten < /translation>
+<location filename = "../components/dialogs/launch_dialog.py"
+line = "70" / >
+    <source>Downloading
+Images < /source>
+< translation > Bilder
+herunterladen < /translation>
 < /message>
 < message >
 <location filename = "../components/dialogs/launch_dialog.py"
@@ -2295,107 +1941,42 @@ line = "74" / >
 <source>Ready < /source>
 < translation > Bereit < /translation>
 < /message>
-< /context>
-< context >
-<name>LaunchThread < /name>
 < message >
 <location filename = "../components/dialogs/launch_dialog.py"
-line = "24" / >
-    <source>Downloading
-Images < /source>
-< translation
-type = "obsolete" > Bilder
-runterladen < /translation>
+line = "85" / >
+    <source>Starting
+...
+</source>
+< translation > Starten
+...
+</translation>
 < /message>
 < /context>
-<context>
-    <name>LegendarySettings</name>
-    <message>
-        <location filename="../components/tabs/settings/legendary.py" line="19"/>
-        <source>Legendary settings</source>
-        <translation type="obsolete">Legendary Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/legendary.py" line="32"/>
-        <source>Default installation directory</source>
-        <translation type="obsolete">Standardordner für Installationen</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/legendary.py" line="41"/>
-        <source>Max workers for Download (Less: slower download)(0: Default)</source>
-        <translation type="obsolete">Maximale Anzahl Downloadprozesse (Weniger: langsamer)(Standard: 0)</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="73"/>
-        <source>Cleanup</source>
-        <translation type="obsolete">Aufräumen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="75"/>
-        <source>Remove everything</source>
-        <translation type="obsolete">Alles aufräumen</translation>
-    </message>
-    <message>
-<location filename = "../ui/components/tabs/settings/legendary.py"
-line = "74" / >
-    <source>Clean, but
-keep
-manifests < /source>
-< translation
-type = "obsolete" > Aufräumen, aber
-Manifests
-behalten < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/settings/legendary.py"
-line = "100" / >
-    <source>Cleanup
-complete!
-Successfully
-removed
-{
-}
-MB < /source>
-< translation
-type = "obsolete" > Fertig!
-Es
-wurden
-{
-}
-MB
-entfernt < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/settings/legendary.py"
-line = "197" / >
-    <source>Cleanup
-complete!
-Successfully
-removed
-{
-}
-</source>
-< translation > Fertig!
-Es
-wurden
-{
-}
-MB
-entfernt < /translation>
-< /message>
+< context >
+<name>LegendarySettings < /name>
 < message >
 <location filename = "../components/tabs/settings/legendary.py"
 line = "66" / >
     <source>Disable
 sync < /source>
-< translation > Deaktivieren < /translation>
+< translation > Sync
+deaktivieren < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/settings/legendary.py"
 line = "117" / >
     <source>Enable
 Sync < /source>
-< translation > Aktivieren < /translation>
+< translation > Synchronisierung
+aktivieren < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/settings/legendary.py"
+line = "85" / >
+    <source>Disable
+Sync < /source>
+< translation > Synchronisierung
+deaktivieren < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/settings/legendary.py"
@@ -2408,7 +1989,7 @@ export
 < translation > Keine
 Spiele
 zum
-Exportieren < /translation>
+exportieren < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/settings/legendary.py"
@@ -2422,7 +2003,23 @@ import
 < translation > Keine
 Spiele
 zum
-Importieren < /translation>
+importieren < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/settings/legendary.py"
+line = "197" / >
+    <source>Cleanup
+complete!
+Successfully
+removed
+{
+}
+</source>
+< translation > Aufräumen
+abgeschlossen.Erfolgreich
+{
+}
+gelöscht < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/settings/legendary.py"
@@ -2431,130 +2028,63 @@ line = "45" / >
 path
 is
 at
-C:ProgramDataEpicEpicGamesLauncherDataManifests < /source>
+C:\
+ProgramData\Epic\EpicGamesLauncher\Data\Manifests < /source>
 < translation > EGL
 Pfad
 ist
-bei
-C:/ProgramData/
-Epic / EpicGames / Launcher / Data / Manifests < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/settings/legendary.py"
-line = "85" / >
-    <source>Disable
-Sync < /source>
-< translation > Deaktivieren < /translation>
+bei: C:\
+ProgramData\Epic\EpicGamesLauncher\Data\Manifests < /translation>
 < /message>
 < /context>
 < context >
 <name>LinuxSettings < /name>
 < message >
-<location filename = "../components/tabs/settings/linux.py"
-line = "28" / >
-    <source>Default
-Wine
-Prefix < /source>
-< translation
-type = "obsolete" > Standard
-Wineprefix < /translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/linux.py" line="36"/>
-        <source>Default Wine executable</source>
-        <translation type="obsolete">Standard Wine</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/linux.py" line="19"/>
-        <source>Linux settings</source>
-        <translation type="obsolete">Linux Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/linux.py" line="58"/>
-        <source>LinuxSettings</source>
-        <translation>Linux Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/linux.py" line="59"/>
-        <source>Wine Settings</source>
-        <translation>Wine Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/linux.py" line="60"/>
-        <source>Executable</source>
-        <translation>Wine version</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/linux.py" line="61"/>
-        <source>Prefix</source>
-        <translation>Prefix</translation>
-    </message>
-</context>
-<context>
-    <name>ListWidgetUninstalled</name>
-    <message>
+<location filename = "../ui/components/tabs/settings/linux.py"
+line = "58" / >
+<source>LinuxSettings < /source>
+< translation > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/linux.py"
+line = "59" / >
+    <source>Wine
+Settings < /source>
+< translation > Wine
+Einstellungen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/linux.py"
+line = "60" / >
+    <source>Executable < /source>
+    < translation > Ausführbare
+Datei < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/linux.py"
+line = "61" / >
+<source>Prefix < /source>
+< translation > Prefix < /translation>
+< /message>
+< /context>
+< context >
+<name>ListWidgetUninstalled < /name>
+< message >
 <location filename = "../components/tabs/games/game_widgets/uninstalled_list_widget.py"
 line = "29" / >
 <source>Install < /source>
-< translation > Installieren < /translation>
+< translation > InstallierenInstallieren < /translation>
 < /message>
 < /context>
 < context >
 <name>LoginDialog < /name>
-< message >
-<location filename = "../components/dialogs/login/__init__.py"
-line = "30" / >
-    <source>Select
-one
-option
-to
-Login < /source>
-< translation
-type = "obsolete" > Wähle
-eine
-Option
-zum
-Einloggen < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/login/__init__.py"
-line = "33" / >
-    <source>Use
-Browser < /source>
-< translation
-type = "obsolete" > Über
-den
-Browser < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/login/__init__.py"
-line = "33" / >
-    <source>This
-opens
-your
-default
-browser.Login
-and
-copy
-the
-text < /source>
-< translation
-type = "obsolete" > Dies
-öffnet
-den
-Browser, Einloggen
-und
-den
-Text
-kopieren < /translation>
-< /message>
 < message >
 <location filename = "../ui/components/dialogs/login/login_dialog.py"
 line = "111" / >
     <source>Welcome
 to
 Rare < /source>
-< translation > Wilkommen
+< translation > Willkommen
 zu
 Rare < /translation>
 < /message>
@@ -2588,11 +2118,10 @@ line = "114" / >
     <source>Select
 login
 method < /source>
-< translation > Wähle
-eine
-Methode
+< translation > Methode
 zum
-Einloggen < /translation>
+Einloggen
+auswählen < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/login/login_dialog.py"
@@ -2711,7 +2240,7 @@ font - weight
 quot;
 &gt;
 Login
-Erfolgreich! &lt; /span&gt;&lt;/
+Erfolgreich &lt; /span&gt;&lt;/
 h2 &gt; &lt;/body&gt;&lt;/
 html &gt; </translation>
 < /message>
@@ -2719,7 +2248,7 @@ html &gt; </translation>
 <location filename = "../ui/components/dialogs/login/login_dialog.py"
 line = "120" / >
 <source>Exit < /source>
-< translation > Schließen < /translation>
+< translation > Beenden < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/dialogs/login/login_dialog.py"
@@ -2750,9 +2279,10 @@ want
 to
 exit
 app ? </source>
-    < translation > Ein Download
-läuft
-noch.Möchtest
+    < translation > Es ist
+ein
+Download
+aktiv.Möchtest
 du
 die
 App
@@ -2761,35 +2291,9 @@ beenden ? </translation>
 < /message>
 < /context>
 < context >
-<name>MangoSettings < /name>
-< message >
-<location filename = "../components/tabs/settings/mango_hud.py" line = "7" / >
-    <source>MangoHUD
-settings < /source>
-< translation
-type = "obsolete" > MangoHUD
-Einstellungen < /translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/mango_hud.py" line="11"/>
-        <source>CPU temperature</source>
-        <translation type="obsolete">CPU Temperatur</translation>
-< /message>
-< message >
-<location filename = "../components/tabs/settings/mango_hud.py"
-line = "12" / >
-    <source>GPU
-temperature < /source>
-< translation
-type = "obsolete" > GPU
-Temperatur < /translation>
-< /message>
-< /context>
-< context >
 <name>MiniWidget < /name>
 < message >
-<location filename = "../components/tabs/account/__init__.py"
-line = "25" / >
+<location filename = "../components/tabs/account/__init__.py" line = "25" / >
     <source>Logged in as < /source>
     < translation > Eingeloggt
 als < /translation>
@@ -2799,13 +2303,14 @@ als < /translation>
 line = "27" / >
     <source>Account
 settings < /source>
-< translation > Accounteinstellungen < /translation>
+< translation > Account
+Einstellungen < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/account/__init__.py"
 line = "32" / >
 <source>Logout < /source>
-< translation > Ausloggen < /translation>
+< translation > Abmelden < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/account/__init__.py"
@@ -2816,7 +2321,7 @@ really
 want
 to
 logout < /source>
-< translation > Willst
+< translation > Möchtest
 du
 dich
 wirklich
@@ -2827,23 +2332,11 @@ abmelden < /translation>
 <name>PathEdit < /name>
 < message >
 <location filename = "../utils/extra_widgets.py"
-line = "133" / >
-    <source>Select
-Path < /source>
-< translation
-type = "obsolete" > Wähle
-den
-Ordner < /translation>
-< /message>
-< message >
-<location filename = "../utils/extra_widgets.py"
-line = "163" / >
+line = "161" / >
     <source>Choose
-Path < /source>
-< translation
-type = "obsolete" > Wähle
-den
-Ordner < /translation>
+path < /source>
+< translation > Wähle
+Pfad < /translation>
 < /message>
 < message >
 <location filename = "../ui/utils/pathedit.py"
@@ -2857,10 +2350,10 @@ line = "43" / >
     <source>Browse
 ...
 </source>
-< translation > Suchen
+< translation > Durchsuchen
 ...
 </translation>
-    </message>
+< /message>
 < message >
 <location filename = "../ui/utils/pathedit.py"
 line = "44" / >
@@ -2873,14 +2366,6 @@ line = "45" / >
 <source>Save < /source>
 < translation > Speichern < /translation>
 < /message>
-< message >
-<location filename = "../utils/extra_widgets.py"
-line = "166" / >
-    <source>Choose
-path < /source>
-< translation > Wähle
-Pfad < /translation>
-< /message>
 < /context>
 < context >
 <name>PathInputDialog < /name>
@@ -2888,242 +2373,176 @@ Pfad < /translation>
 <location filename = "../components/dialogs/path_input_dialog.py"
 line = "25" / >
 <source>Cancel < /source>
-< translation > Abbruch < /translation>
+< translation > Schließen < /translation>
 < /message>
 < /context>
 < context >
 <name>RPCSettings < /name>
 < message >
 <location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "48" / >
+<source>DiscordRPC < /source>
+< translation > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
 line = "49" / >
     <source>Discord
 RPC < /source>
 < translation > Discord
-Spielaktivität < /translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rpc_settings.py" line="16"/>
-        <source>Show when playing</source>
-        <translation type="obsolete">Beim Spielen zeigen</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rpc_settings.py" line="16"/>
-        <source>Show always</source>
-        <translation type="obsolete">Immer zeigen</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rpc_settings.py" line="16"/>
-        <source>Show never</source>
-        <translation type="obsolete">Nie zeigen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="54"/>
-        <source>Show Game</source>
-        <translation>Spiel anzeigen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="55"/>
-        <source>Show OS</source>
-        <translation>Betriebssystem anzeigen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="56"/>
-        <source>Show Time playing</source>
-        <translation>Spielzeit anzeigen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="50"/>
-        <source>When Playing</source>
-        <translation>Beim Spielen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="51"/>
-        <source>Always</source>
-        <translation>Immer</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="52"/>
-        <source>Never</source>
-        <translation>Nie</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="53"/>
-        <source>Show</source>
-        <translation>Zeigen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="48"/>
-        <source>DiscordRPC</source>
-        <translation>Discord RPC</translation>
-    </message>
-</context>
-<context>
-    <name>RareSettings</name>
-    <message>
-        <location filename="../components/tabs/settings/rare.py" line="27"/>
-        <source>Rare settings</source>
-        <translation type="obsolete">Rare Einstellungen</translation>
-    </message>
-    <message>
-<location filename = "../components/tabs/settings/rare.py"
+RPC < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "50" / >
+    <source>When
+Playing < /source>
+< translation > Beim
+Spielen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
 line = "51" / >
-    <source>Save < /source>
-    < translation
-type = "obsolete" > Speichern < /translation>
+<source>Always < /source>
+< translation > Immer < /translation>
+    </message>
+    <message>
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "52" / >
+<source>Never < /source>
+< translation > Nie < /translation>
 < /message>
 < message >
-<location filename = "../components/tabs/settings/rare.py"
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
 line = "53" / >
-    <source>Image
-Directory < /source>
-< translation
-type = "obsolete" > Ordner
-für
-Bilder < /translation>
+<source>Show < /source>
+< translation > Zeigen < /translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/settings/rare.py"
-line = "143" / >
-<source>Language < /source>
-< translation > Sprache < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/settings/rare.py"
-line = "102" / >
-    <source>Restart
-Application
-to
-activate
-changes < /source>
-< translation
-type = "obsolete" > Starte
-die
-App
-neu
-um
-die
-Änderungen
-zu
-aktivieren < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/settings/rare.py"
-line = "36" / >
-        <source>Confirm launch of game</source>
-        <translation type="obsolete">Start des Spiels bestätigen</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rare.py" line="33"/>
-        <source>Exit to System Tray Icon</source>
-        <translation type="obsolete">Beim verlassen auf das System Tray Icon minimieren</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rare.py" line="33"/>
-        <source>Hide to System Tray Icon</source>
-        <translation type="obsolete">In das System Tray Icon minimieren</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rare.py" line="38"/>
-        <source>Auto sync with cloud</source>
-        <translation type="obsolete">Speicherstände automatisch mit der Cloud synchronisieren</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rare.py" line="38"/>
-        <source>Sync with cloud</source>
-        <translation type="obsolete">Automatisch Synchronisieren</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rare.py" line="41"/>
-        <source>Save size</source>
-        <translation type="obsolete">Größe Speichern</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rare.py" line="41"/>
-        <source>Save size of window after restart</source>
-        <translation type="obsolete">Die Fenstergröße nach dem Beenden speichern</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rare.py" line="34"/>
-        <source>Automatically update Games on startup</source>
-        <translation type="obsolete">Spiele automatisch updaten</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/rare.py" line="34"/>
-        <source>Auto updates</source>
-        <translation type="obsolete">Automatische Updates</translation>
-    </message>
-    <message>
-<location filename = "../components/tabs/settings/rare.py"
-line = "39" / >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "54" / >
     <source>Show
-Notifications
-after
-Downloads < /source>
-< translation
-type = "obsolete" > Benachrichtigung
-nach
-Abschluss
-des
-Downloads
-anzeigen < /translation>
+Game < /source>
+< translation > Zeige
+Spiel < /translation>
 < /message>
 < message >
-<location filename = "../components/tabs/settings/rare.py"
-line = "39" / >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "55" / >
     <source>Show
-notification < /source>
-< translation
-type = "obsolete" > Benachrichtigung
-anzeigen < /translation>
+OS < /source>
+< translation > Zeige
+OS < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "56" / >
+    <source>Show
+Time
+playing < /source>
+< translation > Zeige
+Spielzeit < /translation>
+< /message>
+< /context>
+< context >
+<name>RareSettings < /name>
+< message >
+<location filename = "../ui/components/tabs/settings/rare.py"
+line = "136" / >
+<source>RareSettings < /source>
+< translation > </translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "130" / >
-    <source>RareSettings < /source>
-    < translation > Rare
-Einstellungen < /translation>
+line = "137" / >
+<source>Logs < /source>
+< translation > Logs < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "152" / >
-    <source>Image
-Cache
-Directory < /source>
-< translation > Speicherort
-für
-Bilder < /translation>
+line = "138" / >
+    <source>Open
+Log
+directory < /source>
+< translation > Öffne
+Logordner < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
 line = "139" / >
+    <source>Clean
+Log
+directory < /source>
+< translation > Lösche
+Logdateien < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rare.py"
+line = "140" / >
+<source>Shortcuts < /source>
+< translation > Vernküpfungen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rare.py"
+line = "141" / >
+    <source>Create
+Desktop
+link < /source>
+< translation > Desktopverknüpfung
+erstellen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/settings/rare.py"
+line = "129" / >
+    <source>Create
+start
+menu
+link < /source>
+< translation > Startmenüvernküfpung
+erstellen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rare.py"
+line = "143" / >
 <source>Interface < /source>
 < translation > Oberfläche < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "140" / >
+line = "144" / >
     <source>Style
 Sheet < /source>
 < translation > Design < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "144" / >
+line = "146" / >
+<source>None < /source>
+< translation > Keins < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rare.py"
+line = "147" / >
+<source>Language < /source>
+< translation > Sprache < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rare.py"
+line = "148" / >
     <source>Color
 Scheme < /source>
 < translation > Farben < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "145" / >
+line = "149" / >
     <source>Restart
 Rare
 to
 apply. < /source>
 < translation > Starte
 Rare
-neu
-um
+neu, um
 die
 Änderungen
 zu
@@ -3131,74 +2550,13 @@ aktivieren. < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "142" / >
-<source>None < /source>
-< translation > Kein < /translation>
+line = "150" / >
+<source>Behavior < /source>
+< translation > Verhalten < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "135" / >
-    <source>Automatically
-sync
-with cloud < /source>
-< translation > Automatisch mit
-der
-Cloud
-synchronisieren < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/settings/rare.py"
-line = "133" / >
-    <source>Update
-games
-on
-application
-startup < /source>
-< translation > Spiele
-automatisch
-updaten < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/settings/rare.py"
-line = "132" / >
-    <source>Confirm
-game
-launch < /source>
-< translation > Spielstart
-bestätigen < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/settings/rare.py"
-line = "137" / >
-    <source>Exit
-to
-System
-tray < /source>
-< translation > In
-das
-System
-Tray
-minimieren < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/settings/rare.py"
-line = "136" / >
-    <source>Show
-notification
-on
-download
-completion < /source>
-< translation > Zeige
-Benachrichtigung
-wenn
-der
-Download
-abgeschlossen
-ist < /translation>
-< /message>
-< message >
-<location filename = "../ui/components/tabs/settings/rare.py"
-line = "134" / >
+line = "151" / >
     <source>Restore
 window
 size
@@ -3207,138 +2565,118 @@ application
 startup < /source>
 < translation > Fenstergröße
 nach
-neustart
+dem
+Neustart
 beibehalten < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "149" / >
-<source>Logs < /source>
-< translation > Logs < /translation>
+line = "152" / >
+    <source>Show
+notification
+on
+download
+completion < /source>
+< translation > Zeige
+Benachrichtigung
+bei
+Abschluss
+des
+Downloads < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "150" / >
-    <source>Open
-Log
-directory < /source>
-< translation > Logordner
-öffnen < /translation>
+line = "153" / >
+    <source>Automatically
+sync
+with cloud < /source>
+< translation > Automatisch mit
+der
+Cloud
+Synchronisieren < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "151" / >
-    <source>Clean
-Log
-directory < /source>
-< translation > Logs
-löschen < /translation>
+line = "154" / >
+    <source>Update
+games
+on
+application
+startup < /source>
+< translation > Automatisch
+Spiele
+Aktualisieren < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "131" / >
-<source>Behavior < /source>
-< translation > Optionen < /translation>
+line = "155" / >
+    <source>Exit
+to
+System
+tray < /source>
+< translation > In
+das
+System
+Tray
+Icon
+minimieren < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "138" / >
+line = "156" / >
     <source>Show
 console
 for game debug < /source>
 < translation > Zeige
-eine
 Konsole
 zum
 Debuggen < /translation>
 < /message>
 < message >
 <location filename = "../ui/components/tabs/settings/rare.py"
-line = "146" / >
-<source>Shortcuts < /source>
-< translation > Verknüpfungen < /translation>
+line = "157" / >
+    <source>Confirm
+game
+launch < /source>
+< translation > Spielstart
+bestätigen < /translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/settings/rare.py"
-line = "147" / >
-    <source>Create
-Desktop
+<location filename = "../components/tabs/settings/rare.py"
+line = "98" / >
+    <source>Remove
+desktop
 link < /source>
 < translation > Desktopverknüpfung
-erstellen < /translation>
+löschen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/settings/rare.py"
+line = "126" / >
+    <source>Remove
+start
+menu
+link < /source>
+< translation > Startmenüvernküfpung
+löschen < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/settings/rare.py"
 line = "134" / >
-    <source>Create
-start
-menu
-link < /source>
-< translation > Startmenüverknüpfung
-erstellen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/settings/rare.py"
-line = "103" / >
-    <source>Remove
-desktop
-link < /source>
-< translation > Desktopverknüpfung
-löschen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/settings/rare.py"
-line = "131" / >
-    <source>Remove
-start
-menu
-link < /source>
-< translation > Startmenüverknüpfung
-löschen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/settings/rare.py"
-line = "139" / >
     <source>Remove
 Desktop
 link < /source>
-< translation > Desktop
-Verknüpfung
+< translation > Desktopverknüpfung
 löschen < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/settings/rare.py"
-line = "142" / >
+line = "137" / >
     <source>Create
 desktop
 link < /source>
 < translation > Desktopverknüpfung
 erstellen < /translation>
-< /message>
-< /context>
-< context >
-<name>SteamThread < /name>
-< message >
-<location filename = "../components/dialogs/launch_dialog.py"
-line = "41" / >
-    <source>Getting
-data
-from
-ProtonDB < /source>
-< translation
-type = "obsolete" > Daten
-aus
-ProtonDB
-holen < /translation>
-< /message>
-< message >
-<location filename = "../components/dialogs/launch_dialog.py"
-line = "45" / >
-    <source>Checking
-Games
-for data < /source>
-    < translation type = "obsolete" > Daten
-überprüfen < /translation>
 < /message>
 < /context>
 < context >
@@ -3387,35 +2725,49 @@ finden < /translation>
 line = "63" / >
     <source>Cloud
 Saves < /source>
-< translation > Cloud
+< translation > Cloudspeicherstände < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/__init__.py"
+line = "53" / >
+    <source>Found
+Saves
+for folowing Games < /source>
+< translation > Hat
+Spiele
+für
+folgende
+Spiele
+gefunden < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/__init__.py"
+line = "63" / >
+    <source>Your
+games
+does
+not
+support
+Cloud
+Saves < /source>
+< translation > Die
+Spiele
+unterstützen
+keine
+Online
 Speicherstände < /translation>
 < /message>
 < message >
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="53"/>
-        <source>Found Saves for folowing Games</source>
-        <translation>Spielstände für folgende Spiele gefunden</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="63"/>
-        <source>Your games does not support Cloud Saves</source>
-        <translation>Deine Spiele unterstützen keine Online Speicherstände</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="68"/>
-        <source>Sync all games</source>
-        <translation>Alle Spiele synchronisieren</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="141"/>
-        <source>Found no savepath</source>
-        <translation>Kein Speicherort gefunden</translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="141"/>
-        <source>No save path was found. Please select path or skip</source>
-        <translation>Kein Speicherort wurde gefunden. Wähle einen Ordner oder überspringe</translation>
-    </message>
-    <message>
+<location filename = "../components/tabs/cloud_saves/__init__.py"
+line = "68" / >
+    <source>Sync
+all
+games < /source>
+< translation > Alle
+Spiele
+Synchronisieren < /translation>
+< /message>
+< message >
 <location filename = "../components/tabs/cloud_saves/__init__.py"
 line = "124" / >
     <source>You
@@ -3443,212 +2795,68 @@ or
 make
 a
 backup < /source>
-< translation > Das
+< translation > Du
+hast
+ein
 Spiel
-wurde
 beendet, aber
 der
-Onlinespeicherstand
+Speicherstand
+online
 ist
-aktueller.Willst
+neuer.Willst
 du
-den
-wirklich
-runterladen ? Dies könnte
+es
+trotzdem
+herunterladen.Dies
+könnte
 deinen
-Spielfortschritt
-zurücksetzen.Prüfe
-bitte
+Spielstand
+löschen.Bitte
+überprüfe
 den
-Speicherpfad
+Pfad
 oder
 mache
 ein
 Backup < /translation>
 < /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/__init__.py"
+line = "141" / >
+    <source>Found
+no
+savepath < /source>
+< translation > Konnte
+keinen
+Pfad
+finden < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/__init__.py"
+line = "141" / >
+    <source>No
+save
+path
+was
+found.Please
+select
+path
+or
+skip < /source>
+< translation > Kein
+Speicherpfad
+wurde
+gefunden.Bitte
+wähle
+einen
+Pfad
+oder
+überspringe < /translation>
+< /message>
 < /context>
 < context >
 <name>SyncWidget < /name>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "76" / >
-    <source>Path
-not
-found < /source>
-< translation
-type = "obsolete" > Ordner
-nicht
-gefunden < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "102" / >
-    <source>Local
-Save
-date: </source>
-< translation > Lokales
-Speicherdatum: </translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "105" / >
-    <source>No
-Local
-Save
-files < /source>
-< translation > Keine
-Lokalen
-Dateien < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "107" / >
-    <source>Cloud
-save
-date: </source>
-< translation > Online
-Speicherdatum: </translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "109" / >
-    <source>No
-Cloud
-saves < /source>
-< translation > Keine
-Online
-Speicherstände < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "113" / >
-    <source>Game
-is
-up
-to
-date < /source>
-< translation > Spiel
-ist
-aktuell < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "114" / >
-    <source>Upload
-anyway < /source>
-< translation > Trotzdem
-hochladen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "115" / >
-    <source>Download
-anyway < /source>
-< translation > Trotzdem
-herunterladen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "117" / >
-    <source>Cloud
-save
-is
-newer < /source>
-< translation > Online
-Speicherstand
-ist
-aktueller < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "118" / >
-    <source>Download
-Cloud
-saves < /source>
-< translation > Online
-Speicherstand
-herunterladen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "120" / >
-    <source>Upload
-Saves < /source>
-< translation > Spielstände
-hochladen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "131" / >
-    <source>Local
-save
-is
-newer < /source>
-< translation > Lokaler
-Speicher
-ist
-aktueller < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "132" / >
-    <source>Upload
-saves < /source>
-< translation > Spielstände
-hochladen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "134" / >
-    <source>Download
-saves < /source>
-< translation > Spielstand
-herunterladen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "162" / >
-    <source>Change
-path < /source>
-< translation > Pfad
-ändern < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "192" / >
-    <source>Uploading
-...
-</source>
-< translation > Hochladen
-...
-</translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "201" / >
-    <source>Upload
-finished < /source>
-< translation > Hochladen
-abgeschlossen < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "214" / >
-    <source>Downloading
-...
-</source>
-< translation > Runterladen
-...
-</translation>
-< /message>
-< message >
-<location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "221" / >
-    <source>Download
-finished < /source>
-< translation > Download
-abgeschlossen < /translation>
-< /message>
 < message >
 <location filename = "../components/tabs/cloud_saves/sync_widget.py"
 line = "89" / >
@@ -3664,21 +2872,190 @@ manually in Cload
 saves
 tab < /source>
 < translation > Bitte
-dem
-Pfad
+ändere
+den
+Speicherpfad
 von
 {
 }
 manuell
-bearbeiten < /translation>
+im
+Cloudspeicher
+Tab < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/cloud_saves/sync_widget.py"
-line = "204" / >
+line = "104" / >
+    <source>Local
+Save
+date: </source>
+< translation > Lokales
+Speicherdatum: </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "107" / >
+    <source>No
+Local
+Save
+files < /source>
+< translation > Keine
+Lokalen
+Speicherdateien < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "109" / >
+    <source>Cloud
+save
+date: </source>
+< translation > Onlinespeicher
+Datum: </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "111" / >
+    <source>No
+Cloud
+saves < /source>
+< translation > Keine
+Onlinespeicherstände < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "115" / >
+    <source>Game
+is
+up
+to
+date < /source>
+< translation > Speicherstand
+ist
+aktuell < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "116" / >
+    <source>Upload
+anyway < /source>
+< translation > Trotzdem
+hochladen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "117" / >
+    <source>Download
+anyway < /source>
+< translation > Trotzdem
+herunterladen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "119" / >
+    <source>Cloud
+save
+is
+newer < /source>
+< translation > Onlinespeicherstand
+ist
+aktueller < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "120" / >
+    <source>Download
+Cloud
+saves < /source>
+< translation > Onlinespeicherstand
+herunterladen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "122" / >
+    <source>Upload
+Saves < /source>
+< translation > Spielstände
+hochladen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "133" / >
+    <source>Local
+save
+is
+newer < /source>
+< translation > Lokaler
+Spielstand
+ist
+aktueller < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "134" / >
+    <source>Upload
+saves < /source>
+< translation > Speicherstände
+hochladen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "136" / >
+    <source>Download
+saves < /source>
+< translation > Spielstände
+herunterladen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "164" / >
+    <source>Change
+path < /source>
+< translation > Pfad
+ändern < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "194" / >
+    <source>Uploading
+...
+</source>
+< translation > Hochladen
+...
+</translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "203" / >
+    <source>Upload
+finished < /source>
+< translation > Hochladen
+abgeschlossen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "206" / >
     <source>Upload
 failed < /source>
 < translation > Hochladen
 fehlgeschlagen < /translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "216" / >
+    <source>Downloading
+...
+</source>
+< translation > Herunterladen
+...
+</translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "223" / >
+    <source>Download
+finished < /source>
+< translation > Download
+abgeschlossen < /translation>
 < /message>
 < /context>
 < context >
@@ -3696,7 +3073,7 @@ line = "32" / >
 <location filename = "../components/tray_icon.py"
 line = "21" / >
 <source>Exit < /source>
-< translation > Schließen < /translation>
+< translation > Beenden < /translation>
 < /message>
 < /context>
 < context >
@@ -3713,9 +3090,8 @@ uninstall
 {
 }
 </source>
-< translation > Möchtest
+< translation > Möchstest
 du
-wirklich
 {
 }
 deinstallieren < /translation>
@@ -3737,7 +3113,7 @@ want
 to
 keep
 files ? </source>
-    < translation > Willst du
+    < translation > Möchtest du
 die
 Dateien
 behalten ? </translation>
@@ -3751,75 +3127,14 @@ behalten ? </translation>
 <location filename = "../components/dialogs/uninstall_dialog.py"
 line = "27" / >
 <source>Cancel < /source>
-< translation > Abbruch < /translation>
+< translation > Schließen < /translation>
 < /message>
 < /context>
 < context >
 <name>UninstalledInfo < /name>
 < message >
 <location filename = "../components/tabs/games/game_info/uninstalled_info.py"
-line = "65" / >
-    <source>Platinum < /source>
-    < translation
-type = "obsolete" > Platin < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
-line = "66" / >
-    <source>Gold < /source>
-    < translation
-type = "obsolete" > Gold < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
-line = "67" / >
-    <source>Silver < /source>
-    < translation
-type = "obsolete" > Silber < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
-line = "68" / >
-    <source>Bronze < /source>
-    < translation
-type = "obsolete" > Bronze < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
-line = "69" / >
-    <source>Could
-not
-get
-grade
-from
-ProtonDB < /source>
-< translation
-type = "obsolete" > Konnte
-nicht
-die
-Wertung
-finden < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
-line = "93" / >
-    <source>Install < /source>
-    < translation
-type = "obsolete" > Installieren < /translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
-line = "137" / >
-    <source>Rating
-from
-ProtonDB: </source>
-< translation
-type = "obsolete" > ProtonDB
-Wertung: </translation>
-< /message>
-< message >
-<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
-line = "98" / >
+line = "113" / >
 <source>Loading < /source>
 < translation > Laden < /translation>
 < /message>
@@ -3850,15 +3165,15 @@ line = "40" / >
 <name>UpdateWidget < /name>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "220" / >
+line = "221" / >
     <source>Update
 Game < /source>
 < translation > Spiel
-updaten < /translation>
+aktualisieren < /translation>
 < /message>
 < message >
 <location filename = "../components/tabs/downloads/__init__.py"
-line = "226" / >
+line = "227" / >
     <source>Version
 :
 </source>
@@ -3871,7 +3186,7 @@ line = "226" / >
 <name>VerifyThread < /name>
 < message >
 <location filename = "../utils/legendary_utils.py"
-line = "140" / >
+line = "147" / >
     <source>Path
 does
 not
@@ -3882,7 +3197,7 @@ nicht < /translation>
 < /message>
 < message >
 <location filename = "../utils/legendary_utils.py"
-line = "143" / >
+line = "150" / >
     <source>No
 files
 to
@@ -3902,99 +3217,174 @@ line = "129" / >
 < translation > </translation>
 < /message>
 < message >
-        <location filename="../ui/components/tabs/settings/legendary.py" line="130"/>
-        <source>Cleanup</source>
-        <translation>Aufräumen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="131"/>
-        <source>Clean, but keep manifests</source>
-        <translation>Aufräumen, aber Manifests behalten</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="132"/>
-        <source>Remove everything</source>
-        <translation>Alles aufräumen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="133"/>
-        <source>EGL Sync</source>
-        <translation>EGL Sync</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="135"/>
-        <source>Download Settings</source>
-        <translation>Download Einstellungen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="136"/>
-        <source>Max Workers</source>
-        <translation>Maximale Anzahl Prozesse</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="137"/>
-        <source>Less is slower (0: Default)</source>
-        <translation>Kleiner ist langsamer (0: Standard)</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="138"/>
-        <source>Default Installation Directory</source>
-        <translation>Standardordner für Installationen</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="139"/>
-        <source>Back</source>
-        <translation>Zurück</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="140"/>
-        <source>&lt;h2&gt;Sync Games with Epic Games Store&lt;/h2&gt;</source>
-        <translation>&lt;h2&gt;Spiele mit Epic Games Store synchronisieren&lt;/h2&gt;</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="141"/>
-        <source>TextLabel</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="142"/>
-        <source>Exportable Games</source>
-        <translation>Spiele zum Exportieren</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="145"/>
-        <source>Import all Games</source>
-        <translation>Alle Spiele importieren</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="144"/>
-        <source>Export all Games</source>
-        <translation>Alle Spiele Exportieren</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="134"/>
-        <source>Sync Settings</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="143"/>
-        <source>Importable</source>
-        <translation>Spiele zum Importieren</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="146"/>
-        <source>Enable Sync</source>
-        <translation>Synchronisierung aktivieren</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="147"/>
-        <source>Sync once</source>
-        <translation>Nur einmal synchronisieren</translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="148"/>
-        <source>Enable automatic sync</source>
-        <translation>Automatsche ynchronisierung aktivieren</translation>
-    </message>
-</context>
-</TS>
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "130" / >
+<source>Cleanup < /source>
+< translation > Aufräumen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "131" / >
+    <source>Clean, but
+keep
+manifests < /source>
+< translation > Aufräumen, aber
+Manifests
+behalten < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "132" / >
+    <source>Remove
+everything < /source>
+< translation > Alles
+löschen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "133" / >
+    <source>EGL
+Sync < /source>
+< translation > EGL
+Sync < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "134" / >
+    <source>Sync
+Settings < /source>
+< translation > Sync
+Einstellungen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "135" / >
+    <source>Download
+Settings < /source>
+< translation > Download
+Einstellungen < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "136" / >
+    <source>Max
+Workers < /source>
+< translation > Maximale
+Prozesse < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "137" / >
+    <source>Less
+is
+slower(0
+:
+Default
+)
+</source>
+< translation > Weiniger
+ist
+langsamer(0
+:
+Standard
+)
+</translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "138" / >
+    <source>Default
+Installation
+Directory < /source>
+< translation > Standard
+Installationsordner < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "139" / >
+<source>Back < /source>
+< translation > Zurück < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "140" / >
+    <source>&lt;h2&gt;Sync
+Games
+with Epic Games
+Store &lt; /h2&gt;</s
+ource >
+<translation>&lt;h2&gt;Spiele
+mit
+dem
+EGL
+synchronisieren &lt; /h2&gt;</
+translation >
+</message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "141" / >
+<source>TextLabel < /source>
+< translation > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "142" / >
+    <source>Exportable
+Games < /source>
+< translation > Exportierbare
+Spiele < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "143" / >
+<source>Importable < /source>
+< translation > importierbar < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "144" / >
+    <source>Export
+all
+Games < /source>
+< translation > Alle
+Spiele
+exportieren < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "145" / >
+    <source>Import
+all
+Games < /source>
+< translation > alle
+Spiele
+importieren < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "146" / >
+    <source>Enable
+Sync < /source>
+< translation > Synchronisierung
+aktivieren < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "147" / >
+    <source>Sync
+once < /source>
+< translation > Einmal
+Synchronisierung < /translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "148" / >
+    <source>Enable
+automatic
+sync < /source>
+< translation > Automatische
+Synchronisierung
+aktivieren < /translation>
+< /message>
+< /context>
+< /TS>

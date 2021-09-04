@@ -88,6 +88,8 @@ class FlowLayout(QLayout):
         lineheight = 0
         for item in self._items:
             widget = item.widget()
+            if not widget.isVisible():
+                continue
             hspace = self.horizontalSpacing()
             if hspace == -1:
                 hspace = widget.style().layoutSpacing(
@@ -229,9 +231,9 @@ class SelectViewWidget(QWidget):
         self.list_view = QPushButton()
         if icon_view:
             self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="orange"))
-            self.list_view.setIcon(icon("fa5s.list", color="white"))
+            self.list_view.setIcon(icon("fa5s.list"))
         else:
-            self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="white"))
+            self.icon_view_button.setIcon(icon("mdi.view-grid-outline"))
             self.list_view.setIcon(icon("fa5s.list", color="orange"))
 
         self.icon_view_button.clicked.connect(self.icon)
@@ -248,12 +250,12 @@ class SelectViewWidget(QWidget):
 
     def icon(self):
         self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="orange"))
-        self.list_view.setIcon(icon("fa5s.list", color="white"))
+        self.list_view.setIcon(icon("fa5s.list"))
         self.icon_view = False
         self.toggled.emit()
 
     def list(self):
-        self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="white"))
+        self.icon_view_button.setIcon(icon("mdi.view-grid-outline"))
         self.list_view.setIcon(icon("fa5s.list", color="orange"))
         self.icon_view = True
         self.toggled.emit()

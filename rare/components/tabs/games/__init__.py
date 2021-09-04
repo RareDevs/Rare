@@ -95,12 +95,13 @@ class GameListHeadBar(QWidget):
         self.filter.addItems([self.tr("All"),
                               self.tr("Installed only"),
                               self.tr("Offline Games"),
-                              self.tr("32 Bit Games")])
+                              self.tr("32 Bit Games"),
+                              self.tr("Installable Games")])
         self.filter.currentIndexChanged.connect(self.filter_changed)
         self.layout.addWidget(self.filter)
         self.layout.addStretch(1)
 
-        self.import_game = QPushButton(icon("mdi.import", color="white"), self.tr("Import Game"))
+        self.import_game = QPushButton(icon("mdi.import"), self.tr("Import Game"))
         self.layout.addWidget(self.import_game)
 
         self.layout.addStretch(1)
@@ -109,24 +110,23 @@ class GameListHeadBar(QWidget):
         self.search_bar.setObjectName("search_bar")
         self.search_bar.setFrame(False)
         icon_label = QLabel()
-        icon_label.setPixmap(icon("fa.search", color="white").pixmap(QSize(20, 20)))
+        icon_label.setPixmap(icon("fa.search").pixmap(QSize(20, 20)))
         self.layout.addWidget(icon_label)
         self.search_bar.setMinimumWidth(200)
         self.search_bar.setPlaceholderText(self.tr("Search Game"))
         self.layout.addWidget(self.search_bar)
 
         self.layout.addStretch(2)
-
         checked = QSettings().value("icon_view", True, bool)
 
         self.view = SelectViewWidget(checked)
         self.layout.addWidget(self.view)
         self.layout.addStretch(1)
         self.refresh_list = QPushButton()
-        self.refresh_list.setIcon(icon("fa.refresh", color="white"))  # Reload icon
+        self.refresh_list.setIcon(icon("fa.refresh"))  # Reload icon
         self.layout.addWidget(self.refresh_list)
 
         self.setLayout(self.layout)
 
     def filter_changed(self, i):
-        self.filter_changed_signal.emit(["", "installed", "offline", "32bit"][i])
+        self.filter_changed_signal.emit(["", "installed", "offline", "32bit", "installable"][i])

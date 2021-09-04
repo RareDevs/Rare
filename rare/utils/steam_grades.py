@@ -46,7 +46,9 @@ def get_rating(app_name: str, core: LegendaryCore):
         grades = {}
 
     if not grades.get(app_name):
-        steam_id = get_steam_id(core.get_game(app_name).app_title)
+        game = core.get_game(app_name)
+
+        steam_id = get_steam_id(game.app_title)
         grade = get_grade(steam_id)
         grades[app_name] = {
             "steam_id": steam_id,
@@ -116,7 +118,6 @@ def get_steam_id(title: str):
         return ids[steam_name[0]]
     else:
         return 0
-
 
 
 def check_time():  # this function check if it's time to update

@@ -23,7 +23,7 @@ class ImportWidget(QWidget):
         self.game_list = [i.app_name for i in self.core.get_game_list()]
 
         self.main_layout = QHBoxLayout()
-        self.back_button = QPushButton(icon("mdi.keyboard-backspace", color="white"), self.tr("Back"))
+        self.back_button = QPushButton(icon("mdi.keyboard-backspace"), self.tr("Back"))
         self.right_layout = QVBoxLayout()
         self.right_layout.addWidget(self.back_button)
         self.right_layout.addStretch(1)
