@@ -8,6 +8,7 @@ from rare.utils import singleton, utils
 
 
 def main():
+
     parser = ArgumentParser()
     parser.add_argument("-V", "--version", action="store_true", help="Shows version and exits")
     parser.add_argument("-S", "--silent", action="store_true",
@@ -53,12 +54,14 @@ def main():
         args.silent = True
 
     # fix error in cx_freeze
-    import multiprocessing
-    multiprocessing.freeze_support()
 
     from rare.app import start
     start(args)
 
 
 if __name__ == '__main__':
+    import multiprocessing
+
+    multiprocessing.freeze_support()
+
     main()

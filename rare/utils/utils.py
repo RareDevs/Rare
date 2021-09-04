@@ -347,8 +347,12 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
         # Add shortcut
         shell = Dispatch('WScript.Shell')
         shortcut = shell.CreateShortCut(pathLink)
-        shortcut.Targetpath = sys.executable
-        shortcut.Arguments = f'{target} launch {app_name}'
+        if sys.executable.endswith("Rare.exe"):
+            executable = sys.executable
+        else:
+            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
+        shortcut.Targetpath = executable
+        shortcut.Arguments = f'launch {app_name}'
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
