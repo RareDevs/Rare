@@ -264,14 +264,18 @@ def create_rare_desktop_link(type_of_link):
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)
 
-        exexutable = sys.executable
-        if "python.exe" in exexutable:
-            exexutable = exexutable.replace("python.exe", "pythonw.exe")
+        if sys.executable.endswith("Rare.exe"):
+            executable = sys.executable
+        else:
+            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
+
+        if "python.exe" in executable:
+            executable = executable.replace("python.exe", "pythonw.exe")
 
         # Add shortcut
         shell = Dispatch('WScript.Shell')
         shortcut = shell.CreateShortCut(pathLink)
-        shortcut.Targetpath = exexutable
+        shortcut.Targetpath = executable
         shortcut.Arguments = os.path.abspath(sys.argv[0])
         shortcut.WorkingDirectory = os.getcwd()
 
@@ -284,14 +288,13 @@ def create_rare_desktop_link(type_of_link):
 def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -> bool:
     igame = core.get_installed_game(app_name)
 
-    if os.path.exists(
-            os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
-                         igame.app_name, 'Thumbnail.png')):
-        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
-                            igame.app_name, 'Thumbnail')
+    if os.path.exists(p := os.path.join(image_dir, igame.app_name, 'Thumbnail.png')):
+        icon = p
+    elif os.path.exists(p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")):
+        icon = p
     else:
-        icon = os.path.join(QSettings('Rare', 'Rare').value('img_dir', os.path.expanduser('~/.cache/rare/images'), str),
-                            igame.app_name, 'DieselGameBoxTall')
+        icon = os.path.join(os.path.join(image_dir, igame.app_name, "DieselGameBoxTall.png"))
+    icon = icon.replace(".png", "")
     # Linux
     if platform.system() == "Linux":
         if type_of_link == "desktop":
@@ -331,10 +334,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
         if not os.path.exists(target_folder):
             return False
 
-        target = os.path.abspath(sys.argv[0])
-
         # Name of link file
-
         linkName = igame.title
         for c in r'<>?":|\/*':
             linkName.replace(c, "")
