@@ -2,7 +2,8 @@ import logging
 import webbrowser
 
 from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout
+from qtawesome import icon
 
 from rare.components.tabs.shop.shop_models import ShopGame
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
@@ -124,7 +125,14 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         else:
             self.req_group_box.layout().addWidget(QLabel(self.tr("Could not get requirements")))
 
-        self.image.update_image(self.game.image_urls.front_tall, self.game.title, (240, 320))
+        if self.game.image_urls.front_tall:
+            img = self.game.image_urls.front_tall
+        elif self.game.image_urls.offer_image_tall:
+            img = self.game.image_urls.offer_image_tall
+        else:
+            img = ""
+
+        self.image.update_image(img, self.game.title, (240, 320))
 
         self.image_stack.setCurrentIndex(0)
         try:
@@ -136,6 +144,34 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             pass
         self.tags.setText(", ".join(self.game.tags))
 
+        # clear Layout
+        QWidget().setLayout(self.social_link_gb.layout())
+        self.social_link_gb.setLayout(QHBoxLayout())
+
+        self.social_link_gb.layout().addStretch(1)
+        link_count = 0
+        for name, url in self.game.links:
+
+            if name.lower() == "homepage":
+                icn = icon("mdi.web", scale_factor=1.5)
+            else:
+                try:
+                    icn = icon("mdi." + name.lower(), scale_factor=1.5)
+                except Exception as e:
+                    logger.error(str(e))
+                    continue
+
+            button = SocialButton(icn, url)
+            self.social_link_gb.layout().addWidget(button)
+            link_count += 1
+            self.social_link_gb.layout().addStretch(1)
+
+        if link_count == 0:
+            self.social_link_gb.setVisible(False)
+        else:
+            self.social_link_gb.setVisible(True)
+        self.social_link_gb.layout().addStretch(1)
+
     def add_wishlist_items(self, wishlist):
         wishlist = wishlist["data"]["Wishlist"]["wishlistItems"]["elements"]
         for game in wishlist:
@@ -143,3 +179,11 @@ class ShopGameInfo(QWidget, Ui_shop_info):
 
     def button_clicked(self):
         webbrowser.open("https://www.epicgames.com/store/de/p/" + self.slug)
+
+
+class SocialButton(QPushButton):
+    def __init__(self, icn, url):
+        super(SocialButton, self).__init__(icn, "")
+        self.url = url
+        self.clicked.connect(lambda: webbrowser.open(url))
+        self.setToolTip(url)

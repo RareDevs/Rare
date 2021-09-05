@@ -64,7 +64,10 @@ class ShopGame:
                     api_data = product
                     break
         if "pages" in api_data.keys():
-            api_data = api_data["pages"][0]
+            for page in api_data["pages"]:
+                if page["_slug"] == "home":
+                    api_data = page
+                    break
         tmp = cls()
         tmp.title = search_data.get("title", "Fail")
         tmp.image_urls = ImageUrlModel.from_json(search_data["keyImages"])

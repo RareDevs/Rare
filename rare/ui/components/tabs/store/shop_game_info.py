@@ -23,6 +23,11 @@ class Ui_shop_info(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.image_stack = QtWidgets.QStackedWidget(shop_info)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.image_stack.sizePolicy().hasHeightForWidth())
+        self.image_stack.setSizePolicy(sizePolicy)
         self.image_stack.setObjectName("image_stack")
         self.horizontalLayout.addWidget(self.image_stack)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
@@ -81,6 +86,11 @@ class Ui_shop_info(object):
         self.gridLayout_2 = QtWidgets.QGridLayout(self.req_group_box)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.verticalLayout.addWidget(self.req_group_box)
+        self.social_link_gb = QtWidgets.QGroupBox(shop_info)
+        self.social_link_gb.setObjectName("social_link_gb")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.social_link_gb)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.verticalLayout.addWidget(self.social_link_gb)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem2)
 
@@ -101,6 +111,7 @@ class Ui_shop_info(object):
         self.open_store_button.setText(_translate("shop_info", "Buy Game in Epic Games Store"))
         self.wishlist_button.setText(_translate("shop_info", "Add to wishlist"))
         self.req_group_box.setTitle(_translate("shop_info", "Requirements"))
+        self.social_link_gb.setTitle(_translate("shop_info", "Social Links"))
 
 
 if __name__ == "__main__":
