@@ -26,6 +26,7 @@ logger = getLogger("Utils")
 settings = QSettings("Rare", "Rare")
 
 
+
 def download_images(signal: pyqtSignal, core: LegendaryCore):
     if not os.path.isdir(image_dir):
         os.makedirs(image_dir)
@@ -288,6 +289,7 @@ def create_rare_desktop_link(type_of_link):
 def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -> bool:
     igame = core.get_installed_game(app_name)
 
+
     if os.path.exists(p := os.path.join(image_dir, igame.app_name, 'Thumbnail.png')):
         icon = p
     elif os.path.exists(p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")):
@@ -295,6 +297,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
     else:
         icon = os.path.join(os.path.join(image_dir, igame.app_name, "DieselGameBoxTall.png"))
     icon = icon.replace(".png", "")
+
     # Linux
     if platform.system() == "Linux":
         if type_of_link == "desktop":
@@ -387,6 +390,7 @@ def get_uninstalled_pixmap(app_name: str) -> QPixmap:
     return pixmap
 
 
+
 def optimal_text_background(image: list) -> Tuple[int, int, int]:
     """
     Finds an optimal background color for text on the image by calculating the
@@ -419,3 +423,4 @@ def text_color_for_background(background: Tuple[int, int, int]) -> Tuple[int,
         return 255, 255, 255
     else:
         return 0, 0, 0
+

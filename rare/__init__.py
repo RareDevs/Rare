@@ -12,6 +12,7 @@ elif os.name == "nt":
     cache_dir = os.path.expandvars("%APPDATA%/rare/cache")
 else:
     cache_dir = os.path.expanduser("~/.cache/rare/")
+
 if not os.path.exists(cache_dir):
     os.makedirs(cache_dir)
 
@@ -26,3 +27,4 @@ if not os.path.exists(data_dir):
     os.makedirs(data_dir)
 
 image_dir = os.path.join(data_dir, "images")
+

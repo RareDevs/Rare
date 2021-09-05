@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QScrollArea, QL
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import Game
+from rare import data_dir
 from rare.utils.utils import download_image
 
 
@@ -82,7 +83,7 @@ class DLCWidget(QGroupBox):
         super(DLCWidget, self).__init__()
         self.main_layout = QHBoxLayout()
         self.dlc = dlc
-        IMAGE_DIR = QSettings().value("img_dir", os.path.expanduser("~/.cache/rare/images"))
+        IMAGE_DIR = QSettings().value("img_dir", os.path.join(data_dir, "images"))
         if installed:
 
             if os.path.exists(os.path.join(IMAGE_DIR, dlc.app_name, "FinalArt.png")):

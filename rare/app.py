@@ -10,22 +10,24 @@ from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory
 
 from custom_legendary.core import LegendaryCore
-from rare import languages_path, resources_path
+from rare import languages_path, resources_path, cache_dir
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
 from rare.utils.utils import get_lang, load_color_scheme
 
 start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
-file_name = os.path.expanduser(f"~/.cache/rare/logs/Rare_{start_time}.log")
+file_name = os.path.join(cache_dir, f"logs/Rare_{start_time}.log")
 if not os.path.exists(os.path.dirname(file_name)):
     os.makedirs(os.path.dirname(file_name))
-
-logging.basicConfig(
-    format='[%(name)s] %(levelname)s: %(message)s',
-    level=logging.INFO,
-    filename=file_name,
-)
+if "--debug" in sys.argv:
+    logging.basicConfig(format='[%(name)s] %(levelname)s: %(message)s', level=logging.INFO)
+else:
+    logging.basicConfig(
+        format='[%(name)s] %(levelname)s: %(message)s',
+        level=logging.INFO,
+        filename=file_name,
+    )
 logger = logging.getLogger("Rare")
 
 

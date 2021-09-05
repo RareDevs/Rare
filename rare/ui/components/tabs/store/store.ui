@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ShopWidget</class>
+ <widget class="QWidget" name="ShopWidget">
+     <property name="geometry">
+         <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>850</width>
+             <height>572</height>
+         </rect>
+     </property>
+     <property name="windowTitle">
+         <string>Form</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                     <widget class="QScrollArea" name="scrollArea">
+                         <property name="widgetResizable">
+                             <bool>true</bool>
+                         </property>
+                         <widget class="QWidget" name="scrollAreaWidgetContents">
+                             <property name="geometry">
+                                 <rect>
+                                     <x>0</x>
+                                     <y>0</y>
+                                     <width>828</width>
+                                     <height>550</height>
+                                 </rect>
+                             </property>
+                             <layout class="QHBoxLayout" name="horizontalLayout">
+                                 <item>
+                                     <widget class="QWidget" name="widget" native="true">
+                                         <layout class="QVBoxLayout" name="verticalLayout">
+                                             <item>
+                                                 <widget class="QGroupBox" name="free_game_group_box">
+                                                     <property name="sizePolicy">
+                                                         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                                                             <horstretch>0</horstretch>
+                                                             <verstretch>0</verstretch>
+                                                         </sizepolicy>
+                                                     </property>
+                                                     <property name="title">
+                                                         <string>Free Games</string>
+                                                     </property>
+                                                     <layout class="QVBoxLayout" name="verticalLayout_3">
+                                                         <item>
+                                                             <widget class="QStackedWidget" name="free_stack">
+                                                                 <widget class="QWidget" name="free_widget">
+                                                                     <property name="sizePolicy">
+                                                                         <sizepolicy hsizetype="Preferred"
+                                                                                     vsizetype="Maximum">
+                                                                             <horstretch>0</horstretch>
+                                                                             <verstretch>0</verstretch>
+                                                                         </sizepolicy>
+                                                                     </property>
+                                                                     <layout class="QVBoxLayout"
+                                                                             name="verticalLayout_8"/>
+                                                                 </widget>
+                                                             </widget>
+                                                         </item>
+                                                     </layout>
+                                                 </widget>
+                                             </item>
+                                             <item>
+                                                 <widget class="QGroupBox" name="discounts_gb">
+                                                     <property name="title">
+                                                         <string>Discounts from your wishlist</string>
+                                                     </property>
+                                                     <layout class="QVBoxLayout" name="verticalLayout_6">
+                                                         <item>
+                                                             <widget class="QStackedWidget" name="discount_stack">
+                                                                 <widget class="QWidget" name="discount_widget"/>
+                                                             </widget>
+                                                         </item>
+                                                     </layout>
+                                                 </widget>
+                                             </item>
+                                             <item>
+                                                 <widget class="QGroupBox" name="filter_game_gb">
+                                                     <property name="title">
+                                                         <string>Games</string>
+                                                     </property>
+                                                     <layout class="QVBoxLayout" name="verticalLayout_4">
+                                                         <item>
+                                                             <widget class="QStackedWidget" name="game_stack">
+                                                                 <widget class="QWidget" name="game_widget"/>
+                                                             </widget>
+                                                         </item>
+                                                     </layout>
+                                                 </widget>
+                                             </item>
+                                         </layout>
+                                     </widget>
+                                 </item>
+                                 <item>
+                                     <widget class="QGroupBox" name="filter_gb">
+                                         <property name="sizePolicy">
+                                             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                                 <horstretch>0</horstretch>
+                                                 <verstretch>0</verstretch>
+                                             </sizepolicy>
+                                         </property>
+                                         <property name="minimumSize">
+                                             <size>
+                                                 <width>150</width>
+                                                 <height>0</height>
+                                             </size>
+                                         </property>
+                                         <property name="maximumSize">
+                                             <size>
+                                                 <width>16777215</width>
+                                                 <height>16777215</height>
+                                             </size>
+                                         </property>
+                                         <property name="title">
+                                             <string>Filter</string>
+                                         </property>
+                                         <layout class="QVBoxLayout" name="verticalLayout_2">
+                                             <item>
+                                                 <widget class="QPushButton" name="reset_button">
+                                                     <property name="text">
+                                                         <string>Reset</string>
+                                                     </property>
+                                                 </widget>
+                                             </item>
+                                             <item>
+                                                 <widget class="QGroupBox" name="price_gb">
+                                                     <property name="title">
+                                                         <string>Price</string>
+                                                     </property>
+                                                     <layout class="QVBoxLayout" name="verticalLayout_9">
+                                                         <item>
+                                                             <widget class="QRadioButton" name="none_price">
+                                                                 <property name="text">
+                                                                     <string>None</string>
+                                                                 </property>
+                                                                 <property name="checked">
+                                                                     <bool>true</bool>
+                                                                 </property>
+                                                             </widget>
+                                                         </item>
+                                                         <item>
+                                                             <widget class="QRadioButton" name="free_button">
+                                                                 <property name="text">
+                                                                     <string>Free</string>
+                                                                 </property>
+                                                             </widget>
+                                                         </item>
+                                                         <item>
+                                                             <widget class="QRadioButton" name="under10">
+                                                                 <property name="text">
+                                                                     <string>Under 10</string>
+                                                                 </property>
+                                                             </widget>
+                                                         </item>
+                                                         <item>
+                                                             <widget class="QRadioButton" name="under20">
+                                                                 <property name="text">
+                                                                     <string>Under 20</string>
+                                                                 </property>
+                                                             </widget>
+                                                         </item>
+                                                         <item>
+                                                             <widget class="QRadioButton" name="under30">
+                                                                 <property name="text">
+                                                                     <string>Under 30</string>
+                                                                 </property>
+                                                             </widget>
+                                                         </item>
+                                                         <item>
+                                                             <widget class="QRadioButton" name="above">
+                                                                 <property name="text">
+                                                                     <string>14.99 and above</string>
+                                                                 </property>
+                                                             </widget>
+                                                         </item>
+                                                         <item>
+                                                             <widget class="QCheckBox" name="on_discount">
+                                                                 <property name="text">
+                                                                     <string>Discount</string>
+                                                                 </property>
+                                                             </widget>
+                                                         </item>
+                                                     </layout>
+                                                 </widget>
+                                             </item>
+                                             <item>
+                                                 <widget class="QGroupBox" name="platform_gb">
+                                                     <property name="title">
+                                                         <string>Platform</string>
+                                                     </property>
+                                                     <layout class="QVBoxLayout" name="verticalLayout_13"/>
+                                                 </widget>
+                                             </item>
+                                             <item>
+                                                 <widget class="QGroupBox" name="genre_gb">
+                                                     <property name="title">
+                                                         <string>Genre</string>
+                                                     </property>
+                                                     <layout class="QVBoxLayout" name="verticalLayout_12"/>
+                                                 </widget>
+                                             </item>
+                                             <item>
+                                                 <widget class="QGroupBox" name="type_gb">
+                                                     <property name="title">
+                                                         <string>Type</string>
+                                                     </property>
+                                                     <layout class="QVBoxLayout" name="verticalLayout_11"/>
+                                                 </widget>
+                                             </item>
+                                             <item>
+                                                 <widget class="QGroupBox" name="others_gb">
+                                                     <property name="title">
+                                                         <string>Other Tags</string>
+                                                     </property>
+                                                     <layout class="QVBoxLayout" name="verticalLayout_10"/>
+                                                 </widget>
+                                             </item>
+                                             <item>
+                                                 <spacer name="verticalSpacer">
+                                                     <property name="orientation">
+                                                         <enum>Qt::Vertical</enum>
+                                                     </property>
+                                                     <property name="sizeHint" stdset="0">
+                                                         <size>
+                                                             <width>20</width>
+                                                             <height>40</height>
+                                                         </size>
+                                                     </property>
+                                                 </spacer>
+                                             </item>
+                                         </layout>
+                                     </widget>
+                                 </item>
+                             </layout>
+                         </widget>
+                     </widget>
+                 </item>
+             </layout>
+         </item>
+     </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

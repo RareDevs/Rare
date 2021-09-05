@@ -1,3 +1,4 @@
+import json
 import os
 import platform
 
@@ -8,6 +9,7 @@ from qtawesome import icon
 
 from custom_legendary.core import LegendaryCore
 from custom_legendary.models.game import Game, InstalledGame
+from rare import data_dir
 from rare.components.tabs.games.game_info.dlcs import DlcTab
 from rare.components.tabs.games.game_info.game_settings import GameSettings
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
@@ -70,6 +72,18 @@ class GameInfo(QWidget, Ui_GameInfo):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = core
+
+
+        self.ratings = {"platinum": self.tr("Platinum"),
+                        "gold": self.tr("Gold"),
+                        "silver": self.tr("Silver"),
+                        "bronze": self.tr("Bronze"),
+                        "fail": self.tr("Could not get grade"),
+                        "pending": self.tr("Not enough reports")}
+        if os.path.exists(p := os.path.join(data_dir, "game_list.json")):
+            self.grade_table = json.load(open(p))
+        else:
+            self.grade_table = {}
 
         if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)

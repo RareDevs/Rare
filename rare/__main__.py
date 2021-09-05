@@ -3,16 +3,19 @@
 import os
 from argparse import ArgumentParser
 
-from rare import __version__
+from rare import __version__, data_dir
 from rare.utils import singleton, utils
 
 
 def main():
 
+    # CLI Options
+
     parser = ArgumentParser()
     parser.add_argument("-V", "--version", action="store_true", help="Shows version and exits")
     parser.add_argument("-S", "--silent", action="store_true",
                         help="Launch Rare in background. Open it from System Tray Icon")
+    parser.add_argument("--debug", action="store_true", help="Launch in debug mode")
     parser.add_argument("--offline", action="store_true", help="Launch Rare in offline mode")
 
     parser.add_argument("--desktop-shortcut", action="store_true", dest="desktop_shortcut",
@@ -37,12 +40,12 @@ def main():
         print(__version__)
         return
     try:
-        # this object only allows one instance pre machine
+        # this object only allows one instance per machine
         me = singleton.SingleInstance()
     except singleton.SingleInstanceException:
         print("Rare is already running")
 
-        with open(os.path.expanduser("~/.cache/rare/lockfile"), "w") as file:
+        with open(os.path.join(data_dir, "lockfile"), "w") as file:
             if args.subparser == "launch":
                 file.write("launch " + args.app_name)
             else:
@@ -52,6 +55,7 @@ def main():
 
     if args.subparser == "launch":
         args.silent = True
+
 
     # fix error in cx_freeze
 

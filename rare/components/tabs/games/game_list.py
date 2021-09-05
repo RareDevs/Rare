@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QSettings, QTimer
 from PyQt5.QtWidgets import QScrollArea, QWidget, QLabel, QVBoxLayout, QStackedWidget
 
 from custom_legendary.core import LegendaryCore
+from rare import data_dir
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 from rare.components.tabs.games.game_widgets.installed_icon_widget import GameWidgetInstalled
 from rare.components.tabs.games.game_widgets.installed_list_widget import InstalledListWidget

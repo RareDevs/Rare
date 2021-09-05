@@ -1,13 +1,20 @@
+import io
 import os
+from logging import getLogger
 
-from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal
-from PyQt5.QtGui import QMovie
+import PIL
+from PIL import Image
+from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QSettings
+from PyQt5.QtGui import QMovie, QPixmap
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
-    QStyleOptionTab, QStylePainter, QTabBar
+    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton
 from qtawesome import icon
 
-from rare import resources_path
+from rare import resources_path, cache_dir
 from rare.ui.utils.pathedit import Ui_PathEdit
+from rare.utils.qt_requests import QtRequestManager
+
+logger = getLogger("ExtraWidgets")
 
 
 class FlowLayout(QLayout):
@@ -252,3 +259,82 @@ class SelectViewWidget(QWidget):
         self.list_view.setIcon(icon("fa5s.list", color="orange"))
         self.icon_view = True
         self.toggled.emit()
+
+
+class ImageLabel(QLabel):
+
+    def __init__(self):
+        super(ImageLabel, self).__init__()
+        self.path = cache_dir
+        self.manager = QtRequestManager("bytes")
+
+    def update_image(self, url, name, size: tuple = (240, 320)):
+        self.setFixedSize(*size)
+        self.img_size = size
+        self.name = name
+        for c in r'<>?":|\/* ':
+            self.name = self.name.replace(c, "")
+        if self.img_size[0] > self.img_size[1]:
+            name_extension = "wide"
+        else:
+            name_extension = "tall"
+        self.name = f"{self.name}_{name_extension}.png"
+        if not os.path.exists(os.path.join(self.path, self.name)):
+            self.manager.get(url, self.image_ready)
+            # self.request.finished.connect(self.image_ready)
+        else:
+            self.show_image()
+
+    def image_ready(self, data):
+        try:
+            self.setPixmap(QPixmap())
+        except RuntimeError:
+            return
+        try:
+            image: Image.Image = Image.open(io.BytesIO(data))
+        except PIL.UnidentifiedImageError:
+            print(self.name)
+            return
+        image = image.resize((self.img_size[0], self.img_size[1]))
+
+        if QSettings().value("cache_images", False, bool):
+            image.save(os.path.join(self.path, self.name), format="png")
+        byte_array = io.BytesIO()
+        image.save(byte_array, format="PNG")
+        # pixmap = QPixmap.fromImage(ImageQt(image))
+        pixmap = QPixmap()
+        pixmap.loadFromData(byte_array.getvalue())
+        # pixmap = QPixmap.fromImage(ImageQt.ImageQt(image))
+        self.setPixmap(pixmap)
+
+    def show_image(self):
+        self.image = QPixmap(os.path.join(self.path, self.name)).scaled(*self.img_size,
+                                                                        transformMode=Qt.SmoothTransformation)
+        self.setPixmap(self.image)
+
+
+class ButtonLineEdit(QLineEdit):
+    buttonClicked = pyqtSignal()
+
+    def __init__(self, icon_name, placeholder_text: str, parent=None):
+        super(ButtonLineEdit, self).__init__(parent)
+
+        self.button = QToolButton(self)
+        self.button.setIcon(icon(icon_name, color="white"))
+        self.button.setStyleSheet('border: 0px; padding: 0px;')
+        self.button.setCursor(Qt.ArrowCursor)
+        self.button.clicked.connect(self.buttonClicked.emit)
+        self.setPlaceholderText(placeholder_text)
+        frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
+        buttonSize = self.button.sizeHint()
+
+        self.setStyleSheet('QLineEdit {padding-right: %dpx; }' % (buttonSize.width() + frameWidth + 1))
+        self.setMinimumSize(max(self.minimumSizeHint().width(), buttonSize.width() + frameWidth * 2 + 2),
+                            max(self.minimumSizeHint().height(), buttonSize.height() + frameWidth * 2 + 2))
+
+    def resizeEvent(self, event):
+        buttonSize = self.button.sizeHint()
+        frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
+        self.button.move(self.rect().right() - frameWidth - buttonSize.width(),
+                         (self.rect().bottom() - buttonSize.height() + 1) / 2)
+        super(ButtonLineEdit, self).resizeEvent(event)

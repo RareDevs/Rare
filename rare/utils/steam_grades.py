@@ -9,6 +9,8 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from custom_legendary.core import LegendaryCore
 from rare import cache_dir, data_dir
 
+from rare import data_dir, cache_dir
+
 replace_chars = ",;.:-_ "
 
 file = os.path.join(cache_dir, "game_list.json")
@@ -77,6 +79,7 @@ def get_grade(steam_code):
 
 def load_json() -> dict:
     if not os.path.exists(file):
+
         response = requests.get(url)
         steam_ids = json.loads(response.text)["applist"]["apps"]
         ids = {}
@@ -108,6 +111,7 @@ def get_steam_id(title: str):
         ids = json.loads(open(file, "r").read())
     if title in ids.keys():
         steam_name = [title]
+
     else:
         steam_name = difflib.get_close_matches(title, ids.keys(), n=1)
     if steam_name:
