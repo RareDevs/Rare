@@ -14,13 +14,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_RareSettings(object):
     def setupUi(self, RareSettings):
         RareSettings.setObjectName("RareSettings")
-
         RareSettings.resize(694, 532)
         self.gridLayout = QtWidgets.QGridLayout(RareSettings)
         self.gridLayout.setObjectName("gridLayout")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
-
         self.log_dir_group = QtWidgets.QGroupBox(RareSettings)
         self.log_dir_group.setObjectName("log_dir_group")
         self.log_dir_layout = QtWidgets.QVBoxLayout(self.log_dir_group)
@@ -32,17 +30,15 @@ class Ui_RareSettings(object):
         self.log_dir_clean_button.setObjectName("log_dir_clean_button")
         self.log_dir_layout.addWidget(self.log_dir_clean_button)
         self.log_dir_size_label = QtWidgets.QLabel(self.log_dir_group)
-
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.log_dir_size_label.sizePolicy().hasHeightForWidth())
-
+        self.log_dir_size_label.setSizePolicy(sizePolicy)
         self.log_dir_size_label.setText("")
         self.log_dir_size_label.setWordWrap(True)
         self.log_dir_size_label.setObjectName("log_dir_size_label")
         self.log_dir_layout.addWidget(self.log_dir_size_label)
-
         self.verticalLayout_4.addWidget(self.log_dir_group)
         self.rpc_layout = QtWidgets.QVBoxLayout()
         self.rpc_layout.setObjectName("rpc_layout")
@@ -61,7 +57,6 @@ class Ui_RareSettings(object):
         self.gridLayout.addLayout(self.verticalLayout_4, 0, 1, 1, 1)
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-
         self.interface_group = QtWidgets.QGroupBox(RareSettings)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -71,7 +66,6 @@ class Ui_RareSettings(object):
         self.interface_group.setObjectName("interface_group")
         self.interface_layout = QtWidgets.QGridLayout(self.interface_group)
         self.interface_layout.setObjectName("interface_layout")
-
         self.style_label = QtWidgets.QLabel(self.interface_group)
         self.style_label.setObjectName("style_label")
         self.interface_layout.addWidget(self.style_label, 2, 0, 1, 1, QtCore.Qt.AlignRight)
@@ -80,20 +74,20 @@ class Ui_RareSettings(object):
         self.lang_select = QtWidgets.QComboBox(self.interface_group)
         self.lang_select.setObjectName("lang_select")
         self.interface_layout.addWidget(self.lang_select, 0, 1, 1, 1)
-
         self.color_select = QtWidgets.QComboBox(self.interface_group)
         self.color_select.setObjectName("color_select")
         self.color_select.addItem("")
         self.interface_layout.addWidget(self.color_select, 1, 1, 1, 1)
-        self.style_label = QtWidgets.QLabel(self.interface_group)
-        self.style_label.setObjectName("style_label")
-        self.interface_layout.addWidget(self.style_label, 2, 0, 1, 1, QtCore.Qt.AlignRight)
         self.style_select = QtWidgets.QComboBox(self.interface_group)
         self.style_select.setObjectName("style_select")
         self.style_select.addItem("")
         self.interface_layout.addWidget(self.style_select, 2, 1, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.interface_layout.addItem(spacerItem1, 1, 2, 1, 1)
+        self.lang_label = QtWidgets.QLabel(self.interface_group)
+        self.lang_label.setObjectName("lang_label")
+        self.interface_layout.addWidget(self.lang_label, 0, 0, 1, 1, QtCore.Qt.AlignRight)
+        self.color_label = QtWidgets.QLabel(self.interface_group)
+        self.color_label.setObjectName("color_label")
+        self.interface_layout.addWidget(self.color_label, 1, 0, 1, 1, QtCore.Qt.AlignRight)
         self.interface_info = QtWidgets.QLabel(self.interface_group)
         font = QtGui.QFont()
         font.setItalic(True)
@@ -101,7 +95,6 @@ class Ui_RareSettings(object):
         self.interface_info.setWordWrap(True)
         self.interface_info.setObjectName("interface_info")
         self.interface_layout.addWidget(self.interface_info, 3, 0, 1, 3)
-
         self.verticalLayout_3.addWidget(self.interface_group)
         self.settings_group = QtWidgets.QGroupBox(RareSettings)
         self.settings_group.setObjectName("settings_group")
@@ -135,29 +128,24 @@ class Ui_RareSettings(object):
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem2, 1, 0, 1, 2)
 
-
         self.retranslateUi(RareSettings)
         QtCore.QMetaObject.connectSlotsByName(RareSettings)
 
     def retranslateUi(self, RareSettings):
         _translate = QtCore.QCoreApplication.translate
         RareSettings.setWindowTitle(_translate("RareSettings", "RareSettings"))
-
         self.log_dir_group.setTitle(_translate("RareSettings", "Logs"))
         self.log_dir_open_button.setText(_translate("RareSettings", "Open Log directory"))
         self.log_dir_clean_button.setText(_translate("RareSettings", "Clean Log directory"))
         self.groupBox.setTitle(_translate("RareSettings", "Shortcuts"))
         self.desktop_link.setText(_translate("RareSettings", "Create Desktop link"))
         self.startmenu_link.setText(_translate("RareSettings", "Create start menu link"))
-
         self.interface_group.setTitle(_translate("RareSettings", "Interface"))
-        self.color_select.setItemText(0, _translate("RareSettings", "None"))
         self.style_label.setText(_translate("RareSettings", "Style Sheet"))
+        self.color_select.setItemText(0, _translate("RareSettings", "None"))
         self.style_select.setItemText(0, _translate("RareSettings", "None"))
-        self.interface_info.setText(_translate("RareSettings", "Restart Rare to apply."))
         self.lang_label.setText(_translate("RareSettings", "Language"))
         self.color_label.setText(_translate("RareSettings", "Color Scheme"))
-
         self.interface_info.setText(_translate("RareSettings", "Restart Rare to apply."))
         self.settings_group.setTitle(_translate("RareSettings", "Behavior"))
         self.save_size.setText(_translate("RareSettings", "Restore window size on application startup"))
@@ -167,7 +155,6 @@ class Ui_RareSettings(object):
         self.sys_tray.setText(_translate("RareSettings", "Exit to System tray"))
         self.log_games.setText(_translate("RareSettings", "Show console for game debug"))
         self.confirm_start.setText(_translate("RareSettings", "Confirm game launch"))
-
 
 
 if __name__ == "__main__":

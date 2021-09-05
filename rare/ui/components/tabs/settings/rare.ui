@@ -6,14 +6,13 @@
          <rect>
              <x>0</x>
              <y>0</y>
-             <width>544</width>
+             <width>694</width>
              <height>532</height>
          </rect>
      </property>
      <property name="windowTitle">
          <string>RareSettings</string>
      </property>
-
      <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="1">
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -256,116 +255,6 @@
                      </size>
                  </property>
              </spacer>
-         </item>
-
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="0" alignment="Qt::AlignTop">
-    <widget class="QGroupBox" name="interface_group">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title">
-      <string>Interface</string>
-     </property>
-     <layout class="QGridLayout" name="interface_layout">
-      <item row="1" column="1">
-       <widget class="QComboBox" name="color_select">
-        <item>
-         <property name="text">
-          <string>None</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="0" alignment="Qt::AlignRight">
-       <widget class="QLabel" name="style_label">
-        <property name="text">
-         <string>Style Sheet</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QComboBox" name="style_select">
-        <item>
-         <property name="text">
-          <string>None</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <spacer name="interface_hspacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="3" column="0" colspan="3">
-       <widget class="QLabel" name="interface_info">
-        <property name="font">
-         <font>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Restart Rare to apply.</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" alignment="Qt::AlignRight">
-       <widget class="QLabel" name="lang_label">
-        <property name="text">
-         <string>Language</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="lang_select"/>
-      </item>
-      <item row="1" column="0" alignment="Qt::AlignRight">
-       <widget class="QLabel" name="color_label">
-        <property name="text">
-         <string>Color Scheme</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="0" alignment="Qt::AlignTop">
-    <widget class="QGroupBox" name="img_dir_group">
-     <property name="title">
-      <string>Image Cache Directory</string>
-     </property>
-     <layout class="QVBoxLayout" name="img_dir_layout"/>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <spacer name="rare_vspacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
