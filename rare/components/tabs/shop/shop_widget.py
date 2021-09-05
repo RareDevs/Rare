@@ -2,13 +2,13 @@ import datetime
 import logging
 import random
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QCompleter, QGroupBox, QHBoxLayout, QScrollArea, QCheckBox, QVBoxLayout, QLabel
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QWidget, QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel
 
 from custom_legendary.core import LegendaryCore
 from rare.components.tabs.shop import ShopApiCore
 from rare.components.tabs.shop.constants import Constants
-from rare.components.tabs.shop.game_widgets import GameWidget, GameWidgetDiscount
+from rare.components.tabs.shop.game_widgets import GameWidget
 from rare.components.tabs.shop.shop_models import BrowseModel
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
 from rare.utils.extra_widgets import WaitingSpinner, FlowLayout, ButtonLineEdit
@@ -38,12 +38,12 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.types = []
         self.locale = get_lang()
         self.update_games_allowed = True
-
+        self.free_widget.setLayout(FlowLayout())
         self.free_games_now = QGroupBox(self.tr("Now Free"))
         self.free_games_now.setLayout(FlowLayout())
         self.free_widget.layout().addWidget(self.free_games_now)
         self.coming_free_games = QGroupBox(self.tr("Free Games next week"))
-        self.coming_free_games.setLayout(QHBoxLayout())
+        self.coming_free_games.setLayout(FlowLayout())
         self.free_widget.layout().addWidget(self.coming_free_games)
         self.free_stack.addWidget(WaitingSpinner())
         self.free_stack.setCurrentIndex(1)
@@ -56,15 +56,11 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.game_stack.addWidget(WaitingSpinner())
         self.game_stack.setCurrentIndex(1)
 
-        self.completer = QCompleter()
-        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
-
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Games"))
         self.layout().insertWidget(0, self.search_bar)
 
         # self.search_bar.textChanged.connect(self.search_games)
 
-        self.search_bar.setCompleter(self.completer)
         self.search_bar.returnPressed.connect(self.show_search_results)
         self.search_bar.buttonClicked.connect(self.show_search_results)
 
@@ -91,7 +87,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             if not game:
                 continue
             if game["offer"]["price"]["totalPrice"]["discount"] > 0:
-                w = GameWidgetDiscount(self.path, game["offer"])
+                w = GameWidget(self.path, game["offer"])
                 w.show_info.connect(self.show_game.emit)
                 self.discount_widget.layout().addWidget(w)
                 discounts += 1
@@ -142,7 +138,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 coming_free_games.append(game)
         # free games now
         for free_game in free_games_now:
-            w = GameWidgetDiscount(self.path, free_game)
+            w = GameWidget(self.path, free_game)
             w.show_info.connect(self.show_game.emit)
             self.free_games_now.layout().addWidget(w)
             self.free_game_widgets.append(w)
@@ -244,7 +240,13 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             self.game_widget.setLayout(FlowLayout())
 
             for game in data:
-                w = GameWidget(self.path, game, 275)
+                price = game['price']['totalPrice']['fmtPrice']['originalPrice']
+                discount_price = game['price']['totalPrice']['fmtPrice']['discountPrice']
+
+                if price != discount_price:
+                    w = GameWidget(self.path, game, 275)
+                else:
+                    w = GameWidget(self.path, game, 275)
                 self.game_widget.layout().addWidget(w)
                 w.show_info.connect(self.show_game.emit)
 

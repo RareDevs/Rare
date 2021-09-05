@@ -36,6 +36,12 @@
                                          <layout class="QVBoxLayout" name="verticalLayout">
                                              <item>
                                                  <widget class="QGroupBox" name="free_game_group_box">
+                                                     <property name="sizePolicy">
+                                                         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                                                             <horstretch>0</horstretch>
+                                                             <verstretch>0</verstretch>
+                                                         </sizepolicy>
+                                                     </property>
                                                      <property name="title">
                                                          <string>Free Games</string>
                                                      </property>
@@ -43,6 +49,13 @@
                                                          <item>
                                                              <widget class="QStackedWidget" name="free_stack">
                                                                  <widget class="QWidget" name="free_widget">
+                                                                     <property name="sizePolicy">
+                                                                         <sizepolicy hsizetype="Preferred"
+                                                                                     vsizetype="Maximum">
+                                                                             <horstretch>0</horstretch>
+                                                                             <verstretch>0</verstretch>
+                                                                         </sizepolicy>
+                                                                     </property>
                                                                      <layout class="QVBoxLayout"
                                                                              name="verticalLayout_8"/>
                                                                  </widget>

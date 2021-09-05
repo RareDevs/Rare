@@ -29,10 +29,25 @@ class GameWidget(QWidget):
         self.layout = QVBoxLayout()
         self.image = ImageLabel()
         self.layout.addWidget(self.image)
+        mini_layout = QHBoxLayout()
+        self.layout.addLayout(mini_layout)
 
         self.title_label = QLabel(json_info.get("title"))
         self.title_label.setWordWrap(True)
-        self.layout.addWidget(self.title_label)
+        mini_layout.addWidget(self.title_label)
+        mini_layout.addStretch(1)
+
+        price = json_info['price']['totalPrice']['fmtPrice']['originalPrice']
+        discount_price = json_info['price']['totalPrice']['fmtPrice']['discountPrice']
+        price_label = QLabel(price)
+        if price != discount_price:
+            font = QFont()
+            font.setStrikeOut(True)
+            price_label.setFont(font)
+            mini_layout.addWidget(QLabel(discount_price if discount_price != "0" else self.tr("Free")))
+            mini_layout.addWidget(price_label)
+        else:
+            mini_layout.addWidget(price_label)
 
         for c in r'<>?":|\/*':
             json_info["title"] = json_info["title"].replace(c, "")
@@ -55,25 +70,6 @@ class GameWidget(QWidget):
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.show_info.emit(self.json_info)
-
-
-class GameWidgetDiscount(GameWidget):
-    def __init__(self, *args, **kwargs):
-        super(GameWidgetDiscount, self).__init__(*args, **kwargs)
-
-        h_layout = QHBoxLayout()
-        self.layout.addLayout(h_layout)
-
-        price = args[1]['price']['totalPrice']['fmtPrice']['originalPrice']
-        discount_price = args[1]['price']['totalPrice']['fmtPrice']['discountPrice']
-
-        price_label = QLabel(price)
-
-        font = QFont()
-        font.setStrikeOut(True)
-        price_label.setFont(font)
-        h_layout.addWidget(QLabel(discount_price if discount_price != "0" else self.tr("Free")))
-        h_layout.addWidget(price_label)
 
 
 class WishlistWidget(QWidget, Ui_WishlistWidget):
