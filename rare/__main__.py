@@ -1,14 +1,15 @@
 #!/usr/bin/python
 
 import os
+import pathlib
+import sys
 from argparse import ArgumentParser
 
 from rare import __version__, data_dir
-from rare.utils import singleton, utils
+from rare.utils import singleton
 
 
 def main():
-
     # CLI Options
 
     parser = ArgumentParser()
@@ -30,9 +31,11 @@ def main():
     args = parser.parse_args()
 
     if args.desktop_shortcut:
+        from rare.utils import utils
         utils.create_rare_desktop_link("desktop")
         print("Link created")
     if args.startmenu_shortcut:
+        from rare.utils import utils
         utils.create_rare_desktop_link("start_menu")
         print("link created")
 
@@ -67,5 +70,5 @@ if __name__ == '__main__':
     import multiprocessing
 
     multiprocessing.freeze_support()
-
+    sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "legendary"))
     main()

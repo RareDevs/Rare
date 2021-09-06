@@ -1,0 +1,4 @@
+[submodule "legendary"]
+	path = legendary
+	url = https://github.com/dummerle/legendary
+	branch = rare
