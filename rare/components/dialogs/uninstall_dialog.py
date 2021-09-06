@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QCheckBox, QFormLayout, QHBoxLayout, QPushButton
 from qtawesome import icon
 
-from custom_legendary.models.game import Game
+from legendary.models.game import Game
 
 
 class UninstallDialog(QDialog):

@@ -11,8 +11,8 @@ import psutil
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
 
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.downloading import UIUpdate, WriterTask
+from legendary.core import LegendaryCore
+from legendary.models.downloading import UIUpdate, WriterTask
 from rare.utils.models import InstallQueueItemModel
 
 logger = getLogger("Download")

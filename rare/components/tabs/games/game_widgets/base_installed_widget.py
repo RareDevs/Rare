@@ -5,8 +5,8 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction
 
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame
+from legendary.core import LegendaryCore
+from legendary.models.game import InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.extra.console import ConsoleWindow
 from rare.utils import legendary_utils

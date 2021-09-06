@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QPaintEvent, QPainter, QPixmap, QPen, QFont, QColor
 from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QLabel, QHBoxLayout, QWidget
 
-from custom_legendary.models.game import Game
+from legendary.models.game import Game
 from rare.utils.utils import get_pixmap, get_uninstalled_pixmap, optimal_text_background, text_color_for_background
 
 

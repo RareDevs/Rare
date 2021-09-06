@@ -6,7 +6,7 @@ from datetime import date
 import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare import cache_dir, data_dir
 
 from rare import data_dir, cache_dir

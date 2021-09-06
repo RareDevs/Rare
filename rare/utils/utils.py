@@ -20,7 +20,7 @@ if platform.system() == "Windows":
 from rare import languages_path, resources_path, image_dir
 # Mac not supported
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 settings = QSettings("Rare", "Rare")

@@ -5,8 +5,8 @@ from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSl
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QMessageBox
 
-from custom_legendary.core import LegendaryCore
-from custom_legendary.utils.selective_dl import games
+from legendary.core import LegendaryCore
+from legendary.utils.selective_dl import games
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.models import InstallDownloadModel, InstallQueueItemModel

@@ -5,8 +5,8 @@ from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import *
 from qtawesome import icon
 
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame
+from legendary.core import LegendaryCore
+from legendary.models.game import InstalledGame
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 
 logger = getLogger("GameWidgetInstalled")

@@ -2,9 +2,9 @@ import os
 from dataclasses import field, dataclass
 from multiprocessing import Queue
 
-from custom_legendary.downloader.manager import DLManager
-from custom_legendary.models.downloading import AnalysisResult, ConditionCheckResult
-from custom_legendary.models.game import Game, InstalledGame
+from legendary.downloader.mp.manager import DLManager
+from legendary.models.downloading import AnalysisResult, ConditionCheckResult
+from legendary.models.game import Game, InstalledGame
 
 
 @dataclass

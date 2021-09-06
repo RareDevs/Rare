@@ -9,7 +9,7 @@ from PyQt5.QtCore import QSettings, QTranslator
 from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare import languages_path, resources_path, cache_dir
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow

@@ -6,7 +6,7 @@ import pypresence.exceptions
 from PyQt5.QtCore import QObject, QSettings
 from pypresence import Presence
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 
 client_id = "830732538225360908"
 logger = getLogger("RPC")

@@ -3,7 +3,7 @@ import webbrowser
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel, QPushButton
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 
 
 class MiniWidget(QWidget):

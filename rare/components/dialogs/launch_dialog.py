@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 from requests.exceptions import ConnectionError
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare import image_dir
 
 from rare.components.dialogs.login import LoginDialog

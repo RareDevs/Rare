@@ -4,8 +4,8 @@ from PyQt5.QtCore import pyqtSignal, QSettings
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QScrollArea, QLabel, QPushButton, QMessageBox
 
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import Game
+from legendary.core import LegendaryCore
+from legendary.models.game import Game
 from rare import data_dir
 from rare.utils.utils import download_image
 

@@ -7,8 +7,8 @@ from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTabWidget, QMessageBox
 from qtawesome import icon
 
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import Game, InstalledGame
+from legendary.core import LegendaryCore
+from legendary.models.game import Game, InstalledGame
 from rare import data_dir
 from rare.components.tabs.games.game_info.dlcs import DlcTab
 from rare.components.tabs.games.game_info.game_settings import GameSettings

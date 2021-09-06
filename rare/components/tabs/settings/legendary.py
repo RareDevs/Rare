@@ -5,7 +5,7 @@ from logging import getLogger
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedWidget, QVBoxLayout, QDialog, QCheckBox, QLabel, \
     QHBoxLayout, QPushButton, QGroupBox, QWidget
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare.ui.components.tabs.settings.legendary import Ui_legendary_settings
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import get_size

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QStackedWidget, QTabWidget
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare import cache_dir
 from rare.components.tabs.shop.game_info import ShopGameInfo
 from rare.components.tabs.shop.search_results import SearchResults

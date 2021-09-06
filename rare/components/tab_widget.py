@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 from qtawesome import icon
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.tab_utils import TabBar, TabButtonWidget

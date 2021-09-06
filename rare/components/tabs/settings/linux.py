@@ -2,7 +2,7 @@ from logging import getLogger
 
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare.components.tabs.settings.dxvk import DxvkSettings, DxvkWidget
 from rare.ui.components.tabs.settings.linux import Ui_LinuxSettings
 from rare.utils.extra_widgets import PathEdit

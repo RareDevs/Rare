@@ -5,9 +5,9 @@ from PyQt5.QtCore import QThread, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, \
     QHBoxLayout, QGroupBox
 
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.downloading import UIUpdate
-from custom_legendary.models.game import Game, InstalledGame
+from legendary.core import LegendaryCore
+from legendary.models.downloading import UIUpdate
+from legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread

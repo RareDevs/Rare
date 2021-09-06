@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QWidget
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
 
 logger = getLogger("BrowserLogin")

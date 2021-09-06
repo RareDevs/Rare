@@ -5,7 +5,7 @@ import random
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare.components.tabs.shop import ShopApiCore
 from rare.components.tabs.shop.constants import Constants
 from rare.components.tabs.shop.game_widgets import GameWidget

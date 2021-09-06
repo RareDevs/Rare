@@ -4,7 +4,7 @@ from logging import getLogger
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare.components.dialogs.login.browser_login import BrowserLogin
 from rare.components.dialogs.login.import_login import ImportLogin
 from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog

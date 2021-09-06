@@ -5,7 +5,7 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QFileDialog
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare.ui.components.dialogs.login.import_login import Ui_ImportLogin
 
 logger = getLogger("ImportLogin")

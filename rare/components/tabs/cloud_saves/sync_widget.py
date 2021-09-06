@@ -4,8 +4,8 @@ from logging import getLogger
 from PyQt5.QtCore import QThread, pyqtSignal, Qt, QSettings
 from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QGroupBox, QMessageBox
 
-from custom_legendary.core import LegendaryCore
-from custom_legendary.models.game import InstalledGame, SaveGameStatus
+from legendary.core import LegendaryCore
+from legendary.models.game import InstalledGame, SaveGameStatus
 from rare.components.dialogs.path_input_dialog import PathInputDialog
 
 logger = getLogger("Sync")

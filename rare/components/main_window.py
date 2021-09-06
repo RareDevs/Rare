@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, QSettings, QTimer, pyqtSignal
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare import data_dir
 from rare.components.tab_widget import TabWidget
 from rare.utils.rpc import DiscordRPC

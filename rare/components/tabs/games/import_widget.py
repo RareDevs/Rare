@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayo
     QGroupBox
 from qtawesome import icon
 
-from custom_legendary.core import LegendaryCore
+from legendary.core import LegendaryCore
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import PathEdit
 
