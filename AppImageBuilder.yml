@@ -9,7 +9,7 @@ script:
   - mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps/
   - git clone https://github.com/Dummerle/Rare
   - cp -r Rare/rare AppDir/usr/src/rare
-  - cp -r Rare/custom_legendary AppDir/usr/src/
+  - cp -r Rare/legendary AppDir/usr/src/
   - cp AppDir/usr/src/rare/__main__.py AppDir/usr/src/__main__.py
   - cp AppDir/usr/src/rare/resources/images/Rare.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
