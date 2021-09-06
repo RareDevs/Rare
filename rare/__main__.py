@@ -59,16 +59,14 @@ def main():
     if args.subparser == "launch":
         args.silent = True
 
-
-    # fix error in cx_freeze
-
     from rare.app import start
     start(args)
 
 
 if __name__ == '__main__':
-    import multiprocessing
+    # fix error in cx_freeze
 
+    import multiprocessing
     multiprocessing.freeze_support()
     sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "legendary"))
     main()

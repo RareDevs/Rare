@@ -7,7 +7,7 @@ script:
   # Make usr and icons dirs
   - mkdir -p AppDir/usr/src
   - mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps/
-  - git clone https://github.com/Dummerle/Rare
+  - git clone https://github.com/Dummerle/Rare --recurse-submodules
   - cp -r Rare/rare AppDir/usr/src/rare
   - cp -r Rare/legendary AppDir/usr/src/
   - cp AppDir/usr/src/rare/__main__.py AppDir/usr/src/__main__.py
