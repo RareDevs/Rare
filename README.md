@@ -75,7 +75,7 @@ There are more options to contribute.
 
 - If you can Python and PyQt you can implement new Features (Some ideas are in Projects).
 - If you are a designer, you can add Stylesheets or create a logo or a banner
-- You can translate the application in your language
+- You can translate the application in your language: Check [transifex](https://www.transifex.com/rare-1/rare) to translate Rare in your language
 
 More Information is in CONTRIBUTING.md
 
