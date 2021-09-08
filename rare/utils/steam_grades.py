@@ -7,7 +7,6 @@ import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from legendary.core import LegendaryCore
-from rare import cache_dir, data_dir
 
 from rare import data_dir, cache_dir
 
@@ -24,11 +23,13 @@ class SteamWorker(QThread):
     def __init__(self, core: LegendaryCore):
         super(SteamWorker, self).__init__()
         self.core = core
-        self.ratings = {"platinum": self.tr("Platinum"),
+        self.ratings = {
+                        "platinum": self.tr("Platinum"),
                         "gold": self.tr("Gold"),
                         "silver": self.tr("Silver"),
                         "bronze": self.tr("Bronze"),
                         "fail": self.tr("Could not get grade"),
+                        "borked": self.tr("unplayable"),
                         "pending": self.tr("Could not get grade")
                         }
 
@@ -36,7 +37,7 @@ class SteamWorker(QThread):
         self.app_name = app_name
 
     def run(self) -> None:
-        self.rating_signal.emit(self.ratings[get_rating(self.app_name, self.core)])
+        self.rating_signal.emit(self.ratings.get(get_rating(self.app_name, self.core), self.ratings["fail"]))
 
 
 def get_rating(app_name: str, core: LegendaryCore):
