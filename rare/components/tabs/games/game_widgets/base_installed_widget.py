@@ -3,13 +3,14 @@ import platform
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
-from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
 
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.extra.console import ConsoleWindow
-from rare.utils import legendary_utils
+from rare.utils import legendary_utils, utils
 from rare.utils.utils import create_desktop_link
 
 logger = getLogger("Game")
@@ -22,12 +23,13 @@ class BaseInstalledWidget(QGroupBox):
     update_list = pyqtSignal()
     proc: QProcess()
 
-    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap, offline):
+    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap: QPixmap, offline):
         super(BaseInstalledWidget, self).__init__()
         self.igame = igame
         self.core = core
         self.game = self.core.get_game(self.igame.app_name)
-        self.pixmap = pixmap
+        self.image = QLabel()
+        self.image.setPixmap(pixmap.scaled(200, 200 * 4 / 3))
         self.game_running = False
         self.offline = offline
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
@@ -63,9 +65,18 @@ class BaseInstalledWidget(QGroupBox):
         self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
         self.addAction(self.create_start_menu)
 
+        reload_image = QAction(self.tr("Reload Image"), self)
+        reload_image.triggered.connect(self.reload_image)
+        self.addAction(reload_image)
+
         uninstall = QAction(self.tr("Uninstall"), self)
         uninstall.triggered.connect(self.uninstall)
         self.addAction(uninstall)
+
+    def reload_image(self):
+        utils.download_image(self.game, True)
+        pm = utils.get_pixmap(self.game.app_name)
+        self.image.setPixmap(pm)
 
     def create_desktop_link(self, type_of_link):
         if platform.system() not in ["Windows", "Linux"]:

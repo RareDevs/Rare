@@ -27,11 +27,7 @@ class InstalledListWidget(BaseInstalledWidget):
         ##Layout on the right
         self.childLayout = QVBoxLayout()
 
-        if self.pixmap:
-            self.pixmap = self.pixmap.scaled(180, 240, transformMode=Qt.SmoothTransformation)
-            self.image = QLabel()
-            self.image.setPixmap(self.pixmap)
-            self.layout.addWidget(self.image)
+        self.layout.addWidget(self.image)
 
         play_icon = icon("ei.play")
         self.title_widget = QLabel(f"<h1>{self.igame.title}</h1>")

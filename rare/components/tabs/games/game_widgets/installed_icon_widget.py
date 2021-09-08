@@ -32,13 +32,7 @@ class GameWidgetInstalled(BaseInstalledWidget):
             logger.info("Update available for game: " + self.game.app_name)
             self.info_text = self.tr("Update available")
 
-        if self.pixmap:
-            w = 200
-            self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3), transformMode=Qt.SmoothTransformation)
-            self.image = QLabel()
-            self.image.setObjectName("game_widget")
-            self.image.setPixmap(self.pixmap)
-            self.layout.addWidget(self.image)
+        self.layout.addWidget(self.image)
 
         self.title_label = QLabel(f"<h4>{game.title}</h4>")
         self.title_label.setAutoFillBackground(False)
