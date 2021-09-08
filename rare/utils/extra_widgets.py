@@ -143,13 +143,9 @@ class PathEdit(QWidget, Ui_PathEdit):
             self.text_edit.setText(text)
         if self.edit_func is not None:
             self.text_edit.textChanged.connect(self.edit_func)
-        if self.save_func is None:
-            self.save_path_button.setVisible(False)
-        else:
-            self.text_edit.textChanged.connect(lambda t: self.save_path_button.setDisabled(False))
-            self.save_path_button.clicked.connect(self.save)
-            self.save_path_button.setDisabled(True)
+
         self.path_select.clicked.connect(self.set_path)
+        self.text_edit.textChanged.connect(self.save)
 
     def text(self):
         return self.text_edit.text()
@@ -159,7 +155,6 @@ class PathEdit(QWidget, Ui_PathEdit):
 
     def save(self):
         self.save_func()
-        self.save_path_button.setDisabled(True)
 
     def set_path(self):
         dlg_path = self.text_edit.text()
@@ -174,6 +169,7 @@ class PathEdit(QWidget, Ui_PathEdit):
         if dlg.exec_():
             names = dlg.selectedFiles()
             self.text_edit.setText(names[0])
+            self.save()
 
 
 class SideTabBar(QTabBar):
