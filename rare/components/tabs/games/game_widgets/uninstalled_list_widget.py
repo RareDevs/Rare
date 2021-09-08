@@ -14,12 +14,7 @@ class ListWidgetUninstalled(BaseUninstalledWidget):
         super(ListWidgetUninstalled, self).__init__(game, core, pixmap)
         self.layout = QHBoxLayout()
 
-        if self.pixmap:
-            w = 200
-            self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3))
-            self.image = QLabel()
-            self.image.setPixmap(self.pixmap)
-            self.layout.addWidget(self.image)
+        self.layout.addWidget(self.image)
 
         self.child_layout = QVBoxLayout()
 

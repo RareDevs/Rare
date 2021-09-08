@@ -15,12 +15,7 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
         super(IconWidgetUninstalled, self).__init__(game, core, pixmap)
         self.layout = QVBoxLayout()
         self.setObjectName("game_widget_icon")
-        if self.pixmap:
-            w = 200
-            self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3))
-            self.image = QLabel()
-            self.image.setPixmap(self.pixmap)
-            self.layout.addWidget(self.image)
+        self.layout.addWidget(self.image)
 
         self.title_label = QLabel(f"<h3>{game.app_title}</h3>")
         self.title_label.setWordWrap(True)
@@ -33,8 +28,13 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
         self.setFixedWidth(self.sizeHint().width())
 
     def mousePressEvent(self, e) -> None:
-        if not self.installing:
+        # left button
+        if e.button() == 1 and not self.installing:
             self.install()
+
+        # right
+        elif e.button() == 2:
+            pass  # self.showMenu(e)
 
     def enterEvent(self, e):
         if not self.installing:

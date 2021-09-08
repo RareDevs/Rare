@@ -29,7 +29,7 @@ class BaseInstalledWidget(QGroupBox):
         self.core = core
         self.game = self.core.get_game(self.igame.app_name)
         self.image = QLabel()
-        self.image.setPixmap(pixmap.scaled(200, 200 * 4 / 3))
+        self.image.setPixmap(pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
         self.game_running = False
         self.offline = offline
         self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
@@ -76,7 +76,7 @@ class BaseInstalledWidget(QGroupBox):
     def reload_image(self):
         utils.download_image(self.game, True)
         pm = utils.get_pixmap(self.game.app_name)
-        self.image.setPixmap(pm)
+        self.image.setPixmap(pm.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
 
     def create_desktop_link(self, type_of_link):
         if platform.system() not in ["Windows", "Linux"]:
@@ -163,7 +163,6 @@ class BaseInstalledWidget(QGroupBox):
         print(stderr)
         logger.error(stderr)
         # QMessageBox.warning(self, "Warning", stderr + "\nSee ~/.cache/rare/logs/")
-
 
     def finished(self, exit_code):
         logger.info("Game exited with exit code: " + str(exit_code))
