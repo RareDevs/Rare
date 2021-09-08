@@ -1,234 +1,234 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>legendary_settings</class>
-    <widget class="QStackedWidget" name="legendary_settings">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>532</width>
-                <height>383</height>
-            </rect>
-        </property>
-        <property name="windowTitle">
-            <string>StackedWidget</string>
-        </property>
-        <property name="currentIndex">
-            <number>1</number>
-        </property>
-        <widget class="QWidget" name="settings">
-            <layout class="QGridLayout" name="gridLayout_2">
-                <item row="0" column="1">
-                    <widget class="QGroupBox" name="gb_clean">
-                        <property name="title">
-                            <string>Cleanup</string>
-                        </property>
-                        <layout class="QVBoxLayout" name="layout_clean">
-                            <item>
-                                <widget class="QPushButton" name="clean_button_without_manifests">
-                                    <property name="text">
-                                        <string>Clean, but keep manifests</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QPushButton" name="clean_button">
-                                    <property name="text">
-                                        <string>Remove everything</string>
-                                    </property>
-                                </widget>
-                            </item>
-                        </layout>
-                    </widget>
-                </item>
-                <item row="1" column="1">
-                    <widget class="QGroupBox" name="egl_sync">
-                        <property name="title">
-                            <string>EGL Sync</string>
-                        </property>
-                        <layout class="QVBoxLayout" name="verticalLayout">
-                            <item>
-                                <widget class="QPushButton" name="sync_button">
-                                    <property name="text">
-                                        <string>Sync Settings</string>
-                                    </property>
-                                </widget>
-                            </item>
-                        </layout>
-                    </widget>
-                </item>
-                <item row="1" column="0">
-                    <widget class="QGroupBox" name="gb_downloads">
-                        <property name="title">
-                            <string>Download Settings</string>
-                        </property>
-                        <layout class="QGridLayout" name="layout_downloads">
-                            <item row="0" column="4">
-                                <spacer name="hs_downloads">
-                                    <property name="orientation">
-                                        <enum>Qt::Horizontal</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>40</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
-                            <item row="0" column="1">
-                                <widget class="QSpinBox" name="max_worker_select"/>
-                            </item>
-                            <item row="0" column="0" alignment="Qt::AlignRight">
-                                <widget class="QLabel" name="lbl_max_workers">
-                                    <property name="sizePolicy">
-                                        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="text">
-                                        <string>Max Workers</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="0" column="2">
-                                <widget class="QLabel" name="lbl_max_workers_info">
-                                    <property name="font">
-                                        <font>
-                                            <italic>true</italic>
-                                        </font>
-                                    </property>
-                                    <property name="text">
-                                        <string>Less is slower (0: Default)</string>
-                                    </property>
-                                </widget>
-                            </item>
-                        </layout>
-                    </widget>
-                </item>
-                <item row="0" column="0">
-                    <widget class="QGroupBox" name="gb_install_dir">
-                        <property name="title">
-                            <string>Default Installation Directory</string>
-                        </property>
-                        <layout class="QVBoxLayout" name="layout_install_dir"/>
-                    </widget>
-                </item>
-                <item row="2" column="1">
-                    <spacer name="vs_legendary">
-                        <property name="orientation">
-                            <enum>Qt::Vertical</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                            <size>
-                                <width>20</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                    </spacer>
-                </item>
-            </layout>
+ <class>legendary_settings</class>
+ <widget class="QStackedWidget" name="legendary_settings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>532</width>
+    <height>383</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>LegendarySettings</string>
+  </property>
+  <property name="currentIndex">
+   <number>0</number>
+  </property>
+  <widget class="QWidget" name="settings">
+   <layout class="QGridLayout" name="layout_settings">
+    <item row="0" column="1">
+     <widget class="QGroupBox" name="gb_clean">
+      <property name="title">
+       <string>Cleanup</string>
+      </property>
+      <layout class="QVBoxLayout" name="layout_clean">
+       <item>
+        <widget class="QPushButton" name="clean_button_without_manifests">
+         <property name="text">
+          <string>Clean, but keep manifests</string>
+         </property>
         </widget>
-        <widget class="QWidget" name="egl_sync_page">
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-                <item>
-                    <widget class="QPushButton" name="back_button">
-                        <property name="text">
-                            <string>Back</string>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QLabel" name="title">
-                        <property name="text">
-                            <string>&lt;h2&gt;Sync Games with Epic Games Store&lt;/h2&gt;</string>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <layout class="QVBoxLayout" name="pathedit_placeholder"/>
-                </item>
-                <item>
-                    <widget class="QLabel" name="path_info">
-                        <property name="text">
-                            <string>TextLabel</string>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <layout class="QGridLayout" name="gridLayout">
-                        <item row="0" column="0">
-                            <widget class="QGroupBox" name="exportable_games">
-                                <property name="title">
-                                    <string>Exportable Games</string>
-                                </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_3"/>
-                            </widget>
-                        </item>
-                        <item row="0" column="1">
-                            <widget class="QGroupBox" name="importable_games">
-                                <property name="title">
-                                    <string>Importable</string>
-                                </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_4"/>
-                            </widget>
-                        </item>
-                        <item row="1" column="0">
-                            <widget class="QPushButton" name="export_all_button">
-                                <property name="text">
-                                    <string>Export all Games</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="1" column="1">
-                            <widget class="QPushButton" name="import_all_button">
-                                <property name="text">
-                                    <string>Import all Games</string>
-                                </property>
-                            </widget>
-                        </item>
-                    </layout>
-                </item>
-                <item>
-                    <widget class="QGroupBox" name="groupBox">
-                        <property name="title">
-                            <string>Enable Sync</string>
-                        </property>
-                        <layout class="QHBoxLayout" name="horizontalLayout">
-                            <item>
-                                <widget class="QPushButton" name="sync_once_button">
-                                    <property name="text">
-                                        <string>Sync once</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QPushButton" name="enable_sync_button">
-                                    <property name="text">
-                                        <string>Enable automatic sync</string>
-                                    </property>
-                                </widget>
-                            </item>
-                        </layout>
-                    </widget>
-                </item>
-                <item>
-                    <spacer name="verticalSpacer">
-                        <property name="orientation">
-                            <enum>Qt::Vertical</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                            <size>
-                                <width>20</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                    </spacer>
-                </item>
-            </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="clean_button">
+         <property name="text">
+          <string>Remove everything</string>
+         </property>
         </widget>
-    </widget>
-    <resources/>
-    <connections/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QGroupBox" name="egl_sync">
+      <property name="title">
+       <string>EGL Sync</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QPushButton" name="sync_button">
+         <property name="text">
+          <string>Sync Settings</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="gb_downloads">
+      <property name="title">
+       <string>Download Settings</string>
+      </property>
+      <layout class="QGridLayout" name="layout_downloads">
+       <item row="0" column="4">
+        <spacer name="hs_downloads">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="max_worker_select"/>
+       </item>
+       <item row="0" column="0" alignment="Qt::AlignRight">
+        <widget class="QLabel" name="lbl_max_workers">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Max Workers</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="lbl_max_workers_info">
+         <property name="font">
+          <font>
+           <italic>true</italic>
+          </font>
+         </property>
+         <property name="text">
+          <string>Less is slower (0: Default)</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="0" alignment="Qt::AlignTop">
+     <widget class="QGroupBox" name="gb_install_dir">
+      <property name="title">
+       <string>Default Installation Directory</string>
+      </property>
+      <layout class="QVBoxLayout" name="layout_install_dir"/>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <spacer name="vs_legendary">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="egl_sync_page">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QPushButton" name="back_button">
+      <property name="text">
+       <string>Back</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="title">
+      <property name="text">
+       <string>&lt;h2&gt;Sync Games with Epic Games Store&lt;/h2&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="pathedit_placeholder"/>
+    </item>
+    <item>
+     <widget class="QLabel" name="path_info">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="layout_export_import">
+      <item row="0" column="0">
+       <widget class="QGroupBox" name="exportable_games">
+        <property name="title">
+         <string>Exportable Games</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3"/>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QGroupBox" name="importable_games">
+        <property name="title">
+         <string>Importable</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4"/>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="export_all_button">
+        <property name="text">
+         <string>Export all Games</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="import_all_button">
+        <property name="text">
+         <string>Import all Games</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>Enable Sync</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="sync_once_button">
+         <property name="text">
+          <string>Sync once</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="enable_sync_button">
+         <property name="text">
+          <string>Enable automatic sync</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

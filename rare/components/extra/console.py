@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtGui import QTextCursor, QFont
 from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QPushButton, QFileDialog, QVBoxLayout
 
 
@@ -39,6 +39,7 @@ class Console(QPlainTextEdit):
     def __init__(self):
         super().__init__()
         self.setReadOnly(True)
+        self.setFont(QFont("monospace"))
         self._cursor_output = self.textCursor()
 
     def log(self, text):

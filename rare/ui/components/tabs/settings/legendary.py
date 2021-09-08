@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'legendary.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/tabs/settings/legendary.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -17,8 +17,8 @@ class Ui_legendary_settings(object):
         legendary_settings.resize(532, 383)
         self.settings = QtWidgets.QWidget()
         self.settings.setObjectName("settings")
-        self.gridLayout_2 = QtWidgets.QGridLayout(self.settings)
-        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.layout_settings = QtWidgets.QGridLayout(self.settings)
+        self.layout_settings.setObjectName("layout_settings")
         self.gb_clean = QtWidgets.QGroupBox(self.settings)
         self.gb_clean.setObjectName("gb_clean")
         self.layout_clean = QtWidgets.QVBoxLayout(self.gb_clean)
@@ -29,7 +29,7 @@ class Ui_legendary_settings(object):
         self.clean_button = QtWidgets.QPushButton(self.gb_clean)
         self.clean_button.setObjectName("clean_button")
         self.layout_clean.addWidget(self.clean_button)
-        self.gridLayout_2.addWidget(self.gb_clean, 0, 1, 1, 1)
+        self.layout_settings.addWidget(self.gb_clean, 0, 1, 1, 1)
         self.egl_sync = QtWidgets.QGroupBox(self.settings)
         self.egl_sync.setObjectName("egl_sync")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.egl_sync)
@@ -37,7 +37,7 @@ class Ui_legendary_settings(object):
         self.sync_button = QtWidgets.QPushButton(self.egl_sync)
         self.sync_button.setObjectName("sync_button")
         self.verticalLayout.addWidget(self.sync_button)
-        self.gridLayout_2.addWidget(self.egl_sync, 1, 1, 1, 1)
+        self.layout_settings.addWidget(self.egl_sync, 1, 1, 1, 1)
         self.gb_downloads = QtWidgets.QGroupBox(self.settings)
         self.gb_downloads.setObjectName("gb_downloads")
         self.layout_downloads = QtWidgets.QGridLayout(self.gb_downloads)
@@ -61,14 +61,14 @@ class Ui_legendary_settings(object):
         self.lbl_max_workers_info.setFont(font)
         self.lbl_max_workers_info.setObjectName("lbl_max_workers_info")
         self.layout_downloads.addWidget(self.lbl_max_workers_info, 0, 2, 1, 1)
-        self.gridLayout_2.addWidget(self.gb_downloads, 1, 0, 1, 1)
+        self.layout_settings.addWidget(self.gb_downloads, 1, 0, 1, 1)
         self.gb_install_dir = QtWidgets.QGroupBox(self.settings)
         self.gb_install_dir.setObjectName("gb_install_dir")
         self.layout_install_dir = QtWidgets.QVBoxLayout(self.gb_install_dir)
         self.layout_install_dir.setObjectName("layout_install_dir")
-        self.gridLayout_2.addWidget(self.gb_install_dir, 0, 0, 1, 1)
+        self.layout_settings.addWidget(self.gb_install_dir, 0, 0, 1, 1, QtCore.Qt.AlignTop)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_2.addItem(spacerItem1, 2, 1, 1, 1)
+        self.layout_settings.addItem(spacerItem1, 2, 0, 1, 2)
         legendary_settings.addWidget(self.settings)
         self.egl_sync_page = QtWidgets.QWidget()
         self.egl_sync_page.setObjectName("egl_sync_page")
@@ -86,25 +86,25 @@ class Ui_legendary_settings(object):
         self.path_info = QtWidgets.QLabel(self.egl_sync_page)
         self.path_info.setObjectName("path_info")
         self.verticalLayout_2.addWidget(self.path_info)
-        self.gridLayout = QtWidgets.QGridLayout()
-        self.gridLayout.setObjectName("gridLayout")
+        self.layout_export_import = QtWidgets.QGridLayout()
+        self.layout_export_import.setObjectName("layout_export_import")
         self.exportable_games = QtWidgets.QGroupBox(self.egl_sync_page)
         self.exportable_games.setObjectName("exportable_games")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.exportable_games)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.gridLayout.addWidget(self.exportable_games, 0, 0, 1, 1)
+        self.layout_export_import.addWidget(self.exportable_games, 0, 0, 1, 1)
         self.importable_games = QtWidgets.QGroupBox(self.egl_sync_page)
         self.importable_games.setObjectName("importable_games")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.importable_games)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
-        self.gridLayout.addWidget(self.importable_games, 0, 1, 1, 1)
+        self.layout_export_import.addWidget(self.importable_games, 0, 1, 1, 1)
         self.export_all_button = QtWidgets.QPushButton(self.egl_sync_page)
         self.export_all_button.setObjectName("export_all_button")
-        self.gridLayout.addWidget(self.export_all_button, 1, 0, 1, 1)
+        self.layout_export_import.addWidget(self.export_all_button, 1, 0, 1, 1)
         self.import_all_button = QtWidgets.QPushButton(self.egl_sync_page)
         self.import_all_button.setObjectName("import_all_button")
-        self.gridLayout.addWidget(self.import_all_button, 1, 1, 1, 1)
-        self.verticalLayout_2.addLayout(self.gridLayout)
+        self.layout_export_import.addWidget(self.import_all_button, 1, 1, 1, 1)
+        self.verticalLayout_2.addLayout(self.layout_export_import)
         self.groupBox = QtWidgets.QGroupBox(self.egl_sync_page)
         self.groupBox.setObjectName("groupBox")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.groupBox)
@@ -121,12 +121,12 @@ class Ui_legendary_settings(object):
         legendary_settings.addWidget(self.egl_sync_page)
 
         self.retranslateUi(legendary_settings)
-        legendary_settings.setCurrentIndex(1)
+        legendary_settings.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(legendary_settings)
 
     def retranslateUi(self, legendary_settings):
         _translate = QtCore.QCoreApplication.translate
-        legendary_settings.setWindowTitle(_translate("legendary_settings", "StackedWidget"))
+        legendary_settings.setWindowTitle(_translate("legendary_settings", "LegendarySettings"))
         self.gb_clean.setTitle(_translate("legendary_settings", "Cleanup"))
         self.clean_button_without_manifests.setText(_translate("legendary_settings", "Clean, but keep manifests"))
         self.clean_button.setText(_translate("legendary_settings", "Remove everything"))
@@ -150,7 +150,6 @@ class Ui_legendary_settings(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     legendary_settings = QtWidgets.QStackedWidget()
     ui = Ui_legendary_settings()

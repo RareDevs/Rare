@@ -84,12 +84,28 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.rpc = RPCSettings()
         self.rpc_layout.addWidget(self.rpc, alignment=Qt.AlignTop)
 
-        for cb in self.checkboxes:
-            widget, option, default = cb
-            widget.setChecked(self.settings.value(option, default, bool))
-            widget.stateChanged.connect(
-                lambda: self.settings.setValue(option, widget.isChecked())
-            )
+        self.init_checkboxes(self.checkboxes)
+        self.sys_tray.stateChanged.connect(
+            lambda: self.settings.setValue("sys_tray", self.sys_tray.isChecked())
+        )
+        self.auto_update.stateChanged.connect(
+            lambda: self.settings.setValue("auto_update", self.auto_update.isChecked())
+        )
+        self.confirm_start.stateChanged.connect(
+            lambda: self.settings.setValue("confirm_start", self.confirm_start.isChecked())
+        )
+        self.auto_sync_cloud.stateChanged.connect(
+            lambda: self.settings.setValue("auto_sync_cloud", self.auto_sync_cloud.isChecked())
+        )
+        self.notification.stateChanged.connect(
+            lambda: self.settings.setValue("notification", self.notification.isChecked())
+        )
+        self.save_size.stateChanged.connect(
+            lambda: self.settings.setValue("save_size", self.save_size.isChecked())
+        )
+        # self.image_cache.stateChanged.connect(
+        #     lambda: self.settings.setValue("cache_images", self.image_cache.isChecked())
+        # )
 
         if platform.system() == "Linux":
 
@@ -201,3 +217,8 @@ class RareSettings(QWidget, Ui_RareSettings):
             os.rmdir(old_path)
             self.img_dir_path = new_path
             self.settings.setValue("img_dir", new_path)
+
+    def init_checkboxes(self, checkboxes):
+        for cb in checkboxes:
+            widget, option, default = cb
+            widget.setChecked(self.settings.value(option, default, bool))
