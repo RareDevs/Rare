@@ -10,7 +10,7 @@ from qtawesome import icon
 from legendary.core import LegendaryCore
 from legendary.models.game import Game, InstalledGame
 from rare import data_dir
-from rare.components.tabs.games.game_info.dlcs import DlcTab
+from rare.components.tabs.games.game_info.game_dlc import GameDlc
 from rare.components.tabs.games.game_info.game_settings import GameSettings
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
@@ -31,14 +31,14 @@ class InfoTabs(QTabWidget):
         self.tabBarClicked.connect(lambda x: self.parent().layout.setCurrentIndex(0) if x == 0 else None)
 
         self.info = GameInfo(core, self)
-        self.addTab(self.info, self.tr("Game Info"))
+        self.addTab(self.info, self.tr("Information"))
 
         self.settings = GameSettings(core, self)
         self.addTab(self.settings, self.tr("Settings"))
         self.tabBar().setCurrentIndex(1)
 
-        self.dlc_tab = DlcTab(core, self)
-        self.addTab(self.dlc_tab, self.tr("DLCs"))
+        self.dlc = GameDlc(core, self)
+        self.addTab(self.dlc, self.tr("Downloadable Content"))
 
     def update_game(self, app_name, dlcs: list):
 
@@ -51,7 +51,7 @@ class InfoTabs(QTabWidget):
                 self.setTabEnabled(3, False)
             else:
                 self.setTabEnabled(3, True)
-                self.dlc_tab.update_dlcs(app_name, dlcs)
+                self.dlc.update_dlcs(app_name, dlcs)
         else:
             self.setTabEnabled(3, False)
 

@@ -14,8 +14,8 @@
    <string>GameSettings</string>
   </property>
   <layout class="QVBoxLayout" name="game_settings_layout">
-   <item>
-    <widget class="QLabel" name="title">
+   <item alignment="Qt::AlignTop">
+    <widget class="QLabel" name="game_title">
      <property name="text">
       <string notr="true">error</string>
      </property>

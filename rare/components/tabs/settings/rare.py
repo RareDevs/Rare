@@ -37,18 +37,12 @@ class RareSettings(QWidget, Ui_RareSettings):
             (self.notification, "notification", True),
             (self.save_size, "save_size", False),
             (self.log_games, "show_console", False),
-            # (self.image_cache, "cache_images", True)
         ]
 
         self.settings = QSettings()
         self.img_dir_path = self.settings.value("img_dir", os.path.join(data_dir, "images"), type=str)
         language = self.settings.value("language", get_lang(), type=str)
         self.logdir = os.path.join(cache_dir, "logs")
-
-
-        # Select Image directory
-        # self.img_dir = PathEdit(self.img_dir_path, file_type=QFileDialog.DirectoryOnly, save_func=self.save_path)
-        # self.img_dir_layout.addWidget(self.img_dir)
 
         # Select lang
         self.lang_select.addItems([i[1] for i in languages])
@@ -103,9 +97,9 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.save_size.stateChanged.connect(
             lambda: self.settings.setValue("save_size", self.save_size.isChecked())
         )
-        # self.image_cache.stateChanged.connect(
-        #     lambda: self.settings.setValue("cache_images", self.image_cache.isChecked())
-        # )
+        self.log_games.stateChanged.connect(
+            lambda: self.settings.setValue("show_console", self.log_games.isChecked())
+        )
 
         if platform.system() == "Linux":
 

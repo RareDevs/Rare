@@ -79,7 +79,7 @@ class TabWidget(QTabWidget):
             # show uninstalled info
             self.games_tab.default_widget.game_list.show_uninstalled_info.connect(self.games_tab.show_uninstalled)
             # install dlc
-            self.games_tab.game_info.dlc_tab.install_dlc.connect(
+            self.games_tab.game_info.dlc.install_dlc.connect(
                 lambda app_name, update: self.install_game(
                     InstallOptionsModel(app_name=app_name),
                     update=update))

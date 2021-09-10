@@ -205,7 +205,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         wrapper = self.core.lgd.config.get(self.game.app_name, "wrapper", fallback="")
         self.wrapper.setText(wrapper)
 
-        self.title.setText(f"<h2>{self.game.app_title}</h2>")
+        self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
         if platform.system() != "Windows":
             self.linux_settings.update_game(app_name)
             self.linux_settings.dxvk.update_settings(app_name)
