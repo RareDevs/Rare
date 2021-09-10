@@ -11,6 +11,7 @@ from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
+from rare.components.tabs.settings.debug_settings import DebugSettings
 from rare.components.tabs.shop import Shop
 from rare.utils import legendary_utils
 from rare.utils.models import InstallQueueItemModel, InstallOptionsModel
@@ -20,8 +21,9 @@ class TabWidget(QTabWidget):
     quit_app = pyqtSignal(int)
     delete_presence = pyqtSignal()
 
-    def __init__(self, core: LegendaryCore, parent, offline):
+    def __init__(self, core: LegendaryCore, parent, args):
         super(TabWidget, self).__init__(parent=parent)
+        offline = args.offline
         disabled_tab = 4 if not offline else 1
         self.core = core
         self.setTabBar(TabBar(disabled_tab))
@@ -37,6 +39,9 @@ class TabWidget(QTabWidget):
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
         self.settings = SettingsTab(core, self)
+
+        if args.debug:
+            self.settings.addTab(DebugSettings(), "Debug")
 
         # Space Tab
         self.addTab(QWidget(), "")

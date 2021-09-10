@@ -3,11 +3,12 @@ import logging
 import os
 import sys
 import time
+import traceback
 
 import qtawesome
 from PyQt5.QtCore import QSettings, QTranslator
 from PyQt5.QtGui import QIcon, QPalette
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory, QMessageBox
 
 from legendary.core import LegendaryCore
 from rare import languages_path, resources_path, cache_dir
@@ -20,15 +21,16 @@ start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
 file_name = os.path.join(cache_dir, f"logs/Rare_{start_time}.log")
 if not os.path.exists(os.path.dirname(file_name)):
     os.makedirs(os.path.dirname(file_name))
-if "--debug" in sys.argv:
-    logging.basicConfig(format='[%(name)s] %(levelname)s: %(message)s', level=logging.INFO)
-else:
-    logging.basicConfig(
-        format='[%(name)s] %(levelname)s: %(message)s',
-        level=logging.INFO,
-        filename=file_name,
-    )
+
 logger = logging.getLogger("Rare")
+
+
+def excepthook(exc_type, exc_value, exc_tb):
+    tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+    print("Error")
+    logger.fatal(tb)
+    QMessageBox.warning(None, "Error", tb)
+    QApplication.exit(1)
 
 
 class App(QApplication):
@@ -131,7 +133,7 @@ class App(QApplication):
                 self.tr("Download finished"),
                 self.tr("Download finished. {} is playable now").format(self.core.get_game(x[1]).app_title),
                 QSystemTrayIcon.Information, 4000) if (
-                        x[0] and QSettings().value("notification", True, bool)) else None)
+                    x[0] and QSettings().value("notification", True, bool)) else None)
 
         if not self.args.silent:
             self.mainwindow.show()
@@ -151,6 +153,23 @@ class App(QApplication):
 
 
 def start(args):
+    # set excepthook to show dialog with exception
+    sys.excepthook = excepthook
+
+    # configure logging
+    if args.debug:
+        logging.basicConfig(format='[%(name)s] %(levelname)s: %(message)s', level=logging.DEBUG)
+        logging.getLogger().setLevel(level=logging.DEBUG)
+        # keep requests quiet
+        logging.getLogger('requests').setLevel(logging.WARNING)
+        logging.getLogger('urllib3').setLevel(logging.WARNING)
+    else:
+        logging.basicConfig(
+            format='[%(name)s] %(levelname)s: %(message)s',
+            level=logging.INFO,
+            filename=file_name,
+        )
+
     while True:
         app = App(args)
         exit_code = app.exec_()

@@ -80,5 +80,5 @@ jobs:
           pip install pylint
       - name: Analysing the code with pylint
         run: |
-          pylint `ls -R|grep .py$|xargs`
+          pylint rare --disable=R,C,E0611,I1101,W1203,W1201,W0201 --ignore=ui,singleton.py,json_formatter.py
 

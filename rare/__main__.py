@@ -3,7 +3,10 @@
 import os
 import pathlib
 import sys
+import traceback
 from argparse import ArgumentParser
+
+from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from rare import __version__, data_dir
 from rare.utils import singleton
@@ -65,7 +68,6 @@ def main():
 
 if __name__ == '__main__':
     # fix error in cx_freeze
-
     import multiprocessing
     multiprocessing.freeze_support()
     sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "legendary"))

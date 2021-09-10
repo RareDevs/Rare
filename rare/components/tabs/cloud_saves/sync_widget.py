@@ -132,7 +132,7 @@ class SyncWidget(QGroupBox):
         elif self.res == SaveGameStatus.LOCAL_NEWER:
             status = self.tr("Local save is newer")
             self.upload_button = QPushButton(self.tr("Upload saves"))
-            self.download_button.setObjectName("success")
+            self.upload_button.setObjectName("success")
             self.download_button = QPushButton(self.tr("Download saves"))
             self.logger.info(f'Local save for "{igame.title}" is newer')
             if dt_remote:

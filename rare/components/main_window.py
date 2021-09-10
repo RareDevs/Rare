@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         self.setGeometry((desktop.width() - width) / 2, (desktop.height() - height) / 2, width, height)
 
         self.setWindowTitle("Rare - GUI for legendary")
-        self.tab_widget = TabWidget(core, self, args.offline)
+        self.tab_widget = TabWidget(core, self, args)
         self.tab_widget.quit_app.connect(self.quit_app.emit)
         self.setCentralWidget(self.tab_widget)
         if not args.offline:
