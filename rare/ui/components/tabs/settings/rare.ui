@@ -13,21 +13,8 @@
   <property name="windowTitle">
    <string>RareSettings</string>
   </property>
-  <layout class="QGridLayout" name="rare_layout">
-   <item row="2" column="0" colspan="2">
-    <spacer name="rare_vspacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="0">
+  <layout class="QHBoxLayout" name="rare_layout">
+   <item>
     <layout class="QVBoxLayout" name="left_layout">
      <item>
       <widget class="QGroupBox" name="interface_group">
@@ -129,26 +116,6 @@
         <string>Behavior</string>
        </property>
        <layout class="QGridLayout" name="behavior_layout">
-        <item row="2" column="1" rowspan="2">
-         <spacer name="settings_hspacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="6" column="0">
-         <widget class="QCheckBox" name="log_games">
-          <property name="text">
-           <string>Show console for game debug</string>
-          </property>
-         </widget>
-        </item>
         <item row="5" column="0">
          <widget class="QCheckBox" name="save_size">
           <property name="text">
@@ -163,17 +130,17 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QCheckBox" name="auto_sync_cloud">
+        <item row="6" column="0">
+         <widget class="QCheckBox" name="log_games">
           <property name="text">
-           <string>Automatically sync with cloud</string>
+           <string>Show console for game debug</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="confirm_start">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="sys_tray">
           <property name="text">
-           <string>Confirm game launch</string>
+           <string>Exit to System tray</string>
           </property>
          </widget>
         </item>
@@ -184,12 +151,32 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="sys_tray">
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="confirm_start">
           <property name="text">
-           <string>Exit to System tray</string>
+           <string>Confirm game launch</string>
           </property>
          </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="auto_sync_cloud">
+          <property name="text">
+           <string>Automatically sync with cloud</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" rowspan="2">
+         <spacer name="settings_hspacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -209,7 +196,7 @@
      </item>
     </layout>
    </item>
-   <item row="0" column="1">
+   <item>
     <layout class="QVBoxLayout" name="right_layout">
      <item>
       <widget class="QGroupBox" name="log_dir_group">

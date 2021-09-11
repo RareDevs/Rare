@@ -27,15 +27,27 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
         self.layout_install_dir.addWidget(self.install_dir)
 
         # Max Workers
-        max_workers = self.core.lgd.config["Legendary"].get("max_workers", fallback=0)
-        self.max_worker_select.setValue(int(max_workers))
-        self.max_worker_select.valueChanged.connect(self.max_worker_save)
+        max_workers = self.core.lgd.config["Legendary"].getint("max_workers", fallback=0)
+        self.max_worker_spin.setValue(max_workers)
+        self.max_worker_spin.valueChanged.connect(self.max_worker_save)
+        # Max memory
+        max_memory = self.core.lgd.config["Legendary"].getint("max_memory", fallback=0)
+        self.max_memory_spin.setValue(max_memory)
+        self.max_memory_spin.valueChanged.connect(self.max_memory_save)
+        # Preferred CDN
+        preferred_cdn = self.core.lgd.config["Legendary"].get("preferred_cdn", fallback="")
+        self.preferred_cdn_line.setText(preferred_cdn)
+        self.preferred_cdn_line.textChanged.connect(self.preferred_cdn_save)
+        # Disable HTTPS
+        disable_https = self.core.lgd.config["Legendary"].getboolean("disable_https", fallback=False)
+        self.disable_https_check.setChecked(disable_https)
+        self.disable_https_check.stateChanged.connect(self.disable_https_save)
 
         # Cleanup
         self.clean_button.clicked.connect(
             lambda: self.cleanup(False)
         )
-        self.clean_button_without_manifests.clicked.connect(
+        self.clean_keep_manifests_button.clicked.connect(
             lambda: self.cleanup(True)
         )
         self.setCurrentIndex(0)
@@ -63,11 +75,11 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
         self.exportable_widgets = []
 
         if self.core.egl_sync_enabled:
-            self.sync_button.setText(self.tr("Disable sync"))
+            self.egl_sync_button.setText(self.tr("Disable sync"))
         else:
-            self.sync_button.setText(self.tr("Enable Sync"))
+            self.egl_sync_button.setText(self.tr("Enable Sync"))
 
-        self.sync_button.clicked.connect(self.sync)
+        self.egl_sync_button.clicked.connect(self.sync)
 
         self.enable_sync_button.clicked.connect(self.enable_sync)
         self.sync_once_button.clicked.connect(self.core.egl_sync)
@@ -82,7 +94,7 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
         self.core.lgd.config.set('Legendary', 'egl_sync', "true")
         self.core.egl_sync()
         self.core.lgd.save_config()
-        self.sync_button.setText(self.tr("Disable Sync"))
+        self.egl_sync_button.setText(self.tr("Disable Sync"))
         self.enable_sync_button.setDisabled(True)
 
     def export_all(self):
@@ -114,7 +126,7 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
                         igame.egl_guid = ''
                         self.core.install_game(igame)
                 self.core.lgd.save_config()
-                self.sync_button.setText(self.tr("Enable Sync"))
+                self.egl_sync_button.setText(self.tr("Enable Sync"))
         else:
             # enable sync
             self.enable_sync_button.setDisabled(False)
@@ -164,16 +176,29 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
             logger.info("Set config install_dir to " + self.install_dir.text())
         self.core.lgd.save_config()
 
-    def max_worker_save(self, num_workers: str):
-        if num_workers == "":
-            self.core.lgd.config.remove_option("Legendary", "max_workers")
-            self.core.lgd.save_config()
-            return
-        num_workers = int(num_workers)
-        if num_workers == 0:
-            self.core.lgd.config.remove_option("Legendary", "max_workers")
+    def max_worker_save(self, workers: str):
+        if workers := int(workers):
+            self.core.lgd.config.set("Legendary", "max_workers", str(workers))
         else:
-            self.core.lgd.config.set("Legendary", "max_workers", str(num_workers))
+            self.core.lgd.config.remove_option("Legendary", "max_workers")
+        self.core.lgd.save_config()
+
+    def max_memory_save(self, memory: str):
+        if memory := int(memory):
+            self.core.lgd.config.set("Legendary", "max_memory", str(memory))
+        else:
+            self.core.lgd.config.remove_option("Legendary", "max_memory")
+        self.core.lgd.save_config()
+
+    def preferred_cdn_save(self, cdn: str):
+        if cdn:
+            self.core.lgd.config.set("Legendary", "preferred_cdn", cdn.strip(" "))
+        else:
+            self.core.lgd.config.remove_option("Legendary", "preferred_cdn")
+        self.core.lgd.save_config()
+
+    def disable_https_save(self, checked: int):
+        self.core.lgd.config.set("Legendary", "disable_https", str(bool(checked)).lower())
         self.core.lgd.save_config()
 
     def cleanup(self, keep_manifests):
