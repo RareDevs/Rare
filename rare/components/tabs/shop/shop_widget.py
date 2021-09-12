@@ -80,9 +80,10 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.api_core.get_wishlist(self.add_wishlist_items)
 
     def add_wishlist_items(self, wishlist):
-        QWidget().setLayout(self.discount_widget.layout())
 
-        self.discount_widget.setLayout(FlowLayout())
+        for item in (self.discount_widget.layout().itemAt(i) for i in range(self.discount_widget.layout().count())):
+            item.widget().deleteLater()
+
         discounts = 0
         for game in wishlist:
             if not game:
@@ -232,7 +233,12 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.api_core.browse_games(browse_model, self.show_games)
 
     def show_games(self, data):
+        for child in self.game_widget.layout().children():
+            child.deleteLater()
+            del child
+
         QWidget().setLayout(self.game_widget.layout())
+
         if data:
             self.game_widget.setLayout(FlowLayout())
 

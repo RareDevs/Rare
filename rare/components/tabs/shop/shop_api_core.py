@@ -60,7 +60,11 @@ class ShopApiCore(QObject):
         self.manager.post(graphql_url, payload, lambda data: self._handle_search(data, handle_func))
 
     def _handle_search(self, data, handle_func):
-        handle_func(data["data"]["Catalog"]["searchStore"]["elements"])
+        try:
+            handle_func(data["data"]["Catalog"]["searchStore"]["elements"])
+        except KeyError as e:
+            logger.error(str(e))
+            handle_func([])
 
     def browse_games(self, browse_model: BrowseModel, handle_func):
         if self.browse_active:
@@ -77,7 +81,11 @@ class ShopApiCore(QObject):
     def _handle_browse_games(self, data, handle_func):
         self.browse_active = False
         if not self.next_browse_request:
-            handle_func(data["data"]["Catalog"]["searchStore"]["elements"])
+            try:
+                handle_func(data["data"]["Catalog"]["searchStore"]["elements"])
+            except KeyError as e:
+                logger.error(str(e))
+                handle_func([])
         else:
             self.browse_games(*self.next_browse_request)
             self.next_browse_request = tuple(())

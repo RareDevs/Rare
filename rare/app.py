@@ -178,6 +178,6 @@ def start(args):
         exit_code = app.exec_()
         # if not restart
         # restart app
-        app.deleteLater()
+        del app
         if exit_code != -133742:
             break

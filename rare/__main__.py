@@ -3,10 +3,7 @@
 import os
 import pathlib
 import sys
-import traceback
 from argparse import ArgumentParser
-
-from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from rare import __version__, data_dir
 from rare.utils import singleton

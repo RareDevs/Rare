@@ -26,6 +26,8 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
         self.reload_button.clicked.connect(self.update_wishlist)
         self.reload_button.setIcon(icon("fa.refresh", color="white"))
 
+        self.reverse.stateChanged.connect(lambda: self.set_wishlist(sort=self.sort_cb.currentIndex()))
+
     def update_wishlist(self):
         self.setCurrentIndex(1)
         self.api_core.get_wishlist(self.set_wishlist)
@@ -54,30 +56,35 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
         else:
             self.no_games_label.setVisible(False)
 
-    def set_wishlist(self, wishlist, sort=0):
-        self.wishlist = wishlist
+    def set_wishlist(self, wishlist=None, sort=0):
+        if wishlist is not None:
+            self.wishlist = wishlist
 
         for i in self.widgets:
             i.setParent(None)
+            del i
 
         if sort == 0:
-            sorted_list = sorted(wishlist, key=lambda x: x["offer"]["title"])
+            sorted_list = sorted(self.wishlist, key=lambda x: x["offer"]["title"])
         elif sort == 1:
-            sorted_list = sorted(wishlist, key=lambda x: x["offer"]['price']['totalPrice']['fmtPrice']['discountPrice'])
+            sorted_list = sorted(self.wishlist, key=lambda x: x["offer"]['price']['totalPrice']['fmtPrice']['discountPrice'])
         elif sort == 2:
-            sorted_list = sorted(wishlist, key=lambda x: x["offer"]["seller"]["name"])
+            sorted_list = sorted(self.wishlist, key=lambda x: x["offer"]["seller"]["name"])
         elif sort == 3:
-            sorted_list = sorted(wishlist, reverse=True, key=lambda x: 1 - (
+            sorted_list = sorted(self.wishlist, reverse=True, key=lambda x: 1 - (
                     x["offer"]["price"]["totalPrice"]["discountPrice"] / x["offer"]["price"]["totalPrice"][
                 "originalPrice"]))
         else:
-            sorted_list = wishlist
+            sorted_list = self.wishlist
         self.widgets.clear()
 
         if len(sorted_list) == 0:
             self.no_games_label.setVisible(True)
         else:
             self.no_games_label.setVisible(False)
+
+        if self.reverse.isChecked():
+            sorted_list.reverse()
 
         for game in sorted_list:
             w = WishlistWidget(game["offer"])

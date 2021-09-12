@@ -3,7 +3,7 @@ import webbrowser
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QSpacerItem, QGroupBox
 from qtawesome import icon
 
 from rare.components.tabs.shop.shop_models import ShopGame
@@ -175,8 +175,14 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.tags.setText(", ".join(self.game.tags))
 
         # clear Layout
-        QWidget().setLayout(self.social_link_gb.layout())
+        for widget in (self.social_link_gb.layout().itemAt(i) for i in range(self.social_link_gb.layout().count())):
+            if not isinstance(widget, QSpacerItem):
+                widget.widget().deleteLater()
+        self.social_link_gb.deleteLater()
+        self.social_link_gb = QGroupBox(self.tr("Social Links"))
         self.social_link_gb.setLayout(QHBoxLayout())
+
+        self.layout().insertWidget(3, self.social_link_gb)
 
         self.social_link_gb.layout().addStretch(1)
         link_count = 0

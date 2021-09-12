@@ -289,7 +289,10 @@ class GameList(QStackedWidget):
                 # new installed
                 elif self.core.is_installed(widgets[0].game.app_name) and not isinstance(widgets[0],
                                                                                          BaseInstalledWidget):
-                    self.widgets.pop(widgets[0].game.app_name)
+                    name = widgets[0].game.app_name
+                    self.widgets[name][0].deleteLater()
+                    self.widgets[name][1].deleteLater()
+                    self.widgets.pop(name)
 
                     # QWidget().setLayout(self.icon_layout)
 
@@ -303,6 +306,9 @@ class GameList(QStackedWidget):
                                                                                          BaseInstalledWidget):
                     self.list_layout.removeWidget(widgets[1])
                     self.icon_layout.removeWidget(widgets[0])
+
+                    widgets[0].deleteLater()
+                    widgets[1].deleteLater()
 
                     self.widgets.pop(app_name)
 
@@ -331,6 +337,8 @@ class GameList(QStackedWidget):
                     self.icon_layout.removeWidget(self.widgets[app_name][0])
                     self.list_layout.removeWidget(self.widgets[app_name][1])
 
+                    self.widgets[name][0].deleteLater()
+                    self.widgets[name][1].deleteLater()
                     self.widgets.pop(name)
 
                     igame = self.core.get_installed_game(name)
@@ -339,6 +347,9 @@ class GameList(QStackedWidget):
                 for name in new_uninstalled_games:
                     self.icon_layout.removeWidget(self.widgets[app_name][0])
                     self.list_layout.removeWidget(self.widgets[app_name][1])
+
+                    self.widgets[name][0].deleteLater()
+                    self.widgets[name][1].deleteLater()
 
                     self.widgets.pop(name)
 
@@ -379,15 +390,15 @@ class GameList(QStackedWidget):
         # get Uninstalled games
         games, self.dlcs = self.core.get_game_and_dlc_list()
         for game in sorted(games, key=lambda x: x.app_title):
-            if not game.app_name in installed_names:
+            if game.app_name not in installed_names:
                 self.uninstalled_names.append(game)
         for game in self.uninstalled_names:
             i_widget, list_widget = self.widgets[game.app_name]
             icon_layout.addWidget(i_widget)
             list_layout.addWidget(list_widget)
 
-        QWidget().setLayout(self.icon_layout)
-        QWidget().setLayout(self.list_layout)
+        self.icon_layout.deleteLater()
+        self.list_layout.deleteLater()
 
         self.icon_widget = QWidget()
         self.list_widget = QWidget()

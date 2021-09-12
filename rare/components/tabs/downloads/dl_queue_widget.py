@@ -71,8 +71,9 @@ class DlQueueWidget(QGroupBox):
     def update_queue(self, dl_queue: list):
         logger.info("Update Queue " + ", ".join(i.download.game.app_title for i in dl_queue))
         self.dl_queue = dl_queue
-        QWidget().setLayout(self.layout())
-        self.setLayout(QVBoxLayout())
+
+        for item in (self.layout().itemAt(i) for i in range(self.layout().count())):
+            item.widget().deleteLater()
 
         if len(dl_queue) == 0:
             self.layout().addWidget(QLabel(self.tr("No downloads in queue")))
@@ -87,8 +88,6 @@ class DlQueueWidget(QGroupBox):
             self.layout().addWidget(widget)
             if index + 1 == len(dl_queue):
                 widget.move_down_buttton.setDisabled(True)
-
-        self.setLayout(self.layout())
 
     def remove(self, app_name):
         for index, i in enumerate(self.dl_queue):
