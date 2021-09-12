@@ -299,17 +299,17 @@
 <context>
     <name>DLCWidget</name>
     <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="125"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="125"/>
         <source>Install</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="130"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="130"/>
         <source>Installed. Uninstalling DLCs is not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="140"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="140"/>
         <source>Installing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -371,27 +371,27 @@
 <context>
     <name>DlcTab</name>
     <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="36"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="36"/>
         <source>Installed DLCs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="38"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="38"/>
         <source>Available DLCs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="57"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="57"/>
         <source>No DLCs are installed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="59"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="59"/>
         <source>No DLCs are available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/dlcs.py" line="73"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="73"/>
         <source>Base Game is not installed. Please install {} first</source>
         <translation type="unfinished"></translation>
     </message>

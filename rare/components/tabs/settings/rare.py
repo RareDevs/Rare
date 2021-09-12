@@ -1,6 +1,5 @@
 import os
 import platform
-import shutil
 import subprocess
 import sys
 from logging import getLogger
@@ -8,7 +7,7 @@ from logging import getLogger
 from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget
 
-from rare import cache_dir, data_dir
+from rare import cache_dir
 from rare.components.tabs.settings.rpc_settings import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
@@ -37,18 +36,11 @@ class RareSettings(QWidget, Ui_RareSettings):
             (self.notification, "notification", True),
             (self.save_size, "save_size", False),
             (self.log_games, "show_console", False),
-            # (self.image_cache, "cache_images", True)
         ]
 
         self.settings = QSettings()
-        self.img_dir_path = self.settings.value("img_dir", os.path.join(data_dir, "images"), type=str)
         language = self.settings.value("language", get_lang(), type=str)
         self.logdir = os.path.join(cache_dir, "logs")
-
-
-        # Select Image directory
-        # self.img_dir = PathEdit(self.img_dir_path, file_type=QFileDialog.DirectoryOnly, save_func=self.save_path)
-        # self.img_dir_layout.addWidget(self.img_dir)
 
         # Select lang
         self.lang_select.addItems([i[1] for i in languages])
@@ -84,12 +76,28 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.rpc = RPCSettings()
         self.rpc_layout.addWidget(self.rpc, alignment=Qt.AlignTop)
 
-        for cb in self.checkboxes:
-            widget, option, default = cb
-            widget.setChecked(self.settings.value(option, default, bool))
-            widget.stateChanged.connect(
-                lambda: self.settings.setValue(option, widget.isChecked())
-            )
+        self.init_checkboxes(self.checkboxes)
+        self.sys_tray.stateChanged.connect(
+            lambda: self.settings.setValue("sys_tray", self.sys_tray.isChecked())
+        )
+        self.auto_update.stateChanged.connect(
+            lambda: self.settings.setValue("auto_update", self.auto_update.isChecked())
+        )
+        self.confirm_start.stateChanged.connect(
+            lambda: self.settings.setValue("confirm_start", self.confirm_start.isChecked())
+        )
+        self.auto_sync_cloud.stateChanged.connect(
+            lambda: self.settings.setValue("auto_sync_cloud", self.auto_sync_cloud.isChecked())
+        )
+        self.notification.stateChanged.connect(
+            lambda: self.settings.setValue("notification", self.notification.isChecked())
+        )
+        self.save_size.stateChanged.connect(
+            lambda: self.settings.setValue("save_size", self.save_size.isChecked())
+        )
+        self.log_games.stateChanged.connect(
+            lambda: self.settings.setValue("show_console", self.log_games.isChecked())
+        )
 
         if platform.system() == "Linux":
 
@@ -182,22 +190,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.settings.setValue("language", languages[i][0])
         self.interface_info.setVisible(True)
 
-    def update_path(self):
-        old_path = self.img_dir_path
-        new_path = self.img_dir.text()
-
-        if old_path != new_path:
-            if not os.path.exists(new_path):
-                os.makedirs(new_path)
-            elif len(os.listdir(new_path)) > 0:
-                logger.warning("New directory is not empty")
-                return
-            logger.info("Move Images")
-            for i in os.listdir(old_path):
-                try:
-                    shutil.move(os.path.join(old_path, i), os.path.join(new_path, i))
-                except:
-                    pass
-            os.rmdir(old_path)
-            self.img_dir_path = new_path
-            self.settings.setValue("img_dir", new_path)
+    def init_checkboxes(self, checkboxes):
+        for cb in checkboxes:
+            widget, option, default = cb
+            widget.setChecked(self.settings.value(option, default, bool))
