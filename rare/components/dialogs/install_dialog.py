@@ -114,6 +114,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.dl_item.options.sdl_list = ['']
         for cb in self.sdl_list_checks:
             if data := cb.isChecked():
+                # noinspection PyTypeChecker
                 self.dl_item.options.sdl_list.extend(data)
 
     def get_download_info(self):

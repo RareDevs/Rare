@@ -1,6 +1,5 @@
 import os
 import platform
-import shutil
 import subprocess
 import sys
 from logging import getLogger
@@ -8,7 +7,7 @@ from logging import getLogger
 from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget
 
-from rare import cache_dir, data_dir
+from rare import cache_dir
 from rare.components.tabs.settings.rpc_settings import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
@@ -40,7 +39,6 @@ class RareSettings(QWidget, Ui_RareSettings):
         ]
 
         self.settings = QSettings()
-        self.img_dir_path = self.settings.value("img_dir", os.path.join(data_dir, "images"), type=str)
         language = self.settings.value("language", get_lang(), type=str)
         self.logdir = os.path.join(cache_dir, "logs")
 
@@ -191,26 +189,6 @@ class RareSettings(QWidget, Ui_RareSettings):
     def update_lang(self, i: int):
         self.settings.setValue("language", languages[i][0])
         self.interface_info.setVisible(True)
-
-    def update_path(self):
-        old_path = self.img_dir_path
-        new_path = self.img_dir.text()
-
-        if old_path != new_path:
-            if not os.path.exists(new_path):
-                os.makedirs(new_path)
-            elif len(os.listdir(new_path)) > 0:
-                logger.warning("New directory is not empty")
-                return
-            logger.info("Move Images")
-            for i in os.listdir(old_path):
-                try:
-                    shutil.move(os.path.join(old_path, i), os.path.join(new_path, i))
-                except:
-                    pass
-            os.rmdir(old_path)
-            self.img_dir_path = new_path
-            self.settings.setValue("img_dir", new_path)
 
     def init_checkboxes(self, checkboxes):
         for cb in checkboxes:

@@ -2,20 +2,20 @@ import os.path
 import platform
 from logging import getLogger
 
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QStackedWidget, QVBoxLayout, QDialog, QCheckBox, QLabel, \
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QVBoxLayout, QDialog, QCheckBox, QLabel, \
     QHBoxLayout, QPushButton, QGroupBox, QWidget
 
 from legendary.core import LegendaryCore
-from rare.ui.components.tabs.settings.legendary import Ui_legendary_settings
+from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import get_size
 
 logger = getLogger("LegendarySettings")
 
 
-class LegendarySettings(QStackedWidget, Ui_legendary_settings):
-    def __init__(self, core: LegendaryCore):
-        super(LegendarySettings, self).__init__()
+class LegendarySettings(QWidget, Ui_LegendarySettings):
+    def __init__(self, core: LegendaryCore, parent=None):
+        super(LegendarySettings, self).__init__(parent=parent)
         self.setupUi(self)
 
         self.core = core
@@ -24,22 +24,22 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
         self.install_dir = PathEdit(core.get_default_install_dir(),
                                     file_type=QFileDialog.DirectoryOnly,
                                     save_func=self.save_path)
-        self.layout_install_dir.addWidget(self.install_dir)
+        self.install_dir_layout.addWidget(self.install_dir)
 
         # Max Workers
-        max_workers = self.core.lgd.config["Legendary"].getint("max_workers", fallback=0)
+        max_workers = self.core.lgd.config['Legendary'].getint('max_workers', fallback=0)
         self.max_worker_spin.setValue(max_workers)
         self.max_worker_spin.valueChanged.connect(self.max_worker_save)
         # Max memory
-        max_memory = self.core.lgd.config["Legendary"].getint("max_memory", fallback=0)
+        max_memory = self.core.lgd.config['Legendary'].getint('max_memory', fallback=0)
         self.max_memory_spin.setValue(max_memory)
         self.max_memory_spin.valueChanged.connect(self.max_memory_save)
         # Preferred CDN
-        preferred_cdn = self.core.lgd.config["Legendary"].get("preferred_cdn", fallback="")
+        preferred_cdn = self.core.lgd.config['Legendary'].get('preferred_cdn', fallback="")
         self.preferred_cdn_line.setText(preferred_cdn)
         self.preferred_cdn_line.textChanged.connect(self.preferred_cdn_save)
         # Disable HTTPS
-        disable_https = self.core.lgd.config["Legendary"].getboolean("disable_https", fallback=False)
+        disable_https = self.core.lgd.config['Legendary'].getboolean('disable_https', fallback=False)
         self.disable_https_check.setChecked(disable_https)
         self.disable_https_check.stateChanged.connect(self.disable_https_save)
 
@@ -50,11 +50,8 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
         self.clean_keep_manifests_button.clicked.connect(
             lambda: self.cleanup(True)
         )
-        self.setCurrentIndex(0)
 
-        self.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
-
-        self.path_info.setText(self.tr("EGL path is at C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Manifests"))
+        self.manifest_path_info.setText(self.tr("EGL path is at C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Manifests"))
         path = os.path.expanduser("~/")
         if self.core.egl.programdata_path:
             path = self.core.egl.programdata_path
@@ -65,14 +62,14 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
                 if os.path.exists(p := os.path.join(i, "drive_c/ProgramData/Epic/EpicGamesLauncher/Data/Manifests")):
                     path = p
 
-        self.path_edit = PathEdit(path, QFileDialog.DirectoryOnly, save_func=self.save_egl_path)
-        self.pathedit_placeholder.addWidget(self.path_edit)
+        self.manifest_path_edit = PathEdit(path, QFileDialog.DirectoryOnly, save_func=self.save_egl_path)
+        self.manifest_path_layout.addWidget(self.manifest_path_edit)
         if platform.system() != "Windows":
-            self.core.lgd.config.set("Legendary", "egl_programdata")
+            self.core.lgd.config.set('Legendary', 'egl_programdata', path)
             self.core.egl.programdata_path = path
 
-        self.importable_widgets = []
-        self.exportable_widgets = []
+        self.importable_widgets = list()
+        self.exportable_widgets = list()
 
         if self.core.egl_sync_enabled:
             self.egl_sync_button.setText(self.tr("Disable sync"))
@@ -86,7 +83,7 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
 
     def enable_sync(self):
         if not self.core.egl.programdata_path:
-            if os.path.exists(path := self.path_edit.text()):
+            if os.path.exists(path := self.manifest_path_edit.text()):
                 self.core.lgd.config.set("Legendary", "egl_programdata", path)
                 self.core.lgd.save_config()
                 self.core.egl.programdata_path = path
@@ -98,16 +95,18 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
         self.enable_sync_button.setDisabled(True)
 
     def export_all(self):
-        for w in self.exportable_widgets:
-            w.export_game()
+        for ew in self.exportable_widgets:
+            ew.export_game()
+        self.exportable_widgets.clear()
 
     def import_all(self):
-        for w in self.importable_widgets:
-            w.import_game()
+        for iw in self.importable_widgets:
+            iw.import_game()
+        self.importable_widgets.clear()
 
     def save_egl_path(self):
-        self.core.lgd.config.set("Legendary", "egl_programdata", self.path_edit.text())
-        self.core.egl.programdata_path = self.path_edit.text()
+        self.core.lgd.config.set("Legendary", "egl_programdata", self.manifest_path_edit.text())
+        self.core.egl.programdata_path = self.manifest_path_edit.text()
         self.core.lgd.save_config()
         self.update_egl_widget()
 
@@ -131,42 +130,49 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
             # enable sync
             self.enable_sync_button.setDisabled(False)
             self.update_egl_widget()
-            self.setCurrentIndex(1)
 
     def update_egl_widget(self):
-        self.exportable_widgets = []
-        QWidget().setLayout(self.exportable_games.layout())
-        QWidget().setLayout(self.importable_games.layout())
-        importable_layout = QVBoxLayout()
-        self.importable_games.setLayout(importable_layout)
-        exportable_layout = QVBoxLayout()
-        self.exportable_games.setLayout(exportable_layout)
+        self.import_scroll.setVisible(bool(self.core.egl.programdata_path))
+        self.export_scroll.setVisible(bool(self.core.egl.programdata_path))
+        self.export_all_button.setDisabled(not bool(self.core.egl.programdata_path))
+        self.import_all_button.setDisabled(not bool(self.core.egl.programdata_path))
+
         if not self.core.egl.programdata_path:
-            self.importable_games.setVisible(False)
-            self.exportable_games.setVisible(False)
-            self.export_all_button.setVisible(False)
-            self.import_all_button.setVisible(False)
             return
 
-        self.importable_games.setVisible(True)
-        self.exportable_games.setVisible(True)
-        self.export_all_button.setVisible(True)
-        self.import_all_button.setVisible(True)
+        if self.exportable_widgets:
+            for ew in self.exportable_widgets:
+                # FIXME: Handle this using signals to properly update the list on python's side
+                try:
+                    ew.deleteLater()
+                except RuntimeError as e:
+                    print(e)
+        self.exportable_widgets.clear()
+        exportable_games = self.core.egl_get_exportable()
+        for igame in exportable_games:
+            ew = EGLSyncWidget(igame, True, self.core)
+            self.exportable_widgets.append(ew)
+            self.exportable_layout.addWidget(ew)
+        self.export_group.setEnabled(bool(exportable_games))
+        self.export_all_button.setEnabled(bool(exportable_games))
+        self.export_label.setVisible(not bool(exportable_games))
 
-        for igame in self.core.egl_get_exportable():
-            w = EGLSyncWidget(igame, True, self.core)
-            self.importable_widgets.append(w)
-            self.exportable_games.layout().addWidget(w)
-        if len(self.core.egl_get_exportable()) == 0:
-            self.exportable_games.layout().addWidget(QLabel(self.tr("No games to export")))
-
-        self.importable_widgets = []
-        for game in self.core.egl_get_importable():
-            w = EGLSyncWidget(game, False, self.core)
-            self.importable_widgets.append(w)
-            self.importable_games.layout().addWidget(w)
-        if len(self.core.egl_get_importable()) == 0:
-            self.importable_games.layout().addWidget(QLabel(self.tr("No games to import")))
+        if self.importable_widgets:
+            for iw in self.importable_widgets:
+                # FIXME: Handle this using signals to properly update the list on python's side
+                try:
+                    iw.deleteLater()
+                except RuntimeError as e:
+                    print(e)
+        self.importable_widgets.clear()
+        importable_games = self.core.egl_get_importable()
+        for game in importable_games:
+            iw = EGLSyncWidget(game, False, self.core)
+            self.importable_widgets.append(iw)
+            self.importable_layout.addWidget(iw)
+        self.import_group.setEnabled(bool(importable_games))
+        self.import_all_button.setEnabled(bool(importable_games))
+        self.import_label.setVisible(not bool(importable_games))
 
     def save_path(self):
         self.core.lgd.config["Legendary"]["install_dir"] = self.install_dir.text()
@@ -192,7 +198,7 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
 
     def preferred_cdn_save(self, cdn: str):
         if cdn:
-            self.core.lgd.config.set("Legendary", "preferred_cdn", cdn.strip(" "))
+            self.core.lgd.config.set("Legendary", "preferred_cdn", cdn.strip())
         else:
             self.core.lgd.config.remove_option("Legendary", "preferred_cdn")
         self.core.lgd.save_config()
@@ -228,8 +234,8 @@ class LegendarySettings(QStackedWidget, Ui_legendary_settings):
 class DisableSyncDialog(QDialog):
     info = 1, False
 
-    def __init__(self):
-        super(DisableSyncDialog, self).__init__()
+    def __init__(self, parent=None):
+        super(DisableSyncDialog, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
 
         self.question = QLabel(self.tr("Do you really want to disable sync with Epic Games Store"))
@@ -268,8 +274,8 @@ class DisableSyncDialog(QDialog):
 
 
 class EGLSyncWidget(QGroupBox):
-    def __init__(self, game, export: bool, core: LegendaryCore):
-        super(EGLSyncWidget, self).__init__()
+    def __init__(self, game, export: bool, core: LegendaryCore, parent=None):
+        super(EGLSyncWidget, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
         self.export = export
         self.core = core
@@ -292,6 +298,12 @@ class EGLSyncWidget(QGroupBox):
 
     def export_game(self):
         self.core.egl_export(self.game.app_name)
+        # FIXME: on update_egl_widget this is going to crash because
+        # FIXME: the item is not removed from the list in the python's side
+        self.deleteLater()
 
     def import_game(self):
         self.core.egl_import(self.game.app_name)
+        # FIXME: on update_egl_widget this is going to crash because
+        # FIXME: the item is not removed from the list in the python's side
+        self.deleteLater()

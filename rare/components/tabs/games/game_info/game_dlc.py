@@ -1,15 +1,11 @@
-import os
-
-from PyQt5.QtCore import pyqtSignal, QSettings, QSize
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QFrame, QWidget, QMessageBox
 
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
-from rare import data_dir
-from rare.utils.utils import download_image
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
+from rare.utils.utils import get_pixmap
 
 
 class GameDlc(QWidget, Ui_GameDlc):
@@ -72,32 +68,9 @@ class GameDlcWidget(QFrame, Ui_GameDlcWidget):
         super(GameDlcWidget, self).__init__(parent=parent)
         self.setupUi(self)
         self.dlc = dlc
-        image_dir = QSettings().value("img_dir", os.path.join(data_dir, "images"))
 
-        if installed:
-            if os.path.exists(os.path.join(image_dir, dlc.app_name, "FinalArt.png")):
-                pixmap = QPixmap(os.path.join(image_dir, dlc.app_name, "FinalArt.png"))
-            elif os.path.exists(os.path.join(image_dir, dlc.app_name, "DieselGameBoxTall.png")):
-                pixmap = QPixmap(os.path.join(image_dir, dlc.app_name, "DieselGameBoxTall.png"))
-            elif os.path.exists(os.path.join(image_dir, dlc.app_name, "DieselGameBoxLogo.png")):
-                pixmap = QPixmap(os.path.join(image_dir, dlc.app_name, "DieselGameBoxLogo.png"))
-            else:
-                print(f"No Image found: {dlc.app_title}")
-                pixmap = None
-            if not pixmap or pixmap.isNull():
-                print(dlc.app_title + " has corrupt Image")
-                download_image(dlc, force=True)
-                pixmap = QPixmap(f"{image_dir}/{dlc.app_name}/UninstalledArt.png")
-        else:
-            if os.path.exists(f"{image_dir}/{dlc.app_name}/UninstalledArt.png"):
-                pixmap = QPixmap(f"{image_dir}/{dlc.app_name}/DieselGameBoxTall.png")
-            else:
-                pixmap = None
-            if not pixmap or pixmap.isNull():
-                print(dlc.app_title + " has corrupt Image")
-                download_image(dlc, force=True)
-                pixmap = QPixmap(f"{image_dir}/{dlc.app_name}/UninstalledArt.png")
-        self.image.setPixmap(pixmap.scaledToHeight(pixmap.height()*0.5))
+        pixmap = get_pixmap(dlc.app_name)
+        self.image.setPixmap(pixmap.scaledToHeight(pixmap.height() * 0.5))
 
         self.dlc_name.setText(dlc.app_title)
         self.version.setText(dlc.app_version)
