@@ -73,6 +73,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.api_core.get_free_games(self.add_free_games)
         # load wishlist
         self.api_core.get_wishlist(self.add_wishlist_items)
+        # load browse games
         self.prepare_request()
 
     def update_wishlist(self):
@@ -86,11 +87,15 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         for game in wishlist:
             if not game:
                 continue
-            if game["offer"]["price"]["totalPrice"]["discount"] > 0:
-                w = GameWidget(self.path, game["offer"])
-                w.show_info.connect(self.show_game.emit)
-                self.discount_widget.layout().addWidget(w)
-                discounts += 1
+            try:
+                if game["offer"]["price"]["totalPrice"]["discount"] > 0:
+                    w = GameWidget(self.path, game["offer"])
+                    w.show_info.connect(self.show_game.emit)
+                    self.discount_widget.layout().addWidget(w)
+                    discounts += 1
+            except Exception as e:
+                logger.warning(str(game) + str(e))
+                continue
         self.discounts_gb.setVisible(discounts > 0)
         self.discount_stack.setCurrentIndex(0)
 
@@ -99,22 +104,19 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         free_games_now = []
         coming_free_games = []
         for game in free_games:
-            if game["title"] == "Mystery Game":
-                coming_free_games.append(game)
-                continue
+            try:
+                if game['price']['totalPrice']['fmtPrice']['discountPrice'] == "0" and game['price']['totalPrice']['fmtPrice']['originalPrice'] != game['price']['totalPrice']['fmtPrice']['discountPrice']:
+                    free_games_now.append(game)
+                    continue
+
+                if game["title"] == "Mystery Game":
+                    coming_free_games.append(game)
+                    continue
+            except KeyError as e:
+                logger.warning(str(e))
+
             try:
                 # parse datetime to check if game is next week or now
-                try:
-                    end_date = datetime.datetime.strptime(
-                        game["promotions"]["upcomingPromotionalOffers"][0]["promotionalOffers"][0]["endDate"],
-                        '%Y-%m-%dT%H:%M:%S.%fZ')
-                except Exception:
-                    try:
-                        end_date = datetime.datetime.strptime(
-                            game["promotions"]["promotionalOffers"][0]["promotionalOffers"][0]["endDate"],
-                            '%Y-%m-%dT%H:%M:%S.%fZ')
-                    except Exception:
-                        continue
                 try:
                     start_date = datetime.datetime.strptime(
                         game["promotions"]["upcomingPromotionalOffers"][0]["promotionalOffers"][0]["startDate"],
@@ -125,16 +127,14 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                             game["promotions"]["promotionalOffers"][0]["promotionalOffers"][0]["startDate"],
                             '%Y-%m-%dT%H:%M:%S.%fZ')
                     except Exception as e:
-                        print(e)
-                        logger.warning(str(e))
+
                         continue
 
             except TypeError:
                 print("type error")
                 continue
-            if start_date < date < end_date:
-                free_games_now.append(game)
-            elif start_date > date:
+
+            if start_date > date:
                 coming_free_games.append(game)
         # free games now
         for free_game in free_games_now:
@@ -142,8 +142,6 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             w.show_info.connect(self.show_game.emit)
             self.free_games_now.layout().addWidget(w)
             self.free_game_widgets.append(w)
-
-        # self.free_games_now.layout().addStretch(1)
 
         # free games next week
         for free_game in coming_free_games:
@@ -222,11 +220,10 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             if len(self.discounts_gb.layout().children()) > 0:
                 self.discounts_gb.setVisible(True)
 
-        locale = get_lang()
         self.game_stack.setCurrentIndex(1)
         date = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.{str(random.randint(0, 999)).zfill(3)}Z]"
 
-        browse_model = BrowseModel(locale=locale, date=date, count=20, price=self.price,
+        browse_model = BrowseModel(locale=self.locale, date=date, count=20, price=self.price,
                                    onSale=self.on_discount.isChecked())
         browse_model.tag = "|".join(self.tags)
 
@@ -240,13 +237,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             self.game_widget.setLayout(FlowLayout())
 
             for game in data:
-                price = game['price']['totalPrice']['fmtPrice']['originalPrice']
-                discount_price = game['price']['totalPrice']['fmtPrice']['discountPrice']
-
-                if price != discount_price:
-                    w = GameWidget(self.path, game, 275)
-                else:
-                    w = GameWidget(self.path, game, 275)
+                w = GameWidget(self.path, game, 275)
                 self.game_widget.layout().addWidget(w)
                 w.show_info.connect(self.show_game.emit)
 

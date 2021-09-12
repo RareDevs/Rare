@@ -160,9 +160,12 @@ def start(args):
     if args.debug:
         logging.basicConfig(format='[%(name)s] %(levelname)s: %(message)s', level=logging.DEBUG)
         logging.getLogger().setLevel(level=logging.DEBUG)
-        # keep requests quiet
+        # keep requests, asyncio and pillow quiet
         logging.getLogger('requests').setLevel(logging.WARNING)
         logging.getLogger('urllib3').setLevel(logging.WARNING)
+        logging.getLogger("PIL.TiffImagePlugin").setLevel(logging.WARNING)
+        logging.getLogger("asyncio").setLevel(logging.WARNING)
+        logging.getLogger("PIL.PngImagePlugin").setLevel(logging.WARNING)
     else:
         logging.basicConfig(
             format='[%(name)s] %(levelname)s: %(message)s',
@@ -175,6 +178,6 @@ def start(args):
         exit_code = app.exec_()
         # if not restart
         # restart app
-        del app
+        app.deleteLater()
         if exit_code != -133742:
             break

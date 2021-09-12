@@ -1,6 +1,7 @@
 import logging
 import webbrowser
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout
 from qtawesome import icon
@@ -27,6 +28,9 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.image = ImageLabel()
         self.image_stack.addWidget(self.image)
         self.image_stack.addWidget(WaitingSpinner())
+        warn_label = QLabel()
+        warn_label.setPixmap(icon("fa.warning").pixmap(160, 160).scaled(240, 320, Qt.IgnoreAspectRatio))
+        self.image_stack.addWidget(warn_label)
 
         self.locale = get_lang()
         self.wishlist_button.clicked.connect(self.add_to_wishlist)
@@ -51,6 +55,14 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         for i in reversed(range(self.req_group_box.layout().count())):
             self.req_group_box.layout().itemAt(i).widget().setParent(None)
         slug = data["productSlug"]
+        if not slug:
+            for mapping in data["offerMappings"]:
+                if mapping["pageType"] == "productHome":
+                    slug = mapping["pageSlug"]
+                    break
+            else:
+                logger.error("Could not get page information")
+                slug = ""
         if "/home" in slug:
             slug = slug.replace("/home", "")
         self.slug = slug
@@ -73,7 +85,8 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 is_bundle = True
 
         # init API request
-        self.api_core.get_game(slug, is_bundle, self.data_received)
+        if slug:
+            self.api_core.get_game(slug, is_bundle, self.data_received)
 
     def add_to_wishlist(self):
         if not self.in_wishlist:
@@ -87,7 +100,23 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                                                if success else self.wishlist_button.setText("Something goes wrong"))
 
     def data_received(self, game):
-        self.game = ShopGame.from_json(game, self.data)
+        try:
+            self.game = ShopGame.from_json(game, self.data)
+        except Exception as e:
+            logger.error(str(e))
+            self.price.setText("Error")
+            self.req_group_box.setVisible(False)
+            for img in self.data.get("keyImages"):
+                if img["type"] in ["DieselStoreFrontWide", "OfferImageWide", "VaultClosed", "ProductLogo"]:
+                    self.image.update_image(img["url"], size=(240, 320))
+                    self.image_stack.setCurrentIndex(0)
+                    break
+            else:
+                self.image_stack.setCurrentIndex(2)
+            self.price.setText("")
+            self.social_link_gb.setVisible(False)
+            self.tags.setText("")
+            return
         self.title.setText(self.game.title)
         self.price.setFont(QFont())
         if self.game.price == "0" or self.game.price == 0:
@@ -126,13 +155,14 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.req_group_box.layout().addWidget(QLabel(self.tr("Could not get requirements")))
 
         if self.game.image_urls.front_tall:
-            img = self.game.image_urls.front_tall
+            img_url = self.game.image_urls.front_tall
         elif self.game.image_urls.offer_image_tall:
-            img = self.game.image_urls.offer_image_tall
+            img_url = self.game.image_urls.offer_image_tall
+        elif self.game.image_urls.product_logo:
+            img_url = self.game.image_urls.product_logo
         else:
-            img = ""
-
-        self.image.update_image(img, self.game.title, (240, 320))
+            img_url = ""
+        self.image.update_image(img_url, self.game.title, (240, 320))
 
         self.image_stack.setCurrentIndex(0)
         try:

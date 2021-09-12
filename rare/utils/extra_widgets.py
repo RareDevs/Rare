@@ -264,7 +264,7 @@ class ImageLabel(QLabel):
         self.path = cache_dir
         self.manager = QtRequestManager("bytes")
 
-    def update_image(self, url, name, size: tuple = (240, 320)):
+    def update_image(self, url, name="", size: tuple = (240, 320)):
         self.setFixedSize(*size)
         self.img_size = size
         self.name = name
@@ -282,25 +282,19 @@ class ImageLabel(QLabel):
             self.show_image()
 
     def image_ready(self, data):
-        try:
-            self.setPixmap(QPixmap())
-        except RuntimeError:
-            return
+        self.setPixmap(QPixmap())
         try:
             image: Image.Image = Image.open(io.BytesIO(data))
         except PIL.UnidentifiedImageError:
-            print(self.name)
             return
-        image = image.resize((self.img_size[0], self.img_size[1]))
-
-        if QSettings().value("cache_images", False, bool):
-            image.save(os.path.join(self.path, self.name), format="png")
+        image = image.resize((self.img_size[:2]))
         byte_array = io.BytesIO()
         image.save(byte_array, format="PNG")
         # pixmap = QPixmap.fromImage(ImageQt(image))
         pixmap = QPixmap()
         pixmap.loadFromData(byte_array.getvalue())
         # pixmap = QPixmap.fromImage(ImageQt.ImageQt(image))
+        pixmap = pixmap.scaled(*self.img_size[:2], Qt.KeepAspectRatioByExpanding)
         self.setPixmap(pixmap)
 
     def show_image(self):

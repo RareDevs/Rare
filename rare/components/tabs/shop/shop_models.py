@@ -7,12 +7,14 @@ from rare.utils.utils import get_lang
 
 class ImageUrlModel:
     def __init__(self, front_tall: str = "", offer_image_tall: str = "",
-                 thumbnail: str = "", front_wide: str = "", offer_image_wide: str = ""):
+                 thumbnail: str = "", front_wide: str = "", offer_image_wide: str = "",
+                 product_logo: str = ""):
         self.front_tall = front_tall
         self.offer_image_tall = offer_image_tall
         self.thumbnail = thumbnail
         self.front_wide = front_wide
         self.offer_image_wide = offer_image_wide
+        self.product_logo = product_logo
 
     @classmethod
     def from_json(cls, json_data: list):
@@ -28,6 +30,8 @@ class ImageUrlModel:
                 tmp.offer_image_tall = item["url"]
             elif item["type"] == "OfferImageWide":
                 tmp.offer_image_wide = item["url"]
+            elif item["type"] == "ProductLogo":
+                tmp.product_logo = item["url"]
         return tmp
 
 

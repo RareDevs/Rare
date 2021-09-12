@@ -57,7 +57,7 @@ class GameWidget(QWidget):
 
         self.title = json_info["title"]
         for img in json_info["keyImages"]:
-            if img["type"] in ["DieselStoreFrontWide", "OfferImageWide", "VaultClosed"]:
+            if img["type"] in ["DieselStoreFrontWide", "OfferImageWide", "VaultClosed", "ProductLogo"]:
                 if img["type"] == "VaultClosed" and self.title != "Mystery Game":
                     continue
                 self.image.update_image(img["url"], json_info["title"], (self.width, int(self.width * 9 / 16)))
