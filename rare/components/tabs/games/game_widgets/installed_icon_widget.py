@@ -2,7 +2,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import QEvent, pyqtSignal, QSize, Qt
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from qtawesome import icon
 
 from legendary.core import LegendaryCore
