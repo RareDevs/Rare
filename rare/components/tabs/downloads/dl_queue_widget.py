@@ -95,7 +95,7 @@ class DlQueueWidget(QGroupBox):
                 self.dl_queue.pop(index)
                 break
         else:
-            logger.warning("BUG! ", app_name)
+            logger.warning("BUG! " + app_name)
             return
         self.update_list.emit(self.dl_queue)
         self.update_queue(self.dl_queue)

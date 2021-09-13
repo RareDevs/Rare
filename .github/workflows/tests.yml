@@ -81,5 +81,5 @@ jobs:
           pip install -r requirements.txt
       - name: Analysing the code with pylint
         run: |
-          pylint rare --disable=R,C,E0611,I1101,W1203,W1201,W0201 --ignore=ui,singleton.py,json_formatter.py --extension-pkg-whitelist=PyQt5
+          pylint -E rare --disable=E0611 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
 

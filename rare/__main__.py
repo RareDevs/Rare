@@ -10,8 +10,14 @@ from rare.utils import singleton
 
 
 def main():
-    # CLI Options
+    # fix cx_freeze
+    import multiprocessing
+    multiprocessing.freeze_support()
 
+    # insert legendary submodule to path
+    sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "legendary"))
+
+    # CLI Options
     parser = ArgumentParser()
     parser.add_argument("-V", "--version", action="store_true", help="Shows version and exits")
     parser.add_argument("-S", "--silent", action="store_true",
@@ -64,9 +70,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # fix error in cx_freeze
-    import multiprocessing
-
-    multiprocessing.freeze_support()
-    sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "legendary"))
     main()

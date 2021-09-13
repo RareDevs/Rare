@@ -1,7 +1,7 @@
 from logging import getLogger
 
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QScrollArea, QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox
 
 from legendary.core import LegendaryCore
 from legendary.models.game import SaveGameStatus
