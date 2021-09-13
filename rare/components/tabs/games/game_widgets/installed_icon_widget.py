@@ -6,23 +6,23 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from qtawesome import icon
 
 from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame
+from legendary.models.game import InstalledGame, Game
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 
 logger = getLogger("GameWidgetInstalled")
 
 
-class GameWidgetInstalled(BaseInstalledWidget):
+class InstalledIconWidget(BaseInstalledWidget):
     update_list = pyqtSignal(str)
     show_info = pyqtSignal(str)
     update_game = pyqtSignal()
 
-    def __init__(self, game: InstalledGame, core: LegendaryCore, pixmap, offline):
-        super(GameWidgetInstalled, self).__init__(game, core, pixmap, offline)
+    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap, offline, is_origin: bool = False,
+                 game: Game = None):
+        super(InstalledIconWidget, self).__init__(igame, core, pixmap, offline, is_origin, game)
         self.setObjectName("game_widget_icon")
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
-
         self.layout = QVBoxLayout()
         self.core = core
         self.running = False
@@ -34,7 +34,7 @@ class GameWidgetInstalled(BaseInstalledWidget):
 
         self.layout.addWidget(self.image)
 
-        self.title_label = QLabel(f"<h4>{game.title}</h4>")
+        self.title_label = QLabel(f"<h4>{game.app_title}</h4>")
         self.title_label.setAutoFillBackground(False)
         self.title_label.setWordWrap(True)
         self.title_label.setFixedWidth(175)
@@ -78,7 +78,7 @@ class GameWidgetInstalled(BaseInstalledWidget):
         elif self.update_available:
             self.info_label.setText(self.tr("Start game without version check"))
         else:
-            self.info_label.setText("Start Game")
+            self.info_label.setText(self.tr("Start Game") if not self.is_origin else self.tr("Launch/Link"))
 
     def leaveEvent(self, a0: QEvent) -> None:
         if self.running:

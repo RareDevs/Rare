@@ -74,8 +74,6 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
             self.lbl_grade.setVisible(False)
             self.grade.setVisible(False)
 
-        self.non_asset_games = [i.app_name for i in self.core.get_non_asset_library_items()[0]]
-
         self.install_size.setEnabled(False)
         self.lbl_install_size.setEnabled(False)
         self.install_path.setEnabled(False)
@@ -86,12 +84,12 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
 
         self.install_button.clicked.connect(lambda: self.install_game.emit(self.game.app_name))
 
-    def update_game(self, app_name):
-        self.game = self.core.get_game(app_name)
+    def update_game(self, game: Game):
+        self.game = game
 
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
-        pixmap = get_pixmap(app_name)
+        pixmap = get_pixmap(game.app_name)
         w = 200
         pixmap = pixmap.scaled(w, int(w * 4 / 3))
         self.image.setPixmap(pixmap)
@@ -102,14 +100,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.install_size.setText("N/A")
         self.install_path.setText("N/A")
 
-        if app_name in self.non_asset_games:
-            self.no_install_label.setVisible(True)
-            self.install_button.setEnabled(False)
-        else:
-            self.no_install_label.setVisible(False)
-            self.install_button.setEnabled(True)
-
         if platform.system() != "Windows":
             self.grade.setText(self.tr("Loading"))
-            self.steam_worker.set_app_name(app_name)
+            self.steam_worker.set_app_name(game.app_name)
             self.steam_worker.start()

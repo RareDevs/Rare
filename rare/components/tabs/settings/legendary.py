@@ -89,13 +89,13 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.locale_lineedit.textChanged.connect(self.save_locale)
 
     def save_locale(self, text):
-        if re.match("^[a-z]{2}-[A-Z]{2}$", text):
+        if re.match("^[a-z]{2,3}-[A-Z]{2,3}$", text):
             self.core.egs.language_code = text[:2]
             self.core.egs.country_code = text[-2:]
             self.core.lgd.config.set("Legendary", "locale", text)
             self.core.lgd.save_config()
             self.indicator_label.setPixmap(icon("ei.ok-sign", color="green").pixmap(16, 16))
-        elif re.match("^[a-zA-Z]{2}[-_][a-zA-Z]{2}$", text):
+        elif re.match("^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$", text):
             self.locale_lineedit.setText(text[:2].lower() + "-" + text[-2:].upper())
         else:
             self.indicator_label.setPixmap(icon("fa.warning", color="red").pixmap(16, 16))

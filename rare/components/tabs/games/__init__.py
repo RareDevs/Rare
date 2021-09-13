@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushB
     QLabel, QComboBox
 from qtawesome import icon
 
+from legendary.models.game import Game
 from rare.components.tabs.games.game_info import InfoTabs
 from rare.components.tabs.games.game_info.uninstalled_info import UninstalledInfo, UninstalledTabInfo
 from rare.components.tabs.games.game_list import GameList
@@ -41,8 +42,8 @@ class GameTab(QWidget):
         self.default_widget.game_list.update_list(app_name)
         self.layout.setCurrentIndex(0)
 
-    def show_uninstalled(self, app_name):
-        self.uninstalled_info_widget.update_game(app_name)
+    def show_uninstalled(self, game: Game):
+        self.uninstalled_info_widget.update_game(game)
         self.uninstalled_info_widget.setCurrentIndex(1)
         self.layout.setCurrentIndex(3)
 
@@ -66,7 +67,7 @@ class Games(QWidget):
             lambda: self.game_list.search(self.head_bar.search_bar.text()))
 
         self.head_bar.filter_changed_signal.connect(self.game_list.filter)
-
+        self.head_bar.filter_changed(self.head_bar.filter.currentIndex())
         self.layout.addWidget(self.head_bar)
         self.layout.addWidget(self.game_list)
         # self.layout.addStretch(1)
@@ -97,8 +98,14 @@ class GameListHeadBar(QWidget):
                               self.tr("Offline Games"),
                               self.tr("32 Bit Games"),
                               self.tr("Installable Games")])
-        self.filter.currentIndexChanged.connect(self.filter_changed)
         self.layout.addWidget(self.filter)
+
+        try:
+            self.filter.setCurrentIndex(self.settings.value("filter", 0, int))
+        except TypeError:
+            self.settings.setValue("filter", 0)
+
+        self.filter.currentIndexChanged.connect(self.filter_changed)
         self.layout.addStretch(1)
 
         self.import_game = QPushButton(icon("mdi.import"), self.tr("Import Game"))
@@ -130,3 +137,4 @@ class GameListHeadBar(QWidget):
 
     def filter_changed(self, i):
         self.filter_changed_signal.emit(["", "installed", "offline", "32bit", "installable"][i])
+        self.settings.setValue("filter", i)

@@ -5,8 +5,9 @@ from PyQt5.QtCore import Qt, pyqtSignal, QSettings, QTimer
 from PyQt5.QtWidgets import QScrollArea, QWidget, QLabel, QVBoxLayout, QStackedWidget
 
 from legendary.core import LegendaryCore
+from legendary.models.game import Game
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
-from rare.components.tabs.games.game_widgets.installed_icon_widget import GameWidgetInstalled
+from rare.components.tabs.games.game_widgets.installed_icon_widget import InstalledIconWidget
 from rare.components.tabs.games.game_widgets.installed_list_widget import InstalledListWidget
 from rare.components.tabs.games.game_widgets.installing_game_widget import InstallingGameWidget
 from rare.components.tabs.games.game_widgets.uninstalled_icon_widget import IconWidgetUninstalled
@@ -24,7 +25,7 @@ class GameList(QStackedWidget):
     update_game = pyqtSignal()
     game_exited = pyqtSignal(str)
     game_started = pyqtSignal(str)
-    show_uninstalled_info = pyqtSignal(str)
+    show_uninstalled_info = pyqtSignal(Game)
 
     running_games = []
     active_game = ("", 0)
@@ -77,7 +78,14 @@ class GameList(QStackedWidget):
         if not self.offline:
             self.bit32 = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Win32")[0]]
             self.mac_games = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Mac")[0]]
-            self.no_assets = [i.app_name for i in self.core.get_non_asset_library_items()[0]]
+            no_assets = self.core.get_non_asset_library_items()[0]
+            self.no_assets = {}
+            for game in no_assets:
+                self.no_assets[game.app_name] = game
+            self.no_asset_names = []
+            for key in self.no_assets.keys():
+                self.no_asset_names.append(key)
+
         else:
             self.bit32 = []
             self.mac_games = []
@@ -89,9 +97,15 @@ class GameList(QStackedWidget):
 
         # Installed Games
         for igame in self.installed:
-            icon_widget, list_widget = self.add_installed_widget(igame)
+            icon_widget, list_widget = self.add_installed_widget(self.core.get_game(igame.app_name))
             self.icon_layout.addWidget(icon_widget)
             self.list_layout.addWidget(list_widget)
+
+        for game in self.no_assets.values():
+            icon_widget, list_widget = self.add_installed_widget(game, True)
+            self.icon_layout.addWidget(icon_widget)
+            self.list_layout.addWidget(list_widget)
+
         if not self.offline:
             self.uninstalled_games = []
             installed = [i.app_name for i in self.core.get_installed_list()]
@@ -102,7 +116,6 @@ class GameList(QStackedWidget):
                     self.uninstalled_games.append(game)
 
             # add uninstalled games
-            self.uninstalled_games += self.core.get_non_asset_library_items()[0]
             for game in sorted(self.uninstalled_games, key=lambda x: x.app_title):
                 icon_widget, list_widget = self.add_uninstalled_widget(game)
 
@@ -150,21 +163,26 @@ class GameList(QStackedWidget):
 
         return icon_widget, list_widget
 
-    def add_installed_widget(self, igame):
-        pixmap = get_pixmap(igame.app_name)
+    def add_installed_widget(self, game, is_origin=False):
+        pixmap = get_pixmap(game.app_name)
 
         if pixmap.isNull():
-            logger.info(igame.title + " has a corrupt image.")
-            download_image(self.core.get_game(igame.app_name), force=True)
-            pixmap = get_pixmap(igame.app_name)
+            logger.info(game.app_title + " has a corrupt image.")
+            download_image(self.core.get_game(game.app_name), force=True)
+            pixmap = get_pixmap(game.app_name)
 
-        icon_widget = GameWidgetInstalled(igame, self.core, pixmap, self.offline)
+        if game.app_name in self.no_asset_names:
+            igame = None
+        else:
+            igame = self.core.get_installed_game(game.app_name)
+
+        icon_widget = InstalledIconWidget(igame, self.core, pixmap, self.offline, is_origin, game)
         # self.icon_layout.addWidget(icon_widget)
 
-        list_widget = InstalledListWidget(igame, self.core, pixmap, self.offline)
+        list_widget = InstalledListWidget(igame, self.core, pixmap, self.offline, is_origin, game)
         # self.list_layout.addWidget(list_widget)
 
-        self.widgets[igame.app_name] = (icon_widget, list_widget)
+        self.widgets[game.app_name] = (icon_widget, list_widget)
 
         icon_widget.show_info.connect(self.show_game_info.emit)
         list_widget.show_info.connect(self.show_game_info.emit)
@@ -179,16 +197,17 @@ class GameList(QStackedWidget):
         if icon_widget.update_available:
             self.updates.append(igame)
 
-        active, pid = self.check_for_active_game(igame)
-        if active:
-            # Only one game works: Workaround for Satisfactory EA and Exp.
-            self.launch(igame.app_name)
-            icon_widget.game_running = True
-            list_widget.game_running = True
-            self.active_game = (igame.app_name, pid)
-            self.timer = QTimer()
-            self.timer.timeout.connect(self.is_finished)
-            self.timer.start(10000)
+        if igame:
+            active, pid = self.check_for_active_game(igame)
+            if active:
+                # Only one game works: Workaround for Satisfactory EA and Exp.
+                self.launch(igame.app_name)
+                icon_widget.game_running = True
+                list_widget.game_running = True
+                self.active_game = (igame.app_name, pid)
+                self.timer = QTimer()
+                self.timer.timeout.connect(self.is_finished)
+                self.timer.start(10000)
 
         return icon_widget, list_widget
 
@@ -214,8 +233,8 @@ class GameList(QStackedWidget):
                 return True, pid
         return False, 0
 
-    def show_install_info(self, app_name):
-        self.show_uninstalled_info.emit(app_name)
+    def show_install_info(self, game):
+        self.show_uninstalled_info.emit(game)
 
     def finished(self, app_name):
         self.running_games.remove(app_name)
@@ -266,11 +285,10 @@ class GameList(QStackedWidget):
                 elif filter == "mac":
                     w.setVisible(w.game.app_name in self.mac_games)
                 elif filter == "installable":
-                    w.setVisible(w.game.app_name not in self.no_assets)
+                      w.setVisible(w.game.app_name not in self.no_asset_names)
                 else:
                     # All visible
                     w.setVisible(True)
-        self.settings.setValue("filter", filter)
 
     def update_list(self, app_name=None):
         # self.settings.setValue("icon_view", icon_view)

@@ -2,6 +2,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QGroupBox, QLabel, QAction
+from legendary.models.game import Game
 
 from rare.utils import utils
 
@@ -9,7 +10,7 @@ logger = getLogger("Uninstalled")
 
 
 class BaseUninstalledWidget(QGroupBox):
-    show_uninstalled_info = pyqtSignal(str)
+    show_uninstalled_info = pyqtSignal(Game)
 
     def __init__(self, game, core, pixmap):
         super(BaseUninstalledWidget, self).__init__()
@@ -31,4 +32,4 @@ class BaseUninstalledWidget(QGroupBox):
         self.image.setPixmap(pm.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
 
     def install(self):
-        self.show_uninstalled_info.emit(self.game.app_name)
+        self.show_uninstalled_info.emit(self.game)

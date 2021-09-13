@@ -155,7 +155,8 @@ class TabWidget(QTabWidget):
     # Sync game and delete dc rpc
     def game_finished(self, app_name):
         self.delete_presence.emit()
-        if self.core.get_game(app_name).supports_cloud_saves:
+        game = self.core.get_game(app_name)
+        if game and game.supports_cloud_saves:
             self.cloud_saves.sync_game(app_name, True)
 
     def uninstall_game(self, app_name):

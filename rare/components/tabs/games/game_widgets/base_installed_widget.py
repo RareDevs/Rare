@@ -1,13 +1,14 @@
 import os
 import platform
+import webbrowser
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
+from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray, QProcessEnvironment
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
 
 from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame
+from legendary.models.game import InstalledGame, Game
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.extra.console import ConsoleWindow
 from rare.utils import legendary_utils, utils
@@ -23,16 +24,23 @@ class BaseInstalledWidget(QGroupBox):
     update_list = pyqtSignal()
     proc: QProcess()
 
-    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap: QPixmap, offline):
+    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap: QPixmap, offline, is_origin: bool = False, game: Game = None):
         super(BaseInstalledWidget, self).__init__()
         self.igame = igame
+        self.is_origin = is_origin
         self.core = core
-        self.game = self.core.get_game(self.igame.app_name)
+        if not game:
+            self.game = self.core.get_game(self.igame.app_name)
+        else:
+            self.game = game
         self.image = QLabel()
         self.image.setPixmap(pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
         self.game_running = False
         self.offline = offline
-        self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
+        if is_origin:
+            self.update_available = False
+        else:
+            self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
         self.data = QByteArray()
         self.setContentsMargins(0, 0, 0, 0)
         self.settings = QSettings()
@@ -42,8 +50,8 @@ class BaseInstalledWidget(QGroupBox):
         launch.triggered.connect(self.launch)
         self.addAction(launch)
 
-        if os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.desktop")) \
-                or os.path.exists(os.path.expanduser(f"~/Desktop/{self.igame.title}.lnk")):
+        if os.path.exists(os.path.expanduser(f"~/Desktop/{self.game.app_title}.desktop")) \
+                or os.path.exists(os.path.expanduser(f"~/Desktop/{self.game.app_title}.lnk")):
             self.create_desktop = QAction(self.tr("Remove Desktop link"))
         else:
             self.create_desktop = QAction(self.tr("Create Desktop link"))
@@ -52,7 +60,7 @@ class BaseInstalledWidget(QGroupBox):
         self.addAction(self.create_desktop)
 
         if platform.system() == "Linux":
-            start_menu_file = os.path.expanduser(f"~/.local/share/applications/{self.igame.title}.desktop")
+            start_menu_file = os.path.expanduser(f"~/.local/share/applications/{self.game.app_title}.desktop")
         elif platform.system() == "Windows":
             start_menu_file = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
@@ -89,19 +97,19 @@ class BaseInstalledWidget(QGroupBox):
             path = os.path.expanduser("~/.local/share/applications/")
         else:
             return
-        if not (os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop"))
-                or os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.lnk"))):
-            if not create_desktop_link(self.igame.app_name, self.core, type_of_link):
+        if not (os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
+                or os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk"))):
+            if not create_desktop_link(self.game.app_name, self.core, type_of_link):
                 return
             if type_of_link == "desktop":
                 self.create_desktop.setText(self.tr("Remove Desktop link"))
             elif type_of_link == "start_menu":
                 self.create_start_menu.setText(self.tr("Remove Start menu link"))
         else:
-            if os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.desktop")):
-                os.remove(os.path.expanduser(f"{path}{self.igame.title}.desktop"))
-            elif os.path.exists(os.path.expanduser(f"{path}{self.igame.title}.lnk")):
-                os.remove(os.path.expanduser(f"{path}{self.igame.title}.lnk"))
+            if os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.desktop")):
+                os.remove(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
+            elif os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk")):
+                os.remove(os.path.expanduser(f"{path}{self.game.app_title}.lnk"))
 
             if type_of_link == "desktop":
                 self.create_desktop.setText(self.tr("Create Desktop link"))
@@ -114,21 +122,47 @@ class BaseInstalledWidget(QGroupBox):
                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
                 logger.info("Cancel Startup")
                 return 1
-        logger.info("Launching " + self.igame.title)
+        logger.info("Launching " + self.game.app_title)
+        if self.is_origin:
+            self.offline = offline = False
         if offline or self.offline:
             if not self.igame.can_run_offline:
                 QMessageBox.warning(self, "Offline",
                                     self.tr("Game cannot run offline. Please start game in Online mode"))
                 return
+        if not self.is_origin:
+            try:
+                self.proc, params = legendary_utils.launch_game(self.core, self.game.app_name, offline,
+                                                                skip_version_check=skip_version_check)
+            except Exception as e:
+                logger.error(e)
+                QMessageBox.warning(self, "Error",
+                                    str(e))
+                return
+        else:
+            origin_uri = self.core.get_origin_uri(self.game.app_name, self.offline)
+            logger.info("Launch Origin Game: ")
+            if platform.system() == "Windows":
+                webbrowser.open(origin_uri)
+                return
+            wine_pfx = self.core.lgd.config.get(self.game.app_name, 'wine_prefix', fallback=os.path.expanduser("~/.wine"))
+            wine_binary = self.core.lgd.config.get(self.game.app_name, 'wine_executable', fallback="/usr/bin/wine")
+            env = self.core.get_app_environment(self.game.app_name, wine_pfx=wine_pfx)
 
-        try:
-            self.proc, params = legendary_utils.launch_game(self.core, self.igame.app_name, offline,
-                                                            skip_version_check=skip_version_check)
-        except Exception as e:
-            logger.error(e)
-            QMessageBox.warning(self, "Error",
-                                str(e))
-            return
+            if not wine_binary or not env.get('WINEPREFIX'):
+                logger.error(f'In order to launch Origin correctly you must specify the wine binary and prefix '
+                             f'to use in the configuration file or command line. See the README for details.')
+                return
+
+            self.proc = QProcess()
+            self.proc.setProcessChannelMode(QProcess.MergedChannels)
+            # process.setWorkingDirectory()
+            environment = QProcessEnvironment()
+            for e in env:
+                environment.insert(e, env[e])
+            self.proc.setProcessEnvironment(environment)
+
+            params = [wine_binary, origin_uri]
 
         if not self.proc:
             logger.error("Could not start process")
@@ -148,7 +182,7 @@ class BaseInstalledWidget(QGroupBox):
             self.proc.readyReadStandardError.connect(self.stderr)
 
         self.proc.start(params[0], params[1:])
-        self.launch_signal.emit(self.igame.app_name)
+        self.launch_signal.emit(self.game.app_name)
         self.game_running = True
 
         return 0
@@ -166,6 +200,8 @@ class BaseInstalledWidget(QGroupBox):
 
     def finished(self, exit_code):
         logger.info("Game exited with exit code: " + str(exit_code))
+        if exit_code == 53 and self.is_origin:
+            QMessageBox.warning(self, "Error", "Origin is not installed. Please install it manually")
         self.finish_signal.emit(self.game.app_name)
         self.game_running = False
         if self.settings.value("show_console", False, bool):

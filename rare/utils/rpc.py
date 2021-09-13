@@ -85,7 +85,11 @@ class DiscordRPC(QObject):
                             details="https://github.com/Dummerle/Rare")
             return
         if self.settings.value("rpc_name", True, bool):
-            title = self.core.get_installed_game(app_name).title
+            try:
+                title = self.core.get_installed_game(app_name).title
+            except AttributeError:
+                logger.error("Could not get title of game: " + app_name)
+                title = app_name
         start = None
         if self.settings.value("rpc_time", True, bool):
             start = str(time.time()).split(".")[0]
