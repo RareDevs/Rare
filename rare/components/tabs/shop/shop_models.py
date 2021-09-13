@@ -2,8 +2,6 @@ import datetime
 import random
 from dataclasses import dataclass
 
-from rare.utils.utils import get_lang
-
 
 class ImageUrlModel:
     def __init__(self, front_tall: str = "", offer_image_tall: str = "",
@@ -111,7 +109,8 @@ class ShopGame:
 class BrowseModel:
     category: str = "games/edition/base|bundles/games|editors|software/edition/base"
     count: int = 30
-    locale: str = get_lang()
+    language_code: str = "en"
+    country_code: str = "US"
     keywords: str = ""
     sortDir: str = "DESC"
     start: int = 0
@@ -126,11 +125,11 @@ class BrowseModel:
     def __dict__(self):
         payload = {"category": self.category,
                    "count": self.count,
-                   "country": self.locale.upper(),
+                   "country": self.country_code,
                    "keywords": self.keywords,
-                   "locale": self.locale,
+                   "locale": self.language_code + "-" + self.country_code,
                    "sortDir": self.sortDir,
-                   "allowCountries": self.locale.upper(),
+                   "allowCountries": self.country_code,
                    "start": self.start,
                    "tag": self.tag,
                    "withMapping": self.withMapping,

@@ -119,9 +119,10 @@ class TabWidget(QTabWidget):
         if tab_num == 0:
             self.games_tab.layout.setCurrentIndex(0)
         if tab_num == 3:
-            self.store.load()  
-  
-    # TODO; maybe pass InstallOptionsModel only, not split arguments
+            self.store.load()
+
+            # TODO; maybe pass InstallOptionsModel only, not split arguments
+
     def install_game(self, options: InstallOptionsModel, update=False, silent=False):
 
         install_dialog = InstallDialog(self.core,

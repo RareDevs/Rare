@@ -3,7 +3,6 @@ import platform
 import re
 from logging import getLogger
 
-from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QVBoxLayout, QDialog, QCheckBox, QLabel, \
     QHBoxLayout, QPushButton, QGroupBox, QWidget
 from qtawesome import icon
@@ -54,7 +53,8 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
             lambda: self.cleanup(True)
         )
 
-        self.manifest_path_info.setText(self.tr("EGL path is at C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Manifests"))
+        self.manifest_path_info.setText(
+            self.tr("EGL path is at C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Manifests"))
         path = os.path.expanduser("~/")
         if self.core.egl.programdata_path:
             path = self.core.egl.programdata_path

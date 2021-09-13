@@ -6,7 +6,6 @@ from rare.components.tabs.shop.constants import wishlist_query, search_query, ga
     remove_from_wishlist_query
 from rare.components.tabs.shop.shop_models import BrowseModel
 from rare.utils.qt_requests import QtRequestManager
-from rare.utils.utils import get_lang
 
 logger = getLogger("ShopAPICore")
 graphql_url = "https://www.epicgames.com/graphql"
@@ -15,12 +14,14 @@ graphql_url = "https://www.epicgames.com/graphql"
 class ShopApiCore(QObject):
     update_wishlist = pyqtSignal()
 
-    def __init__(self, auth_token):
+    def __init__(self, auth_token, lc: str, cc: str):
         super(ShopApiCore, self).__init__()
         self.token = auth_token
+        self.language_code: str = lc
+        self.country_code: str = cc
+        self.locale = self.language_code + "-" + self.country_code
         self.manager = QtRequestManager()
         self.auth_manager = QtRequestManager(authorization_token=auth_token)
-        self.locale = get_lang()
 
         self.browse_active = False
         self.next_browse_request = tuple(())
@@ -40,8 +41,8 @@ class ShopApiCore(QObject):
         self.auth_manager.post(graphql_url, {
             "query": wishlist_query,
             "variables": {
-                "country": self.locale.upper(),
-                "locale": self.locale
+                "country": self.country_code,
+                "locale": self.language_code + "-" + self.country_code
             }
         }, lambda data: self._handle_wishlist(data, handle_func))
 
@@ -52,8 +53,8 @@ class ShopApiCore(QObject):
         payload = {
             "query": search_query,
             "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base", "count": 1,
-                          "country": "DE", "keywords": name, "locale": self.locale, "sortDir": "DESC",
-                          "allowCountries": self.locale.upper(),
+                          "country": self.country_code, "keywords": name, "locale": self.locale, "sortDir": "DESC",
+                          "allowCountries": self.country_code,
                           "start": 0, "tag": "", "withMapping": False, "withPrice": True}
         }
 
@@ -102,7 +103,7 @@ class ShopApiCore(QObject):
             "variables": {
                 "offerId": offer_id,
                 "namespace": namespace,
-                "country": self.locale.upper(),
+                "country": self.country_code,
                 "locale": self.locale
             },
             "query": add_to_wishlist_query

@@ -7,8 +7,8 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from legendary.core import LegendaryCore
 from legendary.models.game import Game, InstalledGame
-from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare import data_dir
+from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.legendary_utils import VerifyThread
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_size, get_pixmap

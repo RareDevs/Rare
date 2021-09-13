@@ -12,7 +12,6 @@ from rare.components.tabs.shop.game_widgets import GameWidget
 from rare.components.tabs.shop.shop_models import BrowseModel
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
 from rare.utils.extra_widgets import WaitingSpinner, FlowLayout, ButtonLineEdit
-from rare.utils.utils import get_lang
 
 logger = logging.getLogger("Shop")
 
@@ -36,7 +35,6 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.price = ""
         self.tags = []
         self.types = []
-        self.locale = get_lang()
         self.update_games_allowed = True
         self.free_widget.setLayout(FlowLayout())
         self.free_games_now = QGroupBox(self.tr("Now Free"))
@@ -106,7 +104,9 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         coming_free_games = []
         for game in free_games:
             try:
-                if game['price']['totalPrice']['fmtPrice']['discountPrice'] == "0" and game['price']['totalPrice']['fmtPrice']['originalPrice'] != game['price']['totalPrice']['fmtPrice']['discountPrice']:
+                if game['price']['totalPrice']['fmtPrice']['discountPrice'] == "0" and \
+                        game['price']['totalPrice']['fmtPrice']['originalPrice'] != \
+                        game['price']['totalPrice']['fmtPrice']['discountPrice']:
                     free_games_now.append(game)
                     continue
 
@@ -224,7 +224,8 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.game_stack.setCurrentIndex(1)
         date = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.{str(random.randint(0, 999)).zfill(3)}Z]"
 
-        browse_model = BrowseModel(locale=self.locale, date=date, count=20, price=self.price,
+        browse_model = BrowseModel(language_code=self.core.language_code, country_code=self.core.country_code,
+                                   date=date, count=20, price=self.price,
                                    onSale=self.on_discount.isChecked())
         browse_model.tag = "|".join(self.tags)
 
@@ -237,11 +238,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             child.deleteLater()
             del child
 
-        QWidget().setLayout(self.game_widget.layout())
-
         if data:
-            self.game_widget.setLayout(FlowLayout())
-
             for game in data:
                 w = GameWidget(self.path, game, 275)
                 self.game_widget.layout().addWidget(w)

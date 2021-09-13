@@ -7,7 +7,6 @@ import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from legendary.core import LegendaryCore
-
 from rare import data_dir, cache_dir
 
 replace_chars = ",;.:-_ "
@@ -24,14 +23,14 @@ class SteamWorker(QThread):
         super(SteamWorker, self).__init__()
         self.core = core
         self.ratings = {
-                        "platinum": self.tr("Platinum"),
-                        "gold": self.tr("Gold"),
-                        "silver": self.tr("Silver"),
-                        "bronze": self.tr("Bronze"),
-                        "fail": self.tr("Could not get grade"),
-                        "borked": self.tr("unplayable"),
-                        "pending": self.tr("Could not get grade")
-                        }
+            "platinum": self.tr("Platinum"),
+            "gold": self.tr("Gold"),
+            "silver": self.tr("Silver"),
+            "bronze": self.tr("Bronze"),
+            "fail": self.tr("Could not get grade"),
+            "borked": self.tr("unplayable"),
+            "pending": self.tr("Could not get grade")
+        }
 
     def set_app_name(self, app_name: str):
         self.app_name = app_name

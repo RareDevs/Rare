@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'shop_game_info.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/tabs/store/shop_game_info.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -36,21 +36,21 @@ class Ui_shop_info(object):
         font = QtGui.QFont()
         font.setPointSize(18)
         self.title.setFont(font)
-        self.title.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse)
+        self.title.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.title.setObjectName("title")
         self.verticalLayout_2.addWidget(self.title)
         self.dev = QtWidgets.QLabel(shop_info)
         font = QtGui.QFont()
         font.setPointSize(14)
         self.dev.setFont(font)
-        self.dev.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse)
+        self.dev.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.dev.setObjectName("dev")
         self.verticalLayout_2.addWidget(self.dev)
         self.owned_label = QtWidgets.QLabel(shop_info)
         self.owned_label.setObjectName("owned_label")
         self.verticalLayout_2.addWidget(self.owned_label)
         self.price = QtWidgets.QLabel(shop_info)
-        self.price.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse)
+        self.price.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.price.setObjectName("price")
         self.verticalLayout_2.addWidget(self.price)
         self.discount_price = QtWidgets.QLabel(shop_info)

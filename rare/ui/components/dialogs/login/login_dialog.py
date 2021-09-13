@@ -124,6 +124,7 @@ class Ui_LoginDialog(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     LoginDialog = QtWidgets.QDialog()
     ui = Ui_LoginDialog()

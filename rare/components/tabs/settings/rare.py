@@ -7,11 +7,12 @@ from logging import getLogger
 from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget
 
+from legendary.core import LegendaryCore
 from rare import cache_dir
 from rare.components.tabs.settings.rpc_settings import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
-from rare.utils.utils import get_lang, get_possible_langs, get_color_schemes, get_style_sheets
+from rare.utils.utils import get_possible_langs, get_color_schemes, get_style_sheets
 
 logger = getLogger("RareSettings")
 
@@ -23,10 +24,10 @@ languages = [
 
 
 class RareSettings(QWidget, Ui_RareSettings):
-    def __init__(self):
+    def __init__(self, core: LegendaryCore):
         super(RareSettings, self).__init__()
         self.setupUi(self)
-
+        self.core = core
         # (widget_name, option_name, default)
         self.checkboxes = [
             (self.sys_tray, "sys_tray", True),
@@ -39,7 +40,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         ]
 
         self.settings = QSettings()
-        language = self.settings.value("language", get_lang(), type=str)
+        language = self.settings.value("language", self.core.language_code, type=str)
         self.logdir = os.path.join(cache_dir, "logs")
 
         # Select lang

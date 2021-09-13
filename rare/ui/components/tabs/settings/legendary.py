@@ -27,7 +27,7 @@ class Ui_LegendarySettings(object):
         self.download_group = QtWidgets.QGroupBox(LegendarySettings)
         self.download_group.setObjectName("download_group")
         self.download_layout = QtWidgets.QFormLayout(self.download_group)
-        self.download_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.download_layout.setLabelAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.download_layout.setObjectName("download_layout")
         self.max_workers_label = QtWidgets.QLabel(self.download_group)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
@@ -267,6 +267,7 @@ class Ui_LegendarySettings(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     LegendarySettings = QtWidgets.QWidget()
     ui = Ui_LegendarySettings()

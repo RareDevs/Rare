@@ -108,6 +108,7 @@ class Ui_Wishlist(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Wishlist = QtWidgets.QStackedWidget()
     ui = Ui_Wishlist()

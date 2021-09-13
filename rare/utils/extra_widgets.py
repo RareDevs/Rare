@@ -4,7 +4,7 @@ from logging import getLogger
 
 import PIL
 from PIL import Image
-from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal, QSettings
+from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal
 from PyQt5.QtGui import QMovie, QPixmap
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
     QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton

@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import QProcess, pyqtSignal, Qt
+from PyQt5.QtCore import QProcess, pyqtSignal
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 from qtawesome import icon
 

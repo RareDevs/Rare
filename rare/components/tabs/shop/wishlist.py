@@ -67,7 +67,8 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
         if sort == 0:
             sorted_list = sorted(self.wishlist, key=lambda x: x["offer"]["title"])
         elif sort == 1:
-            sorted_list = sorted(self.wishlist, key=lambda x: x["offer"]['price']['totalPrice']['fmtPrice']['discountPrice'])
+            sorted_list = sorted(self.wishlist,
+                                 key=lambda x: x["offer"]['price']['totalPrice']['fmtPrice']['discountPrice'])
         elif sort == 2:
             sorted_list = sorted(self.wishlist, key=lambda x: x["offer"]["seller"]["name"])
         elif sort == 3:

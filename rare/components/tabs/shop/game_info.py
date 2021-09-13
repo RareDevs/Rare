@@ -9,7 +9,6 @@ from qtawesome import icon
 from rare.components.tabs.shop.shop_models import ShopGame
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
 from rare.utils.extra_widgets import WaitingSpinner, ImageLabel
-from rare.utils.utils import get_lang
 
 logger = logging.getLogger("ShopInfo")
 
@@ -32,7 +31,6 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         warn_label.setPixmap(icon("fa.warning").pixmap(160, 160).scaled(240, 320, Qt.IgnoreAspectRatio))
         self.image_stack.addWidget(warn_label)
 
-        self.locale = get_lang()
         self.wishlist_button.clicked.connect(self.add_to_wishlist)
         self.in_wishlist = False
         self.wishlist = []

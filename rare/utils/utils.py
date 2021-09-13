@@ -9,7 +9,7 @@ from typing import Tuple
 
 import requests
 from PIL import Image, UnidentifiedImageError
-from PyQt5.QtCore import pyqtSignal, QLocale, QSettings
+from PyQt5.QtCore import pyqtSignal, QSettings
 from PyQt5.QtGui import QPalette, QColor, QPixmap
 
 # Windows
@@ -24,7 +24,6 @@ from legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 settings = QSettings("Rare", "Rare")
-
 
 
 def download_images(signal: pyqtSignal, core: LegendaryCore):
@@ -119,16 +118,6 @@ def download_image(game, force=False):
             uninstalledArt.save(f'{image_dir}/' + game.app_name + '/UninstalledArt.png')
         else:
             logger.warning(f"File {image_dir}/{game.app_name}/DieselGameBoxTall.png doesn't exist")
-
-
-def get_lang():
-    core = LegendaryCore()
-    if "Legendary" in core.lgd.config.sections() and "locale" in core.lgd.config["Legendary"]:
-        logger.info("Found locale in Legendary config: " + core.lgd.config.get("Legendary", "locale"))
-        return core.lgd.config.get("Legendary", "locale").split("-")[0]
-    else:
-        logger.info("Found locale in system config: " + QLocale.system().name().split("_")[0])
-        return QLocale.system().name().split("_")[0]
 
 
 color_role_map = {
@@ -289,7 +278,6 @@ def create_rare_desktop_link(type_of_link):
 def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -> bool:
     igame = core.get_installed_game(app_name)
 
-
     if os.path.exists(p := os.path.join(image_dir, igame.app_name, 'Thumbnail.png')):
         icon = p
     elif os.path.exists(p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")):
@@ -390,7 +378,6 @@ def get_uninstalled_pixmap(app_name: str) -> QPixmap:
     return pixmap
 
 
-
 def optimal_text_background(image: list) -> Tuple[int, int, int]:
     """
     Finds an optimal background color for text on the image by calculating the
@@ -423,4 +410,3 @@ def text_color_for_background(background: Tuple[int, int, int]) -> Tuple[int,
         return 255, 255, 255
     else:
         return 0, 0, 0
-

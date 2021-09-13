@@ -15,7 +15,7 @@ from rare import languages_path, resources_path, cache_dir
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
-from rare.utils.utils import get_lang, load_color_scheme
+from rare.utils.utils import load_color_scheme
 
 start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
 file_name = os.path.join(cache_dir, f"logs/Rare_{start_time}.log")
@@ -74,7 +74,7 @@ class App(QApplication):
 
         # Translator
         self.translator = QTranslator()
-        lang = settings.value("language", get_lang(), type=str)
+        lang = settings.value("language", self.core.language_code, type=str)
         if os.path.exists(p := os.path.join(languages_path, lang + ".qm")):
             self.translator.load(p)
             logger.info("Your language is supported: " + lang)

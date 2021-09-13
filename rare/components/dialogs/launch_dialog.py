@@ -7,7 +7,6 @@ from requests.exceptions import ConnectionError
 
 from legendary.core import LegendaryCore
 from rare import image_dir
-
 from rare.components.dialogs.login import LoginDialog
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.utils import download_images
@@ -25,7 +24,6 @@ class ImageThread(QThread):
     def run(self):
         download_images(self.download_progess, self.core)
         self.download_progess.emit(100)
-
 
 
 class LaunchDialog(QDialog, Ui_LaunchDialog):
@@ -67,7 +65,6 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         # self.core = core
         if not os.path.exists(image_dir):
             os.makedirs(image_dir)
-
 
         if not self.offline:
             self.image_info.setText(self.tr("Downloading Images"))
