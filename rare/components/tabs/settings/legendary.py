@@ -84,19 +84,26 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.enable_sync_button.clicked.connect(self.enable_sync)
         self.sync_once_button.clicked.connect(self.core.egl_sync)
 
-        self.locale_lineedit.setText(self.core.lgd.config.get("Legendary", "locale"))
+        self.locale_lineedit.setText(f"{self.core.language_code}-{self.core.country_code}")
 
         self.locale_lineedit.textChanged.connect(self.save_locale)
 
-    def save_locale(self, text):
+    def save_locale(self, text: str):
         if re.match("^[a-z]{2,3}-[A-Z]{2,3}$", text):
-            self.core.egs.language_code = text[:2]
-            self.core.egs.country_code = text[-2:]
+            self.core.egs.language_code = text.split("-")[0]
+            self.core.egs.country_code = text.split("-")[1]
             self.core.lgd.config.set("Legendary", "locale", text)
             self.core.lgd.save_config()
             self.indicator_label.setPixmap(icon("ei.ok-sign", color="green").pixmap(16, 16))
         elif re.match("^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$", text):
-            self.locale_lineedit.setText(text[:2].lower() + "-" + text[-2:].upper())
+            text = text.replace("_", "-")
+            # changing text triggers text changed signal
+            self.locale_lineedit.setText(text.split("-")[0].lower() + "-" + text.split("-")[1].upper())
+        elif text == "":
+            if self.core.lgd.config.has_option("Legendary", "locale"):
+                self.core.lgd.config.remove_option("Legendary", "locale")
+                self.core.lgd.save_config()
+            self.indicator_label.setPixmap(icon("ei.ok-sign", color="green").pixmap(16, 16))
         else:
             self.indicator_label.setPixmap(icon("fa.warning", color="red").pixmap(16, 16))
 
