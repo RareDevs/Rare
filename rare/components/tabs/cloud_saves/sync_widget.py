@@ -95,7 +95,7 @@ class SyncWidget(QGroupBox):
 
         self.res, (self.dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, save)
         if self.res == SaveGameStatus.NO_SAVE:
-            self.logger.info('No cloud or local savegame found.')
+            self.logger.debug('No cloud or local savegame found.')
             return
 
         # game_title = QLabel(f"<h2>{igame.title}</h2>")
@@ -111,7 +111,7 @@ class SyncWidget(QGroupBox):
             cloud_save_date = QLabel(self.tr("No Cloud saves"))
 
         if self.res == SaveGameStatus.SAME_AGE:
-            self.logger.info(f'Save game for "{igame.title}" is up to date')
+            self.logger.debug(f'Save game for "{igame.title}" is up to date')
             status = self.tr("Game is up to date")
             self.upload_button = QPushButton(self.tr("Upload anyway"))
             self.download_button = QPushButton(self.tr("Download anyway"))
@@ -120,12 +120,12 @@ class SyncWidget(QGroupBox):
             self.download_button = QPushButton(self.tr("Download Cloud saves"))
             self.download_button.setObjectName("success")
             self.upload_button = QPushButton(self.tr("Upload Saves"))
-            self.logger.info(f'Cloud save for "{igame.title}" is newer:')
-            self.logger.info(f'- Cloud save date: {dt_remote.strftime("%Y-%m-%d %H:%M:%S")}')
+            self.logger.debug(f'Cloud save for "{igame.title}" is newer:')
+            self.logger.debug(f'- Cloud save date: {dt_remote.strftime("%Y-%m-%d %H:%M:%S")}')
             if self.dt_local:
-                self.logger.info(f'- Local save date: {self.dt_local.strftime("%Y-%m-%d %H:%M:%S")}')
+                self.logger.debug(f'- Local save date: {self.dt_local.strftime("%Y-%m-%d %H:%M:%S")}')
             else:
-                self.logger.info('- Local save date: N/A')
+                self.logger.debug('- Local save date: N/A')
                 self.upload_button.setDisabled(True)
                 self.upload_button.setToolTip("No local save")
 
@@ -136,11 +136,11 @@ class SyncWidget(QGroupBox):
             self.download_button = QPushButton(self.tr("Download saves"))
             self.logger.info(f'Local save for "{igame.title}" is newer')
             if dt_remote:
-                self.logger.info(f'- Cloud save date: {dt_remote.strftime("%Y-%m-%d %H:%M:%S")}')
+                self.logger.debug(f'- Cloud save date: {dt_remote.strftime("%Y-%m-%d %H:%M:%S")}')
             else:
-                self.logger.info('- Cloud save date: N/A')
+                self.logger.debug('- Cloud save date: N/A')
                 self.download_button.setDisabled(True)
-            self.logger.info(f'- Local save date: {self.dt_local.strftime("%Y-%m-%d %H:%M:%S")}')
+            self.logger.debug(f'- Local save date: {self.dt_local.strftime("%Y-%m-%d %H:%M:%S")}')
         else:
             self.logger.error(self.res)
             return

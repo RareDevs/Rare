@@ -14,7 +14,6 @@ logger = getLogger("GameWidgetInstalled")
 
 class InstalledIconWidget(BaseInstalledWidget):
     update_list = pyqtSignal(str)
-    show_info = pyqtSignal(str)
     update_game = pyqtSignal()
 
     def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap, offline, is_origin: bool = False,
@@ -54,7 +53,7 @@ class InstalledIconWidget(BaseInstalledWidget):
 
         self.menu_btn.setObjectName("menu_button")
 
-        self.menu_btn.clicked.connect(lambda: self.show_info.emit(self.game.app_name))
+        self.menu_btn.clicked.connect(lambda: self.show_info.emit(self.game))
         self.menu_btn.setFixedWidth(17)
         minilayout.addWidget(self.menu_btn)
         minilayout.addStretch(1)
@@ -97,10 +96,3 @@ class InstalledIconWidget(BaseInstalledWidget):
         # right
         elif e.button() == 2:
             pass  # self.showMenu(e)
-
-    """def showMenu(self, event):
-        menu = QMenu()
-        desktop_link = menu.addAction("Add Desktop link")
-        action = menu.exec_(self.mapToGlobal(event.pos()))
-        if action == desktop_link:
-            print("LOL")"""

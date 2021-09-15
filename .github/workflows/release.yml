@@ -35,6 +35,11 @@ jobs:
           sudo apt install python3-all python3-stdeb dh-python python3-setuptools python3-wheel
           sudo pip install -r requirements.txt
 
+      run: |
+        git submodule init
+        git submodule update
+        python legendary/setup.py install
+
       - name: run python setup
         run: |
           python3 setup.py sdist
@@ -53,7 +58,6 @@ jobs:
           overwrite: true
 
   appimage:
-    if: "!github.event.release.prerelease"
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -67,6 +71,12 @@ jobs:
           sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
           sudo chmod +x /usr/local/bin/appimagetool
           sudo pip3 install appimage-builder
+      - name: Setup Submodule
+        run: |
+          git submodule init
+          git submodule update
+          python legendary/setup.py install
+
       - name: Prepare Build directory
         run: |
           mkdir build
@@ -101,6 +111,13 @@ jobs:
 
       - name: cx_freeze
         run: pip3 install --upgrade cx_freeze wheel
+
+      - name: Init Legendary
+        run: |
+          git submodule init
+          git submodule update
+          python legendary/setup.py install
+
 
       - name: Build
         run: python freeze.py bdist_msi

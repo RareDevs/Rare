@@ -1,4 +1,3 @@
-import json
 import os
 import platform
 
@@ -7,7 +6,6 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from legendary.core import LegendaryCore
 from legendary.models.game import Game, InstalledGame
-from rare import data_dir
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.legendary_utils import VerifyThread
 from rare.utils.steam_grades import SteamWorker
@@ -26,17 +24,6 @@ class GameInfo(QWidget, Ui_GameInfo):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = core
-
-        self.ratings = {"platinum": self.tr("Platinum"),
-                        "gold": self.tr("Gold"),
-                        "silver": self.tr("Silver"),
-                        "bronze": self.tr("Bronze"),
-                        "fail": self.tr("Could not get grade"),
-                        "pending": self.tr("Not enough reports")}
-        if os.path.exists(p := os.path.join(data_dir, "game_list.json")):
-            self.grade_table = json.load(open(p))
-        else:
-            self.grade_table = {}
 
         if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
@@ -92,12 +79,12 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
 
-    def update_game(self, app_name):
-        self.game = self.core.get_game(app_name)
-        self.igame = self.core.get_installed_game(app_name)
+    def update_game(self, game: Game):
+        self.game = game
+        self.igame = self.core.get_installed_game(game.app_name)
         self.game_title.setText(f'<h2>{self.game.app_title}</h2>')
 
-        pixmap = get_pixmap(app_name)
+        pixmap = get_pixmap(game.app_name)
         w = 200
         pixmap = pixmap.scaled(w, int(w * 4 / 3))
         self.image.setPixmap(pixmap)
@@ -105,18 +92,24 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.app_name.setText(self.game.app_name)
         self.version.setText(self.game.app_version)
         self.dev.setText(self.game.metadata["developer"])
-        self.install_size.setText(get_size(self.igame.install_size))
-        self.install_path.setText(self.igame.install_path)
+        if self.igame:
+            self.install_size.setText(get_size(self.igame.install_size))
+            self.install_path.setText(self.igame.install_path)
+            self.install_size.setVisible(True)
+            self.install_path.setVisible(True)
+        else:
+            self.install_size.setVisible(False)
+            self.install_path.setVisible(False)
 
         if platform.system() != "Windows":
             self.grade.setText(self.tr("Loading"))
-            self.steam_worker.set_app_name(app_name)
+            self.steam_worker.set_app_name(game.app_name)
             self.steam_worker.start()
 
-        if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(app_name):
+        if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(game.app_name):
             self.verify_widget.setCurrentIndex(0)
-        elif self.verify_threads.get(app_name):
+        elif self.verify_threads.get(game.app_name):
             self.verify_widget.setCurrentIndex(1)
             self.verify_progress.setValue(
-                self.verify_threads[app_name].num / self.verify_threads[app_name].total * 100
+                self.verify_threads[game.app_name].num / self.verify_threads[game.app_name].total * 100
             )

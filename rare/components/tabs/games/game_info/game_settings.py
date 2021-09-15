@@ -176,21 +176,24 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.core.lgd.config.set(self.game.app_name + ".env", "STEAM_COMPAT_DATA_PATH", text)
         self.core.lgd.save_config()
 
-    def update_game(self, app_name):
+    def update_game(self, game: Game):
         self.change = False
-        self.game = self.core.get_game(app_name)
-        self.igame = self.core.get_installed_game(app_name)
+        self.game = game
+        self.igame = self.core.get_installed_game(game.app_name)
+        app_name = game.app_name
+        if self.igame:
+            if self.igame.can_run_offline:
+                offline = self.core.lgd.config.get(self.game.app_name, "offline", fallback="unset")
+                if offline == "true":
+                    self.offline.setCurrentIndex(1)
+                elif offline == "false":
+                    self.offline.setCurrentIndex(2)
+                else:
+                    self.offline.setCurrentIndex(0)
 
-        if self.igame.can_run_offline:
-            offline = self.core.lgd.config.get(self.game.app_name, "offline", fallback="unset")
-            if offline == "true":
-                self.offline.setCurrentIndex(1)
-            elif offline == "false":
-                self.offline.setCurrentIndex(2)
+                self.offline.setEnabled(True)
             else:
-                self.offline.setCurrentIndex(0)
-
-            self.offline.setEnabled(True)
+                self.offline.setEnabled(False)
         else:
             self.offline.setEnabled(False)
 

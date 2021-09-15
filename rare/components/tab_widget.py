@@ -117,7 +117,7 @@ class TabWidget(QTabWidget):
 
     def mouse_clicked(self, tab_num):
         if tab_num == 0:
-            self.games_tab.layout.setCurrentIndex(0)
+            self.games_tab.layout().setCurrentIndex(0)
         if tab_num == 3:
             self.store.load()
 

@@ -1,6 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTabWidget
+from legendary.models.game import Game
 from qtawesome import icon
 
 from rare.components.tabs.games.game_info.game_dlc import GameDlc
@@ -18,7 +19,7 @@ class InfoTabs(QTabWidget):
         self.setTabPosition(QTabWidget.West)
 
         self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
-        self.tabBarClicked.connect(lambda x: self.parent().layout.setCurrentIndex(0) if x == 0 else None)
+        self.tabBarClicked.connect(lambda x: self.parent().layout().setCurrentIndex(0) if x == 0 else None)
 
         self.info = GameInfo(core, self)
         self.addTab(self.info, self.tr("Information"))
@@ -30,21 +31,21 @@ class InfoTabs(QTabWidget):
         self.dlc = GameDlc(core, self)
         self.addTab(self.dlc, self.tr("Downloadable Content"))
 
-    def update_game(self, app_name, dlcs: list):
+    def update_game(self, game: Game, dlcs: list):
 
-        self.info.update_game(app_name)
-        self.settings.update_game(app_name)
+        self.info.update_game(game)
+        self.settings.update_game(game)
 
         # DLC Tab: Disable if no dlcs available
         if dlcs:
-            if len(dlcs[self.core.get_game(app_name).asset_info.catalog_item_id]) == 0:
+            if len(dlcs[game.asset_info.catalog_item_id]) == 0:
                 self.setTabEnabled(3, False)
             else:
                 self.setTabEnabled(3, True)
-                self.dlc.update_dlcs(app_name, dlcs)
+                self.dlc.update_dlcs(game.app_name, dlcs)
         else:
             self.setTabEnabled(3, False)
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
-            self.parent().layout.setCurrentIndex(0)
+            self.parent().layout().setCurrentIndex(0)

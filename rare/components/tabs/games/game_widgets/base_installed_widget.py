@@ -5,7 +5,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray, QProcessEnvironment
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
+from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel, QPushButton
 
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
@@ -19,7 +19,7 @@ logger = getLogger("Game")
 
 class BaseInstalledWidget(QGroupBox):
     launch_signal = pyqtSignal(str)
-    show_info = pyqtSignal(str)
+    show_info = pyqtSignal(Game)
     finish_signal = pyqtSignal(str)
     update_list = pyqtSignal()
     proc: QProcess()
@@ -201,7 +201,15 @@ class BaseInstalledWidget(QGroupBox):
     def finished(self, exit_code):
         logger.info("Game exited with exit code: " + str(exit_code))
         if exit_code == 53 and self.is_origin:
-            QMessageBox.warning(self, "Error", "Origin is not installed. Please install it manually")
+            msg_box = QMessageBox()
+            msg_box.setText(self.tr("Origin is not installed. Do you want to download installer file? "))
+            msg_box.addButton(QPushButton("Download"), QMessageBox.YesRole)
+            msg_box.addButton(QPushButton("Cancel"), QMessageBox.RejectRole)
+            resp = msg_box.exec()
+            # click install button
+            if resp == 0:
+                webbrowser.open("https://www.dm.origin.com/download")
+
         self.finish_signal.emit(self.game.app_name)
         self.game_running = False
         if self.settings.value("show_console", False, bool):

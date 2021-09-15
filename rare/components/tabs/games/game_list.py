@@ -21,7 +21,7 @@ logger = getLogger("Game list")
 
 class GameList(QStackedWidget):
     install_game = pyqtSignal(InstallOptionsModel)
-    show_game_info = pyqtSignal(str)
+    show_game_info = pyqtSignal(Game)
     update_game = pyqtSignal()
     game_exited = pyqtSignal(str)
     game_started = pyqtSignal(str)

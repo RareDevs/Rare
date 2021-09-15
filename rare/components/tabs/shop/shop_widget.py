@@ -240,6 +240,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
         if data:
             for game in data:
+                print(game)
                 w = GameWidget(self.path, game, 275)
                 self.game_widget.layout().addWidget(w)
                 w.show_info.connect(self.show_game.emit)

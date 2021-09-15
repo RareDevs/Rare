@@ -69,7 +69,7 @@ class DlQueueWidget(QGroupBox):
         self.layout().addWidget(self.text)
 
     def update_queue(self, dl_queue: list):
-        logger.info("Update Queue " + ", ".join(i.download.game.app_title for i in dl_queue))
+        logger.debug("Update Queue " + ", ".join(i.download.game.app_title for i in dl_queue))
         self.dl_queue = dl_queue
 
         for item in (self.layout().itemAt(i) for i in range(self.layout().count())):
@@ -122,7 +122,7 @@ class DlQueueWidget(QGroupBox):
                 index = i
                 break
         else:
-            logger.warning("Could not find appname" + app_name)
+            logger.warning("infoCould not find appname" + app_name)
             return
         self.dl_queue.insert(index + 1, self.dl_queue.pop(index))
         self.update_list.emit(self.dl_queue)

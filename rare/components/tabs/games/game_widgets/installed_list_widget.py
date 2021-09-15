@@ -41,7 +41,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.launch_button.setFixedWidth(120)
 
         self.info = QPushButton("Info")
-        self.info.clicked.connect(lambda: self.show_info.emit(self.game.app_name))
+        self.info.clicked.connect(lambda: self.show_info.emit(self.game))
         self.info.setFixedWidth(80)
 
         self.childLayout.addWidget(self.title_widget)
