@@ -18,7 +18,7 @@ class GameInfo(QWidget, Ui_GameInfo):
     uninstall_game = pyqtSignal(str)
     update_list = pyqtSignal(str)
     verify_game = pyqtSignal(str)
-    verify_threads = {}
+    verify_threads = dict()
 
     def __init__(self, core: LegendaryCore, parent):
         super(GameInfo, self).__init__(parent=parent)
@@ -56,6 +56,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         verify_thread = VerifyThread(self.core, self.game.app_name)
         verify_thread.status.connect(self.verify_satistics)
         verify_thread.summary.connect(self.finish_verify)
+        verify_thread.finished.connect(verify_thread.deleteLater)
         verify_thread.start()
         self.verify_progress.setValue(0)
         self.verify_threads[self.game.app_name] = verify_thread
