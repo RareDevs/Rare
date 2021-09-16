@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -30,24 +32,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Install Deps
         run: |
           sudo apt install python3-all python3-stdeb dh-python python3-setuptools python3-wheel
           sudo pip install -r requirements.txt
-
-      run: |
-        git submodule init
-        git submodule update
-        python legendary/setup.py install
-
+      - name: Install legendary
+        run: |
+          pushd legendary
+          python setup.py install
+          popd
       - name: run python setup
         run: |
           python3 setup.py sdist
           python3 setup.py --command-packages=stdeb.command bdist_deb
-
       - name: move file
         run: mv deb_dist/*.deb Rare.deb
-
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
@@ -61,33 +62,31 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: install Deps
         run: |
           sudo apt update
           sudo apt install python3 python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev fakeroot strace fuse
-
       - name: install appimage-builder
         run: |
           sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
           sudo chmod +x /usr/local/bin/appimagetool
           sudo pip3 install appimage-builder
-      - name: Setup Submodule
+      - name: Install legendary
         run: |
-          git submodule init
-          git submodule update
-          python legendary/setup.py install
-
+          pushd legendary
+          python setup.py install
+          popd
       - name: Prepare Build directory
         run: |
           mkdir build
           cp AppImageBuilder.yml build/
           cd build
-
       - name: Build Appimage
         run: |
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
-
       - name: Upload to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
@@ -101,30 +100,24 @@ jobs:
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v2
-
+        with:
+          submodules: true
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
-
       - name: Dependencies
         run: pip3 install -r requirements.txt
-
       - name: cx_freeze
         run: pip3 install --upgrade cx_freeze wheel
-
-      - name: Init Legendary
+      - name: Install legendary
         run: |
-          git submodule init
-          git submodule update
-          python legendary/setup.py install
-
-
+          pushd legendary
+          python setup.py install
+          popd
       - name: Build
         run: python freeze.py bdist_msi
-
       - name: Rename File
         run: mv dist/* dist/Rare.msi
-
       - name: Upload to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:

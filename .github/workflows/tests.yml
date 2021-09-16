@@ -70,80 +70,76 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Setup Submodule
-        run: |
-          git submodule init
-          git submodule update
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pylint
           pip install -r requirements.txt
-          python legendary/setup.py install
+      - name: Install legendary
+        run: |
+          pushd legendary
+          python setup.py install
+          popd
       - name: Analysing the code with pylint
         run: |
           pylint -E rare --disable=E0611 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
 
   appimage:
-      runs-on: ubuntu-20.04
-      steps:
-        - uses: actions/checkout@v2
-        - name: install Deps
-          run: |
-            sudo apt update
-            sudo apt install python3 python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev fakeroot strace fuse
-
-        - name: install appimage-builder
-          run: |
-            sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
-            sudo chmod +x /usr/local/bin/appimagetool
-            sudo pip3 install appimage-builder
-
-        - name: Init Submodule
-          run: |
-            git submodule init
-            git submodule update
-            python legendary/setup.py install
-
-        - name: Prepare Build directory
-          run: |
-            mkdir build
-            cp AppImageBuilder.yml build/
-            cd build
-
-        - name: Build Appimage
-          run: |
-            appimage-builder --skip-test
-            mv Rare-*.AppImage Rare.AppImage
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: install Deps
+        run: |
+          sudo apt update
+          sudo apt install python3 python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev fakeroot strace fuse
+      - name: install appimage-builder
+        run: |
+          sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
+          sudo chmod +x /usr/local/bin/appimagetool
+          sudo pip3 install appimage-builder
+      - name: Install legendary
+        run: |
+          pushd legendary
+          python setup.py install
+          popd
+      - name: Prepare Build directory
+        run: |
+          mkdir build
+          cp AppImageBuilder.yml build/
+          cd build
+      - name: Build Appimage
+        run: |
+          appimage-builder --skip-test
+          mv Rare-*.AppImage Rare.AppImage
 
 
   cx_freeze:
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v2
-
+        with:
+          submodules: true
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
-
       - name: Dependencies
         run: pip3 install -r requirements.txt
-
       - name: cx_freeze
         run: pip3 install --upgrade cx_freeze wheel
-
-      - name: Init Legendary
+      - name: Install legendary
         run: |
-          git submodule init
-          git submodule update
-          python legendary/setup.py install
-
+          pushd legendary
+          python setup.py install
+          popd
       - name: Build
         run: python freeze.py bdist_msi
-
       - name: Rename File
         run: mv dist/* dist/Rare.msi
