@@ -150,7 +150,7 @@ class TabWidget(QTabWidget):
             downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
             self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
         self.games_tab.default_widget.game_list.update_list(app_name)
-        self.games_tab.layout.setCurrentIndex(0)
+        self.games_tab.layout().setCurrentIndex(0)
 
     # Sync game and delete dc rpc
     def game_finished(self, app_name):

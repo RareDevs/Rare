@@ -76,7 +76,7 @@ jobs:
       - name: Install legendary
         run: |
           pushd legendary
-          python setup.py install
+          sudo python setup.py install
           popd
       - name: Prepare Build directory
         run: |

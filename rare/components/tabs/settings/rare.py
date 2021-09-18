@@ -181,7 +181,7 @@ class RareSettings(QWidget, Ui_RareSettings):
 
     def open_dir(self):
         if platform.system() == "Windows":
-            os.startfile(self.logdir)
+            os.startfile(self.logdir)  # pylint: disable=E1101
         else:
             opener = "open" if sys.platform == "darwin" else "xdg-open"
             subprocess.Popen([opener, self.logdir])

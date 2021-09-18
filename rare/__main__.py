@@ -5,6 +5,8 @@ import pathlib
 import sys
 from argparse import ArgumentParser
 
+# from PyQt5.QtGui import QOpenGLDebugLogger, QOpenGLDebugMessage
+
 
 def main():
     # disable debug.log file

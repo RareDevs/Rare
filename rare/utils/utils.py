@@ -15,7 +15,7 @@ from PyQt5.QtGui import QPalette, QColor, QPixmap
 # Windows
 
 if platform.system() == "Windows":
-    from win32com.client import Dispatch
+    from win32com.client import Dispatch # pylint: disable=E0401
 
 from rare import languages_path, resources_path, image_dir
 # Mac not supported

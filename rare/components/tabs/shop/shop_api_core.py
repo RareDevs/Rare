@@ -88,7 +88,7 @@ class ShopApiCore(QObject):
                 logger.error(str(e))
                 handle_func([])
         else:
-            self.browse_games(*self.next_browse_request)
+            self.browse_games(*self.next_browse_request)  # pylint: disable=E1120
             self.next_browse_request = tuple(())
 
     def get_game(self, slug: str, is_bundle: bool, handle_func):
