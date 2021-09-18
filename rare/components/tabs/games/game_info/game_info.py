@@ -33,6 +33,7 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.steam_worker.rating_signal.connect(self.grade.setText)
 
         self.game_actions_stack.setCurrentIndex(0)
+        self.install_button.setText(self.tr("Link to Origin/Launch"))
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
 
         self.uninstall_button.clicked.connect(self.uninstall)
@@ -101,6 +102,18 @@ class GameInfo(QWidget, Ui_GameInfo):
         else:
             self.install_size.setVisible(False)
             self.install_path.setVisible(False)
+
+        if not self.igame:
+            # origin game
+            self.uninstall_button.setDisabled(True)
+            self.verify_button.setDisabled(True)
+            self.repair_button.setDisabled(True)
+            self.game_actions_stack.setCurrentIndex(1)
+        else:
+            self.uninstall_button.setDisabled(False)
+            self.verify_button.setDisabled(False)
+            self.repair_button.setDisabled(False)
+            self.game_actions_stack.setCurrentIndex(0)
 
         if platform.system() != "Windows":
             self.grade.setText(self.tr("Loading"))

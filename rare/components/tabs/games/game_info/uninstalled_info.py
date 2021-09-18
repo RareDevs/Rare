@@ -64,8 +64,6 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.setupUi(self)
         self.core = core
 
-        self.no_install_label.setVisible(False)
-
         if platform.system() != "Windows":
             self.steam_worker = SteamWorker(self.core)
             self.steam_worker.rating_signal.connect(self.grade.setText)
