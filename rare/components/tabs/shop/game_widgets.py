@@ -64,7 +64,6 @@ class GameWidget(QWidget):
                 break
         else:
             logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
-            # print(json_info["keyImages"])
 
         self.setLayout(self.layout)
 

@@ -42,10 +42,10 @@ In [releases page](https://github.com/Dummerle/Rare/releases) are AppImages for 
 available
 
 ### Run from source
-
-1. Run `pip install -r requirements.txt` to get dependencies. If you use `pacman` you can
+1. Clone the repo with Submodule: `git clone https://github.com/Dummerle/Rare --recurse-submodules`. 
+2. Run `pip install -r requirements.txt` to get dependencies. If you use `pacman` you can
    run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-pillow`
-2. For unix operating systems run `sh start.sh`. For windows run `set PYTHONPATH=%CD% && python rare`
+3. Run `python3 rare`
 
 ## Why Rare?
 

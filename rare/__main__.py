@@ -5,17 +5,19 @@ import pathlib
 import sys
 from argparse import ArgumentParser
 
-from rare import __version__, data_dir
-from rare.utils import singleton
-
 
 def main():
+    # disable debug.log file
+    # QOpenGLDebugLogger.disableMessages(QOpenGLDebugLogger(), QOpenGLDebugMessage.AnySource, QOpenGLDebugMessage.AnyType)
     # fix cx_freeze
     import multiprocessing
     multiprocessing.freeze_support()
 
     # insert legendary submodule to path
     sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "legendary"))
+
+    # insert source directory
+    sys.path.insert(0, str(pathlib.Path(__file__).parent.parent.absolute()))
 
     # CLI Options
     parser = ArgumentParser()
@@ -36,24 +38,31 @@ def main():
 
     args = parser.parse_args()
 
+    if args.debug:
+        print(sys.path)
+
     if args.desktop_shortcut:
         from rare.utils import utils
         utils.create_rare_desktop_link("desktop")
         print("Link created")
+
     if args.startmenu_shortcut:
         from rare.utils import utils
         utils.create_rare_desktop_link("start_menu")
         print("link created")
 
     if args.version:
+        from rare import __version__
         print(__version__)
         return
+    from rare.utils import singleton
     try:
         # this object only allows one instance per machine
+
         me = singleton.SingleInstance()
     except singleton.SingleInstanceException:
         print("Rare is already running")
-
+        from rare import data_dir
         with open(os.path.join(data_dir, "lockfile"), "w") as file:
             if args.subparser == "launch":
                 file.write("launch " + args.app_name)

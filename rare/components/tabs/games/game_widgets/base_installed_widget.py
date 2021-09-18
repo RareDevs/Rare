@@ -55,9 +55,9 @@ class BaseInstalledWidget(QGroupBox):
             self.create_desktop = QAction(self.tr("Remove Desktop link"))
         else:
             self.create_desktop = QAction(self.tr("Create Desktop link"))
-
-        self.create_desktop.triggered.connect(lambda: self.create_desktop_link("desktop"))
-        self.addAction(self.create_desktop)
+        if not is_origin:
+            self.create_desktop.triggered.connect(lambda: self.create_desktop_link("desktop"))
+            self.addAction(self.create_desktop)
 
         if platform.system() == "Linux":
             start_menu_file = os.path.expanduser(f"~/.local/share/applications/{self.game.app_title}.desktop")
@@ -69,9 +69,9 @@ class BaseInstalledWidget(QGroupBox):
             self.create_start_menu = QAction(self.tr("Remove start menu link"))
         else:
             self.create_start_menu = QAction(self.tr("Create start menu link"))
-
-        self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
-        self.addAction(self.create_start_menu)
+        if not is_origin:
+            self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
+            self.addAction(self.create_start_menu)
 
         reload_image = QAction(self.tr("Reload Image"), self)
         reload_image.triggered.connect(self.reload_image)
@@ -99,8 +99,11 @@ class BaseInstalledWidget(QGroupBox):
             return
         if not (os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
                 or os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk"))):
-            if not create_desktop_link(self.game.app_name, self.core, type_of_link):
-                return
+            try:
+                if not create_desktop_link(self.game.app_name, self.core, type_of_link):
+                    return
+            except PermissionError:
+                QMessageBox.warning(self, "Error", "Permission error. Cannot create Desktop Link")
             if type_of_link == "desktop":
                 self.create_desktop.setText(self.tr("Remove Desktop link"))
             elif type_of_link == "start_menu":

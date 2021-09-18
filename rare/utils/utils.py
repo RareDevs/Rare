@@ -254,20 +254,15 @@ def create_rare_desktop_link(type_of_link):
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)
 
-        if sys.executable.endswith("Rare.exe"):
-            executable = sys.executable
-        else:
-            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
-
-        if "python.exe" in executable:
-            executable = executable.replace("python.exe", "pythonw.exe")
-
+        executable = sys.executable
+        executable = executable.replace("python.exe", "pythonw.exe")
+        logger.debug(executable)
         # Add shortcut
         shell = Dispatch('WScript.Shell')
         shortcut = shell.CreateShortCut(pathLink)
         shortcut.Targetpath = executable
-        shortcut.Arguments = os.path.abspath(sys.argv[0])
-        shortcut.WorkingDirectory = os.getcwd()
+        if not sys.executable.endswith("Rare.exe"):
+            shortcut.Arguments = os.path.abspath(sys.argv[0])
 
         # Icon
         shortcut.IconLocation = os.path.join(resources_path, "images", "Rare.ico")

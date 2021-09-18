@@ -3,7 +3,7 @@ import logging
 import random
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel
 
 from legendary.core import LegendaryCore
 from rare.components.tabs.shop import ShopApiCore
@@ -240,7 +240,6 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
         if data:
             for game in data:
-                print(game)
                 w = GameWidget(self.path, game, 275)
                 self.game_widget.layout().addWidget(w)
                 w.show_info.connect(self.show_game.emit)
