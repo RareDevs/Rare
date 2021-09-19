@@ -118,6 +118,11 @@ jobs:
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Rare.AppImage
+          path: Rare.AppImage
+
 
   cx_freeze:
     runs-on: "windows-latest"
@@ -137,3 +142,8 @@ jobs:
           pip install ./legendary
       - name: Build
         run: python freeze.py bdist_msi
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Rare-Windows.msi
+          path: dist/*.msi
