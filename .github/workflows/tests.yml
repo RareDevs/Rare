@@ -107,7 +107,7 @@ jobs:
           sudo pip3 install appimage-builder
       - name: Install legendary
         run: |
-          pip install legendary
+          pip install ./legendary
       - name: Prepare Build directory
         run: |
           mkdir build
@@ -134,6 +134,6 @@ jobs:
         run: pip3 install --upgrade cx_freeze wheel
       - name: Install legendary
         run: |
-          pip install legendary
+          pip install ./legendary
       - name: Build
         run: python freeze.py bdist_msi
