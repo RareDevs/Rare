@@ -5,7 +5,7 @@ from qtawesome import icon
 from legendary.core import LegendaryCore
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.tab_utils import TabBar, TabButtonWidget
+from rare.components.tabs.tab_utils import TabBar, TabButtonWidget
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab

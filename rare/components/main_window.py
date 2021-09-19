@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
 from legendary.core import LegendaryCore
 from rare import data_dir
-from rare.components.tab_widget import TabWidget
+from rare.components.tabs.tab_widget import TabWidget
 from rare.utils.rpc import DiscordRPC
 
 logger = getLogger("Window")
