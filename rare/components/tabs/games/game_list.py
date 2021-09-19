@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QSettings, QTimer
 from PyQt5.QtWidgets import QScrollArea, QWidget, QLabel, QVBoxLayout, QStackedWidget
 
 from legendary.core import LegendaryCore
-from legendary.models.game import Game
+from legendary.models.game import Game, GameAsset
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 from rare.components.tabs.games.game_widgets.installed_icon_widget import InstalledIconWidget
 from rare.components.tabs.games.game_widgets.installed_list_widget import InstalledListWidget
@@ -75,7 +75,9 @@ class GameList(QStackedWidget):
 
         self.updates = []
         self.widgets = {}
+        # api calls
         if not self.offline:
+            self.core.lgd.assets = [GameAsset.from_egs_json(a) for a in self.core.egs.get_game_assets()]
             self.bit32 = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Win32")[0]]
             self.mac_games = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Mac")[0]]
             no_assets = self.core.get_non_asset_library_items()[0]

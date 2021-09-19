@@ -40,7 +40,7 @@ class BaseInstalledWidget(QGroupBox):
         if is_origin:
             self.update_available = False
         else:
-            self.update_available = self.core.get_asset(self.game.app_name, True).build_version != igame.version
+            self.update_available = self.core.get_asset(self.game.app_name, False).build_version != igame.version
         self.data = QByteArray()
         self.setContentsMargins(0, 0, 0, 0)
         self.settings = QSettings()
