@@ -316,7 +316,7 @@ class GameList(QStackedWidget):
                     # QWidget().setLayout(self.icon_layout)
 
                     igame = self.core.get_installed_game(app_name)
-                    self.add_installed_widget(igame)
+                    self.add_installed_widget(self.core.get_game(igame.app_name))
 
                     self._update_games()
 
@@ -361,7 +361,7 @@ class GameList(QStackedWidget):
                     self.widgets.pop(name)
 
                     igame = self.core.get_installed_game(name)
-                    self.add_installed_widget(igame)
+                    self.add_installed_widget(self.core.get_game(igame.app_name))
 
                 for name in new_uninstalled_games:
                     self.icon_layout.removeWidget(self.widgets[app_name][0])
