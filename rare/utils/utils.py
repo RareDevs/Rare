@@ -89,8 +89,14 @@ def download_image(game, force=False):
             # finalArt = Image.open(f'{image_dir}/' + game.app_name + '/DieselGameBoxTall.png')
             # finalArt.save(f'{image_dir}/{game.app_name}/FinalArt.png')
             # And same with the grayscale one
-
-            bg = Image.open(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png"))
+            try:
+                bg = Image.open(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png"))
+            except UnidentifiedImageError:
+                logger.warning("Reload image for " + game.app_title)
+                # avoid endless recursion
+                if not force:
+                    download_image(game, True)
+                return
             uninstalledArt = bg.convert('L')
             uninstalledArt = uninstalledArt.resize((200, int(200 * 4 / 3)))
             uninstalledArt.save(f'{image_dir}/{game.app_name}/UninstalledArt.png')
