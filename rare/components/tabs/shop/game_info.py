@@ -51,7 +51,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.title_str = data["title"]
         self.api_core.get_wishlist(self.handle_wishlist_update)
         for i in reversed(range(self.req_group_box.layout().count())):
-            self.req_group_box.layout().itemAt(i).widget().setParent(None)
+            self.req_group_box.layout().itemAt(i).widget().deleteLater()
         slug = data["productSlug"]
         if not slug:
             for mapping in data["offerMappings"]:
@@ -151,7 +151,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 self.req_group_box.layout().addWidget(rec_label, i + 1, 2)
         else:
             self.req_group_box.layout().addWidget(QLabel(self.tr("Could not get requirements")))
-
+        self.req_group_box.setVisible(True)
         if self.game.image_urls.front_tall:
             img_url = self.game.image_urls.front_tall
         elif self.game.image_urls.offer_image_tall:
