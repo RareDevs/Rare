@@ -88,7 +88,7 @@ jobs:
           popd
       - name: Analysing the code with pylint
         run: |
-          pylint -E rare --disable=E0611 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
+          pylint -E rare --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
 
   appimage:
     runs-on: ubuntu-20.04
@@ -107,9 +107,7 @@ jobs:
           sudo pip3 install appimage-builder
       - name: Install legendary
         run: |
-          pushd legendary
-          python setup.py install
-          popd
+          pip install legendary
       - name: Prepare Build directory
         run: |
           mkdir build
@@ -136,10 +134,6 @@ jobs:
         run: pip3 install --upgrade cx_freeze wheel
       - name: Install legendary
         run: |
-          pushd legendary
-          python setup.py install
-          popd
+          pip install legendary
       - name: Build
         run: python freeze.py bdist_msi
-      - name: Rename File
-        run: mv dist/* dist/Rare.msi
