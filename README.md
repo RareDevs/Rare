@@ -22,7 +22,6 @@ or `--startmenu-shortcut` option
 
 **Note**: On Linux must be `/home/user/.local/bin` in PATH and on Windows must be `PythonInstallationDirectory\Scripts`
 in PATH.
-
 ### Linux
 
 #### Arch based
@@ -40,6 +39,12 @@ Install via `pip`.
 
 In [releases page](https://github.com/Dummerle/Rare/releases) are AppImages for Linux and a msi file for windows
 available
+
+### Latest packages
+In [actions](https://github.com/Dummerle/Rare/actions) you find packages for the latest commits. 
+
+**Note**: they might be unstable
+
 
 ### Run from source
 1. Clone the repo with Submodule: `git clone https://github.com/Dummerle/Rare --recurse-submodules`. 

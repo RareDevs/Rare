@@ -28,3 +28,5 @@ if not os.path.exists(data_dir):
     os.makedirs(data_dir)
 
 image_dir = os.path.join(data_dir, "images")
+if not os.path.exists(image_dir):
+    os.mkdir(image_dir)
