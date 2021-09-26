@@ -19,7 +19,7 @@ class InfoTabs(QTabWidget):
         self.setTabPosition(QTabWidget.West)
 
         self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
-        self.tabBarClicked.connect(lambda x: self.parent().layout().setCurrentIndex(0) if x == 0 else None)
+        self.tabBarClicked.connect(lambda x: self.parent().setCurrentIndex(0) if x == 0 else None)
 
         self.info = GameInfo(core, self)
         self.addTab(self.info, self.tr("Information"))
@@ -32,7 +32,7 @@ class InfoTabs(QTabWidget):
         self.addTab(self.dlc, self.tr("Downloadable Content"))
 
     def update_game(self, game: Game, dlcs: list):
-
+        self.setCurrentIndex(1)
         self.info.update_game(game)
         self.settings.update_game(game)
 

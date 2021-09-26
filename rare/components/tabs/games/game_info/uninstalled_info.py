@@ -25,8 +25,6 @@ class UninstalledTabInfo(QTabWidget):
         self.setTabPosition(QTabWidget.West)
 
         self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
-        self.tabBarClicked.connect(lambda x: self.parent().layout.setCurrentIndex(0) if x == 0 else None)
-
         self.info = UninstalledInfo(core, self)
         self.addTab(self.info, self.tr("Game Info"))
 
@@ -42,17 +40,18 @@ class UninstalledTabInfo(QTabWidget):
         # self.setTabEnabled(1, False)
         self.setCurrentIndex(1)
 
-    def update_game(self, app_name):
+    def update_game(self, app_name: Game):
+        self.setCurrentIndex(1)
         self.info.update_game(app_name)
         self.model.clear()
         try:
-            self.model.load(json.load(open(os.path.expanduser(f"~/.config/legendary/metadata/{app_name}.json"), "r")))
+            self.model.load(app_name.__dict__)
         except:  # ignore if no metadata
             pass
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
-            self.parent().layout.setCurrentIndex(0)
+            self.parent().setCurrentIndex(0)
 
 
 class UninstalledInfo(QWidget, Ui_GameInfo):

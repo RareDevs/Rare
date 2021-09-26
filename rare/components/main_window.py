@@ -36,17 +36,17 @@ class MainWindow(QMainWindow):
         if not args.offline:
             self.rpc = DiscordRPC(core)
             # Discord RPC on game launch
-            self.tab_widget.games_tab.default_widget.game_list.game_started.connect(
-                lambda: self.rpc.set_discord_rpc(self.tab_widget.games_tab.default_widget.game_list.running_games[0]))
+            #self.tab_widget.games_tab.default_widget.game_list.game_started.connect(
+            #    lambda: self.rpc.set_discord_rpc(self.tab_widget.games_tab.default_widget.game_list.running_games[0]))
             # Remove RPC
             self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
             # Show RPC on changed rare_settings
             self.tab_widget.settings.rare_settings.rpc.update_settings.connect(
                 lambda: self.rpc.changed_settings(self.tab_widget.games_tab.default_widget.game_list.running_games))
 
-        game = self.tab_widget.games_tab.default_widget.game_list.active_game
-        if game != ("", 0) and not args.offline:
-            self.rpc.set_discord_rpc(game[0])  # Appname
+        #game = self.tab_widget.games_tab.default_widget.game_list.active_game
+        #if game != ("", 0) and not args.offline:
+        #    self.rpc.set_discord_rpc(game[0])  # Appname
 
         if args.subparser == "launch":
             logger.info("Launching " + self.core.get_installed_game(args.app_name).title)

@@ -1,15 +1,15 @@
-from PyQt5.QtCore import QSize, pyqtSignal
+from PyQt5.QtCore import QSize, pyqtSignal, QObject
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 from qtawesome import icon
 
 from legendary.core import LegendaryCore
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
+from rare.components.tabs.games.__init__ import GamesTab
 from rare.components.tabs.tab_utils import TabBar, TabButtonWidget
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab
-from rare.components.tabs.games import GameTab
 from rare.components.tabs.settings import SettingsTab
 from rare.components.tabs.settings.debug_settings import DebugSettings
 from rare.components.tabs.shop import Shop
@@ -28,12 +28,12 @@ class TabWidget(QTabWidget):
         self.core = core
         self.setTabBar(TabBar(disabled_tab))
         # Generate Tabs
-        self.games_tab = GameTab(core, self, offline)
+        self.games_tab = GamesTab(core, self)
         self.addTab(self.games_tab, self.tr("Games"))
         if not offline:
-            updates = self.games_tab.default_widget.game_list.updates
-            self.downloadTab = DownloadTab(core, updates, self)
-            self.addTab(self.downloadTab, "Downloads" + (" (" + str(len(updates)) + ")" if len(updates) != 0 else ""))
+            # updates = self.games_tab.default_widget.game_list.updates
+            self.downloadTab = DownloadTab(core, [], self)
+            self.addTab(self.downloadTab, "Downloads" + (" (" + str(len([])) + ")" if len([]) != 0 else ""))
             self.cloud_saves = SyncSaves(core, self)
             self.addTab(self.cloud_saves, "Cloud Saves")
             self.store = Shop(self.core)
@@ -65,7 +65,7 @@ class TabWidget(QTabWidget):
 
         # Signals
         # open download tab
-        self.games_tab.default_widget.game_list.update_game.connect(lambda: self.setCurrentIndex(1))
+        # self.games_tab.update_game.connect(lambda: self.setCurrentIndex(1))
 
         # uninstall
         self.games_tab.game_info.info.uninstall_game.connect(self.uninstall_game)
@@ -76,8 +76,6 @@ class TabWidget(QTabWidget):
         if not offline:
             # Download finished
             self.downloadTab.finished.connect(self.dl_finished)
-            # show uninstalled info
-            self.games_tab.default_widget.game_list.show_uninstalled_info.connect(self.games_tab.show_uninstalled)
             # install dlc
             self.games_tab.game_info.dlc.install_dlc.connect(
                 lambda app_name, update: self.install_game(
@@ -100,7 +98,7 @@ class TabWidget(QTabWidget):
             # Finished sync
             self.cloud_saves.finished.connect(self.finished_sync)
         # Game finished
-        self.games_tab.default_widget.game_list.game_exited.connect(self.game_finished)
+        self.games_tab.game_exited.connect(self.game_finished)
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
@@ -113,7 +111,7 @@ class TabWidget(QTabWidget):
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(5))
 
         self.downloadTab.dl_status.connect(
-            self.games_tab.default_widget.game_list.installing_widget.image_widget.set_status)
+            self.games_tab.installing_widget.image_widget.set_status)
 
     def mouse_clicked(self, tab_num):
         if tab_num == 0:
@@ -141,7 +139,7 @@ class TabWidget(QTabWidget):
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
         self.setCurrentIndex(1)
         self.downloadTab.install_game(download_item)
-        self.games_tab.default_widget.game_list.start_download(download_item.options.app_name)
+        self.games_tab.start_download(download_item.options.app_name)
 
     def game_imported(self, app_name: str):
         igame = self.core.get_installed_game(app_name)
@@ -149,8 +147,8 @@ class TabWidget(QTabWidget):
             self.downloadTab.add_update(igame)
             downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
             self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
-        self.games_tab.default_widget.game_list.update_list(app_name)
-        self.games_tab.layout().setCurrentIndex(0)
+        self.games_tab.update_list(app_name)
+        self.games_tab.setCurrentIndex(0)
 
     # Sync game and delete dc rpc
     def game_finished(self, app_name):
@@ -165,6 +163,7 @@ class TabWidget(QTabWidget):
         if infos == 0:
             return
         legendary_utils.uninstall(game.app_name, self.core, infos)
+        self.games_tab.setCurrentIndex(0)
         if app_name in self.downloadTab.update_widgets.keys():
             self.downloadTab.update_layout.removeWidget(self.downloadTab.update_widgets[app_name])
             self.downloadTab.update_widgets.pop(app_name)
@@ -175,9 +174,9 @@ class TabWidget(QTabWidget):
     # Update gamelist and set text of Downloads to "Downloads"
     def dl_finished(self, update_list):
         if update_list[0]:
-            self.games_tab.default_widget.game_list.update_list(update_list[1])
+            self.games_tab.update_list(update_list[1])
             self.cloud_saves.reload(update_list[1])
-        self.games_tab.default_widget.game_list.installing_widget.setVisible(False)
+        self.games_tab.installing_widget.setVisible(False)
         downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
         self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
 
@@ -187,6 +186,7 @@ class TabWidget(QTabWidget):
 
     # Remove text "sync game"
     def finished_sync(self, app_name):
-        self.games_tab.default_widget.game_list.widgets[app_name][0].info_text = ""
-        self.games_tab.default_widget.game_list.widgets[app_name][0].info_label.setText("")
-        self.games_tab.default_widget.game_list.widgets[app_name][1].info_label.setText("")
+        if self.core.is_installed(app_name):
+            self.games_tab.widgets[app_name][0].info_text = ""
+            self.games_tab.widgets[app_name][0].info_label.setText("")
+            self.games_tab.widgets[app_name][1].info_label.setText("")

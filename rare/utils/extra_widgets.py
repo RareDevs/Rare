@@ -154,7 +154,8 @@ class PathEdit(QWidget, Ui_PathEdit):
         self.text_edit.setText(text)
 
     def save(self):
-        self.save_func()
+        if self.save_func:
+            self.save_func()
 
     def set_path(self):
         dlg_path = self.text_edit.text()
