@@ -8,6 +8,7 @@ from legendary.models.game import SaveGameStatus
 from rare.components.dialogs.path_input_dialog import PathInputDialog
 from rare.components.tabs.cloud_saves.sync_widget import SyncWidget
 from rare.utils.extra_widgets import WaitingSpinner
+from rare.utils.models import Signals
 
 logger = getLogger("Sync Saves")
 
@@ -27,11 +28,16 @@ class LoadThread(QThread):
 class SyncSaves(QScrollArea):
     finished = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, parent):
-        super(SyncSaves, self).__init__(parent=parent)
+    def __init__(self, core: LegendaryCore, signals: Signals):
+        super(SyncSaves, self).__init__()
         self.core = core
+        self.signals = signals
+        self.signals.cloud_saves.connect(self.signal_received)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.load_saves()
+
+    def signal_received(self, action, ):
+        pass
 
     def load_saves(self, app_name=None, auto=False):
         self.widget = QWidget()

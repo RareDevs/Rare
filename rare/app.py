@@ -15,6 +15,7 @@ from rare import languages_path, resources_path, cache_dir
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
+from rare.utils.models import Signals
 from rare.utils.utils import load_color_scheme
 
 start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
@@ -70,11 +71,14 @@ class App(QApplication):
         self.launch_dialog = None
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")
-        settings = QSettings()
+        self.settings = QSettings()
+
+        self.signals = Signals()
+        self.signals.app.connect(lambda x: self.handle_signal(*x))
 
         # Translator
         self.translator = QTranslator()
-        lang = settings.value("language", self.core.language_code, type=str)
+        lang = self.settings.value("language", self.core.language_code, type=str)
         if os.path.exists(p := os.path.join(languages_path, lang + ".qm")):
             self.translator.load(p)
             logger.info("Your language is supported: " + lang)
@@ -84,18 +88,18 @@ class App(QApplication):
 
         # Style
         self.setStyle(QStyleFactory.create("Fusion"))
-        if settings.value("color_scheme", None) is None and settings.value("style_sheet", None) is None:
-            settings.setValue("color_scheme", "")
-            settings.setValue("style_sheet", "RareStyle")
-        if color := settings.value("color_scheme", False):
-            settings.setValue("style_sheet", "")
+        if self.settings.value("color_scheme", None) is None and self.settings.value("style_sheet", None) is None:
+            self.settings.setValue("color_scheme", "")
+            self.settings.setValue("style_sheet", "RareStyle")
+        if color := self.settings.value("color_scheme", False):
+            self.settings.setValue("style_sheet", "")
             custom_palette = load_color_scheme(os.path.join(resources_path, "colors", color + ".scheme"))
             if custom_palette is not None:
                 self.setPalette(custom_palette)
                 qtawesome.set_defaults(color=custom_palette.color(QPalette.Text))
 
-        elif style := settings.value("style_sheet", False):
-            settings.setValue("color_scheme", "")
+        elif style := self.settings.value("style_sheet", False):
+            self.settings.setValue("color_scheme", "")
             stylesheet = open(os.path.join(resources_path, "stylesheets", style, "stylesheet.qss")).read()
             style_resource_path = os.path.join(resources_path, "stylesheets", style, "")
             if os.name == "nt":
@@ -122,21 +126,25 @@ class App(QApplication):
 
     def start_app(self, offline=False):
         self.args.offline = offline
-        self.mainwindow = MainWindow(self.core, self.args)
-        self.mainwindow.quit_app.connect(self.exit_app)
+        self.mainwindow = MainWindow(self.core, self.args, self.signals)
         self.tray_icon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(self.exit_app)
         self.tray_icon.start_rare.triggered.connect(self.mainwindow.show)
         self.tray_icon.activated.connect(self.tray)
-        if not offline:
-            self.mainwindow.tab_widget.downloadTab.finished.connect(lambda x: self.tray_icon.showMessage(
-                self.tr("Download finished"),
-                self.tr("Download finished. {} is playable now").format(self.core.get_game(x[1]).app_title),
-                QSystemTrayIcon.Information, 4000) if (
-                    x[0] and QSettings().value("notification", True, bool)) else None)
 
         if not self.args.silent:
             self.mainwindow.show()
+
+    def handle_signal(self, action, data):
+        if action == self.signals.actions.quit_app:
+            self.exit_app(data)
+        elif action == self.signals.actions.installation_finished:
+            # data: (notification, app_title)
+            if data[0] and self.settings.value("notification", True, bool):
+                self.tray_icon.showMessage(
+                    self.tr("Download finished"),
+                    self.tr("Download finished. {} is playable now").format(data[1]),
+                    QSystemTrayIcon.Information, 4000)
 
     def tray(self, reason):
         if reason == QSystemTrayIcon.DoubleClick:

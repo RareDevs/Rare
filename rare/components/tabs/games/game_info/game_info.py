@@ -1,29 +1,27 @@
 import os
 import platform
 
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from legendary.core import LegendaryCore
 from legendary.models.game import Game, InstalledGame
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.legendary_utils import VerifyThread
+from rare.utils.models import Signals, InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_size, get_pixmap
 
 
 class GameInfo(QWidget, Ui_GameInfo):
     igame: InstalledGame
-    game: Game
-    uninstall_game = pyqtSignal(str)
-    update_list = pyqtSignal(str)
-    verify_game = pyqtSignal(str)
+    game: Game = None
     verify_threads = dict()
 
-    def __init__(self, core: LegendaryCore, parent):
+    def __init__(self, core: LegendaryCore, signals: Signals, parent):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = core
+        self.signals = signals
 
         if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
@@ -41,8 +39,11 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.repair_button.clicked.connect(self.repair)
 
     def uninstall(self):
-        self.uninstall_game.emit(self.game.app_name)
-        self.update_list.emit(self.game.app_name)
+        # uninstall game
+        self.signals.games_tab.emit((self.signals.actions.uninstall, self.game))
+
+        # remove from update or dl_queue
+        self.signals.dl_tab.emit((self.signals.actions.uninstall, self.game))
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')
@@ -50,19 +51,21 @@ class GameInfo(QWidget, Ui_GameInfo):
             QMessageBox.warning(self, "Warning", self.tr(
                 "Repair file does not exist or game does not need a repair. Please verify game first"))
             return
-        self.verify_game.emit(self.game.app_name)
+        self.signals.dl_tab.emit(
+            (self.signals.actions.install_game, InstallOptionsModel(app_name=self.game.app_name, repair=True,
+                                                                    base_path=self.igame.install_path)))
 
     def verify(self):
         self.verify_widget.setCurrentIndex(1)
         verify_thread = VerifyThread(self.core, self.game.app_name)
-        verify_thread.status.connect(self.verify_satistics)
+        verify_thread.status.connect(self.verify_staistics)
         verify_thread.summary.connect(self.finish_verify)
         verify_thread.finished.connect(verify_thread.deleteLater)
         verify_thread.start()
         self.verify_progress.setValue(0)
         self.verify_threads[self.game.app_name] = verify_thread
 
-    def verify_satistics(self, progress):
+    def verify_staistics(self, progress):
         # checked, max, app_name
         if progress[2] == self.game.app_name:
             self.verify_progress.setValue(progress[0] * 100 / progress[1])
@@ -72,12 +75,16 @@ class GameInfo(QWidget, Ui_GameInfo):
         if failed == 0 and missing == 0:
             QMessageBox.information(self, "Summary",
                                     "Game was verified successfully. No missing or corrupt files found")
+            self.igame.needs_verification = False
+            self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
         else:
             ans = QMessageBox.question(self, "Summary", self.tr(
                 'Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?').format(
                 failed, missing), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if ans == QMessageBox.Yes:
-                self.verify_game.emit(self.game.app_name)
+                self.signals.dl_tab.emit(
+                    (self.signals.actions.install_game, InstallOptionsModel(app_name=self.game.app_name, repair=True,
+                                                                            base_path=self.igame.install_path)))
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
 

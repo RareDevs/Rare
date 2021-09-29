@@ -2,6 +2,8 @@ import os
 from dataclasses import field, dataclass
 from multiprocessing import Queue
 
+from PyQt5.QtCore import QObject, pyqtSignal
+
 from legendary.downloader.mp.manager import DLManager
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame
@@ -17,6 +19,8 @@ class InstallOptionsModel:
     ignore_space_req: bool = False
     force: bool = False
     sdl_list: list = field(default_factory=lambda: [''])
+    update: bool = False
+    silent: bool = False
 
 
 @dataclass
@@ -38,3 +42,25 @@ class InstallQueueItemModel:
 
     def __bool__(self):
         return (self.status_q is not None) and (self.download is not None) and (self.options is not None)
+
+
+class SignalActions:
+    quit_app = "quit_app"
+    dl_status = "dl_status"
+    install_game = "install_game"
+    start_installation = "start_installation"
+    installation_finished = "installation_finished"
+    uninstall = "uninstall"
+    set_index = "set_index"
+    set_dl_tab_text = "set_dl_tab_text"
+
+
+class Signals(QObject):
+    actions = SignalActions()
+
+    tab_widget = pyqtSignal(tuple)
+    games_tab = pyqtSignal(tuple)
+    cloud_saves = pyqtSignal(tuple)
+    dl_tab = pyqtSignal(tuple)
+    main_window = pyqtSignal(tuple)
+    app = pyqtSignal(tuple)

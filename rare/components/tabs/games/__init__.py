@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 from legendary.core import LegendaryCore
 from legendary.models.game import GameAsset
+from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.tabs.games.game_info import InfoTabs
 from rare.components.tabs.games.game_info.uninstalled_info import UninstalledTabInfo
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
@@ -17,7 +18,9 @@ from rare.components.tabs.games.game_widgets.uninstalled_list_widget import List
 from rare.components.tabs.games.head_bar import GameListHeadBar
 from rare.components.tabs.games.import_widget import ImportWidget
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
+from rare.utils import legendary_utils
 from rare.utils.extra_widgets import FlowLayout
+from rare.utils.models import Signals
 from rare.utils.utils import get_pixmap, download_image, get_uninstalled_pixmap
 
 logger = getLogger("GamesTab")
@@ -28,37 +31,33 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
     widgets = {}
     running_games = []
     game_exited = pyqtSignal(str)
-
     game_started = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, offline):
+    def __init__(self, core: LegendaryCore, offline, signals: Signals):
         super(GamesTab, self).__init__()
         self.setupUi(self)
         self.core = core
         self.offline = offline
+        self.signals = signals
+        self.signals.games_tab.connect(lambda x: self.signal_received(*x))
         self.settings = QSettings()
 
         self.head_bar = GameListHeadBar()
         self.games.layout().insertWidget(0, self.head_bar)
 
-        self.game_info = InfoTabs(self.core, self)
-        self.game_info.info.update_list.connect(self.update_list)
+        self.game_info = InfoTabs(self.core, self.signals, self)
         self.addWidget(self.game_info)
 
         self.import_widget = ImportWidget(core, self)
         self.addWidget(self.import_widget)
 
-        self.uninstalled_info_widget = UninstalledTabInfo(core, self)
+        self.uninstalled_info_widget = UninstalledTabInfo(core, self.signals, self)
         self.layout().addWidget(self.uninstalled_info_widget)
 
         # navigation
         self.head_bar.import_game.clicked.connect(lambda: self.setCurrentIndex(2))
         self.import_widget.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
         self.uninstalled_info_widget.tabBarClicked.connect(lambda x: self.setCurrentIndex(0) if x == 0 else None)
-
-        self.game_info.info.update_list.connect(self.update_list)
-
-
 
         self.setup_game_list()
 
@@ -73,7 +72,26 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.head_bar.refresh_list.clicked.connect(self.update_list)
         self.head_bar.view.toggled.connect(self.toggle_view)
 
-        self.filter(["", "installed", "offline", "32bit", "installable"][self.settings.value("filter", 0, int)])
+        self.filter(self.head_bar.available_filters[self.settings.value("filter", 0, int)])
+
+    def signal_received(self, action, data):
+        if action == self.signals.actions.dl_status:
+            self.installing_widget.set_status(data)
+        elif action == self.signals.actions.set_index:
+            self.setCurrentIndex(data)
+        elif action == self.signals.actions.start_installation:
+            self.installing_widget.set_game(data)
+            self.installing_widget.setVisible(True)
+        elif action == self.signals.actions.installation_finished:
+            self.update_list(data)
+            self.installing_widget.setVisible(False)
+        elif action == self.signals.actions.uninstall:
+            infos = UninstallDialog(data).get_information()
+            if infos == 0:
+                return
+            legendary_utils.uninstall(data.app_name, self.core, infos)
+            self.setCurrentIndex(0)
+            self.update_list(data.app_name)
 
     def show_game_info(self, game):
         self.game_info.update_game(game, self.dlcs)
@@ -196,10 +214,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.widgets[game.app_name] = (icon_widget, list_widget)
 
         return icon_widget, list_widget
-
-    def start_download(self, app_name):
-        self.installing_widget.set_game(self.core.get_game(app_name))
-        self.installing_widget.setVisible(True)
 
     def finished(self, app_name):
         self.running_games.remove(app_name)

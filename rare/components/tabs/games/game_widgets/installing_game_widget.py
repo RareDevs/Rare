@@ -36,6 +36,10 @@ class InstallingGameWidget(QGroupBox):
         self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3), transformMode=Qt.SmoothTransformation)
         self.image_widget.set_game(self.pixmap, game.app_name)
 
+    def set_status(self, s: int):
+        self.image_widget.status = s
+        self.image_widget.repaint()
+
 
 class PaintWidget(QWidget):
     def __init__(self):
@@ -74,7 +78,3 @@ class PaintWidget(QWidget):
         painter.setFont(QFont(None, 16))
         painter.drawText(a0.rect(), Qt.AlignCenter, str(self.status) + "%")
         painter.end()
-
-    def set_status(self, s: int):
-        self.status = s
-        self.repaint()

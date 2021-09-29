@@ -24,6 +24,8 @@ class GameListHeadBar(QWidget):
                               self.tr("Exclude Origin")])
         self.layout().addWidget(self.filter)
 
+        self.available_filters = ["", "installed", "offline", "32bit", "installable"]
+
         try:
             self.filter.setCurrentIndex(self.settings.value("filter", 0, int))
         except TypeError:
@@ -58,5 +60,5 @@ class GameListHeadBar(QWidget):
         self.layout().addWidget(self.refresh_list)
 
     def filter_changed(self, i):
-        self.filter_changed_signal.emit(["", "installed", "offline", "32bit", "installable"][i])
+        self.filter_changed_signal.emit(self.available_filters[i])
         self.settings.setValue("filter", i)

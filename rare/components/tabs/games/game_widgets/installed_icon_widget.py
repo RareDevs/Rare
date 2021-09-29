@@ -64,9 +64,9 @@ class InstalledIconWidget(BaseInstalledWidget):
         self.info_label.setObjectName("info_label")
         self.layout.addWidget(self.info_label)
 
-        # p = self.palette()
-        # p.setColor(self.backgroundRole(), Qt.red)
-        # self.setPalette(p)
+        if not self.is_origin and self.igame.needs_verification:
+            self.info_text = self.tr("Game needs verification")
+            self.info_label.setText(self.info_text)
 
         self.setLayout(self.layout)
         self.setFixedWidth(self.sizeHint().width())
@@ -74,6 +74,8 @@ class InstalledIconWidget(BaseInstalledWidget):
     def enterEvent(self, a0: QEvent) -> None:
         if self.game_running:
             self.info_label.setText(self.tr("Game running"))
+        elif not self.is_origin and self.igame.needs_verification:
+            self.info_label.setText(self.tr("Please verify game before playing"))
         elif self.update_available:
             self.info_label.setText(self.tr("Start game without version check"))
         else:
@@ -87,7 +89,7 @@ class InstalledIconWidget(BaseInstalledWidget):
 
     def mousePressEvent(self, e: QMouseEvent):
         # left button
-        if e.button() == 1 and not self.game_running:
+        if e.button() == 1 and not self.game_running and not self.igame.needs_verification:
             if self.update_available:
                 self.launch(skip_version_check=True)
             else:

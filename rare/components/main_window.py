@@ -1,26 +1,30 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QSettings, QTimer, pyqtSignal
+from PyQt5.QtCore import Qt, QSettings, QTimer
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
 from legendary.core import LegendaryCore
 from rare import data_dir
 from rare.components.tabs.tab_widget import TabWidget
+from rare.utils.models import Signals
 from rare.utils.rpc import DiscordRPC
 
 logger = getLogger("Window")
 
 
 class MainWindow(QMainWindow):
-    quit_app = pyqtSignal(int)
 
-    def __init__(self, core: LegendaryCore, args):
+    def __init__(self, core: LegendaryCore, args, signals: Signals):
         super(MainWindow, self).__init__()
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.settings = QSettings()
         self.core = core
+
+        self.signals = signals
+        self.signals.main_window.connect(lambda x: self.handle_signal(*x))
+
         self.offline = args.offline
         width, height = 1200, 800
         if self.settings.value("save_size", False):
@@ -30,8 +34,7 @@ class MainWindow(QMainWindow):
         self.setGeometry((desktop.width() - width) / 2, (desktop.height() - height) / 2, width, height)
 
         self.setWindowTitle("Rare - GUI for legendary")
-        self.tab_widget = TabWidget(core, self, args)
-        self.tab_widget.quit_app.connect(self.quit_app.emit)
+        self.tab_widget = TabWidget(core, self.signals, self, args)
         self.setCentralWidget(self.tab_widget)
         if not args.offline:
             self.rpc = DiscordRPC(core)
@@ -58,6 +61,9 @@ class MainWindow(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.timer_finished)
         self.timer.start(1000)
+
+    def handle_signal(self, action, data):
+        pass
 
     def timer_finished(self):
         file_path = os.path.join(data_dir, "lockfile")

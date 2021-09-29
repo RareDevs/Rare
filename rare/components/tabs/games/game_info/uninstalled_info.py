@@ -1,8 +1,6 @@
-import json
-import os
 import platform
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTabWidget, QTreeView
 from qtawesome import icon
@@ -12,20 +10,22 @@ from legendary.models.game import Game
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.json_formatter import QJsonModel
+from rare.utils.models import Signals, InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_pixmap
 
 
 class UninstalledTabInfo(QTabWidget):
-    def __init__(self, core, parent):
+    def __init__(self, core, signals: Signals, parent):
         super(UninstalledTabInfo, self).__init__(parent=parent)
         self.app_name = ""
         self.core = core
+        self.signals = signals
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
 
         self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
-        self.info = UninstalledInfo(core, self)
+        self.info = UninstalledInfo(core, self.signals, self)
         self.addTab(self.info, self.tr("Game Info"))
 
         self.view = QTreeView()
@@ -56,13 +56,13 @@ class UninstalledTabInfo(QTabWidget):
 
 class UninstalledInfo(QWidget, Ui_GameInfo):
     game: Game
-    install_game = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, parent=None):
+    def __init__(self, core: LegendaryCore, signals: Signals, parent=None):
         super(UninstalledInfo, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = core
-
+        self.signals = signals
+        self.install_button.clicked.connect(self.install_game)
         if platform.system() != "Windows":
             self.steam_worker = SteamWorker(self.core)
             self.steam_worker.rating_signal.connect(self.grade.setText)
@@ -79,11 +79,11 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.game_actions_stack.setCurrentIndex(1)
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
 
-        self.install_button.clicked.connect(lambda: self.install_game.emit(self.game.app_name))
+    def install_game(self):
+        self.signals.dl_tab.emit((self.signals.actions.install_game, InstallOptionsModel(app_name=self.game.app_name)))
 
     def update_game(self, game: Game):
         self.game = game
-
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
         pixmap = get_pixmap(game.app_name)
