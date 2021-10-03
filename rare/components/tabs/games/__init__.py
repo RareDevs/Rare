@@ -375,7 +375,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         for game in sorted(games, key=lambda x: x.app_title):
             if game.app_name not in installed_names:
                 self.uninstalled_names.append(game.app_name)
-        for game in self.uninstalled_names:
+        for game in self.uninstalled_games:
             i_widget, list_widget = self.widgets[game.app_name]
             icon_layout.addWidget(i_widget)
             list_layout.addWidget(list_widget)
