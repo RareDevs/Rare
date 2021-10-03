@@ -89,7 +89,9 @@ class InstalledIconWidget(BaseInstalledWidget):
 
     def mousePressEvent(self, e: QMouseEvent):
         # left button
-        if e.button() == 1 and not self.game_running and not self.igame.needs_verification:
+        if e.button() == 1 and not self.game_running:
+            if not self.is_origin and self.igame.needs_verification:
+                return
             if self.update_available:
                 self.launch(skip_version_check=True)
             else:

@@ -137,6 +137,7 @@ class BaseInstalledWidget(QGroupBox):
             try:
                 self.proc, params = legendary_utils.launch_game(self.core, self.game.app_name, offline,
                                                                 skip_version_check=skip_version_check)
+
             except Exception as e:
                 logger.error(e)
                 QMessageBox.warning(self, "Error",

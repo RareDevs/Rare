@@ -217,7 +217,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
     def finished(self, app_name):
         self.running_games.remove(app_name)
-        self.active_game = ("", 0)
         self.widgets[app_name][0].info_text = ""
         self.widgets[app_name][0].info_label.setText("")
         self.widgets[app_name][1].launch_button.setDisabled(False)

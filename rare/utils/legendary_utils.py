@@ -8,7 +8,7 @@ from PyQt5.QtCore import QProcess, QProcessEnvironment, QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
 
 from legendary.core import LegendaryCore
-from legendary.models.game import VerifyResult
+from legendary.models.game import VerifyResult, LaunchParameters
 from legendary.utils.lfs import validate_files
 
 logger = getLogger("Legendary Utils")
@@ -38,17 +38,26 @@ def launch_game(core, app_name: str, offline: bool = False, skip_version_check: 
             if latest.build_version != game.version:
                 print("Please update game")
                 return None
-    params, cwd, env = core.get_launch_parameters(app_name=app_name, offline=offline)
+    params: LaunchParameters = core.get_launch_parameters(app_name=app_name, offline=offline)
+
+    full_params = list()
+    full_params.extend(params.launch_command)
+    full_params.append(os.path.join(params.game_directory, params.game_executable))
+    full_params.extend(params.game_parameters)
+    full_params.extend(params.egl_parameters)
+    full_params.extend(params.user_parameters)
 
     process = QProcess()
     process.setProcessChannelMode(QProcess.MergedChannels)
-    process.setWorkingDirectory(cwd)
+    process.setWorkingDirectory(params.working_directory)
     environment = QProcessEnvironment()
-    for e in env:
-        environment.insert(e, env[e])
+    full_env = os.environ.copy()
+    full_env.update(params.environment)
+    for env, value in full_env.items():
+        environment.insert(env, value)
     process.setProcessEnvironment(environment)
 
-    return process, params
+    return process, full_params
 
 
 def uninstall(app_name: str, core: LegendaryCore, options=None):
