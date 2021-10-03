@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'rpc_settings.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/tabs/settings/rpc_settings.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -14,6 +14,8 @@ from PyQt5 import QtCore, QtWidgets
 class Ui_RPCSettings(object):
     def setupUi(self, RPCSettings):
         RPCSettings.setObjectName("RPCSettings")
+        RPCSettings.resize(174, 146)
+        RPCSettings.setWindowTitle("DiscordRPC")
         self.layout = QtWidgets.QGridLayout(RPCSettings)
         self.layout.setObjectName("layout")
         self.enable = QtWidgets.QComboBox(RPCSettings)
@@ -45,7 +47,6 @@ class Ui_RPCSettings(object):
 
     def retranslateUi(self, RPCSettings):
         _translate = QtCore.QCoreApplication.translate
-        RPCSettings.setWindowTitle(_translate("RPCSettings", "DiscordRPC"))
         RPCSettings.setTitle(_translate("RPCSettings", "Discord RPC"))
         self.enable.setItemText(0, _translate("RPCSettings", "When Playing"))
         self.enable.setItemText(1, _translate("RPCSettings", "Always"))
@@ -58,7 +59,6 @@ class Ui_RPCSettings(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     RPCSettings = QtWidgets.QGroupBox()
     ui = Ui_RPCSettings()

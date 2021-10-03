@@ -15,6 +15,7 @@ class Ui_LegendarySettings(object):
     def setupUi(self, LegendarySettings):
         LegendarySettings.setObjectName("LegendarySettings")
         LegendarySettings.resize(796, 732)
+        LegendarySettings.setWindowTitle("LegendarySettings")
         self.settings_layout = QtWidgets.QHBoxLayout(LegendarySettings)
         self.settings_layout.setObjectName("settings_layout")
         self.left_layout = QtWidgets.QVBoxLayout()
@@ -103,6 +104,7 @@ class Ui_LegendarySettings(object):
         self.manifest_path_layout.setObjectName("manifest_path_layout")
         self.egl_sync_layout.addLayout(self.manifest_path_layout)
         self.manifest_path_info = QtWidgets.QLabel(self.egl_sync_group)
+        self.manifest_path_info.setText("TextLabel")
         self.manifest_path_info.setObjectName("manifest_path_info")
         self.egl_sync_layout.addWidget(self.manifest_path_info)
         self.export_import_layout = QtWidgets.QHBoxLayout()
@@ -235,7 +237,6 @@ class Ui_LegendarySettings(object):
 
     def retranslateUi(self, LegendarySettings):
         _translate = QtCore.QCoreApplication.translate
-        LegendarySettings.setWindowTitle(_translate("LegendarySettings", "LegendarySettings"))
         self.install_dir_group.setTitle(_translate("LegendarySettings", "Default Installation Directory"))
         self.download_group.setTitle(_translate("LegendarySettings", "Download Settings"))
         self.max_workers_label.setText(_translate("LegendarySettings", "Max Workers"))
@@ -247,7 +248,6 @@ class Ui_LegendarySettings(object):
         self.preferred_cdn_line.setPlaceholderText(_translate("LegendarySettings", "Default"))
         self.disable_https_label.setText(_translate("LegendarySettings", "Disable HTTPS"))
         self.egl_sync_group.setTitle(_translate("LegendarySettings", "Sync with Epic Games Launcher"))
-        self.manifest_path_info.setText(_translate("LegendarySettings", "TextLabel"))
         self.export_group.setTitle(_translate("LegendarySettings", "Exportable Games"))
         self.export_label.setText(_translate("LegendarySettings", "No games to export to EGS"))
         self.export_all_button.setText(_translate("LegendarySettings", "Export all Games"))
@@ -267,7 +267,6 @@ class Ui_LegendarySettings(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     LegendarySettings = QtWidgets.QWidget()
     ui = Ui_LegendarySettings()

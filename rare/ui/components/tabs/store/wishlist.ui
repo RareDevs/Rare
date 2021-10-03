@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>StackedWidget</string>
+   <string notr="true">StackedWidget</string>
   </property>
   <widget class="QWidget" name="page">
    <layout class="QVBoxLayout" name="verticalLayout">

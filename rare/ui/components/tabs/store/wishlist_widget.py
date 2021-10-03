@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'wishlist_widget.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/tabs/store/wishlist_widget.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -15,6 +15,7 @@ class Ui_WishlistWidget(object):
     def setupUi(self, WishlistWidget):
         WishlistWidget.setObjectName("WishlistWidget")
         WishlistWidget.resize(523, 172)
+        WishlistWidget.setWindowTitle("Form")
         self.horizontalLayout = QtWidgets.QHBoxLayout(WishlistWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.widget = QtWidgets.QWidget(WishlistWidget)
@@ -71,7 +72,6 @@ class Ui_WishlistWidget(object):
 
     def retranslateUi(self, WishlistWidget):
         _translate = QtCore.QCoreApplication.translate
-        WishlistWidget.setWindowTitle(_translate("WishlistWidget", "Form"))
         self.title_label.setText(_translate("WishlistWidget", "TextLabel"))
         self.developer.setText(_translate("WishlistWidget", "TextLabel"))
         self.discount_price.setText(_translate("WishlistWidget", "TextLabel"))
@@ -80,7 +80,6 @@ class Ui_WishlistWidget(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     WishlistWidget = QtWidgets.QWidget()
     ui = Ui_WishlistWidget()

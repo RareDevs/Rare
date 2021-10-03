@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>Form</string>
+            <string notr="true">Form</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
             <item>
@@ -78,7 +78,7 @@
                             <item>
                                 <widget class="QLabel" name="price">
                                     <property name="text">
-                                        <string>TextLabel</string>
+                                        <string notr="true">TextLabel</string>
                                     </property>
                                     <property name="textInteractionFlags">
                                         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
@@ -88,14 +88,14 @@
                             <item>
                                 <widget class="QLabel" name="discount_price">
                                     <property name="text">
-                                        <string>TextLabel</string>
+                                        <string notr="true">TextLabel</string>
                                     </property>
                                 </widget>
                             </item>
                             <item>
                                 <widget class="QLabel" name="tags">
                                     <property name="text">
-                                        <string>TextLabel</string>
+                                        <string notr="true">TextLabel</string>
                                     </property>
                                 </widget>
                             </item>

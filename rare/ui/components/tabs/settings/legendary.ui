@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>LegendarySettings</string>
+   <string notr="true">LegendarySettings</string>
   </property>
   <layout class="QHBoxLayout" name="settings_layout">
    <item>
@@ -172,7 +172,7 @@
         <item>
          <widget class="QLabel" name="manifest_path_info">
           <property name="text">
-           <string>TextLabel</string>
+              <string notr="true">TextLabel</string>
           </property>
          </widget>
         </item>

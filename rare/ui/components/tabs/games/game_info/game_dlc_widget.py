@@ -14,12 +14,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_GameDlcWidget(object):
     def setupUi(self, GameDlcWidget):
         GameDlcWidget.setObjectName("GameDlcWidget")
-        GameDlcWidget.resize(424, 162)
+        GameDlcWidget.resize(424, 163)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(GameDlcWidget.sizePolicy().hasHeightForWidth())
         GameDlcWidget.setSizePolicy(sizePolicy)
+        GameDlcWidget.setWindowTitle("GameDlcWidget")
         GameDlcWidget.setFrameShape(QtWidgets.QFrame.StyledPanel)
         GameDlcWidget.setFrameShadow(QtWidgets.QFrame.Raised)
         self.dlc_layout = QtWidgets.QHBoxLayout(GameDlcWidget)
@@ -135,7 +136,6 @@ class Ui_GameDlcWidget(object):
 
     def retranslateUi(self, GameDlcWidget):
         _translate = QtCore.QCoreApplication.translate
-        GameDlcWidget.setWindowTitle(_translate("GameDlcWidget", "GameDlcWidget"))
         self.dlc_name_label.setText(_translate("GameDlcWidget", "DLC Name"))
         self.version_label.setText(_translate("GameDlcWidget", "Version"))
         self.status_label.setText(_translate("GameDlcWidget", "Status"))

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'browse_games.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/tabs/store/browse_games.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -15,6 +15,7 @@ class Ui_browse_games(object):
     def setupUi(self, browse_games):
         browse_games.setObjectName("browse_games")
         browse_games.resize(706, 541)
+        browse_games.setWindowTitle("Form")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(browse_games)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.stack = QtWidgets.QStackedWidget(browse_games)
@@ -110,7 +111,6 @@ class Ui_browse_games(object):
 
     def retranslateUi(self, browse_games):
         _translate = QtCore.QCoreApplication.translate
-        browse_games.setWindowTitle(_translate("browse_games", "Form"))
         self.error_label.setText(_translate("browse_games", "An error occured"))
         self.price_gb.setTitle(_translate("browse_games", "Price"))
         self.clear_price.setText(_translate("browse_games", "Clear price filter"))

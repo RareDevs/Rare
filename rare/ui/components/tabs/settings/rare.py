@@ -15,6 +15,7 @@ class Ui_RareSettings(object):
     def setupUi(self, RareSettings):
         RareSettings.setObjectName("RareSettings")
         RareSettings.resize(674, 532)
+        RareSettings.setWindowTitle("RareSettings")
         self.rare_layout = QtWidgets.QHBoxLayout(RareSettings)
         self.rare_layout.setObjectName("rare_layout")
         self.left_layout = QtWidgets.QVBoxLayout()
@@ -149,7 +150,6 @@ class Ui_RareSettings(object):
 
     def retranslateUi(self, RareSettings):
         _translate = QtCore.QCoreApplication.translate
-        RareSettings.setWindowTitle(_translate("RareSettings", "RareSettings"))
         self.interface_group.setTitle(_translate("RareSettings", "Interface"))
         self.lang_label.setText(_translate("RareSettings", "Language"))
         self.color_label.setText(_translate("RareSettings", "Color Scheme"))

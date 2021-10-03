@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>RareSettings</string>
+            <string notr="true">RareSettings</string>
         </property>
         <layout class="QHBoxLayout" name="rare_layout">
             <item>

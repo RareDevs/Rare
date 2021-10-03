@@ -52,32 +52,70 @@
         <source>GNU General Public License v3.0</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/about.py" line="110"/>
-        <source>This is a beta version, so you can get bugs. If you get a bug, please report it by creating an Issue on &lt;a href=&apos;https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt;. You can also contact me on Discord (Dummerle#7419). Or you can join the &lt;a href=&apos;https://discord.gg/YvmABK9YSk&apos;&gt;Discord server&lt;/a&gt;
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>App</name>
-    <message>
-        <location filename="../app.py" line="132"/>
-        <source>Download finished</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../app.py" line="132"/>
-        <source>Download finished. {} is playable now</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>BaseInstalledWidget</name>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="49"/>
-        <source>Launch</source>
-        <translation type="unfinished"></translation>
+< message >
+<location filename = "../ui/components/tabs/settings/about.py"
+line = "110" / >
+    <source>This
+is
+a
+beta
+version, so
+you
+can
+get
+bugs.If
+you
+get
+a
+bug, please
+report
+it
+by
+creating
+an
+Issue
+on &lt; a
+href =
+&
+apos;
+https://github.com/Dummerle/Rare/issues&apos;&gt;Github&lt;/a&gt;. You can also contact me on Discord (Dummerle#7419). Or you can join the &lt;a href=&apos;https://discord.gg/YvmABK9YSk&apos;&gt;Discord server&lt;/a&gt;
+    </source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>App < /name>
+< message >
+<location filename = "../app.py"
+line = "145" / >
+    <source>Download
+finished < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../app.py"
+line = "145" / >
+    <source>Download
+finished.
+{
+}
+is
+playable
+now < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>BaseInstalledWidget < /name>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "49" / >
+    <source>Launch < /source>
+    < translation
+type = "unfinished" > </translation>
     </message>
     <message>
         <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="108"/>
@@ -120,27 +158,57 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="124"/>
-        <source>Do you want to launch {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="133"/>
-        <source>Game cannot run offline. Please start game in Online mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="208"/>
-        <source>Origin is not installed. Do you want to download installer file? </source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>BaseUninstalledWidget</name>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/base_uninstalled_widget.py" line="25"/>
-        <source>Reload Image</source>
-        <translation type="unfinished"></translation>
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "124" / >
+    <source>Do
+you
+want
+to
+launch
+{
+}
+</source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "133" / >
+    <source>Game
+cannot
+run
+offline.Please
+start
+game in Online
+mode < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "209" / >
+    <source>Origin
+is
+not
+installed.Do
+you
+want
+to
+download
+installer
+file ? </source>
+    < translation type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>BaseUninstalledWidget < /name>
+< message >
+<location filename = "../components/tabs/games/game_widgets/base_uninstalled_widget.py"
+line = "25" / >
+    <source>Reload
+Image < /source>
+< translation
+type = "unfinished" > </translation>
     </message>
 </context>
 <context>
@@ -349,77 +417,118 @@
         <location filename="../components/tabs/downloads/dl_queue_widget.py" line="47"/>
         <source>Install size: {} GB</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/dl_queue_widget.py" line="50"/>
-        <source>Remove Download</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DownloadTab</name>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="36"/>
-        <source>No active Download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="54"/>
-        <source>Stop Download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="65"/>
-        <source>Updates</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="74"/>
-        <source>No updates available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="121"/>
-        <source>Installing Game: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="127"/>
-        <source>Download finished. Reload library</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="166"/>
-        <source>Installing Game: No active download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="176"/>
-        <source>Download speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="177"/>
-        <source>Cache used</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="179"/>
-        <source>Downloaded</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="181"/>
-        <source>Time left: </source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DxvkSettings</name>
-    <message>
-        <location filename="../ui/components/tabs/settings/dxvk.py" line="73"/>
-        <source>DxvkSettings</source>
-        <translation type="unfinished"></translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/dl_queue_widget.py"
+line = "50" / >
+    <source>Remove
+Download < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>DownloadTab < /name>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "35" / >
+    <source>No
+active
+Download < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "53" / >
+    <source>Stop
+Download < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "64" / >
+    <source>Updates < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "73" / >
+    <source>No
+updates
+available < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "121" / >
+    <source>Installing
+Game: </source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "129" / >
+    <source>Download
+finished.Reload
+library < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "170" / >
+    <source>Installing
+Game: No
+active
+download < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "180" / >
+    <source>Download
+speed < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "181" / >
+    <source>Cache
+used < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "183" / >
+    <source>Downloaded < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "185" / >
+    <source>Time
+left: </source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>DxvkSettings < /name>
+< message >
+<location filename = "../ui/components/tabs/settings/dxvk.py"
+line = "73" / >
+    <source>DxvkSettings < /source>
+    < translation
+type = "unfinished" > </translation>
     </message>
     <message>
         <location filename="../ui/components/tabs/settings/dxvk.py" line="74"/>
@@ -579,11 +688,6 @@
 <context>
     <name>GameDlcWidget</name>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_dlc_widget.py" line="138"/>
-        <source>GameDlcWidget</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../ui/components/tabs/games/game_info/game_dlc_widget.py" line="139"/>
         <source>DLC Name</source>
         <translation type="unfinished"></translation>
@@ -682,42 +786,84 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_info.py" line="218"/>
-        <source>Uninstall Game</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_info.py" line="219"/>
-        <source>Install Game</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/game_info.py" line="36"/>
-        <source>Link to Origin/Launch</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/game_info.py" line="50"/>
-        <source>Repair file does not exist or game does not need a repair. Please verify game first</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/game_info.py" line="76"/>
-        <source>Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/game_info.py" line="119"/>
-        <source>Loading</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>GameListHeadBar</name>
-    <message>
-        <location filename="../components/tabs/games/head_bar.py" line="20"/>
-        <source>All</source>
-        <translation type="unfinished"></translation>
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "218" / >
+    <source>Uninstall
+Game < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_info.py"
+line = "219" / >
+    <source>Install
+Game < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/game_info.py"
+line = "34" / >
+    <source>Link
+to
+Origin / Launch < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/game_info.py"
+line = "51" / >
+    <source>Repair
+file
+does
+not
+exist
+or
+game
+does
+not
+need
+a
+repair.Please
+verify
+game
+first < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/game_info.py"
+line = "81" / >
+    <source>Verification
+failed, {}
+file(s)
+corrupted, {}
+file(s)
+are
+missing.Do
+you
+want
+to
+repair
+them ? </source>
+    < translation type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/game_info.py"
+line = "126" / >
+    <source>Loading < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>GameListHeadBar < /name>
+< message >
+<location filename = "../components/tabs/games/head_bar.py"
+line = "20" / >
+    <source>All < /source>
+    < translation
+type = "unfinished" > </translation>
     </message>
     <message>
         <location filename="../components/tabs/games/head_bar.py" line="20"/>
@@ -730,32 +876,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/head_bar.py" line="20"/>
-        <source>32 Bit Games</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/head_bar.py" line="20"/>
-        <source>Exclude Origin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/head_bar.py" line="35"/>
-        <source>Import Game</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/head_bar.py" line="47"/>
-        <source>Search Game</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>GameSettings</name>
-    <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="134"/>
-        <source>GameSettings</source>
-        <translation type="unfinished"></translation>
+<location filename = "../components/tabs/games/head_bar.py"
+line = "20" / >
+    <source>32
+Bit
+Games < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/head_bar.py"
+line = "20" / >
+    <source>Exclude
+Origin < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/head_bar.py"
+line = "37" / >
+    <source>Import
+Game < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/head_bar.py"
+line = "49" / >
+    <source>Search
+Game < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>GameSettings < /name>
+< message >
+<location filename = "../ui/components/tabs/games/game_info/game_settings.py"
+line = "134" / >
+    <source>GameSettings < /source>
+    < translation
+type = "unfinished" > </translation>
     </message>
     <message>
         <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="135"/>
@@ -849,47 +1010,64 @@
     </message>
 </context>
 <context>
-    <name>GameWidget</name>
-    <message>
-        <location filename="../components/tabs/shop/game_widgets.py" line="47"/>
-        <source>Free</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>GamesTab</name>
-    <message>
-        <location filename="../ui/components/tabs/games/games_tab.py" line="45"/>
-        <source>StackedWidget</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/__init__.py" line="148"/>
-        <source>Installed Games: {}    Available Games: {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/__init__.py" line="213"/>
-        <source>Launch</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/__init__.py" line="222"/>
-        <source>Sync CLoud saves</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/__init__.py" line="231"/>
-        <source>Game running</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>IconWidgetUninstalled</name>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="41"/>
-        <source>Game Info</source>
-        <translation type="unfinished"></translation>
+<name>GameWidget < /name>
+< message >
+<location filename = "../components/tabs/shop/game_widgets.py"
+line = "47" / >
+    <source>Free < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>GamesTab < /name>
+< message >
+<location filename = "../components/tabs/games/__init__.py"
+line = "151" / >
+    <source>Installed
+Games: {
+}
+Available
+Games: {
+}
+</source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/__init__.py"
+line = "211" / >
+    <source>Launch < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/__init__.py"
+line = "220" / >
+    <source>Sync
+CLoud
+saves < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/__init__.py"
+line = "229" / >
+    <source>Game
+running < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>IconWidgetUninstalled < /name>
+< message >
+<location filename = "../components/tabs/games/game_widgets/uninstalled_icon_widget.py"
+line = "41" / >
+    <source>Game
+Info < /source>
+< translation
+type = "unfinished" > </translation>
     </message>
     <message>
         <location filename="../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="43"/>
@@ -996,42 +1174,59 @@
         <location filename="../components/tabs/games/import_widget.py" line="118"/>
         <source>Successfully imported {}. Reload library</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_widget.py" line="125"/>
-        <source>Failed to import {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>InfoTabs</name>
-    <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="21"/>
-        <source>Back</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="25"/>
-        <source>Information</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="28"/>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="32"/>
-        <source>Downloadable Content</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>InstallDialog</name>
-    <message>
-        <location filename="../ui/components/dialogs/install_dialog.py" line="163"/>
-        <source>error</source>
-        <translation type="unfinished"></translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/import_widget.py"
+line = "125" / >
+    <source>Failed
+to
+import {}
+
+</source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>InfoTabs < /name>
+< message >
+<location filename = "../components/tabs/games/game_info/__init__.py"
+line = "23" / >
+    <source>Back < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/__init__.py"
+line = "27" / >
+    <source>Information < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/__init__.py"
+line = "30" / >
+    <source>Settings < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/__init__.py"
+line = "34" / >
+    <source>Downloadable
+Content < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>InstallDialog < /name>
+< message >
+<location filename = "../ui/components/dialogs/install_dialog.py"
+line = "163" / >
+    <source>error < /source>
+    < translation
+type = "unfinished" > </translation>
     </message>
     <message>
         <location filename="../ui/components/dialogs/install_dialog.py" line="164"/>
@@ -1137,45 +1332,85 @@
         <location filename="../components/dialogs/install_dialog.py" line="176"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>InstalledIconWidget</name>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="32"/>
-        <source>Update available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="84"/>
-        <source>Game running</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="78"/>
-        <source>Start game without version check</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="80"/>
-        <source>Start Game</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="80"/>
-        <source>Launch/Link</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>InstalledListWidget</name>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="39"/>
-        <source>Launch</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="39"/>
+< /message>
+< /context>
+< context >
+<name>InstalledIconWidget < /name>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "32" / >
+    <source>Update
+available < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "86" / >
+    <source>Game
+running < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "80" / >
+    <source>Start
+game
+without
+version
+check < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "82" / >
+    <source>Start
+Game < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "82" / >
+    <source>Launch / Link < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "68" / >
+    <source>Game
+needs
+verification < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_icon_widget.py"
+line = "78" / >
+    <source>Please
+verify
+game
+before
+playing < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>InstalledListWidget < /name>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_list_widget.py"
+line = "39" / >
+    <source>Launch < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_widgets/installed_list_widget.py"
+line = "39" / >
         <source>Link/Play</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1193,101 +1428,143 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/dialogs/launch_dialog.py" line="37"/>
-        <source>&lt;h2&gt;Launching Rare&lt;/h2&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/dialogs/launch_dialog.py" line="38"/>
-        <source>Downloading images</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/dialogs/launch_dialog.py" line="70"/>
-        <source>Downloading Images</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/dialogs/launch_dialog.py" line="74"/>
-        <source>Ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/dialogs/launch_dialog.py" line="85"/>
-        <source>Starting...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>LegendarySettings</name>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="238"/>
-        <source>LegendarySettings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="239"/>
-        <source>Default Installation Directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="240"/>
-        <source>Download Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="241"/>
-        <source>Max Workers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="245"/>
-        <source>Less is slower (0: Default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="243"/>
-        <source>Max Memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="244"/>
-        <source>MiB</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="246"/>
-        <source>Preferred CDN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="247"/>
-        <source>Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="248"/>
-        <source>Disable HTTPS</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="249"/>
-        <source>Sync with Epic Games Launcher</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="250"/>
-        <source>TextLabel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="251"/>
-        <source>Exportable Games</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/legendary.py" line="252"/>
-        <source>No games to export to EGS</source>
+<location filename = "../ui/components/dialogs/launch_dialog.py"
+line = "37" / >
+    <source>&lt;h2&gt;Launching
+Rare &lt; /h2&gt;</s
+ource >
+<translation type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/dialogs/launch_dialog.py"
+line = "38" / >
+    <source>Downloading
+images < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/dialogs/launch_dialog.py"
+line = "94" / >
+    <source>Downloading
+Images < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/dialogs/launch_dialog.py"
+line = "142" / >
+    <source>Starting
+...
+</source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>LegendarySettings < /name>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "240" / >
+    <source>Default
+Installation
+Directory < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "241" / >
+    <source>Download
+Settings < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "242" / >
+    <source>Max
+Workers < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "246" / >
+    <source>Less
+is
+slower(0
+:
+Default
+)
+</source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "244" / >
+    <source>Max
+Memory < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "245" / >
+    <source>MiB < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "247" / >
+    <source>Preferred
+CDN < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "248" / >
+    <source>Default < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "249" / >
+    <source>Disable
+HTTPS < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "250" / >
+    <source>Sync
+with Epic Games
+Launcher < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "251" / >
+    <source>Exportable
+Games < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/legendary.py"
+line = "252" / >
+    <source>No
+games
+to
+export
+to
+EGS < /source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1458,55 +1735,80 @@
         <location filename="../ui/components/dialogs/login/login_dialog.py" line="121"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/dialogs/login/login_dialog.py" line="122"/>
-        <source>Next</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MainWindow</name>
-    <message>
-        <location filename="../components/main_window.py" line="96"/>
-        <source>There is a download active. Do you really want to exit app?</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MiniWidget</name>
-    <message>
-        <location filename="../components/tabs/account/__init__.py" line="25"/>
-        <source>Logged in as </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/account/__init__.py" line="27"/>
-        <source>Account settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/account/__init__.py" line="32"/>
-        <source>Logout</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/account/__init__.py" line="38"/>
-        <source>Do you really want to logout</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PathEdit</name>
-    <message>
-        <location filename="../utils/extra_widgets.py" line="164"/>
-        <source>Choose path</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/utils/pathedit.py" line="34"/>
-        <source>PathEdit</source>
-        <translation type="unfinished"></translation>
+< /message>
+< message >
+<location filename = "../ui/components/dialogs/login/login_dialog.py"
+line = "122" / >
+    <source>Next < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>MainWindow < /name>
+< message >
+<location filename = "../components/main_window.py"
+line = "94" / >
+    <source>There
+is
+a
+download
+active.Do
+you
+really
+want
+to
+exit
+app ? </source>
+    < translation type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>MiniWidget < /name>
+< message >
+<location filename = "../components/tabs/account/__init__.py"
+line = "24" / >
+    <source>Logged in as < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/account/__init__.py"
+line = "26" / >
+    <source>Account
+settings < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/account/__init__.py"
+line = "31" / >
+    <source>Logout < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/account/__init__.py"
+line = "37" / >
+    <source>Do
+you
+really
+want
+to
+logout < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>PathEdit < /name>
+< message >
+<location filename = "../utils/extra_widgets.py"
+line = "164" / >
+    <source>Choose
+path < /source>
+< translation
+type = "unfinished" > </translation>
     </message>
     <message>
         <location filename="../ui/utils/pathedit.py" line="35"/>
@@ -1520,72 +1822,88 @@
     </message>
 </context>
 <context>
-    <name>PathInputDialog</name>
-    <message>
-        <location filename="../components/dialogs/path_input_dialog.py" line="25"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>RPCSettings</name>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="48"/>
-        <source>DiscordRPC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="49"/>
-        <source>Discord RPC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="50"/>
-        <source>When Playing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="51"/>
-        <source>Always</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="52"/>
-        <source>Never</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="53"/>
-        <source>Show</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="54"/>
-        <source>Show Game</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="55"/>
-        <source>Show OS</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rpc_settings.py" line="56"/>
-        <source>Show Time playing</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>RareSettings</name>
-    <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="152"/>
-        <source>RareSettings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/settings/rare.py" line="153"/>
-        <source>Interface</source>
-        <translation type="unfinished"></translation>
+<name>PathInputDialog < /name>
+< message >
+<location filename = "../components/dialogs/path_input_dialog.py"
+line = "25" / >
+    <source>Cancel < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>RPCSettings < /name>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "50" / >
+    <source>Discord
+RPC < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "51" / >
+    <source>When
+Playing < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "52" / >
+    <source>Always < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "53" / >
+    <source>Never < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "54" / >
+    <source>Show < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "55" / >
+    <source>Show
+Game < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "56" / >
+    <source>Show
+OS < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+line = "57" / >
+    <source>Show
+Time
+playing < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>RareSettings < /name>
+< message >
+<location filename = "../ui/components/tabs/settings/rare.py"
+line = "153" / >
+    <source>Interface < /source>
+    < translation
+type = "unfinished" > </translation>
     </message>
     <message>
         <location filename="../ui/components/tabs/settings/rare.py" line="154"/>
@@ -1779,11 +2097,6 @@
 </context>
 <context>
     <name>ShopWidget</name>
-    <message>
-        <location filename="../ui/components/tabs/store/store.py" line="153"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="../ui/components/tabs/store/store.py" line="154"/>
         <source>Free Games</source>
@@ -2057,32 +2370,41 @@
         <location filename="../components/tabs/cloud_saves/sync_widget.py" line="216"/>
         <source>Downloading...</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="223"/>
-        <source>Download finished</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TabWidget</name>
-    <message>
-        <location filename="../components/tabs/tab_widget.py" line="35"/>
-        <source>Games</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/tab_widget.py" line="43"/>
-        <source>Store (Beta)</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TrayIcon</name>
-    <message>
-        <location filename="../components/tray_icon.py" line="21"/>
-        <source>Exit</source>
-        <translation type="unfinished"></translation>
+< /message>
+< message >
+<location filename = "../components/tabs/cloud_saves/sync_widget.py"
+line = "223" / >
+    <source>Download
+finished < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>TabWidget < /name>
+< message >
+<location filename = "../components/tabs/tab_widget.py"
+line = "29" / >
+    <source>Games < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/tab_widget.py"
+line = "38" / >
+    <source>Store(Beta) < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>TrayIcon < /name>
+< message >
+<location filename = "../components/tray_icon.py"
+line = "21" / >
+    <source>Exit < /source>
+    < translation
+type = "unfinished" > </translation>
     </message>
 </context>
 <context>
@@ -2106,76 +2428,101 @@
         <location filename="../components/dialogs/uninstall_dialog.py" line="24"/>
         <source>Uninstall</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/dialogs/uninstall_dialog.py" line="27"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>UninstalledInfo</name>
-    <message>
-        <location filename="../components/tabs/games/game_info/uninstalled_info.py" line="101"/>
-        <source>Loading</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>UninstalledTabInfo</name>
-    <message>
-        <location filename="../components/tabs/games/game_info/uninstalled_info.py" line="27"/>
-        <source>Back</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/uninstalled_info.py" line="29"/>
-        <source>Game Info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_info/uninstalled_info.py" line="38"/>
-        <source>Metadata</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>UpdateWidget</name>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="215"/>
-        <source>Update Game</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="221"/>
-        <source>Version: </source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>VerifyThread</name>
-    <message>
-        <location filename="../utils/legendary_utils.py" line="147"/>
-        <source>Path does not exist</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../utils/legendary_utils.py" line="150"/>
-        <source>No files to validate</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Wishlist</name>
-    <message>
-        <location filename="../ui/components/tabs/store/wishlist.py" line="95"/>
-        <source>StackedWidget</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/store/wishlist.py" line="96"/>
-        <source>Wishlist</source>
-        <translation type="unfinished"></translation>
+< /message>
+< message >
+<location filename = "../components/dialogs/uninstall_dialog.py"
+line = "27" / >
+    <source>Cancel < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>UninstalledInfo < /name>
+< message >
+<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
+line = "102" / >
+    <source>Loading < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>UninstalledTabInfo < /name>
+< message >
+<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
+line = "27" / >
+    <source>Back < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
+line = "30" / >
+    <source>Game
+Info < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/games/game_info/uninstalled_info.py"
+line = "39" / >
+    <source>Metadata < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>UpdateWidget < /name>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "229" / >
+    <source>Update
+Game < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../components/tabs/downloads/__init__.py"
+line = "235" / >
+    <source>Version
+:
+</source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>VerifyThread < /name>
+< message >
+<location filename = "../utils/legendary_utils.py"
+line = "156" / >
+    <source>Path
+does
+not
+exist < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../utils/legendary_utils.py"
+line = "159" / >
+    <source>No
+files
+to
+validate < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>Wishlist < /name>
+< message >
+<location filename = "../ui/components/tabs/store/wishlist.py"
+line = "96" / >
+    <source>Wishlist < /source>
+    < translation
+type = "unfinished" > </translation>
     </message>
     <message>
         <location filename="../ui/components/tabs/store/wishlist.py" line="97"/>
@@ -2231,11 +2578,6 @@
 <context>
     <name>WishlistWidget</name>
     <message>
-        <location filename="../ui/components/tabs/store/wishlist_widget.py" line="74"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../ui/components/tabs/store/wishlist_widget.py" line="78"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
@@ -2256,11 +2598,6 @@
 </context>
 <context>
     <name>browse_games</name>
-    <message>
-        <location filename="../ui/components/tabs/store/browse_games.py" line="113"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="../ui/components/tabs/store/browse_games.py" line="114"/>
         <source>An error occured</source>
@@ -2320,47 +2657,63 @@
         <location filename="../ui/components/tabs/store/browse_games.py" line="125"/>
         <source>Platform</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/store/browse_games.py" line="126"/>
-        <source>Other Tags</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>shop_info</name>
-    <message>
-        <location filename="../ui/components/tabs/store/shop_game_info.py" line="103"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/store/shop_game_info.py" line="104"/>
-        <source>Back</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/store/shop_game_info.py" line="105"/>
-        <source>Error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/store/shop_game_info.py" line="110"/>
-        <source>TextLabel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/store/shop_game_info.py" line="107"/>
-        <source>You already own this game</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/store/shop_game_info.py" line="111"/>
-        <source>Buy Game in Epic Games Store</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/components/tabs/store/shop_game_info.py" line="112"/>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/store/browse_games.py"
+line = "126" / >
+    <source>Other
+Tags < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< /context>
+< context >
+<name>shop_info < /name>
+< message >
+<location filename = "../ui/components/tabs/store/shop_game_info.py"
+line = "107" / >
+    <source>Back < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/store/shop_game_info.py"
+line = "108" / >
+    <source>Error < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/store/shop_game_info.py"
+line = "109" / >
+    <source>TextLabel < /source>
+    < translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/store/shop_game_info.py"
+line = "110" / >
+    <source>You
+already
+own
+this
+game < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/store/shop_game_info.py"
+line = "111" / >
+    <source>Buy
+Game in Epic
+Games
+Store < /source>
+< translation
+type = "unfinished" > </translation>
+< /message>
+< message >
+<location filename = "../ui/components/tabs/store/shop_game_info.py"
+line = "112" / >
         <source>Add to wishlist</source>
         <translation type="unfinished"></translation>
     </message>

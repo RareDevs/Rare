@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>PathEdit</string>
+            <string notr="true">PathEdit</string>
         </property>
         <layout class="QHBoxLayout" name="layout_pathedit">
             <property name="leftMargin">

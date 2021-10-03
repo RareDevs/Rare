@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'wishlist.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/tabs/store/wishlist.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -15,6 +15,7 @@ class Ui_Wishlist(object):
     def setupUi(self, Wishlist):
         Wishlist.setObjectName("Wishlist")
         Wishlist.resize(736, 398)
+        Wishlist.setWindowTitle("StackedWidget")
         self.page = QtWidgets.QWidget()
         self.page.setObjectName("page")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.page)
@@ -92,7 +93,6 @@ class Ui_Wishlist(object):
 
     def retranslateUi(self, Wishlist):
         _translate = QtCore.QCoreApplication.translate
-        Wishlist.setWindowTitle(_translate("Wishlist", "StackedWidget"))
         self.title_label.setText(_translate("Wishlist", "Wishlist"))
         self.sort_label.setText(_translate("Wishlist", "Sort by"))
         self.sort_cb.setItemText(0, _translate("Wishlist", "Name"))
@@ -108,7 +108,6 @@ class Ui_Wishlist(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     Wishlist = QtWidgets.QStackedWidget()
     ui = Ui_Wishlist()
