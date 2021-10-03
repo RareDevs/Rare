@@ -60,6 +60,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         self.core = core
         self.offline = offline
         self.thread_pool = QThreadPool()
+        self.thread_pool.setMaxThreadCount(2)
         self.api_results = ApiResults()
 
     def login(self):
