@@ -124,9 +124,10 @@ class App(QApplication):
         if not args.silent or args.subparser == "launch":
             self.launch_dialog.login()
 
-    def start_app(self, offline=False):
+    def start_app(self, offline=False, api_results=None):
         self.args.offline = offline
-        self.mainwindow = MainWindow(self.core, self.args, self.signals)
+        self.mainwindow = MainWindow(self.core, self.args, self.signals, api_results)
+        self.launch_dialog.close()
         self.tray_icon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(self.exit_app)
         self.tray_icon.start_rare.triggered.connect(self.mainwindow.show)

@@ -17,18 +17,18 @@ from rare.utils.models import InstallOptionsModel, Signals
 class TabWidget(QTabWidget):
     delete_presence = pyqtSignal()
 
-    def __init__(self, core: LegendaryCore, signals: Signals, parent, args):
+    def __init__(self, core: LegendaryCore, signals: Signals, parent, args, api_results):
         super(TabWidget, self).__init__(parent=parent)
-        offline = args.offline
-        disabled_tab = 4 if not offline else 1
+        self.offline = args.offline
+        disabled_tab = 4 if not self.offline else 1
         self.core = core
         self.signals = signals
         self.setTabBar(TabBar(disabled_tab))
         # Generate Tabs
-        self.games_tab = GamesTab(core, args.offline, self.signals)
+        self.games_tab = GamesTab(core, args.offline, self.signals, api_results)
         self.addTab(self.games_tab, self.tr("Games"))
         self.signals.tab_widget.connect(lambda x: self.handle_signal(*x))
-        if not offline:
+        if not self.offline:
             # updates = self.games_tab.default_widget.game_list.updates
             self.downloadTab = DownloadTab(core, [], self.signals)
             self.addTab(self.downloadTab, "Downloads" + (" (" + str(len([])) + ")" if len([]) != 0 else ""))
@@ -64,7 +64,7 @@ class TabWidget(QTabWidget):
         # imported
         self.games_tab.import_widget.update_list.connect(self.game_imported)
 
-        if not offline:
+        if not self.offline:
             # install dlc
             self.games_tab.game_info.dlc.install_dlc.connect(
                 lambda app_name, update: self.install_game(
@@ -95,7 +95,8 @@ class TabWidget(QTabWidget):
     def mouse_clicked(self, tab_num):
         if tab_num == 0:
             self.games_tab.layout().setCurrentIndex(0)
-        if tab_num == 3:
+
+        if not self.offline and tab_num == 3:
             self.store.load()
 
     def game_imported(self, app_name: str):
@@ -113,7 +114,6 @@ class TabWidget(QTabWidget):
         game = self.core.get_game(app_name)
         if game and game.supports_cloud_saves:
             self.cloud_saves.sync_game(app_name, True)
-
 
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())

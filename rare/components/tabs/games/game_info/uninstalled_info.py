@@ -16,7 +16,7 @@ from rare.utils.utils import get_pixmap
 
 
 class UninstalledTabInfo(QTabWidget):
-    def __init__(self, core, signals: Signals, parent):
+    def __init__(self, core, signals: Signals, offline, parent):
         super(UninstalledTabInfo, self).__init__(parent=parent)
         self.app_name = ""
         self.core = core
@@ -26,6 +26,7 @@ class UninstalledTabInfo(QTabWidget):
 
         self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
         self.info = UninstalledInfo(core, self.signals, self)
+        self.info.install_button.setDisabled(offline)
         self.addTab(self.info, self.tr("Game Info"))
 
         self.view = QTreeView()

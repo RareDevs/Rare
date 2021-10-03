@@ -64,3 +64,21 @@ class Signals(QObject):
     dl_tab = pyqtSignal(tuple)
     main_window = pyqtSignal(tuple)
     app = pyqtSignal(tuple)
+
+
+@dataclass
+class ApiResults:
+    game_list: list = None
+    dlcs: list = None
+    bit32_games: list = None
+    mac_games: list = None
+    assets: list = None
+    no_asset_games: list = None
+
+    def __bool__(self):
+        return self.game_list is not None \
+               and self.dlcs is not None \
+               and self.bit32_games is not None \
+               and self.mac_games is not None \
+               and self.assets is not None \
+               and self.no_asset_games is not None

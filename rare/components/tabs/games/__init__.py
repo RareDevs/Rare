@@ -4,7 +4,6 @@ from PyQt5.QtCore import pyqtSignal, QSettings
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 from legendary.core import LegendaryCore
-from legendary.models.game import GameAsset
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.tabs.games.game_info import InfoTabs
 from rare.components.tabs.games.game_info.uninstalled_info import UninstalledTabInfo
@@ -20,7 +19,7 @@ from rare.components.tabs.games.import_widget import ImportWidget
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import FlowLayout
-from rare.utils.models import Signals
+from rare.utils.models import Signals, ApiResults
 from rare.utils.utils import get_pixmap, download_image, get_uninstalled_pixmap
 
 logger = getLogger("GamesTab")
@@ -33,7 +32,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
     game_exited = pyqtSignal(str)
     game_started = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, offline, signals: Signals):
+    def __init__(self, core: LegendaryCore, offline, signals: Signals, api_results: ApiResults):
         super(GamesTab, self).__init__()
         self.setupUi(self)
         self.core = core
@@ -51,13 +50,25 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.import_widget = ImportWidget(core, self)
         self.addWidget(self.import_widget)
 
-        self.uninstalled_info_widget = UninstalledTabInfo(core, self.signals, self)
+        self.uninstalled_info_widget = UninstalledTabInfo(core, self.signals, self.offline, self)
         self.layout().addWidget(self.uninstalled_info_widget)
 
         # navigation
         self.head_bar.import_game.clicked.connect(lambda: self.setCurrentIndex(2))
         self.import_widget.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
         self.uninstalled_info_widget.tabBarClicked.connect(lambda x: self.setCurrentIndex(0) if x == 0 else None)
+
+        self.game_list = api_results.game_list
+        self.dlcs = api_results.dlcs
+        self.bit32 = api_results.bit32_games
+        self.mac_games = api_results.mac_games
+        self.no_assets = api_results.no_asset_games
+        self.no_asset_names = []
+        if not self.offline:
+            for game in self.no_assets:
+                self.no_asset_names.append(game.app_name)
+        else:
+            self.no_assets = []
 
         self.setup_game_list()
 
@@ -108,26 +119,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.list_view = QWidget()
         self.list_view.setLayout(QVBoxLayout())
 
-        # TODO move to seperate thread
-        if not self.offline:
-            self.game_list, self.dlcs = self.core.get_game_and_dlc_list(True)
-            self.bit32 = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Win32")[0]]
-            self.mac_games = [i.app_name for i in self.core.get_game_and_dlc_list(True, "Mac")[0]]
-            self.core.lgd.assets = [GameAsset.from_egs_json(a) for a in self.core.egs.get_game_assets()]
-            no_assets = self.core.get_non_asset_library_items()[0]
-            self.no_assets = []
-            for game in no_assets:
-                self.no_assets.append(game)
-            self.no_asset_names = []
-            for game in self.no_assets:
-                self.no_asset_names.append(game.app_name)
-        else:
-            self.bit32 = []
-            self.mac_games = []
-            self.dlcs = []
-
         self.installed = sorted(self.core.get_installed_list(), key=lambda x: x.title)
-
+        installed_names = [i.app_name for i in self.installed]
         self.update_count_games_label()
 
         # add installing game widget for icon view: List view not supported
@@ -146,15 +139,10 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
 
-        if not self.offline:
-            self.uninstalled_games = []
-            installed = [i.app_name for i in self.core.get_installed_list()]
-            # get Uninstalled games
-            for game in self.game_list:
-                if game.app_name not in installed:
-                    self.uninstalled_games.append(game)
-
-            for game in sorted(self.uninstalled_games, key=lambda x: x.app_title):
+        self.uninstalled_games = []
+        for game in sorted(self.game_list, key=lambda x: x.app_title):
+            if game.app_name not in [i.app_name for i in self.installed]:
+                self.uninstalled_games.append(game)
                 icon_widget, list_widget = self.add_uninstalled_widget(game)
                 self.icon_view.layout().addWidget(icon_widget)
                 self.list_view.layout().addWidget(list_widget)
@@ -386,7 +374,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         # add uninstalled games
         for game in sorted(games, key=lambda x: x.app_title):
             if game.app_name not in installed_names:
-                self.uninstalled_names.append(game)
+                self.uninstalled_names.append(game.app_name)
         for game in self.uninstalled_names:
             i_widget, list_widget = self.widgets[game.app_name]
             icon_layout.addWidget(i_widget)
@@ -394,8 +382,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         QWidget().setLayout(self.icon_view.layout())
         QWidget().setLayout(self.list_view.layout())
-        #self.icon_view.layout().deleteLater()
-        #self.list_view.layout().deleteLater()
+        # self.icon_view.layout().deleteLater()
+        # self.list_view.layout().deleteLater()
 
         self.icon_view.setLayout(icon_layout)
         self.list_view.setLayout(list_layout)
@@ -404,7 +392,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.list_view.setParent(None)
 
         # insert widget in layout
-        self.scroll_widget.layout().insertWidget(1, self.icon_view if self.head_bar.view.isChecked() else self.list_view)
+        self.scroll_widget.layout().insertWidget(1,
+                                                 self.icon_view if self.head_bar.view.isChecked() else self.list_view)
 
     def toggle_view(self):
         self.settings.setValue("icon_view", not self.head_bar.view.isChecked())

@@ -16,7 +16,7 @@ logger = getLogger("Window")
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, core: LegendaryCore, args, signals: Signals):
+    def __init__(self, core: LegendaryCore, args, signals: Signals, api_results):
         super(MainWindow, self).__init__()
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.settings = QSettings()
@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         self.setGeometry((desktop.width() - width) / 2, (desktop.height() - height) / 2, width, height)
 
         self.setWindowTitle("Rare - GUI for legendary")
-        self.tab_widget = TabWidget(core, self.signals, self, args)
+        self.tab_widget = TabWidget(core, self.signals, self, args, api_results)
         self.setCentralWidget(self.tab_widget)
         if not args.offline:
             self.rpc = DiscordRPC(core)
