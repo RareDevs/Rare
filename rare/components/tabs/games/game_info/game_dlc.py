@@ -5,7 +5,6 @@ from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
-from rare.utils.models import Signals, InstallOptionsModel
 from rare.utils.utils import get_pixmap
 
 
@@ -13,18 +12,17 @@ class GameDlc(QWidget, Ui_GameDlc):
     install_dlc = pyqtSignal(str, bool)
     game: Game
 
-    def __init__(self, core: LegendaryCore, signals: Signals, parent=None):
+    def __init__(self, core: LegendaryCore, parent=None):
         super(GameDlc, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = core
-        self.signals = signals
         self.installed_dlcs = list()
         self.installed_dlc_widgets = list()
         self.available_dlc_widgets = list()
 
     def update_dlcs(self, app_name, dlcs: list):
         self.game = self.core.get_game(app_name)
-        self.game_title.setText(f"<h4>{self.game.app_title}</h4>")
+        self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
         if self.installed_dlc_widgets:
             for dlc_widget in self.installed_dlc_widgets:
@@ -37,27 +35,30 @@ class GameDlc(QWidget, Ui_GameDlc):
         self.available_dlc_widgets.clear()
 
         self.installed_dlcs = [i.app_name for i in self.core.get_installed_dlc_list()]
+
         for dlc in sorted(dlcs[self.game.asset_info.catalog_item_id], key=lambda x: x.app_title):
             if dlc.app_name in self.installed_dlcs:
                 dlc_widget = GameDlcWidget(dlc, True)
                 self.installed_dlc_widgets.append(dlc_widget)
-                self.installed_dlc_group.layout().addWidget(dlc_widget)
+                self.installed_dlc_contents_layout.addWidget(dlc_widget)
             else:
                 dlc_widget = GameDlcWidget(dlc, False)
                 dlc_widget.install.connect(self.install)
                 self.available_dlc_widgets.append(dlc_widget)
-                self.available_dlc_group.layout().addWidget(dlc_widget)
+                self.available_dlc_contents_layout.addWidget(dlc_widget)
 
         self.installed_dlc_label.setVisible(not self.installed_dlc_widgets)
+        self.installed_dlc_scroll.setVisible(bool(self.installed_dlc_widgets))
 
         self.available_dlc_label.setVisible(not self.available_dlc_widgets)
+        self.available_dlc_scroll.setVisible(bool(self.available_dlc_widgets))
 
     def install(self, app_name):
         if not self.core.is_installed(self.game.app_name):
             QMessageBox.warning(self, "Error", self.tr("Base Game is not installed. Please install {} first").format(
                 self.game.app_title))
             return
-        self.signals.dl_tab.emit((Signals.actions.install_game, InstallOptionsModel(app_name, update=True)))
+        self.install_dlc.emit(app_name, True)
 
 
 class GameDlcWidget(QFrame, Ui_GameDlcWidget):
