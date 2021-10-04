@@ -30,7 +30,7 @@ class InfoTabs(QTabWidget):
         self.addTab(self.settings, self.tr("Settings"))
         self.tabBar().setCurrentIndex(1)
 
-        self.dlc = GameDlc(core, self)
+        self.dlc = GameDlc(core, signals, self)
         self.addTab(self.dlc, self.tr("Downloadable Content"))
 
     def update_game(self, game: Game, dlcs: list):

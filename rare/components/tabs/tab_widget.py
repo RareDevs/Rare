@@ -6,12 +6,12 @@ from legendary.core import LegendaryCore
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab
-from rare.components.tabs.games.__init__ import GamesTab
+from rare.components.tabs.games import GamesTab
 from rare.components.tabs.settings import SettingsTab
 from rare.components.tabs.settings.debug_settings import DebugSettings
 from rare.components.tabs.shop import Shop
 from rare.components.tabs.tab_utils import TabBar, TabButtonWidget
-from rare.utils.models import InstallOptionsModel, Signals
+from rare.utils.models import Signals
 
 
 class TabWidget(QTabWidget):
@@ -65,12 +65,6 @@ class TabWidget(QTabWidget):
         self.games_tab.import_widget.update_list.connect(self.game_imported)
 
         if not self.offline:
-            # install dlc
-            self.games_tab.game_info.dlc.install_dlc.connect(
-                lambda app_name, update: self.install_game(
-                    InstallOptionsModel(app_name=app_name),
-                    update=update))
-
             # Finished sync
             self.cloud_saves.finished.connect(self.finished_sync)
         # Game finished

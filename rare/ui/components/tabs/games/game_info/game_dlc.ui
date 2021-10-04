@@ -4,177 +4,118 @@
  <widget class="QWidget" name="GameDlc">
   <property name="geometry">
    <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>287</width>
-    <height>366</height>
+       <x>0</x>
+       <y>0</y>
+       <width>650</width>
+       <height>518</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GameDlc</string>
+      <string notr="true">GameDlc</string>
   </property>
-  <layout class="QVBoxLayout" name="game_dlc_layout">
-   <item alignment="Qt::AlignTop">
-    <widget class="QLabel" name="game_title">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string notr="true">error</string>
-     </property>
-     <property name="textInteractionFlags">
-      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="installed_dlc_group">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title">
-      <string>Installed DLCs</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-     </property>
-     <layout class="QVBoxLayout" name="installed_dlc_group_layout">
-      <item>
-       <widget class="QLabel" name="installed_dlc_label">
-        <property name="text">
-         <string>No Downloadable Content has been installed.</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QScrollArea" name="installed_dlc_scroll">
-        <property name="focusPolicy">
-         <enum>Qt::WheelFocus</enum>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
-        </property>
-        <property name="widgetResizable">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-        <widget class="QWidget" name="installed_dlc_contents">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>255</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <layout class="QVBoxLayout" name="installed_dlc_contents_layout">
-          <property name="spacing">
-           <number>6</number>
-          </property>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="available_dlc_group">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title">
-      <string>Available DLCs</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-     </property>
-     <layout class="QVBoxLayout" name="available_dlc_group_layout">
-      <item>
-       <widget class="QLabel" name="available_dlc_label">
-        <property name="text">
-         <string>No Downloadable Content is available</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QScrollArea" name="available_dlc_scroll">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
-        </property>
-        <property name="widgetResizable">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-        <widget class="QWidget" name="available_dlc_contents">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>255</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <layout class="QVBoxLayout" name="available_dlc_contents_layout">
-          <property name="spacing">
-           <number>6</number>
-          </property>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <spacer name="vspacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
+     <layout class="QVBoxLayout" name="game_dlc_layout">
+         <item>
+             <widget class="QScrollArea" name="noborder">
+                 <property name="widgetResizable">
+                     <bool>true</bool>
+                 </property>
+                 <widget class="QWidget" name="scrollAreaWidgetContents">
+                     <property name="geometry">
+                         <rect>
+                             <x>0</x>
+                             <y>0</y>
+                             <width>630</width>
+                             <height>245</height>
+                         </rect>
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout">
+                         <item>
+                             <widget class="QLabel" name="game_title">
+                                 <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                                         <horstretch>0</horstretch>
+                                         <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                 </property>
+                                 <property name="font">
+                                     <font>
+                                         <pointsize>16</pointsize>
+                                     </font>
+                                 </property>
+                                 <property name="text">
+                                     <string notr="true">error</string>
+                                 </property>
+                                 <property name="textInteractionFlags">
+                                     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+                                 </property>
+                             </widget>
+                         </item>
+                         <item>
+                             <widget class="QGroupBox" name="available_dlc_group">
+                                 <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                         <horstretch>0</horstretch>
+                                         <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                 </property>
+                                 <property name="title">
+                                     <string>Available DLCs</string>
+                                 </property>
+                                 <property name="alignment">
+                                     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                                 </property>
+                                 <layout class="QVBoxLayout" name="available_dlc_group_layout">
+                                     <item>
+                                         <widget class="QLabel" name="available_dlc_label">
+                                             <property name="text">
+                                                 <string>No Downloadable Content is available</string>
+                                             </property>
+                                         </widget>
+                                     </item>
+                                 </layout>
+                             </widget>
+                         </item>
+                         <item>
+                             <widget class="QGroupBox" name="installed_dlc_group">
+                                 <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                         <horstretch>0</horstretch>
+                                         <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                 </property>
+                                 <property name="title">
+                                     <string>Installed DLCs</string>
+                                 </property>
+                                 <property name="alignment">
+                                     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                                 </property>
+                                 <layout class="QVBoxLayout" name="installed_dlc_group_layout">
+                                     <item>
+                                         <widget class="QLabel" name="installed_dlc_label">
+                                             <property name="text">
+                                                 <string>No Downloadable Content has been installed.</string>
+                                             </property>
+                                         </widget>
+                                     </item>
+                                 </layout>
+                             </widget>
+                         </item>
+                     </layout>
+                 </widget>
+             </widget>
+         </item>
+         <item>
+             <spacer name="verticalSpacer">
+                 <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                     <size>
+                         <width>20</width>
+                         <height>40</height>
+                     </size>
+                 </property>
+             </spacer>
    </item>
   </layout>
  </widget>
