@@ -3,7 +3,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool
 from PyQt5.QtWidgets import QDialog
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, HTTPError
 
 from legendary.core import LegendaryCore
 from legendary.models.game import GameAsset
@@ -44,7 +44,10 @@ class ApiRequestWorker(QRunnable):
         self.setAutoDelete(True)
 
     def run(self) -> None:
-        result = self.function(*self.args)
+        try:
+            result = self.function(*self.args)
+        except HTTPError():
+            result = None
         self.signals.result.emit(result, self.text)
 
 
@@ -117,17 +120,23 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
     def handle_api_worker_result(self, result, text):
         logger.debug("Api Request got from " + text)
         if text == "gamelist":
-            self.api_results.game_list, self.api_results.dlcs = result
+            if result:
+                self.api_results.game_list, self.api_results.dlcs = result
+            else:
+                self.api_results.game_list, self.api_results.dlcs = self.core.get_game_and_dlc_list(False)
         elif text == "32bit":
-            self.api_results.bit32_games = [i.app_name for i in result[0]]
+            self.api_results.bit32_games = [i.app_name for i in result[0]] if result else []
         elif text == "mac":
-            self.api_results.mac_games = [i.app_name for i in result[0]]
+            self.api_results.mac_games = [i.app_name for i in result[0]] if result else []
         elif text == "assets":
-            assets = [GameAsset.from_egs_json(a) for a in result]
+            if not result:
+                assets = self.core.lgd.assets
+            else:
+                assets = [GameAsset.from_egs_json(a) for a in result]
             self.core.lgd.assets = assets
             self.api_results.assets = assets
         elif text == "no_assets":
-            self.api_results.no_asset_games = result[0]
+            self.api_results.no_asset_games = result[0] if result else []
 
         if self.api_results:
             self.finish()
