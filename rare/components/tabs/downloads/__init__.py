@@ -144,8 +144,8 @@ class DownloadTab(QWidget):
                 if len(self.update_widgets) == 0:
                     self.update_text.setVisible(True)
 
-            self.signals.app.emit((self.signals.actions.installation_finished, (True, game.app_title)))
-            self.signals.games_tab.emit((self.signals.actions.installation_finished, game.app_name))
+            self.signals.app.emit((self.signals.actions.installation_finished, game.app_title))
+            self.signals.games_tab.emit((self.signals.actions.installation_finished, (game.app_name, True)))
             self.signals.tab_widget.emit(
                 (self.signals.actions.set_dl_tab_text, len(self.dl_queue) + len(self.update_widgets.keys())))
             self.reset_infos()
@@ -160,7 +160,8 @@ class DownloadTab(QWidget):
 
         elif text == "stop":
             self.reset_infos()
-            self.signals.app.emit((self.signals.actions.installation_finished, (False, self.active_game.app_title)))
+            self.signals.games_tab.emit(
+                (self.signals.actions.installation_finished, (self.active_game.app_name, False)))
             self.active_game = None
             if self.dl_queue:
                 self.start_installation(self.dl_queue[0])

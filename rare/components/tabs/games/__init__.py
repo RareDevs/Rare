@@ -94,7 +94,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             self.installing_widget.set_game(data)
             self.installing_widget.setVisible(True)
         elif action == self.signals.actions.installation_finished:
-            self.update_list(data)
+            if data[1]:  # update list
+                self.update_list(data[0])
             self.installing_widget.setVisible(False)
         elif action == self.signals.actions.uninstall:
             infos = UninstallDialog(data).get_information()

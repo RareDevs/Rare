@@ -141,10 +141,10 @@ class App(QApplication):
             self.exit_app(data)
         elif action == self.signals.actions.installation_finished:
             # data: (notification, app_title)
-            if data[0] and self.settings.value("notification", True, bool):
+            if self.settings.value("notification", True, bool):
                 self.tray_icon.showMessage(
                     self.tr("Download finished"),
-                    self.tr("Download finished. {} is playable now").format(data[1]),
+                    self.tr("Download finished. {} is playable now").format(data),
                     QSystemTrayIcon.Information, 4000)
 
     def tray(self, reason):
