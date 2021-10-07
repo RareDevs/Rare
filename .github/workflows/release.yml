@@ -75,9 +75,7 @@ jobs:
           sudo pip3 install appimage-builder
       - name: Install legendary
         run: |
-          pushd legendary
-          sudo python setup.py install
-          popd
+          pip install ./legendary
       - name: Prepare Build directory
         run: |
           mkdir build
@@ -87,6 +85,7 @@ jobs:
         run: |
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
+
       - name: Upload to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
@@ -111,11 +110,10 @@ jobs:
         run: pip3 install --upgrade cx_freeze wheel
       - name: Install legendary
         run: |
-          pushd legendary
-          python setup.py install
-          popd
+          pip install ./legendary
       - name: Build
         run: python freeze.py bdist_msi
+
       - name: Rename File
         run: mv dist/* dist/Rare.msi
       - name: Upload to GitHub
