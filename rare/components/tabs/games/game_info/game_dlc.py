@@ -5,6 +5,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
+from rare.utils.models import Signals, InstallOptionsModel
 from rare.utils.utils import get_pixmap
 
 
@@ -12,9 +13,14 @@ class GameDlc(QWidget, Ui_GameDlc):
     install_dlc = pyqtSignal(str, bool)
     game: Game
 
-    def __init__(self, core: LegendaryCore, parent=None):
+    def __init__(self, core: LegendaryCore, signals: Signals, parent=None):
         super(GameDlc, self).__init__(parent=parent)
         self.setupUi(self)
+
+        self.available_dlc_scroll.setObjectName("noborder")
+        self.installed_dlc_scroll.setObjectName("noborder")
+
+        self.signals = signals
         self.core = core
         self.installed_dlcs = list()
         self.installed_dlc_widgets = list()
@@ -58,7 +64,9 @@ class GameDlc(QWidget, Ui_GameDlc):
             QMessageBox.warning(self, "Error", self.tr("Base Game is not installed. Please install {} first").format(
                 self.game.app_title))
             return
-        self.install_dlc.emit(app_name, True)
+
+        self.signals.dl_tab.emit(
+            (self.signals.actions.install_game, (InstallOptionsModel(app_name=app_name, update=True))))
 
 
 class GameDlcWidget(QFrame, Ui_GameDlcWidget):

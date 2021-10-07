@@ -30,8 +30,9 @@ class TabWidget(QTabWidget):
         self.signals.tab_widget.connect(lambda x: self.handle_signal(*x))
         if not self.offline:
             # updates = self.games_tab.default_widget.game_list.updates
-            self.downloadTab = DownloadTab(core, [], self.signals)
-            self.addTab(self.downloadTab, "Downloads" + (" (" + str(len([])) + ")" if len([]) != 0 else ""))
+            self.downloadTab = DownloadTab(core, self.games_tab.updates, self.signals)
+            self.addTab(self.downloadTab, "Downloads" + (
+                " (" + str(len(self.games_tab.updates)) + ")" if len(self.games_tab.updates) != 0 else ""))
             self.cloud_saves = SyncSaves(core, self.signals)
             self.addTab(self.cloud_saves, "Cloud Saves")
             self.store = Shop(self.core)

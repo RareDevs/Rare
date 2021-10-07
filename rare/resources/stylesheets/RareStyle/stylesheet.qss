@@ -22,6 +22,10 @@ QLabel {
     padding: 0px;
 }
 
+QScrollArea#noborder {
+    border-color: transparent;
+}
+
 QMenu,
 QListView,
 QListWidget,

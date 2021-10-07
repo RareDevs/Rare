@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QSettings
+from PyQt5.QtCore import pyqtSignal, QSettings, QObjectCleanupHandler
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 from legendary.core import LegendaryCore
@@ -26,11 +26,11 @@ logger = getLogger("GamesTab")
 
 
 class GamesTab(QStackedWidget, Ui_GamesTab):
-    updates = []
     widgets = {}
     running_games = []
     game_exited = pyqtSignal(str)
     game_started = pyqtSignal(str)
+    updates = set()
 
     def __init__(self, core: LegendaryCore, offline, signals: Signals, api_results: ApiResults):
         super(GamesTab, self).__init__()
@@ -104,6 +104,11 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             legendary_utils.uninstall(data.app_name, self.core, infos)
             self.setCurrentIndex(0)
             self.update_list(data.app_name)
+        elif action == self.signals.actions.verification_finished:
+            i_widget, l_widget = self.widgets[data.app_name]
+            i_widget.igame = data
+            l_widget.igame = data
+            i_widget.info_text = ""
 
     def show_game_info(self, game):
         self.game_info.update_game(game, self.dlcs)
@@ -183,7 +188,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         list_widget.update_list.connect(self.update_list)
 
         if icon_widget.update_available:
-            self.updates.append(igame)
+            self.updates.add(igame.app_name)
 
         return icon_widget, list_widget
 
@@ -259,11 +264,13 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     w.setVisible(True)
 
     def update_list(self, app_name=None):
+        print(app_name)
         if app_name:
             if widgets := self.widgets.get(app_name):
 
                 # from update
                 if self.core.is_installed(widgets[0].game.app_name) and isinstance(widgets[0], BaseInstalledWidget):
+                    logger.debug("Update Gamelist: Updated: " + app_name)
                     igame = self.core.get_installed_game(app_name)
                     for w in widgets:
                         w.igame = igame
@@ -277,15 +284,14 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     self.widgets[app_name][1].deleteLater()
                     self.widgets.pop(app_name)
 
-                    igame = self.core.get_installed_game(app_name)
-                    self.add_installed_widget(self.core.get_game(igame.app_name))
+                    self.add_installed_widget(self.core.get_game(app_name))
 
                     self._update_games()
 
                 # uninstalled
                 elif not self.core.is_installed(widgets[0].game.app_name) and isinstance(widgets[0],
                                                                                          BaseInstalledWidget):
-                    logger.debug("Update list: uninstall")
+                    logger.debug("Update list: Uninstalled: " + app_name)
                     self.widgets[app_name][0].deleteLater()
                     self.widgets[app_name][1].deleteLater()
 
@@ -313,9 +319,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
             if new_installed_games:
                 for name in new_installed_games:
-                    self.icon_view.layout().removeWidget(self.widgets[name][0])
-                    self.list_view.layout().removeWidget(self.widgets[name][1])
-
                     self.widgets[name][0].deleteLater()
                     self.widgets[name][1].deleteLater()
                     self.widgets.pop(name)
@@ -350,7 +353,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     i_widget, list_widget = self.widgets[name]
                     self.icon_view.layout().addWidget(i_widget)
                     self.list_view.layout().addWidget(list_widget)
-        self.installing_widget.setVisible(False)
         self.update_count_games_label()
 
     def _update_games(self):
@@ -371,20 +373,19 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.uninstalled_names = []
         installed_names = [i.app_name for i in self.core.get_installed_list()]
         # get Uninstalled games
-        games, self.dlcs = self.core.get_game_and_dlc_list(update_assets=False)
+        self.game_list, self.dlcs = self.core.get_game_and_dlc_list(update_assets=False)
         # add uninstalled games
-        for game in sorted(games, key=lambda x: x.app_title):
+        for game in sorted(self.game_list, key=lambda x: x.app_title):
             if game.app_name not in installed_names:
-                self.uninstalled_names.append(game.app_name)
-        for game in self.uninstalled_games:
-            i_widget, list_widget = self.widgets[game.app_name]
-            icon_layout.addWidget(i_widget)
-            list_layout.addWidget(list_widget)
+                i_widget, list_widget = self.widgets[game.app_name]
+                icon_layout.addWidget(i_widget)
+                list_layout.addWidget(list_widget)
 
-        QWidget().setLayout(self.icon_view.layout())
-        QWidget().setLayout(self.list_view.layout())
-        # self.icon_view.layout().deleteLater()
-        # self.list_view.layout().deleteLater()
+        QObjectCleanupHandler().add(self.icon_view.layout())
+        QObjectCleanupHandler().add(self.list_view.layout())
+
+        # QWidget().setLayout(self.icon_view.layout())
+        # QWidget().setLayout(self.list_view.layout())
 
         self.icon_view.setLayout(icon_layout)
         self.list_view.setLayout(list_layout)

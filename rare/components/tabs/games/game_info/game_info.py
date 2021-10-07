@@ -77,6 +77,7 @@ class GameInfo(QWidget, Ui_GameInfo):
                                     "Game was verified successfully. No missing or corrupt files found")
             self.igame.needs_verification = False
             self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
+            self.signals.games_tab.emit((self.signals.actions.verification_finished, self.igame))
         else:
             ans = QMessageBox.question(self, "Summary", self.tr(
                 'Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?').format(

@@ -53,6 +53,7 @@ class SignalActions:
     uninstall = "uninstall"
     set_index = "set_index"
     set_dl_tab_text = "set_dl_tab_text"
+    verification_finished = "verification_finished"
 
 
 class Signals(QObject):

@@ -74,8 +74,8 @@ class DownloadTab(QWidget):
         self.update_layout.addWidget(self.update_text)
         self.update_text.setVisible(len(updates) == 0)
 
-        for igame in updates:
-            self.add_update(igame)
+        for name in updates:
+            self.add_update(self.core.get_installed_game(name))
 
         self.layout.addStretch(1)
 
