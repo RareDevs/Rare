@@ -6,7 +6,7 @@ from rare import shared
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab
-from rare.components.tabs.games.__init__ import GamesTab
+from rare.components.tabs.games import GamesTab
 from rare.components.tabs.settings import SettingsTab
 from rare.components.tabs.settings.debug_settings import DebugSettings
 from rare.components.tabs.shop import Shop
