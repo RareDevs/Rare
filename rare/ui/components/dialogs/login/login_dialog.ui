@@ -77,7 +77,7 @@
                         <enum>QFrame::Raised</enum>
                     </property>
                     <property name="currentIndex">
-                        <number>1</number>
+                        <number>0</number>
                     </property>
                     <widget class="QWidget" name="login_page">
                         <property name="enabled">
@@ -159,21 +159,6 @@
                                         </size>
                                     </property>
                                 </spacer>
-                            </item>
-                        </layout>
-                    </widget>
-                    <widget class="QWidget" name="success_page">
-                        <layout class="QHBoxLayout" name="success_page_layout">
-                            <item>
-                                <widget class="QLabel" name="success_label">
-                                    <property name="text">
-                                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h2 style=&quot;
-                                            margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px;
-                                            -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot;
-                                            font-size:x-large; font-weight:600;&quot;&gt;Login Successful!&lt;/span&gt;&lt;/h2&gt;&lt;/body&gt;&lt;/html&gt;
-                                        </string>
-                                    </property>
-                                </widget>
                             </item>
                         </layout>
                     </widget>

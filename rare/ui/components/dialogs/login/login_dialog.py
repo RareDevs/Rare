@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'login_dialog.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/dialogs/login/login_dialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -78,14 +78,6 @@ class Ui_LoginDialog(object):
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.login_page_layout.addItem(spacerItem2, 1, 2, 2, 1)
         self.login_stack.addWidget(self.login_page)
-        self.success_page = QtWidgets.QWidget()
-        self.success_page.setObjectName("success_page")
-        self.success_page_layout = QtWidgets.QHBoxLayout(self.success_page)
-        self.success_page_layout.setObjectName("success_page_layout")
-        self.success_label = QtWidgets.QLabel(self.success_page)
-        self.success_label.setObjectName("success_label")
-        self.success_page_layout.addWidget(self.success_label)
-        self.login_stack.addWidget(self.success_page)
         self.dialog_layout.addWidget(self.login_stack)
         self.button_layout = QtWidgets.QHBoxLayout()
         self.button_layout.setObjectName("button_layout")
@@ -103,7 +95,7 @@ class Ui_LoginDialog(object):
         self.dialog_layout.addLayout(self.button_layout)
 
         self.retranslateUi(LoginDialog)
-        self.login_stack.setCurrentIndex(1)
+        self.login_stack.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(LoginDialog)
 
     def retranslateUi(self, LoginDialog):
@@ -115,8 +107,6 @@ class Ui_LoginDialog(object):
         self.login_import_label.setText(_translate("LoginDialog", "Import from Epic Games Launcher"))
         self.login_import_radio.setText(_translate("LoginDialog", "Import"))
         self.login_browser_radio.setText(_translate("LoginDialog", "Browser"))
-        self.success_label.setText(_translate("LoginDialog",
-                                              "<html><head/><body><h2 style=\" margin-top:16px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:x-large; font-weight:600;\">Login Successful!</span></h2></body></html>"))
         self.exit_button.setText(_translate("LoginDialog", "Exit"))
         self.back_button.setText(_translate("LoginDialog", "Back"))
         self.next_button.setText(_translate("LoginDialog", "Next"))
@@ -124,7 +114,6 @@ class Ui_LoginDialog(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     LoginDialog = QtWidgets.QDialog()
     ui = Ui_LoginDialog()

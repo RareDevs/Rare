@@ -17,12 +17,11 @@ class LoginPages:
     landing: int
     browser: int
     import_egl: int
-    success: int
 
 
 class LoginDialog(QDialog, Ui_LoginDialog):
     logged_in: bool = False
-    pages = LoginPages(landing=0, browser=1, import_egl=2, success=3)
+    pages = LoginPages(landing=0, browser=1, import_egl=2)
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(LoginDialog, self).__init__(parent=parent)
@@ -36,7 +35,7 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         self.login_stack.insertWidget(self.pages.browser, self.browser_page)
         self.browser_page.success.connect(self.login_successful)
         self.browser_page.changed.connect(
-            lambda: self.next_button.setEnabled(self.browser_page.is_valid())
+            self.next_button.setEnabled
         )
         self.import_page = ImportLogin(self.core, self.login_stack)
         self.login_stack.insertWidget(self.pages.import_egl, self.import_page)
@@ -88,12 +87,7 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         try:
             if self.core.login():
                 self.logged_in = True
-                self.welcome_label.setText(
-                    self.welcome_label.text().replace("</h1>", f", {self.core.lgd.userdata['displayName']}</h1>")
-                )
-                self.exit_button.setVisible(False)
-                self.back_button.setVisible(False)
-                self.login_stack.setCurrentIndex(self.pages.success)
+                self.close()
             else:
                 raise ValueError("Login failed.")
         except ValueError as e:
