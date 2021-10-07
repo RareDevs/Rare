@@ -2,24 +2,19 @@ import webbrowser
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel, QPushButton
 
-from legendary.core import LegendaryCore
-from rare.utils.models import Signals
+from rare import shared
 
 
 class MiniWidget(QWidget):
-    def __init__(self, core: LegendaryCore, signals: Signals):
+    def __init__(self):
         super(MiniWidget, self).__init__()
         self.layout = QVBoxLayout()
-        self.core = core
-        self.signals = signals
+        self.core = shared.legendary_core
+        self.signals = shared.signals
         self.layout.addWidget(QLabel("Account"))
         username = self.core.lgd.userdata.get("display_name")
         if not username:
-            try:
-                self.core.login()
-                username = self.core.lgd.userdata.get("display_name")
-            except Exception:
-                username = "Offline"
+            username = "Offline"
 
         self.layout.addWidget(QLabel(self.tr("Logged in as ") + str(username)))
 

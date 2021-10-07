@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 from qtawesome import icon
 
-from legendary.core import LegendaryCore
+from rare import shared
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab
@@ -11,35 +11,34 @@ from rare.components.tabs.settings import SettingsTab
 from rare.components.tabs.settings.debug_settings import DebugSettings
 from rare.components.tabs.shop import Shop
 from rare.components.tabs.tab_utils import TabBar, TabButtonWidget
-from rare.utils.models import InstallOptionsModel, Signals
+from rare.utils.models import InstallOptionsModel
 
 
 class TabWidget(QTabWidget):
     delete_presence = pyqtSignal()
 
-    def __init__(self, core: LegendaryCore, signals: Signals, parent, args, api_results):
+    def __init__(self, parent):
         super(TabWidget, self).__init__(parent=parent)
-        self.offline = args.offline
-        disabled_tab = 4 if not self.offline else 1
-        self.core = core
-        self.signals = signals
+        disabled_tab = 4 if not shared.args.offline else 1
+        self.core = shared.legendary_core
+        self.signals = shared.signals
         self.setTabBar(TabBar(disabled_tab))
         # Generate Tabs
-        self.games_tab = GamesTab(core, args.offline, self.signals, api_results)
+        self.games_tab = GamesTab()
         self.addTab(self.games_tab, self.tr("Games"))
         self.signals.tab_widget.connect(lambda x: self.handle_signal(*x))
-        if not self.offline:
+        if not shared.args.offline:
             # updates = self.games_tab.default_widget.game_list.updates
-            self.downloadTab = DownloadTab(core, self.games_tab.updates, self.signals)
+            self.downloadTab = DownloadTab(self.games_tab.updates)
             self.addTab(self.downloadTab, "Downloads" + (
                 " (" + str(len(self.games_tab.updates)) + ")" if len(self.games_tab.updates) != 0 else ""))
-            self.cloud_saves = SyncSaves(core, self.signals)
+            self.cloud_saves = SyncSaves()
             self.addTab(self.cloud_saves, "Cloud Saves")
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
-        self.settings = SettingsTab(core, self)
+        self.settings = SettingsTab()
 
-        if args.debug:
+        if shared.args.debug:
             self.settings.addTab(DebugSettings(), "Debug")
 
         # Space Tab
@@ -50,10 +49,10 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
 
-        self.mini_widget = MiniWidget(core, self.signals)
+        self.mini_widget = MiniWidget()
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.mini_widget)
-        account_button = TabButtonWidget(core, 'mdi.account-circle', 'Account')
+        account_button = TabButtonWidget('mdi.account-circle', 'Account')
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)
         self.tabBar().setTabButton(disabled_tab + 1, self.tabBar().RightSide, account_button)
@@ -65,7 +64,7 @@ class TabWidget(QTabWidget):
         # imported
         self.games_tab.import_widget.update_list.connect(self.game_imported)
 
-        if not self.offline:
+        if not shared.args.offline:
             # install dlc
             self.games_tab.game_info.dlc.install_dlc.connect(
                 lambda app_name, update: self.install_game(
@@ -97,7 +96,7 @@ class TabWidget(QTabWidget):
         if tab_num == 0:
             self.games_tab.layout().setCurrentIndex(0)
 
-        if not self.offline and tab_num == 3:
+        if not shared.args.offline and tab_num == 3:
             self.store.load()
 
     def game_imported(self, app_name: str):

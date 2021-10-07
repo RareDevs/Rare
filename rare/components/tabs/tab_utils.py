@@ -23,7 +23,7 @@ class TabBar(QTabBar):
 
 
 class TabButtonWidget(QToolButton):
-    def __init__(self, core, button_icon: str, tool_tip: str):
+    def __init__(self, button_icon: str, tool_tip: str):
         super(TabButtonWidget, self).__init__()
         self.setText("Icon")
         self.setPopupMode(QToolButton.InstantPopup)

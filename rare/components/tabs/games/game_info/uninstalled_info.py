@@ -5,28 +5,28 @@ from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTabWidget, QTreeView
 from qtawesome import icon
 
-from legendary.core import LegendaryCore
 from legendary.models.game import Game
+from rare import shared
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabBar
 from rare.utils.json_formatter import QJsonModel
-from rare.utils.models import Signals, InstallOptionsModel
+from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_pixmap
 
 
 class UninstalledTabInfo(QTabWidget):
-    def __init__(self, core, signals: Signals, offline, parent):
-        super(UninstalledTabInfo, self).__init__(parent=parent)
+    def __init__(self):
+        super(UninstalledTabInfo, self).__init__()
         self.app_name = ""
-        self.core = core
-        self.signals = signals
+        self.core = shared.legendary_core
+        self.signals = shared.signals
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
 
         self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
-        self.info = UninstalledInfo(core, self.signals, self)
-        self.info.install_button.setDisabled(offline)
+        self.info = UninstalledInfo()
+        self.info.install_button.setDisabled(shared.args.offline)
         self.addTab(self.info, self.tr("Game Info"))
 
         self.view = QTreeView()
@@ -58,11 +58,11 @@ class UninstalledTabInfo(QTabWidget):
 class UninstalledInfo(QWidget, Ui_GameInfo):
     game: Game
 
-    def __init__(self, core: LegendaryCore, signals: Signals, parent=None):
-        super(UninstalledInfo, self).__init__(parent=parent)
+    def __init__(self):
+        super(UninstalledInfo, self).__init__()
         self.setupUi(self)
-        self.core = core
-        self.signals = signals
+        self.core = shared.legendary_core
+        self.signals = shared.signals
         self.install_button.clicked.connect(self.install_game)
         if platform.system() != "Windows":
             self.steam_worker = SteamWorker(self.core)

@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QGroupBox
 from PyQt5.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QWidgetAction, QMenu, QToolButton, QHBoxLayout
 
 from legendary.core import LegendaryCore
+from rare import shared
 from rare.ui.components.tabs.settings.dxvk import Ui_DxvkSettings
 
 logger = getLogger("DXVK Settings")
@@ -12,12 +13,12 @@ logger = getLogger("DXVK Settings")
 
 class DxvkSettings(QGroupBox, Ui_DxvkSettings):
 
-    def __init__(self, core: LegendaryCore, name=None):
+    def __init__(self, name=None):
         super(DxvkSettings, self).__init__()
         self.setupUi(self)
 
         self.name = name if name is not None else "default"
-        self.core = core
+        self.core = shared.legendary_core
 
         self.dxvk_options_map = {
             "devinfo": self.devinfo,
@@ -96,9 +97,9 @@ class DxvkSettings(QGroupBox, Ui_DxvkSettings):
 
 class DxvkWidget(QGroupBox):
 
-    def __init__(self, core: LegendaryCore, name=None):
+    def __init__(self, name=None):
         super(DxvkWidget, self).__init__()
-        self.core = core
+        self.core = shared.legendary_core
         self.setObjectName("settings_widget")
         self.dxvk_settings = {
             "fps": [False, "Fps"],

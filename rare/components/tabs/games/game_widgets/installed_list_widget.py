@@ -4,7 +4,6 @@ from PyQt5.QtCore import QProcess, pyqtSignal
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 from qtawesome import icon
 
-from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 
@@ -16,10 +15,10 @@ class InstalledListWidget(BaseInstalledWidget):
     signal = pyqtSignal(str)
     update_game = pyqtSignal()
 
-    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap, offline, is_orign: bool = False, game: Game = None):
-        super(InstalledListWidget, self).__init__(igame, core, pixmap, offline, is_orign, game)
+    def __init__(self, igame: InstalledGame, pixmap, is_origin: bool = False, game: Game = None):
+        super(InstalledListWidget, self).__init__(igame, pixmap, is_origin, game)
         self.dev = self.game.metadata["developer"]
-        if not is_orign:
+        if not is_origin:
             self.size = igame.install_size
             self.launch_params = igame.launch_parameters
         else:

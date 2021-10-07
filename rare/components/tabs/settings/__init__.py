@@ -10,16 +10,15 @@ from rare.utils.extra_widgets import SideTabBar
 
 
 class SettingsTab(QTabWidget):
-    def __init__(self, core, parent):
-        super(SettingsTab, self).__init__(parent=parent)
-        self.core = core
+    def __init__(self):
+        super(SettingsTab, self).__init__()
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
-        self.rare_settings = RareSettings(self.core)
+        self.rare_settings = RareSettings()
         self.addTab(self.rare_settings, "Rare")
-        self.addTab(LegendarySettings(core), "Legendary")
+        self.addTab(LegendarySettings(), "Legendary")
         if platform.system() != "Windows":
-            self.addTab(LinuxSettings(core), "Linux")
+            self.addTab(LinuxSettings(), "Linux")
         self.about = About()
 
         self.addTab(self.about, "About (!)" if self.about.update_available else "About")

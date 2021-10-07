@@ -5,10 +5,8 @@ from PyQt5.QtCore import Qt, QSettings, QTimer
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
-from legendary.core import LegendaryCore
-from rare import data_dir
+from rare import data_dir, shared
 from rare.components.tabs.tab_widget import TabWidget
-from rare.utils.models import Signals
 from rare.utils.rpc import DiscordRPC
 
 logger = getLogger("Window")
@@ -16,16 +14,16 @@ logger = getLogger("Window")
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, core: LegendaryCore, args, signals: Signals, api_results):
+    def __init__(self):
         super(MainWindow, self).__init__()
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.settings = QSettings()
-        self.core = core
+        self.core = shared.legendary_core
 
-        self.signals = signals
+        self.signals = shared.signals
         self.signals.main_window.connect(lambda x: self.handle_signal(*x))
 
-        self.offline = args.offline
+        self.offline = shared.args.offline
         width, height = 1200, 800
         if self.settings.value("save_size", False):
             width, height = self.settings.value("window_size", (1200, 800), tuple)
@@ -34,12 +32,12 @@ class MainWindow(QMainWindow):
         self.setGeometry((desktop.width() - width) / 2, (desktop.height() - height) / 2, width, height)
 
         self.setWindowTitle("Rare - GUI for legendary")
-        self.tab_widget = TabWidget(core, self.signals, self, args, api_results)
+        self.tab_widget = TabWidget(self)
         self.setCentralWidget(self.tab_widget)
-        if not args.offline:
-            self.rpc = DiscordRPC(core)
+        if not shared.args.offline:
+            self.rpc = DiscordRPC(shared.legendary_core)
             # Discord RPC on game launch
-            #self.tab_widget.games_tab.default_widget.game_list.game_started.connect(
+            # self.tab_widget.games_tab.default_widget.game_list.game_started.connect(
             #    lambda: self.rpc.set_discord_rpc(self.tab_widget.games_tab.default_widget.game_list.running_games[0]))
             # Remove RPC
             self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
@@ -47,16 +45,16 @@ class MainWindow(QMainWindow):
             self.tab_widget.settings.rare_settings.rpc.update_settings.connect(
                 lambda: self.rpc.changed_settings(self.tab_widget.games_tab.default_widget.game_list.running_games))
 
-        #game = self.tab_widget.games_tab.default_widget.game_list.active_game
-        #if game != ("", 0) and not args.offline:
+        # game = self.tab_widget.games_tab.default_widget.game_list.active_game
+        # if game != ("", 0) and not args.offline:
         #    self.rpc.set_discord_rpc(game[0])  # Appname
 
-        if args.subparser == "launch":
-            logger.info("Launching " + self.core.get_installed_game(args.app_name).title)
-            if args.app_name in self.tab_widget.games_tab.default_widget.game_list.widgets.keys():
-                self.tab_widget.games_tab.default_widget.game_list.widgets[args.app_name][1].launch()
+        if shared.args.subparser == "launch":
+            logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
+            if shared.args.app_name in self.tab_widget.games_tab.default_widget.game_list.widgets.keys():
+                self.tab_widget.games_tab.default_widget.game_list.widgets[shared.args.app_name][1].launch()
             else:
-                logger.info(f"Could not find {args.app_name} in Games")
+                logger.info(f"Could not find {shared.args.app_name} in Games")
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.timer_finished)

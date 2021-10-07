@@ -5,8 +5,8 @@ from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from qtawesome import icon
 
-from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
+from rare import shared
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 
 logger = getLogger("GameWidgetInstalled")
@@ -16,14 +16,14 @@ class InstalledIconWidget(BaseInstalledWidget):
     update_list = pyqtSignal(str)
     update_game = pyqtSignal()
 
-    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap, offline, is_origin: bool = False,
+    def __init__(self, igame: InstalledGame, pixmap, is_origin: bool = False,
                  game: Game = None):
-        super(InstalledIconWidget, self).__init__(igame, core, pixmap, offline, is_origin, game)
+        super(InstalledIconWidget, self).__init__(igame, pixmap, is_origin, game)
         self.setObjectName("game_widget_icon")
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.layout = QVBoxLayout()
-        self.core = core
+        self.core = shared.legendary_core
         self.running = False
         self.info_text = ""
 

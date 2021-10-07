@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayo
     QGroupBox
 from qtawesome import icon
 
-from legendary.core import LegendaryCore
+from rare import shared
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import PathEdit
 
@@ -17,9 +17,9 @@ logger = getLogger("Import")
 class ImportWidget(QWidget):
     update_list = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, parent):
-        super(ImportWidget, self).__init__(parent=parent)
-        self.core = core
+    def __init__(self):
+        super(ImportWidget, self).__init__()
+        self.core = shared.legendary_core
         self.game_list = [i.app_name for i in self.core.get_game_list()]
 
         self.main_layout = QHBoxLayout()

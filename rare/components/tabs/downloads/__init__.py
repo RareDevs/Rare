@@ -8,10 +8,11 @@ from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayo
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate
 from legendary.models.game import Game, InstalledGame
+from rare import shared
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
-from rare.utils.models import InstallOptionsModel, InstallQueueItemModel, Signals
+from rare.utils.models import InstallOptionsModel, InstallQueueItemModel
 from rare.utils.utils import get_size
 
 logger = getLogger("Download")
@@ -22,13 +23,13 @@ class DownloadTab(QWidget):
     dl_queue = []
     dl_status = pyqtSignal(int)
 
-    def __init__(self, core: LegendaryCore, updates: list, signals: Signals):
+    def __init__(self, updates: list):
         super(DownloadTab, self).__init__()
-        self.core = core
+        self.core = shared.legendary_core
         self.layout = QVBoxLayout()
         self.active_game: Game = None
         self.analysis = None
-        self.signals = signals
+        self.signals = shared.signals
         self.signals.dl_tab.connect(lambda x: self.signal_received(*x))
         self.info_layout = QGridLayout()
 

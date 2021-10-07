@@ -75,7 +75,7 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.proton_prefix = PathEdit("None", QFileDialog.DirectoryOnly, save_func=self.update_prefix)
             self.proton_prefix_layout.addWidget(self.proton_prefix)
 
-            self.linux_settings = LinuxAppSettings(core)
+            self.linux_settings = LinuxAppSettings()
             self.linux_layout.addWidget(self.linux_settings)
         else:
             self.proton_groupbox.setVisible(False)
@@ -238,8 +238,8 @@ class GameSettings(QWidget, Ui_GameSettings):
 
 
 class LinuxAppSettings(LinuxSettings):
-    def __init__(self, core):
-        super(LinuxAppSettings, self).__init__(core, "app")
+    def __init__(self):
+        super(LinuxAppSettings, self).__init__("app")
 
     def update_game(self, app_name):
         self.name = app_name

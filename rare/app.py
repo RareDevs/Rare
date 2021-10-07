@@ -12,10 +12,10 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory, QMessa
 
 from legendary.core import LegendaryCore
 from rare import languages_path, resources_path, cache_dir
+from rare import shared
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
-from rare.utils.models import Signals
 from rare.utils.utils import load_color_scheme
 
 start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
@@ -35,12 +35,12 @@ def excepthook(exc_type, exc_value, exc_tb):
 
 
 class App(QApplication):
-    def __init__(self, args):
+    def __init__(self):
         super(App, self).__init__(sys.argv)
-        self.args = args  # add some options
+        self.args = shared.args  # add some options
         # init Legendary
         try:
-            self.core = LegendaryCore()
+            self.core = shared.init_legendary()
         except configparser.MissingSectionHeaderError as e:
             logger.warning(f"Config is corrupt: {e}")
             if config_path := os.environ.get('XDG_CONFIG_HOME'):
@@ -73,7 +73,7 @@ class App(QApplication):
         self.setOrganizationName("Rare")
         self.settings = QSettings()
 
-        self.signals = Signals()
+        self.signals = shared.init_signals()
         self.signals.app.connect(lambda x: self.handle_signal(*x))
 
         # Translator
@@ -115,18 +115,17 @@ class App(QApplication):
         self.setWindowIcon(QIcon(os.path.join(resources_path, "images", "Rare.png")))
 
         # launch app
-        self.launch_dialog = LaunchDialog(self.core, args.offline)
+        self.launch_dialog = LaunchDialog()
         self.launch_dialog.quit_app.connect(self.launch_dialog.close)
         self.launch_dialog.quit_app.connect(lambda ec: exit(ec))
         self.launch_dialog.start_app.connect(self.start_app)
         self.launch_dialog.start_app.connect(self.launch_dialog.close)
 
-        if not args.silent or args.subparser == "launch":
+        if not self.args.silent or self.args.subparser == "launch":
             self.launch_dialog.login()
 
-    def start_app(self, offline=False, api_results=None):
-        self.args.offline = offline
-        self.mainwindow = MainWindow(self.core, self.args, self.signals, api_results)
+    def start_app(self):
+        self.mainwindow = MainWindow()
         self.launch_dialog.close()
         self.tray_icon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(self.exit_app)
@@ -164,6 +163,7 @@ class App(QApplication):
 def start(args):
     # set excepthook to show dialog with exception
     sys.excepthook = excepthook
+    shared.init_args(args)
 
     # configure logging
     if args.debug:
@@ -183,7 +183,7 @@ def start(args):
         )
 
     while True:
-        app = App(args)
+        app = App()
         exit_code = app.exec_()
         # if not restart
         # restart app

@@ -7,7 +7,7 @@ from requests.exceptions import ConnectionError, HTTPError
 
 from legendary.core import LegendaryCore
 from legendary.models.game import GameAsset
-from rare import image_dir
+from rare import image_dir, shared
 from rare.components.dialogs.login import LoginDialog
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.models import ApiResults
@@ -53,15 +53,15 @@ class ApiRequestWorker(QRunnable):
 
 class LaunchDialog(QDialog, Ui_LaunchDialog):
     quit_app = pyqtSignal(int)
-    start_app = pyqtSignal(bool, ApiResults)
+    start_app = pyqtSignal()
     finished = False
 
-    def __init__(self, core: LegendaryCore, offline=False, parent=None):
+    def __init__(self, parent=None):
         super(LaunchDialog, self).__init__(parent=parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.core = core
-        self.offline = offline
+        self.core = shared.legendary_core
+        self.offline = shared.args.offline
         self.thread_pool = QThreadPool()
         self.thread_pool.setMaxThreadCount(2)
         self.api_results = ApiResults()
@@ -150,6 +150,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         if self.finished:
             logger.info("App starting")
             self.image_info.setText(self.tr("Starting..."))
-            self.start_app.emit(self.offline, self.api_results)
+            shared.args.offline = self.offline
+            shared.api_results = self.api_results
+            self.start_app.emit()
         else:
             self.finished = True

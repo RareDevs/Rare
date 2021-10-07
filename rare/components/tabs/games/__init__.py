@@ -3,7 +3,7 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QSettings, QObjectCleanupHandler
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
-from legendary.core import LegendaryCore
+from rare import shared
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.tabs.games.game_info import InfoTabs
 from rare.components.tabs.games.game_info.uninstalled_info import UninstalledTabInfo
@@ -19,7 +19,6 @@ from rare.components.tabs.games.import_widget import ImportWidget
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import FlowLayout
-from rare.utils.models import Signals, ApiResults
 from rare.utils.utils import get_pixmap, download_image, get_uninstalled_pixmap
 
 logger = getLogger("GamesTab")
@@ -32,12 +31,11 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
     game_started = pyqtSignal(str)
     updates = set()
 
-    def __init__(self, core: LegendaryCore, offline, signals: Signals, api_results: ApiResults):
+    def __init__(self):
         super(GamesTab, self).__init__()
         self.setupUi(self)
-        self.core = core
-        self.offline = offline
-        self.signals = signals
+        self.core = shared.legendary_core
+        self.signals = shared.signals
         self.signals.games_tab.connect(lambda x: self.signal_received(*x))
         self.settings = QSettings()
 
@@ -47,10 +45,10 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.game_info = InfoTabs(self.core, self.signals, self)
         self.addWidget(self.game_info)
 
-        self.import_widget = ImportWidget(core, self)
+        self.import_widget = ImportWidget()
         self.addWidget(self.import_widget)
 
-        self.uninstalled_info_widget = UninstalledTabInfo(core, self.signals, self.offline, self)
+        self.uninstalled_info_widget = UninstalledTabInfo()
         self.layout().addWidget(self.uninstalled_info_widget)
 
         # navigation
@@ -58,13 +56,13 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.import_widget.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
         self.uninstalled_info_widget.tabBarClicked.connect(lambda x: self.setCurrentIndex(0) if x == 0 else None)
 
-        self.game_list = api_results.game_list
-        self.dlcs = api_results.dlcs
-        self.bit32 = api_results.bit32_games
-        self.mac_games = api_results.mac_games
-        self.no_assets = api_results.no_asset_games
+        self.game_list = shared.api_results.game_list
+        self.dlcs = shared.api_results.dlcs
+        self.bit32 = shared.api_results.bit32_games
+        self.mac_games = shared.api_results.mac_games
+        self.no_assets = shared.api_results.no_asset_games
         self.no_asset_names = []
-        if not self.offline:
+        if not shared.args.offline:
             for game in self.no_assets:
                 self.no_asset_names.append(game.app_name)
         else:
@@ -170,9 +168,9 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         else:
             igame = self.core.get_installed_game(game.app_name)
 
-        icon_widget = InstalledIconWidget(igame, self.core, pixmap, self.offline, is_origin, game)
+        icon_widget = InstalledIconWidget(igame, pixmap, is_origin, game)
 
-        list_widget = InstalledListWidget(igame, self.core, pixmap, self.offline, is_origin, game)
+        list_widget = InstalledListWidget(igame, pixmap, is_origin, game)
 
         self.widgets[game.app_name] = (icon_widget, list_widget)
 

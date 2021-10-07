@@ -7,8 +7,8 @@ from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray, QProce
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel, QPushButton
 
-from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
+from rare import shared
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.extra.console import ConsoleWindow
 from rare.utils import legendary_utils, utils
@@ -24,11 +24,11 @@ class BaseInstalledWidget(QGroupBox):
     update_list = pyqtSignal()
     proc: QProcess()
 
-    def __init__(self, igame: InstalledGame, core: LegendaryCore, pixmap: QPixmap, offline, is_origin: bool = False, game: Game = None):
+    def __init__(self, igame: InstalledGame, pixmap: QPixmap, is_origin: bool = False, game: Game = None):
         super(BaseInstalledWidget, self).__init__()
         self.igame = igame
         self.is_origin = is_origin
-        self.core = core
+        self.core = shared.legendary_core
         if not game:
             self.game = self.core.get_game(self.igame.app_name)
         else:
@@ -36,7 +36,7 @@ class BaseInstalledWidget(QGroupBox):
         self.image = QLabel()
         self.image.setPixmap(pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
         self.game_running = False
-        self.offline = offline
+        self.offline = shared.args.offline
         if is_origin:
             self.update_available = False
         else:

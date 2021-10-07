@@ -7,8 +7,7 @@ from logging import getLogger
 from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
-from legendary.core import LegendaryCore
-from rare import cache_dir
+from rare import cache_dir, shared
 from rare.components.tabs.settings.rpc_settings import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
@@ -24,10 +23,10 @@ languages = [
 
 
 class RareSettings(QWidget, Ui_RareSettings):
-    def __init__(self, core: LegendaryCore):
+    def __init__(self):
         super(RareSettings, self).__init__()
         self.setupUi(self)
-        self.core = core
+        self.core = shared.legendary_core
         # (widget_name, option_name, default)
         self.checkboxes = [
             (self.sys_tray, "sys_tray", True),

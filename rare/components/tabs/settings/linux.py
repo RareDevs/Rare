@@ -2,7 +2,7 @@ from logging import getLogger
 
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
-from legendary.core import LegendaryCore
+from rare import shared
 from rare.components.tabs.settings.dxvk import DxvkSettings, DxvkWidget
 from rare.ui.components.tabs.settings.linux import Ui_LinuxSettings
 from rare.utils.extra_widgets import PathEdit
@@ -11,12 +11,12 @@ logger = getLogger("LinuxSettings")
 
 
 class LinuxSettings(QWidget, Ui_LinuxSettings):
-    def __init__(self, core: LegendaryCore, name=None):
+    def __init__(self, name=None):
         super(LinuxSettings, self).__init__()
         self.setupUi(self)
 
         self.name = name if name is not None else "default"
-        self.core = core
+        self.core = shared.legendary_core
 
         # Wine prefix
         self.wine_prefix = PathEdit(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""),
@@ -34,9 +34,9 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         # dxvk
         # FIXME: Remove this check when done with per game settings
         if name is None:
-            self.dxvk = DxvkSettings(core, self.name)
+            self.dxvk = DxvkSettings(self.name)
         else:
-            self.dxvk = DxvkWidget(core)
+            self.dxvk = DxvkWidget()
         self.dxvk_layout.addWidget(self.dxvk)
 
     def save_setting(self, widget: PathEdit, setting_name: str):

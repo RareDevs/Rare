@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox, QVBoxLayout, QDialog, QChe
 from qtawesome import icon
 
 from legendary.core import LegendaryCore
+from rare import shared
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import get_size
@@ -16,14 +17,14 @@ logger = getLogger("LegendarySettings")
 
 
 class LegendarySettings(QWidget, Ui_LegendarySettings):
-    def __init__(self, core: LegendaryCore, parent=None):
-        super(LegendarySettings, self).__init__(parent=parent)
+    def __init__(self):
+        super(LegendarySettings, self).__init__()
         self.setupUi(self)
 
-        self.core = core
+        self.core = shared.legendary_core
 
         # Default installation directory
-        self.install_dir = PathEdit(core.get_default_install_dir(),
+        self.install_dir = PathEdit(self.core.get_default_install_dir(),
                                     file_type=QFileDialog.DirectoryOnly,
                                     save_func=self.save_path)
         self.install_dir_layout.addWidget(self.install_dir)

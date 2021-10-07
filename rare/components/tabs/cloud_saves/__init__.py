@@ -5,10 +5,10 @@ from PyQt5.QtWidgets import QScrollArea, QWidget, QVBoxLayout, QLabel, QPushButt
 
 from legendary.core import LegendaryCore
 from legendary.models.game import SaveGameStatus
+from rare import shared
 from rare.components.dialogs.path_input_dialog import PathInputDialog
 from rare.components.tabs.cloud_saves.sync_widget import SyncWidget
 from rare.utils.extra_widgets import WaitingSpinner
-from rare.utils.models import Signals
 
 logger = getLogger("Sync Saves")
 
@@ -28,15 +28,15 @@ class LoadThread(QThread):
 class SyncSaves(QScrollArea):
     finished = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, signals: Signals):
+    def __init__(self):
         super(SyncSaves, self).__init__()
-        self.core = core
-        self.signals = signals
+        self.core = shared.legendary_core
+        self.signals = shared.signals
         self.signals.cloud_saves.connect(self.signal_received)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.load_saves()
 
-    def signal_received(self, action, ):
+    def signal_received(self, action, data):
         pass
 
     def load_saves(self, app_name=None, auto=False):
