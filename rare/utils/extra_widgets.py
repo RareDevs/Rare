@@ -5,7 +5,7 @@ from logging import getLogger
 import PIL
 from PIL import Image
 from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal
-from PyQt5.QtGui import QMovie, QPixmap
+from PyQt5.QtGui import QMovie, QPixmap, QFontMetrics
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
     QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton
 from qtawesome import icon
@@ -177,10 +177,11 @@ class SideTabBar(QTabBar):
     def __init__(self):
         super(SideTabBar, self).__init__()
         self.setObjectName("settings_bar")
+        self.fm = QFontMetrics(self.font())
 
     def tabSizeHint(self, index):
         # width = QTabBar.tabSizeHint(self, index).width()
-        return QSize(200, 30)
+        return QSize(200, self.fm.height() + 18)
 
     def paintEvent(self, event):
         painter = QStylePainter(self)
