@@ -6,6 +6,7 @@ from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QSpacerItem, QGroupBox
 from qtawesome import icon
 
+from rare import shared
 from rare.components.tabs.shop.shop_models import ShopGame
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
 from rare.utils.extra_widgets import WaitingSpinner, ImageLabel
@@ -212,7 +213,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.wishlist.append(game["offer"]["title"])
 
     def button_clicked(self):
-        webbrowser.open("https://www.epicgames.com/store/de/p/" + self.slug)
+        webbrowser.open(f"https://www.epicgames.com/store/{shared.legendary_core.language_code}/p/" + self.slug)
 
 
 class SocialButton(QPushButton):
