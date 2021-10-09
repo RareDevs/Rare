@@ -89,6 +89,8 @@ class ImportWidget(QWidget):
         if os.path.exists(path):
             if os.path.exists(os.path.join(path, ".egstore")):
                 self.app_name_input.setText(self.find_app_name(path))
+                return True, path
+        return False, path
 
     def find_app_name(self, path):
         if not os.path.exists(os.path.join(path, ".egstore")):
