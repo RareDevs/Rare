@@ -8,7 +8,7 @@ from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GamesTab
 from rare.components.tabs.settings import SettingsTab
-from rare.components.tabs.settings.debug_settings import DebugSettings
+from rare.components.tabs.settings.debug import DebugSettings
 from rare.components.tabs.shop import Shop
 from rare.components.tabs.tab_utils import TabBar, TabButtonWidget
 from rare.utils.models import InstallOptionsModel

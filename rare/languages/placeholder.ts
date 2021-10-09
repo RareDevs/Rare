@@ -1834,7 +1834,7 @@ type = "unfinished" > </translation>
 < context >
 <name>RPCSettings < /name>
 < message >
-<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+<location filename = "../ui/components/tabs/settings/rpc.py"
 line = "50" / >
     <source>Discord
 RPC < /source>
@@ -1842,7 +1842,7 @@ RPC < /source>
 type = "unfinished" > </translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+<location filename = "../ui/components/tabs/settings/rpc.py"
 line = "51" / >
     <source>When
 Playing < /source>
@@ -1850,28 +1850,28 @@ Playing < /source>
 type = "unfinished" > </translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+<location filename = "../ui/components/tabs/settings/rpc.py"
 line = "52" / >
     <source>Always < /source>
     < translation
 type = "unfinished" > </translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+<location filename = "../ui/components/tabs/settings/rpc.py"
 line = "53" / >
     <source>Never < /source>
     < translation
 type = "unfinished" > </translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+<location filename = "../ui/components/tabs/settings/rpc.py"
 line = "54" / >
     <source>Show < /source>
     < translation
 type = "unfinished" > </translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+<location filename = "../ui/components/tabs/settings/rpc.py"
 line = "55" / >
     <source>Show
 Game < /source>
@@ -1879,7 +1879,7 @@ Game < /source>
 type = "unfinished" > </translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+<location filename = "../ui/components/tabs/settings/rpc.py"
 line = "56" / >
     <source>Show
 OS < /source>
@@ -1887,7 +1887,7 @@ OS < /source>
 type = "unfinished" > </translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/settings/rpc_settings.py"
+<location filename = "../ui/components/tabs/settings/rpc.py"
 line = "57" / >
     <source>Show
 Time
