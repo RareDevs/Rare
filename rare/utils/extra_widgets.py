@@ -204,6 +204,7 @@ class PathEdit(IndicatorLineEdit):
                                        edit_func=edit_func, save_func=save_func,
                                        horiz_policy=horiz_policy, parent=parent)
         self.setObjectName("PathEdit")
+        self.line_edit.setMinimumSize(QSize(300, 0))
         self.path_select = QToolButton(self)
         self.path_select.setObjectName("path_select")
         self.layout.addWidget(self.path_select)
