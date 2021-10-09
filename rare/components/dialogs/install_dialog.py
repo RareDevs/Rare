@@ -140,10 +140,11 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.get_options()
         self.get_download_info()
 
-    def option_changed(self):
+    def option_changed(self, path):
         self.options_changed = True
         self.install_button.setEnabled(False)
         self.verify_button.setEnabled(not self.worker_running)
+        return True, path
 
     def cancel_clicked(self):
         self.dl_item.download = None

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'browser_login.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/dialogs/login/browser_login.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_BrowserLogin(object):
     def setupUi(self, BrowserLogin):
         BrowserLogin.setObjectName("BrowserLogin")
-        BrowserLogin.resize(246, 130)
+        BrowserLogin.resize(382, 178)
         BrowserLogin.setWindowTitle("BrowserLogin")
         self.browser_layout = QtWidgets.QGridLayout(BrowserLogin)
         self.browser_layout.setObjectName("browser_layout")
@@ -28,9 +28,6 @@ class Ui_BrowserLogin(object):
         self.title_label.setFont(font)
         self.title_label.setObjectName("title_label")
         self.browser_layout.addWidget(self.title_label, 0, 0, 1, 2, QtCore.Qt.AlignTop)
-        self.sid_edit = QtWidgets.QLineEdit(BrowserLogin)
-        self.sid_edit.setObjectName("sid_edit")
-        self.browser_layout.addWidget(self.sid_edit, 1, 1, 1, 1)
         self.info_label = QtWidgets.QLabel(BrowserLogin)
         font = QtGui.QFont()
         font.setItalic(True)
@@ -47,6 +44,9 @@ class Ui_BrowserLogin(object):
         self.status_label.setText("")
         self.status_label.setObjectName("status_label")
         self.browser_layout.addWidget(self.status_label, 2, 1, 1, 1)
+        self.sid_layout = QtWidgets.QHBoxLayout()
+        self.sid_layout.setObjectName("sid_layout")
+        self.browser_layout.addLayout(self.sid_layout, 1, 1, 1, 1)
 
         self.retranslateUi(BrowserLogin)
         QtCore.QMetaObject.connectSlotsByName(BrowserLogin)
@@ -55,14 +55,11 @@ class Ui_BrowserLogin(object):
         _translate = QtCore.QCoreApplication.translate
         self.open_button.setText(_translate("BrowserLogin", "Open Browser"))
         self.title_label.setText(_translate("BrowserLogin", "Login through browser"))
-        self.sid_edit.setPlaceholderText(_translate("BrowserLogin", "Insert SID here"))
-        self.info_label.setText(_translate("BrowserLogin",
-                                           "Click the button to open the login page in a browser. After logging in, copy the SID code in the input above."))
+        self.info_label.setText(_translate("BrowserLogin", "Click the button to open the login page in a browser. After logging in, copy the SID code in the input above."))
 
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     BrowserLogin = QtWidgets.QWidget()
     ui = Ui_BrowserLogin()

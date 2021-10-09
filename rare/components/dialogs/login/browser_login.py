@@ -4,16 +4,17 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QWidget
-
 from legendary.core import LegendaryCore
+
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
+from rare.utils.extra_widgets import IndicatorLineEdit
 
 logger = getLogger("BrowserLogin")
 
 
 class BrowserLogin(QWidget, Ui_BrowserLogin):
     success = pyqtSignal()
-    changed = pyqtSignal(bool)
+    changed = pyqtSignal()
     login_url = "https://www.epicgames.com/id/login?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Fapi%2Fredirect"
 
     def __init__(self, core: LegendaryCore, parent=None):
@@ -22,34 +23,37 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
 
         self.core = core
 
+        self.sid_edit = IndicatorLineEdit(
+            ph_text=self.tr("Insert SID here"),
+            edit_func=self.text_changed,
+            parent=self
+        )
+        self.sid_layout.addWidget(self.sid_edit)
+
         self.open_button.clicked.connect(self.open_browser)
-        self.sid_edit.textChanged.connect(self.text_changed)
+        self.sid_edit.textChanged.connect(self.changed.emit)
 
-    def is_valid(self, text: str):
+    def is_valid(self):
+        return self.sid_edit.is_valid
+
+    @staticmethod
+    def text_changed(text) -> tuple[bool, str]:
         if text:
-            return len(text) == 32
+            text = text.strip()
+            if text.startswith("{") and text.endswith("}"):
+                try:
+                    text = json.loads(text).get("sid")
+                except json.JSONDecodeError:
+                    return False, text
+            elif '"' in text:
+                text = text.strip('"')
+            return len(text) == 32, text
         else:
-            return len(self.sid_edit.text()) == 32
-
-    def text_changed(self, text):
-        if not self.is_valid(text):
-            try:
-                sid = json.loads(text).get("sid")
-                if sid and self.is_valid(sid):
-                    self.sid_edit.setText(sid)
-                    self.status_label.setText(self.tr("Parsed sid from pasted text"))
-            except json.JSONDecodeError:
-                self.changed.emit(False)
-
-        else:
-            self.changed.emit(True)
+            return False, text
 
     def do_login(self):
         self.status_label.setText(self.tr("Logging in..."))
         sid = self.sid_edit.text()
-        # when the text copied
-        if sid.startswith("{") and sid.endswith("}"):
-            sid = json.loads(sid)["sid"]
         try:
             token = self.core.auth_sid(sid)
             if self.core.auth_code(token):

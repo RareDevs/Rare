@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from logging import getLogger
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from legendary.core import LegendaryCore
 from rare.components.dialogs.login.browser_login import BrowserLogin
@@ -35,7 +35,7 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         self.login_stack.insertWidget(self.pages.browser, self.browser_page)
         self.browser_page.success.connect(self.login_successful)
         self.browser_page.changed.connect(
-            self.next_button.setEnabled
+            lambda: self.next_button.setEnabled(self.browser_page.is_valid())
         )
         self.import_page = ImportLogin(self.core, self.login_stack)
         self.login_stack.insertWidget(self.pages.import_egl, self.import_page)
@@ -76,8 +76,6 @@ class LoginDialog(QDialog, Ui_LoginDialog):
             self.browser_page.do_login()
         elif self.login_stack.currentIndex() == self.pages.import_egl:
             self.import_page.do_login()
-        else:
-            self.close()
 
     def login(self):
         self.exec_()
@@ -94,3 +92,5 @@ class LoginDialog(QDialog, Ui_LoginDialog):
             logger.error(str(e))
             self.next_button.setEnabled(False)
             self.logged_in = False
+            QMessageBox.warning(self, "Error", str(e))
+
