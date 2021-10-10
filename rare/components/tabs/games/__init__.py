@@ -39,10 +39,16 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.signals.games_tab.connect(lambda x: self.signal_received(*x))
         self.settings = QSettings()
 
+        self.game_list = shared.api_results.game_list
+        self.dlcs = shared.api_results.dlcs
+        self.bit32 = shared.api_results.bit32_games
+        self.mac_games = shared.api_results.mac_games
+        self.no_assets = shared.api_results.no_asset_games
+
         self.head_bar = GameListHeadBar()
         self.games.layout().insertWidget(0, self.head_bar)
 
-        self.game_info = InfoTabs(self.core, self.signals, self)
+        self.game_info = InfoTabs(self.dlcs, self)
         self.addWidget(self.game_info)
 
         self.import_widget = ImportWidget()
@@ -56,11 +62,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.import_widget.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
         self.uninstalled_info_widget.tabBarClicked.connect(lambda x: self.setCurrentIndex(0) if x == 0 else None)
 
-        self.game_list = shared.api_results.game_list
-        self.dlcs = shared.api_results.dlcs
-        self.bit32 = shared.api_results.bit32_games
-        self.mac_games = shared.api_results.mac_games
-        self.no_assets = shared.api_results.no_asset_games
         self.no_asset_names = []
         if not shared.args.offline:
             for game in self.no_assets:
@@ -262,7 +263,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     w.setVisible(True)
 
     def update_list(self, app_name=None):
-        print(app_name)
         if app_name:
             if widgets := self.widgets.get(app_name):
 

@@ -4,19 +4,19 @@ from PyQt5.QtWidgets import QWidget, QTabWidget
 from qtawesome import icon
 
 from legendary.models.game import Game
+from rare import shared
 from rare.components.tabs.games.game_info.game_dlc import GameDlc
 from rare.components.tabs.games.game_info.game_info import GameInfo
 from rare.components.tabs.games.game_info.game_settings import GameSettings
 from rare.utils.extra_widgets import SideTabBar
-from rare.utils.models import Signals
 
 
 class InfoTabs(QTabWidget):
-    def __init__(self, core, signals: Signals, parent):
+    def __init__(self, dlcs: list, parent):
         super(InfoTabs, self).__init__(parent=parent)
         self.app_name = ""
-        self.core = core
-        self.signals = signals
+        self.core = shared.legendary_core
+        self.signals = shared.signals
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
 
@@ -26,11 +26,12 @@ class InfoTabs(QTabWidget):
         self.info = GameInfo(self.core, self.signals, self)
         self.addTab(self.info, self.tr("Information"))
 
-        self.settings = GameSettings(core, self)
+        self.settings = GameSettings(self.core, self)
         self.addTab(self.settings, self.tr("Settings"))
         self.tabBar().setCurrentIndex(1)
 
-        self.dlc = GameDlc(core, self.signals, self)
+        self.dlc_list = dlcs
+        self.dlc = GameDlc(self.dlc_list, self)
         self.addTab(self.dlc, self.tr("Downloadable Content"))
 
     def update_game(self, game: Game, dlcs: list):
@@ -39,14 +40,11 @@ class InfoTabs(QTabWidget):
         self.settings.update_game(game)
 
         # DLC Tab: Disable if no dlcs available
-        if dlcs:
-            if len(dlcs[game.asset_info.catalog_item_id]) == 0:
-                self.setTabEnabled(3, False)
-            else:
-                self.setTabEnabled(3, True)
-                self.dlc.update_dlcs(game.app_name, dlcs)
-        else:
+        if len(self.dlc_list[game.asset_info.catalog_item_id]) == 0:
             self.setTabEnabled(3, False)
+        else:
+            self.setTabEnabled(3, True)
+            self.dlc.update_dlcs(game.app_name)
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
