@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>796</width>
-    <height>732</height>
+    <width>552</width>
+    <height>268</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -161,152 +161,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="egl_sync_group">
-       <property name="title">
-        <string>Sync with Epic Games Launcher</string>
-       </property>
-       <layout class="QVBoxLayout" name="egl_sync_layout">
-        <item>
-         <layout class="QVBoxLayout" name="manifest_path_layout"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="manifest_path_info">
-          <property name="text">
-              <string notr="true">TextLabel</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="export_import_layout">
-          <item>
-           <widget class="QGroupBox" name="export_group">
-            <property name="title">
-             <string>Exportable Games</string>
-            </property>
-            <layout class="QVBoxLayout" name="export_layout">
-             <item>
-              <widget class="QLabel" name="export_label">
-               <property name="text">
-                <string>No games to export to EGS</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QScrollArea" name="export_scroll">
-               <property name="sizeAdjustPolicy">
-                <enum>QAbstractScrollArea::AdjustIgnored</enum>
-               </property>
-               <property name="widgetResizable">
-                <bool>true</bool>
-               </property>
-               <widget class="QWidget" name="export_contents">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>248</width>
-                  <height>18</height>
-                 </rect>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <layout class="QVBoxLayout" name="exportable_layout"/>
-               </widget>
-              </widget>
-             </item>
-             <item alignment="Qt::AlignRight">
-              <widget class="QPushButton" name="export_all_button">
-               <property name="text">
-                <string>Export all Games</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="import_group">
-            <property name="title">
-             <string>Importable</string>
-            </property>
-            <layout class="QVBoxLayout" name="import_layout">
-             <item>
-              <widget class="QLabel" name="import_label">
-               <property name="text">
-                <string>No games to import from EGS</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QScrollArea" name="import_scroll">
-               <property name="sizeAdjustPolicy">
-                <enum>QAbstractScrollArea::AdjustIgnored</enum>
-               </property>
-               <property name="widgetResizable">
-                <bool>true</bool>
-               </property>
-               <widget class="QWidget" name="import_contents">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>247</width>
-                  <height>18</height>
-                 </rect>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <layout class="QVBoxLayout" name="importable_layout"/>
-               </widget>
-              </widget>
-             </item>
-             <item alignment="Qt::AlignRight">
-              <widget class="QPushButton" name="import_all_button">
-               <property name="text">
-                <string>Import all Games</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="enable_sync_group">
-          <property name="title">
-           <string>Enable Sync</string>
-          </property>
-          <layout class="QHBoxLayout" name="enable_sync_layout">
-           <item alignment="Qt::AlignRight">
-            <widget class="QPushButton" name="sync_once_button">
-             <property name="text">
-              <string>Sync once</string>
-             </property>
-            </widget>
-           </item>
-           <item alignment="Qt::AlignRight">
-            <widget class="QPushButton" name="enable_sync_button">
-             <property name="text">
-              <string>Enable automatic sync</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
       <spacer name="left_vspacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -324,6 +178,20 @@
    <item>
     <layout class="QVBoxLayout" name="right_layout">
      <item>
+      <widget class="QGroupBox" name="locale_group">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>Locale</string>
+       </property>
+       <layout class="QVBoxLayout" name="locale_layout"/>
+      </widget>
+     </item>
+     <item>
       <widget class="QGroupBox" name="cleanup_group">
        <property name="title">
         <string>Cleanup</string>
@@ -340,63 +208,6 @@
          <widget class="QPushButton" name="clean_button">
           <property name="text">
            <string>Remove everything</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="egl_sync">
-       <property name="title">
-        <string>EGL Sync</string>
-       </property>
-       <layout class="QVBoxLayout" name="egl_sync_layout_3">
-        <item>
-         <widget class="QPushButton" name="egl_sync_button">
-          <property name="text">
-           <string>Sync Settings</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="locale_gb">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Locale</string>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLineEdit" name="locale_lineedit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="placeholderText">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="indicator_label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string/>
           </property>
          </widget>
         </item>

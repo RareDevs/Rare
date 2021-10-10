@@ -1,17 +1,17 @@
 import io
 import os
+from typing import Callable
 from logging import getLogger
 
 import PIL
 from PIL import Image
-from PyQt5.QtCore import Qt, QRect, QSize, QPoint, pyqtSignal
+from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize, QPoint, pyqtSignal
 from PyQt5.QtGui import QMovie, QPixmap, QFontMetrics
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
-    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton
+    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton, QTabWidget
 from qtawesome import icon
 
 from rare import resources_path, cache_dir
-from rare.ui.utils.pathedit import Ui_PathEdit
 from rare.utils.qt_requests import QtRequestManager
 
 logger = getLogger("ExtraWidgets")
@@ -123,42 +123,103 @@ class FlowLayout(QLayout):
             return parent.spacing()
 
 
-class PathEdit(QWidget, Ui_PathEdit):
+class IndicatorLineEdit(QWidget):
+    textChanged = pyqtSignal(str)
+    is_valid = False
+
+    def __init__(self,
+                 text: str = "",
+                 ph_text: str = "",
+                 edit_func: Callable[[str], tuple[bool, str]] = None,
+                 save_func: Callable[[str], None] = None,
+                 horiz_policy: QSizePolicy = QSizePolicy.Expanding,
+                 parent=None):
+        super(IndicatorLineEdit, self).__init__(parent=parent)
+        self.setObjectName("IndicatorTextEdit")
+        self.layout = QHBoxLayout(self)
+        self.layout.setObjectName("layout")
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.line_edit = QLineEdit(self)
+        self.line_edit.setObjectName("line_edit")
+        self.line_edit.setPlaceholderText(ph_text)
+        self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
+        self.layout.addWidget(self.line_edit)
+        if edit_func is not None:
+            self.indicator_label = QLabel()
+            self.indicator_label.setPixmap(icon("ei.info-circle", color="gray").pixmap(16, 16))
+            self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            self.layout.addWidget(self.indicator_label)
+
+        if not ph_text:
+            _translate = QCoreApplication.translate
+            self.line_edit.setPlaceholderText(_translate("PathEdit", "Default"))
+
+        if text:
+            self.line_edit.setText(text)
+
+        self.edit_func = edit_func
+        self.save_func = save_func
+        self.line_edit.textChanged.connect(self.__edit)
+        if self.edit_func is None:
+            self.line_edit.textChanged.connect(self.__save)
+
+    def text(self) -> str:
+        return self.line_edit.text()
+
+    def setText(self, text: str):
+        self.line_edit.setText(text)
+
+    def __indicator(self, res):
+        color = "green" if res else "red"
+        self.indicator_label.setPixmap(icon("ei.info-circle", color=color).pixmap(16, 16))
+
+    def __edit(self, text):
+        if self.edit_func is not None:
+            self.line_edit.blockSignals(True)
+            self.is_valid, text = self.edit_func(text)
+            self.line_edit.setText(text)
+            self.line_edit.blockSignals(False)
+            self.__indicator(self.is_valid)
+            self.textChanged.emit(text)
+            if self.is_valid:
+                self.__save(text)
+
+    def __save(self, text):
+        if self.save_func is not None:
+            self.save_func(text)
+
+
+class PathEdit(IndicatorLineEdit):
     def __init__(self,
                  text: str = "",
                  file_type: QFileDialog.FileType = QFileDialog.AnyFile,
-                 type_filter: str = None,
-                 name_filter: str = None,
-                 edit_func: callable = None,
-                 save_func: callable = None):
-        super(PathEdit, self).__init__()
-        self.setupUi(self)
+                 type_filter: str = "",
+                 name_filter: str = "",
+                 ph_text: str = "",
+                 edit_func: Callable[[str], tuple[bool, str]] = None,
+                 save_func: Callable[[str], None] = None,
+                 horiz_policy: QSizePolicy = QSizePolicy.Expanding,
+                 parent=None):
+        super(PathEdit, self).__init__(text=text, ph_text=ph_text,
+                                       edit_func=edit_func, save_func=save_func,
+                                       horiz_policy=horiz_policy, parent=parent)
+        self.setObjectName("PathEdit")
+        self.line_edit.setMinimumSize(QSize(300, 0))
+        self.path_select = QToolButton(self)
+        self.path_select.setObjectName("path_select")
+        self.layout.addWidget(self.path_select)
+
+        _translate = QCoreApplication.translate
+        self.path_select.setText(_translate("PathEdit", "Browse..."))
 
         self.type_filter = type_filter
         self.name_filter = name_filter
         self.file_type = file_type
-        self.edit_func = edit_func
-        self.save_func = save_func
-        if text:
-            self.text_edit.setText(text)
-        if self.edit_func is not None:
-            self.text_edit.textChanged.connect(self.edit_func)
 
-        self.path_select.clicked.connect(self.set_path)
-        self.text_edit.textChanged.connect(self.save)
+        self.path_select.clicked.connect(self.__set_path)
 
-    def text(self):
-        return self.text_edit.text()
-
-    def setText(self, text: str):
-        self.text_edit.setText(text)
-
-    def save(self):
-        if self.save_func:
-            self.save_func()
-
-    def set_path(self):
-        dlg_path = self.text_edit.text()
+    def __set_path(self):
+        dlg_path = self.line_edit.text()
         if not dlg_path:
             dlg_path = os.path.expanduser("~/")
         dlg = QFileDialog(self, self.tr("Choose path"), dlg_path)
@@ -169,14 +230,13 @@ class PathEdit(QWidget, Ui_PathEdit):
             dlg.setNameFilter(self.name_filter)
         if dlg.exec_():
             names = dlg.selectedFiles()
-            self.text_edit.setText(names[0])
-            self.save()
+            self.line_edit.setText(names[0])
 
 
 class SideTabBar(QTabBar):
-    def __init__(self):
-        super(SideTabBar, self).__init__()
-        self.setObjectName("settings_bar")
+    def __init__(self, parent=None):
+        super(SideTabBar, self).__init__(parent=parent)
+        self.setObjectName("side_tab_bar")
         self.fm = QFontMetrics(self.font())
 
     def tabSizeHint(self, index):
@@ -202,7 +262,7 @@ class SideTabBar(QTabBar):
             painter.translate(c)
             painter.rotate(90)
             painter.translate(-c)
-            painter.drawControl(QStyle.CE_TabBarTabLabel, opt);
+            painter.drawControl(QStyle.CE_TabBarTabLabel, opt)
             painter.restore()
 
 
@@ -260,6 +320,9 @@ class SelectViewWidget(QWidget):
 
 
 class ImageLabel(QLabel):
+    image = None
+    img_size = None
+    name = str()
 
     def __init__(self):
         super(ImageLabel, self).__init__()

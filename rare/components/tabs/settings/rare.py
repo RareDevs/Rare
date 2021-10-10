@@ -8,10 +8,10 @@ from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from rare import cache_dir, shared
-from rare.components.tabs.settings.rpc_settings import RPCSettings
+from rare.components.tabs.settings.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
-from rare.utils.utils import get_possible_langs, get_color_schemes, get_style_sheets
+from rare.utils.utils import get_translations, get_color_schemes, get_style_sheets
 
 logger = getLogger("RareSettings")
 
@@ -44,7 +44,7 @@ class RareSettings(QWidget, Ui_RareSettings):
 
         # Select lang
         self.lang_select.addItems([i[1] for i in languages])
-        if language in get_possible_langs():
+        if language in get_translations():
             index = [lang[0] for lang in languages].index(language)
             self.lang_select.setCurrentIndex(index)
         else:

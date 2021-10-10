@@ -17,10 +17,6 @@ QLabel {
     padding: 0px;
 }
 
-QScrollArea#noborder {
-    border-color: transparent;
-}
-
 QMenu,
 QListView,
 QListView::item,
@@ -82,6 +78,9 @@ QToolButton {
 }
 QFrame[frameShape="6"] {
     border-radius: 4px;
+}
+QScrollArea#noborder {
+    border-color: transparent;
 }
 QComboBox {
     background-color: #3c3f41;
@@ -489,7 +488,7 @@ QTabBar::tab:selected:right {
     background: qlineargradient(x1: 2, y1: 0, x2: 0, y2: 0,
                                 stop: 0 #483d8b, stop: 1 #202225); /* stop: 0 #2f4f4f stop: 0.2 #203636 */
 }
-QTabBar::tab:disabled#settings_bar {
+QTabBar::tab:disabled#side_tab_bar {
     color: transparent;
     border-color: transparent;
     background-color: transparent;

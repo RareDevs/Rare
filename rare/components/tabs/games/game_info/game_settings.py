@@ -150,12 +150,12 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.core.lgd.config.set(self.game.app_name, "no_wine", "true")
                 self.core.lgd.config.set(self.game.app_name + ".env", "STEAM_COMPAT_DATA_PATH",
                                          os.path.expanduser("~/.proton"))
-                self.proton_prefix.text_edit.setText(os.path.expanduser("~/.proton"))
+                self.proton_prefix.setText(os.path.expanduser("~/.proton"))
 
                 # Dont use Wine
-                self.linux_settings.wine_exec.text_edit.setText("")
+                self.linux_settings.wine_exec.setText("")
                 self.linux_settings.save_setting(self.linux_settings.wine_exec, "wine_exec")
-                self.linux_settings.wine_prefix.text_edit.setText("")
+                self.linux_settings.wine_prefix.setText("")
                 self.linux_settings.save_setting(self.linux_settings.wine_prefix, "wine_prefix")
 
         self.core.lgd.save_config()
@@ -164,14 +164,14 @@ class GameSettings(QWidget, Ui_GameSettings):
         text = self.proton_prefix.text()
         if not text:
             text = os.path.expanduser("~/.proton")
-            self.proton_prefix.text_edit.setText(text)
+            self.proton_prefix.setText(text)
         if not os.path.exists(text):
             try:
                 os.makedirs(text)
             except PermissionError:
                 QMessageBox.warning(self, "Warning", self.tr("No permission to create folder"))
                 text = os.path.expanduser("~/.proton")
-                self.proton_prefix.text_edit.setText(text)
+                self.proton_prefix.setText(text)
 
         self.core.lgd.config.set(self.game.app_name + ".env", "STEAM_COMPAT_DATA_PATH", text)
         self.core.lgd.save_config()
@@ -219,7 +219,7 @@ class GameSettings(QWidget, Ui_GameSettings):
                 proton_prefix = self.core.lgd.config.get(f"{app_name}.env", "STEAM_COMPAT_DATA_PATH",
                                                          fallback=self.tr(
                                                              "Please select path for proton prefix"))
-                self.proton_prefix.text_edit.setText(proton_prefix)
+                self.proton_prefix.setText(proton_prefix)
                 self.wrapper_widget.setEnabled(False)
             else:
                 self.proton_wrapper.setCurrentIndex(0)
@@ -243,7 +243,7 @@ class LinuxAppSettings(LinuxSettings):
 
     def update_game(self, app_name):
         self.name = app_name
-        self.wine_prefix.text_edit.setText(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""))
-        self.wine_exec.text_edit.setText(self.core.lgd.config.get(self.name, "wine_executable", fallback=""))
+        self.wine_prefix.setText(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""))
+        self.wine_exec.setText(self.core.lgd.config.get(self.name, "wine_executable", fallback=""))
         self.dxvk.name = app_name
         self.dxvk.more_settings_widget.name = app_name
