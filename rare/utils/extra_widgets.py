@@ -1,14 +1,14 @@
 import io
 import os
-from typing import Callable
 from logging import getLogger
+from typing import Callable, Tuple
 
 import PIL
 from PIL import Image
 from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize, QPoint, pyqtSignal
 from PyQt5.QtGui import QMovie, QPixmap, QFontMetrics
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
-    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton, QTabWidget
+    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton
 from qtawesome import icon
 
 from rare import resources_path, cache_dir
@@ -130,7 +130,7 @@ class IndicatorLineEdit(QWidget):
     def __init__(self,
                  text: str = "",
                  ph_text: str = "",
-                 edit_func: Callable[[str], tuple[bool, str]] = None,
+                 edit_func: Callable[[str], Tuple[bool, str]] = None,
                  save_func: Callable[[str], None] = None,
                  horiz_policy: QSizePolicy = QSizePolicy.Expanding,
                  parent=None):
@@ -196,7 +196,7 @@ class PathEdit(IndicatorLineEdit):
                  type_filter: str = "",
                  name_filter: str = "",
                  ph_text: str = "",
-                 edit_func: Callable[[str], tuple[bool, str]] = None,
+                 edit_func: Callable[[str], Tuple[bool, str]] = None,
                  save_func: Callable[[str], None] = None,
                  horiz_policy: QSizePolicy = QSizePolicy.Expanding,
                  parent=None):

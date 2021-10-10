@@ -1,11 +1,12 @@
 import json
 from logging import getLogger
+from typing import Tuple
 
 from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QWidget
-from legendary.core import LegendaryCore
 
+from legendary.core import LegendaryCore
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
 from rare.utils.extra_widgets import IndicatorLineEdit
 
@@ -37,7 +38,7 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
         return self.sid_edit.is_valid
 
     @staticmethod
-    def text_changed(text) -> tuple[bool, str]:
+    def text_changed(text) -> Tuple[bool, str]:
         if text:
             text = text.strip()
             if text.startswith("{") and text.endswith("}"):

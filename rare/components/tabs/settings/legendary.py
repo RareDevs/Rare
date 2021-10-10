@@ -1,7 +1,6 @@
-import os.path
-import platform
 import re
 from logging import getLogger
+from typing import Tuple
 
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
@@ -61,7 +60,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.locale_layout.addWidget(self.locale_edit)
 
     @staticmethod
-    def locale_chck(text: str) -> tuple[bool, str]:
+    def locale_chck(text: str) -> Tuple[bool, str]:
         if text:
             if re.match("^[a-zA-Z]{2,3}_[a-zA-Z]{2,3}$", text):
                 language, country = text.split("_")
