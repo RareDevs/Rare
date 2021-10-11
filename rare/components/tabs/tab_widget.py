@@ -26,7 +26,6 @@ class TabWidget(QTabWidget):
         # Generate Tabs
         self.games_tab = GamesTab()
         self.addTab(self.games_tab, self.tr("Games"))
-
         if not shared.args.offline:
             # updates = self.games_tab.default_widget.game_list.updates
             self.downloadTab = DownloadTab(self.games_tab.updates)
@@ -67,7 +66,7 @@ class TabWidget(QTabWidget):
         # update dl tab text
         self.signals.update_download_tab_text.connect(self.update_dl_tab_text)
         # imported
-        # self.games_tab.import_widget.update_list.connect(self.game_imported)
+        shared.signals.update_game_list.connect(self.game_imported)
 
         if not shared.args.offline:
             # install dlc
