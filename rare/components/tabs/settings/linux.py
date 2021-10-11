@@ -21,14 +21,14 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         # Wine prefix
         self.wine_prefix = PathEdit(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""),
                                     file_type=QFileDialog.DirectoryOnly,
-                                    save_func=lambda: self.save_setting(self.wine_prefix, "wine_prefix"))
+                                    save_func=lambda text: self.save_setting(text, "wine_prefix"))
         self.prefix_layout.addWidget(self.wine_prefix)
 
         # Wine executable
         self.wine_exec = PathEdit(self.core.lgd.config.get(self.name, "wine_executable", fallback=""),
                                   file_type=QFileDialog.ExistingFile,
                                   name_filter="Wine executable (wine wine64)",
-                                  save_func=lambda: self.save_setting(self.wine_exec, "wine_executable"))
+                                  save_func=lambda text: self.save_setting(text, "wine_executable"))
         self.exec_layout.addWidget(self.wine_exec)
 
         # dxvk
@@ -39,15 +39,15 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
             self.dxvk = DxvkWidget()
         self.dxvk_layout.addWidget(self.dxvk)
 
-    def save_setting(self, widget: PathEdit, setting_name: str):
+    def save_setting(self, text: str, setting_name: str):
         if self.name not in self.core.lgd.config.sections():
             self.core.lgd.config.add_section(self.name)
 
-        self.core.lgd.config.set(self.name, setting_name, widget.text())
-        if not widget.text():
+        self.core.lgd.config.set(self.name, setting_name, text)
+        if not text:
             self.core.lgd.config.remove_option(self.name, setting_name)
         else:
-            logger.info("Set config of wine_prefix to " + widget.text())
+            logger.info("Set config of wine_prefix to " + text)
         if self.core.lgd.config[self.name] == {}:
             self.core.lgd.config.remove_section(self.name)
         self.core.lgd.save_config()

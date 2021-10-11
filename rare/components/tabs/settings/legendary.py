@@ -62,8 +62,8 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
     @staticmethod
     def locale_chck(text: str) -> Tuple[bool, str]:
         if text:
-            if re.match("^[a-zA-Z]{2,3}_[a-zA-Z]{2,3}$", text):
-                language, country = text.split("_")
+            if re.match("^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$", text):
+                language, country = text.replace("_", "-").split("-")
                 text = "-".join([language.lower(), country.upper()])
             return bool(re.match("^[a-z]{2,3}-[A-Z]{2,3}$", text)), text
         else:
