@@ -2,40 +2,33 @@ import platform
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
-from PyQt5.QtWidgets import QWidget, QTabWidget, QTreeView
-from qtawesome import icon
-
+from PyQt5.QtWidgets import QWidget, QTreeView
 from legendary.models.game import Game
-from rare import shared
+
+import rare.shared as shared
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
-from rare.utils.extra_widgets import SideTabBar
+from rare.utils.extra_widgets import SideTabWidget
 from rare.utils.json_formatter import QJsonModel
 from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_pixmap
 
 
-class UninstalledTabInfo(QTabWidget):
-    def __init__(self):
-        super(UninstalledTabInfo, self).__init__()
-        self.app_name = ""
+class UninstalledInfoTabs(SideTabWidget):
+    def __init__(self, parent=None):
+        super(UninstalledInfoTabs, self).__init__(show_back=True, parent=parent)
         self.core = shared.legendary_core
         self.signals = shared.signals
-        self.setTabBar(SideTabBar())
-        self.setTabPosition(QTabWidget.West)
 
-        self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
         self.info = UninstalledInfo()
         self.info.install_button.setDisabled(shared.args.offline)
-        self.addTab(self.info, self.tr("Game Info"))
+        self.addTab(self.info, self.tr("Information"))
 
         self.view = QTreeView()
         self.view.setColumnWidth(0, 300)
         self.view.setWordWrap(True)
-
         self.model = QJsonModel()
         self.view.setModel(self.model)
-
         self.addTab(self.view, self.tr("Metadata"))
 
         # self.setTabEnabled(1, False)
@@ -47,7 +40,8 @@ class UninstalledTabInfo(QTabWidget):
         self.model.clear()
         try:
             self.model.load(app_name.__dict__)
-        except:  # ignore if no metadata
+        except:
+            # ignore if no metadata
             pass
 
     def keyPressEvent(self, e: QKeyEvent):
@@ -58,8 +52,8 @@ class UninstalledTabInfo(QTabWidget):
 class UninstalledInfo(QWidget, Ui_GameInfo):
     game: Game
 
-    def __init__(self):
-        super(UninstalledInfo, self).__init__()
+    def __init__(self, parent=None):
+        super(UninstalledInfo, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = shared.legendary_core
         self.signals = shared.signals

@@ -3,10 +3,10 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QSettings, QObjectCleanupHandler
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
-from rare import shared
+import rare.shared as shared
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.tabs.games.game_info import InfoTabs
-from rare.components.tabs.games.game_info.uninstalled_info import UninstalledTabInfo
+from rare.components.tabs.games.game_info import GameInfoTabs
+from rare.components.tabs.games.game_info.uninstalled_info import UninstalledInfoTabs
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 from rare.components.tabs.games.game_widgets.base_uninstalled_widget import BaseUninstalledWidget
 from rare.components.tabs.games.game_widgets.installed_icon_widget import InstalledIconWidget
@@ -48,19 +48,20 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.head_bar = GameListHeadBar()
         self.games.layout().insertWidget(0, self.head_bar)
 
-        self.game_info = InfoTabs(self.dlcs, self)
-        self.addWidget(self.game_info)
+        self.game_info_tabs = GameInfoTabs(self.dlcs, self)
+        self.game_info_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
+        self.addWidget(self.game_info_tabs)
 
         self.import_widget = ImportWidget()
         self.addWidget(self.import_widget)
 
-        self.uninstalled_info_widget = UninstalledTabInfo()
-        self.layout().addWidget(self.uninstalled_info_widget)
+        self.uninstalled_info_tabs = UninstalledInfoTabs(self)
+        self.uninstalled_info_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
+        self.addWidget(self.uninstalled_info_tabs)
 
         # navigation
         self.head_bar.import_game.clicked.connect(lambda: self.setCurrentIndex(2))
         self.import_widget.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
-        self.uninstalled_info_widget.tabBarClicked.connect(lambda x: self.setCurrentIndex(0) if x == 0 else None)
 
         self.no_asset_names = []
         if not shared.args.offline:
@@ -110,11 +111,11 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             i_widget.info_text = ""
 
     def show_game_info(self, game):
-        self.game_info.update_game(game, self.dlcs)
+        self.game_info_tabs.update_game(game, self.dlcs)
         self.setCurrentIndex(1)
 
     def show_uninstalled_info(self, game):
-        self.uninstalled_info_widget.update_game(game)
+        self.uninstalled_info_tabs.update_game(game)
         self.setCurrentIndex(3)
 
     def setup_game_list(self):

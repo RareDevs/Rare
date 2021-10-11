@@ -8,7 +8,7 @@ from PIL import Image
 from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize, QPoint, pyqtSignal
 from PyQt5.QtGui import QMovie, QPixmap, QFontMetrics
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
-    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton
+    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton, QTabWidget
 from qtawesome import icon
 
 from rare import resources_path, cache_dir
@@ -264,6 +264,23 @@ class SideTabBar(QTabBar):
             painter.translate(-c)
             painter.drawControl(QStyle.CE_TabBarTabLabel, opt)
             painter.restore()
+
+
+class SideTabWidget(QTabWidget):
+    back_clicked = pyqtSignal()
+
+    def __init__(self, show_back: bool = False, parent=None):
+        super(SideTabWidget, self).__init__(parent=parent)
+        self.setTabBar(SideTabBar())
+        self.setTabPosition(QTabWidget.West)
+        if show_back:
+            self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
+            self.tabBarClicked.connect(self.back_func)
+
+    def back_func(self, tab):
+        # shortcut for tab == 0
+        if not tab:
+            self.back_clicked.emit()
 
 
 class WaitingSpinner(QLabel):
