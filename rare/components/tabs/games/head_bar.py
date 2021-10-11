@@ -6,10 +6,10 @@ from rare.utils.extra_widgets import SelectViewWidget
 
 
 class GameListHeadBar(QWidget):
-    filter_changed_signal = pyqtSignal(str)
+    filterChanged = pyqtSignal(str)
 
-    def __init__(self):
-        super(GameListHeadBar, self).__init__()
+    def __init__(self, parent=None):
+        super(GameListHeadBar, self).__init__(parent=parent)
         self.setLayout(QHBoxLayout())
         # self.installed_only = QCheckBox(self.tr("Installed only"))
         self.settings = QSettings()
@@ -35,7 +35,14 @@ class GameListHeadBar(QWidget):
         self.layout().addStretch(1)
 
         self.import_game = QPushButton(icon("mdi.import"), self.tr("Import Game"))
+        self.import_clicked = self.import_game.clicked
         self.layout().addWidget(self.import_game)
+
+        self.egl_sync = QPushButton(icon("mdi.sync"), self.tr("Sync with EGL"))
+        self.egl_sync_clicked = self.egl_sync.clicked
+        self.layout().addWidget(self.egl_sync)
+        # FIXME: Until it is ready
+        self.egl_sync.setEnabled(False)
 
         self.layout().addStretch(1)
 
@@ -55,10 +62,11 @@ class GameListHeadBar(QWidget):
         self.view = SelectViewWidget(checked)
         self.layout().addWidget(self.view)
         self.layout().addStretch(1)
+
         self.refresh_list = QPushButton()
         self.refresh_list.setIcon(icon("fa.refresh"))  # Reload icon
         self.layout().addWidget(self.refresh_list)
 
     def filter_changed(self, i):
-        self.filter_changed_signal.emit(self.available_filters[i])
+        self.filterChanged.emit(self.available_filters[i])
         self.settings.setValue("filter", i)
