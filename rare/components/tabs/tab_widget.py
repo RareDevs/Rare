@@ -36,7 +36,7 @@ class TabWidget(QTabWidget):
             self.addTab(self.cloud_saves, "Cloud Saves")
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
-        self.settings = SettingsTab()
+        self.settings = SettingsTab(self)
 
         if shared.args.debug:
             self.settings.addTab(DebugSettings(), "Debug")
@@ -66,7 +66,7 @@ class TabWidget(QTabWidget):
 
         if not shared.args.offline:
             # install dlc
-            self.games_tab.game_info.dlc.install_dlc.connect(
+            self.games_tab.game_info_tabs.dlc.install_dlc.connect(
                 lambda app_name, update: self.install_game(
                     InstallOptionsModel(app_name=app_name),
                     update=update))

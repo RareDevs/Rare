@@ -1,24 +1,25 @@
 import platform
 
-from PyQt5.QtWidgets import QTabWidget
-
-from rare.components.tabs.settings.about import About
-from rare.components.tabs.settings.legendary import LegendarySettings
-from rare.components.tabs.settings.linux import LinuxSettings
-from rare.components.tabs.settings.rare import RareSettings
-from rare.utils.extra_widgets import SideTabBar
+from rare.utils.extra_widgets import SideTabWidget
+from .about import About
+from .legendary import LegendarySettings
+from .linux import LinuxSettings
+from .rare import RareSettings
 
 
-class SettingsTab(QTabWidget):
-    def __init__(self):
-        super(SettingsTab, self).__init__()
-        self.setTabBar(SideTabBar())
-        self.setTabPosition(QTabWidget.West)
+class SettingsTab(SideTabWidget):
+    def __init__(self, parent=None):
+        super(SettingsTab, self).__init__(parent=parent)
+
         self.rare_settings = RareSettings()
         self.addTab(self.rare_settings, "Rare")
+
         self.addTab(LegendarySettings(), "Legendary")
+
         if platform.system() != "Windows":
             self.addTab(LinuxSettings(), "Linux")
-        self.about = About()
 
+        self.about = About()
         self.addTab(self.about, "About (!)" if self.about.update_available else "About")
+
+        self.setCurrentIndex(0)
