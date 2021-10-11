@@ -1,5 +1,6 @@
 import os
 import platform
+from typing import Tuple
 
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox
@@ -72,7 +73,8 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.proton_wrapper.addItems(self.possible_proton_wrappers)
             self.proton_wrapper.currentIndexChanged.connect(self.change_proton)
 
-            self.proton_prefix = PathEdit("None", QFileDialog.DirectoryOnly, save_func=self.update_prefix)
+            self.proton_prefix = PathEdit("None", QFileDialog.DirectoryOnly,
+                                          edit_func=self.proton_prefix_edit, save_func=self.proton_prefix_save)
             self.proton_prefix_layout.addWidget(self.proton_prefix)
 
             self.linux_settings = LinuxAppSettings()
@@ -154,25 +156,27 @@ class GameSettings(QWidget, Ui_GameSettings):
 
                 # Dont use Wine
                 self.linux_settings.wine_exec.setText("")
-                self.linux_settings.save_setting(self.linux_settings.wine_exec, "wine_exec")
+                self.linux_settings.save_setting(self.linux_settings.wine_exec.text(), "wine_exec")
                 self.linux_settings.wine_prefix.setText("")
-                self.linux_settings.save_setting(self.linux_settings.wine_prefix, "wine_prefix")
+                self.linux_settings.save_setting(self.linux_settings.wine_prefix.text(), "wine_prefix")
 
         self.core.lgd.save_config()
 
-    def update_prefix(self):
-        text = self.proton_prefix.text()
+    def proton_prefix_edit(self, text: str) -> Tuple[bool, str]:
         if not text:
             text = os.path.expanduser("~/.proton")
-            self.proton_prefix.setText(text)
+            return True, text
         if not os.path.exists(text):
             try:
                 os.makedirs(text)
             except PermissionError:
-                QMessageBox.warning(self, "Warning", self.tr("No permission to create folder"))
+                QMessageBox.warning(self, "Warning", f"{self.tr('No permission to create folder')} {text}")
                 text = os.path.expanduser("~/.proton")
-                self.proton_prefix.setText(text)
+            finally:
+                return True, text
+        return True, text
 
+    def proton_prefix_save(self, text: str):
         self.core.lgd.config.set(self.game.app_name + ".env", "STEAM_COMPAT_DATA_PATH", text)
         self.core.lgd.save_config()
 
