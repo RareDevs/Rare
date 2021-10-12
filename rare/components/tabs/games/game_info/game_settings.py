@@ -73,8 +73,11 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.proton_wrapper.addItems(self.possible_proton_wrappers)
             self.proton_wrapper.currentIndexChanged.connect(self.change_proton)
 
-            self.proton_prefix = PathEdit("None", QFileDialog.DirectoryOnly,
-                                          edit_func=self.proton_prefix_edit, save_func=self.proton_prefix_save)
+            self.proton_prefix = PathEdit(
+                file_type=QFileDialog.DirectoryOnly,
+                edit_func=self.proton_prefix_edit,
+                save_func=self.proton_prefix_save
+            )
             self.proton_prefix_layout.addWidget(self.proton_prefix)
 
             self.linux_settings = LinuxAppSettings()

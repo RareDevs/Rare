@@ -42,16 +42,16 @@ class GameListHeadBar(QWidget):
         self.egl_sync_clicked = self.egl_sync.clicked
         self.layout().addWidget(self.egl_sync)
         # FIXME: Until it is ready
-        self.egl_sync.setEnabled(False)
+        # self.egl_sync.setEnabled(False)
 
         self.layout().addStretch(1)
 
-        self.search_bar = QLineEdit()
-        self.search_bar.setObjectName("search_bar")
-        self.search_bar.setFrame(False)
         icon_label = QLabel()
         icon_label.setPixmap(icon("fa.search").pixmap(QSize(20, 20)))
         self.layout().addWidget(icon_label)
+        self.search_bar = QLineEdit()
+        self.search_bar.setObjectName("search_bar")
+        self.search_bar.setFrame(False)
         self.search_bar.setMinimumWidth(200)
         self.search_bar.setPlaceholderText(self.tr("Search Game"))
         self.layout().addWidget(self.search_bar)

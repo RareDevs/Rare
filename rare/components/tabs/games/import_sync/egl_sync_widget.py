@@ -1,34 +1,54 @@
 import os
 import platform
+from glob import glob
 from logging import getLogger
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, \
     QCheckBox, QPushButton, QListWidgetItem, QDialog, QFileDialog
 
 import rare.shared as shared
 from rare.ui.components.tabs.games.import_sync.egl_sync_widget import Ui_EGLSyncGroup
 from rare.utils.extra_widgets import PathEdit
+from rare.utils.utils import WineResolver
 
 logger = getLogger("EGLSync")
+
+appdata_path_spec = \
+    r'%LOCALAPPDATA%\EpicGamesLauncher\Saved\Config\Windows'
+programdata_path_spec = \
+    r'%PROGRAMDATA%\Epic\EpicGamesLauncher\Data\Manifests'
 
 
 class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
     importable_items = list()
     exportable_items = list()
+    wine_resolver: QThread
 
     def __init__(self, parent=None):
         super(EGLSyncGroup, self).__init__(parent=parent)
         self.setupUi(self)
+        self.export_list.setProperty("noBorder", 1)
+        self.import_list.setProperty("noBorder", 1)
 
-        self.egl_path_info.setText(
-            self.tr("EGL path is at C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Manifests"))
+        if platform.system() == "Windows":
+            estimated_path = os.path.expandvars(programdata_path_spec)
+        else:
+            estimated_path = str()
+            self.wine_resolver = WineResolver(programdata_path_spec, 'default', shared.legendary_core)
+            self.wine_resolver.result_ready.connect(self.egl_path_info.setText)
+            self.wine_resolver.finished.connect(self.wine_resolver.quit)
+            self.wine_resolver.finished.connect(self.wine_resolver.deleteLater)
+            self.wine_resolver.start()
+        self.egl_path_info.setText(estimated_path)
+
         egl_path = os.path.expanduser("~/")
         if egl_path := shared.legendary_core.egl.programdata_path:
             pass
         elif egl_path := shared.legendary_core.lgd.config.get("default", "wine_prefix", fallback=""):
-            egl_data_path = os.path.join(shared.legendary_core.lgd.config.get("default", "wine_prefix", fallback=""),
-                                         'drive_c/ProgramData/Epic/EpicGamesLauncher/Data')
+            egl_data_path = os.path.join(
+                shared.legendary_core.lgd.config.get("default", "wine_prefix", fallback=""),
+                'drive_c/ProgramData/Epic/EpicGamesLauncher/Data')
             egl_path = os.path.join(egl_data_path, 'Manifests')
         else:
             possible_wine_prefixes = [os.path.expanduser("~/.wine"),
@@ -37,7 +57,13 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                 if os.path.exists(p := os.path.join(i, "drive_c/ProgramData/Epic/EpicGamesLauncher/Data/Manifests")):
                     egl_path = p
 
-        self.egl_path_edit = PathEdit(egl_path, QFileDialog.DirectoryOnly, save_func=self.save_egl_path)
+        self.egl_path_edit = PathEdit(
+            path=egl_path,
+            file_type=QFileDialog.DirectoryOnly,
+            edit_func=self.egl_path_edit_cb,
+            save_func=self.egl_path_save_cb,
+            parent=self
+        )
         self.egl_path_layout.addWidget(self.egl_path_edit)
         if platform.system() != "Windows":
             shared.legendary_core.lgd.config.set('Legendary', 'egl_programdata', egl_path)
@@ -71,12 +97,18 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.export_button.clicked.connect(self.export_selected)
         self.import_button.clicked.connect(self.import_selected)
 
-    def check_egl_path(self, path):
-        pass
+    def egl_path_edit_cb(self, path):
+        if platform.system() != "Windows":
+            if os.path.exists(os.path.join(path, "system.reg")) and os.path.exists(os.path.join(path, "dosdevices/c:")):
+                # path is a wine prefix
+                path = os.path.join(path, "dosdevices/c:", "ProgramData/Epic/EpicGamesLauncher/Data/Manifests")
+        if os.path.exists(path) and glob(f"{path}/*.item"):
+            return True, path
+        return False, path
 
-    def save_egl_path(self):
-        shared.legendary_core.lgd.config.set("Legendary", "egl_programdata", self.egl_path_edit.text())
-        shared.legendary_core.egl.programdata_path = self.egl_path_edit.text()
+    def egl_path_save_cb(self, path):
+        shared.legendary_core.lgd.config.set("Legendary", "egl_programdata", path)
+        shared.legendary_core.egl.programdata_path = path
         shared.legendary_core.lgd.save_config()
         self.update_lists()
 

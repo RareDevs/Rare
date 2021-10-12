@@ -19,8 +19,8 @@ class GameDlc(QWidget, Ui_GameDlc):
         super(GameDlc, self).__init__(parent=parent)
         self.setupUi(self)
 
-        self.available_dlc_scroll.setObjectName("noborder")
-        self.installed_dlc_scroll.setObjectName("noborder")
+        self.available_dlc_scroll.setProperty("noBorder", 1)
+        self.installed_dlc_scroll.setProperty("noBorder", 1)
         self.signals = shared.signals
         self.core = shared.core
 
@@ -95,19 +95,22 @@ class GameDlcWidget(QFrame, Ui_GameDlcWidget):
         self.app_name.setText(dlc.app_name)
 
         if installed:
-            self.install_button.clicked.connect(self.uninstall_dlc)
+            self.action_button.setProperty("uninstall", 1)
+            self.action_button.clicked.connect(self.uninstall_dlc)
             self.status.setText(self.tr("Installed"))
-            self.install_button.setText("Uninstall")
-
+            self.action_button.setText(self.tr("Uninstall DLC"))
         else:
-            self.install_button.clicked.connect(self.install_game)
+            self.action_button.setProperty("install", 1)
+            self.action_button.clicked.connect(self.install_game)
             self.status.setText(self.tr("Not installed"))
-            self.install_button.setText("Install")
+            self.action_button.setText(self.tr("Install DLC"))
 
     def uninstall_dlc(self):
+        self.action_button.setDisabled(True)
+        self.action_button.setText(self.tr("Uninstalling"))
         self.uninstall.emit(self.dlc)
 
     def install_game(self):
-        self.install_button.setDisabled(True)
-        self.install_button.setText(self.tr("Installing"))
+        self.action_button.setDisabled(True)
+        self.action_button.setText(self.tr("Installing"))
         self.install.emit(self.dlc.app_name)

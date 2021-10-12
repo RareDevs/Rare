@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ImportGroup(object):
     def setupUi(self, ImportGroup):
         ImportGroup.setObjectName("ImportGroup")
-        ImportGroup.resize(223, 128)
+        ImportGroup.resize(223, 127)
         self.import_layout = QtWidgets.QFormLayout(ImportGroup)
         self.import_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.import_layout.setObjectName("import_layout")
@@ -49,8 +49,8 @@ class Ui_ImportGroup(object):
     def retranslateUi(self, ImportGroup):
         _translate = QtCore.QCoreApplication.translate
         ImportGroup.setWindowTitle(_translate("ImportGroup", "ImportGroup"))
-        ImportGroup.setTitle(_translate("ImportGroup", "Import EGL game from directory"))
-        self.path_edit_label.setText(_translate("ImportGroup", "Select path"))
+        ImportGroup.setTitle(_translate("ImportGroup", "Import EGL game from a directory"))
+        self.path_edit_label.setText(_translate("ImportGroup", "Installation path"))
         self.app_name_label.setText(_translate("ImportGroup", "Override app name"))
         self.import_button.setText(_translate("ImportGroup", "Import Game"))
 
