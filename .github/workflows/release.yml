@@ -40,9 +40,7 @@ jobs:
           sudo pip install -r requirements.txt
       - name: Install legendary
         run: |
-          pushd legendary
-          python setup.py install
-          popd
+          pip install ./legendary
       - name: run python setup
         run: |
           python3 setup.py sdist
