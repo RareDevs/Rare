@@ -79,7 +79,8 @@ QToolButton {
 QFrame[frameShape="6"] {
     border-radius: 4px;
 }
-QScrollArea#noborder {
+QListView[noBorder="1"],
+QScrollArea[noBorder="1"] {
     border-color: transparent;
 }
 QComboBox {
@@ -268,21 +269,27 @@ QPushButton#menu_button {
 QPushButton:hover#menu_button {
     background-color: #334;
 }
+QPushButton[install="1"],
 QPushButton#install_button {
     background-color: #090;
 }
+QPushButton[install="1"]::hover,
 QPushButton::hover#install_button {
     background-color: #060;
 }
+QPushButton[install="1"]::disabled,
 QPushButton::disabled#install_button {
     background-color: #020;
 }
+QPushButton[uninstall="1"],
 QPushButton#uninstall_button {
     background-color: #900;
 }
+QPushButton[uninstall="1"]::hover,
 QPushButton::hover#uninstall_button {
     background-color: #600;
 }
+QPushButton[uninstall="1"]::disabled,
 QPushButton::disabled#uninstall_button {
     background-color: #200;
 }

@@ -26,7 +26,7 @@ class ImportSyncTabs(SideTabWidget):
         )
         self.addTab(self.egl_sync_widget, self.tr("Sync with EGL"))
         # FIXME: Until it is ready
-        self.setTabEnabled(2, False)
+        # self.setTabEnabled(2, False)
 
         self.tabBar().setCurrentIndex(1)
 

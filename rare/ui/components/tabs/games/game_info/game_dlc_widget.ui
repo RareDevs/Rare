@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-      <string notr="true">GameDlcWidget</string>
+   <string notr="true">GameDlcWidget</string>
   </property>
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
@@ -172,7 +172,7 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QPushButton" name="install_button">
+      <widget class="QPushButton" name="action_button">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -189,7 +189,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Install DLC</string>
+        <string notr="true">Action</string>
        </property>
       </widget>
      </item>

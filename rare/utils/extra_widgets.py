@@ -148,6 +148,7 @@ class IndicatorLineEdit(QWidget):
             self.indicator_label = QLabel()
             self.indicator_label.setPixmap(icon("ei.info-circle", color="gray").pixmap(16, 16))
             self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            self.__indicator(edit_func(text))
             self.layout.addWidget(self.indicator_label)
 
         if not ph_text:
@@ -191,7 +192,7 @@ class IndicatorLineEdit(QWidget):
 
 class PathEdit(IndicatorLineEdit):
     def __init__(self,
-                 text: str = "",
+                 path: str = "",
                  file_type: QFileDialog.FileType = QFileDialog.AnyFile,
                  type_filter: str = "",
                  name_filter: str = "",
@@ -200,7 +201,7 @@ class PathEdit(IndicatorLineEdit):
                  save_func: Callable[[str], None] = None,
                  horiz_policy: QSizePolicy = QSizePolicy.Expanding,
                  parent=None):
-        super(PathEdit, self).__init__(text=text, ph_text=ph_text,
+        super(PathEdit, self).__init__(text=path, ph_text=ph_text,
                                        edit_func=edit_func, save_func=save_func,
                                        horiz_policy=horiz_policy, parent=parent)
         self.setObjectName("PathEdit")
