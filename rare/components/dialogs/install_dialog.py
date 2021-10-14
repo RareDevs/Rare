@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QMessageBox
 
 from legendary.core import LegendaryCore
 from legendary.utils.selective_dl import games
+from rare import shared
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.models import InstallDownloadModel, InstallQueueItemModel
@@ -16,13 +17,13 @@ from rare.utils.utils import get_size
 class InstallDialog(QDialog, Ui_InstallDialog):
     result_ready = pyqtSignal(InstallQueueItemModel)
 
-    def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel, update=False, silent=False, parent=None):
+    def __init__(self, dl_item: InstallQueueItemModel, update=False, silent=False, parent=None):
         super(InstallDialog, self).__init__(parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
 
-        self.core = core
+        self.core = shared.core
         self.dl_item = dl_item
         self.dl_item.status_q = MPQueue()
         self.app_name = self.dl_item.options.app_name
@@ -65,7 +66,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
         self.force_download_check.stateChanged.connect(self.option_changed)
         self.ignore_space_check.stateChanged.connect(self.option_changed)
-        self.download_only_check.stateChanged.connect(self.option_changed)
+        self.download_only_check.stateChanged.connect(lambda: self.non_reload_option_changed("download_only"))
 
         self.sdl_list_checks = list()
         try:
@@ -145,6 +146,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_button.setEnabled(False)
         self.verify_button.setEnabled(not self.worker_running)
         return True, path
+
+    def non_reload_option_changed(self, option: str):
+        if option == "download_only":
+            self.dl_item.options.no_install = self.download_only_check.isChecked()
 
     def cancel_clicked(self):
         self.dl_item.download = None
