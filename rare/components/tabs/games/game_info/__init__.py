@@ -1,8 +1,8 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
-from legendary.models.game import Game
 
 import rare.shared as shared
+from legendary.models.game import Game
 from rare.utils.extra_widgets import SideTabWidget
 from .game_dlc import GameDlc
 from .game_info import GameInfo
@@ -15,7 +15,7 @@ class GameInfoTabs(SideTabWidget):
         self.core = shared.legendary_core
         self.signals = shared.signals
 
-        self.info = GameInfo(self.core, self.signals, self)
+        self.info = GameInfo(self)
         self.addTab(self.info, self.tr("Information"))
 
         self.settings = GameSettings(self.core, self)

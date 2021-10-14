@@ -9,6 +9,7 @@ import qtawesome
 from PyQt5.QtCore import QSettings, QTranslator
 from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory, QMessageBox
+from requests import HTTPError
 
 from legendary.core import LegendaryCore
 from rare import languages_path, resources_path, cache_dir
@@ -29,6 +30,17 @@ logger = logging.getLogger("Rare")
 def excepthook(exc_type, exc_value, exc_tb):
     tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
     print("Error")
+    if exc_tb == HTTPError:
+        try:
+            if shared.legendary_core.login():
+                return
+            else:
+                raise ValueError
+        except Exception as e:
+            logger.fatal(str(e))
+            QMessageBox.warning(None, "Error", QApplication.tr("Failed to login"))
+            QApplication.exit(1)
+            return
     logger.fatal(tb)
     QMessageBox.warning(None, "Error", tb)
     QApplication.exit(1)
@@ -74,7 +86,15 @@ class App(QApplication):
         self.settings = QSettings()
 
         self.signals = shared.init_signals()
-        self.signals.app.connect(lambda x: self.handle_signal(*x))
+
+        self.signals.exit_app.connect(self.exit)
+        self.signals.send_notification.connect(
+            lambda title:
+            self.tray_icon.showMessage(
+                self.tr("Download finished"),
+                self.tr("Download finished. {} is playable now").format(title),
+                QSystemTrayIcon.Information, 4000)
+            if self.settings.value("notification", True, bool) else None)
 
         # Translator
         self.translator = QTranslator()
@@ -134,17 +154,6 @@ class App(QApplication):
 
         if not self.args.silent:
             self.mainwindow.show()
-
-    def handle_signal(self, action, data):
-        if action == self.signals.actions.quit_app:
-            self.exit_app(data)
-        elif action == self.signals.actions.installation_finished:
-            # data: (notification, app_title)
-            if self.settings.value("notification", True, bool):
-                self.tray_icon.showMessage(
-                    self.tr("Download finished"),
-                    self.tr("Download finished. {} is playable now").format(data),
-                    QSystemTrayIcon.Information, 4000)
 
     def tray(self, reason):
         if reason == QSystemTrayIcon.DoubleClick:

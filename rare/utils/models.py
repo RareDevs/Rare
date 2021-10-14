@@ -44,29 +44,6 @@ class InstallQueueItemModel:
         return (self.status_q is not None) and (self.download is not None) and (self.options is not None)
 
 
-class SignalActions:
-    quit_app = "quit_app"
-    dl_status = "dl_status"
-    install_game = "install_game"
-    start_installation = "start_installation"
-    installation_finished = "installation_finished"
-    uninstall = "uninstall"
-    set_index = "set_index"
-    set_dl_tab_text = "set_dl_tab_text"
-    verification_finished = "verification_finished"
-
-
-class Signals(QObject):
-    actions = SignalActions()
-
-    tab_widget = pyqtSignal(tuple)
-    games_tab = pyqtSignal(tuple)
-    cloud_saves = pyqtSignal(tuple)
-    dl_tab = pyqtSignal(tuple)
-    main_window = pyqtSignal(tuple)
-    app = pyqtSignal(tuple)
-
-
 @dataclass
 class ApiResults:
     game_list: list = None
@@ -83,3 +60,23 @@ class ApiResults:
                and self.mac_games is not None \
                and self.assets is not None \
                and self.no_asset_games is not None
+
+
+class Signals(QObject):
+    exit_app = pyqtSignal(int)
+    send_notification = pyqtSignal(str)
+
+    set_main_tab_index = pyqtSignal(int)
+    update_download_tab_text = pyqtSignal()
+
+    dl_progress = pyqtSignal(int)
+    # set visibility of installing widget in games tab
+    installation_started = pyqtSignal(Game)
+
+    install_game = pyqtSignal(InstallOptionsModel)
+    installation_finished = pyqtSignal(bool, str)
+
+    update_gamelist = pyqtSignal(str)
+    uninstall_game = pyqtSignal(Game)
+
+    set_discord_rpc = pyqtSignal(str)

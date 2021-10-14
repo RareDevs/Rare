@@ -75,8 +75,7 @@ class GameDlc(QWidget, Ui_GameDlc):
                 self.game.app_title))
             return
 
-        self.signals.dl_tab.emit(
-            (self.signals.actions.install_game, (InstallOptionsModel(app_name=app_name, update=True))))
+        self.signals.install_game.emit(InstallOptionsModel(app_name=app_name, update=True))
 
 
 class GameDlcWidget(QFrame, Ui_GameDlcWidget):

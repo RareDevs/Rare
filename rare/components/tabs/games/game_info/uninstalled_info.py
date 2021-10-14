@@ -3,9 +3,9 @@ import platform
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTreeView
-from legendary.models.game import Game
 
 import rare.shared as shared
+from legendary.models.game import Game
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabWidget
 from rare.utils.json_formatter import QJsonModel
@@ -75,7 +75,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
 
     def install_game(self):
-        self.signals.dl_tab.emit((self.signals.actions.install_game, InstallOptionsModel(app_name=self.game.app_name)))
+        self.signals.install_game.emit(InstallOptionsModel(app_name=self.game.app_name))
 
     def update_game(self, game: Game):
         self.game = game

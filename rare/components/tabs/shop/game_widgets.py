@@ -32,6 +32,11 @@ class GameWidget(QWidget):
         mini_layout = QHBoxLayout()
         self.layout.addLayout(mini_layout)
 
+        if not json_info:
+            self.layout.addWidget(QLabel("An error occurred"))
+            self.setLayout(self.layout)
+            return
+
         self.title_label = QLabel(json_info.get("title"))
         self.title_label.setWordWrap(True)
         mini_layout.addWidget(self.title_label)

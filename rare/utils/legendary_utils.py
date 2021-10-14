@@ -2,7 +2,6 @@ import os
 import platform
 import shutil
 from logging import getLogger
-from sys import stdout
 
 from PyQt5.QtCore import QProcess, QProcessEnvironment, QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
@@ -106,7 +105,7 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
 
 class VerifyThread(QThread):
     status = pyqtSignal(tuple)
-    summary = pyqtSignal(tuple)
+    summary = pyqtSignal(int, int, str)
 
     def __init__(self, core, app_name):
         super(VerifyThread, self).__init__()
@@ -159,8 +158,6 @@ class VerifyThread(QThread):
             QMessageBox.warning(None, "Error", self.tr("No files to validate"))
             logger.error(str(e))
 
-        stdout.write(f'Verification progress: {self.num}/{self.total} ({self.num * 100 / self.total:.01f}%)\t\n')
-
         # always write repair file, even if all match
         if repair_file:
             repair_filename = os.path.join(self.core.lgd.get_tmp_path(), f'{self.app_name}.repair')
@@ -174,7 +171,7 @@ class VerifyThread(QThread):
 
         else:
             logger.error(f'Verification finished, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
-            self.summary.emit((len(failed), len(missing), self.app_name))
+            self.summary.emit(len(failed), len(missing), self.app_name)
 
 
 def import_game(core: LegendaryCore, app_name: str, path: str):

@@ -20,7 +20,7 @@ logger = getLogger("Download")
 
 class DownloadTab(QWidget):
     thread: QThread
-    dl_queue = []
+    dl_queue = list()
     dl_status = pyqtSignal(int)
 
     def __init__(self, updates: list):
@@ -30,7 +30,6 @@ class DownloadTab(QWidget):
         self.active_game: Game = None
         self.analysis = None
         self.signals = shared.signals
-        self.signals.dl_tab.connect(lambda x: self.signal_received(*x))
         self.info_layout = QGridLayout()
 
         self.installing_game = QLabel(self.tr("No active Download"))
@@ -82,9 +81,7 @@ class DownloadTab(QWidget):
 
         self.setLayout(self.layout)
 
-    def signal_received(self, action, data):
-        if action == self.signals.actions.install_game:
-            self.get_install_options(data)
+        self.signals.install_game.connect(self.get_install_options)
 
     def add_update(self, igame: InstalledGame):
         widget = UpdateWidget(self.core, igame, self)
@@ -121,7 +118,7 @@ class DownloadTab(QWidget):
         self.analysis = queue_item.download.analysis
         self.installing_game.setText(self.tr("Installing Game: ") + self.active_game.app_title)
 
-        self.signals.games_tab.emit((self.signals.actions.start_installation, self.active_game))
+        self.signals.installation_started.emit(self.active_game)
 
     def status(self, text):
         if text == "dl_finished":
@@ -145,10 +142,12 @@ class DownloadTab(QWidget):
                 if len(self.update_widgets) == 0:
                     self.update_text.setVisible(True)
 
-            self.signals.app.emit((self.signals.actions.installation_finished, game.app_title))
-            self.signals.games_tab.emit((self.signals.actions.installation_finished, (game.app_name, True)))
-            self.signals.tab_widget.emit(
-                (self.signals.actions.set_dl_tab_text, len(self.dl_queue) + len(self.update_widgets.keys())))
+            self.signals.send_notification.emit(game.app_title)
+            self.signals.update_gamelist.emit(game.app_name)
+            self.signals.update_download_tab_text.emit()
+
+            self.signals.installation_finished.emit(True, game.app_name)
+
             self.reset_infos()
 
             if len(self.dl_queue) != 0:
@@ -161,8 +160,7 @@ class DownloadTab(QWidget):
 
         elif text == "stop":
             self.reset_infos()
-            self.signals.games_tab.emit(
-                (self.signals.actions.installation_finished, (self.active_game.app_name, False)))
+            self.signals.installation_finished.emit(False, self.active_game.app_name)
             self.active_game = None
             if self.dl_queue:
                 self.start_installation(self.dl_queue[0])
@@ -185,8 +183,7 @@ class DownloadTab(QWidget):
         self.downloaded.setText(
             self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
         self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
-        self.signals.games_tab.emit(
-            (self.signals.actions.dl_status, int(100 * ui_update.total_downloaded / self.analysis.dl_size)))
+        self.signals.dl_progress.emit(int(100 * ui_update.total_downloaded / self.analysis.dl_size))
 
     def get_time(self, seconds: int) -> str:
         return str(datetime.timedelta(seconds=seconds))
@@ -194,7 +191,7 @@ class DownloadTab(QWidget):
     def on_install_dialog_closed(self, download_item: InstallQueueItemModel):
         if download_item:
             self.install_game(download_item)
-            self.signals.tab_widget.emit((self.signals.actions.set_index, 1))
+            self.signals.set_main_tab_index.emit(1)
         else:
             if w := self.update_widgets.get(download_item.options.app_name):
                 w.update_button.setDisabled(False)

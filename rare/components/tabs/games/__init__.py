@@ -1,9 +1,10 @@
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QSettings, QObjectCleanupHandler
+from PyQt5.QtCore import QSettings, QObjectCleanupHandler
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 import rare.shared as shared
+from legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.tabs.games.game_info import GameInfoTabs
 from rare.components.tabs.games.game_info.uninstalled_info import UninstalledInfoTabs
@@ -27,8 +28,6 @@ logger = getLogger("GamesTab")
 class GamesTab(QStackedWidget, Ui_GamesTab):
     widgets = {}
     running_games = []
-    game_exited = pyqtSignal(str)
-    game_started = pyqtSignal(str)
     updates = set()
 
     def __init__(self):
@@ -36,7 +35,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.setupUi(self)
         self.core = shared.legendary_core
         self.signals = shared.signals
-        self.signals.games_tab.connect(lambda x: self.signal_received(*x))
         self.settings = QSettings()
 
         self.game_list = shared.api_results.game_list
@@ -85,30 +83,32 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         self.filter(self.head_bar.available_filters[self.settings.value("filter", 0, int)])
 
-    def signal_received(self, action, data):
-        if action == self.signals.actions.dl_status:
-            self.installing_widget.set_status(data)
-        elif action == self.signals.actions.set_index:
-            self.setCurrentIndex(data)
-        elif action == self.signals.actions.start_installation:
-            self.installing_widget.set_game(data)
-            self.installing_widget.setVisible(True)
-        elif action == self.signals.actions.installation_finished:
-            if data[1]:  # update list
-                self.update_list(data[0])
-            self.installing_widget.setVisible(False)
-        elif action == self.signals.actions.uninstall:
-            infos = UninstallDialog(data).get_information()
-            if infos == 0:
-                return
-            legendary_utils.uninstall(data.app_name, self.core, infos)
-            self.setCurrentIndex(0)
-            self.update_list(data.app_name)
-        elif action == self.signals.actions.verification_finished:
-            i_widget, l_widget = self.widgets[data.app_name]
-            i_widget.igame = data
-            l_widget.igame = data
-            i_widget.info_text = ""
+        # signals
+        self.signals.dl_progress.connect(self.installing_widget.set_status)
+        self.signals.installation_started.connect(self.installation_started)
+        self.signals.update_gamelist.connect(self.update_list)
+        self.signals.installation_finished.connect(lambda x: self.installing_widget.setVisible(False))
+
+    def installation_started(self, game: Game):
+        if game.is_dlc:
+            return
+        self.installing_widget.set_game(game)
+        self.installing_widget.setVisible(True)
+
+    def verification_finished(self, igame: InstalledGame):
+        # only if igame needs verification
+        i_widget, l_widget = self.widgets[igame.app_name]
+        i_widget.igame = igame
+        l_widget.igame = igame
+        i_widget.info_text = ""
+
+    def uninstall_game(self, game: Game):
+        infos = UninstallDialog(game).get_information()
+        if infos == 0:
+            return
+        legendary_utils.uninstall(game.app_name, self.core, infos)
+        self.setCurrentIndex(0)
+        self.update_list(game.app_name)
 
     def show_game_info(self, game):
         self.game_info_tabs.update_game(game, self.dlcs)
@@ -224,15 +224,17 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             self.widgets[app_name][0].info_text = self.tr("Sync CLoud saves")
             self.widgets[app_name][0].info_label.setText(self.tr("Sync CLoud saves"))
             self.widgets[app_name][1].info_label.setText(self.tr("Sync CLoud saves"))
-        self.game_exited.emit(app_name)
+        self.signals.set_discord_rpc.emit(None)
 
     def launch(self, app_name):
         self.running_games.append(app_name)
-        self.game_started.emit(app_name)
+        # self.game_started.emit(app_name)
         self.widgets[app_name][0].info_text = self.tr("Game running")
         self.widgets[app_name][0].info_label.setText(self.tr("Game running"))
         self.widgets[app_name][1].launch_button.setDisabled(True)
         self.widgets[app_name][1].launch_button.setText(self.tr("Game running"))
+
+        self.signals.set_discord_rpc.emit(app_name)
 
     def search(self, text: str):
         for t in self.widgets.values():

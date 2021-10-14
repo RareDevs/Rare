@@ -1,7 +1,7 @@
 from argparse import Namespace
 
 from legendary.core import LegendaryCore
-from rare.utils.models import Signals, ApiResults
+from rare.utils.models import ApiResults, Signals
 
 legendary_core: LegendaryCore = None
 signals: Signals = None

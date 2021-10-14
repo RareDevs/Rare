@@ -1,13 +1,14 @@
 import os
 import platform
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
-from legendary.core import LegendaryCore
 from legendary.models.game import Game, InstalledGame
+from rare import shared
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.legendary_utils import VerifyThread
-from rare.utils.models import Signals, InstallOptionsModel
+from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_size, get_pixmap
 
@@ -16,12 +17,13 @@ class GameInfo(QWidget, Ui_GameInfo):
     igame: InstalledGame
     game: Game = None
     verify_threads = dict()
+    verification_finished = pyqtSignal(InstalledGame)
 
-    def __init__(self, core: LegendaryCore, signals: Signals, parent):
+    def __init__(self, parent):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
-        self.core = core
-        self.signals = signals
+        self.core = shared.legendary_core
+        self.signals = shared.signals
 
         if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
@@ -34,16 +36,9 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.install_button.setText(self.tr("Link to Origin/Launch"))
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
 
-        self.uninstall_button.clicked.connect(self.uninstall)
+        self.uninstall_button.clicked.connect(lambda: self.signals.uninstall_game.emit(self.game))
         self.verify_button.clicked.connect(self.verify)
         self.repair_button.clicked.connect(self.repair)
-
-    def uninstall(self):
-        # uninstall game
-        self.signals.games_tab.emit((self.signals.actions.uninstall, self.game))
-
-        # remove from update or dl_queue
-        self.signals.dl_tab.emit((self.signals.actions.uninstall, self.game))
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')
@@ -51,9 +46,8 @@ class GameInfo(QWidget, Ui_GameInfo):
             QMessageBox.warning(self, "Warning", self.tr(
                 "Repair file does not exist or game does not need a repair. Please verify game first"))
             return
-        self.signals.dl_tab.emit(
-            (self.signals.actions.install_game, InstallOptionsModel(app_name=self.game.app_name, repair=True,
-                                                                    base_path=self.igame.install_path)))
+        self.signals.install_game.emit(InstallOptionsModel(app_name=self.game.app_name, repair=True,
+                                                           update=True))
 
     def verify(self):
         self.verify_widget.setCurrentIndex(1)
@@ -70,22 +64,22 @@ class GameInfo(QWidget, Ui_GameInfo):
         if progress[2] == self.game.app_name:
             self.verify_progress.setValue(progress[0] * 100 / progress[1])
 
-    def finish_verify(self, failed):
-        failed, missing, app_name = failed
-        if failed == 0 and missing == 0:
+    def finish_verify(self, failed, missing, app_name):
+        if failed == missing == 0:
             QMessageBox.information(self, "Summary",
                                     "Game was verified successfully. No missing or corrupt files found")
-            self.igame.needs_verification = False
-            self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
-            self.signals.games_tab.emit((self.signals.actions.verification_finished, self.igame))
+            igame = self.core.get_installed_game(app_name)
+            if igame.needs_verification:
+                igame.needs_verification = False
+                self.core.lgd.set_installed_game(self.igame.app_name, igame)
+                self.verification_finished.emit(igame)
         else:
             ans = QMessageBox.question(self, "Summary", self.tr(
                 'Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?').format(
                 failed, missing), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if ans == QMessageBox.Yes:
-                self.signals.dl_tab.emit(
-                    (self.signals.actions.install_game, InstallOptionsModel(app_name=self.game.app_name, repair=True,
-                                                                            base_path=self.igame.install_path)))
+                self.signals.install_game.emit(InstallOptionsModel(app_name=self.game.app_name, repair=True,
+                                                                   update=True))
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
 
@@ -102,6 +96,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.app_name.setText(self.game.app_name)
         self.version.setText(self.game.app_version)
         self.dev.setText(self.game.metadata["developer"])
+
         if self.igame:
             self.install_size.setText(get_size(self.igame.install_size))
             self.install_path.setText(self.igame.install_path)

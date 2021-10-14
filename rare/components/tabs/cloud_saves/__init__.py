@@ -32,12 +32,8 @@ class SyncSaves(QScrollArea):
         super(SyncSaves, self).__init__()
         self.core = shared.legendary_core
         self.signals = shared.signals
-        self.signals.cloud_saves.connect(self.signal_received)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.load_saves()
-
-    def signal_received(self, action, data):
-        pass
 
     def load_saves(self, app_name=None, auto=False):
         self.widget = QWidget()

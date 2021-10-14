@@ -21,7 +21,6 @@ class MainWindow(QMainWindow):
         self.core = shared.legendary_core
 
         self.signals = shared.signals
-        self.signals.main_window.connect(lambda x: self.handle_signal(*x))
 
         self.offline = shared.args.offline
         width, height = 1200, 800
@@ -35,11 +34,7 @@ class MainWindow(QMainWindow):
         self.tab_widget = TabWidget(self)
         self.setCentralWidget(self.tab_widget)
         if not shared.args.offline:
-            self.rpc = DiscordRPC(shared.legendary_core)
-            # Discord RPC on game launch
-            # self.tab_widget.games_tab.default_widget.game_list.game_started.connect(
-            #    lambda: self.rpc.set_discord_rpc(self.tab_widget.games_tab.default_widget.game_list.running_games[0]))
-            # Remove RPC
+            self.rpc = DiscordRPC()
             self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
             # Show RPC on changed rare_settings
             self.tab_widget.settings.rare_settings.rpc.update_settings.connect(

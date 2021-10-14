@@ -35,4 +35,4 @@ class MiniWidget(QWidget):
 
         if reply == QMessageBox.Yes:
             self.core.lgd.invalidate_userdata()
-            self.signals.app.emit((self.signals.actions.quit_app, -133742))  # restart exit code
+            self.signals.exit_app.emit(-133742)  # restart exit code

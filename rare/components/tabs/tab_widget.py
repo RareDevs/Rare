@@ -26,7 +26,7 @@ class TabWidget(QTabWidget):
         # Generate Tabs
         self.games_tab = GamesTab()
         self.addTab(self.games_tab, self.tr("Games"))
-        self.signals.tab_widget.connect(lambda x: self.handle_signal(*x))
+
         if not shared.args.offline:
             # updates = self.games_tab.default_widget.game_list.updates
             self.downloadTab = DownloadTab(self.games_tab.updates)
@@ -61,8 +61,13 @@ class TabWidget(QTabWidget):
                     "(!)" if self.settings.about.update_available else "")
 
         # Signals
+        # set current index
+        self.signals.set_main_tab_index.connect(self.setCurrentIndex)
+
+        # update dl tab text
+        self.signals.update_download_tab_text.connect(self.update_dl_tab_text)
         # imported
-        self.games_tab.import_widget.update_list.connect(self.game_imported)
+        # self.games_tab.import_widget.update_list.connect(self.game_imported)
 
         if not shared.args.offline:
             # install dlc
@@ -74,7 +79,6 @@ class TabWidget(QTabWidget):
             # Finished sync
             self.cloud_saves.finished.connect(self.finished_sync)
         # Game finished
-        self.games_tab.game_exited.connect(self.game_finished)
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
@@ -86,11 +90,14 @@ class TabWidget(QTabWidget):
         QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(2))
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(5))
 
-    def handle_signal(self, action, data):
-        if action == self.signals.actions.set_index:
-            self.setCurrentIndex(data)
-        if action == self.signals.actions.set_dl_tab_text:
-            self.setTabText(1, "Downloads" + ((" (" + str(data) + ")") if data != 0 else ""))
+    def update_dl_tab_text(self):
+        num_downloads = len(set([i.options.app_name for i in self.downloadTab.dl_queue] + [i for i in
+                                                                                           self.downloadTab.update_widgets.keys()]))
+
+        if num_downloads != 0:
+            self.setTabText(1, f"Downloads ({num_downloads})")
+        else:
+            self.setTabText(1, "Downloads")
 
     def mouse_clicked(self, tab_num):
         if tab_num == 0:
@@ -107,13 +114,6 @@ class TabWidget(QTabWidget):
             self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
         self.games_tab.update_list(app_name)
         self.games_tab.setCurrentIndex(0)
-
-    # Sync game and delete dc rpc
-    def game_finished(self, app_name):
-        self.delete_presence.emit()
-        game = self.core.get_game(app_name)
-        if game and game.supports_cloud_saves:
-            self.cloud_saves.sync_game(app_name, True)
 
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
