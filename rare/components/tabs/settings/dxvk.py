@@ -18,7 +18,7 @@ class DxvkSettings(QGroupBox, Ui_DxvkSettings):
         self.setupUi(self)
 
         self.name = name if name is not None else "default"
-        self.core = shared.legendary_core
+        self.core = shared.core
 
         self.dxvk_options_map = {
             "devinfo": self.devinfo,
@@ -99,7 +99,7 @@ class DxvkWidget(QGroupBox):
 
     def __init__(self, name=None):
         super(DxvkWidget, self).__init__()
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.setObjectName("settings_widget")
         self.dxvk_settings = {
             "fps": [False, "Fps"],

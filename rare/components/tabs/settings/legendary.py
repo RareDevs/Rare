@@ -17,7 +17,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         super(LegendarySettings, self).__init__(parent=parent)
         self.setupUi(self)
 
-        self.core = shared.legendary_core
+        self.core = shared.core
 
         # Default installation directory
         self.install_dir = PathEdit(self.core.get_default_install_dir(),

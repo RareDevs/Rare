@@ -30,7 +30,7 @@ class SyncSaves(QScrollArea):
 
     def __init__(self):
         super(SyncSaves, self).__init__()
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.signals = shared.signals
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.load_saves()

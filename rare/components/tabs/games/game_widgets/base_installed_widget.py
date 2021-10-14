@@ -28,7 +28,7 @@ class BaseInstalledWidget(QGroupBox):
         super(BaseInstalledWidget, self).__init__()
         self.igame = igame
         self.is_origin = is_origin
-        self.core = shared.legendary_core
+        self.core = shared.core
         if not game:
             self.game = self.core.get_game(self.igame.app_name)
         else:

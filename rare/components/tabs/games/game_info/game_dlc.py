@@ -22,7 +22,7 @@ class GameDlc(QWidget, Ui_GameDlc):
         self.available_dlc_scroll.setObjectName("noborder")
         self.installed_dlc_scroll.setObjectName("noborder")
         self.signals = shared.signals
-        self.core = shared.legendary_core
+        self.core = shared.core
 
         self.dlcs = dlcs
         self.installed_dlc_widgets = list()

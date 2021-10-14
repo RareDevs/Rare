@@ -23,7 +23,7 @@ class InstalledIconWidget(BaseInstalledWidget):
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.layout = QVBoxLayout()
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.running = False
         self.info_text = ""
 

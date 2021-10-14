@@ -25,7 +25,7 @@ class DownloadTab(QWidget):
 
     def __init__(self, updates: list):
         super(DownloadTab, self).__init__()
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.layout = QVBoxLayout()
         self.active_game: Game = None
         self.analysis = None

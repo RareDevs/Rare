@@ -19,7 +19,7 @@ class ImportWidget(QWidget):
 
     def __init__(self):
         super(ImportWidget, self).__init__()
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.game_list = [i.app_name for i in self.core.get_game_list()]
 
         self.main_layout = QHBoxLayout()

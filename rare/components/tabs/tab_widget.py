@@ -20,7 +20,7 @@ class TabWidget(QTabWidget):
     def __init__(self, parent):
         super(TabWidget, self).__init__(parent=parent)
         disabled_tab = 4 if not shared.args.offline else 1
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.signals = shared.signals
         self.setTabBar(TabBar(disabled_tab))
         # Generate Tabs

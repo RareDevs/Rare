@@ -32,7 +32,7 @@ def excepthook(exc_type, exc_value, exc_tb):
     print("Error")
     if exc_tb == HTTPError:
         try:
-            if shared.legendary_core.login():
+            if shared.core.login():
                 return
             else:
                 raise ValueError

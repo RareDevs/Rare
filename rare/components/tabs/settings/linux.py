@@ -16,7 +16,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         self.setupUi(self)
 
         self.name = name if name is not None else "default"
-        self.core = shared.legendary_core
+        self.core = shared.core
 
         # Wine prefix
         self.wine_prefix = PathEdit(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""),

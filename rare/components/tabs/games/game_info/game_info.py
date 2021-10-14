@@ -22,7 +22,7 @@ class GameInfo(QWidget, Ui_GameInfo):
     def __init__(self, parent):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.signals = shared.signals
 
         if platform.system() == "Windows":

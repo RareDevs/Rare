@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.settings = QSettings()
-        self.core = shared.legendary_core
+        self.core = shared.core
 
         self.signals = shared.signals
 

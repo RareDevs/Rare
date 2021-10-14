@@ -60,7 +60,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         super(LaunchDialog, self).__init__(parent=parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.offline = shared.args.offline
         self.thread_pool = QThreadPool()
         self.thread_pool.setMaxThreadCount(2)

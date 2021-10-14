@@ -26,7 +26,7 @@ class RareSettings(QWidget, Ui_RareSettings):
     def __init__(self):
         super(RareSettings, self).__init__()
         self.setupUi(self)
-        self.core = shared.legendary_core
+        self.core = shared.core
         # (widget_name, option_name, default)
         self.checkboxes = [
             (self.sys_tray, "sys_tray", True),

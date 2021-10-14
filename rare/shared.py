@@ -3,16 +3,16 @@ from argparse import Namespace
 from legendary.core import LegendaryCore
 from rare.utils.models import ApiResults, Signals
 
-legendary_core: LegendaryCore = None
+core: LegendaryCore = None
 signals: Signals = None
 args: Namespace = None
 api_results: ApiResults = None
 
 
 def init_legendary():
-    global legendary_core
-    legendary_core = LegendaryCore()
-    return legendary_core
+    global core
+    core = LegendaryCore()
+    return core
 
 
 def init_signals():

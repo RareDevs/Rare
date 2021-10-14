@@ -47,7 +47,10 @@ class ShopApiCore(QObject):
         }, lambda data: self._handle_wishlist(data, handle_func))
 
     def _handle_wishlist(self, data, handle_func):
-        handle_func(data["data"]["Wishlist"]["wishlistItems"]["elements"])
+        try:
+            handle_func(data["data"]["Wishlist"]["wishlistItems"]["elements"])
+        except KeyError:
+            handle_func(None)
 
     def search_game(self, name, handle_func):
         payload = {

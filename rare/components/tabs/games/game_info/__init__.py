@@ -12,7 +12,7 @@ from .game_settings import GameSettings
 class GameInfoTabs(SideTabWidget):
     def __init__(self, dlcs: list, parent=None):
         super(GameInfoTabs, self).__init__(show_back=True, parent=parent)
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.signals = shared.signals
 
         self.info = GameInfo(self)

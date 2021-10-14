@@ -17,7 +17,7 @@ class DiscordRPC(QObject):
         super(DiscordRPC, self).__init__()
         self.RPC = None
         self.state = 1  # 0: game, 1: always active, 2: off
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.signals = shared.signals
 
         self.settings = QSettings()

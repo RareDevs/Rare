@@ -213,7 +213,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.wishlist.append(game["offer"]["title"])
 
     def button_clicked(self):
-        webbrowser.open(f"https://www.epicgames.com/store/{shared.legendary_core.language_code}/p/" + self.slug)
+        webbrowser.open(f"https://www.epicgames.com/store/{shared.core.language_code}/p/" + self.slug)
 
 
 class SocialButton(QPushButton):

@@ -17,7 +17,7 @@ from rare.utils.utils import get_pixmap
 class UninstalledInfoTabs(SideTabWidget):
     def __init__(self, parent=None):
         super(UninstalledInfoTabs, self).__init__(show_back=True, parent=parent)
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.signals = shared.signals
 
         self.info = UninstalledInfo()
@@ -55,7 +55,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
     def __init__(self, parent=None):
         super(UninstalledInfo, self).__init__(parent=parent)
         self.setupUi(self)
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.signals = shared.signals
         self.install_button.clicked.connect(self.install_game)
         if platform.system() != "Windows":

@@ -33,7 +33,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
     def __init__(self):
         super(GamesTab, self).__init__()
         self.setupUi(self)
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.signals = shared.signals
         self.settings = QSettings()
 
