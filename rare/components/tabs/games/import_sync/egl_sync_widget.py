@@ -1,6 +1,7 @@
 import os
 import platform
 from glob import glob
+from typing import Tuple
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, QThread
@@ -11,13 +12,9 @@ import rare.shared as shared
 from rare.ui.components.tabs.games.import_sync.egl_sync_widget import Ui_EGLSyncGroup
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import WineResolver
+from rare.utils.models import PathSpec
 
 logger = getLogger("EGLSync")
-
-appdata_path_spec = \
-    r'%LOCALAPPDATA%\EpicGamesLauncher\Saved\Config\Windows'
-programdata_path_spec = \
-    r'%PROGRAMDATA%\Epic\EpicGamesLauncher\Data\Manifests'
 
 
 class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
@@ -31,52 +28,58 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.export_list.setProperty("noBorder", 1)
         self.import_list.setProperty("noBorder", 1)
 
+        self.core = shared.core
+
         if platform.system() == "Windows":
-            estimated_path = os.path.expandvars(programdata_path_spec)
+            estimated_path = os.path.expandvars(PathSpec.egl_programdata)
         else:
             estimated_path = str()
-            self.wine_resolver = WineResolver(programdata_path_spec, 'default', shared.legendary_core)
+            self.wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
             self.wine_resolver.result_ready.connect(self.egl_path_info.setText)
             self.wine_resolver.finished.connect(self.wine_resolver.quit)
             self.wine_resolver.finished.connect(self.wine_resolver.deleteLater)
             self.wine_resolver.start()
         self.egl_path_info.setText(estimated_path)
 
-        egl_path = os.path.expanduser("~/")
-        if egl_path := shared.legendary_core.egl.programdata_path:
-            pass
-        elif egl_path := shared.legendary_core.lgd.config.get("default", "wine_prefix", fallback=""):
-            egl_data_path = os.path.join(
-                shared.legendary_core.lgd.config.get("default", "wine_prefix", fallback=""),
-                'drive_c/ProgramData/Epic/EpicGamesLauncher/Data')
-            egl_path = os.path.join(egl_data_path, 'Manifests')
-        else:
-            possible_wine_prefixes = [os.path.expanduser("~/.wine"),
-                                      os.path.expanduser("~/Games/epic-games-store")]
-            for i in possible_wine_prefixes:
-                if os.path.exists(p := os.path.join(i, "drive_c/ProgramData/Epic/EpicGamesLauncher/Data/Manifests")):
-                    egl_path = p
+        # if shared.core.egl.programdata_path:
 
-        self.egl_path_edit = PathEdit(
-            path=egl_path,
-            file_type=QFileDialog.DirectoryOnly,
-            edit_func=self.egl_path_edit_cb,
-            save_func=self.egl_path_save_cb,
-            parent=self
-        )
-        self.egl_path_layout.addWidget(self.egl_path_edit)
+        # if platform.system() != "Windows":
+        #     shared.core.lgd.config.set('Legendary', 'egl_programdata', egl_path)
+        #     shared.core.egl.programdata_path = egl_path
+        #
+        # egl_path = os.path.expanduser("~/")
+        # if egl_path := shared.core.egl.programdata_path:
+        #     pass
+        # elif egl_path := shared.core.lgd.config.get("default", "wine_prefix", fallback=""):
+        #     egl_data_path = os.path.join(
+        #         shared.core.lgd.config.get("default", "wine_prefix", fallback=""),
+        #         'drive_c/ProgramData/Epic/EpicGamesLauncher/Data')
+        #     egl_path = os.path.join(egl_data_path, 'Manifests')
+        # else:
+        #     possible_wine_prefixes = [os.path.expanduser("~/.wine"),
+        #                               os.path.expanduser("~/Games/epic-games-store")]
+        #     for i in possible_wine_prefixes:
+        #         if os.path.exists(p := os.path.join(i, "drive_c/ProgramData/Epic/EpicGamesLauncher/Data/Manifests")):
+        #             egl_path = p
+
         if platform.system() != "Windows":
-            shared.legendary_core.lgd.config.set('Legendary', 'egl_programdata', egl_path)
-            shared.legendary_core.egl.programdata_path = egl_path
-
-        if shared.legendary_core.egl_sync_enabled:
-            self.refresh_button.setText(self.tr("Disable sync"))
+            egl_path = self.core.egl.programdata_path
+            if egl_path is None:
+                egl_path = str()
+            self.egl_path_edit = PathEdit(
+                path=egl_path,
+                file_type=QFileDialog.DirectoryOnly,
+                edit_func=self.egl_path_edit_cb,
+                save_func=self.egl_path_save_cb,
+                parent=self
+            )
+            self.egl_path_edit.textChanged.connect(self.egl_path_changed)
+            self.egl_path_layout.addWidget(self.egl_path_edit)
         else:
-            self.refresh_button.setText(self.tr("Enable Sync"))
-        self.refresh_button.clicked.connect(self.sync)
+            self.egl_path_label.setVisible(False)
 
-        # self.enable_sync_button.clicked.connect(self.enable_sync)
-        # self.sync_once_button.clicked.connect(shared.lgd_core.egl_sync)
+        self.egl_sync_check.setChecked(shared.core.egl_sync_enabled)
+        self.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
 
         self.export_list.itemDoubleClicked.connect(
             lambda item:
@@ -97,73 +100,89 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.export_button.clicked.connect(self.export_selected)
         self.import_button.clicked.connect(self.import_selected)
 
-    def egl_path_edit_cb(self, path):
+        self.update_lists()
+
+    @staticmethod
+    def egl_path_edit_cb(path) -> Tuple[bool, str]:
+        if not path:
+            return True, path
         if platform.system() != "Windows":
             if os.path.exists(os.path.join(path, "system.reg")) and os.path.exists(os.path.join(path, "dosdevices/c:")):
                 # path is a wine prefix
                 path = os.path.join(path, "dosdevices/c:", "ProgramData/Epic/EpicGamesLauncher/Data/Manifests")
-        if os.path.exists(path) and glob(f"{path}/*.item"):
+        if os.path.exists(path):
             return True, path
         return False, path
 
     def egl_path_save_cb(self, path):
-        shared.legendary_core.lgd.config.set("Legendary", "egl_programdata", path)
-        shared.legendary_core.egl.programdata_path = path
-        shared.legendary_core.lgd.save_config()
-        self.update_lists()
+        if not path:
+            # This is the same as "--unlink"
+            self.core.egl.programdata_path = None
+            self.core.lgd.config.remove_option('Legendary', 'egl_programdata')
+            self.core.lgd.config.remove_option('Legendary', 'egl_sync')
+            # remove EGL GUIDs from all games, DO NOT remove .egstore folders because that would fuck things up.
+            for igame in self.core.get_installed_list():
+                igame.egl_guid = ''
+                self.core.install_game(igame)
+        else:
+            self.core.egl.programdata_path = path
+            self.core.lgd.config.set("Legendary", "egl_programdata", path)
+        self.core.lgd.save_config()
 
-    def update_export_list(self):
-        self.export_button.setDisabled(not bool(shared.legendary_core.egl.programdata_path))
-        self.export_select_all_button.setDisabled(not bool(shared.legendary_core.egl.programdata_path))
-        self.export_select_none_button.setDisabled(not bool(shared.legendary_core.egl.programdata_path))
+    def egl_path_changed(self, path):
+        if self.egl_path_edit.is_valid:
+            self.egl_sync_check.setEnabled(bool(path))
+            self.egl_sync_check.setCheckState(Qt.Unchecked)
+            self.update_lists()
 
-        self.export_list.clear()
-        self.exportable_items.clear()
-        exportable_games = shared.legendary_core.egl_get_exportable()
-        for igame in exportable_games:
-            ew = EGLSyncItem(igame, True, self.export_list)
-            self.exportable_items.append(ew)
-            self.export_list.addItem(ew)
-        self.export_group.setEnabled(bool(exportable_games))
-        self.export_button.setEnabled(bool(exportable_games))
-        self.export_label.setVisible(not bool(exportable_games))
-
-    def update_import_list(self):
-        self.import_button.setDisabled(not bool(shared.legendary_core.egl.programdata_path))
-        self.import_select_all_button.setDisabled(not bool(shared.legendary_core.egl.programdata_path))
-        self.import_select_none_button.setDisabled(not bool(shared.legendary_core.egl.programdata_path))
-
-        self.import_list.clear()
-        self.importable_items.clear()
-        importable_games = shared.legendary_core.egl_get_importable()
-        for game in importable_games:
-            iw = EGLSyncItem(game, False, self.import_list)
-            self.importable_items.append(iw)
-            self.import_list.addItem(iw)
-        self.import_group.setEnabled(bool(importable_games))
-        self.import_button.setEnabled(bool(importable_games))
-        self.import_label.setVisible(not bool(importable_games))
+    def egl_sync_changed(self, state):
+        if state == Qt.Unchecked:
+            self.core.lgd.config.remove_option('Legendary', 'egl_sync')
+        else:
+            self.core.lgd.config.set('Legendary', 'egl_sync', str(True))
+            self.core.egl_sync()
+            self.update_lists()
+        self.core.lgd.save_config()
 
     def update_lists(self):
-        self.export_list.setVisible(bool(shared.legendary_core.egl.programdata_path))
-        self.import_list.setVisible(bool(shared.legendary_core.egl.programdata_path))
-        if not shared.legendary_core.egl.programdata_path:
+        self.export_list.setVisible(bool(shared.core.egl.programdata_path))
+        self.import_list.setVisible(bool(shared.core.egl.programdata_path))
+        if not shared.core.egl.programdata_path:
             return
         self.update_export_list()
         self.update_import_list()
 
-    def enable_sync(self):
-        if not shared.legendary_core.egl.programdata_path:
-            if os.path.exists(path := self.egl_path_edit.text()):
-                shared.legendary_core.lgd.config.set("Legendary", "egl_programdata", path)
-                shared.legendary_core.lgd.save_config()
-                shared.legendary_core.egl.programdata_path = path
+    def update_export_list(self):
+        self.export_button.setDisabled(not bool(shared.core.egl.programdata_path))
+        self.export_select_all_button.setDisabled(not bool(shared.core.egl.programdata_path))
+        self.export_select_none_button.setDisabled(not bool(shared.core.egl.programdata_path))
 
-        shared.legendary_core.lgd.config.set('Legendary', 'egl_sync', "true")
-        shared.legendary_core.egl_sync()
-        shared.legendary_core.lgd.save_config()
-        self.refresh_button.setText(self.tr("Disable Sync"))
-        self.enable_sync_button.setDisabled(True)
+        self.export_list.clear()
+        self.exportable_items.clear()
+        exportable_games = shared.core.egl_get_exportable()
+        for igame in exportable_games:
+            ew = EGLSyncItem(igame, True, self.export_list)
+            self.exportable_items.append(ew)
+            self.export_list.addItem(ew)
+        for btn in self.export_buttons_layout.children():
+            btn.setEnabled(bool(exportable_games))
+        self.export_label.setVisible(not bool(exportable_games))
+
+    def update_import_list(self):
+        self.import_button.setDisabled(not bool(shared.core.egl.programdata_path))
+        self.import_select_all_button.setDisabled(not bool(shared.core.egl.programdata_path))
+        self.import_select_none_button.setDisabled(not bool(shared.core.egl.programdata_path))
+
+        self.import_list.clear()
+        self.importable_items.clear()
+        importable_games = shared.core.egl_get_importable()
+        for game in importable_games:
+            iw = EGLSyncItem(game, False, self.import_list)
+            self.importable_items.append(iw)
+            self.import_list.addItem(iw)
+        for btn in self.import_buttons_layout.children():
+            btn.setEnabled(bool(importable_games))
+        self.import_label.setVisible(not bool(importable_games))
 
     @staticmethod
     def select_items(item_list, state):
@@ -184,27 +203,6 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                 self.import_list.takeItem(self.import_list.row(iw))
         self.update_import_list()
 
-    def sync(self):
-        if shared.legendary_core.egl_sync_enabled:
-            # disable sync
-            info = DisableSyncDialog().get_information()
-            if info[0] == 0:
-                if info[1]:
-                    shared.legendary_core.lgd.config.remove_option('Legendary', 'egl_sync')
-                else:
-                    shared.legendary_core.lgd.config.remove_option('Legendary', 'egl_programdata')
-                    shared.legendary_core.lgd.config.remove_option('Legendary', 'egl_sync')
-                    # remove EGL GUIDs from all games, DO NOT remove .egstore folders because that would fuck things up.
-                    for igame in shared.legendary_core.get_installed_list():
-                        igame.egl_guid = ''
-                        shared.legendary_core.install_game(igame)
-                shared.legendary_core.lgd.save_config()
-                self.refresh_button.setText(self.tr("Enable Sync"))
-        else:
-            # enable sync
-            # self.enable_sync_button.setDisabled(False)
-            self.update_lists()
-
 
 class EGLSyncItem(QListWidgetItem):
     def __init__(self, game, export: bool, parent=None):
@@ -216,16 +214,16 @@ class EGLSyncItem(QListWidgetItem):
         if export:
             self.setText(game.title)
         else:
-            self.setText(shared.legendary_core.get_game(game.app_name).app_title)
+            self.setText(shared.core.get_game(game.app_name).app_title)
 
     def is_checked(self):
         return True if self.checkState() == Qt.Checked else False
 
     def export_game(self):
-        shared.legendary_core.egl_export(self.game.app_name)
+        shared.core.egl_export(self.game.app_name)
 
     def import_game(self):
-        shared.legendary_core.egl_import(self.game.app_name)
+        shared.core.egl_import(self.game.app_name)
 
 
 class DisableSyncDialog(QDialog):
@@ -279,7 +277,7 @@ class EGLSyncItemWidget(QGroupBox):
         if export:
             self.app_title_label = QLabel(game.title)
         else:
-            title = shared.legendary_core.get_game(game.app_name).app_title
+            title = shared.core.get_game(game.app_name).app_title
             self.app_title_label = QLabel(title)
         self.layout.addWidget(self.app_title_label)
         self.button = QPushButton(self.tr("Export") if export else self.tr("Import"))
@@ -293,13 +291,13 @@ class EGLSyncItemWidget(QGroupBox):
         self.setLayout(self.layout)
 
     def export_game(self):
-        shared.legendary_core.egl_export(self.game.app_name)
+        shared.core.egl_export(self.game.app_name)
         # FIXME: on update_egl_widget this is going to crash because
         # FIXME: the item is not removed from the list in the python's side
         self.deleteLater()
 
     def import_game(self):
-        shared.legendary_core.egl_import(self.game.app_name)
+        shared.core.egl_import(self.game.app_name)
         # FIXME: on update_egl_widget this is going to crash because
         # FIXME: the item is not removed from the list in the python's side
         self.deleteLater()
