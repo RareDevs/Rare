@@ -148,7 +148,7 @@ class IndicatorLineEdit(QWidget):
             self.indicator_label = QLabel()
             self.indicator_label.setPixmap(icon("ei.info-circle", color="gray").pixmap(16, 16))
             self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            self.__indicator(edit_func(text))
+            self.__indicator(edit_func(text)[0])
             self.layout.addWidget(self.indicator_label)
 
         if not ph_text:
@@ -181,9 +181,9 @@ class IndicatorLineEdit(QWidget):
             self.line_edit.setText(text)
             self.line_edit.blockSignals(False)
             self.__indicator(self.is_valid)
-            self.textChanged.emit(text)
             if self.is_valid:
                 self.__save(text)
+            self.textChanged.emit(text)
 
     def __save(self, text):
         if self.save_func is not None:
@@ -237,7 +237,7 @@ class PathEdit(IndicatorLineEdit):
 class SideTabBar(QTabBar):
     def __init__(self, parent=None):
         super(SideTabBar, self).__init__(parent=parent)
-        self.setObjectName("side_tab_bar")
+        self.setObjectName("SideTabBar")
         self.fm = QFontMetrics(self.font())
 
     def tabSizeHint(self, index):
