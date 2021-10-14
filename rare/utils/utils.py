@@ -61,6 +61,7 @@ def download_image(game, force=False):
     else:
         json_data = json.load(open(f"{image_dir}/{game.app_name}/image.json", "r"))
     # Download
+    download = False
     for image in game.metadata["keyImages"]:
         if image["type"] == "DieselGameBoxTall" or image["type"] == "DieselGameBoxLogo" or image["type"] == "Thumbnail":
             if image["type"] not in json_data.keys():
@@ -79,51 +80,57 @@ def download_image(game, force=False):
                         img = Image.open(f"{image_dir}/{game.app_name}/{image['type']}.png")
                         img = img.resize((200, int(200 * 4 / 3)))
                         img.save(f"{image_dir}/{game.app_name}/{image['type']}.png")
+                        download = True
                     except UnidentifiedImageError as e:
                         logger.warning(e)
 
     # scale and grey
-    if not os.path.exists(os.path.join(image_dir, game.app_name + '/UninstalledArt.png')):
+    uninstalled_image = os.path.join(image_dir, game.app_name + '/UninstalledArt.png')
+    if download and os.path.exists(uninstalled_image):
+        os.remove(uninstalled_image)
+    elif os.path.exists(uninstalled_image):
+        return
 
-        if os.path.exists(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png")):
-            # finalArt = Image.open(f'{image_dir}/' + game.app_name + '/DieselGameBoxTall.png')
-            # finalArt.save(f'{image_dir}/{game.app_name}/FinalArt.png')
-            # And same with the grayscale one
-            try:
-                bg = Image.open(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png"))
-            except UnidentifiedImageError:
-                logger.warning("Reload image for " + game.app_title)
-                # avoid endless recursion
-                if not force:
-                    download_image(game, True)
-                return
-            uninstalledArt = bg.convert('L')
-            uninstalledArt = uninstalledArt.resize((200, int(200 * 4 / 3)))
-            uninstalledArt.save(f'{image_dir}/{game.app_name}/UninstalledArt.png')
-        elif os.path.isfile(f"{image_dir}/{game.app_name}/DieselGameBoxLogo.png"):
-            bg: Image.Image = Image.open(f"{image_dir}/{game.app_name}/DieselGameBoxLogo.png")
-            bg = bg.resize((int(bg.size[1] * 3 / 4), bg.size[1]))
-            logo = Image.open(f'{image_dir}/{game.app_name}/DieselGameBoxLogo.png').convert('RGBA')
-            wpercent = ((bg.size[0] * (3 / 4)) / float(logo.size[0]))
-            hsize = int((float(logo.size[1]) * float(wpercent)))
-            logo = logo.resize((int(bg.size[0] * (3 / 4)), hsize), Image.ANTIALIAS)
-            # Calculate where the image has to be placed
-            pasteX = int((bg.size[0] - logo.size[0]) / 2)
-            pasteY = int((bg.size[1] - logo.size[1]) / 2)
-            # And finally copy the background and paste in the image
-            # finalArt = bg.copy()
-            # finalArt.paste(logo, (pasteX, pasteY), logo)
-            # Write out the file
-            # finalArt.save(f'{image_dir}/' + game.app_name + '/FinalArt.png')
-            logoCopy = logo.copy()
-            logoCopy.putalpha(int(256 * 3 / 4))
-            logo.paste(logoCopy, logo)
-            uninstalledArt = bg.copy()
-            uninstalledArt.paste(logo, (pasteX, pasteY), logo)
-            uninstalledArt = uninstalledArt.convert('L')
-            uninstalledArt.save(f'{image_dir}/' + game.app_name + '/UninstalledArt.png')
-        else:
-            logger.warning(f"File {image_dir}/{game.app_name}/DieselGameBoxTall.png doesn't exist")
+    if os.path.exists(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png")):
+        # finalArt = Image.open(f'{image_dir}/' + game.app_name + '/DieselGameBoxTall.png')
+        # finalArt.save(f'{image_dir}/{game.app_name}/FinalArt.png')
+        # And same with the grayscale one
+        try:
+            bg = Image.open(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png"))
+        except UnidentifiedImageError:
+            logger.warning("Reload image for " + game.app_title)
+            # avoid endless recursion
+            if not force:
+                download_image(game, True)
+            return
+        uninstalledArt = bg.convert('L')
+        uninstalledArt = uninstalledArt.resize((200, int(200 * 4 / 3)))
+        uninstalledArt.save(f'{image_dir}/{game.app_name}/UninstalledArt.png')
+
+    elif os.path.isfile(f"{image_dir}/{game.app_name}/DieselGameBoxLogo.png"):
+        bg: Image.Image = Image.open(f"{image_dir}/{game.app_name}/DieselGameBoxLogo.png")
+        bg = bg.resize((int(bg.size[1] * 3 / 4), bg.size[1]))
+        logo = Image.open(f'{image_dir}/{game.app_name}/DieselGameBoxLogo.png').convert('RGBA')
+        wpercent = ((bg.size[0] * (3 / 4)) / float(logo.size[0]))
+        hsize = int((float(logo.size[1]) * float(wpercent)))
+        logo = logo.resize((int(bg.size[0] * (3 / 4)), hsize), Image.ANTIALIAS)
+        # Calculate where the image has to be placed
+        pasteX = int((bg.size[0] - logo.size[0]) / 2)
+        pasteY = int((bg.size[1] - logo.size[1]) / 2)
+        # And finally copy the background and paste in the image
+        # finalArt = bg.copy()
+        # finalArt.paste(logo, (pasteX, pasteY), logo)
+        # Write out the file
+        # finalArt.save(f'{image_dir}/' + game.app_name + '/FinalArt.png')
+        logoCopy = logo.copy()
+        logoCopy.putalpha(int(256 * 3 / 4))
+        logo.paste(logoCopy, logo)
+        uninstalledArt = bg.copy()
+        uninstalledArt.paste(logo, (pasteX, pasteY), logo)
+        uninstalledArt = uninstalledArt.convert('L')
+        uninstalledArt.save(f'{image_dir}/' + game.app_name + '/UninstalledArt.png')
+    else:
+        logger.warning(f"File {image_dir}/{game.app_name}/DieselGameBoxTall.png doesn't exist")
 
 
 color_role_map = {
