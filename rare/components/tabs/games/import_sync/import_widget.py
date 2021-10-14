@@ -17,7 +17,7 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
     def __init__(self, parent=None):
         super(ImportGroup, self).__init__(parent=parent)
         self.setupUi(self)
-        self.core = shared.legendary_core
+        self.core = shared.core
         self.game_list = [i.app_name for i in self.core.get_game_list()]
 
         self.path_edit = PathEdit(
@@ -95,7 +95,7 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
                 self.core.get_installed_game(app_name).title))
             self.app_name.setText("")
 
-            shared.signals.update_game_list.emit(app_name)
+            shared.signals.update_gamelist.emit(app_name)
         else:
             logger.warning("Failed to import" + app_name)
             self.info_label.setText(self.tr("Failed to import {}").format(app_name))
