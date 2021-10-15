@@ -107,9 +107,13 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         if not path:
             return True, path
         if platform.system() != "Windows":
-            if os.path.exists(os.path.join(path, "system.reg")) and os.path.exists(os.path.join(path, "dosdevices/c:")):
+            path = path.rstrip('/')
+            if os.path.exists(os.path.join(path, 'system.reg')) and os.path.exists(os.path.join(path, 'dosdevices/c:')):
                 # path is a wine prefix
-                path = os.path.join(path, "dosdevices/c:", "ProgramData/Epic/EpicGamesLauncher/Data/Manifests")
+                path = os.path.join(path, 'dosdevices/c:', 'ProgramData/Epic/EpicGamesLauncher/Data/Manifests')
+            elif not path.endswith('ProgramData/Epic/EpicGamesLauncher/Data/Manifests'):
+                # lower() might not be needed here
+                return False, path
         if os.path.exists(path):
             return True, path
         return False, path
