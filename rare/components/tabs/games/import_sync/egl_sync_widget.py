@@ -108,11 +108,10 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         if not path:
             return True, path
         if platform.system() != "Windows":
-            path = path.rstrip('/')
             if os.path.exists(os.path.join(path, 'system.reg')) and os.path.exists(os.path.join(path, 'dosdevices/c:')):
                 # path is a wine prefix
                 path = os.path.join(path, 'dosdevices/c:', 'ProgramData/Epic/EpicGamesLauncher/Data/Manifests')
-            elif not path.endswith('ProgramData/Epic/EpicGamesLauncher/Data/Manifests'):
+            elif not path.rstrip('/').endswith('ProgramData/Epic/EpicGamesLauncher/Data/Manifests'):
                 # lower() might or might not be needed in the check
                 return False, path
         if os.path.exists(path):
@@ -145,12 +144,12 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             self.core.lgd.config.remove_option('Legendary', 'egl_sync')
         else:
             self.core.lgd.config.set('Legendary', 'egl_sync', str(True))
-            self.core.egl_sync()
-            self.update_lists()
+            # self.core.egl_sync()
+            # self.update_lists()
         self.core.lgd.save_config()
 
     def update_lists(self):
-        have_path = bool(shared.core.egl.programdata_path)
+        have_path = bool(shared.core.egl.programdata_path) and self.egl_path_edit.is_valid
         self.egl_sync_label.setEnabled(have_path)
         self.egl_sync_check.setEnabled(have_path)
 
