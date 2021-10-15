@@ -153,7 +153,7 @@ class IndicatorLineEdit(QWidget):
 
         if not ph_text:
             _translate = QCoreApplication.translate
-            self.line_edit.setPlaceholderText(_translate("PathEdit", "Default"))
+            self.line_edit.setPlaceholderText(_translate(self.__class__.__name__, "Default"))
 
         if text:
             self.line_edit.setText(text)

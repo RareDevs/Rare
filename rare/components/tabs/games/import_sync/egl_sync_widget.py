@@ -6,7 +6,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, \
-    QCheckBox, QPushButton, QListWidgetItem, QDialog, QFileDialog
+    QCheckBox, QPushButton, QListWidgetItem, QDialog, QFileDialog, QSizePolicy
 
 import rare.shared as shared
 from rare.ui.components.tabs.games.import_sync.egl_sync_widget import Ui_EGLSyncGroup
@@ -68,6 +68,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                 egl_path = str()
             self.egl_path_edit = PathEdit(
                 path=egl_path,
+                ph_text=estimated_path,
                 file_type=QFileDialog.DirectoryOnly,
                 edit_func=self.egl_path_edit_cb,
                 save_func=self.egl_path_save_cb,
@@ -112,7 +113,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                 # path is a wine prefix
                 path = os.path.join(path, 'dosdevices/c:', 'ProgramData/Epic/EpicGamesLauncher/Data/Manifests')
             elif not path.endswith('ProgramData/Epic/EpicGamesLauncher/Data/Manifests'):
-                # lower() might not be needed here
+                # lower() might or might not be needed in the check
                 return False, path
         if os.path.exists(path):
             return True, path
@@ -149,18 +150,27 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.core.lgd.save_config()
 
     def update_lists(self):
-        self.export_list.setVisible(bool(shared.core.egl.programdata_path))
-        self.import_list.setVisible(bool(shared.core.egl.programdata_path))
-        if not shared.core.egl.programdata_path:
+        have_path = bool(shared.core.egl.programdata_path)
+        self.egl_sync_label.setEnabled(have_path)
+        self.egl_sync_check.setEnabled(have_path)
+
+        self.export_import_widget.setEnabled(have_path)
+
+        self.export_label.setVisible(not have_path)
+        self.export_list.setVisible(have_path)
+        self.export_buttons_widget.setVisible(have_path)
+
+        self.import_label.setVisible(not have_path)
+        self.import_list.setVisible(have_path)
+        self.import_buttons_widget.setVisible(have_path)
+
+        if not have_path:
             return
+
         self.update_export_list()
         self.update_import_list()
 
     def update_export_list(self):
-        self.export_button.setDisabled(not bool(shared.core.egl.programdata_path))
-        self.export_select_all_button.setDisabled(not bool(shared.core.egl.programdata_path))
-        self.export_select_none_button.setDisabled(not bool(shared.core.egl.programdata_path))
-
         self.export_list.clear()
         self.exportable_items.clear()
         exportable_games = shared.core.egl_get_exportable()
@@ -168,15 +178,12 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             ew = EGLSyncItem(igame, True, self.export_list)
             self.exportable_items.append(ew)
             self.export_list.addItem(ew)
-        for btn in self.export_buttons_layout.children():
-            btn.setEnabled(bool(exportable_games))
-        self.export_label.setVisible(not bool(exportable_games))
+        have_exportable = bool(exportable_games)
+        self.export_label.setVisible(not have_exportable)
+        self.export_list.setVisible(have_exportable)
+        self.export_buttons_widget.setVisible(have_exportable)
 
     def update_import_list(self):
-        self.import_button.setDisabled(not bool(shared.core.egl.programdata_path))
-        self.import_select_all_button.setDisabled(not bool(shared.core.egl.programdata_path))
-        self.import_select_none_button.setDisabled(not bool(shared.core.egl.programdata_path))
-
         self.import_list.clear()
         self.importable_items.clear()
         importable_games = shared.core.egl_get_importable()
@@ -184,9 +191,10 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             iw = EGLSyncItem(game, False, self.import_list)
             self.importable_items.append(iw)
             self.import_list.addItem(iw)
-        for btn in self.import_buttons_layout.children():
-            btn.setEnabled(bool(importable_games))
-        self.import_label.setVisible(not bool(importable_games))
+        have_importable = bool(importable_games)
+        self.import_label.setVisible(not have_importable)
+        self.import_list.setVisible(have_importable)
+        self.import_buttons_widget.setVisible(have_importable)
 
     @staticmethod
     def select_items(item_list, state):

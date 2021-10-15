@@ -53,144 +53,219 @@
    <item row="2" column="1">
     <widget class="QCheckBox" name="egl_sync_check">
      <property name="text">
+      <string notr="true"/>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <layout class="QHBoxLayout" name="egl_path_layout"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="egl_sync_label">
+     <property name="text">
       <string>Enable automatic sync</string>
      </property>
     </widget>
    </item>
    <item row="3" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="export_import_layout">
-     <item>
-      <widget class="QGroupBox" name="export_group">
-       <property name="title">
-        <string>Exportable games</string>
-       </property>
-       <layout class="QVBoxLayout" name="export_layout">
-        <item>
-         <widget class="QLabel" name="export_label">
-          <property name="text">
-           <string>No games to export to EGS</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QListWidget" name="export_list">
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="export_buttons_layout">
-          <item>
-           <widget class="QPushButton" name="export_select_all_button">
-            <property name="text">
-             <string>Select all</string>
+    <widget class="QWidget" name="export_import_widget" native="true">
+     <layout class="QHBoxLayout" name="export_import_layout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QGroupBox" name="export_group">
+        <property name="title">
+         <string>Exportable games</string>
+        </property>
+        <layout class="QVBoxLayout" name="export_layout">
+         <item>
+          <widget class="QLabel" name="export_label">
+           <property name="text">
+            <string>No games to export to EGS</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="export_list">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="export_group_hspacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>4</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QWidget" name="export_buttons_widget" native="true">
+           <layout class="QHBoxLayout" name="export_buttons_layout">
+            <property name="leftMargin">
+             <number>0</number>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="export_select_none_button">
-            <property name="text">
-             <string>Select none</string>
+            <property name="topMargin">
+             <number>0</number>
             </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="export_buttons_hspacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+            <property name="rightMargin">
+             <number>0</number>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
+            <property name="bottomMargin">
+             <number>0</number>
             </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="export_button">
-            <property name="text">
-             <string>Export</string>
+            <item>
+             <widget class="QPushButton" name="export_select_all_button">
+              <property name="text">
+               <string>Select all</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="export_select_none_button">
+              <property name="text">
+               <string>Select none</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="export_buttons_hspacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="export_button">
+              <property name="text">
+               <string>Export</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="import_group">
+        <property name="title">
+         <string>Importable games</string>
+        </property>
+        <layout class="QVBoxLayout" name="import_layout">
+         <item>
+          <widget class="QLabel" name="import_label">
+           <property name="text">
+            <string>No games to import from EGS</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="import_list">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="import_group_hspacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>4</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QWidget" name="import_buttons_widget" native="true">
+           <layout class="QHBoxLayout" name="import_buttons_layout">
+            <property name="leftMargin">
+             <number>0</number>
             </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="import_group">
-       <property name="title">
-        <string>Importable games</string>
-       </property>
-       <layout class="QVBoxLayout" name="import_layout">
-        <item>
-         <widget class="QLabel" name="import_label">
-          <property name="text">
-           <string>No games to import from EGS</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QListWidget" name="import_list">
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="import_buttons_layout">
-          <item>
-           <widget class="QPushButton" name="import_select_all_button">
-            <property name="text">
-             <string>Select all</string>
+            <property name="topMargin">
+             <number>0</number>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="import_select_none_button">
-            <property name="text">
-             <string>Select none</string>
+            <property name="rightMargin">
+             <number>0</number>
             </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="import_buttons_hspacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+            <property name="bottomMargin">
+             <number>0</number>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="import_button">
-            <property name="text">
-             <string>Import</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="1">
-    <layout class="QHBoxLayout" name="egl_path_layout"/>
+            <item>
+             <widget class="QPushButton" name="import_select_all_button">
+              <property name="text">
+               <string>Select all</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="import_select_none_button">
+              <property name="text">
+               <string>Select none</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="import_buttons_hspacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="import_button">
+              <property name="text">
+               <string>Import</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
