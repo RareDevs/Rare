@@ -42,8 +42,8 @@ class ImportSyncWidget(QWidget):
     def __init__(self, widget: QWidget, title: str, info: str, parent=None):
         super(ImportSyncWidget, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
-        self.title = QLabel(f"<h2>{title}</h2")
-        self.layout.addWidget(self.title)
+        # self.title = QLabel(f"<h2>{title}</h2")
+        # self.layout.addWidget(self.title)
         self.group = widget
         self.layout.addWidget(self.group)
         self.info = QLabel(f"<h4>{info}</h4>")
