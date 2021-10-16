@@ -4,7 +4,7 @@ from glob import glob
 from typing import Tuple
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QThread
+from PyQt5.QtCore import Qt, QThread, QFileSystemWatcher
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, \
     QCheckBox, QPushButton, QListWidgetItem, QDialog, QFileDialog, QSizePolicy
 
@@ -62,22 +62,28 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         #         if os.path.exists(p := os.path.join(i, "drive_c/ProgramData/Epic/EpicGamesLauncher/Data/Manifests")):
         #             egl_path = p
 
-        if platform.system() != "Windows":
-            egl_path = self.core.egl.programdata_path
-            if egl_path is None:
-                egl_path = str()
-            self.egl_path_edit = PathEdit(
-                path=egl_path,
-                ph_text=estimated_path,
-                file_type=QFileDialog.DirectoryOnly,
-                edit_func=self.egl_path_edit_cb,
-                save_func=self.egl_path_save_cb,
-                parent=self
-            )
-            self.egl_path_edit.textChanged.connect(self.egl_path_changed)
-            self.egl_path_layout.addWidget(self.egl_path_edit)
-        else:
+        egl_path = shared.core.egl.programdata_path
+        if egl_path is None:
+            egl_path = str()
+        self.egl_path_edit = PathEdit(
+            path=egl_path,
+            ph_text=estimated_path,
+            file_type=QFileDialog.DirectoryOnly,
+            edit_func=self.egl_path_edit_cb,
+            save_func=self.egl_path_save_cb,
+            parent=self
+        )
+        self.egl_path_edit.textChanged.connect(self.egl_path_changed)
+        self.egl_path_layout.addWidget(self.egl_path_edit)
+
+        self.egl_watcher = QFileSystemWatcher([self.egl_path_edit.text()], self)
+        self.egl_watcher.directoryChanged.connect(self.egl_items_changed)
+
+        if platform.system() == "Windows":
             self.egl_path_label.setVisible(False)
+            self.egl_path_edit.setVisible(False)
+            self.egl_path_info_label.setVisible(False)
+            self.egl_path_info.setVisible(False)
 
         self.egl_sync_check.setChecked(shared.core.egl_sync_enabled)
         self.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
@@ -118,69 +124,70 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             return True, path
         return False, path
 
-    def egl_path_save_cb(self, path):
+    @staticmethod
+    def egl_path_save_cb(path):
         if not path:
             # This is the same as "--unlink"
-            self.core.egl.programdata_path = None
-            self.core.lgd.config.remove_option('Legendary', 'egl_programdata')
-            self.core.lgd.config.remove_option('Legendary', 'egl_sync')
+            shared.core.egl.programdata_path = None
+            shared.core.lgd.config.remove_option('Legendary', 'egl_programdata')
+            shared.core.lgd.config.remove_option('Legendary', 'egl_sync')
             # remove EGL GUIDs from all games, DO NOT remove .egstore folders because that would fuck things up.
-            for igame in self.core.get_installed_list():
+            for igame in shared.core.get_installed_list():
                 igame.egl_guid = ''
-                self.core.install_game(igame)
+                shared.core.install_game(igame)
         else:
-            self.core.egl.programdata_path = path
-            self.core.lgd.config.set("Legendary", "egl_programdata", path)
-        self.core.lgd.save_config()
+            # NOTE: need to clear known manifests to force refresh
+            shared.core.egl.manifests.clear()
+            shared.core.egl.programdata_path = path
+            shared.core.lgd.config.set("Legendary", "egl_programdata", path)
+        shared.core.lgd.save_config()
 
     def egl_path_changed(self, path):
         if self.egl_path_edit.is_valid:
             self.egl_sync_check.setEnabled(bool(path))
-            self.egl_sync_check.setCheckState(Qt.Unchecked)
-            self.update_lists()
+        self.egl_sync_check.setCheckState(Qt.Unchecked)
+        self.egl_watcher.removePaths([p for p in self.egl_watcher.directories()])
+        self.egl_watcher.addPaths([path])
+        self.update_lists()
 
     def egl_sync_changed(self, state):
         if state == Qt.Unchecked:
             self.core.lgd.config.remove_option('Legendary', 'egl_sync')
         else:
             self.core.lgd.config.set('Legendary', 'egl_sync', str(True))
-            # self.core.egl_sync()
-            # self.update_lists()
+            # lk: not sure if this should be done here
+            # self.select_items(self.importable_items, Qt.Checked)
+            # self.import_selected()
+            # self.select_items(self.exportable_items, Qt.Checked)
+            # self.export_selected()
         self.core.lgd.save_config()
+
+    def egl_items_changed(self, path: str):
+        if path == shared.core.egl.programdata_path and self.egl_path_edit.is_valid:
+            shared.core.egl.manifests.clear()
+            self.update_import_list()
+            self.update_export_list()
 
     def update_lists(self):
         have_path = bool(shared.core.egl.programdata_path) and self.egl_path_edit.is_valid
         self.egl_sync_label.setEnabled(have_path)
         self.egl_sync_check.setEnabled(have_path)
 
-        self.export_import_widget.setEnabled(have_path)
-
-        self.export_label.setVisible(not have_path)
-        self.export_list.setVisible(have_path)
-        self.export_buttons_widget.setVisible(have_path)
+        self.import_export_widget.setEnabled(have_path)
 
         self.import_label.setVisible(not have_path)
         self.import_list.setVisible(have_path)
         self.import_buttons_widget.setVisible(have_path)
 
+        self.export_label.setVisible(not have_path)
+        self.export_list.setVisible(have_path)
+        self.export_buttons_widget.setVisible(have_path)
+
         if not have_path:
             return
 
-        self.update_export_list()
         self.update_import_list()
-
-    def update_export_list(self):
-        self.export_list.clear()
-        self.exportable_items.clear()
-        exportable_games = shared.core.egl_get_exportable()
-        for igame in exportable_games:
-            ew = EGLSyncItem(igame, True, self.export_list)
-            self.exportable_items.append(ew)
-            self.export_list.addItem(ew)
-        have_exportable = bool(exportable_games)
-        self.export_label.setVisible(not have_exportable)
-        self.export_list.setVisible(have_exportable)
-        self.export_buttons_widget.setVisible(have_exportable)
+        self.update_export_list()
 
     def update_import_list(self):
         self.import_list.clear()
@@ -195,24 +202,39 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.import_list.setVisible(have_importable)
         self.import_buttons_widget.setVisible(have_importable)
 
+    def update_export_list(self):
+        self.export_list.clear()
+        self.exportable_items.clear()
+        exportable_games = shared.core.egl_get_exportable()
+        for igame in exportable_games:
+            ew = EGLSyncItem(igame, True, self.export_list)
+            self.exportable_items.append(ew)
+            self.export_list.addItem(ew)
+        have_exportable = bool(exportable_games)
+        self.export_label.setVisible(not have_exportable)
+        self.export_list.setVisible(have_exportable)
+        self.export_buttons_widget.setVisible(have_exportable)
+
     @staticmethod
     def select_items(item_list, state):
         for w in item_list:
             w.setCheckState(state)
-
-    def export_selected(self):
-        for ew in self.exportable_items:
-            if ew.is_checked():
-                ew.export_game()
-                self.export_list.takeItem(self.export_list.row(ew))
-        self.update_export_list()
 
     def import_selected(self):
         for iw in self.importable_items:
             if iw.is_checked:
                 iw.import_game()
                 self.import_list.takeItem(self.import_list.row(iw))
+        self.core.egl_sync()
         self.update_import_list()
+
+    def export_selected(self):
+        for ew in self.exportable_items:
+            if ew.is_checked():
+                ew.export_game()
+                self.export_list.takeItem(self.export_list.row(ew))
+        self.core.egl_sync()
+        self.update_export_list()
 
 
 class EGLSyncItem(QListWidgetItem):

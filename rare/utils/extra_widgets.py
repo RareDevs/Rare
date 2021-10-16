@@ -148,21 +148,26 @@ class IndicatorLineEdit(QWidget):
             self.indicator_label = QLabel()
             self.indicator_label.setPixmap(icon("ei.info-circle", color="gray").pixmap(16, 16))
             self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            self.__indicator(edit_func(text)[0])
             self.layout.addWidget(self.indicator_label)
 
         if not ph_text:
             _translate = QCoreApplication.translate
             self.line_edit.setPlaceholderText(_translate(self.__class__.__name__, "Default"))
 
-        if text:
-            self.line_edit.setText(text)
-
         self.edit_func = edit_func
         self.save_func = save_func
         self.line_edit.textChanged.connect(self.__edit)
         if self.edit_func is None:
             self.line_edit.textChanged.connect(self.__save)
+
+        # lk: this can be placed here to trigger __edit
+        # lk: it going to save the input again if it is valid which
+        # lk: is ok to do given the checks don't misbehave (they shouldn't)
+        # lk: however it is going to edit any "understood" bad input to good input
+        # lk: and we might not want that (but the validity check reports on the edited string)
+        # lk: it is also going to trigger this widget's textChanged signal but that gets lost
+        if text:
+            self.line_edit.setText(text)
 
     def text(self) -> str:
         return self.line_edit.text()
