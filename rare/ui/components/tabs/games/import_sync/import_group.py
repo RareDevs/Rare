@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'rare/ui/components/tabs/games/import_sync/import_widget.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/tabs/games/import_sync/import_group.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #

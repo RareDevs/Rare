@@ -12,10 +12,7 @@
 }
 
 QLabel {
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 2px;
-    border-color: transparent;
+    border-width: 0px;
     background-color: transparent;
     padding: 0px;
     selection-background-color: #2f4f4f;

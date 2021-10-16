@@ -6,7 +6,7 @@ from typing import Tuple
 from PyQt5.QtWidgets import QFileDialog, QGroupBox
 
 import rare.shared as shared
-from rare.ui.components.tabs.games.import_sync.import_widget import Ui_ImportGroup
+from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
 

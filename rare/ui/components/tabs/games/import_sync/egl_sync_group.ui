@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EGLSyncGroup</class>
+ <widget class="QGroupBox" name="EGLSyncGroup">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>478</width>
+    <height>106</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">EGLSyncGroup</string>
+  </property>
+  <property name="title">
+   <string>Sync with Epic Games Launcher</string>
+  </property>
+  <property name="checkable">
+   <bool>false</bool>
+  </property>
+  <property name="checked">
+   <bool>false</bool>
+  </property>
+  <layout class="QFormLayout" name="egl_sync_layout">
+   <property name="labelAlignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <item row="0" column="0">
+    <widget class="QLabel" name="egl_path_label">
+     <property name="text">
+      <string>Prefix/Manifest path</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <layout class="QHBoxLayout" name="egl_path_layout"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="egl_path_info_label">
+     <property name="text">
+      <string>Estimated path</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLabel" name="egl_path_info">
+     <property name="text">
+      <string notr="true">error</string>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="egl_sync_check">
+     <property name="text">
+      <string notr="true"/>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <layout class="QVBoxLayout" name="import_export_layout"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="egl_sync_label">
+     <property name="text">
+      <string>Enable automatic sync</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
