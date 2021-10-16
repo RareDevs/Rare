@@ -1,32 +1,28 @@
 import os
 import platform
-from glob import glob
-from typing import Tuple
 from logging import getLogger
+from typing import List, Tuple
 
 from PyQt5.QtCore import Qt, QThread, QFileSystemWatcher
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, \
-    QCheckBox, QPushButton, QListWidgetItem, QDialog, QFileDialog, QSizePolicy
+    QCheckBox, QPushButton, QListWidgetItem, QDialog, QFileDialog
 
 import rare.shared as shared
-from rare.ui.components.tabs.games.import_sync.egl_sync_widget import Ui_EGLSyncGroup
+from rare.ui.components.tabs.games.import_sync.egl_sync_group import Ui_EGLSyncGroup
+from rare.ui.components.tabs.games.import_sync.egl_sync_list_group import Ui_EGLSyncListGroup
 from rare.utils.extra_widgets import PathEdit
-from rare.utils.utils import WineResolver
 from rare.utils.models import PathSpec
+from rare.utils.utils import WineResolver
 
 logger = getLogger("EGLSync")
 
 
 class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
-    importable_items = list()
-    exportable_items = list()
     wine_resolver: QThread
 
     def __init__(self, parent=None):
         super(EGLSyncGroup, self).__init__(parent=parent)
         self.setupUi(self)
-        self.export_list.setProperty("noBorder", 1)
-        self.import_list.setProperty("noBorder", 1)
 
         self.core = shared.core
 
@@ -88,24 +84,10 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_sync_check.setChecked(shared.core.egl_sync_enabled)
         self.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
 
-        self.export_list.itemDoubleClicked.connect(
-            lambda item:
-            item.setCheckState(Qt.Unchecked) if item.checkState() != Qt.Unchecked else item.setCheckState(Qt.Checked))
-        self.import_list.itemDoubleClicked.connect(
-            lambda item:
-            item.setCheckState(Qt.Unchecked) if item.checkState() != Qt.Unchecked else item.setCheckState(Qt.Checked))
-
-        self.export_select_all_button.clicked.connect(
-            lambda: self.select_items(self.exportable_items, Qt.Checked))
-        self.export_select_none_button.clicked.connect(
-            lambda: self.select_items(self.exportable_items, Qt.Unchecked))
-        self.import_select_all_button.clicked.connect(
-            lambda: self.select_items(self.importable_items, Qt.Checked))
-        self.import_select_none_button.clicked.connect(
-            lambda: self.select_items(self.importable_items, Qt.Unchecked))
-
-        self.export_button.clicked.connect(self.export_selected)
-        self.import_button.clicked.connect(self.import_selected)
+        self.import_list = EGLSyncListGroup(export=False, parent=self)
+        self.import_export_layout.addWidget(self.import_list)
+        self.export_list = EGLSyncListGroup(export=True, parent=self)
+        self.import_export_layout.addWidget(self.export_list)
 
         self.update_lists()
 
@@ -173,73 +155,15 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_sync_label.setEnabled(have_path)
         self.egl_sync_check.setEnabled(have_path)
 
-        self.import_export_widget.setEnabled(have_path)
-
-        self.import_label.setVisible(not have_path)
-        self.import_list.setVisible(have_path)
-        self.import_buttons_widget.setVisible(have_path)
-
-        self.export_label.setVisible(not have_path)
-        self.export_list.setVisible(have_path)
-        self.export_buttons_widget.setVisible(have_path)
-
-        if not have_path:
-            return
-
-        self.update_import_list()
-        self.update_export_list()
-
-    def update_import_list(self):
-        self.import_list.clear()
-        self.importable_items.clear()
-        importable_games = shared.core.egl_get_importable()
-        for game in importable_games:
-            iw = EGLSyncItem(game, False, self.import_list)
-            self.importable_items.append(iw)
-            self.import_list.addItem(iw)
-        have_importable = bool(importable_games)
-        self.import_label.setVisible(not have_importable)
-        self.import_list.setVisible(have_importable)
-        self.import_buttons_widget.setVisible(have_importable)
-
-    def update_export_list(self):
-        self.export_list.clear()
-        self.exportable_items.clear()
-        exportable_games = shared.core.egl_get_exportable()
-        for igame in exportable_games:
-            ew = EGLSyncItem(igame, True, self.export_list)
-            self.exportable_items.append(ew)
-            self.export_list.addItem(ew)
-        have_exportable = bool(exportable_games)
-        self.export_label.setVisible(not have_exportable)
-        self.export_list.setVisible(have_exportable)
-        self.export_buttons_widget.setVisible(have_exportable)
-
-    @staticmethod
-    def select_items(item_list, state):
-        for w in item_list:
-            w.setCheckState(state)
-
-    def import_selected(self):
-        for iw in self.importable_items:
-            if iw.is_checked:
-                iw.import_game()
-                self.import_list.takeItem(self.import_list.row(iw))
-        self.core.egl_sync()
-        self.update_import_list()
-
-    def export_selected(self):
-        for ew in self.exportable_items:
-            if ew.is_checked():
-                ew.export_game()
-                self.export_list.takeItem(self.export_list.row(ew))
-        self.core.egl_sync()
-        self.update_export_list()
+        self.import_list.populate(have_path)
+        self.import_list.setEnabled(have_path)
+        self.export_list.populate(have_path)
+        self.export_list.setEnabled(have_path)
 
 
-class EGLSyncItem(QListWidgetItem):
+class EGLSyncListItem(QListWidgetItem):
     def __init__(self, game, export: bool, parent=None):
-        super(EGLSyncItem, self).__init__(parent=parent)
+        super(EGLSyncListItem, self).__init__(parent=parent)
         self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
         self.setCheckState(Qt.Unchecked)
         self.game = game
@@ -252,11 +176,67 @@ class EGLSyncItem(QListWidgetItem):
     def is_checked(self):
         return True if self.checkState() == Qt.Checked else False
 
-    def export_game(self):
-        shared.core.egl_export(self.game.app_name)
+    def action(self):
+        if self.export:
+            shared.core.egl_export(self.game.app_name)
+        else:
+            shared.core.egl_import(self.game.app_name)
 
-    def import_game(self):
-        shared.core.egl_import(self.game.app_name)
+
+class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
+
+    def __init__(self, export: bool, parent=None):
+        super(EGLSyncListGroup, self).__init__(parent=parent)
+        self.setupUi(self)
+        self.list.setProperty("noBorder", 1)
+
+        self.export = export
+
+        if export:
+            self.setTitle(self.tr('Exportable games'))
+            self.label.setText(self.tr('No games to export to EGL'))
+            self.action_button.setText(self.tr('Export'))
+            self.list_func = shared.core.egl_get_exportable
+        else:
+            self.setTitle(self.tr('Importable games'))
+            self.label.setText(self.tr('No games to import from EGL'))
+            self.action_button.setText(self.tr('Import'))
+            self.list_func = shared.core.egl_get_importable
+
+        self.list.itemDoubleClicked.connect(
+            lambda item:
+            item.setCheckState(Qt.Unchecked) if item.checkState() != Qt.Unchecked else item.setCheckState(Qt.Checked)
+        )
+
+        self.select_all_button.clicked.connect(lambda: self.mark(Qt.Checked))
+        self.select_none_button.clicked.connect(lambda: self.mark(Qt.Unchecked))
+
+        self.action_button.clicked.connect(self.action)
+
+    def mark(self, state):
+        for item in self.items:
+            item.setCheckState(state)
+
+    def populate(self, enabled: bool):
+        if enabled:
+            self.list.clear()
+            for item in self.list_func():
+                self.list.addItem(EGLSyncListItem(item, self.export, self.list))
+        self.label.setVisible(not enabled or not bool(self.list.count()))
+        self.list.setVisible(enabled and bool(self.list.count()))
+        self.buttons_widget.setVisible(enabled and bool(self.list.count()))
+
+    def action(self):
+        for item in self.items:
+            if item.is_checked:
+                item.action()
+                self.list.takeItem(self.list.row(item))
+        self.core.egl_sync()
+        self.populate(True)
+
+    @property
+    def items(self) -> List[EGLSyncListItem]:
+        return [self.list.item(i) for i in range(self.list.count())]
 
 
 class DisableSyncDialog(QDialog):
