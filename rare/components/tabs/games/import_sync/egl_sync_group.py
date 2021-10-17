@@ -3,7 +3,7 @@ import platform
 from logging import getLogger
 from typing import List, Tuple, Iterable
 
-from PyQt5.QtCore import Qt, QThread, QFileSystemWatcher
+from PyQt5.QtCore import Qt, QThread, QThreadPool, QRunnable, pyqtSlot, QFileSystemWatcher
 from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog
 
 import rare.shared as shared
@@ -17,7 +17,6 @@ logger = getLogger("EGLSync")
 
 
 class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
-    wine_resolver: QThread
 
     def __init__(self, parent=None):
         super(EGLSyncGroup, self).__init__(parent=parent)
@@ -25,42 +24,24 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_path_info.setProperty('infoLabel', 1)
 
         self.core = shared.core
+        self.threadpool = QThreadPool.globalInstance()
 
         if platform.system() == 'Windows':
             estimated_path = os.path.expandvars(PathSpec.egl_programdata)
         else:
             estimated_path = self.tr('Updating...')
-            self.wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
-            self.wine_resolver.result_ready.connect(self.egl_path_info.setText)
-            self.wine_resolver.finished.connect(self.wine_resolver.quit)
-            self.wine_resolver.finished.connect(self.wine_resolver.deleteLater)
-            self.wine_resolver.start()
+            wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
+            wine_resolver.signals.result_ready.connect(self.egl_path_info.setText)
+            self.threadpool.start(wine_resolver)
         self.egl_path_info.setText(estimated_path)
-
-        # if shared.core.egl.programdata_path:
-
-        # if platform.system() != "Windows":
-        #     shared.core.lgd.config.set('Legendary', 'egl_programdata', egl_path)
-        #     shared.core.egl.programdata_path = egl_path
-        #
-        # egl_path = os.path.expanduser("~/")
-        # if egl_path := shared.core.egl.programdata_path:
-        #     pass
-        # elif egl_path := shared.core.lgd.config.get("default", "wine_prefix", fallback=""):
-        #     egl_data_path = os.path.join(
-        #         shared.core.lgd.config.get("default", "wine_prefix", fallback=""),
-        #         'drive_c/ProgramData/Epic/EpicGamesLauncher/Data')
-        #     egl_path = os.path.join(egl_data_path, 'Manifests')
-        # else:
-        #     possible_wine_prefixes = [os.path.expanduser("~/.wine"),
-        #                               os.path.expanduser("~/Games/epic-games-store")]
-        #     for i in possible_wine_prefixes:
-        #         if os.path.exists(p := os.path.join(i, "drive_c/ProgramData/Epic/EpicGamesLauncher/Data/Manifests")):
-        #             egl_path = p
 
         egl_path = shared.core.egl.programdata_path
         if egl_path is None:
-            egl_path = str()
+            egl_path = shared.core.lgd.config.get(
+                "default",
+                "wine_prefix",
+                fallback=PathSpec().wine_egl_prefixes(results=1))
+
         self.egl_path_edit = PathEdit(
             path=egl_path,
             ph_text=estimated_path,
@@ -135,11 +116,14 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             self.core.lgd.config.remove_option('Legendary', 'egl_sync')
         else:
             self.core.lgd.config.set('Legendary', 'egl_sync', str(True))
-            # lk: not sure if this should be done here
-            # self.import_list.mark(Qt.Checked)
-            # self.import_list.action()
-            # self.export_list.mark(Qt.Checked)
-            # self.export_list.action()
+            # lk: do import/export here since automatic sync was selected
+            self.import_list.mark(Qt.Checked)
+            self.export_list.mark(Qt.Checked)
+            sync_worker = EGLSyncWorker(self.import_list, self.export_list)
+            self.threadpool.start(sync_worker)
+            self.import_list.setEnabled(False)
+            self.export_list.setEnabled(False)
+            # self.update_lists()
         self.core.lgd.save_config()
 
     def update_lists(self):
@@ -234,7 +218,8 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
             if item.is_checked():
                 item.action()
                 self.list.takeItem(self.list.row(item))
-        shared.signals.update_gamelist.emit(str())
+        if not self.export:
+            shared.signals.update_gamelist.emit(str())
         self.populate(True)
 
     @property
@@ -242,6 +227,19 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         # for i in range(self.list.count()):
         #     yield self.list.item(i)
         return [self.list.item(i) for i in range(self.list.count())]
+
+
+class EGLSyncWorker(QRunnable):
+    def __init__(self, import_list: EGLSyncListGroup, export_list: EGLSyncListGroup):
+        super(EGLSyncWorker, self).__init__()
+        self.setAutoDelete(True)
+        self.import_list = import_list
+        self.export_list = export_list
+
+    @pyqtSlot()
+    def run(self):
+        self.import_list.action()
+        self.export_list.action()
 
 
 '''
