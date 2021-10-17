@@ -17,6 +17,12 @@ QLabel {
     padding: 0px;
     selection-background-color: #2f4f4f;
 }
+QLabel[infoLabel="1"] {
+    color: #bbbbbb;
+    font-style: italic;
+    font-weight: normal;
+}
+
 
 QMenu,
 QListView,
