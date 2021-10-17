@@ -174,10 +174,10 @@ class EGLSyncListItem(QListWidgetItem):
         else:
             self.setText(shared.core.get_game(game.app_name).app_title)
 
-    def is_checked(self):
+    def is_checked(self) -> bool:
         return True if self.checkState() == Qt.Checked else False
 
-    def action(self):
+    def action(self) -> None:
         if self.export:
             shared.core.egl_export(self.game.app_name)
         else:
@@ -229,11 +229,10 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
 
     def action(self):
         for item in self.items:
-            if item.is_checked:
+            if item.is_checked():
                 item.action()
                 self.list.takeItem(self.list.row(item))
-        self.core.egl_sync()
-        shared.signals.update_gamelist.emit()
+        shared.signals.update_gamelist.emit(str())
         self.populate(True)
 
     @property
