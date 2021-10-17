@@ -349,8 +349,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                 # get Uninstalled games
                 games, self.dlcs = self.core.get_game_and_dlc_list()
                 for game in sorted(games, key=lambda x: x.app_title):
-                    if not game.app_name in installed_names:
-                        self.uninstalled_names.append(game)
+                    if game.app_name not in installed_names:
+                        uninstalled_names.append(game)
                 for name in uninstalled_names:
                     i_widget, list_widget = self.widgets[name]
                     self.icon_view.layout().addWidget(i_widget)

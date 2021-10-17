@@ -36,27 +36,17 @@ class MainWindow(QMainWindow):
         if not shared.args.offline:
             self.rpc = DiscordRPC()
             self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
-            # Show RPC on changed rare_settings
-            self.tab_widget.settings.rare_settings.rpc.update_settings.connect(
-                lambda: self.rpc.changed_settings(self.tab_widget.games_tab.default_widget.game_list.running_games))
-
-        # game = self.tab_widget.games_tab.default_widget.game_list.active_game
-        # if game != ("", 0) and not args.offline:
-        #    self.rpc.set_discord_rpc(game[0])  # Appname
-
         if shared.args.subparser == "launch":
             logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
-            if shared.args.app_name in self.tab_widget.games_tab.default_widget.game_list.widgets.keys():
-                self.tab_widget.games_tab.default_widget.game_list.widgets[shared.args.app_name][1].launch()
+            if shared.args.app_name in [i.app_name for i in self.tab_widget.games_tab.installed]:
+                self.tab_widget.games_tab.widgets[shared.args.app_name][1].launch()
             else:
-                logger.info(f"Could not find {shared.args.app_name} in Games")
+                logger.info(
+                    f"Could not find {shared.args.app_name} in Games or it is not installed. Continue startup...")
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.timer_finished)
         self.timer.start(1000)
-
-    def handle_signal(self, action, data):
-        pass
 
     def timer_finished(self):
         file_path = os.path.join(data_dir, "lockfile")
