@@ -18,6 +18,7 @@ class GameInfo(QWidget, Ui_GameInfo):
     game: Game = None
     verify_threads = dict()
     verification_finished = pyqtSignal(InstalledGame)
+    uninstalled = pyqtSignal(Game)
 
     def __init__(self, parent):
         super(GameInfo, self).__init__(parent=parent)
