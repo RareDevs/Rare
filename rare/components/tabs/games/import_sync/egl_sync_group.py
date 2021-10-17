@@ -73,7 +73,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_path_layout.addWidget(self.egl_path_edit)
 
         self.egl_watcher = QFileSystemWatcher([self.egl_path_edit.text()], self)
-        self.egl_watcher.directoryChanged.connect(self.egl_items_changed)
+        self.egl_watcher.directoryChanged.connect(self.update_lists)
 
         if platform.system() == "Windows":
             self.egl_path_label.setVisible(False)
@@ -119,7 +119,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                 shared.core.install_game(igame)
         else:
             # NOTE: need to clear known manifests to force refresh
-            shared.core.egl.manifests.clear()
+            # shared.core.egl.manifests.clear()
             shared.core.egl.programdata_path = path
             shared.core.lgd.config.set("Legendary", "egl_programdata", path)
         shared.core.lgd.save_config()
@@ -138,20 +138,21 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         else:
             self.core.lgd.config.set('Legendary', 'egl_sync', str(True))
             # lk: not sure if this should be done here
-            # self.select_items(self.importable_items, Qt.Checked)
-            # self.import_selected()
-            # self.select_items(self.exportable_items, Qt.Checked)
-            # self.export_selected()
+            # self.import_list.mark(Qt.Checked)
+            # self.import_list.action()
+            # self.export_list.mark(Qt.Checked)
+            # self.export_list.action()
         self.core.lgd.save_config()
 
-    def egl_items_changed(self, path: str):
-        if path == shared.core.egl.programdata_path and self.egl_path_edit.is_valid:
-            shared.core.egl.manifests.clear()
-            self.update_import_list()
-            self.update_export_list()
+    # def egl_items_changed(self, path: str):
+    #     if path == shared.core.egl.programdata_path and self.egl_path_edit.is_valid:
+    #         shared.core.egl.manifests.clear()
+    #         self.import_list.populate(True)
+    #         self.export_list.populate(True)
 
     def update_lists(self):
-        have_path = bool(shared.core.egl.programdata_path) and self.egl_path_edit.is_valid
+        if have_path := bool(shared.core.egl.programdata_path) and self.egl_path_edit.is_valid:
+            shared.core.egl.manifests.clear()
         self.egl_sync_label.setEnabled(have_path)
         self.egl_sync_check.setEnabled(have_path)
 
@@ -232,6 +233,7 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
                 item.action()
                 self.list.takeItem(self.list.row(item))
         self.core.egl_sync()
+        shared.signals.update_gamelist.emit()
         self.populate(True)
 
     @property
