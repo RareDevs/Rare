@@ -83,7 +83,7 @@ class SyncSaves(QScrollArea):
             if not game.supports_cloud_saves:
                 continue
             if latest_save.get(igame.app_name):
-                sync_widget = SyncWidget(igame, latest_save[igame.app_name], self.core)
+                sync_widget = SyncWidget(igame, latest_save[igame.app_name])
             else:
                 continue
             sync_widget.reload.connect(self.reload)

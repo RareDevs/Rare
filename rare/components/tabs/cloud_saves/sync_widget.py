@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QLabel, QGrou
 
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, SaveGameStatus
+from rare import shared
 from rare.components.dialogs.path_input_dialog import PathInputDialog
 
 logger = getLogger("Sync")
@@ -58,13 +59,13 @@ class _DownloadThread(QThread):
 class SyncWidget(QGroupBox):
     reload = pyqtSignal(str)
 
-    def __init__(self, igame: InstalledGame, save, core: LegendaryCore):
+    def __init__(self, igame: InstalledGame, save):
         super(SyncWidget, self).__init__(igame.title)
         self.setObjectName("group")
         self.layout = QVBoxLayout()
         self.setContentsMargins(10, 20, 10, 20)
         self.thr = None
-        self.core = core
+        self.core = shared.core
         self.save = save
         self.logger = getLogger("Sync " + igame.app_name)
         self.game = self.core.get_game(igame.app_name)
@@ -195,10 +196,10 @@ class SyncWidget(QGroupBox):
         self.upload_button.setDisabled(True)
         self.download_button.setDisabled(True)
         self.thr = _UploadThread(self.igame.app_name, self.dt_local, self.igame.save_path, self.core)
-        self.thr.finished.connect(self.uploaded)
+        self.thr.signal.connect(self.uploaded)
         self.thr.start()
 
-    def uploaded(self, success):
+    def uploaded(self, success: bool):
         if success:
             self.info_text.setText(self.tr("Upload finished"))
 
@@ -218,7 +219,7 @@ class SyncWidget(QGroupBox):
         self.thr.signal.connect(self.downloaded)
         self.thr.start()
 
-    def downloaded(self, success):
+    def downloaded(self, success: bool):
         if success:
             self.info_text.setText(self.tr("Download finished"))
             self.upload_button.setDisabled(True)

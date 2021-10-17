@@ -121,11 +121,8 @@ class DownloadTab(QWidget):
         self.signals.installation_started.emit(self.active_game)
 
     def status(self, text):
-        if text == "dl_finished":
-            pass
-        elif text == "finish":
+        if text == "finish":
             self.installing_game.setText(self.tr("Download finished. Reload library"))
-            # QMessageBox.information(self, "Info", "Download finished")
             logger.info("Download finished: " + self.active_game.app_title)
 
             game = self.active_game
