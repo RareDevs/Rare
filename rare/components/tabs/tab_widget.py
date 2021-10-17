@@ -66,7 +66,7 @@ class TabWidget(QTabWidget):
         # update dl tab text
         self.signals.update_download_tab_text.connect(self.update_dl_tab_text)
         # imported
-        shared.signals.update_gamelist.connect(self.game_imported)
+        # shared.signals.update_gamelist.connect(self.game_imported)
 
         if not shared.args.offline:
             # install dlc
