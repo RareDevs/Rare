@@ -1,11 +1,10 @@
 import os
 import platform
 from logging import getLogger
-from typing import List, Tuple
+from typing import List, Tuple, Iterable
 
 from PyQt5.QtCore import Qt, QThread, QFileSystemWatcher
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QGroupBox, \
-    QCheckBox, QPushButton, QListWidgetItem, QDialog, QFileDialog
+from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog
 
 import rare.shared as shared
 from rare.ui.components.tabs.games.import_sync.egl_sync_group import Ui_EGLSyncGroup
@@ -23,13 +22,14 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
     def __init__(self, parent=None):
         super(EGLSyncGroup, self).__init__(parent=parent)
         self.setupUi(self)
+        self.egl_path_info.setProperty('infoLabel', 1)
 
         self.core = shared.core
 
-        if platform.system() == "Windows":
+        if platform.system() == 'Windows':
             estimated_path = os.path.expandvars(PathSpec.egl_programdata)
         else:
-            estimated_path = str()
+            estimated_path = self.tr('Updating...')
             self.wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
             self.wine_resolver.result_ready.connect(self.egl_path_info.setText)
             self.wine_resolver.finished.connect(self.wine_resolver.quit)
@@ -72,9 +72,6 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_path_edit.textChanged.connect(self.egl_path_changed)
         self.egl_path_layout.addWidget(self.egl_path_edit)
 
-        self.egl_watcher = QFileSystemWatcher([self.egl_path_edit.text()], self)
-        self.egl_watcher.directoryChanged.connect(self.update_lists)
-
         if platform.system() == "Windows":
             self.egl_path_label.setVisible(False)
             self.egl_path_edit.setVisible(False)
@@ -88,6 +85,9 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.import_export_layout.addWidget(self.import_list)
         self.export_list = EGLSyncListGroup(export=True, parent=self)
         self.import_export_layout.addWidget(self.export_list)
+
+        self.egl_watcher = QFileSystemWatcher([self.egl_path_edit.text()], self)
+        self.egl_watcher.directoryChanged.connect(self.update_lists)
 
         self.update_lists()
 
@@ -118,8 +118,6 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                 igame.egl_guid = ''
                 shared.core.install_game(igame)
         else:
-            # NOTE: need to clear known manifests to force refresh
-            # shared.core.egl.manifests.clear()
             shared.core.egl.programdata_path = path
             shared.core.lgd.config.set("Legendary", "egl_programdata", path)
         shared.core.lgd.save_config()
@@ -144,22 +142,18 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             # self.export_list.action()
         self.core.lgd.save_config()
 
-    # def egl_items_changed(self, path: str):
-    #     if path == shared.core.egl.programdata_path and self.egl_path_edit.is_valid:
-    #         shared.core.egl.manifests.clear()
-    #         self.import_list.populate(True)
-    #         self.export_list.populate(True)
-
     def update_lists(self):
+        self.egl_watcher.blockSignals(True)
         if have_path := bool(shared.core.egl.programdata_path) and self.egl_path_edit.is_valid:
+            # NOTE: need to clear known manifests to force refresh
             shared.core.egl.manifests.clear()
         self.egl_sync_label.setEnabled(have_path)
         self.egl_sync_check.setEnabled(have_path)
-
         self.import_list.populate(have_path)
         self.import_list.setEnabled(have_path)
         self.export_list.populate(have_path)
         self.export_list.setEnabled(have_path)
+        self.egl_watcher.blockSignals(False)
 
 
 class EGLSyncListItem(QListWidgetItem):
@@ -208,11 +202,19 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
             lambda item:
             item.setCheckState(Qt.Unchecked) if item.checkState() != Qt.Unchecked else item.setCheckState(Qt.Checked)
         )
+        self.list.itemChanged.connect(self.has_selected)
 
         self.select_all_button.clicked.connect(lambda: self.mark(Qt.Checked))
         self.select_none_button.clicked.connect(lambda: self.mark(Qt.Unchecked))
 
         self.action_button.clicked.connect(self.action)
+
+    def has_selected(self):
+        for item in self.items:
+            if item.is_checked():
+                self.action_button.setEnabled(True)
+                return
+        self.action_button.setEnabled(False)
 
     def mark(self, state):
         for item in self.items:
@@ -236,8 +238,14 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         self.populate(True)
 
     @property
-    def items(self) -> List[EGLSyncListItem]:
+    def items(self) -> Iterable[EGLSyncListItem]:
+        # for i in range(self.list.count()):
+        #     yield self.list.item(i)
         return [self.list.item(i) for i in range(self.list.count())]
+
+
+'''
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QCheckBox, QPushButton, QDialog
 
 
 class DisableSyncDialog(QDialog):
@@ -315,3 +323,4 @@ class EGLSyncItemWidget(QGroupBox):
         # FIXME: on update_egl_widget this is going to crash because
         # FIXME: the item is not removed from the list in the python's side
         self.deleteLater()
+'''
