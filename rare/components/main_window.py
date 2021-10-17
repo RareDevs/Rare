@@ -37,12 +37,12 @@ class MainWindow(QMainWindow):
             self.rpc = DiscordRPC()
             self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
         if shared.args.subparser == "launch":
-            logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
             if shared.args.app_name in [i.app_name for i in self.tab_widget.games_tab.installed]:
+                logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
                 self.tab_widget.games_tab.widgets[shared.args.app_name][1].launch()
             else:
                 logger.info(
-                    f"Could not find {shared.args.app_name} in Games or it is not installed. Continue startup...")
+                    f"Could not find {shared.args.app_name} in Games or it is not installed")
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.timer_finished)
