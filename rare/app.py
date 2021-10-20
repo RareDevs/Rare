@@ -1,19 +1,19 @@
 import configparser
 import logging
 import os
+import platform
 import sys
 import time
 import traceback
 
 import qtawesome
-from PyQt5.QtCore import QSettings, QTranslator
+from PyQt5.QtCore import QThreadPool, QSettings, QTranslator
 from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory, QMessageBox
 from requests import HTTPError
 
-from legendary.core import LegendaryCore
+import rare.shared as shared
 from rare import languages_path, resources_path, cache_dir
-from rare import shared
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
@@ -61,7 +61,7 @@ class App(QApplication):
                 path = os.path.expanduser('~/.config/legendary')
             with open(os.path.join(path, "config.ini"), "w") as config_file:
                 config_file.write("[Legendary]")
-            self.core = LegendaryCore()
+            self.core = shared.init_legendary()
         if "Legendary" not in self.core.lgd.config.sections():
             self.core.lgd.config.add_section("Legendary")
             self.core.lgd.save_config()
@@ -107,31 +107,26 @@ class App(QApplication):
         self.installTranslator(self.translator)
 
         # Style
-        self.setStyle(QStyleFactory.create("Fusion"))
         if self.settings.value("color_scheme", None) is None and self.settings.value("style_sheet", None) is None:
             self.settings.setValue("color_scheme", "")
             self.settings.setValue("style_sheet", "RareStyle")
+
         if color := self.settings.value("color_scheme", False):
+            self.setStyle(QStyleFactory.create("Fusion"))
             self.settings.setValue("style_sheet", "")
             custom_palette = load_color_scheme(os.path.join(resources_path, "colors", color + ".scheme"))
             if custom_palette is not None:
                 self.setPalette(custom_palette)
                 qtawesome.set_defaults(color=custom_palette.color(QPalette.Text))
-
         elif style := self.settings.value("style_sheet", False):
+            self.setStyle(QStyleFactory.create("Fusion"))
             self.settings.setValue("color_scheme", "")
             stylesheet = open(os.path.join(resources_path, "stylesheets", style, "stylesheet.qss")).read()
             style_resource_path = os.path.join(resources_path, "stylesheets", style, "")
-            if os.name == "nt":
+            if platform.system() == "Windows":
                 style_resource_path = style_resource_path.replace('\\', '/')
             self.setStyleSheet(stylesheet.replace("@path@", style_resource_path))
             qtawesome.set_defaults(color="white")
-            # lk: for qresources stylesheets, not an ideal solution for modability,
-            # lk: too many extra steps and I don't like binary files in git, even as strings.
-            # importlib.import_module("rare.resources.stylesheets." + style)
-            # resource = QFile(f":/{style}/stylesheet.qss")
-            # resource.open(QIODevice.ReadOnly)
-            # self.setStyleSheet(QTextStream(resource).readAll())
         self.setWindowIcon(QIcon(os.path.join(resources_path, "images", "Rare.png")))
 
         # launch app
@@ -161,10 +156,13 @@ class App(QApplication):
             logger.info("Show App")
 
     def exit_app(self, exit_code=0):
-        if self.tray_icon is not None:
-            self.tray_icon.deleteLater()
+        self.mainwindow.hide()
+        threadpool = QThreadPool.globalInstance()
+        threadpool.waitForDone()
         if self.mainwindow is not None:
             self.mainwindow.close()
+        if self.tray_icon is not None:
+            self.tray_icon.deleteLater()
         self.processEvents()
         self.exit(exit_code)
 

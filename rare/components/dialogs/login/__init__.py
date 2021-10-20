@@ -56,7 +56,7 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         self.login_stack.setCurrentIndex(self.pages.landing)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.dialog_layout.setSizeConstraint(QLayout.SetFixedSize);
+        self.dialog_layout.setSizeConstraint(QLayout.SetFixedSize)
         # self.resize(self.minimumSizeHint())
 
     def back_clicked(self):
