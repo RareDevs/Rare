@@ -1,4 +1,5 @@
 import os
+from typing import Union, List
 from dataclasses import field, dataclass
 from multiprocessing import Queue
 
@@ -22,6 +23,9 @@ class InstallOptionsModel:
     update: bool = False
     silent: bool = False
 
+    def set_no_install(self, enabled: bool) -> None:
+        self.no_install = enabled
+
 
 @dataclass
 class InstallDownloadModel:
@@ -42,6 +46,34 @@ class InstallQueueItemModel:
 
     def __bool__(self):
         return (self.status_q is not None) and (self.download is not None) and (self.options is not None)
+
+
+class PathSpec:
+    egl_appdata: str = r'%LOCALAPPDATA%\EpicGamesLauncher\Saved\Config\Windows'
+    egl_programdata: str = r'%PROGRAMDATA%\Epic\EpicGamesLauncher\Data\Manifests'
+    wine_programdata: str = r'dosdevices/c:/ProgramData'
+
+    @property
+    def wine_egl_programdata(self):
+        return self.egl_programdata.replace('\\', '/').replace('%PROGRAMDATA%', self.wine_programdata)
+
+    def wine_egl_prefixes(self, results: int = 0) -> Union[List[str], str]:
+        possible_prefixes = [
+            os.path.expanduser("~/.wine"),
+            os.path.expanduser("~/Games/epic-games-store"),
+        ]
+        prefixes = []
+        for prefix in possible_prefixes:
+            if os.path.exists(os.path.join(prefix, self.wine_egl_programdata)):
+                prefixes.append(prefix)
+        if not prefixes:
+            return str()
+        if not results:
+            return prefixes
+        elif results == 1:
+            return prefixes[0]
+        else:
+            return prefixes[:results]
 
 
 @dataclass
