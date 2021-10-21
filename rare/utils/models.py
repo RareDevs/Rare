@@ -1,12 +1,13 @@
 import os
 from dataclasses import field, dataclass
 from multiprocessing import Queue
+from typing import List
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from legendary.downloader.mp.manager import DLManager
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
-from legendary.models.game import Game, InstalledGame
+from legendary.models.game import Game, InstalledGame, SaveGameFile, GameAsset
 
 
 @dataclass
@@ -46,12 +47,13 @@ class InstallQueueItemModel:
 
 @dataclass
 class ApiResults:
-    game_list: list = None
-    dlcs: list = None
-    bit32_games: list = None
-    mac_games: list = None
-    assets: list = None
-    no_asset_games: list = None
+    game_list: List[Game] = None
+    dlcs: List[Game] = None
+    bit32_games: List[Game] = None
+    mac_games: List[Game] = None
+    assets: List[GameAsset] = None
+    no_asset_games: List[Game] = None
+    saves: List[SaveGameFile] = None
 
     def __bool__(self):
         return self.game_list is not None \
@@ -59,7 +61,8 @@ class ApiResults:
                and self.bit32_games is not None \
                and self.mac_games is not None \
                and self.assets is not None \
-               and self.no_asset_games is not None
+               and self.no_asset_games is not None \
+               and self.saves is not None
 
 
 class Signals(QObject):

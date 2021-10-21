@@ -4,7 +4,6 @@ from qtawesome import icon
 
 from rare import shared
 from rare.components.tabs.account import MiniWidget
-from rare.components.tabs.cloud_saves import SyncSaves
 from rare.components.tabs.downloads import DownloadTab
 from rare.components.tabs.games import GamesTab
 from rare.components.tabs.settings import SettingsTab
@@ -19,7 +18,7 @@ class TabWidget(QTabWidget):
 
     def __init__(self, parent):
         super(TabWidget, self).__init__(parent=parent)
-        disabled_tab = 4 if not shared.args.offline else 1
+        disabled_tab = 3 if not shared.args.offline else 1
         self.core = shared.core
         self.signals = shared.signals
         self.setTabBar(TabBar(disabled_tab))
@@ -32,8 +31,6 @@ class TabWidget(QTabWidget):
             self.downloadTab = DownloadTab(self.games_tab.updates)
             self.addTab(self.downloadTab, "Downloads" + (
                 " (" + str(len(self.games_tab.updates)) + ")" if len(self.games_tab.updates) != 0 else ""))
-            self.cloud_saves = SyncSaves()
-            self.addTab(self.cloud_saves, "Cloud Saves")
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
         self.settings = SettingsTab(self)
@@ -76,8 +73,6 @@ class TabWidget(QTabWidget):
                     InstallOptionsModel(app_name=app_name),
                     update=update))
 
-            # Finished sync
-            self.cloud_saves.finished.connect(self.finished_sync)
         # Game finished
 
         # Open game list on click on Games tab button
@@ -103,7 +98,7 @@ class TabWidget(QTabWidget):
         if tab_num == 0:
             self.games_tab.layout().setCurrentIndex(0)
 
-        if not shared.args.offline and tab_num == 3:
+        if not shared.args.offline and tab_num == 2:
             self.store.load()
 
     def game_imported(self, app_name: str):

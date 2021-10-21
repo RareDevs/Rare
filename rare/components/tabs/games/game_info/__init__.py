@@ -4,6 +4,7 @@ from PyQt5.QtGui import QKeyEvent
 import rare.shared as shared
 from legendary.models.game import Game
 from rare.utils.extra_widgets import SideTabWidget
+from .cloud_saves import CloudSaves
 from .game_dlc import GameDlc
 from .game_info import GameInfo
 from .game_settings import GameSettings
@@ -21,22 +22,31 @@ class GameInfoTabs(SideTabWidget):
         self.settings = GameSettings(self.core, self)
         self.addTab(self.settings, self.tr("Settings"))
 
+        self.cloud_saves = CloudSaves(self)
+        self.addTab(self.cloud_saves, self.tr("Cloud saves"))
+
         self.dlc_list = dlcs
         self.dlc = GameDlc(self.dlc_list, self)
         self.addTab(self.dlc, self.tr("Downloadable Content"))
 
         self.tabBar().setCurrentIndex(1)
 
-    def update_game(self, game: Game, dlcs: list):
+    def update_game(self, game: Game):
         self.setCurrentIndex(1)
         self.info.update_game(game)
         self.settings.update_game(game)
 
+        if game.supports_cloud_saves:
+            self.cloud_saves.update_game(game)
+            self.setTabEnabled(3, True)
+        else:
+            self.setTabEnabled(3, False)
+
         # DLC Tab: Disable if no dlcs available
         if len(self.dlc_list[game.asset_info.catalog_item_id]) == 0:
-            self.setTabEnabled(3, False)
+            self.setTabEnabled(4, False)
         else:
-            self.setTabEnabled(3, True)
+            self.setTabEnabled(4, True)
             self.dlc.update_dlcs(game.app_name)
 
     def keyPressEvent(self, e: QKeyEvent):

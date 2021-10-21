@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>CloudSaves</class>
+    <widget class="QWidget" name="CloudSaves">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>580</width>
+                <height>300</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string notr="true">Form</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+                <widget class="QLabel" name="game_title">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="text">
+                        <string>TextLabel</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <layout class="QGridLayout" name="gridLayout">
+                    <item row="0" column="0">
+                        <widget class="QLabel" name="cloud_info_label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>115</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                            <property name="font">
+                                <font>
+                                    <weight>75</weight>
+                                    <bold>true</bold>
+                                </font>
+                            </property>
+                            <property name="text">
+                                <string>Cloud Save date:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="1" column="0">
+                        <widget class="QLabel" name="local_text_label">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>112</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                            <property name="font">
+                                <font>
+                                    <weight>75</weight>
+                                    <bold>true</bold>
+                                </font>
+                            </property>
+                            <property name="text">
+                                <string>Local Save date:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="0" column="1" alignment="Qt::AlignLeft">
+                        <widget class="QLabel" name="cloud_label">
+                            <property name="text">
+                                <string notr="true">No save online</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="1" column="1" alignment="Qt::AlignLeft">
+                        <widget class="QLabel" name="local_label">
+                            <property name="text">
+                                <string notr="true">No local save</string>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <layout class="QVBoxLayout" name="pathlayout"/>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="button_layout">
+                    <item>
+                        <widget class="QPushButton" name="download_button">
+                            <property name="text">
+                                <string notr="true">Download</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QPushButton" name="upload_button">
+                            <property name="text">
+                                <string notr="true">Upload</string>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <widget class="QPushButton" name="clean_saves_button">
+                    <property name="text">
+                        <string>Clean saves</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <widget class="QLabel" name="info_label">
+                    <property name="text">
+                        <string/>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <spacer name="verticalSpacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>20</width>
+                            <height>40</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections/>
+</ui>

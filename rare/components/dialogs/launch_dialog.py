@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import QDialog
 from requests.exceptions import ConnectionError, HTTPError
 
 from legendary.core import LegendaryCore
-from legendary.models.game import GameAsset
 from rare import image_dir, shared
 from rare.components.dialogs.login import LoginDialog
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
@@ -46,7 +45,7 @@ class ApiRequestWorker(QRunnable):
     def run(self) -> None:
         try:
             result = self.function(*self.args)
-        except HTTPError():
+        except HTTPError:
             result = None
         self.signals.result.emit(result, self.text)
 
@@ -104,8 +103,9 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
                 ["gamelist", self.core.get_game_and_dlc_list, (True,)],
                 ["32bit", self.core.get_game_and_dlc_list, (True, "Win32")],
                 ["mac", self.core.get_game_and_dlc_list, (True, "Mac")],
-                ["assets", self.core.egs.get_game_assets, ()],
-                ["no_assets", self.core.get_non_asset_library_items, ()]
+                ["assets", self.core.get_assets, (True,)],
+                ["no_assets", self.core.get_non_asset_library_items, ()],
+                ["saves", self.core.get_save_games, ()]
             ]
             for r in api_requests:
                 worker = ApiRequestWorker(*r)
@@ -132,11 +132,17 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             if not result:
                 assets = self.core.lgd.assets
             else:
-                assets = [GameAsset.from_egs_json(a) for a in result]
+                assets = result
             self.core.lgd.assets = assets
             self.api_results.assets = assets
         elif text == "no_assets":
             self.api_results.no_asset_games = result[0] if result else []
+
+        elif text == "saves":
+            if len(result) == 0:
+                self.api_results.saves = []
+            else:
+                self.api_results.saves = result
 
         if self.api_results:
             self.finish()

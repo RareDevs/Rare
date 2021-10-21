@@ -112,7 +112,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.update_list(game.app_name)
 
     def show_game_info(self, game):
-        self.game_info_tabs.update_game(game, self.dlcs)
+        self.game_info_tabs.update_game(game)
         self.setCurrentIndex(1)
 
     def show_uninstalled_info(self, game):

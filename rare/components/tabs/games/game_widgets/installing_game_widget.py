@@ -10,7 +10,6 @@ class InstallingGameWidget(QGroupBox):
     def __init__(self):
         super(InstallingGameWidget, self).__init__()
         self.setObjectName("game_widget_icon")
-
         self.setLayout(QVBoxLayout())
 
         self.pixmap = QPixmap()
@@ -25,7 +24,6 @@ class InstallingGameWidget(QGroupBox):
         self.title_label.setWordWrap(True)
         self.title_label.setFixedWidth(175)
         minilayout = QHBoxLayout()
-        self.setObjectName("game_widget")
         minilayout.addWidget(self.title_label)
         self.layout().addLayout(minilayout)
 
