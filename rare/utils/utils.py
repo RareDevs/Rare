@@ -13,6 +13,8 @@ from PIL import Image, UnidentifiedImageError
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings
 from PyQt5.QtGui import QPalette, QColor, QPixmap
 
+from .models import PathSpec
+
 # Windows
 
 if platform.system() == "Windows":
@@ -437,7 +439,7 @@ class WineResolver(QRunnable):
             app_name, 'wine_executable',
             fallback=core.lgd.config.get('default', 'wine_executable', fallback='wine'))
         self.winepath_binary = os.path.join(os.path.dirname(self.wine_binary), 'winepath')
-        self.path = path.replace('{', '%').replace('}', '%')
+        self.path = PathSpec(core, app_name).cook(path)
 
     @pyqtSlot()
     def run(self):
@@ -452,4 +454,5 @@ class WineResolver(QRunnable):
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 env=self.wine_env, shell=False, text=True)
         out, err = proc.communicate()
-        self.signals.result_ready.emit(out.strip())
+        real_path = os.path.realpath(out.strip())
+        self.signals.result_ready.emit(real_path)
