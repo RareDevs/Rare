@@ -435,6 +435,8 @@ class WineResolver(QRunnable):
         self.signals = WineResolverSignals()
         self.wine_env = os.environ.copy()
         self.wine_env.update(core.get_app_environment(app_name))
+        self.wine_env['WINEDLLOVERRIDES'] = 'winemenubuilder=d;mscoree=d;mshtml=d;'
+        self.wine_env['DISPLAY'] = ''
         self.wine_binary = core.lgd.config.get(
             app_name, 'wine_executable',
             fallback=core.lgd.config.get('default', 'wine_executable', fallback='wine'))
