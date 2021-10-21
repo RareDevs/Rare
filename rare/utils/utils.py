@@ -446,7 +446,9 @@ class WineResolver(QRunnable):
     @pyqtSlot()
     def run(self):
         path = self.path.strip().replace('/', '\\')
-        proc = subprocess.Popen([self.wine_binary, 'cmd', '/c', 'echo', path],
+        cmd = 'cd {} & cd'.format(path)
+        # [self.wine_binary, 'cmd', '/c', 'echo', path] if path not exists alternative
+        proc = subprocess.Popen([self.wine_binary, 'cmd', '/c', cmd],
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 env=self.wine_env, shell=False, text=True)
         out, err = proc.communicate()
