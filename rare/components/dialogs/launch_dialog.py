@@ -105,7 +105,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
                 ["32bit", self.core.get_game_and_dlc_list, (True, "Win32")],
                 ["mac", self.core.get_game_and_dlc_list, (True, "Mac")],
                 ["assets", self.core.egs.get_game_assets, ()],
-                ["no_assets", self.core.get_non_asset_library_items, ()]
+                ["no_assets", self.core.get_non_asset_library_items, ()],
+                ["saves", self.core.get_save_games, ()]
             ]
             for r in api_requests:
                 worker = ApiRequestWorker(*r)
@@ -137,6 +138,9 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.api_results.assets = assets
         elif text == "no_assets":
             self.api_results.no_asset_games = result[0] if result else []
+
+        elif text == "saves":
+            self.api_results.saves = result
 
         if self.api_results:
             self.finish()

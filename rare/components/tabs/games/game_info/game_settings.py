@@ -3,7 +3,7 @@ import platform
 from typing import Tuple
 
 from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QWidget, QFileDialog
+from PyQt5.QtWidgets import QWidget, QFileDialog, QLabel
 
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
@@ -47,6 +47,13 @@ class GameSettings(QWidget, Ui_GameSettings):
 
         self.core = core
         self.settings = QSettings()
+
+        self.cloud_save_path_edit = PathEdit("", file_type=QFileDialog.DirectoryOnly,
+                                             ph_text=self.tr("Cloud save path"),
+                                             edit_func=lambda text: (os.path.exists(text), text),
+                                             save_func=self.save_save_path)
+        self.cloud_gb.layout().addRow(QLabel(self.tr("Save path")), self.cloud_save_path_edit)
+
         self.offline.currentIndexChanged.connect(
             lambda x: self.update_combobox(x, "offline")
         )
@@ -85,7 +92,12 @@ class GameSettings(QWidget, Ui_GameSettings):
         else:
             self.proton_groupbox.setVisible(False)
 
-        # startparams, skip_update_check
+        # skip_update_check
+
+    def save_save_path(self, text):
+        if self.game.supports_cloud_saves and not self.change:
+            self.igame.save_path = text
+            self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
 
     def save_line_edit(self, option, value):
         if value:
@@ -211,7 +223,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
         if platform.system() != "Windows":
             self.linux_settings.update_game(app_name)
-            self.linux_settings.dxvk.update_settings(app_name)
+
             proton = self.core.lgd.config.get(f"{app_name}", "wrapper", fallback="").replace('"', "")
             if proton != "":
                 self.proton_prefix.setEnabled(True)
@@ -227,11 +239,16 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.wrapper_widget.setEnabled(True)
 
         if not self.game.supports_cloud_saves:
-            self.cloud_sync.setEnabled(False)
+            self.cloud_gb.setEnabled(False)
+            self.cloud_save_path_edit.setText("")
         else:
-            self.cloud_sync.setEnabled(True)
+            self.cloud_gb.setEnabled(True)
             sync_cloud = self.settings.value(f"{self.game.app_name}/auto_sync_cloud", True, bool)
             self.cloud_sync.setChecked(sync_cloud)
+            if self.igame.save_path:
+                self.cloud_save_path_edit.setText(self.igame.save_path)
+            else:
+                self.cloud_save_path_edit.setText("")
 
         self.launch_params.setText(self.core.lgd.config.get(self.game.app_name, "start_params", fallback=""))
         self.change = True
@@ -245,5 +262,6 @@ class LinuxAppSettings(LinuxSettings):
         self.name = app_name
         self.wine_prefix.setText(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""))
         self.wine_exec.setText(self.core.lgd.config.get(self.name, "wine_executable", fallback=""))
+
         self.dxvk.name = app_name
-        self.dxvk.more_settings_widget.name = app_name
+        self.dxvk.load_settings()

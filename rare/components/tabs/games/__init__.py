@@ -5,6 +5,7 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 import rare.shared as shared
+from .cloud_save_utils import CloudSaveUtils
 from legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
@@ -38,6 +39,9 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.core = shared.core
         self.signals = shared.signals
         self.settings = QSettings()
+        self.cloud_save_utils = CloudSaveUtils()
+        self.cloud_save_utils.sync_finished.connect(self.sync_finished)
+        self.before_launch_sync = dict()
 
         self.game_list = shared.api_results.game_list
         self.dlcs = shared.api_results.dlcs
@@ -129,7 +133,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.import_sync_tabs.show_egl_sync()
 
     def show_game_info(self, game):
-        self.game_info_tabs.update_game(game, self.dlcs)
+        self.game_info_tabs.update_game(game)
         self.setCurrentIndex(1)
 
     def show_uninstalled_info(self, game):
@@ -137,7 +141,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.setCurrentIndex(3)
 
     def setup_game_list(self):
-
         self.icon_view = QWidget()
         self.icon_view.setLayout(FlowLayout())
         self.list_view = QWidget()
@@ -153,12 +156,12 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         # add installed games
         for igame in self.installed:
-            icon_widget, list_widget = self.add_installed_widget(self.core.get_game(igame.app_name, update_meta=False))
+            icon_widget, list_widget = self.add_installed_widget(igame.app_name)
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
 
         for game in self.no_assets:
-            icon_widget, list_widget = self.add_installed_widget(game, is_origin=True)
+            icon_widget, list_widget = self.add_installed_widget(game.app_name)
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
 
@@ -175,35 +178,44 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             len(self.core.get_installed_list()),
             len(self.game_list)))
 
-    def add_installed_widget(self, game, is_origin=False):
-        pixmap = get_pixmap(game.app_name)
+    def sync_finished(self, app_name):
+        self.widgets[app_name][0].info_text = ""
+        self.widgets[app_name][0].info_label.setText("")
+        self.widgets[app_name][1].info_label.setText("")
+
+        if app_name in self.before_launch_sync.keys():
+            self.launch(*self.before_launch_sync[app_name])
+            self.before_launch_sync.pop(app_name)
+
+    def add_installed_widget(self, app_name):
+        pixmap = get_pixmap(app_name)
         if pixmap.isNull():
-            logger.info(game.app_title + " has a corrupt image.")
-            download_image(self.core.get_game(game.app_name), force=True)
-            pixmap = get_pixmap(game.app_name)
+            logger.info(app_name + " has a corrupt image.")
+            download_image(self.core.get_game(app_name), force=True)
+            pixmap = get_pixmap(app_name)
 
-        if game.app_name in self.no_asset_names:
-            igame = None
-        else:
-            igame = self.core.get_installed_game(game.app_name)
+        icon_widget = InstalledIconWidget(app_name, pixmap)
 
-        icon_widget = InstalledIconWidget(igame, pixmap, is_origin, game)
+        list_widget = InstalledListWidget(app_name, pixmap)
 
-        list_widget = InstalledListWidget(igame, pixmap, is_origin, game)
-
-        self.widgets[game.app_name] = (icon_widget, list_widget)
+        self.widgets[app_name] = (icon_widget, list_widget)
 
         icon_widget.show_info.connect(self.show_game_info)
         list_widget.show_info.connect(self.show_game_info)
 
-        icon_widget.launch_signal.connect(self.launch)
+        icon_widget.launch_signal.connect(self.prepare_launch)
         icon_widget.finish_signal.connect(self.finished)
 
-        list_widget.launch_signal.connect(self.launch)
+        list_widget.launch_signal.connect(self.prepare_launch)
         list_widget.finish_signal.connect(self.finished)
 
+        game = self.core.get_game(app_name)
+        if game.supports_cloud_saves:
+            icon_widget.sync_game.connect(self.cloud_save_utils.sync_before_launch_game)
+            list_widget.sync_game.connect(self.cloud_save_utils.sync_before_launch_game)
+
         if icon_widget.update_available:
-            self.updates.add(igame.app_name)
+            self.updates.add(app_name)
 
         return icon_widget, list_widget
 
@@ -229,33 +241,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.widgets[game.app_name] = (icon_widget, list_widget)
 
         return icon_widget, list_widget
-
-    def finished(self, app_name):
-        self.running_games.remove(app_name)
-        self.widgets[app_name][0].info_text = ""
-        self.widgets[app_name][0].info_label.setText("")
-        self.widgets[app_name][1].launch_button.setDisabled(False)
-        self.widgets[app_name][1].launch_button.setText(self.tr("Launch"))
-        if self.widgets[app_name][0].game.supports_cloud_saves:
-            if not self.settings.value(f"{app_name}/auto_sync_cloud", True, bool) \
-                    and not self.settings.value("auto_sync_cloud", True, bool):
-                logger.info("Auto saves disabled")
-                return
-
-            self.widgets[app_name][0].info_text = self.tr("Sync CLoud saves")
-            self.widgets[app_name][0].info_label.setText(self.tr("Sync CLoud saves"))
-            self.widgets[app_name][1].info_label.setText(self.tr("Sync CLoud saves"))
-        self.signals.set_discord_rpc.emit(None)
-
-    def launch(self, app_name):
-        self.running_games.append(app_name)
-        # self.game_started.emit(app_name)
-        self.widgets[app_name][0].info_text = self.tr("Game running")
-        self.widgets[app_name][0].info_label.setText(self.tr("Game running"))
-        self.widgets[app_name][1].launch_button.setDisabled(True)
-        self.widgets[app_name][1].launch_button.setText(self.tr("Game running"))
-
-        self.signals.set_discord_rpc.emit(app_name)
 
     def filter_games(self, filter_name="all", search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
@@ -315,7 +300,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                         self.widgets[app_name][1].deleteLater()
                         self.widgets.pop(app_name)
 
-                        self.add_installed_widget(self.core.get_game(app_name))
+                        self.add_installed_widget(app_name)
                         update_list = True
 
                     # uninstalled
@@ -330,6 +315,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                         game = self.core.get_game(app_name, False)
                         self.add_uninstalled_widget(game)
                         update_list = True
+
             # do not update, if only update finished
             if update_list:
                 self._update_games()
@@ -356,7 +342,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     self.widgets.pop(name)
 
                     igame = self.core.get_installed_game(name)
-                    self.add_installed_widget(self.core.get_game(igame.app_name))
+                    self.add_installed_widget(igame.app_name)
 
                 for name in new_uninstalled_games:
                     self.icon_view.layout().removeWidget(self.widgets[name][0])
