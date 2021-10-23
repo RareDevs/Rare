@@ -100,6 +100,7 @@ class ApiResults:
     mac_games: list = None
     assets: list = None
     no_asset_games: list = None
+    saves: list = None
 
     def __bool__(self):
         return self.game_list is not None \
@@ -107,7 +108,8 @@ class ApiResults:
                and self.bit32_games is not None \
                and self.mac_games is not None \
                and self.assets is not None \
-               and self.no_asset_games is not None
+               and self.no_asset_games is not None \
+               and self.saves is not None
 
 
 class Signals(QObject):

@@ -27,7 +27,7 @@ class GameInfoTabs(SideTabWidget):
 
         self.tabBar().setCurrentIndex(1)
 
-    def update_game(self, game: Game, dlcs: list):
+    def update_game(self, game: Game):
         self.setCurrentIndex(1)
         self.info.update_game(game)
         self.settings.update_game(game)

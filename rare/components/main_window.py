@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
         if shared.args.subparser == "launch":
             if shared.args.app_name in [i.app_name for i in self.tab_widget.games_tab.installed]:
                 logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
-                self.tab_widget.games_tab.widgets[shared.args.app_name][1].launch()
+                self.tab_widget.games_tab.widgets[shared.args.app_name][1].prepare_launch()
             else:
                 logger.info(
                     f"Could not find {shared.args.app_name} in Games or it is not installed")
@@ -57,8 +57,8 @@ class MainWindow(QMainWindow):
             file.close()
             if action.startswith("launch"):
                 game = action.replace("launch ", "").replace("\n", "")
-                if self.core.is_installed(game):
-                    self.tab_widget.games_tab.widgets[game][1].launch()
+                if game in [i.app_name for i in self.tab_widget.games_tab.game_list] and self.core.is_installed(game):
+                    self.tab_widget.games_tab.game_utils.prepare_launch(game, offline=shared.args.offline)
                 else:
                     logger.info(f"Could not find {game} in Games")
 

@@ -5,7 +5,6 @@ from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from qtawesome import icon
 
-from legendary.models.game import InstalledGame, Game
 from rare import shared
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
 
@@ -15,9 +14,8 @@ logger = getLogger("GameWidgetInstalled")
 class InstalledIconWidget(BaseInstalledWidget):
     update_game = pyqtSignal()
 
-    def __init__(self, igame: InstalledGame, pixmap, is_origin: bool = False,
-                 game: Game = None):
-        super(InstalledIconWidget, self).__init__(igame, pixmap, is_origin, game)
+    def __init__(self, app_name, pixmap):
+        super(InstalledIconWidget, self).__init__(app_name, pixmap)
         self.setObjectName("game_widget_icon")
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -32,7 +30,7 @@ class InstalledIconWidget(BaseInstalledWidget):
 
         self.layout.addWidget(self.image)
 
-        self.title_label = QLabel(f"<h4>{game.app_title}</h4>")
+        self.title_label = QLabel(f"<h4>{self.game.app_title}</h4>")
         self.title_label.setAutoFillBackground(False)
         self.title_label.setWordWrap(True)
         self.title_label.setFixedWidth(175)

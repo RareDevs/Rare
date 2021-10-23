@@ -98,37 +98,23 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="cloud_sync_label">
-        <property name="text">
-         <string>Sync with cloud</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QCheckBox" name="cloud_sync">
-        <property name="text">
-         <string notr="true"/>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
        <widget class="QLabel" name="launch_params_label">
         <property name="text">
          <string>Launch parameters</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QWidget" name="launch_params_widget" native="true">
-        <layout class="QHBoxLayout" name="launch_params_layout">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
+      <item row="2" column="1">
+          <widget class="QWidget" name="launch_params_widget" native="true">
+              <layout class="QHBoxLayout" name="launch_params_layout">
+                  <property name="leftMargin">
+                      <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                      <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                      <number>0</number>
          </property>
          <property name="bottomMargin">
           <number>0</number>
@@ -156,24 +142,24 @@
         </layout>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="wrapper_label">
-        <property name="text">
-         <string>Wrapper</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QWidget" name="wrapper_widget" native="true">
-        <layout class="QHBoxLayout" name="wrapper_layout">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
+         <item row="3" column="0">
+             <widget class="QLabel" name="wrapper_label">
+                 <property name="text">
+                     <string>Wrapper</string>
+                 </property>
+             </widget>
+         </item>
+         <item row="3" column="1">
+             <widget class="QWidget" name="wrapper_widget" native="true">
+                 <layout class="QHBoxLayout" name="wrapper_layout">
+                     <property name="leftMargin">
+                         <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                         <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                         <number>0</number>
          </property>
          <property name="bottomMargin">
           <number>0</number>
@@ -246,28 +232,51 @@
        <layout class="QVBoxLayout" name="proton_prefix_layout"/>
       </item>
       <item row="3" column="0" colspan="2">
-       <layout class="QVBoxLayout" name="linux_layout">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-       </layout>
+          <layout class="QVBoxLayout" name="linux_layout">
+              <property name="spacing">
+                  <number>0</number>
+              </property>
+          </layout>
       </item>
      </layout>
     </widget>
    </item>
-   <item>
-    <spacer name="game_settings_vspacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
+      <item>
+          <widget class="QGroupBox" name="cloud_gb">
+              <property name="title">
+                  <string>Cloud Saves</string>
+              </property>
+              <layout class="QFormLayout" name="formLayout">
+                  <item row="0" column="0">
+                      <widget class="QLabel" name="cloud_sync_label">
+                          <property name="text">
+                              <string>Sync with cloud</string>
+                          </property>
+                      </widget>
+                  </item>
+                  <item row="0" column="1">
+                      <widget class="QCheckBox" name="cloud_sync">
+                          <property name="text">
+                              <string notr="true"/>
+                          </property>
+                      </widget>
+                  </item>
+              </layout>
+          </widget>
+      </item>
+      <item>
+          <spacer name="game_settings_vspacer">
+              <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+                  <size>
+                      <width>20</width>
+                      <height>40</height>
+                  </size>
+              </property>
+          </spacer>
+      </item>
   </layout>
  </widget>
  <resources/>

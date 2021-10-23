@@ -7,7 +7,7 @@ from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray, QProce
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel, QPushButton
 
-from legendary.models.game import InstalledGame, Game
+from legendary.models.game import Game
 from rare import shared
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.extra.console import ConsoleWindow
@@ -19,29 +19,32 @@ logger = getLogger("Game")
 
 
 class BaseInstalledWidget(QGroupBox):
-    launch_signal = pyqtSignal(str)
+    launch_signal = pyqtSignal(str, QProcess, list)
     show_info = pyqtSignal(Game)
-    finish_signal = pyqtSignal(str)
+    finish_signal = pyqtSignal(str, int)
     update_list = pyqtSignal()
     proc: QProcess()
+    sync_game = pyqtSignal(str)
 
-    def __init__(self, igame: InstalledGame, pixmap: QPixmap, is_origin: bool = False, game: Game = None):
+    def __init__(self, app_name, pixmap: QPixmap):
         super(BaseInstalledWidget, self).__init__()
-        self.igame = igame
-        self.is_origin = is_origin
         self.core = shared.core
-        if not game:
-            self.game = self.core.get_game(self.igame.app_name)
+
+        self.game = self.core.get_game(app_name)
+        if self.game.third_party_store != "Origin":
+            self.igame = self.core.get_installed_game(app_name)
+            self.is_origin = False
         else:
-            self.game = game
+            self.is_origin = True
+
         self.image = QLabel()
         self.image.setPixmap(pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
         self.game_running = False
         self.offline = shared.args.offline
-        if is_origin:
+        if self.game.third_party_store == "Origin":
             self.update_available = False
         else:
-            self.update_available = self.core.get_asset(self.game.app_name, False).build_version != igame.version
+            self.update_available = self.core.get_asset(self.game.app_name, False).build_version != self.igame.version
         self.data = QByteArray()
         self.setContentsMargins(0, 0, 0, 0)
         self.settings = QSettings()
@@ -51,12 +54,17 @@ class BaseInstalledWidget(QGroupBox):
         launch.triggered.connect(self.launch)
         self.addAction(launch)
 
+        if self.game.supports_cloud_saves:
+            sync = QAction(self.tr("Sync with cloud"), self)
+            sync.triggered.connect(lambda: self.sync_game.emit(self.game.app_name))
+            self.addAction(sync)
+
         if os.path.exists(os.path.expanduser(f"~/Desktop/{self.game.app_title}.desktop")) \
                 or os.path.exists(os.path.expanduser(f"~/Desktop/{self.game.app_title}.lnk")):
             self.create_desktop = QAction(self.tr("Remove Desktop link"))
         else:
             self.create_desktop = QAction(self.tr("Create Desktop link"))
-        if not is_origin:
+        if not self.is_origin:
             self.create_desktop.triggered.connect(lambda: self.create_desktop_link("desktop"))
             self.addAction(self.create_desktop)
 
@@ -70,7 +78,7 @@ class BaseInstalledWidget(QGroupBox):
             self.create_start_menu = QAction(self.tr("Remove start menu link"))
         else:
             self.create_start_menu = QAction(self.tr("Create start menu link"))
-        if not is_origin:
+        if not self.is_origin:
             self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
             self.addAction(self.create_start_menu)
 
@@ -187,9 +195,8 @@ class BaseInstalledWidget(QGroupBox):
             self.proc.readyReadStandardOutput.connect(self.stdout)
             self.proc.readyReadStandardError.connect(self.stderr)
 
-        self.proc.start(params[0], params[1:])
-        self.launch_signal.emit(self.game.app_name)
-        self.game_running = True
+        self.launch_signal.emit(self.game.app_name, self.proc, params)
+        # self.game_running = True
 
         return 0
 
@@ -216,7 +223,7 @@ class BaseInstalledWidget(QGroupBox):
             if resp == 0:
                 webbrowser.open("https://www.dm.origin.com/download")
 
-        self.finish_signal.emit(self.game.app_name)
+        self.finish_signal.emit(self.game.app_name, exit_code)
         self.game_running = False
         if self.settings.value("show_console", False, bool):
             self.console.log(f"Game exited with code: {exit_code}")

@@ -3,7 +3,7 @@ from logging import getLogger
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
 from rare import shared
-from rare.components.tabs.settings.dxvk import DxvkSettings, DxvkWidget
+from rare.components.tabs.settings.dxvk import DxvkSettings
 from rare.ui.components.tabs.settings.linux import Ui_LinuxSettings
 from rare.utils.extra_widgets import PathEdit
 
@@ -32,11 +32,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         self.exec_layout.addWidget(self.wine_exec)
 
         # dxvk
-        # FIXME: Remove this check when done with per game settings
-        if name is None:
-            self.dxvk = DxvkSettings(self.name)
-        else:
-            self.dxvk = DxvkWidget()
+        self.dxvk = DxvkSettings(self.name)
         self.dxvk_layout.addWidget(self.dxvk)
 
     def save_setting(self, text: str, setting_name: str):
