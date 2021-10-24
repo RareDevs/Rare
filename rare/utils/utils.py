@@ -3,19 +3,22 @@ import math
 import os
 import platform
 import shutil
+import subprocess
 import sys
 from logging import getLogger
 from typing import Tuple
 
 import requests
 from PIL import Image, UnidentifiedImageError
-from PyQt5.QtCore import pyqtSignal, QSettings
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings
 from PyQt5.QtGui import QPalette, QColor, QPixmap
+
+from .models import PathSpec
 
 # Windows
 
 if platform.system() == "Windows":
-    from win32com.client import Dispatch # pylint: disable=E0401
+    from win32com.client import Dispatch  # pylint: disable=E0401
 
 from rare import languages_path, resources_path, image_dir
 # Mac not supported
@@ -418,3 +421,42 @@ def text_color_for_background(background: Tuple[int, int, int]) -> Tuple[int,
         return 255, 255, 255
     else:
         return 0, 0, 0
+
+
+class WineResolverSignals(QObject):
+    result_ready = pyqtSignal(str)
+
+
+class WineResolver(QRunnable):
+
+    def __init__(self, path: str, app_name: str, core: LegendaryCore):
+        super(WineResolver, self).__init__()
+        self.setAutoDelete(True)
+        self.signals = WineResolverSignals()
+        self.wine_env = os.environ.copy()
+        self.wine_env.update(core.get_app_environment(app_name))
+        self.wine_env['WINEDLLOVERRIDES'] = 'winemenubuilder=d;mscoree=d;mshtml=d;'
+        self.wine_env['DISPLAY'] = ''
+        self.wine_binary = core.lgd.config.get(
+            app_name, 'wine_executable',
+            fallback=core.lgd.config.get('default', 'wine_executable', fallback='wine'))
+        self.winepath_binary = os.path.join(os.path.dirname(self.wine_binary), 'winepath')
+        self.path = PathSpec(core, app_name).cook(path)
+
+    @pyqtSlot()
+    def run(self):
+        path = self.path.strip().replace('/', '\\')
+        cmd = 'cd {} & cd'.format(path)
+        # [self.wine_binary, 'cmd', '/c', 'echo', path] if path not exists alternative
+        proc = subprocess.Popen([self.wine_binary, 'cmd', '/c', cmd],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                env=self.wine_env, shell=False, text=True)
+        out, err = proc.communicate()
+        # Clean wine output
+        out = out.strip().strip('"')
+        proc = subprocess.Popen([self.winepath_binary, '-u', out],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                env=self.wine_env, shell=False, text=True)
+        out, err = proc.communicate()
+        real_path = os.path.realpath(out.strip())
+        self.signals.result_ready.emit(real_path)
