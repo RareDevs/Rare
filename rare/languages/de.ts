@@ -1268,7 +1268,7 @@
     <message>
         <location filename="../components/tabs/games/game_widgets/uninstalled_list_widget.py" line="24"/>
         <source>Install</source>
-        <translation>InstallierenInstallieren</translation>
+        <translation>Installieren</translation>
     </message>
 </context>
 <context>
