@@ -29,6 +29,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
     widgets = {}
     running_games = []
     updates = set()
+    active_filter = 0
 
     def __init__(self):
         super(GamesTab, self).__init__()
@@ -76,12 +77,14 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         else:
             self.scroll_widget.layout().insertWidget(1, self.icon_view)
 
-        self.head_bar.search_bar.textChanged.connect(self.search)
-        self.head_bar.filter_changed_signal.connect(self.filter)
+        self.head_bar.search_bar.textChanged.connect(lambda x: self.filter_games("", x))
+        self.head_bar.filter_changed_signal.connect(self.filter_games)
         self.head_bar.refresh_list.clicked.connect(self.update_list)
         self.head_bar.view.toggled.connect(self.toggle_view)
 
-        self.filter(self.head_bar.available_filters[self.settings.value("filter", 0, int)])
+        f = self.settings.value("filter", 0, int)
+        self.active_filter = self.head_bar.available_filters[f]
+        self.filter_games(self.active_filter)
 
         # signals
         self.signals.dl_progress.connect(self.installing_widget.set_status)
@@ -127,7 +130,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.list_view.setLayout(QVBoxLayout())
 
         self.installed = sorted(self.core.get_installed_list(), key=lambda x: x.title)
-        installed_names = [i.app_name for i in self.installed]
         self.update_count_games_label()
 
         # add installing game widget for icon view: List view not supported
@@ -237,34 +239,37 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         self.signals.set_discord_rpc.emit(app_name)
 
-    def search(self, text: str):
-        for t in self.widgets.values():
-            for w in t:
-                if text.lower() in w.game.app_title.lower() + w.game.app_name.lower():
-                    w.setVisible(True)
-                else:
-                    w.setVisible(False)
+    def filter_games(self, filter_name="", search_text: str = ""):
+        if not search_text and (t := self.head_bar.search_bar.text()):
+            search_text = t
 
-    def filter(self, filter_name="installed"):
+        if filter_name:
+            self.active_filter = filter_name
+        if not filter_name and (t := self.active_filter):
+            filter_name = t
+
         for t in self.widgets.values():
             # icon and list widget
             for w in t:
                 if filter_name == "installed":
-                    w.setVisible(self.core.is_installed(w.game.app_name))
+                    visible = self.core.is_installed(w.game.app_name)
                 elif filter_name == "offline":
                     if self.core.is_installed(w.game.app_name):
-                        w.setVisible(w.igame.can_run_offline)
+                        visible = w.igame.can_run_offline
                     else:
-                        w.setVisible(False)
+                        visible = False
                 elif filter_name == "32bit" and self.bit32:
-                    w.setVisible(w.game.app_name in self.bit32)
+                    visible = w.game.app_name in self.bit32
                 elif filter_name == "mac":
-                    w.setVisible(w.game.app_name in self.mac_games)
+                    visible = w.game.app_name in self.mac_games
                 elif filter_name == "installable":
-                    w.setVisible(w.game.app_name not in self.no_asset_names)
+                    visible = w.game.app_name not in self.no_asset_names
                 else:
                     # All visible
-                    w.setVisible(True)
+                    visible = True
+                if search_text.lower() not in w.game.app_name.lower() and search_text.lower() not in w.game.app_title.lower():
+                    visible = False
+                w.setVisible(visible)
 
     def update_list(self, app_name=None):
         if app_name:
