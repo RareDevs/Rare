@@ -4,10 +4,10 @@ import os
 from datetime import date
 
 import requests
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, QCoreApplication
 
 from legendary.core import LegendaryCore
-from rare import data_dir, cache_dir
+from rare import data_dir, cache_dir, shared
 
 replace_chars = ",;.:-_ "
 
@@ -15,38 +15,45 @@ file = os.path.join(cache_dir, "game_list.json")
 url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 
 
-class SteamWorker(QThread):
-    app_name = ""
+class SteamSignals(QObject):
     rating_signal = pyqtSignal(str)
+
+
+class SteamWorker(QRunnable):
+    app_name = ""
 
     def __init__(self, core: LegendaryCore):
         super(SteamWorker, self).__init__()
+        self.signals = SteamSignals()
         self.core = core
+        _tr = QCoreApplication.translate
         self.ratings = {
-            "platinum": self.tr("Platinum"),
-            "gold": self.tr("Gold"),
-            "silver": self.tr("Silver"),
-            "bronze": self.tr("Bronze"),
-            "fail": self.tr("Could not get grade"),
-            "borked": self.tr("unplayable"),
-            "pending": self.tr("Could not get grade")
+            "platinum": _tr("SteamWorker", "Platinum"),
+            "gold": _tr("SteamWorker", "Gold"),
+            "silver": _tr("SteamWorker", "Silver"),
+            "bronze": _tr("SteamWorker", "Bronze"),
+            "fail": _tr("SteamWorker", "Could not get grade"),
+            "borked": _tr("SteamWorker", "unplayable"),
+            "pending": _tr("SteamWorker", "Could not get grade")
         }
 
     def set_app_name(self, app_name: str):
         self.app_name = app_name
 
     def run(self) -> None:
-        self.rating_signal.emit(self.ratings.get(get_rating(self.app_name, self.core), self.ratings["fail"]))
+        self.signals.rating_signal.emit(self.ratings.get(get_rating(self.app_name), self.ratings["fail"]))
 
 
-def get_rating(app_name: str, core: LegendaryCore):
+def get_rating(app_name: str):
     if os.path.exists(p := os.path.join(data_dir, "steam_ids.json")):
         grades = json.load(open(p))
     else:
         grades = {}
 
     if not grades.get(app_name):
-        game = core.get_game(app_name)
+        if shared.args.offline:
+            return "pending"
+        game = shared.core.get_game(app_name)
 
         steam_id = get_steam_id(game.app_title)
         grade = get_grade(steam_id)

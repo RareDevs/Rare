@@ -1,7 +1,7 @@
 import os
 import platform
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from legendary.models.game import Game, InstalledGame
@@ -31,7 +31,8 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.grade.setVisible(False)
         else:
             self.steam_worker = SteamWorker(self.core)
-            self.steam_worker.rating_signal.connect(self.grade.setText)
+            self.steam_worker.signals.rating_signal.connect(self.grade.setText)
+            self.steam_worker.setAutoDelete(False)
 
         self.game_actions_stack.setCurrentIndex(0)
         self.install_button.setText(self.tr("Link to Origin/Launch"))
@@ -122,7 +123,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         if platform.system() != "Windows":
             self.grade.setText(self.tr("Loading"))
             self.steam_worker.set_app_name(game.app_name)
-            self.steam_worker.start()
+            QThreadPool.globalInstance().start(self.steam_worker)
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(game.app_name):
             self.verify_widget.setCurrentIndex(0)

@@ -1,6 +1,6 @@
 import platform
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThreadPool
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTreeView
 
@@ -60,9 +60,10 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.install_button.clicked.connect(self.install_game)
         if platform.system() != "Windows":
             self.steam_worker = SteamWorker(self.core)
-            self.steam_worker.rating_signal.connect(self.grade.setText)
+            self.steam_worker.signals.rating_signal.connect(self.grade.setText)
+            self.steam_worker.setAutoDelete(False)
 
-        if platform.system() == "Windows":
+        else:
             self.lbl_grade.setVisible(False)
             self.grade.setVisible(False)
 
@@ -95,4 +96,4 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         if platform.system() != "Windows":
             self.grade.setText(self.tr("Loading"))
             self.steam_worker.set_app_name(game.app_name)
-            self.steam_worker.start()
+            QThreadPool.globalInstance().start(self.steam_worker)

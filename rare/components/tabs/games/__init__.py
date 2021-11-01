@@ -239,7 +239,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         self.signals.set_discord_rpc.emit(app_name)
 
-    def filter_games(self, filter_name="", search_text: str = ""):
+    def filter_games(self, filter_name="all", search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
 
@@ -264,8 +264,10 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     visible = w.game.app_name in self.mac_games
                 elif filter_name == "installable":
                     visible = w.game.app_name not in self.no_asset_names
-                else:
+                elif filter_name == "all":
                     # All visible
+                    visible = True
+                else:
                     visible = True
                 if search_text.lower() not in w.game.app_name.lower() and search_text.lower() not in w.game.app_title.lower():
                     visible = False
