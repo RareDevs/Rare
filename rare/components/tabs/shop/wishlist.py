@@ -57,12 +57,14 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
             self.no_games_label.setVisible(False)
 
     def set_wishlist(self, wishlist=None, sort=0):
+        if wishlist and wishlist[0] == "error":
+            return
+
         if wishlist is not None:
             self.wishlist = wishlist
 
         for i in self.widgets:
-            i.setParent(None)
-            del i
+            i.deleteLater()
 
         if sort == 0:
             sorted_list = sorted(self.wishlist, key=lambda x: x["offer"]["title"])

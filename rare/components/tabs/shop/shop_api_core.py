@@ -33,9 +33,16 @@ class ShopApiCore(QObject):
 
     def _handle_free_games(self, data, handle_func):
         try:
-            handle_func(data["data"]["Catalog"]["searchStore"]["elements"])
-        except KeyError as e:
-            logger.error(str(e))
+            results: dict = data["data"]["Catalog"]["searchStore"]["elements"]
+        except KeyError:
+            logger.error("Free games Api request failed")
+            handle_func(["error", "Key error"])
+            return
+        except Exception as e:
+            logger.error("Free games Api request failed: " + str(e))
+            handle_func(["error", e])
+            return
+        handle_func(results)
 
     def get_wishlist(self, handle_func):
         self.auth_manager.post(graphql_url, {
@@ -48,9 +55,17 @@ class ShopApiCore(QObject):
 
     def _handle_wishlist(self, data, handle_func):
         try:
-            handle_func(data["data"]["Wishlist"]["wishlistItems"]["elements"])
+            results: list = data["data"]["Wishlist"]["wishlistItems"]["elements"]
         except KeyError:
-            handle_func(None)
+            logger.error("Free games Api request failed")
+            handle_func(["error", "Key error"])
+            return
+        except Exception as e:
+            logger.error("Free games Api request failed: " + str(e))
+            handle_func(["error", e])
+            return
+
+        handle_func(results)
 
     def search_game(self, name, handle_func):
         payload = {
@@ -101,6 +116,7 @@ class ShopApiCore(QObject):
     def _handle_get_game(self, data, handle_func):
         handle_func(data)
 
+    # needs a captcha
     def add_to_wishlist(self, namespace, offer_id, handle_func: callable):
         payload = {
             "variables": {

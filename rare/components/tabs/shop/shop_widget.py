@@ -3,7 +3,7 @@ import logging
 import random
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel, QPushButton
 
 from legendary.core import LegendaryCore
 from rare.components.tabs.shop import ShopApiCore
@@ -37,12 +37,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.types = []
         self.update_games_allowed = True
         self.free_widget.setLayout(FlowLayout())
-        self.free_games_now = QGroupBox(self.tr("Now Free"))
-        self.free_games_now.setLayout(FlowLayout())
-        self.free_widget.layout().addWidget(self.free_games_now)
-        self.coming_free_games = QGroupBox(self.tr("Free Games next week"))
-        self.coming_free_games.setLayout(FlowLayout())
-        self.free_widget.layout().addWidget(self.coming_free_games)
+
         self.free_stack.addWidget(WaitingSpinner())
         self.free_stack.setCurrentIndex(1)
 
@@ -78,9 +73,18 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.api_core.get_wishlist(self.add_wishlist_items)
 
     def add_wishlist_items(self, wishlist):
+        for i in range(self.discount_widget.layout().count()):
+            item = self.discount_widget.layout().itemAt(i)
+            if item:
+                item.widget().deleteLater()
 
-        for item in (self.discount_widget.layout().itemAt(i) for i in range(self.discount_widget.layout().count())):
-            item.widget().deleteLater()
+        if wishlist[0] == "error":
+            self.discount_widget.layout().addWidget(QLabel(self.tr("Failed to get wishlist: ") + wishlist[1]))
+            btn = QPushButton(self.tr("Reload"))
+            self.discount_widget.layout().addWidget(btn)
+            btn.clicked.connect(lambda: self.api_core.get_wishlist(self.add_wishlist_items))
+            self.discount_stack.setCurrentIndex(0)
+            return
 
         discounts = 0
         for game in wishlist:
@@ -98,7 +102,28 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.discounts_gb.setVisible(discounts > 0)
         self.discount_stack.setCurrentIndex(0)
 
-    def add_free_games(self, free_games):
+    def add_free_games(self, free_games: list):
+        for i in range(self.free_widget.layout().count()):
+            item = self.free_widget.layout().itemAt(i)
+            if item:
+                item.widget().deleteLater()
+
+        if free_games[0] == "error":
+            self.free_widget.layout().addWidget(QLabel(self.tr("Failed to fetch free games: ") + free_games[1]))
+            btn = QPushButton(self.tr("Reload"))
+            self.free_widget.layout().addWidget(btn)
+            btn.clicked.connect(lambda: self.api_core.get_free_games(self.add_free_games))
+            self.free_stack.setCurrentIndex(0)
+            return
+
+        self.free_games_now = QGroupBox(self.tr("Now Free"))
+        self.free_games_now.setLayout(FlowLayout())
+        self.free_widget.layout().addWidget(self.free_games_now)
+
+        self.coming_free_games = QGroupBox(self.tr("Free Games next week"))
+        self.coming_free_games.setLayout(FlowLayout())
+        self.free_widget.layout().addWidget(self.coming_free_games)
+
         date = datetime.datetime.now()
         free_games_now = []
         coming_free_games = []
@@ -245,10 +270,11 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 w.show_info.connect(self.show_game.emit)
 
         else:
-            self.game_widget.setLayout(QVBoxLayout())
-            self.game_widget.layout().addWidget(
+            layout = QVBoxLayout()
+            layout.addWidget(
                 QLabel(self.tr("Could not get games matching the filter")))
-            self.game_widget.layout().addStretch(1)
+            layout.addStretch(1)
+            self.game_widget.setLayout(layout)
         self.game_stack.setCurrentIndex(0)
 
 

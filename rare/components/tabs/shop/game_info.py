@@ -37,6 +37,8 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.wishlist = []
 
     def handle_wishlist_update(self, data):
+        if data[0] == "error":
+            return
         self.wishlist = [i["offer"]["title"] for i in data]
         if self.title_str in self.wishlist:
             self.in_wishlist = True
