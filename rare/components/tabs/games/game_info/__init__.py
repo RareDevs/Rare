@@ -7,10 +7,11 @@ from rare.utils.extra_widgets import SideTabWidget
 from .game_dlc import GameDlc
 from .game_info import GameInfo
 from .game_settings import GameSettings
+from ..game_utils import GameUtils
 
 
 class GameInfoTabs(SideTabWidget):
-    def __init__(self, dlcs: list, parent=None):
+    def __init__(self, dlcs: list, game_utils: GameUtils, parent=None):
         super(GameInfoTabs, self).__init__(show_back=True, parent=parent)
         self.core = shared.core
         self.signals = shared.signals
@@ -22,7 +23,7 @@ class GameInfoTabs(SideTabWidget):
         self.addTab(self.settings, self.tr("Settings"))
 
         self.dlc_list = dlcs
-        self.dlc = GameDlc(self.dlc_list, self)
+        self.dlc = GameDlc(self.dlc_list, game_utils, self)
         self.addTab(self.dlc, self.tr("Downloadable Content"))
 
         self.tabBar().setCurrentIndex(1)

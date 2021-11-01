@@ -99,7 +99,7 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
 
 
 class CloudSaveUtils(QObject):
-    sync_finished = pyqtSignal(str)
+    sync_finished = pyqtSignal(str, bool)
 
     def __init__(self):
         super(CloudSaveUtils, self).__init__()
@@ -119,7 +119,7 @@ class CloudSaveUtils(QObject):
 
         self.thread_pool = QThreadPool.globalInstance()
 
-    def sync_before_launch_game(self, app_name):
+    def sync_before_launch_game(self, app_name) -> bool:
         igame = self.core.get_installed_game(app_name)
         res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
 
@@ -144,7 +144,6 @@ class CloudSaveUtils(QObject):
             result = CloudSaveDialog(igame, dt_local, dt_remote, newer).get_action()
             if result == CloudSaveDialog.UPLOAD:
                 self.upload_saves(igame, dt_local)
-                return
             elif result == CloudSaveDialog.DOWNLOAD:
                 self.download_saves(igame)
             elif result == CloudSaveDialog.CANCEL:
@@ -153,20 +152,11 @@ class CloudSaveUtils(QObject):
 
         return False
 
-    def game_finished(self, app_name, exit_code):
+    def game_finished(self, app_name):
         igame = self.core.get_installed_game(app_name)
         res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
 
         if res == SaveGameStatus.LOCAL_NEWER:
-            if exit_code != 0:
-                reply = QMessageBox.question(None, "Cloud Saves", self.tr(
-                    "Game could crashed. Do you want to upload save files? The save files could be corrupt"),
-                                             buttons=QMessageBox.Yes | QMessageBox.No, defaultButton=QMessageBox.Yes)
-
-                if reply == QMessageBox.No:
-                    self.sync_finished.emit(app_name)
-                    return
-
             self.upload_saves(igame, dt_local)
             return
 
@@ -202,7 +192,7 @@ class CloudSaveUtils(QObject):
 
     def worker_finished(self, error_message: str, app_name: str):
         if not error_message:
-            self.sync_finished.emit(app_name)
+            self.sync_finished.emit(app_name, False)
         else:
             QMessageBox.warning(None, "Warning", self.tr("Syncing with cloud failed: \n ") + error_message)
-            self.sync_finished.emit(app_name)
+            self.sync_finished.emit(app_name, True)

@@ -12,8 +12,10 @@ from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import FlowLayout
 from rare.utils.utils import get_pixmap, download_image
+from .cloud_save_utils import CloudSaveUtils
 from .game_info import GameInfoTabs
 from .game_info.uninstalled_info import UninstalledInfoTabs
+from .game_utils import GameUtils
 from .game_widgets.base_installed_widget import BaseInstalledWidget
 from .game_widgets.base_uninstalled_widget import BaseUninstalledWidget
 from .game_widgets.installed_icon_widget import InstalledIconWidget
@@ -39,8 +41,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.core = shared.core
         self.signals = shared.signals
         self.settings = QSettings()
-        self.cloud_save_utils = CloudSaveUtils()
-        self.cloud_save_utils.sync_finished.connect(self.sync_finished)
+        self.game_utils = GameUtils(parent=self)
         self.before_launch_sync = dict()
 
         self.game_list = shared.api_results.game_list
@@ -54,7 +55,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.head_bar.egl_sync_clicked.connect(self.show_egl_sync)
         self.games.layout().insertWidget(0, self.head_bar)
 
-        self.game_info_tabs = GameInfoTabs(self.dlcs, self)
+        self.game_info_tabs = GameInfoTabs(self.dlcs, self.game_utils, self)
         self.game_info_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
         self.addWidget(self.game_info_tabs)
 
@@ -178,15 +179,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             len(self.core.get_installed_list()),
             len(self.game_list)))
 
-    def sync_finished(self, app_name):
-        self.widgets[app_name][0].info_text = ""
-        self.widgets[app_name][0].info_label.setText("")
-        self.widgets[app_name][1].info_label.setText("")
-
-        if app_name in self.before_launch_sync.keys():
-            self.launch(*self.before_launch_sync[app_name])
-            self.before_launch_sync.pop(app_name)
-
     def add_installed_widget(self, app_name):
         pixmap = get_pixmap(app_name)
         if pixmap.isNull():
@@ -194,25 +186,14 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             download_image(self.core.get_game(app_name), force=True)
             pixmap = get_pixmap(app_name)
 
-        icon_widget = InstalledIconWidget(app_name, pixmap)
+        icon_widget = InstalledIconWidget(app_name, pixmap, self.game_utils)
 
-        list_widget = InstalledListWidget(app_name, pixmap)
+        list_widget = InstalledListWidget(app_name, pixmap, self.game_utils)
 
         self.widgets[app_name] = (icon_widget, list_widget)
 
         icon_widget.show_info.connect(self.show_game_info)
         list_widget.show_info.connect(self.show_game_info)
-
-        icon_widget.launch_signal.connect(self.prepare_launch)
-        icon_widget.finish_signal.connect(self.finished)
-
-        list_widget.launch_signal.connect(self.prepare_launch)
-        list_widget.finish_signal.connect(self.finished)
-
-        game = self.core.get_game(app_name)
-        if game.supports_cloud_saves:
-            icon_widget.sync_game.connect(self.cloud_save_utils.sync_before_launch_game)
-            list_widget.sync_game.connect(self.cloud_save_utils.sync_before_launch_game)
 
         if icon_widget.update_available:
             self.updates.add(app_name)
@@ -404,9 +385,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         QObjectCleanupHandler().add(self.icon_view.layout())
         QObjectCleanupHandler().add(self.list_view.layout())
-
-        # QWidget().setLayout(self.icon_view.layout())
-        # QWidget().setLayout(self.list_view.layout())
 
         self.icon_view.setLayout(icon_layout)
         self.list_view.setLayout(list_layout)

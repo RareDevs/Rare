@@ -14,8 +14,8 @@ logger = getLogger("GameWidgetInstalled")
 class InstalledIconWidget(BaseInstalledWidget):
     update_game = pyqtSignal()
 
-    def __init__(self, app_name, pixmap):
-        super(InstalledIconWidget, self).__init__(app_name, pixmap)
+    def __init__(self, app_name, pixmap, game_utils):
+        super(InstalledIconWidget, self).__init__(app_name, pixmap, game_utils)
         self.setObjectName("game_widget_icon")
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -29,6 +29,8 @@ class InstalledIconWidget(BaseInstalledWidget):
             self.info_text = self.tr("Update available")
 
         self.layout.addWidget(self.image)
+
+        self.game_utils.finished.connect(self.game_finished)
 
         self.title_label = QLabel(f"<h4>{self.game.app_title}</h4>")
         self.title_label.setAutoFillBackground(False)
@@ -97,3 +99,10 @@ class InstalledIconWidget(BaseInstalledWidget):
         # right
         elif e.button() == 2:
             pass  # self.showMenu(e)
+
+    def game_finished(self, app_name):
+        if app_name != self.game.app_name:
+            return
+
+        self.info_text = ""
+        self.info_label.setText("")

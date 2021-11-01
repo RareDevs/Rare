@@ -3,10 +3,9 @@ from PyQt5.QtWidgets import QFrame, QWidget, QMessageBox
 
 from legendary.models.game import Game
 from rare import shared
-from rare.components.dialogs.uninstall_dialog import UninstallDialog
+from rare.components.tabs.games.game_utils import GameUtils
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
-from rare.utils import legendary_utils
 from rare.utils.models import InstallOptionsModel
 from rare.utils.utils import get_pixmap
 
@@ -15,9 +14,10 @@ class GameDlc(QWidget, Ui_GameDlc):
     install_dlc = pyqtSignal(str, bool)
     game: Game
 
-    def __init__(self, dlcs: list, parent=None):
+    def __init__(self, dlcs: list, game_utils: GameUtils, parent=None):
         super(GameDlc, self).__init__(parent=parent)
         self.setupUi(self)
+        self.game_utils = game_utils
 
         self.available_dlc_scroll.setProperty("noBorder", 1)
         self.installed_dlc_scroll.setProperty("noBorder", 1)
@@ -62,12 +62,9 @@ class GameDlc(QWidget, Ui_GameDlc):
         self.available_dlc_label.setVisible(not self.available_dlc_widgets)
         self.available_dlc_scroll.setVisible(bool(self.available_dlc_widgets))
 
-    def uninstall(self, game):
-        infos = UninstallDialog(game).get_information()
-        if infos == 0:
-            return
-        legendary_utils.uninstall(game.app_name, self.core, infos)
-        self.update_dlcs(self.game.app_name)
+    def uninstall(self, app_name):
+        if self.game_utils.uninstall_game(app_name):
+            self.update_dlcs(app_name)
 
     def install(self, app_name):
         if not self.core.is_installed(self.game.app_name):
@@ -80,7 +77,7 @@ class GameDlc(QWidget, Ui_GameDlc):
 
 class GameDlcWidget(QFrame, Ui_GameDlcWidget):
     install = pyqtSignal(str)  # Appname
-    uninstall = pyqtSignal(Game)
+    uninstall = pyqtSignal(str)
 
     def __init__(self, dlc: Game, installed: bool, parent=None):
         super(GameDlcWidget, self).__init__(parent=parent)
