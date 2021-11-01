@@ -15,6 +15,10 @@ class ConsoleWindow(QWidget):
         self.layout.addWidget(self.save_button)
         self.save_button.clicked.connect(self.save)
 
+        self.clear_button = QPushButton(self.tr("Clear"))
+        self.layout.addWidget(self.clear_button)
+        self.clear_button.clicked.connect(self.console.clear)
+
         self.setLayout(self.layout)
 
     def save(self):
