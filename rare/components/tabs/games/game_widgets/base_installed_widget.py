@@ -1,19 +1,16 @@
 import os
 import platform
-import webbrowser
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray, QProcessEnvironment
+from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel, QPushButton
+from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
 
 from legendary.models.game import Game
 from rare import shared
-from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.extra.console import ConsoleWindow
-from rare.utils import legendary_utils, utils
-from rare.utils.extra_widgets import CustomQMessageDialog
+from rare.utils import utils
 from rare.utils.utils import create_desktop_link
+from rare.components.tabs.games.game_utils import GameUtils
 
 logger = getLogger("Game")
 
@@ -22,13 +19,14 @@ class BaseInstalledWidget(QGroupBox):
     launch_signal = pyqtSignal(str, QProcess, list)
     show_info = pyqtSignal(Game)
     finish_signal = pyqtSignal(str, int)
-    update_list = pyqtSignal()
     proc: QProcess()
-    sync_game = pyqtSignal(str)
 
-    def __init__(self, app_name, pixmap: QPixmap):
+    def __init__(self, app_name, pixmap: QPixmap, game_utils: GameUtils):
         super(BaseInstalledWidget, self).__init__()
         self.core = shared.core
+        self.game_utils = game_utils
+        self.game_utils.cloud_save_finished.connect(self.sync_finished)
+        self.sync_cloud_saves = False
 
         self.game = self.core.get_game(app_name)
         if self.game.third_party_store != "Origin":
@@ -56,7 +54,7 @@ class BaseInstalledWidget(QGroupBox):
 
         if self.game.supports_cloud_saves:
             sync = QAction(self.tr("Sync with cloud"), self)
-            sync.triggered.connect(lambda: self.sync_game.emit(self.game.app_name))
+            sync.triggered.connect(self.sync_game)
             self.addAction(sync)
 
         if os.path.exists(os.path.expanduser(f"~/Desktop/{self.game.app_title}.desktop")) \
@@ -87,7 +85,9 @@ class BaseInstalledWidget(QGroupBox):
         self.addAction(reload_image)
 
         uninstall = QAction(self.tr("Uninstall"), self)
-        uninstall.triggered.connect(self.uninstall)
+        uninstall.triggered.connect(
+            lambda: shared.signals.update_gamelist.emit(self.game.app_name) if self.game_utils.uninstall_game(
+                self.game.app_name) else None)
         self.addAction(uninstall)
 
     def reload_image(self):
@@ -129,109 +129,13 @@ class BaseInstalledWidget(QGroupBox):
                 self.create_start_menu.setText(self.tr("Create Start menu link"))
 
     def launch(self, offline=False, skip_version_check=False):
-        if QSettings().value("confirm_start", False, bool):
-            if not CustomQMessageDialog.yes_no_question(self, "Launch", self.tr("Do you want to launch {}").format(
-                    self.game.app_title)) == CustomQMessageDialog.yes:
-                logger.info("Cancel Startup")
-                return 1
-        logger.info("Launching " + self.game.app_title)
-        if self.is_origin:
-            self.offline = offline = False
-        if offline or self.offline:
-            if not self.igame.can_run_offline:
-                QMessageBox.warning(self, "Offline",
-                                    self.tr("Game cannot run offline. Please start game in Online mode"))
-                return
-        if not self.is_origin:
-            try:
-                self.proc, params = legendary_utils.launch_game(self.core, self.game.app_name, offline,
-                                                                skip_version_check=skip_version_check)
+        if self.game.supports_cloud_saves:
+            self.sync_cloud_saves = True
+        self.game_utils.launch_game(self.game.app_name, offline=offline, skip_update_check=skip_version_check)
 
-            except Exception as e:
-                logger.error(e)
-                QMessageBox.warning(self, "Error",
-                                    str(e))
-                return
-        else:
-            origin_uri = self.core.get_origin_uri(self.game.app_name, self.offline)
-            logger.info("Launch Origin Game: ")
-            if platform.system() == "Windows":
-                webbrowser.open(origin_uri)
-                return
-            wine_pfx = self.core.lgd.config.get(self.game.app_name, 'wine_prefix',
-                                                fallback=os.path.expanduser("~/.wine"))
-            wine_binary = self.core.lgd.config.get(self.game.app_name, 'wine_executable', fallback="/usr/bin/wine")
-            env = self.core.get_app_environment(self.game.app_name, wine_pfx=wine_pfx)
+    def sync_finished(self, app_name):
+        if app_name == self.game.app_name:
+            self.sync_cloud_saves = False
 
-            if not wine_binary or not env.get('WINEPREFIX'):
-                logger.error(f'In order to launch Origin correctly you must specify the wine binary and prefix '
-                             f'to use in the configuration file or command line. See the README for details.')
-                return
-
-            self.proc = QProcess()
-            self.proc.setProcessChannelMode(QProcess.MergedChannels)
-            # process.setWorkingDirectory()
-            environment = QProcessEnvironment()
-            for e in env:
-                environment.insert(e, env[e])
-            self.proc.setProcessEnvironment(environment)
-
-            params = [wine_binary, origin_uri]
-
-        if not self.proc:
-            logger.error("Could not start process")
-            return 1
-        self.proc.finished.connect(self.finished)
-
-        if self.settings.value("show_console", False, bool):
-            self.console = ConsoleWindow()
-            self.console.show()
-            self.proc.readyReadStandardOutput.connect(lambda: self.console.log(
-                bytes(self.proc.readAllStandardOutput()).decode("utf-8", errors="ignore")))
-            self.proc.readyReadStandardError.connect(lambda: self.console.error(
-                bytes(self.proc.readAllStandardOutput()).decode("utf-8", errors="ignore")))
-
-        else:
-            self.proc.readyReadStandardOutput.connect(self.stdout)
-            self.proc.readyReadStandardError.connect(self.stderr)
-
-        self.launch_signal.emit(self.game.app_name, self.proc, params)
-        # self.game_running = True
-
-        return 0
-
-    def stdout(self):
-        data = self.proc.readAllStandardOutput()
-        stdout = bytes(data).decode("utf-8", errors="ignore")
-        print(stdout)
-
-    def stderr(self):
-        stderr = bytes(self.proc.readAllStandardError()).decode("utf-8", errors="ignore")
-        print(stderr)
-        logger.error(stderr)
-        # QMessageBox.warning(self, "Warning", stderr + "\nSee ~/.cache/rare/logs/")
-
-    def finished(self, exit_code):
-        logger.info("Game exited with exit code: " + str(exit_code))
-        if exit_code == 53 and self.is_origin:
-            msg_box = QMessageBox()
-            msg_box.setText(self.tr("Origin is not installed. Do you want to download installer file? "))
-            msg_box.addButton(QPushButton("Download"), QMessageBox.YesRole)
-            msg_box.addButton(QPushButton("Cancel"), QMessageBox.RejectRole)
-            resp = msg_box.exec()
-            # click install button
-            if resp == 0:
-                webbrowser.open("https://www.dm.origin.com/download")
-
-        self.finish_signal.emit(self.game.app_name, exit_code)
-        self.game_running = False
-        if self.settings.value("show_console", False, bool):
-            self.console.log(f"Game exited with code: {exit_code}")
-
-    def uninstall(self):
-        infos = UninstallDialog(self.game).get_information()
-        if infos == 0:
-            print("Cancel Uninstall")
-            return
-        legendary_utils.uninstall(self.game.app_name, self.core, infos)
-        self.update_list.emit(self.game.app_name)
+    def sync_game(self):
+        self.game_utils.cloud_save_utils.sync_before_launch_game(self.game.app_name)

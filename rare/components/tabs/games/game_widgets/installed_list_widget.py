@@ -14,8 +14,8 @@ class InstalledListWidget(BaseInstalledWidget):
     signal = pyqtSignal(str)
     update_game = pyqtSignal()
 
-    def __init__(self, app_name, pixmap):
-        super(InstalledListWidget, self).__init__(app_name, pixmap)
+    def __init__(self, app_name, pixmap, game_utils):
+        super(InstalledListWidget, self).__init__(app_name, pixmap, game_utils)
         self.dev = self.game.metadata["developer"]
         if self.game.third_party_store != "Origin":
             self.size = self.igame.install_size

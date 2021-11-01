@@ -3,60 +3,14 @@ import platform
 import shutil
 from logging import getLogger
 
-from PyQt5.QtCore import QProcess, QProcessEnvironment, pyqtSignal, QRunnable, QObject, QCoreApplication
+from PyQt5.QtCore import pyqtSignal, QCoreApplication, QObject, QRunnable
 from PyQt5.QtWidgets import QMessageBox
 
 from legendary.core import LegendaryCore
-from legendary.models.game import VerifyResult, LaunchParameters
+from legendary.models.game import VerifyResult
 from legendary.utils.lfs import validate_files
 
 logger = getLogger("Legendary Utils")
-
-
-def launch_game(core, app_name: str, offline: bool = False, skip_version_check: bool = False):
-    game = core.get_installed_game(app_name)
-    if not game:
-        print("Game not found")
-        return None
-    if game.is_dlc:
-        print("Game is dlc")
-        return None
-    if not os.path.exists(game.install_path):
-        print("Game doesn't exist")
-        return None
-
-    if not offline:
-
-        if not skip_version_check and not core.is_noupdate_game(app_name):
-            # check updates
-            try:
-                latest = core.get_asset(app_name, update=True)
-            except ValueError:
-                print("Metadata doesn't exist")
-                return None
-            if latest.build_version != game.version:
-                print("Please update game")
-                return None
-    params: LaunchParameters = core.get_launch_parameters(app_name=app_name, offline=offline)
-
-    full_params = list()
-    full_params.extend(params.launch_command)
-    full_params.append(os.path.join(params.game_directory, params.game_executable))
-    full_params.extend(params.game_parameters)
-    full_params.extend(params.egl_parameters)
-    full_params.extend(params.user_parameters)
-
-    process = QProcess()
-    process.setProcessChannelMode(QProcess.MergedChannels)
-    process.setWorkingDirectory(params.working_directory)
-    environment = QProcessEnvironment()
-    full_env = os.environ.copy()
-    full_env.update(params.environment)
-    for env, value in full_env.items():
-        environment.insert(env, value)
-    process.setProcessEnvironment(environment)
-
-    return process, full_params
 
 
 def uninstall(app_name: str, core: LegendaryCore, options=None):
