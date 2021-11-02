@@ -6,7 +6,7 @@ from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
 from rare import data_dir, shared
-from rare.components.tabs.tab_widget import TabWidget
+from rare.components.tabs import TabWidget
 from rare.utils.rpc import DiscordRPC
 
 logger = getLogger("Window")

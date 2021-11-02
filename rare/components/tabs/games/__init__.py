@@ -103,6 +103,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.signals.installation_finished.connect(lambda x: self.installing_widget.setVisible(False))
         self.signals.uninstall_game.connect(self.uninstall_game)
 
+        self.game_list_scroll_area.horizontalScrollBar().setDisabled(True)
+
     def installation_started(self, app_name: str):
         game = self.core.get_game(app_name, False)
         if game.is_dlc:
@@ -115,7 +117,9 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         i_widget, l_widget = self.widgets[igame.app_name]
         i_widget.igame = igame
         l_widget.igame = igame
-        i_widget.info_text = ""
+
+        i_widget.leaveEvent(None)
+        l_widget.update_text()
 
     def uninstall_game(self, game: Game):
         infos = UninstallDialog(game).get_information()
@@ -269,11 +273,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                         igame = self.core.get_installed_game(app_name)
                         for w in widgets:
                             w.igame = igame
-                            w.update_available = self.core.get_asset(w.game.app_name,
-                                                                     True).build_version != igame.version
-                        widgets[0].info_label.setText("")
-                        widgets[0].info_text = ""
-
+                        w.update_available = self.core.get_asset(w.game.app_name, True).build_version != igame.version
+                        widgets[0].leaveEvent(None)
                     # new installed
                     elif self.core.is_installed(app_name) and isinstance(widgets[0], BaseUninstalledWidget):
                         logger.debug("Update Gamelist: New installed " + app_name)
@@ -405,3 +406,5 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         else:
             self.scroll_widget.layout().replaceWidget(self.icon_view, self.list_view)
             self.icon_view.setParent(None)
+
+        self.game_list_scroll_area.verticalScrollBar().setValue(0)

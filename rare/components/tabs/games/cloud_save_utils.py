@@ -123,9 +123,6 @@ class CloudSaveUtils(QObject):
         igame = self.core.get_installed_game(app_name)
         res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
 
-        # maybe i will add this
-        # if res == SaveGameStatus.REMOTE_NEWER:
-        #    self.download_saves()
         if res != SaveGameStatus.SAME_AGE:
             newer = None
             if res == SaveGameStatus.REMOTE_NEWER:

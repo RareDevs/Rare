@@ -34,7 +34,7 @@ class RunningGameModel:
 
 class GameUtils(QObject):
     running_games = dict()
-    finished = pyqtSignal(str)
+    finished = pyqtSignal(str, str)
     cloud_save_finished = pyqtSignal(str)
     launch_queue = dict()
 
@@ -78,12 +78,15 @@ class GameUtils(QObject):
         else:
             if not game:
                 logger.error("Game not found")
+                self.finished.emit(app_name, self.tr("Game not found in available games"))
                 return
             if game.is_dlc:
                 logger.error("Game is dlc")
+                self.finished.emit(app_name, self.tr("Game is a DLC. Please launch base game instead"))
                 return
             if not os.path.exists(igame.install_path):
                 logger.error("Game doesn't exist")
+                self.finished.emit(app_name, self.tr("Game files of {} do not exist. Please install game"))
                 return
 
         process = GameProcess(app_name)
@@ -96,11 +99,11 @@ class GameUtils(QObject):
                     try:
                         latest = self.core.get_asset(app_name, update=True)
                     except ValueError:
-                        print("Metadata doesn't exist")
-                        return None
+                        self.finished.emit(app_name, self.tr("Metadata doesn't exist"))
+                        return
                     if latest.build_version != igame.version:
-                        print("Please update game")
-                        return None
+                        self.finished.emit(app_name, self.tr("Please update game"))
+                        return
 
             params: LaunchParameters = self.core.get_launch_parameters(app_name=app_name, offline=offline,
                                                                        wine_bin=wine_bin, wine_pfx=wine_pfx)
@@ -130,6 +133,7 @@ class GameUtils(QObject):
             logger.info("Launch Origin Game: ")
             if platform.system() == "Windows":
                 webbrowser.open(origin_uri)
+                self.finished.emit(app_name, "")
                 return
             wine_pfx = self.core.lgd.config.get(self.game.app_name, 'wine_prefix',
                                                 fallback=os.path.expanduser("~/.wine"))
@@ -137,9 +141,10 @@ class GameUtils(QObject):
                 wine_bin = self.core.lgd.config.get(self.game.app_name, 'wine_executable', fallback="/usr/bin/wine")
             env = self.core.get_app_environment(self.game.app_name, wine_pfx=wine_pfx)
 
-            if not wine_bin or not env.get('WINEPREFIX'):
+            if not wine_bin or not env.get('WINEPREFIX') and not os.path.exists("/usr/bin/wine"):
                 logger.error(f'In order to launch Origin correctly you must specify the wine binary and prefix '
                              f'to use in the configuration file or command line. See the README for details.')
+                self.finished.emit(app_name, self.tr("No wine executable selected. Please set it in settings"))
                 return
 
             environment = QProcessEnvironment()
@@ -175,7 +180,7 @@ class GameUtils(QObject):
                 webbrowser.open("https://www.dm.origin.com/download")
 
         self.running_games.pop(app_name)
-        self.finished.emit(app_name)
+        self.finished.emit(app_name, "")
 
         if QSettings().value("show_console", False, bool):
             self.console.log(f"Game exited with code: {exit_code}")

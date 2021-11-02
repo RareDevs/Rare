@@ -26,13 +26,29 @@ class BaseInstalledWidget(QGroupBox):
         self.core = shared.core
         self.game_utils = game_utils
         self.game_utils.cloud_save_finished.connect(self.sync_finished)
-        self.sync_cloud_saves = False
+        self.syncing_cloud_saves = False
+
+        self.texts = {
+            "needs_verification": self.tr("Please verify game before playing"),
+            "hover": {
+                "update_available": self.tr("Start game without version check"),
+                "launch": self.tr("Launch Game"),
+                "launch_origin": self.tr("Launch/Link"),
+                "running": self.tr("Game running")
+            },
+            "default": {
+                "running": self.tr("Game running"),
+                "syncing": self.tr("Syncing cloud saves"),
+                "update_available": self.tr("Update available")
+            }
+        }
 
         self.game = self.core.get_game(app_name)
         if self.game.third_party_store != "Origin":
             self.igame = self.core.get_installed_game(app_name)
             self.is_origin = False
         else:
+            self.igame = None
             self.is_origin = True
 
         self.image = QLabel()
@@ -129,13 +145,19 @@ class BaseInstalledWidget(QGroupBox):
                 self.create_start_menu.setText(self.tr("Create Start menu link"))
 
     def launch(self, offline=False, skip_version_check=False):
-        if self.game.supports_cloud_saves:
-            self.sync_cloud_saves = True
-        self.game_utils.launch_game(self.game.app_name, offline=offline, skip_update_check=skip_version_check)
+        if not self.game_running:
+            if self.game.supports_cloud_saves:
+                self.syncing_cloud_saves = True
+            self.game_utils.prepare_launch(self.game.app_name, offline, skip_version_check)
 
     def sync_finished(self, app_name):
         if app_name == self.game.app_name:
-            self.sync_cloud_saves = False
+            self.syncing_cloud_saves = False
 
     def sync_game(self):
-        self.game_utils.cloud_save_utils.sync_before_launch_game(self.game.app_name)
+        if self.game_utils.cloud_save_utils.sync_before_launch_game(self.game.app_name):
+            self.syncing_cloud_saves = True
+
+    def game_finished(self, app_name, error):
+        if error:
+            QMessageBox.warning(self, "Error", error)
