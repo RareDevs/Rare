@@ -3,10 +3,10 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
 from rare import data_dir, shared
-from rare.components.tabs.tab_widget import TabWidget
+from rare.components.tabs import TabWidget
 from rare.utils.extra_widgets import CustomQMessageDialog
 from rare.utils.rpc import DiscordRPC
 

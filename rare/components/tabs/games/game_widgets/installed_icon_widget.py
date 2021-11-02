@@ -21,12 +21,9 @@ class InstalledIconWidget(BaseInstalledWidget):
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.layout = QVBoxLayout()
         self.core = shared.core
-        self.running = False
-        self.info_text = ""
 
         if self.update_available:
             logger.info("Update available for game: " + self.game.app_name)
-            self.info_text = self.tr("Update available")
 
         self.layout.addWidget(self.image)
 
@@ -45,9 +42,8 @@ class InstalledIconWidget(BaseInstalledWidget):
         self.menu_btn.setIcon(icon("ei.info-circle"))
         # self.menu_btn.setObjectName("installed_menu_button")
         self.menu_btn.setIconSize(QSize(18, 18))
-        self.menu_btn.enterEvent = lambda x: self.info_label.setText("Information")
-        self.menu_btn.leaveEvent = lambda x: self.info_label.setText(
-            "Please update Game") if self.update_available else self.info_label.setText("Start Game")
+        self.menu_btn.enterEvent = lambda x: self.info_label.setText(self.tr("Information"))
+        self.menu_btn.leaveEvent = lambda x: self.enterEvent(None)
         # remove Border
 
         self.menu_btn.setObjectName("menu_button")
@@ -58,33 +54,37 @@ class InstalledIconWidget(BaseInstalledWidget):
         minilayout.addStretch(1)
         self.layout.addLayout(minilayout)
 
-        self.info_label = QLabel(self.info_text)
+        self.info_label = QLabel("")
+        self.leaveEvent(None)
         self.info_label.setAutoFillBackground(False)
         self.info_label.setObjectName("info_label")
         self.layout.addWidget(self.info_label)
 
         if not self.is_origin and self.igame.needs_verification:
-            self.info_text = self.tr("Game needs verification")
-            self.info_label.setText(self.info_text)
+            self.info_label.setText(self.texts["needs_verification"])
 
         self.setLayout(self.layout)
         self.setFixedWidth(self.sizeHint().width())
 
-    def enterEvent(self, a0: QEvent) -> None:
+    def enterEvent(self, a0: QEvent = None) -> None:
         if self.game_running:
-            self.info_label.setText(self.tr("Game running"))
+            self.info_label.setText(self.texts["hover"]["running"])
         elif not self.is_origin and self.igame.needs_verification:
-            self.info_label.setText(self.tr("Please verify game before playing"))
+            self.info_label.setText(self.texts["hover"]["needs_verification"])
         elif self.update_available:
-            self.info_label.setText(self.tr("Start game without version check"))
+            self.info_label.setText(self.texts["hover"]["update_available"])
         else:
-            self.info_label.setText(self.tr("Start Game") if not self.is_origin else self.tr("Launch/Link"))
+            self.info_label.setText(self.texts["hover"]["launch" if not self.is_origin else "launch_origin"])
 
-    def leaveEvent(self, a0: QEvent) -> None:
-        if self.running:
-            self.info_label.setText(self.tr("Game running"))
+    def leaveEvent(self, a0: QEvent = None) -> None:
+        if self.game_running:
+            self.info_label.setText(self.texts["default"]["running"])
+        elif self.syncing_cloud_saves:
+            self.info_label.setText(self.texts["default"]["syncing"])
+        elif self.update_available:
+            self.info_label.setText(self.texts["default"]["update_available"])
         else:
-            self.info_label.setText(self.info_text)
+            self.info_label.setText("")
 
     def mousePressEvent(self, e: QMouseEvent):
         # left button
@@ -100,9 +100,10 @@ class InstalledIconWidget(BaseInstalledWidget):
         elif e.button() == 2:
             pass  # self.showMenu(e)
 
-    def game_finished(self, app_name):
+    def game_finished(self, app_name, error):
         if app_name != self.game.app_name:
             return
 
-        self.info_text = ""
-        self.info_label.setText("")
+        super().game_finished(app_name, error)
+
+        self.leaveEvent(None)
