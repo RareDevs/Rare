@@ -199,7 +199,8 @@ class IndicatorLineEdit(QWidget):
         if self.edit_func is not None:
             self.line_edit.blockSignals(True)
             self.is_valid, text = self.edit_func(text)
-            self.line_edit.setText(text)
+            if text != self.line_edit.text():
+                self.line_edit.setText(text)
             self.line_edit.blockSignals(False)
             self.__indicator(self.is_valid)
             if self.is_valid:

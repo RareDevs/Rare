@@ -3,8 +3,9 @@ import platform
 from typing import Tuple
 
 from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QWidget, QFileDialog, QLabel
+from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QLabel, QVBoxLayout, QPushButton
 
+from qtawesome import icon
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 from rare.components.tabs.settings.linux import LinuxSettings
@@ -48,11 +49,19 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.core = core
         self.settings = QSettings()
 
+        save_widget = QWidget()
+        save_widget.setLayout(QVBoxLayout())
         self.cloud_save_path_edit = PathEdit("", file_type=QFileDialog.DirectoryOnly,
                                              ph_text=self.tr("Cloud save path"),
                                              edit_func=lambda text: (os.path.exists(text), text),
                                              save_func=self.save_save_path)
-        self.cloud_gb.layout().addRow(QLabel(self.tr("Save path")), self.cloud_save_path_edit)
+        save_widget.layout().addWidget(self.cloud_save_path_edit)
+
+        self.compute_save_path_button = QPushButton(icon("fa.magic"), self.tr("Auto compute save path"))
+        save_widget.layout().addWidget(self.compute_save_path_button)
+        self.compute_save_path_button.clicked.connect(self.compute_save_path)
+
+        self.cloud_gb.layout().addRow(QLabel(self.tr("Save path")), save_widget)
 
         self.offline.currentIndexChanged.connect(
             lambda x: self.update_combobox(x, "offline")
@@ -93,6 +102,18 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.proton_groupbox.setVisible(False)
 
         # skip_update_check
+
+    def compute_save_path(self):
+        if self.core.is_installed(self.game.app_name) and self.game.supports_cloud_saves:
+            try:
+                new_path = self.core.get_save_path(self.game.app_name)
+            except Exception as e:
+                QMessageBox.warning(self, "Error",
+                                    self.tr("Could not compute save path for {}").format(
+                                        self.game.app_title) + "\n" + str(
+                                        e))
+                return
+            self.cloud_save_path_edit.setText(new_path)
 
     def save_save_path(self, text):
         if self.game.supports_cloud_saves and not self.change:

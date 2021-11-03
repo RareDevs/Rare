@@ -102,7 +102,7 @@ class BaseInstalledWidget(QGroupBox):
 
         uninstall = QAction(self.tr("Uninstall"), self)
         uninstall.triggered.connect(
-            lambda: shared.signals.update_gamelist.emit(self.game.app_name) if self.game_utils.uninstall_game(
+            lambda: shared.signals.update_gamelist.emit([self.game.app_name]) if self.game_utils.uninstall_game(
                 self.game.app_name) else None)
         self.addAction(uninstall)
 
