@@ -25,7 +25,7 @@ class BaseInstalledWidget(QGroupBox):
         super(BaseInstalledWidget, self).__init__()
         self.core = shared.core
         self.game_utils = game_utils
-        self.game_utils.cloud_save_finished.connect(self.sync_finished)
+
         self.syncing_cloud_saves = False
 
         self.texts = {
@@ -151,8 +151,7 @@ class BaseInstalledWidget(QGroupBox):
             self.game_utils.prepare_launch(self.game.app_name, offline, skip_version_check)
 
     def sync_finished(self, app_name):
-        if app_name == self.game.app_name:
-            self.syncing_cloud_saves = False
+        self.syncing_cloud_saves = False
 
     def sync_game(self):
         if self.game_utils.cloud_save_utils.sync_before_launch_game(self.game.app_name):

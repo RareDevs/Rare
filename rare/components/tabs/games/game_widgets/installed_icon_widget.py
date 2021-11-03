@@ -28,6 +28,7 @@ class InstalledIconWidget(BaseInstalledWidget):
         self.layout.addWidget(self.image)
 
         self.game_utils.finished.connect(self.game_finished)
+        self.game_utils.cloud_save_finished.connect(self.sync_finished)
 
         self.title_label = QLabel(f"<h4>{self.game.app_title}</h4>")
         self.title_label.setAutoFillBackground(False)
@@ -99,6 +100,12 @@ class InstalledIconWidget(BaseInstalledWidget):
         # right
         elif e.button() == 2:
             pass  # self.showMenu(e)
+
+    def sync_finished(self, app_name):
+        if not app_name == self.game.app_name:
+            return
+        super().sync_finished(app_name)
+        self.leaveEvent(None)
 
     def game_finished(self, app_name, error):
         if app_name != self.game.app_name:
