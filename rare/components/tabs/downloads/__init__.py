@@ -118,7 +118,7 @@ class DownloadTab(QWidget):
         self.analysis = queue_item.download.analysis
         self.installing_game.setText(self.tr("Installing Game: ") + self.active_game.app_title)
 
-        self.signals.installation_started.emit(self.active_game)
+        self.signals.installation_started.emit(self.active_game.app_name)
 
     def status(self, text):
         if text == "finish":
@@ -140,7 +140,7 @@ class DownloadTab(QWidget):
                     self.update_text.setVisible(True)
 
             self.signals.send_notification.emit(game.app_title)
-            self.signals.update_gamelist.emit(game.app_name)
+            self.signals.update_gamelist.emit([game.app_name])
             self.signals.update_download_tab_text.emit()
 
             self.signals.installation_finished.emit(True, game.app_name)

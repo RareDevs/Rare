@@ -106,15 +106,6 @@ class TabWidget(QTabWidget):
         if not shared.args.offline and tab_num == 3:
             self.store.load()
 
-    def game_imported(self, app_name: str):
-        igame = self.core.get_installed_game(app_name)
-        if self.core.get_asset(app_name, False).build_version != igame.version:
-            self.downloadTab.add_update(igame)
-            downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
-            self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
-        self.games_tab.update_list(app_name)
-        self.games_tab.setCurrentIndex(0)
-
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
         super(TabWidget, self).resizeEvent(event)

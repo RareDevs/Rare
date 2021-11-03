@@ -6,21 +6,21 @@ from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 import rare.shared as shared
 from legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.tabs.games.game_info import GameInfoTabs
-from rare.components.tabs.games.game_info.uninstalled_info import UninstalledInfoTabs
-from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
-from rare.components.tabs.games.game_widgets.base_uninstalled_widget import BaseUninstalledWidget
-from rare.components.tabs.games.game_widgets.installed_icon_widget import InstalledIconWidget
-from rare.components.tabs.games.game_widgets.installed_list_widget import InstalledListWidget
-from rare.components.tabs.games.game_widgets.installing_game_widget import InstallingGameWidget
-from rare.components.tabs.games.game_widgets.uninstalled_icon_widget import IconWidgetUninstalled
-from rare.components.tabs.games.game_widgets.uninstalled_list_widget import ListWidgetUninstalled
-from rare.components.tabs.games.head_bar import GameListHeadBar
-from rare.components.tabs.games.import_widget import ImportWidget
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import FlowLayout
 from rare.utils.utils import get_pixmap, download_image, get_uninstalled_pixmap
+from .game_info import GameInfoTabs
+from .game_info.uninstalled_info import UninstalledInfoTabs
+from .game_widgets.base_installed_widget import BaseInstalledWidget
+from .game_widgets.base_uninstalled_widget import BaseUninstalledWidget
+from .game_widgets.installed_icon_widget import InstalledIconWidget
+from .game_widgets.installed_list_widget import InstalledListWidget
+from .game_widgets.installing_game_widget import InstallingGameWidget
+from .game_widgets.uninstalled_icon_widget import IconWidgetUninstalled
+from .game_widgets.uninstalled_list_widget import ListWidgetUninstalled
+from .head_bar import GameListHeadBar
+from .import_widget import ImportWidget
 
 logger = getLogger("GamesTab")
 
@@ -50,6 +50,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.game_info_tabs = GameInfoTabs(self.dlcs, self)
         self.game_info_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
         self.addWidget(self.game_info_tabs)
+
+        self.game_info_tabs.info.verification_finished.connect(self.verification_finished)
 
         self.import_widget = ImportWidget()
         self.addWidget(self.import_widget)
@@ -93,7 +95,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.signals.installation_finished.connect(lambda x: self.installing_widget.setVisible(False))
         self.signals.uninstall_game.connect(self.uninstall_game)
 
-    def installation_started(self, game: Game):
+    def installation_started(self, app_name: str):
+        game = self.core.get_game(app_name, False)
         if game.is_dlc:
             return
         self.installing_widget.set_game(game)
@@ -112,7 +115,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             return
         legendary_utils.uninstall(game.app_name, self.core, infos)
         self.setCurrentIndex(0)
-        self.update_list(game.app_name)
+        self.update_list([game.app_name])
 
     def show_game_info(self, game):
         self.game_info_tabs.update_game(game, self.dlcs)
@@ -184,11 +187,9 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         icon_widget.launch_signal.connect(self.launch)
         icon_widget.finish_signal.connect(self.finished)
-        icon_widget.update_list.connect(self.update_list)
 
         list_widget.launch_signal.connect(self.launch)
         list_widget.finish_signal.connect(self.finished)
-        list_widget.update_list.connect(self.update_list)
 
         if icon_widget.update_available:
             self.updates.add(igame.app_name)
@@ -273,43 +274,48 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     visible = False
                 w.setVisible(visible)
 
-    def update_list(self, app_name=None):
-        if app_name:
-            if widgets := self.widgets.get(app_name):
+    def update_list(self, app_names: list = None):
+        if app_names:
+            update_list = False
+            for app_name in app_names:
+                if widgets := self.widgets.get(app_name):
 
-                # from update
-                if self.core.is_installed(widgets[0].game.app_name) and isinstance(widgets[0], BaseInstalledWidget):
-                    logger.debug("Update Gamelist: Updated: " + app_name)
-                    igame = self.core.get_installed_game(app_name)
-                    for w in widgets:
-                        w.igame = igame
-                        w.update_available = self.core.get_asset(w.game.app_name, True).build_version != igame.version
-                    widgets[0].info_label.setText("")
-                    widgets[0].info_text = ""
-                # new installed
-                elif self.core.is_installed(app_name) and isinstance(widgets[0], BaseUninstalledWidget):
-                    logger.debug("Update Gamelist: New installed " + app_name)
-                    self.widgets[app_name][0].deleteLater()
-                    self.widgets[app_name][1].deleteLater()
-                    self.widgets.pop(app_name)
+                    # from update
+                    if self.core.is_installed(widgets[0].game.app_name) and isinstance(widgets[0], BaseInstalledWidget):
+                        logger.debug("Update Gamelist: Updated: " + app_name)
+                        igame = self.core.get_installed_game(app_name)
+                        for w in widgets:
+                            w.igame = igame
+                            w.update_available = self.core.get_asset(w.game.app_name,
+                                                                     True).build_version != igame.version
+                        widgets[0].info_label.setText("")
+                        widgets[0].info_text = ""
 
-                    self.add_installed_widget(self.core.get_game(app_name))
+                    # new installed
+                    elif self.core.is_installed(app_name) and isinstance(widgets[0], BaseUninstalledWidget):
+                        logger.debug("Update Gamelist: New installed " + app_name)
+                        self.widgets[app_name][0].deleteLater()
+                        self.widgets[app_name][1].deleteLater()
+                        self.widgets.pop(app_name)
 
-                    self._update_games()
+                        self.add_installed_widget(self.core.get_game(app_name))
+                        update_list = True
 
-                # uninstalled
-                elif not self.core.is_installed(widgets[0].game.app_name) and isinstance(widgets[0],
-                                                                                         BaseInstalledWidget):
-                    logger.debug("Update list: Uninstalled: " + app_name)
-                    self.widgets[app_name][0].deleteLater()
-                    self.widgets[app_name][1].deleteLater()
+                    # uninstalled
+                    elif not self.core.is_installed(widgets[0].game.app_name) and isinstance(widgets[0],
+                                                                                             BaseInstalledWidget):
+                        logger.debug("Update list: Uninstalled: " + app_name)
+                        self.widgets[app_name][0].deleteLater()
+                        self.widgets[app_name][1].deleteLater()
 
-                    self.widgets.pop(app_name)
+                        self.widgets.pop(app_name)
 
-                    game = self.core.get_game(app_name, False)
-                    self.add_uninstalled_widget(game)
-
-                    self._update_games()
+                        game = self.core.get_game(app_name, False)
+                        self.add_uninstalled_widget(game)
+                        update_list = True
+            # do not update, if only update finished
+            if update_list:
+                self._update_games()
 
         else:
             installed_names = [i.app_name for i in self.core.get_installed_list()]
@@ -336,15 +342,15 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     self.add_installed_widget(self.core.get_game(igame.app_name))
 
                 for name in new_uninstalled_games:
-                    self.icon_view.layout().removeWidget(self.widgets[app_name][0])
-                    self.list_view.layout().removeWidget(self.widgets[app_name][1])
+                    self.icon_view.layout().removeWidget(self.widgets[name][0])
+                    self.list_view.layout().removeWidget(self.widgets[name][1])
 
                     self.widgets[name][0].deleteLater()
                     self.widgets[name][1].deleteLater()
 
                     self.widgets.pop(name)
 
-                    game = self.core.get_game(name, True)
+                    game = self.core.get_game(name, False)
                     self.add_uninstalled_widget(game)
 
                 for igame in sorted(self.core.get_installed_list(), key=lambda x: x.title):
@@ -353,15 +359,18 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     self.icon_view.layout().addWidget(i_widget)
                     self.list_view.layout().addWidget(list_widget)
 
+                for game in self.no_assets:
+                    i_widget, list_widget = self.widgets[game.app_name]
+                    self.icon_view.layout().addWidget(i_widget)
+                    self.list_view.layout().addWidget(list_widget)
+
                 # get Uninstalled games
                 games, self.dlcs = self.core.get_game_and_dlc_list()
                 for game in sorted(games, key=lambda x: x.app_title):
-                    if game.app_name not in installed_names:
-                        uninstalled_names.append(game)
-                for name in uninstalled_names:
-                    i_widget, list_widget = self.widgets[name]
-                    self.icon_view.layout().addWidget(i_widget)
-                    self.list_view.layout().addWidget(list_widget)
+                    if not self.core.is_installed(game.app_name) and game.app_name not in self.no_asset_names:
+                        i_widget, list_widget = self.widgets[game.app_name]
+                        self.icon_view.layout().addWidget(i_widget)
+                        self.list_view.layout().addWidget(list_widget)
         self.update_count_games_label()
 
     def _update_games(self):

@@ -167,7 +167,7 @@ class VerifyThread(QThread):
 
         if not missing and not failed:
             logger.info('Verification finished successfully.')
-            self.summary.emit((0, 0, self.app_name))
+            self.summary.emit(0, 0, self.app_name)
 
         else:
             logger.error(f'Verification finished, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')

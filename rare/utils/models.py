@@ -1,7 +1,7 @@
 import os
-from typing import Union, List
 from dataclasses import field, dataclass
 from multiprocessing import Queue
+from typing import Union, List
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -111,20 +111,20 @@ class ApiResults:
 
 
 class Signals(QObject):
-    exit_app = pyqtSignal(int)
-    send_notification = pyqtSignal(str)
+    exit_app = pyqtSignal(int)  # exit code
+    send_notification = pyqtSignal(str)  # app_title
 
-    set_main_tab_index = pyqtSignal(int)
+    set_main_tab_index = pyqtSignal(int)  # tab index
     update_download_tab_text = pyqtSignal()
 
-    dl_progress = pyqtSignal(int)
+    dl_progress = pyqtSignal(int)  # 0-100
     # set visibility of installing widget in games tab
-    installation_started = pyqtSignal(Game)
+    installation_started = pyqtSignal(str)  # app_name
 
     install_game = pyqtSignal(InstallOptionsModel)
     installation_finished = pyqtSignal(bool, str)
 
-    update_gamelist = pyqtSignal(str)
-    uninstall_game = pyqtSignal(Game)
+    update_gamelist = pyqtSignal(list)
+    uninstall_game = pyqtSignal(Game)  # deprecated
 
-    set_discord_rpc = pyqtSignal(str)
+    set_discord_rpc = pyqtSignal(str)  # app_name of running game

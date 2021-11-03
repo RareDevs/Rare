@@ -13,7 +13,6 @@ logger = getLogger("GameWidgetInstalled")
 
 
 class InstalledIconWidget(BaseInstalledWidget):
-    update_list = pyqtSignal(str)
     update_game = pyqtSignal()
 
     def __init__(self, igame: InstalledGame, pixmap, is_origin: bool = False,

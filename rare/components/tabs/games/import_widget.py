@@ -2,7 +2,6 @@ import json
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton, QVBoxLayout, QFileDialog, QLineEdit, \
     QGroupBox
 from qtawesome import icon
@@ -15,7 +14,6 @@ logger = getLogger("Import")
 
 
 class ImportWidget(QWidget):
-    update_list = pyqtSignal(str)
 
     def __init__(self):
         super(ImportWidget, self).__init__()
@@ -121,7 +119,7 @@ class ImportWidget(QWidget):
                 self.core.get_installed_game(app_name).title))
             self.app_name_input.setText("")
 
-            self.update_list.emit(app_name)
+            shared.signals.update_gamelist.emit([app_name])
         else:
             logger.warning("Failed to import" + app_name)
             self.info_label.setText(self.tr("Failed to import {}").format(app_name))
