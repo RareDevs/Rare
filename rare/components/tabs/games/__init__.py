@@ -43,6 +43,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.settings = QSettings()
         self.game_utils = GameUtils(parent=self)
         self.before_launch_sync = dict()
+        shared.api_results.saves = []
 
         self.game_list = shared.api_results.game_list
         self.dlcs = shared.api_results.dlcs

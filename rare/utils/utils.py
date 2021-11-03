@@ -11,6 +11,7 @@ from typing import Tuple
 import requests
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings, Qt
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
+from requests import HTTPError
 
 from .models import PathSpec
 
@@ -19,7 +20,7 @@ from .models import PathSpec
 if platform.system() == "Windows":
     from win32com.client import Dispatch  # pylint: disable=E0401
 
-from rare import languages_path, resources_path, image_dir
+from rare import languages_path, resources_path, image_dir, shared
 # Mac not supported
 
 from legendary.core import LegendaryCore
@@ -415,3 +416,21 @@ class WineResolver(QRunnable):
         # pylint: disable=E1136
         self.signals.result_ready[str].emit(real_path)
         return
+
+
+class CloudResultSignal(QObject):
+    result_ready = pyqtSignal(list)  # List[SaveGameFile]
+
+
+class CloudWorker(QRunnable):
+    def __init__(self):
+        super(CloudWorker, self).__init__()
+        self.signals = CloudResultSignal()
+        self.setAutoDelete(True)
+
+    def run(self) -> None:
+        try:
+            result = shared.core.get_save_games()
+        except HTTPError():
+            result = None
+        self.signals.result_ready.emit(result)
