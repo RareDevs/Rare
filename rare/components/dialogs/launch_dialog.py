@@ -11,7 +11,7 @@ from rare import image_dir, shared
 from rare.components.dialogs.login import LoginDialog
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.models import ApiResults
-from rare.utils.utils import download_images
+from rare.utils.utils import download_images, CloudWorker
 
 logger = getLogger("Login")
 
@@ -106,12 +106,15 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
                 ["mac", self.core.get_game_and_dlc_list, (True, "Mac")],
                 ["assets", self.core.egs.get_game_assets, ()],
                 ["no_assets", self.core.get_non_asset_library_items, ()],
-                ["saves", self.core.get_save_games, ()]
             ]
             for r in api_requests:
                 worker = ApiRequestWorker(*r)
                 worker.signals.result.connect(self.handle_api_worker_result)
                 self.thread_pool.start(worker)
+
+            cloud_worker = CloudWorker()
+            cloud_worker.signals.result_ready.connect(lambda x: self.handle_api_worker_result(x, "saves"))
+            self.thread_pool.start(cloud_worker)
 
         else:
             self.finished = True

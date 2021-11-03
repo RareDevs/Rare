@@ -51,6 +51,16 @@ class SaveWorker(QRunnable):
             self.signals.finished.emit(str(e), self.model.app_name)
             logger.error(str(e))
             return
+        try:
+            if isinstance(self.model, UploadModel):
+                logger.info("Updating cloud saves...")
+                result = shared.core.get_save_games(self.model.app_name)
+                shared.api_results.saves = result
+        except Exception as e:
+            self.signals.finished.emit(str(e), self.model.app_name)
+            logger.error(str(e))
+            return
+
         self.signals.finished.emit("", self.model.app_name)
 
 
@@ -106,18 +116,22 @@ class CloudSaveUtils(QObject):
         self.core = shared.core
         saves = shared.api_results.saves
 
+        self.latest_saves = self.get_latest_saves(saves)
+
+        self.thread_pool = QThreadPool.globalInstance()
+
+    def get_latest_saves(self, saves):
         save_games = set()
         for igame in self.core.get_installed_list():
             game = self.core.get_game(igame.app_name)
             if self.core.is_installed(igame.app_name) and game.supports_cloud_saves:
                 save_games.add(igame.app_name)
 
-        self.latest_saves = dict()
+        latest_saves = dict()
         for s in sorted(saves, key=lambda a: a.datetime):
             if s.app_name in save_games:
-                self.latest_saves[s.app_name] = s
-
-        self.thread_pool = QThreadPool.globalInstance()
+                latest_saves[s.app_name] = s
+        return latest_saves
 
     def sync_before_launch_game(self, app_name) -> bool:
         igame = self.core.get_installed_game(app_name)
@@ -189,7 +203,9 @@ class CloudSaveUtils(QObject):
 
     def worker_finished(self, error_message: str, app_name: str):
         if not error_message:
+
             self.sync_finished.emit(app_name, False)
+            self.latest_saves = self.get_latest_saves(shared.api_results.saves)
         else:
             QMessageBox.warning(None, "Warning", self.tr("Syncing with cloud failed: \n ") + error_message)
             self.sync_finished.emit(app_name, True)

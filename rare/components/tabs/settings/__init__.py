@@ -1,5 +1,6 @@
 import platform
 
+from rare import shared
 from rare.utils.extra_widgets import SideTabWidget
 from .about import About
 from .legendary import LegendarySettings
@@ -23,3 +24,4 @@ class SettingsTab(SideTabWidget):
         self.addTab(self.about, "About (!)" if self.about.update_available else "About")
 
         self.setCurrentIndex(0)
+        print(shared.api_results.saves)
