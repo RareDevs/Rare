@@ -2,9 +2,9 @@ from logging import getLogger
 
 from PyQt5.QtCore import QSettings, QObjectCleanupHandler
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
+from legendary.models.game import Game, InstalledGame
 
 import rare.shared as shared
-from legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils import legendary_utils

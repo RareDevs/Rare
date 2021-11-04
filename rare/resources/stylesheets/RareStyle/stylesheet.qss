@@ -254,7 +254,7 @@ QToolButton {
     border-radius: 2px;
     padding: 2px;
     padding-left: 6px;
-    padding-right: 6px
+    padding-right: 6px;
 }
 QPushButton::menu-indicator {
     subcontrol-position: right center;
