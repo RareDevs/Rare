@@ -147,6 +147,7 @@ class IndicatorLineEdit(QWidget):
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
         if completer is not None:
             completer.popup().setItemDelegate(QStyledItemDelegate(self))
+            completer.popup().setAlternatingRowColors(True)
             self.line_edit.setCompleter(completer)
         self.layout.addWidget(self.line_edit)
         if edit_func is not None:
@@ -234,7 +235,7 @@ class PathEditIconProvider(QFileIconProvider):
 
 
 class PathEdit(IndicatorLineEdit):
-    compl = QCompleter()
+    completer = QCompleter()
     compl_model = QFileSystemModel()
 
     def __init__(self,
@@ -252,8 +253,8 @@ class PathEdit(IndicatorLineEdit):
                                     QFileSystemModel.DontUseCustomDirectoryIcons)
         self.compl_model.setIconProvider(PathEditIconProvider())
         self.compl_model.setRootPath(path)
-        self.compl.setModel(self.compl_model)
-        super(PathEdit, self).__init__(text=path, ph_text=ph_text, completer=self.compl,
+        self.completer.setModel(self.compl_model)
+        super(PathEdit, self).__init__(text=path, ph_text=ph_text, completer=self.completer,
                                        edit_func=edit_func, save_func=save_func,
                                        horiz_policy=horiz_policy, parent=parent)
         self.setObjectName("PathEdit")
