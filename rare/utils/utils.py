@@ -445,7 +445,7 @@ class WineResolver(QRunnable):
 
     @pyqtSlot()
     def run(self):
-        if 'WINEPREFIX' not in self.wine_env:
+        if 'WINEPREFIX' not in self.wine_env or not os.path.exists(self.wine_env['WINEPREFIX']):
             # pylint: disable=E1136
             self.signals.result_ready[str].emit(str())
             return
