@@ -445,6 +445,10 @@ class WineResolver(QRunnable):
 
     @pyqtSlot()
     def run(self):
+        if 'WINEPREFIX' not in self.wine_env:
+            # pylint: disable=E1136
+            self.signals.result_ready[str].emit(str())
+            return
         path = self.path.strip().replace('/', '\\')
         cmd = 'cd {} & cd'.format(path)
         # [self.wine_binary, 'cmd', '/c', 'echo', path] if path not exists alternative
@@ -459,4 +463,6 @@ class WineResolver(QRunnable):
                                 env=self.wine_env, shell=False, text=True)
         out, err = proc.communicate()
         real_path = os.path.realpath(out.strip())
-        self.signals.result_ready.emit(real_path)
+        # pylint: disable=E1136
+        self.signals.result_ready[str].emit(real_path)
+        return
