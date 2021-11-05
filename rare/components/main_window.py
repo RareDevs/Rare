@@ -56,8 +56,8 @@ class MainWindow(QMainWindow):
             file.close()
             if action.startswith("launch"):
                 game = action.replace("launch ", "").replace("\n", "")
-                if game in self.tab_widget.games_tab.default_widget.game_list.widgets.keys():
-                    self.tab_widget.games_tab.default_widget.game_list.widgets[game][1].launch()
+                if self.core.is_installed(game):
+                    self.tab_widget.games_tab.widgets[game][1].launch()
                 else:
                     logger.info(f"Could not find {game} in Games")
 
