@@ -137,14 +137,23 @@ class IndicatorLineEdit(QWidget):
                  horiz_policy: QSizePolicy = QSizePolicy.Expanding,
                  parent=None):
         super(IndicatorLineEdit, self).__init__(parent=parent)
-        self.setObjectName("IndicatorTextEdit")
+        self.setObjectName("IndicatorLineEdit")
         self.layout = QHBoxLayout(self)
         self.layout.setObjectName("layout")
         self.layout.setContentsMargins(0, 0, 0, 0)
+        # Add line_edit
         self.line_edit = QLineEdit(self)
         self.line_edit.setObjectName("line_edit")
         self.line_edit.setPlaceholderText(ph_text)
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
+        # Add hint_label to line_edit
+        self.line_edit.setLayout(QHBoxLayout())
+        self.hint_label = QLabel()
+        self.hint_label.setObjectName('HintLabel')
+        self.hint_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.line_edit.layout().setContentsMargins(0, 0, 10, 0)
+        self.line_edit.layout().addWidget(self.hint_label)
+        # Add completer
         if completer is not None:
             completer.popup().setItemDelegate(QStyledItemDelegate(self))
             completer.popup().setAlternatingRowColors(True)
@@ -180,6 +189,10 @@ class IndicatorLineEdit(QWidget):
 
     def setText(self, text: str):
         self.line_edit.setText(text)
+
+    def setHintText(self, text: str):
+        self.hint_label.setFrameRect(self.line_edit.rect())
+        self.hint_label.setText(text)
 
     def __indicator(self, res):
         color = "green" if res else "red"

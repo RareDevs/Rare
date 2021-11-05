@@ -1,9 +1,9 @@
 import os
 import platform
 from logging import getLogger
-from typing import List, Tuple, Iterable
+from typing import Tuple, Iterable
 
-from PyQt5.QtCore import Qt, QThread, QThreadPool, QRunnable, pyqtSlot, QFileSystemWatcher
+from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, QFileSystemWatcher
 from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog
 
 import rare.shared as shared
@@ -27,13 +27,12 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.threadpool = QThreadPool.globalInstance()
 
         if platform.system() == 'Windows':
-            estimated_path = os.path.expandvars(PathSpec.egl_programdata)
+            self.egl_path_info.setText(os.path.expandvars(PathSpec.egl_programdata))
         else:
-            estimated_path = self.tr('Updating...')
+            self.egl_path_info.setText(self.tr('Updating...'))
             wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
-            wine_resolver.signals.result_ready.connect(self.egl_path_info.setText)
+            wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
             self.threadpool.start(wine_resolver)
-        self.egl_path_info.setText(estimated_path)
 
         egl_path = shared.core.egl.programdata_path
         if egl_path is None:
@@ -44,7 +43,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
         self.egl_path_edit = PathEdit(
             path=egl_path,
-            ph_text=estimated_path,
+            ph_text=self.tr('Path to the Wine prefix where EGL is installed, or the Manifests folder'),
             file_type=QFileDialog.DirectoryOnly,
             edit_func=self.egl_path_edit_cb,
             save_func=self.egl_path_save_cb,
@@ -71,6 +70,12 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_watcher.directoryChanged.connect(self.update_lists)
 
         self.update_lists()
+
+    def wine_resolver_cb(self, path):
+        self.egl_path_info.setText(path)
+        if not path:
+            self.egl_path_info.setText(
+                self.tr('Default Wine prefix is unset, configure it in Settings -> Linux'))
 
     @staticmethod
     def egl_path_edit_cb(path) -> Tuple[bool, str]:
@@ -161,6 +166,14 @@ class EGLSyncListItem(QListWidgetItem):
         else:
             shared.core.egl_import(self.game.app_name)
 
+    @property
+    def app_name(self):
+        return self.game.app_name
+
+    @property
+    def app_title(self):
+        return self.game.app_title
+
 
 class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
 
@@ -214,12 +227,14 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         self.buttons_widget.setVisible(enabled and bool(self.list.count()))
 
     def action(self):
+        imported = list()
         for item in self.items:
             if item.is_checked():
                 item.action()
+                imported.append(item.app_name)
                 self.list.takeItem(self.list.row(item))
-        if not self.export:
-            shared.signals.update_gamelist.emit(str())
+        if not self.export and imported:
+            shared.signals.update_gamelist.emit(imported)
         self.populate(True)
 
     @property

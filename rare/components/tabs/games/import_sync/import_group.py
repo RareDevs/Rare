@@ -1,12 +1,11 @@
 import json
 import os
 from logging import getLogger
-from typing import Tuple
+from typing import List, Tuple
 
 from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QListView
-from legendary.core import LegendaryCore
+from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QListView, QTreeView, QHeaderView
 
 import rare.shared as shared
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
@@ -19,11 +18,11 @@ logger = getLogger("Import")
 class AppNameCompleter(QCompleter):
     activated = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, parent=None):
+    def __init__(self, app_names: List, parent=None):
         super(AppNameCompleter, self).__init__(parent)
+        # pylint: disable=E1136
         super(AppNameCompleter, self).activated[QModelIndex].connect(self.__activated)
 
-        app_names = [(i.app_name, i.app_title) for i in core.get_game_list()]
         model = QStandardItemModel(len(app_names), 2)
         for idx, game in enumerate(app_names):
             app_name, app_title = game
@@ -31,16 +30,16 @@ class AppNameCompleter(QCompleter):
             model.setData(model.index(idx, 1), app_name)
         self.setModel(model)
 
-        # treeview = QTreeView()
-        # treeview.setRootIsDecorated(False)
-        # treeview.header().hide()
-        # treeview.header().setSectionResizeMode(0, QHeaderView.Stretch)
-        # treeview.header().setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        # self.setPopup(treeview)
+        treeview = QTreeView()
+        self.setPopup(treeview)
+        treeview.setRootIsDecorated(False)
+        treeview.header().hide()
+        treeview.header().setSectionResizeMode(0, QHeaderView.Stretch)
+        treeview.header().setSectionResizeMode(1, QHeaderView.Stretch)
 
-        listview = QListView()
-        # listview.setModelColumn(1)
-        self.setPopup(listview)
+        # listview = QListView()
+        # self.setPopup(listview)
+        # # listview.setModelColumn(1)
 
         self.setFilterMode(Qt.MatchContains)
         self.setCaseSensitivity(Qt.CaseInsensitive)
@@ -82,7 +81,7 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
 
         self.app_name = IndicatorLineEdit(
             ph_text=self.tr("Use in case the app name was not found automatically"),
-            completer=AppNameCompleter(self.core),
+            completer=AppNameCompleter(app_names=[(i.app_name, i.app_title) for i in self.core.get_game_list()]),
             edit_func=self.app_name_edit_cb,
             parent=self
         )
