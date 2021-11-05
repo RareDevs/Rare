@@ -214,6 +214,8 @@ QTableView {
     background-color: #202225;
     alternate-background-color: #282a2e;
 }
+
+QListView::item,
 QTreeView::item {
     margin-right: 1px;
 }
