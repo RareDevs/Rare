@@ -3,7 +3,7 @@ import os
 from logging import getLogger
 from typing import List, Tuple
 
-from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal
+from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QObject, QEvent
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QListView, QTreeView, QHeaderView
 
@@ -21,7 +21,7 @@ class AppNameCompleter(QCompleter):
     def __init__(self, app_names: List, parent=None):
         super(AppNameCompleter, self).__init__(parent)
         # pylint: disable=E1136
-        super(AppNameCompleter, self).activated[QModelIndex].connect(self.__activated)
+        super(AppNameCompleter, self).activated[QModelIndex].connect(self.__activated_idx)
 
         model = QStandardItemModel(len(app_names), 2)
         for idx, game in enumerate(app_names):
@@ -45,18 +45,18 @@ class AppNameCompleter(QCompleter):
         self.setCaseSensitivity(Qt.CaseInsensitive)
         # self.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
 
-    def __activated(self, idx_str):
+    def __activated_idx(self, idx):
         # lk: don't even look at this in a funny way, it will die of shame
         # lk: Note to self, the completer and popup models are different.
         # lk: Getting the index from the popup and trying to use it in the completer will return invalid results
-        if isinstance(idx_str, QModelIndex):
+        if isinstance(idx, QModelIndex):
             self.activated.emit(
                 self.popup().model().data(
-                    self.popup().model().index(idx_str.row(), 1)
+                    self.popup().model().index(idx.row(), 1)
                 )
             )
+        # TODO: implement conversion from app_name to app_title (signal loop here)
         # if isinstance(idx_str, str):
-        #     # TODO: implement conversion from app_name to app_title (possible signal loop here?)
         #     self.activated.emit(idx_str)
 
 
