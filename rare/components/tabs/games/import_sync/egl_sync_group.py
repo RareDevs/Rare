@@ -66,8 +66,8 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.export_list = EGLSyncListGroup(export=True, parent=self)
         self.import_export_layout.addWidget(self.export_list)
 
-        self.egl_watcher = QFileSystemWatcher([self.egl_path_edit.text()], self)
-        self.egl_watcher.directoryChanged.connect(self.update_lists)
+        # self.egl_watcher = QFileSystemWatcher([self.egl_path_edit.text()], self)
+        # self.egl_watcher.directoryChanged.connect(self.update_lists)
 
         self.update_lists()
 
@@ -75,7 +75,8 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_path_info.setText(path)
         if not path:
             self.egl_path_info.setText(
-                self.tr('Default Wine prefix is unset, configure it in Settings -> Linux'))
+                self.tr('Default Wine prefix is unset, or path does not exist. '
+                        'Create it or configure it in Settings -> Linux'))
 
     @staticmethod
     def egl_path_edit_cb(path) -> Tuple[bool, str]:
@@ -112,8 +113,8 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         if self.egl_path_edit.is_valid:
             self.egl_sync_check.setEnabled(bool(path))
         self.egl_sync_check.setCheckState(Qt.Unchecked)
-        self.egl_watcher.removePaths([p for p in self.egl_watcher.directories()])
-        self.egl_watcher.addPaths([path])
+        # self.egl_watcher.removePaths([p for p in self.egl_watcher.directories()])
+        # self.egl_watcher.addPaths([path])
         self.update_lists()
 
     def egl_sync_changed(self, state):
@@ -132,7 +133,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.core.lgd.save_config()
 
     def update_lists(self):
-        self.egl_watcher.blockSignals(True)
+        # self.egl_watcher.blockSignals(True)
         if have_path := bool(shared.core.egl.programdata_path) and self.egl_path_edit.is_valid:
             # NOTE: need to clear known manifests to force refresh
             shared.core.egl.manifests.clear()
@@ -142,7 +143,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.import_list.setEnabled(have_path)
         self.export_list.populate(have_path)
         self.export_list.setEnabled(have_path)
-        self.egl_watcher.blockSignals(False)
+        # self.egl_watcher.blockSignals(False)
 
 
 class EGLSyncListItem(QListWidgetItem):
