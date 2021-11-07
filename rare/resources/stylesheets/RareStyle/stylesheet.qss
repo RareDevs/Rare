@@ -397,13 +397,21 @@ QGroupBox#settings_widget {
     border-radius: 4px;
     font-size: 11px;
     font-weight: bold;
-    margin-top: 3ex;
+    margin-top: 5ex;
     padding: 1px;
 }
 QGroupBox#game_widget_icon {
     border-width: 0px;
     padding: 0px;
     margin: 2px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left; /* position at the top center */
+    border-width: 0px;
+    border-style: solid;
+    border-radius: 2px;
+    border-color: #483d8b;
 }
 
 QSizeGrip {
