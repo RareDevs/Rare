@@ -1,14 +1,16 @@
 /*
 */
 
-* { background-color: #202225; }
-* { color: #eeeeee; }
-* { border-color: #483d8b; }
+* {
+    color: #eeeeee;
+    border-color: #483d8b;
+    background-color: #202225;
+}
 *:disabled,
 *::drop-down:disabled {
     color: #43474d;
     border-color: #43474d;
-    background-color: #202225;
+    background-color: transparent;
 }
 
 QLabel {
@@ -392,18 +394,35 @@ QRadioButton::indicator:checked:disabled {
 QGroupBox,
 QGroupBox#group,
 QGroupBox#settings_widget {
+    font-weight: bold;
+    margin-top: 1ex;
+    /* margin-left: 0.5em; /* Offset to the left */
     border-width: 1px;
     border-style: solid;
     border-radius: 4px;
-    font-size: 11px;
-    font-weight: bold;
-    margin-top: 3ex;
-    padding: 1px;
+    padding-top: 3ex;
 }
 QGroupBox#game_widget_icon {
+    margin: 2px;
     border-width: 0px;
     padding: 0px;
-    margin: 2px;
+}
+QGroupBox::title {
+    /* background: qlineargradient(x1: -2, y1: 0, x2: 1, y2: 1,
+			    stop: 0 #483d8b, stop: 1 #202225); /* stop: 0 #28224D */
+    subcontrol-origin: border;
+    subcontrol-position: top left; /* position at the top left */
+    border-width: 1px;
+    border-style: solid;
+    border-top-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom-color: #483d8b;
+    border-right-color: #483d8b;
+    padding: 1px;
+}
+QGroupBox::title:disabled {
+    border-bottom-color: #43474d;
+    border-right-color: #43474d;
 }
 
 QSizeGrip {
