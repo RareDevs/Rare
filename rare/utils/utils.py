@@ -450,9 +450,11 @@ class WineResolver(QRunnable):
             self.signals.result_ready[str].emit(str())
             return
         path = self.path.strip().replace('/', '\\')
-        cmd = 'cd {} & cd'.format(path)
-        # [self.wine_binary, 'cmd', '/c', 'echo', path] if path not exists alternative
-        proc = subprocess.Popen([self.wine_binary, 'cmd', '/c', cmd],
+        # lk: if path does not exist form
+        cmd = [self.wine_binary, 'cmd', '/c', 'echo', path]
+        # lk: if path exists and needs a case sensitive interpretation form
+        # cmd = [self.wine_binary, 'cmd', '/c', f'cd {path} & cd']
+        proc = subprocess.Popen(cmd,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 env=self.wine_env, shell=False, text=True)
         out, err = proc.communicate()
