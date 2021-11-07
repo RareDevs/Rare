@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import Tuple, Iterable
 
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, QFileSystemWatcher
-from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog
+from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QErrorMessage
 
 import rare.shared as shared
 from rare.ui.components.tabs.games.import_sync.egl_sync_group import Ui_EGLSyncGroup
@@ -119,6 +119,8 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
     def egl_sync_changed(self, state):
         if state == Qt.Unchecked:
+            self.import_list.setEnabled(bool(self.import_list.items))
+            self.export_list.setEnabled(bool(self.export_list.items))
             self.core.lgd.config.remove_option('Legendary', 'egl_sync')
         else:
             self.core.lgd.config.set('Legendary', 'egl_sync', str(True))
@@ -163,9 +165,10 @@ class EGLSyncListItem(QListWidgetItem):
 
     def action(self) -> None:
         if self.export:
-            shared.core.egl_export(self.game.app_name)
+            error = shared.core.egl_export(self.game.app_name)
         else:
-            shared.core.egl_import(self.game.app_name)
+            error = shared.core.egl_import(self.game.app_name)
+        return error
 
     @property
     def app_name(self):
@@ -229,14 +232,24 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
 
     def action(self):
         imported = list()
+        errors = list()
         for item in self.items:
             if item.is_checked():
-                item.action()
-                imported.append(item.app_name)
-                self.list.takeItem(self.list.row(item))
+                if e := item.action():
+                    errors.append(e)
+                else:
+                    imported.append(item.app_name)
+                    self.list.takeItem(self.list.row(item))
         if not self.export and imported:
             shared.signals.update_gamelist.emit(imported)
         self.populate(True)
+        if errors:
+            QMessageBox.warning(
+                self,
+                self.tr('The following errors occured while {}.').format(
+                    self.tr('exporting') if self.export else self.tr('importing')),
+                '\n'.join(errors)
+            )
 
     @property
     def items(self) -> Iterable[EGLSyncListItem]:
