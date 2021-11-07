@@ -2,9 +2,9 @@ from logging import getLogger
 
 from PyQt5.QtCore import QSettings, QObjectCleanupHandler
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
+from legendary.models.game import Game, InstalledGame
 
 import rare.shared as shared
-from legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils import legendary_utils
@@ -20,19 +20,19 @@ from .game_widgets.installing_game_widget import InstallingGameWidget
 from .game_widgets.uninstalled_icon_widget import IconWidgetUninstalled
 from .game_widgets.uninstalled_list_widget import ListWidgetUninstalled
 from .head_bar import GameListHeadBar
-from .import_widget import ImportWidget
+from .import_sync import ImportSyncTabs
 
 logger = getLogger("GamesTab")
 
 
 class GamesTab(QStackedWidget, Ui_GamesTab):
-    widgets = {}
-    running_games = []
+    widgets = dict()
+    running_games = list()
     updates = set()
     active_filter = 0
 
-    def __init__(self):
-        super(GamesTab, self).__init__()
+    def __init__(self, parent=None):
+        super(GamesTab, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = shared.core
         self.signals = shared.signals
@@ -44,7 +44,9 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.mac_games = shared.api_results.mac_games
         self.no_assets = shared.api_results.no_asset_games
 
-        self.head_bar = GameListHeadBar()
+        self.head_bar = GameListHeadBar(self)
+        self.head_bar.import_clicked.connect(self.show_import)
+        self.head_bar.egl_sync_clicked.connect(self.show_egl_sync)
         self.games.layout().insertWidget(0, self.head_bar)
 
         self.game_info_tabs = GameInfoTabs(self.dlcs, self)
@@ -53,8 +55,9 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         self.game_info_tabs.info.verification_finished.connect(self.verification_finished)
 
-        self.import_widget = ImportWidget()
-        self.addWidget(self.import_widget)
+        self.import_sync_tabs = ImportSyncTabs(self)
+        self.import_sync_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
+        self.addWidget(self.import_sync_tabs)
 
         self.uninstalled_info_tabs = UninstalledInfoTabs(self)
         self.uninstalled_info_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
@@ -62,7 +65,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         # navigation
         self.head_bar.import_game.clicked.connect(lambda: self.setCurrentIndex(2))
-        self.import_widget.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
 
         self.no_asset_names = []
         if not shared.args.offline:
@@ -80,7 +82,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             self.scroll_widget.layout().insertWidget(1, self.icon_view)
 
         self.head_bar.search_bar.textChanged.connect(lambda x: self.filter_games("", x))
-        self.head_bar.filter_changed_signal.connect(self.filter_games)
+        self.head_bar.filterChanged.connect(self.filter_games)
         self.head_bar.refresh_list.clicked.connect(self.update_list)
         self.head_bar.view.toggled.connect(self.toggle_view)
 
@@ -116,6 +118,14 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         legendary_utils.uninstall(game.app_name, self.core, infos)
         self.setCurrentIndex(0)
         self.update_list([game.app_name])
+
+    def show_import(self):
+        self.setCurrentIndex(2)
+        self.import_sync_tabs.show_import()
+
+    def show_egl_sync(self, idx):
+        self.setCurrentIndex(2)
+        self.import_sync_tabs.show_egl_sync()
 
     def show_game_info(self, game):
         self.game_info_tabs.update_game(game, self.dlcs)

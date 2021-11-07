@@ -5,11 +5,12 @@ from typing import Callable, Tuple
 
 import PIL
 from PIL import Image
-from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize, QPoint, pyqtSignal
+from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize, QPoint, pyqtSignal, QFileInfo
 from PyQt5.QtGui import QMovie, QPixmap, QFontMetrics
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
-    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton, QTabWidget
-from qtawesome import icon
+    QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton, QTabWidget, QCompleter, QFileSystemModel, \
+    QStyledItemDelegate, QFileIconProvider
+from qtawesome import icon as qta_icon
 
 from rare import resources_path, cache_dir
 from rare.utils.qt_requests import QtRequestManager
@@ -130,32 +131,43 @@ class IndicatorLineEdit(QWidget):
     def __init__(self,
                  text: str = "",
                  ph_text: str = "",
+                 completer: QCompleter = None,
                  edit_func: Callable[[str], Tuple[bool, str]] = None,
                  save_func: Callable[[str], None] = None,
                  horiz_policy: QSizePolicy = QSizePolicy.Expanding,
                  parent=None):
         super(IndicatorLineEdit, self).__init__(parent=parent)
-        self.setObjectName("IndicatorTextEdit")
+        self.setObjectName("IndicatorLineEdit")
         self.layout = QHBoxLayout(self)
         self.layout.setObjectName("layout")
         self.layout.setContentsMargins(0, 0, 0, 0)
+        # Add line_edit
         self.line_edit = QLineEdit(self)
         self.line_edit.setObjectName("line_edit")
         self.line_edit.setPlaceholderText(ph_text)
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
+        # Add hint_label to line_edit
+        self.line_edit.setLayout(QHBoxLayout())
+        self.hint_label = QLabel()
+        self.hint_label.setObjectName('HintLabel')
+        self.hint_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.line_edit.layout().setContentsMargins(0, 0, 10, 0)
+        self.line_edit.layout().addWidget(self.hint_label)
+        # Add completer
+        if completer is not None:
+            completer.popup().setItemDelegate(QStyledItemDelegate(self))
+            completer.popup().setAlternatingRowColors(True)
+            self.line_edit.setCompleter(completer)
         self.layout.addWidget(self.line_edit)
         if edit_func is not None:
             self.indicator_label = QLabel()
-            self.indicator_label.setPixmap(icon("ei.info-circle", color="gray").pixmap(16, 16))
+            self.indicator_label.setPixmap(qta_icon("ei.info-circle", color="gray").pixmap(16, 16))
             self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
             self.layout.addWidget(self.indicator_label)
 
         if not ph_text:
             _translate = QCoreApplication.translate
-            self.line_edit.setPlaceholderText(_translate("PathEdit", "Default"))
-
-        if text:
-            self.line_edit.setText(text)
+            self.line_edit.setPlaceholderText(_translate(self.__class__.__name__, "Default"))
 
         self.edit_func = edit_func
         self.save_func = save_func
@@ -163,15 +175,28 @@ class IndicatorLineEdit(QWidget):
         if self.edit_func is None:
             self.line_edit.textChanged.connect(self.__save)
 
+        # lk: this can be placed here to trigger __edit
+        # lk: it going to save the input again if it is valid which
+        # lk: is ok to do given the checks don't misbehave (they shouldn't)
+        # lk: however it is going to edit any "understood" bad input to good input
+        # lk: and we might not want that (but the validity check reports on the edited string)
+        # lk: it is also going to trigger this widget's textChanged signal but that gets lost
+        if text:
+            self.line_edit.setText(text)
+
     def text(self) -> str:
         return self.line_edit.text()
 
     def setText(self, text: str):
         self.line_edit.setText(text)
 
+    def setHintText(self, text: str):
+        self.hint_label.setFrameRect(self.line_edit.rect())
+        self.hint_label.setText(text)
+
     def __indicator(self, res):
         color = "green" if res else "red"
-        self.indicator_label.setPixmap(icon("ei.info-circle", color=color).pixmap(16, 16))
+        self.indicator_label.setPixmap(qta_icon("ei.info-circle", color=color).pixmap(16, 16))
 
     def __edit(self, text):
         if self.edit_func is not None:
@@ -180,18 +205,54 @@ class IndicatorLineEdit(QWidget):
             self.line_edit.setText(text)
             self.line_edit.blockSignals(False)
             self.__indicator(self.is_valid)
-            self.textChanged.emit(text)
             if self.is_valid:
                 self.__save(text)
+            self.textChanged.emit(text)
 
     def __save(self, text):
         if self.save_func is not None:
             self.save_func(text)
 
 
+class PathEditIconProvider(QFileIconProvider):
+    icons = [
+        'mdi.file-cancel',      # Unknown
+        'mdi.desktop-classic',  # Computer
+        'mdi.desktop-mac',      # Desktop
+        'mdi.trash-can',        # Trashcan
+        'mdi.server-network',   # Network
+        'mdi.harddisk',         # Drive
+        'mdi.folder',           # Folder
+        'mdi.file',             # File
+        'mdi.cog',              # Executable
+    ]
+
+    def __init__(self):
+        super(PathEditIconProvider, self).__init__()
+        self.icon_types = dict()
+        for idx, icn in enumerate(self.icons):
+            self.icon_types.update({idx-1: qta_icon(icn, color='#eeeeee')})
+
+    def icon(self, info_type):
+        if isinstance(info_type, QFileInfo):
+            if info_type.isRoot():
+                return self.icon_types[4]
+            if info_type.isDir():
+                return self.icon_types[5]
+            if info_type.isFile():
+                return self.icon_types[6]
+            if info_type.isExecutable():
+                return self.icon_types[7]
+            return self.icon_types[-1]
+        return self.icon_types[int(info_type)]
+
+
 class PathEdit(IndicatorLineEdit):
+    completer = QCompleter()
+    compl_model = QFileSystemModel()
+
     def __init__(self,
-                 text: str = "",
+                 path: str = "",
                  file_type: QFileDialog.FileType = QFileDialog.AnyFile,
                  type_filter: str = "",
                  name_filter: str = "",
@@ -200,7 +261,13 @@ class PathEdit(IndicatorLineEdit):
                  save_func: Callable[[str], None] = None,
                  horiz_policy: QSizePolicy = QSizePolicy.Expanding,
                  parent=None):
-        super(PathEdit, self).__init__(text=text, ph_text=ph_text,
+        self.compl_model.setOptions(QFileSystemModel.DontWatchForChanges |
+                                    QFileSystemModel.DontResolveSymlinks |
+                                    QFileSystemModel.DontUseCustomDirectoryIcons)
+        self.compl_model.setIconProvider(PathEditIconProvider())
+        self.compl_model.setRootPath(path)
+        self.completer.setModel(self.compl_model)
+        super(PathEdit, self).__init__(text=path, ph_text=ph_text, completer=self.completer,
                                        edit_func=edit_func, save_func=save_func,
                                        horiz_policy=horiz_policy, parent=parent)
         self.setObjectName("PathEdit")
@@ -231,12 +298,13 @@ class PathEdit(IndicatorLineEdit):
         if dlg.exec_():
             names = dlg.selectedFiles()
             self.line_edit.setText(names[0])
+            self.compl_model.setRootPath(names[0])
 
 
 class SideTabBar(QTabBar):
     def __init__(self, parent=None):
         super(SideTabBar, self).__init__(parent=parent)
-        self.setObjectName("side_tab_bar")
+        self.setObjectName("SideTabBar")
         self.fm = QFontMetrics(self.font())
 
     def tabSizeHint(self, index):
@@ -274,7 +342,7 @@ class SideTabWidget(QTabWidget):
         self.setTabBar(SideTabBar())
         self.setTabPosition(QTabWidget.West)
         if show_back:
-            self.addTab(QWidget(), icon("mdi.keyboard-backspace"), self.tr("Back"))
+            self.addTab(QWidget(), qta_icon("mdi.keyboard-backspace"), self.tr("Back"))
             self.tabBarClicked.connect(self.back_func)
 
     def back_func(self, tab):
@@ -305,11 +373,11 @@ class SelectViewWidget(QWidget):
         self.icon_view_button = QPushButton()
         self.list_view = QPushButton()
         if icon_view:
-            self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="orange"))
-            self.list_view.setIcon(icon("fa5s.list"))
+            self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", color="orange"))
+            self.list_view.setIcon(qta_icon("fa5s.list"))
         else:
-            self.icon_view_button.setIcon(icon("mdi.view-grid-outline"))
-            self.list_view.setIcon(icon("fa5s.list", color="orange"))
+            self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline"))
+            self.list_view.setIcon(qta_icon("fa5s.list", color="orange"))
 
         self.icon_view_button.clicked.connect(self.icon)
         self.list_view.clicked.connect(self.list)
@@ -324,14 +392,14 @@ class SelectViewWidget(QWidget):
         return self.icon_view
 
     def icon(self):
-        self.icon_view_button.setIcon(icon("mdi.view-grid-outline", color="orange"))
-        self.list_view.setIcon(icon("fa5s.list"))
+        self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", color="orange"))
+        self.list_view.setIcon(qta_icon("fa5s.list"))
         self.icon_view = False
         self.toggled.emit()
 
     def list(self):
-        self.icon_view_button.setIcon(icon("mdi.view-grid-outline"))
-        self.list_view.setIcon(icon("fa5s.list", color="orange"))
+        self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline"))
+        self.list_view.setIcon(qta_icon("fa5s.list", color="orange"))
         self.icon_view = True
         self.toggled.emit()
 
@@ -395,7 +463,7 @@ class ButtonLineEdit(QLineEdit):
         super(ButtonLineEdit, self).__init__(parent)
 
         self.button = QToolButton(self)
-        self.button.setIcon(icon(icon_name, color="white"))
+        self.button.setIcon(qta_icon(icon_name, color="white"))
         self.button.setStyleSheet('border: 0px; padding: 0px;')
         self.button.setCursor(Qt.ArrowCursor)
         self.button.clicked.connect(self.buttonClicked.emit)

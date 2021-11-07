@@ -445,10 +445,16 @@ class WineResolver(QRunnable):
 
     @pyqtSlot()
     def run(self):
+        if 'WINEPREFIX' not in self.wine_env or not os.path.exists(self.wine_env['WINEPREFIX']):
+            # pylint: disable=E1136
+            self.signals.result_ready[str].emit(str())
+            return
         path = self.path.strip().replace('/', '\\')
-        cmd = 'cd {} & cd'.format(path)
-        # [self.wine_binary, 'cmd', '/c', 'echo', path] if path not exists alternative
-        proc = subprocess.Popen([self.wine_binary, 'cmd', '/c', cmd],
+        # lk: if path does not exist form
+        cmd = [self.wine_binary, 'cmd', '/c', 'echo', path]
+        # lk: if path exists and needs a case sensitive interpretation form
+        # cmd = [self.wine_binary, 'cmd', '/c', f'cd {path} & cd']
+        proc = subprocess.Popen(cmd,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 env=self.wine_env, shell=False, text=True)
         out, err = proc.communicate()
@@ -459,4 +465,6 @@ class WineResolver(QRunnable):
                                 env=self.wine_env, shell=False, text=True)
         out, err = proc.communicate()
         real_path = os.path.realpath(out.strip())
-        self.signals.result_ready.emit(real_path)
+        # pylint: disable=E1136
+        self.signals.result_ready[str].emit(real_path)
+        return

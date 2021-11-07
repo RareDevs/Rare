@@ -52,15 +52,15 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
 
         self.locale_edit = IndicatorLineEdit(
             f"{self.core.language_code}-{self.core.country_code}",
-            edit_func=self.locale_chck,
-            save_func=self.locale_save,
+            edit_func=self.locale_edit_cb,
+            save_func=self.locale_save_cb,
             horiz_policy=QSizePolicy.Minimum,
             parent=self
         )
         self.locale_layout.addWidget(self.locale_edit)
 
     @staticmethod
-    def locale_chck(text: str) -> Tuple[bool, str]:
+    def locale_edit_cb(text: str) -> Tuple[bool, str]:
         if text:
             if re.match("^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$", text):
                 language, country = text.replace("_", "-").split("-")
@@ -69,7 +69,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         else:
             return True, text
 
-    def locale_save(self, text: str):
+    def locale_save_cb(self, text: str):
         if text:
             self.core.egs.language_code, self.core.egs.country_code = text.split("-")
             self.core.lgd.config.set("Legendary", "locale", text)

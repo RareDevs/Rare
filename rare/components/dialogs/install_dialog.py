@@ -31,6 +31,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.update = update
         self.silent = silent
 
+        self.options_changed = False
+        self.worker_running = False
+        self.reject_close = True
+
         self.threadpool = QThreadPool(self)
         self.threadpool.setMaxThreadCount(1)
 
@@ -38,16 +42,14 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_dialog_label.setText(f"<h3>{header} \"{self.game.app_title}\"</h3>")
         self.setWindowTitle(f"{self.windowTitle()} - {header} \"{self.game.app_title}\"")
 
+        default_path = os.path.expanduser("~/legendary")
         if self.core.lgd.config.has_option("Legendary", "install_dir"):
             default_path = self.core.lgd.config.get("Legendary", "install_dir")
-        else:
-            default_path = os.path.expanduser("~/legendary")
-        if not default_path:
-            default_path = os.path.expanduser("~/legendary")
 
-        self.install_dir_edit = PathEdit(text=default_path,
+        self.install_dir_edit = PathEdit(path=default_path,
                                          file_type=QFileDialog.DirectoryOnly,
-                                         edit_func=self.option_changed)
+                                         edit_func=self.option_changed,
+                                         parent=self)
         self.install_dir_layout.addWidget(self.install_dir_edit)
 
         if self.update:
@@ -90,10 +92,6 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.cancel_button.clicked.connect(self.cancel_clicked)
         self.verify_button.clicked.connect(self.verify_clicked)
         self.install_button.clicked.connect(self.install_clicked)
-
-        self.options_changed = False
-        self.worker_running = False
-        self.reject_close = True
 
         self.resize(self.minimumSize())
         # self.setFixedSize(self.size())
