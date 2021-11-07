@@ -364,7 +364,10 @@ class ImageLabel(QLabel):
             self.show_image()
 
     def image_ready(self, data):
-        self.setPixmap(QPixmap())
+        try:
+            self.setPixmap(QPixmap())
+        except Exception:
+            logger.warning("C++ object already removed, when image ready")
         try:
             image: Image.Image = Image.open(io.BytesIO(data))
         except PIL.UnidentifiedImageError:
