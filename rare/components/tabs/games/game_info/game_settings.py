@@ -3,7 +3,7 @@ import platform
 from typing import Tuple
 
 from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QWidget, QFileDialog
 
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
@@ -169,15 +169,8 @@ class GameSettings(QWidget, Ui_GameSettings):
         if not text:
             text = os.path.expanduser("~/.proton")
             return True, text
-        if not os.path.exists(text):
-            try:
-                os.makedirs(text)
-            except PermissionError:
-                QMessageBox.warning(self, "Warning", f"{self.tr('No permission to create folder')} {text}")
-                text = os.path.expanduser("~/.proton")
-            finally:
-                return True, text
-        return True, text
+        parent = os.path.dirname(text)
+        return os.path.exists(parent), text
 
     def proton_prefix_save(self, text: str):
         self.core.lgd.config.set(self.game.app_name + ".env", "STEAM_COMPAT_DATA_PATH", text)

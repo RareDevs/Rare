@@ -103,6 +103,22 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
     core.lgd.save_config()
 
 
+def update_manifest(app_name: str, core: LegendaryCore):
+    game = core.get_game(app_name)
+    logger.info('Reloading game manifest of ' + game.app_title)
+    new_manifest_data, base_urls = core.get_cdn_manifest(game)
+    # overwrite base urls in metadata with current ones to avoid using old/dead CDNs
+    game.base_urls = base_urls
+    # save base urls to game metadata
+    core.lgd.set_game_meta(game.app_name, game)
+
+    new_manifest = core.load_manifest(new_manifest_data)
+    logger.debug(f'Base urls: {base_urls}')
+    # save manifest with version name as well for testing/downgrading/etc.
+    core.lgd.save_manifest(game.app_name, new_manifest_data,
+                           version=new_manifest.meta.build_version)
+
+
 class VerifyThread(QThread):
     status = pyqtSignal(tuple)
     summary = pyqtSignal(int, int, str)
@@ -119,6 +135,13 @@ class VerifyThread(QThread):
         logger.info(f'Loading installed manifest for "{self.app_name}"')
         igame = self.core.get_installed_game(self.app_name)
         manifest_data, _ = self.core.get_installed_manifest(self.app_name)
+        if not manifest_data:
+            update_manifest(self.app_name, self.core)
+        manifest_data, _ = self.core.get_installed_manifest(self.app_name)
+        if not manifest_data:
+            self.summary.emit(0, 0, self.app_name)
+            return
+
         manifest = self.core.load_manifest(manifest_data)
 
         files = sorted(manifest.file_manifest_list.elements,
