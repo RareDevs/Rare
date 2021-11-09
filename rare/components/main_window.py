@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
             width, height = self.settings.value("window_size", (1200, 800), tuple)
 
         desktop = QApplication.desktop()
-        self.setGeometry((desktop.width() - width) / 2, (desktop.height() - height) / 2, width, height)
+        self.setGeometry((desktop.width() - width) // 2, (desktop.height() - height) // 2, int(width), int(height))
 
         self.setWindowTitle("Rare - GUI for legendary")
         self.tab_widget = TabWidget(self)
