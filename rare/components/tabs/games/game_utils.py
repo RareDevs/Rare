@@ -121,6 +121,24 @@ class GameUtils(QObject):
             full_env.update(params.environment)
             for env, value in full_env.items():
                 environment.insert(env, value)
+
+            if platform.system() != "Windows":
+                for env in ["STEAM_COMPAT_DATA_PATH", "WINEPREFIX"]:
+                    if val := full_env.get(env):
+                        if not os.path.exists(val):
+                            try:
+                                os.makedirs(val)
+                            except PermissionError as e:
+                                logger.error(str(e))
+                                if QMessageBox.question(None, "Error",
+                                                        self.tr(
+                                                            "Error while launching {}. No permission to create {} for {}\nLaunch anyway?").format(
+                                                            game.app_title, val, env),
+                                                        buttons=QMessageBox.Yes | QMessageBox.No,
+                                                        defaultButton=QMessageBox.Yes) == QMessageBox.No:
+                                    process.deleteLater()
+                                    return
+
             process.setProcessEnvironment(environment)
             process.game_finished.connect(self.game_finished)
             running_game = RunningGameModel(process=process, app_name=app_name)
