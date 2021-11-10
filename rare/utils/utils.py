@@ -13,6 +13,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings, Qt
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
 from requests import HTTPError
 
+from legendary.models.game import Game
 from .models import PathSpec
 
 # Windows
@@ -434,3 +435,8 @@ class CloudWorker(QRunnable):
         except HTTPError():
             result = None
         self.signals.result_ready.emit(result)
+
+
+def get_raw_save_path(game: Game):
+    if game.supports_cloud_saves:
+        return game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")

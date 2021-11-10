@@ -1,16 +1,18 @@
 import os
 import platform
+from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QSettings, QThreadPool
 from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QLabel, QVBoxLayout, QPushButton
-
 from qtawesome import icon
+
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 from rare.components.tabs.settings.linux import LinuxSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
 from rare.utils.extra_widgets import PathEdit
+from rare.utils.utils import WineResolver, get_raw_save_path
 
 
 def find_proton_wrappers():
@@ -33,6 +35,9 @@ def find_proton_wrappers():
     if not possible_proton_wrappers:
         print("Unable to find any Proton version")
     return possible_proton_wrappers
+
+
+logger = getLogger("GameSettings")
 
 
 class GameSettings(QWidget, Ui_GameSettings):
@@ -108,15 +113,34 @@ class GameSettings(QWidget, Ui_GameSettings):
             try:
                 new_path = self.core.get_save_path(self.game.app_name)
             except Exception as e:
-                QMessageBox.warning(self, "Error",
-                                    self.tr("Could not compute save path for {}").format(
-                                        self.game.app_title) + "\n" + str(
-                                        e))
+                logger.warning(str(e))
+                self.cloud_save_path_edit.setText(self.tr("Loading"))
+                self.cloud_save_path_edit.setDisabled(True)
+                self.compute_save_path_button.setDisabled(True)
+                resolver = WineResolver(get_raw_save_path(self.game), self.game.app_name, self.core)
+                resolver.signals.result_ready.connect(self.wine_resolver_finished)
+                QThreadPool.globalInstance().start(resolver)
                 return
             self.cloud_save_path_edit.setText(new_path)
 
+    def wine_resolver_finished(self, path):
+        self.cloud_save_path_edit.setDisabled(False)
+        self.compute_save_path_button.setDisabled(False)
+        if path and not os.path.exists(path):
+            try:
+                os.makedirs(path)
+            except PermissionError:
+                self.cloud_save_path_edit.setText("")
+                QMessageBox.warning(None, "Error", self.tr(
+                    "Error while launching {}. No permission to create {}").format(
+                    self.game.app_title, path))
+                return
+        if not path:
+            return
+        self.cloud_save_path_edit.setText(path)
+
     def save_save_path(self, text):
-        if self.game.supports_cloud_saves and not self.change:
+        if self.game.supports_cloud_saves and self.change:
             self.igame.save_path = text
             self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
 
@@ -133,6 +157,10 @@ class GameSettings(QWidget, Ui_GameSettings):
                     self.core.lgd.config.remove_section(self.game.app_name)
         self.core.lgd.save_config()
         self.sender().setEnabled(False)
+
+        if option == "wine_prefix":
+            if self.game.supports_cloud_saves:
+                self.compute_save_path()
 
     def update_combobox(self, i, option):
         if self.change:

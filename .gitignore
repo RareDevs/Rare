@@ -11,3 +11,4 @@ __pycache__
 *.tar.gz
 /Rare.egg-info/
 /venv
+/venv310/
