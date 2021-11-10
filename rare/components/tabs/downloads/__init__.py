@@ -176,7 +176,7 @@ class DownloadTab(QWidget):
         self.analysis = None
 
     def statistics(self, ui_update: UIUpdate):
-        self.prog_bar.setValue(ui_update.progress)
+        self.prog_bar.setValue(int(ui_update.progress))
         self.dl_speed.setText(self.tr("Download speed") + f": {get_size(ui_update.download_speed)}/s")
         self.cache_used.setText(
             self.tr("Cache used") + f": {get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}")

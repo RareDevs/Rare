@@ -48,17 +48,7 @@
                                                         <layout class="QVBoxLayout" name="verticalLayout_3">
                                                             <item>
                                                                 <widget class="QStackedWidget" name="free_stack">
-                                                                    <widget class="QWidget" name="free_widget">
-                                                                        <property name="sizePolicy">
-                                                                            <sizepolicy hsizetype="Preferred"
-                                                                                        vsizetype="Maximum">
-                                                                                <horstretch>0</horstretch>
-                                                                                <verstretch>0</verstretch>
-                                                                            </sizepolicy>
-                                                                        </property>
-                                                                        <layout class="QVBoxLayout"
-                                                                                name="verticalLayout_8"/>
-                                                                    </widget>
+                                                                    <widget class="QWidget" name="free_widget"/>
                                                                 </widget>
                                                             </item>
                                                         </layout>

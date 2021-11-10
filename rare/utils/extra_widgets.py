@@ -1,12 +1,9 @@
-import io
 import os
 from logging import getLogger
 from typing import Callable, Tuple
 
-import PIL
-from PIL import Image
 from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize, QPoint, pyqtSignal, QFileInfo
-from PyQt5.QtGui import QMovie, QPixmap, QFontMetrics
+from PyQt5.QtGui import QMovie, QPixmap, QFontMetrics, QImage
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
     QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton, QTabWidget, QCompleter, QFileSystemModel, \
     QStyledItemDelegate, QFileIconProvider
@@ -436,18 +433,12 @@ class ImageLabel(QLabel):
             self.setPixmap(QPixmap())
         except Exception:
             logger.warning("C++ object already removed, when image ready")
-        try:
-            image: Image.Image = Image.open(io.BytesIO(data))
-        except PIL.UnidentifiedImageError:
             return
-        image = image.resize((self.img_size[:2]))
-        byte_array = io.BytesIO()
-        image.save(byte_array, format="PNG")
-        # pixmap = QPixmap.fromImage(ImageQt(image))
-        pixmap = QPixmap()
-        pixmap.loadFromData(byte_array.getvalue())
-        # pixmap = QPixmap.fromImage(ImageQt.ImageQt(image))
-        pixmap = pixmap.scaled(*self.img_size[:2], Qt.KeepAspectRatioByExpanding)
+        image = QImage()
+        image.loadFromData(data)
+        image = image.scaled(*self.img_size[:2], Qt.KeepAspectRatio, transformMode=Qt.SmoothTransformation)
+
+        pixmap = QPixmap().fromImage(image)
         self.setPixmap(pixmap)
 
     def show_image(self):
@@ -479,5 +470,5 @@ class ButtonLineEdit(QLineEdit):
         buttonSize = self.button.sizeHint()
         frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
         self.button.move(self.rect().right() - frameWidth - buttonSize.width(),
-                         (self.rect().bottom() - buttonSize.height() + 1) / 2)
+                         (self.rect().bottom() - buttonSize.height() + 1) // 2)
         super(ButtonLineEdit, self).resizeEvent(event)

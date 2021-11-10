@@ -9,9 +9,8 @@ from logging import getLogger
 from typing import Tuple
 
 import requests
-from PIL import Image, UnidentifiedImageError
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings
-from PyQt5.QtGui import QPalette, QColor, QPixmap
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings, Qt
+from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
 
 from .models import PathSpec
 
@@ -49,7 +48,7 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
         except json.decoder.JSONDecodeError:
             shutil.rmtree(f"{image_dir}/{game.app_name}")
             download_image(game)
-        signal.emit(i / len(game_list) * 100)
+        signal.emit(i * 100 // len(game_list))
 
 
 def download_image(game, force=False):
@@ -58,13 +57,12 @@ def download_image(game, force=False):
     if not os.path.isdir(f"{image_dir}/" + game.app_name):
         os.mkdir(f"{image_dir}/" + game.app_name)
 
-    # to git picture updates
+    # to get picture updates
     if not os.path.isfile(f"{image_dir}/{game.app_name}/image.json"):
         json_data = {"DieselGameBoxTall": None, "DieselGameBoxLogo": None, "Thumbnail": None}
     else:
         json_data = json.load(open(f"{image_dir}/{game.app_name}/image.json", "r"))
     # Download
-    download = False
     for image in game.metadata["keyImages"]:
         if image["type"] == "DieselGameBoxTall" or image["type"] == "DieselGameBoxLogo" or image["type"] == "Thumbnail":
             if image["type"] not in json_data.keys():
@@ -77,63 +75,11 @@ def download_image(game, force=False):
                 json.dump(json_data, open(f"{image_dir}/{game.app_name}/image.json", "w"))
                 logger.info(f"Download Image for Game: {game.app_title}")
                 url = image["url"]
-                with open(f"{image_dir}/{game.app_name}/{image['type']}.png", "wb") as f:
-                    f.write(requests.get(url).content)
-                    try:
-                        img = Image.open(f"{image_dir}/{game.app_name}/{image['type']}.png")
-                        img = img.resize((200, int(200 * 4 / 3)))
-                        img.save(f"{image_dir}/{game.app_name}/{image['type']}.png")
-                        download = True
-                    except UnidentifiedImageError as e:
-                        logger.warning(e)
-
-    # scale and grey
-    uninstalled_image = os.path.join(image_dir, game.app_name + '/UninstalledArt.png')
-    if download and os.path.exists(uninstalled_image):
-        os.remove(uninstalled_image)
-    elif os.path.exists(uninstalled_image):
-        return
-
-    if os.path.exists(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png")):
-        # finalArt = Image.open(f'{image_dir}/' + game.app_name + '/DieselGameBoxTall.png')
-        # finalArt.save(f'{image_dir}/{game.app_name}/FinalArt.png')
-        # And same with the grayscale one
-        try:
-            bg = Image.open(os.path.join(image_dir, f"{game.app_name}/DieselGameBoxTall.png"))
-        except UnidentifiedImageError:
-            logger.warning("Reload image for " + game.app_title)
-            # avoid endless recursion
-            if not force:
-                download_image(game, True)
-            return
-        uninstalledArt = bg.convert('L')
-        uninstalledArt = uninstalledArt.resize((200, int(200 * 4 / 3)))
-        uninstalledArt.save(f'{image_dir}/{game.app_name}/UninstalledArt.png')
-
-    elif os.path.isfile(f"{image_dir}/{game.app_name}/DieselGameBoxLogo.png"):
-        bg: Image.Image = Image.open(f"{image_dir}/{game.app_name}/DieselGameBoxLogo.png")
-        bg = bg.resize((int(bg.size[1] * 3 / 4), bg.size[1]))
-        logo = Image.open(f'{image_dir}/{game.app_name}/DieselGameBoxLogo.png').convert('RGBA')
-        wpercent = ((bg.size[0] * (3 / 4)) / float(logo.size[0]))
-        hsize = int((float(logo.size[1]) * float(wpercent)))
-        logo = logo.resize((int(bg.size[0] * (3 / 4)), hsize), Image.ANTIALIAS)
-        # Calculate where the image has to be placed
-        pasteX = int((bg.size[0] - logo.size[0]) / 2)
-        pasteY = int((bg.size[1] - logo.size[1]) / 2)
-        # And finally copy the background and paste in the image
-        # finalArt = bg.copy()
-        # finalArt.paste(logo, (pasteX, pasteY), logo)
-        # Write out the file
-        # finalArt.save(f'{image_dir}/' + game.app_name + '/FinalArt.png')
-        logoCopy = logo.copy()
-        logoCopy.putalpha(int(256 * 3 / 4))
-        logo.paste(logoCopy, logo)
-        uninstalledArt = bg.copy()
-        uninstalledArt.paste(logo, (pasteX, pasteY), logo)
-        uninstalledArt = uninstalledArt.convert('L')
-        uninstalledArt.save(f'{image_dir}/' + game.app_name + '/UninstalledArt.png')
-    else:
-        logger.warning(f"File {image_dir}/{game.app_name}/DieselGameBoxTall.png doesn't exist")
+                resp = requests.get(url)
+                img = QImage()
+                img.loadFromData(resp.content)
+                img = img.scaled(200, 200 * 4 // 3, Qt.KeepAspectRatio, transformMode=Qt.SmoothTransformation)
+                img.save(os.path.join(image_dir, game.app_name, image["type"] + ".png"), format="PNG")
 
 
 color_role_map = {
@@ -359,7 +305,8 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
 
         # Icon
         if not os.path.exists(icon + ".ico"):
-            img = Image.open(icon + ".png")
+            img = QImage()
+            img.load(icon + ".png")
             img.save(icon + ".ico")
             logger.info("Create Icon")
         shortcut.IconLocation = os.path.join(icon + ".ico")
@@ -398,7 +345,7 @@ def optimal_text_background(image: list) -> Tuple[int, int, int]:
     containing RGB tuples, ranging from 0 to 255.
     """
     # cursed, I know
-    average = map(lambda value: value / len(image), map(sum, zip(*image)))
+    average = map(lambda value: value // len(image), map(sum, zip(*image)))
     inverted = map(lambda value: 255 - value, average)
     return tuple(inverted)
 

@@ -3,8 +3,8 @@ import platform
 from logging import getLogger
 from typing import Tuple, Iterable
 
-from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, QFileSystemWatcher
-from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QErrorMessage
+from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot
+from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox
 
 import rare.shared as shared
 from rare.ui.components.tabs.games.import_sync.egl_sync_group import Ui_EGLSyncGroup
@@ -25,14 +25,17 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
         self.core = shared.core
         self.threadpool = QThreadPool.globalInstance()
+        if not self.core.egl.programdata_path:
+            if platform.system() == 'Windows':
+                self.egl_path_info.setText(os.path.expandvars(PathSpec.egl_programdata))
+            else:
+                self.egl_path_info.setText(self.tr('Updating...'))
+                wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
+                wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
+                self.threadpool.start(wine_resolver)
 
-        if platform.system() == 'Windows':
-            self.egl_path_info.setText(os.path.expandvars(PathSpec.egl_programdata))
         else:
-            self.egl_path_info.setText(self.tr('Updating...'))
-            wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
-            wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
-            self.threadpool.start(wine_resolver)
+            self.egl_path_info.setText(self.core.egl.programdata_path)
 
         egl_path = shared.core.egl.programdata_path
         if egl_path is None:
@@ -73,10 +76,14 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
     def wine_resolver_cb(self, path):
         self.egl_path_info.setText(path)
-        if not path:
+        if not path or not os.path.exists(path):
             self.egl_path_info.setText(
                 self.tr('Default Wine prefix is unset, or path does not exist. '
                         'Create it or configure it in Settings -> Linux'))
+        elif os.path.exists(path):
+            self.core.egl.programdata_path = path
+            self.core.lgd.config.set("Legendary", "egl_programdata", path)
+            self.core.lgd.save_config()
 
     @staticmethod
     def egl_path_edit_cb(path) -> Tuple[bool, str]:
@@ -95,7 +102,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
     @staticmethod
     def egl_path_save_cb(path):
-        if not path:
+        if not path or not os.path.exists(path):
             # This is the same as "--unlink"
             shared.core.egl.programdata_path = None
             shared.core.lgd.config.remove_option('Legendary', 'egl_programdata')
@@ -107,6 +114,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         else:
             shared.core.egl.programdata_path = path
             shared.core.lgd.config.set("Legendary", "egl_programdata", path)
+
         shared.core.lgd.save_config()
 
     def egl_path_changed(self, path):

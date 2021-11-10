@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 from legendary.models.game import Game, InstalledGame
 from rare import shared
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
-from rare.utils.legendary_utils import VerifyThread
+from rare.utils.legendary_utils import VerifyWorker
 from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_size, get_pixmap
@@ -42,6 +42,8 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.verify_button.clicked.connect(self.verify)
         self.repair_button.clicked.connect(self.repair)
 
+        self.thread_pool = QThreadPool.globalInstance()
+
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')
         if not os.path.exists(repair_file):
@@ -53,18 +55,17 @@ class GameInfo(QWidget, Ui_GameInfo):
 
     def verify(self):
         self.verify_widget.setCurrentIndex(1)
-        verify_thread = VerifyThread(self.core, self.game.app_name)
-        verify_thread.status.connect(self.verify_staistics)
-        verify_thread.summary.connect(self.finish_verify)
-        verify_thread.finished.connect(verify_thread.deleteLater)
-        verify_thread.start()
+        verify_worker = VerifyWorker(self.core, self.game.app_name)
+        verify_worker.signals.status.connect(self.verify_staistics)
+        verify_worker.signals.summary.connect(self.finish_verify)
+        self.thread_pool.start(verify_worker)
         self.verify_progress.setValue(0)
-        self.verify_threads[self.game.app_name] = verify_thread
+        self.verify_threads[self.game.app_name] = verify_worker
 
     def verify_staistics(self, progress):
         # checked, max, app_name
         if progress[2] == self.game.app_name:
-            self.verify_progress.setValue(progress[0] * 100 / progress[1])
+            self.verify_progress.setValue(progress[0] * 100 // progress[1])
 
     def finish_verify(self, failed, missing, app_name):
         if failed == missing == 0:

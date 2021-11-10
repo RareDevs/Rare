@@ -88,7 +88,7 @@ class GameDlcWidget(QFrame, Ui_GameDlcWidget):
         self.dlc = dlc
 
         pixmap = get_pixmap(dlc.app_name)
-        self.image.setPixmap(pixmap.scaledToHeight(pixmap.height() * 0.5))
+        self.image.setPixmap(pixmap.scaledToHeight(int(pixmap.height() * 0.5)))
 
         self.dlc_name.setText(dlc.app_title)
         self.version.setText(dlc.app_version)

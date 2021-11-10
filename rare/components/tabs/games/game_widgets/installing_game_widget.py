@@ -63,7 +63,7 @@ class PaintWidget(QWidget):
         painter.begin(self)
         painter.drawPixmap(self.rect(), self.image)
 
-        w = self.image.width() * (1 - self.status / 100)
+        w = self.image.width() * (1 - self.status // 100)
         painter.drawPixmap(self.image.width() - w, 0, w, self.image.height(),
                            self.new_image.copy(QRect(self.image.width() - w, 0, w, self.image.height())))
 

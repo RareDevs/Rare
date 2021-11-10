@@ -37,7 +37,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.wishlist = []
 
     def handle_wishlist_update(self, data):
-        if data[0] == "error":
+        if data and data[0] == "error":
             return
         self.wishlist = [i["offer"]["title"] for i in data]
         if self.title_str in self.wishlist:
@@ -88,6 +88,8 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         # init API request
         if slug:
             self.api_core.get_game(slug, is_bundle, self.data_received)
+        else:
+            self.data_received({})
 
     def add_to_wishlist(self):
         if not self.in_wishlist:
@@ -108,15 +110,17 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.price.setText("Error")
             self.req_group_box.setVisible(False)
             for img in self.data.get("keyImages"):
-                if img["type"] in ["DieselStoreFrontWide", "OfferImageWide", "VaultClosed", "ProductLogo"]:
+                if img["type"] in ["DieselStoreFrontWide", "OfferImageTall", "VaultClosed", "ProductLogo"]:
                     self.image.update_image(img["url"], size=(240, 320))
                     self.image_stack.setCurrentIndex(0)
                     break
             else:
                 self.image_stack.setCurrentIndex(2)
             self.price.setText("")
+            self.discount_price.setText("")
             self.social_link_gb.setVisible(False)
             self.tags.setText("")
+            self.dev.setText(self.data.get("seller", {}).get("name", ""))
             return
         self.title.setText(self.game.title)
         self.price.setFont(QFont())

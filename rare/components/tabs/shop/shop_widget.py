@@ -3,7 +3,7 @@ import logging
 import random
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
 
 from legendary.core import LegendaryCore
 from rare.components.tabs.shop import ShopApiCore
@@ -107,7 +107,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             if item:
                 item.widget().deleteLater()
 
-        if free_games[0] == "error":
+        if free_games and free_games[0] == "error":
             self.free_widget.layout().addWidget(QLabel(self.tr("Failed to fetch free games: ") + free_games[1]))
             btn = QPushButton(self.tr("Reload"))
             self.free_widget.layout().addWidget(btn)
@@ -116,11 +116,11 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             return
 
         self.free_games_now = QGroupBox(self.tr("Now Free"))
-        self.free_games_now.setLayout(FlowLayout())
+        self.free_games_now.setLayout(QHBoxLayout())
         self.free_widget.layout().addWidget(self.free_games_now)
 
         self.coming_free_games = QGroupBox(self.tr("Free Games next week"))
-        self.coming_free_games.setLayout(FlowLayout())
+        self.coming_free_games.setLayout(QHBoxLayout())
         self.free_widget.layout().addWidget(self.coming_free_games)
 
         date = datetime.datetime.now()

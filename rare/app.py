@@ -179,9 +179,7 @@ def start(args):
         # keep requests, asyncio and pillow quiet
         logging.getLogger('requests').setLevel(logging.WARNING)
         logging.getLogger('urllib3').setLevel(logging.WARNING)
-        logging.getLogger("PIL.TiffImagePlugin").setLevel(logging.WARNING)
         logging.getLogger("asyncio").setLevel(logging.WARNING)
-        logging.getLogger("PIL.PngImagePlugin").setLevel(logging.WARNING)
     else:
         logging.basicConfig(
             format='[%(name)s] %(levelname)s: %(message)s',

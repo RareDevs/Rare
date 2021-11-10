@@ -3,7 +3,7 @@ import platform
 import shutil
 from logging import getLogger
 
-from PyQt5.QtCore import QProcess, QProcessEnvironment, QThread, pyqtSignal
+from PyQt5.QtCore import QProcess, QProcessEnvironment, pyqtSignal, QRunnable, QObject, QCoreApplication
 from PyQt5.QtWidgets import QMessageBox
 
 from legendary.core import LegendaryCore
@@ -119,13 +119,18 @@ def update_manifest(app_name: str, core: LegendaryCore):
                            version=new_manifest.meta.build_version)
 
 
-class VerifyThread(QThread):
+class VerifySignals(QObject):
     status = pyqtSignal(tuple)
     summary = pyqtSignal(int, int, str)
 
+
+class VerifyWorker(QRunnable):
     def __init__(self, core, app_name):
-        super(VerifyThread, self).__init__()
+        super(VerifyWorker, self).__init__()
         self.core, self.app_name = core, app_name
+        self.signals = VerifySignals()
+        self.tr = QCoreApplication.translate
+        self.setAutoDelete(True)
 
     def run(self):
         if not self.core.is_installed(self.app_name):
@@ -139,7 +144,7 @@ class VerifyThread(QThread):
             update_manifest(self.app_name, self.core)
         manifest_data, _ = self.core.get_installed_manifest(self.app_name)
         if not manifest_data:
-            self.summary.emit(0, 0, self.app_name)
+            self.signals.summary.emit(0, 0, self.app_name)
             return
 
         manifest = self.core.load_manifest(manifest_data)
@@ -158,7 +163,7 @@ class VerifyThread(QThread):
         repair_file = []
         try:
             for result, path, result_hash in validate_files(igame.install_path, file_list):
-                self.status.emit((self.num, self.total, self.app_name))
+                self.signals.status.emit((self.num, self.total, self.app_name))
                 self.num += 1
 
                 if result == VerifyResult.HASH_MATCH:
@@ -175,10 +180,10 @@ class VerifyThread(QThread):
                     logger.error(f'Other failure (see log), treating file as missing: "{path}"')
                     missing.append(path)
         except OSError as e:
-            QMessageBox.warning(None, "Error", self.tr("Path does not exist"))
+            QMessageBox.warning(None, "Error", self.tr("VerifyWorker", "Path does not exist"))
             logger.error(str(e))
         except ValueError as e:
-            QMessageBox.warning(None, "Error", self.tr("No files to validate"))
+            QMessageBox.warning(None, "Error", self.tr("VerifyWorker", "No files to validate"))
             logger.error(str(e))
 
         # always write repair file, even if all match
@@ -190,11 +195,11 @@ class VerifyThread(QThread):
 
         if not missing and not failed:
             logger.info('Verification finished successfully.')
-            self.summary.emit(0, 0, self.app_name)
+            self.signals.summary.emit(0, 0, self.app_name)
 
         else:
             logger.error(f'Verification finished, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
-            self.summary.emit(len(failed), len(missing), self.app_name)
+            self.signals.summary.emit(len(failed), len(missing), self.app_name)
 
 
 def import_game(core: LegendaryCore, app_name: str, path: str):

@@ -1,5 +1,4 @@
 requests
-Pillow
 PyQt5
 QtAwesome
 psutil

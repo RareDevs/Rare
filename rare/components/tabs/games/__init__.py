@@ -1,15 +1,16 @@
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings, QObjectCleanupHandler
+from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
-from legendary.models.game import Game, InstalledGame
 
 import rare.shared as shared
+from legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import FlowLayout
-from rare.utils.utils import get_pixmap, download_image, get_uninstalled_pixmap
+from rare.utils.utils import get_pixmap, download_image
 from .game_info import GameInfoTabs
 from .game_info.uninstalled_info import UninstalledInfoTabs
 from .game_widgets.base_installed_widget import BaseInstalledWidget
@@ -152,7 +153,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         # add installed games
         for igame in self.installed:
-            icon_widget, list_widget = self.add_installed_widget(self.core.get_game(igame.app_name))
+            icon_widget, list_widget = self.add_installed_widget(self.core.get_game(igame.app_name, update_meta=False))
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
 
@@ -207,11 +208,17 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         return icon_widget, list_widget
 
     def add_uninstalled_widget(self, game):
-        pixmap = get_uninstalled_pixmap(game.app_name)
+        pixmap = get_pixmap(game.app_name)
+        img = pixmap.toImage()
+        img = img.convertToFormat(QImage.Format_Grayscale8)
+        pixmap = QPixmap.fromImage(img)
         if pixmap.isNull():
-            logger.info(game.app_title + " has a corrupt image. Reloading...")
+            logger.warning(game.app_title + " has a corrupt image. Reloading...")
             download_image(game, force=True)
-            pixmap = get_uninstalled_pixmap(game.app_name)
+            pixmap = get_pixmap(game.app_name)
+            img = pixmap.toImage()
+            img = img.convertToFormat(QImage.Format_Grayscale8)
+            pixmap = QPixmap.fromImage(img)
 
         icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
         icon_widget.show_uninstalled_info.connect(self.show_uninstalled_info)

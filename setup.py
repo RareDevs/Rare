@@ -9,7 +9,6 @@ with open("README.md", "r") as fh:
 
 requirements = [
     "requests<3.0",
-    "pillow",
     "setuptools",
     "wheel",
     "PyQt5",
