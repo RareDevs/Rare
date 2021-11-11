@@ -1,8 +1,8 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QSettings, QTimer
-from PyQt5.QtGui import QCloseEvent
+from PyQt5.QtCore import Qt, QSettings, QTimer, QSize, QRect
+from PyQt5.QtGui import QCloseEvent, QCursor
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
 from rare import data_dir, shared
@@ -21,18 +21,34 @@ class MainWindow(QMainWindow):
         self.core = shared.core
 
         self.signals = shared.signals
-
         self.offline = shared.args.offline
-        width, height = 1200, 800
-        if self.settings.value("save_size", False):
-            width, height = self.settings.value("window_size", (1200, 800), tuple)
-
-        desktop = QApplication.desktop()
-        self.setGeometry((desktop.width() - width) // 2, (desktop.height() - height) // 2, int(width), int(height))
 
         self.setWindowTitle("Rare - GUI for legendary")
         self.tab_widget = TabWidget(self)
         self.setCentralWidget(self.tab_widget)
+
+        width, height = 1200, 800
+        if self.settings.value("save_size", False):
+            width, height = self.settings.value("window_size", (width, height), tuple)
+
+        # move the window outside the viewport
+        self.move(-50000, -50000)
+        # show the window in order for it to get decorated, otherwise windowHandle() is null
+        self.show()
+        # get the margins of the decorated window
+        margins = self.windowHandle().frameMargins()
+        # hide the window again because we don't want to show it at this point
+        self.hide()
+        # get the screen the cursor is on
+        current_screen = QApplication.screenAt(QCursor.pos())
+        # get the available screen geometry (excludes panels/docks)
+        screen_rect = current_screen.availableGeometry()
+        decor_width = margins.left() + margins.right()
+        decor_height = margins.top() + margins.bottom()
+        window_size = QSize(width, height).boundedTo(screen_rect.size() - QSize(decor_width, decor_height))
+        self.resize(window_size)
+        self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
+
         if not shared.args.offline:
             self.rpc = DiscordRPC()
             self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
@@ -60,7 +76,6 @@ class MainWindow(QMainWindow):
                     self.tab_widget.games_tab.game_utils.prepare_launch(game, offline=shared.args.offline)
                 else:
                     logger.info(f"Could not find {game} in Games")
-
             elif action.startswith("start"):
                 self.show()
             os.remove(file_path)
