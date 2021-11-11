@@ -398,6 +398,10 @@ class WineResolver(QRunnable):
             # pylint: disable=E1136
             self.signals.result_ready[str].emit(str())
             return
+        if not os.path.exists(self.wine_binary) or not os.path.exists(self.winepath_binary):
+            # pylint: disable=E1136
+            self.signals.result_ready[str].emit(str())
+            return
         path = self.path.strip().replace('/', '\\')
         # lk: if path does not exist form
         cmd = [self.wine_binary, 'cmd', '/c', 'echo', path]
