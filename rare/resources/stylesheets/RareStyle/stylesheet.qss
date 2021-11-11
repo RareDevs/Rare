@@ -81,10 +81,10 @@ QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
 QPushButton {
-    height: 3ex;
+    height: 1.4em;
 }
 QToolButton {
-    height: 2.5ex;
+    height: 1.15em;
 }
 QFrame[frameShape="6"] {
     border-radius: 4px;
@@ -412,12 +412,12 @@ QGroupBox,
 QGroupBox#group,
 QGroupBox#settings_widget {
     font-weight: bold;
-    margin-top: 1ex;
+    margin-top: 0.5em;
     /* margin-left: 0.5em; /* Offset to the left */
     border-width: 1px;
     border-style: solid;
     border-radius: 4px;
-    padding-top: 3ex;
+    padding-top: 1.2em;
 }
 QGroupBox#game_widget_icon {
     margin: 2px;
