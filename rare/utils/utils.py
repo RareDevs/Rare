@@ -6,10 +6,12 @@ import shutil
 import subprocess
 import sys
 from logging import getLogger
-from typing import Tuple
+from typing import Tuple, List
 
 import requests
+import qtawesome
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings, Qt
+from PyQt5.QtWidgets import QApplication, QStyleFactory, QStyle
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
 from requests import HTTPError
 
@@ -116,7 +118,7 @@ color_group_map = {
 }
 
 
-def load_color_scheme(path: str):
+def load_color_scheme(path: str) -> QPalette:
     palette = QPalette()
     scheme = QSettings(path, QSettings.IniFormat)
     try:
@@ -138,7 +140,20 @@ def load_color_scheme(path: str):
     return palette
 
 
-def get_color_schemes():
+def set_color_pallete(color_scheme: str):
+    if not color_scheme:
+        QApplication.instance().setStyle(QStyleFactory.create(QApplication.instance().property('rareDefaultQtStyle')))
+        QApplication.instance().setStyleSheet("")
+        QApplication.instance().setPalette(QApplication.instance().style().standardPalette())
+        return
+    QApplication.instance().setStyle(QStyleFactory.create("Fusion"))
+    custom_palette = load_color_scheme(os.path.join(resources_path, "colors", color_scheme + ".scheme"))
+    if custom_palette is not None:
+        QApplication.instance().setPalette(custom_palette)
+        qtawesome.set_defaults(color=custom_palette.color(QPalette.Text))
+
+
+def get_color_schemes() -> List[str]:
     colors = []
     for file in os.listdir(os.path.join(resources_path, "colors")):
         if file.endswith(".scheme") and os.path.isfile(os.path.join(resources_path, "colors", file)):
@@ -146,7 +161,21 @@ def get_color_schemes():
     return colors
 
 
-def get_style_sheets():
+def set_style_sheet(style_sheet: str):
+    if not style_sheet:
+        QApplication.instance().setStyle(QStyleFactory.create(QApplication.instance().property('rareDefaultQtStyle')))
+        QApplication.instance().setStyleSheet("")
+        return
+    QApplication.instance().setStyle(QStyleFactory.create("Fusion"))
+    stylesheet = open(os.path.join(resources_path, "stylesheets", style_sheet, "stylesheet.qss")).read()
+    style_resource_path = os.path.join(resources_path, "stylesheets", style_sheet, "")
+    if platform.system() == "Windows":
+        style_resource_path = style_resource_path.replace('\\', '/')
+    QApplication.instance().setStyleSheet(stylesheet.replace("@path@", style_resource_path))
+    qtawesome.set_defaults(color="white")
+
+
+def get_style_sheets() -> List[str]:
     styles = []
     for folder in os.listdir(os.path.join(resources_path, "stylesheets")):
         if os.path.isfile(os.path.join(resources_path, "stylesheets", folder, "stylesheet.qss")):
