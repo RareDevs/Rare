@@ -5,13 +5,13 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 import rare.shared as shared
-from .cloud_save_utils import CloudSaveUtils
 from legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import FlowLayout
 from rare.utils.utils import get_pixmap, download_image
+from .cloud_save_utils import CloudSaveUtils
 from .cloud_save_utils import CloudSaveUtils
 from .game_info import GameInfoTabs
 from .game_info.uninstalled_info import UninstalledInfoTabs
@@ -274,7 +274,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                         igame = self.core.get_installed_game(app_name)
                         for w in widgets:
                             w.igame = igame
-                        w.update_available = self.core.get_asset(w.game.app_name, True).build_version != igame.version
+                            w.update_available = self.core.get_asset(w.game.app_name,
+                                                                     True).build_version != igame.version
                         widgets[0].leaveEvent(None)
                     # new installed
                     elif self.core.is_installed(app_name) and isinstance(widgets[0], BaseUninstalledWidget):
