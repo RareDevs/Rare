@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt, QCoreApplication, QRect, QSize, QPoint, pyqtSignal,
 from PyQt5.QtGui import QMovie, QPixmap, QFontMetrics, QImage
 from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, QHBoxLayout, QWidget, QPushButton, \
     QStyleOptionTab, QStylePainter, QTabBar, QLineEdit, QToolButton, QTabWidget, QCompleter, QFileSystemModel, \
-    QStyledItemDelegate, QFileIconProvider
+    QStyledItemDelegate, QFileIconProvider, QMessageBox
 from qtawesome import icon as qta_icon
 
 from rare import resources_path, cache_dir
@@ -472,3 +472,27 @@ class ButtonLineEdit(QLineEdit):
         self.button.move(self.rect().right() - frameWidth - buttonSize.width(),
                          (self.rect().bottom() - buttonSize.height() + 1) // 2)
         super(ButtonLineEdit, self).resizeEvent(event)
+
+
+class CustomQMessageDialog(QMessageBox):
+    yes = 0
+    no = 1
+    cancel = 2
+
+    def __init__(self, *args, **kwargs):
+        super(CustomQMessageDialog, self).__init__(*args, **kwargs)
+
+    @classmethod
+    def yes_no_question(cls, parent: QWidget, title: str, text: str, add_cancel_btn: bool = False):
+        dlg = cls(parent=parent)
+        dlg.setWindowTitle(title)
+        dlg.setText(text)
+
+        dlg.addButton(QPushButton(dlg.tr("Yes")), QMessageBox.YesRole)
+        dlg.addButton(QPushButton(dlg.tr("No")), QMessageBox.NoRole)
+
+        if add_cancel_btn:
+            dlg.addButton(QPushButton(dlg.tr("Cancel")), QMessageBox.RejectRole)
+
+        res = dlg.exec()
+        return res

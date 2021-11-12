@@ -1,8 +1,9 @@
 import webbrowser
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel, QPushButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 
 from rare import shared
+from rare.utils.extra_widgets import CustomQMessageDialog
 
 
 class MiniWidget(QWidget):
@@ -29,10 +30,9 @@ class MiniWidget(QWidget):
         self.setLayout(self.layout)
 
     def logout(self):
-        reply = QMessageBox.question(self.parent().parent(), 'Message',
-                                     self.tr("Do you really want to logout"), QMessageBox.Yes |
-                                     QMessageBox.No, QMessageBox.No)
+        reply = CustomQMessageDialog.yes_no_question(self.parent().parent(), 'Message',
+                                                     self.tr("Do you really want to logout"))
 
-        if reply == QMessageBox.Yes:
+        if reply == CustomQMessageDialog.yes:
             self.core.lgd.invalidate_userdata()
             self.signals.exit_app.emit(-133742)  # restart exit code

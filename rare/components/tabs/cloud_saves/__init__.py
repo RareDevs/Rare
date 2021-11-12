@@ -123,11 +123,13 @@ class SyncSaves(QScrollArea):
             widget.upload()
         elif widget.res == SaveGameStatus.REMOTE_NEWER:
             if from_game_finish_auto:
-                if QMessageBox.question(self, "Really", self.tr("You finished playing game, but Remote game is newer. "
+                if CustomQMessageDialog.yes_no_question(self, "Really",
+                                                        self.tr("You finished playing game, but Remote game is newer. "
                                                                 "Do you want to download anyway? This could remove "
                                                                 "your game progress. Please check your save path or "
                                                                 "make a backup"),
-                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
+                                                        QMessageBox.Yes | QMessageBox.No,
+                                                        QMessageBox.No) == QMessageBox.Yes:
                     widget.download()
                 else:
                     logger.info("Cancel Download")

@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 from legendary.models.game import Game, InstalledGame
 from rare import shared
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
+from rare.utils.extra_widgets import CustomQMessageDialog
 from rare.utils.legendary_utils import VerifyWorker
 from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
@@ -62,6 +63,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.verify_pool.start(verify_worker)
         self.verify_progress.setValue(0)
         self.verify_threads[self.game.app_name] = verify_worker
+        self.verify_pool.start(verify_worker)
 
     def verify_staistics(self, progress):
         # checked, max, app_name
@@ -78,10 +80,10 @@ class GameInfo(QWidget, Ui_GameInfo):
                 self.core.lgd.set_installed_game(self.igame.app_name, igame)
                 self.verification_finished.emit(igame)
         else:
-            ans = QMessageBox.question(self, "Summary", self.tr(
+            ans = CustomQMessageDialog.yes_no_question(self, "Summary", self.tr(
                 'Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?').format(
-                failed, missing), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-            if ans == QMessageBox.Yes:
+                failed, missing))
+            if ans == CustomQMessageDialog.yes:
                 self.signals.install_game.emit(InstallOptionsModel(app_name=self.game.app_name, repair=True,
                                                                    update=True))
         self.verify_widget.setCurrentIndex(0)

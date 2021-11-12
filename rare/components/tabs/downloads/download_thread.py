@@ -9,10 +9,10 @@ from queue import Empty
 
 import psutil
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QMessageBox
 
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate, WriterTask
+from rare.utils.extra_widgets import CustomQMessageDialog
 from rare.utils.models import InstallQueueItemModel
 
 logger = getLogger("Download")
@@ -135,7 +135,7 @@ class DownloadThread(QThread):
                         print(f' - {dlc.app_title} (App name: {dlc.app_name}, version: {dlc.app_version})')
                     print('Manually installing DLCs works the same; just use the DLC app name instead.')
 
-                    # install_dlcs = QMessageBox.question(self, "", "Do you want to install the prequisites", QMessageBox.Yes|QMessageBox.No) == QMessageBox.Yes
+                    # install_dlcs = CustomQMessageDialog.yes_no_question(self, "", "Do you want to install the prequisites", QMessageBox.Yes|QMessageBox.No) == QMessageBox.Yes
                     # TODO
                 if game.supports_cloud_saves and not game.is_dlc:
                     logger.info('This game supports cloud saves, syncing is handled by the "sync-saves" command.')
@@ -160,8 +160,8 @@ class DownloadThread(QThread):
         print('This game lists the following prequisites to be installed:')
         print(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
         if platform.system() == "Windows":
-            if QMessageBox.question(self, "", "Do you want to install the prequisites",
-                                    QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+            if CustomQMessageDialog.yes_no_question(None, "",
+                                                    "Do you want to install the prequisites") == CustomQMessageDialog.yes:
                 self.core.prereq_installed(igame.app_name)
                 req_path, req_exec = os.path.split(postinstall['path'])
                 work_dir = os.path.join(igame.install_path, req_path)

@@ -12,6 +12,7 @@ from rare import shared
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.extra.console import ConsoleWindow
 from rare.utils import legendary_utils, utils
+from rare.utils.extra_widgets import CustomQMessageDialog
 from rare.utils.utils import create_desktop_link
 
 logger = getLogger("Game")
@@ -121,8 +122,8 @@ class BaseInstalledWidget(QGroupBox):
 
     def launch(self, offline=False, skip_version_check=False):
         if QSettings().value("confirm_start", False, bool):
-            if not QMessageBox.question(self, "Launch", self.tr("Do you want to launch {}").format(self.game.app_title),
-                                        QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
+            if not CustomQMessageDialog.yes_no_question(self, "Launch", self.tr("Do you want to launch {}").format(
+                    self.game.app_title)) == CustomQMessageDialog.yes:
                 logger.info("Cancel Startup")
                 return 1
         logger.info("Launching " + self.game.app_title)
@@ -149,7 +150,8 @@ class BaseInstalledWidget(QGroupBox):
             if platform.system() == "Windows":
                 webbrowser.open(origin_uri)
                 return
-            wine_pfx = self.core.lgd.config.get(self.game.app_name, 'wine_prefix', fallback=os.path.expanduser("~/.wine"))
+            wine_pfx = self.core.lgd.config.get(self.game.app_name, 'wine_prefix',
+                                                fallback=os.path.expanduser("~/.wine"))
             wine_binary = self.core.lgd.config.get(self.game.app_name, 'wine_executable', fallback="/usr/bin/wine")
             env = self.core.get_app_environment(self.game.app_name, wine_pfx=wine_pfx)
 

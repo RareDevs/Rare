@@ -3,10 +3,11 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer
 from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from rare import data_dir, shared
 from rare.components.tabs.tab_widget import TabWidget
+from rare.utils.extra_widgets import CustomQMessageDialog
 from rare.utils.rpc import DiscordRPC
 
 logger = getLogger("Window")
@@ -74,9 +75,9 @@ class MainWindow(QMainWindow):
         elif self.offline:
             pass
         elif self.tab_widget.downloadTab.active_game is not None:
-            if not QMessageBox.question(self, "Close",
-                                        self.tr("There is a download active. Do you really want to exit app?"),
-                                        QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
+            if CustomQMessageDialog.yes_no_question(self, "Close",
+                                                    self.tr(
+                                                        "There is a download active. Do you really want to exit app?")) == CustomQMessageDialog.no:
                 e.ignore()
                 return
         if self.settings.value("save_size", False, bool):
