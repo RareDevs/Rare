@@ -106,6 +106,12 @@ class App(QApplication):
             logger.info("Your language is not supported")
         self.installTranslator(self.translator)
 
+        # translator for qt stuff
+        if os.path.exists(p := os.path.join(languages_path, f"qt_{lang}.qm")):
+            self.qt_translator = QTranslator()
+            self.qt_translator.load(p)
+            self.installTranslator(self.qt_translator)
+
         # Style
         if self.settings.value("color_scheme", None) is None and self.settings.value("style_sheet", None) is None:
             self.settings.setValue("color_scheme", "")

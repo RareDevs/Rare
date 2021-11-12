@@ -42,7 +42,8 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.verify_button.clicked.connect(self.verify)
         self.repair_button.clicked.connect(self.repair)
 
-        self.thread_pool = QThreadPool.globalInstance()
+        self.verify_pool = QThreadPool()
+        self.verify_pool.setMaxThreadCount(2)
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')
@@ -58,7 +59,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         verify_worker = VerifyWorker(self.core, self.game.app_name)
         verify_worker.signals.status.connect(self.verify_staistics)
         verify_worker.signals.summary.connect(self.finish_verify)
-        self.thread_pool.start(verify_worker)
+        self.verify_pool.start(verify_worker)
         self.verify_progress.setValue(0)
         self.verify_threads[self.game.app_name] = verify_worker
 

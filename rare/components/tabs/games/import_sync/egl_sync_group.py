@@ -76,14 +76,12 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
     def wine_resolver_cb(self, path):
         self.egl_path_info.setText(path)
-        if not path or not os.path.exists(path):
+        if path:
+            self.egl_path_edit.setText(path)
+        else:
             self.egl_path_info.setText(
                 self.tr('Default Wine prefix is unset, or path does not exist. '
                         'Create it or configure it in Settings -> Linux'))
-        elif os.path.exists(path):
-            self.core.egl.programdata_path = path
-            self.core.lgd.config.set("Legendary", "egl_programdata", path)
-            self.core.lgd.save_config()
 
     @staticmethod
     def egl_path_edit_cb(path) -> Tuple[bool, str]:
