@@ -13,6 +13,8 @@ it by creating an issue on GitHub or on Discord: https://discord.gg/YvmABK9YSk
 
 Execute `pip install Rare` for all users Or `pip install Rare --user` for only one user.
 
+To install latest git version use `pip install --upgrade https://github.com/Dummerle/Rare/archive/refs/heads/main.zip`
+
 Linux: execute `rare` in your terminal.
 
 Windows: execute `pythonw -m rare` in cmd
@@ -33,7 +35,7 @@ There are some AUR packages available:
 
 #### Other
 
-Install via `pip`.
+Install via `pip` or use a package
 
 ### Packages
 
@@ -72,7 +74,8 @@ In [actions](https://github.com/Dummerle/Rare/actions) you find packages for the
 ## Planned Features
 
 - More Translations (Need help)
-- More Information about Games More planned features are in [projects](https://github.com/Dummerle/Rare/projects/1)
+- More Information about Games
+- More planned features are in [projects](https://github.com/Dummerle/Rare/projects/1)
 
 ## Contributing
 

@@ -9,14 +9,13 @@ on:
 
 jobs:
 
-  appimage:
+  push_file:
     runs-on: ubuntu-20.04
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
-
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'

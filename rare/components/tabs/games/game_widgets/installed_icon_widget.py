@@ -67,6 +67,8 @@ class InstalledIconWidget(BaseInstalledWidget):
         self.setLayout(self.layout)
         self.setFixedWidth(self.sizeHint().width())
 
+        self.game_utils.game_launched.connect(self.game_started)
+
     def enterEvent(self, a0: QEvent = None) -> None:
         if self.game_running:
             self.info_label.setText(self.texts["hover"]["running"])
@@ -112,5 +114,9 @@ class InstalledIconWidget(BaseInstalledWidget):
             return
 
         super().game_finished(app_name, error)
-
         self.leaveEvent(None)
+
+    def game_started(self, app_name):
+        if app_name == self.game.app_name:
+            self.game_running = True
+            self.leaveEvent(None)

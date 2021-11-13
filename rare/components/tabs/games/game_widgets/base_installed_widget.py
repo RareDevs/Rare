@@ -8,9 +8,9 @@ from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
 
 from legendary.models.game import Game
 from rare import shared
+from rare.components.tabs.games.game_utils import GameUtils
 from rare.utils import utils
 from rare.utils.utils import create_desktop_link
-from rare.components.tabs.games.game_utils import GameUtils
 
 logger = getLogger("Game")
 
@@ -154,9 +154,10 @@ class BaseInstalledWidget(QGroupBox):
         self.syncing_cloud_saves = False
 
     def sync_game(self):
-        if self.game_utils.cloud_save_utils.sync_before_launch_game(self.game.app_name):
+        if self.game_utils.cloud_save_utils.sync_before_launch_game(self.game.app_name, True):
             self.syncing_cloud_saves = True
 
     def game_finished(self, app_name, error):
         if error:
             QMessageBox.warning(self, "Error", error)
+        self.game_running = False
