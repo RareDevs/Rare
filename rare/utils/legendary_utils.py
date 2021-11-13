@@ -83,7 +83,6 @@ class VerifyWorker(QRunnable):
         super(VerifyWorker, self).__init__()
         self.core, self.app_name = core, app_name
         self.signals = VerifySignals()
-        self.tr = QCoreApplication.translate
         self.setAutoDelete(True)
 
     def run(self):
@@ -113,6 +112,8 @@ class VerifyWorker(QRunnable):
         failed = []
         missing = []
 
+        _translate = QCoreApplication.translate
+
         logger.info(f'Verifying "{igame.title}" version "{manifest.meta.build_version}"')
         repair_file = []
         try:
@@ -134,10 +135,10 @@ class VerifyWorker(QRunnable):
                     logger.error(f'Other failure (see log), treating file as missing: "{path}"')
                     missing.append(path)
         except OSError as e:
-            QMessageBox.warning(None, "Error", self.tr("VerifyWorker", "Path does not exist"))
+            QMessageBox.warning(None, "Error", _translate("VerifyWorker", "Path does not exist"))
             logger.error(str(e))
         except ValueError as e:
-            QMessageBox.warning(None, "Error", self.tr("VerifyWorker", "No files to validate"))
+            QMessageBox.warning(None, "Error", _translate("VerifyWorker", "No files to validate"))
             logger.error(str(e))
 
         # always write repair file, even if all match

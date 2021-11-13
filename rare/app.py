@@ -124,6 +124,7 @@ class App(QApplication):
             if custom_palette is not None:
                 self.setPalette(custom_palette)
                 qtawesome.set_defaults(color=custom_palette.color(QPalette.Text))
+
         elif style := self.settings.value("style_sheet", False):
             self.setStyle(QStyleFactory.create("Fusion"))
             self.settings.setValue("color_scheme", "")

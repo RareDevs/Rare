@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>223</width>
+    <width>235</width>
     <height>127</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ImportGroup</string>
+   <string notr="true">ImportGroup</string>
   </property>
   <property name="title">
    <string>Import EGL game from a directory</string>

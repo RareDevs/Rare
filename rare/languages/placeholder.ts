@@ -2132,15 +2132,13 @@
 <context>
     <name>VerifyWorker</name>
     <message>
-        <location filename="../utils/legendary_utils.py" line="183"/>
-        <source>VerifyWorker</source>
-        <comment>Path does not exist</comment>
+        <location filename="../utils/legendary_utils.py" line="184"/>
+        <source>Path does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../utils/legendary_utils.py" line="186"/>
-        <source>VerifyWorker</source>
-        <comment>No files to validate</comment>
+        <location filename="../utils/legendary_utils.py" line="187"/>
+        <source>No files to validate</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
