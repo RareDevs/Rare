@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from logging import getLogger
 from typing import Union
 
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, Qt
+from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, Qt, QSettings
 from PyQt5.QtWidgets import QDialog, QMessageBox, QSizePolicy, QLayout
 from qtawesome import icon
 
@@ -109,7 +109,7 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
 
 
 class CloudSaveUtils(QObject):
-    sync_finished = pyqtSignal(str, bool)
+    sync_finished = pyqtSignal(str)
 
     def __init__(self):
         super(CloudSaveUtils, self).__init__()
@@ -117,6 +117,7 @@ class CloudSaveUtils(QObject):
         saves = shared.api_results.saves
 
         self.latest_saves = self.get_latest_saves(saves)
+        self.settings = QSettings()
 
         self.thread_pool = QThreadPool.globalInstance()
 
@@ -133,7 +134,12 @@ class CloudSaveUtils(QObject):
                 latest_saves[s.app_name] = s
         return latest_saves
 
-    def sync_before_launch_game(self, app_name) -> bool:
+    def sync_before_launch_game(self, app_name, ignore_settings=False) -> bool:
+        if not ignore_settings:
+            default = self.settings.value("auto_sync_cloud", True, bool)
+            if not self.settings.value(f"{app_name}/auto_sync_cloud", default, bool):
+                return False
+
         igame = self.core.get_installed_game(app_name)
         res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
 
@@ -163,7 +169,13 @@ class CloudSaveUtils(QObject):
 
         return False
 
-    def game_finished(self, app_name):
+    def game_finished(self, app_name, ignore_settings=False):
+        if not ignore_settings:
+            default = self.settings.value("auto_sync_cloud", True, bool)
+            if not self.settings.value(f"{app_name}/auto_sync_cloud", default, bool):
+                self.sync_finished.emit(app_name)
+                return
+
         igame = self.core.get_installed_game(app_name)
         res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
 
@@ -174,9 +186,11 @@ class CloudSaveUtils(QObject):
         elif res == SaveGameStatus.NO_SAVE:
             QMessageBox.warning(None, "No saves", self.tr(
                 "There are no saves local and online. Maybe you have to change save path of {}").format(igame.title))
+            self.sync_finished.emit(app_name)
             return
 
         elif res == SaveGameStatus.SAME_AGE:
+            self.sync_finished.emit(app_name)
             return
 
         # Remote newer
@@ -204,8 +218,8 @@ class CloudSaveUtils(QObject):
     def worker_finished(self, error_message: str, app_name: str):
         if not error_message:
 
-            self.sync_finished.emit(app_name, False)
+            self.sync_finished.emit(app_name)
             self.latest_saves = self.get_latest_saves(shared.api_results.saves)
         else:
             QMessageBox.warning(None, "Warning", self.tr("Syncing with cloud failed: \n ") + error_message)
-            self.sync_finished.emit(app_name, True)
+            self.sync_finished.emit(app_name)

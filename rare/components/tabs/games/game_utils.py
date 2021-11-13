@@ -37,6 +37,7 @@ class GameUtils(QObject):
     finished = pyqtSignal(str, str)
     cloud_save_finished = pyqtSignal(str)
     launch_queue = dict()
+    game_launched = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(GameUtils, self).__init__(parent=parent)
@@ -59,8 +60,11 @@ class GameUtils(QObject):
         if game.supports_cloud_saves and self.cloud_save_utils.sync_before_launch_game(app_name):
             self.launch_queue[app_name] = (app_name, skip_update_check, offline)
             return
-        else:
-            self.launch_game(app_name, offline, skip_update_check)
+        elif game.supports_cloud_saves:
+            self.sync_finished(app_name)
+
+        self.launch_game(app_name, offline, skip_update_check)
+        return
 
     def launch_game(self, app_name: str, offline: bool = False, skip_update_check: bool = False, wine_bin: str = None,
                     wine_pfx: str = None):
@@ -143,6 +147,7 @@ class GameUtils(QObject):
             process.game_finished.connect(self.game_finished)
             running_game = RunningGameModel(process=process, app_name=app_name)
             process.start(full_params[0], full_params[1:])
+            self.game_launched.emit(app_name)
 
             self.running_games[game.app_name] = running_game
 
@@ -206,7 +211,8 @@ class GameUtils(QObject):
         if self.core.get_game(app_name).supports_cloud_saves:
             if exit_code != 0:
                 r = QMessageBox.question(None, "Question", self.tr(
-                    "Game exited with code {}, which is not a normal code. It could be caused by a crash. Do you want to sync cloud saves"),
+                    "Game exited with code {}, which is not a normal code. It could be caused by a crash. Do you want to sync cloud saves").format(
+                    exit_code),
                                          buttons=QMessageBox.Yes | QMessageBox.No, defaultButton=QMessageBox.Yes)
                 if r != QMessageBox.Yes:
                     return

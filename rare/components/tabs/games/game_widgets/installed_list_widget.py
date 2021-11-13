@@ -68,9 +68,12 @@ class InstalledListWidget(BaseInstalledWidget):
         self.setLayout(self.layout)
 
         self.game_utils.cloud_save_finished.connect(self.sync_finished)
+        self.game_utils.finished.connect(self.game_finished)
 
         self.leaveEvent = self.update_text
         self.enterEvent = self.update_text
+
+        self.game_utils.game_launched.connect(self.game_started)
 
     def update_text(self, e=None):
         if self.update_available:
@@ -81,3 +84,16 @@ class InstalledListWidget(BaseInstalledWidget):
             self.info_label.setText(self.texts["default"]["syncing"])
         else:
             self.info_label.setText("")
+
+    def game_started(self, app_name):
+        if app_name == self.game.app_name:
+            self.game_running = True
+            self.update_text()
+            self.launch_button.setDisabled(True)
+
+    def game_finished(self, app_name, error):
+        if app_name != self.game.app_name:
+            return
+        super().game_finished(app_name, error)
+        self.update_text(None)
+        self.launch_button.setDisabled(False)
