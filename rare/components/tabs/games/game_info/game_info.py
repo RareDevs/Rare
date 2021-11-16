@@ -1,5 +1,6 @@
 import os
 import platform
+from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QWidget, QMessageBox
@@ -13,19 +14,22 @@ from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_size, get_pixmap
 
+logger = getLogger("GameInfo")
+
 
 class GameInfo(QWidget, Ui_GameInfo):
     igame: InstalledGame
     game: Game = None
     verify_threads = dict()
     verification_finished = pyqtSignal(InstalledGame)
-    uninstalled = pyqtSignal(Game)
+    uninstalled = pyqtSignal(str)
 
-    def __init__(self, parent):
+    def __init__(self, parent, game_utils):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = shared.core
         self.signals = shared.signals
+        self.game_utils = game_utils
 
         if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
@@ -39,12 +43,17 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.install_button.setText(self.tr("Link to Origin/Launch"))
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
 
-        self.uninstall_button.clicked.connect(lambda: self.signals.uninstall_game.emit(self.game))
+        self.uninstall_button.clicked.connect(self.uninstall)
         self.verify_button.clicked.connect(self.verify)
         self.repair_button.clicked.connect(self.repair)
 
         self.verify_pool = QThreadPool()
         self.verify_pool.setMaxThreadCount(2)
+
+    def uninstall(self):
+        if self.game_utils.uninstall_game(self.game.app_name):
+            self.game_utils.update_list.emit(self.game.app_name)
+            self.uninstalled.emit(self.game.app_name)
 
     def repair(self):
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')
@@ -56,11 +65,16 @@ class GameInfo(QWidget, Ui_GameInfo):
                                                            update=True))
 
     def verify(self):
+        if not os.path.exists(self.igame.install_path):
+            logger.error("Path does not exist")
+            QMessageBox.warning(self, "Warning",
+                                self.tr("Installation path of {} does not exist. Cannot verify").format(
+                                    self.igame.title))
+            return
         self.verify_widget.setCurrentIndex(1)
         verify_worker = VerifyWorker(self.core, self.game.app_name)
         verify_worker.signals.status.connect(self.verify_staistics)
         verify_worker.signals.summary.connect(self.finish_verify)
-        self.verify_pool.start(verify_worker)
         self.verify_progress.setValue(0)
         self.verify_threads[self.game.app_name] = verify_worker
         self.verify_pool.start(verify_worker)

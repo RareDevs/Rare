@@ -112,8 +112,7 @@ class InstalledIconWidget(BaseInstalledWidget):
     def game_finished(self, app_name, error):
         if app_name != self.game.app_name:
             return
-
-        super().game_finished(app_name, error)
+        self.game_running = False
         self.leaveEvent(None)
 
     def game_started(self, app_name):

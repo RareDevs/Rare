@@ -83,13 +83,22 @@ jobs:
         run: |
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
+          mv Rare-*.AppImage.zsync Rare.AppImage.zsync
 
       - name: Upload to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare.AppImage
-          asset_name: Rare.AppImage
+          asset_name: Rare-${{github.ref}}.AppImage
+          tag: ${{ github.ref }}
+          overwrite: true
+      - name: Upload to GitHub
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Rare.AppImage
+          asset_name: Rare-${{github.ref}}.AppImage.zsync
           tag: ${{ github.ref }}
           overwrite: true
 
@@ -119,6 +128,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: dist/Rare.msi
-          asset_name: Rare.msi
+          asset_name: Rare-${{github.ref}}.msi
           tag: ${{ github.ref }}
           overwrite: true

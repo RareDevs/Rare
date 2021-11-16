@@ -32,8 +32,8 @@ class TabWidget(QTabWidget):
                 " (" + str(len(self.games_tab.updates)) + ")" if len(self.games_tab.updates) != 0 else ""))
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
-        self.settings = SettingsTab(self)
 
+        self.settings = SettingsTab(self)
         if shared.args.debug:
             self.settings.addTab(DebugSettings(), "Debug")
 

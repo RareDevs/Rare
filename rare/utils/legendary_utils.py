@@ -90,9 +90,9 @@ class VerifyWorker(QRunnable):
         if not self.core.is_installed(self.app_name):
             logger.error(f'Game "{self.app_name}" is not installed')
             return
-
-        logger.info(f'Loading installed manifest for "{self.app_name}"')
         igame = self.core.get_installed_game(self.app_name)
+
+        logger.info(f'Loading installed manifest for "{igame.title}"')
         manifest_data, _ = self.core.get_installed_manifest(self.app_name)
         if not manifest_data:
             update_manifest(self.app_name, self.core)

@@ -30,14 +30,16 @@ class GameProcess(QProcess):
 class RunningGameModel:
     process: GameProcess
     app_name: str
+    always_ask_sync: bool = False
 
 
 class GameUtils(QObject):
     running_games = dict()
-    finished = pyqtSignal(str, str)
+    finished = pyqtSignal(str, str)  # app_name, error
     cloud_save_finished = pyqtSignal(str)
     launch_queue = dict()
     game_launched = pyqtSignal(str)
+    update_list = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(GameUtils, self).__init__(parent=parent)
@@ -48,7 +50,19 @@ class GameUtils(QObject):
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
 
     def uninstall_game(self, app_name) -> bool:
+        # returns if uninstalled
         game = self.core.get_game(app_name)
+        igame = self.core.get_installed_game(app_name)
+        if not os.path.exists(igame.install_path):
+            if QMessageBox.Yes == QMessageBox.question(None, "Uninstall", self.tr(
+                    "Game files of {} do not exist. Remove it from installed games?").format(igame.title),
+                                                       QMessageBox.Yes | QMessageBox.No,
+                                                       QMessageBox.Yes):
+                self.core.lgd.remove_installed_game(app_name)
+                return True
+            else:
+                return False
+
         infos = UninstallDialog(game).get_information()
         if infos == 0:
             return False
@@ -57,17 +71,26 @@ class GameUtils(QObject):
 
     def prepare_launch(self, app_name, offline: bool = False, skip_update_check: bool = False):
         game = self.core.get_game(app_name)
-        if game.supports_cloud_saves and self.cloud_save_utils.sync_before_launch_game(app_name):
-            self.launch_queue[app_name] = (app_name, skip_update_check, offline)
-            return
-        elif game.supports_cloud_saves:
+        dont_sync_after_finish = False
+
+        if game.supports_cloud_saves:
+            try:
+                sync = self.cloud_save_utils.sync_before_launch_game(app_name)
+            except ValueError:
+                logger.info("Cancel startup")
+                self.sync_finished(app_name)
+            except AssertionError:
+                dont_sync_after_finish = True
+            else:
+                if sync:
+                    self.launch_queue[app_name] = (app_name, skip_update_check, offline)
+                    return
             self.sync_finished(app_name)
 
-        self.launch_game(app_name, offline, skip_update_check)
-        return
+        self.launch_game(app_name, offline, skip_update_check, ask_always_sync=dont_sync_after_finish)
 
     def launch_game(self, app_name: str, offline: bool = False, skip_update_check: bool = False, wine_bin: str = None,
-                    wine_pfx: str = None):
+                    wine_pfx: str = None, ask_always_sync: bool = False):
         game = self.core.get_game(app_name)
         igame = self.core.get_installed_game(app_name)
 
@@ -90,7 +113,8 @@ class GameUtils(QObject):
                 return
             if not os.path.exists(igame.install_path):
                 logger.error("Game doesn't exist")
-                self.finished.emit(app_name, self.tr("Game files of {} do not exist. Please install game"))
+                self.finished.emit(app_name,
+                                   self.tr("Game files of {} do not exist. Please install game").format(game.app_title))
                 return
 
         process = GameProcess(app_name)
@@ -145,7 +169,7 @@ class GameUtils(QObject):
 
             process.setProcessEnvironment(environment)
             process.game_finished.connect(self.game_finished)
-            running_game = RunningGameModel(process=process, app_name=app_name)
+            running_game = RunningGameModel(process=process, app_name=app_name, always_ask_sync=ask_always_sync)
             process.start(full_params[0], full_params[1:])
             self.game_launched.emit(app_name)
 
@@ -202,6 +226,7 @@ class GameUtils(QObject):
             if resp == 0:
                 webbrowser.open("https://www.dm.origin.com/download")
 
+        game: RunningGameModel = self.running_games.get(app_name, None)
         self.running_games.pop(app_name)
         self.finished.emit(app_name, "")
 
@@ -216,7 +241,7 @@ class GameUtils(QObject):
                                          buttons=QMessageBox.Yes | QMessageBox.No, defaultButton=QMessageBox.Yes)
                 if r != QMessageBox.Yes:
                     return
-            self.cloud_save_utils.game_finished(app_name)
+            self.cloud_save_utils.game_finished(app_name, game.always_ask_sync)
 
     def sync_finished(self, app_name):
         if app_name in self.launch_queue.keys():
