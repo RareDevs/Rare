@@ -3,9 +3,9 @@ import os
 from logging import getLogger
 from typing import List, Tuple
 
-from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QObject, QEvent
+from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QListView, QTreeView, QHeaderView
+from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView
 
 import rare.shared as shared
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
@@ -65,10 +65,10 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         super(ImportGroup, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = shared.core
-        self.app_name_list = [game.app_name for game in self.core.get_game_list()]
+        self.app_name_list = [game.app_name for game in shared.api_results.game_list]
         self.install_dir_list = [
             game.metadata.get('customAttributes', {}).get('FolderName', {}).get('value', game.app_name)
-            for game in self.core.get_game_list(False) if not game.is_dlc]
+            for game in shared.api_results.game_list if not game.is_dlc]
 
         self.path_edit = PathEdit(
             self.core.get_default_install_dir(),

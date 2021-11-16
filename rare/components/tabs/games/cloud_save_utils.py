@@ -134,17 +134,43 @@ class CloudSaveUtils(QObject):
                 latest_saves[s.app_name] = s
         return latest_saves
 
-    def sync_before_launch_game(self, app_name, ignore_settings=False) -> bool:
+    def sync_before_launch_game(self, app_name, ignore_settings=False) -> int:
         if not ignore_settings:
             default = self.settings.value("auto_sync_cloud", True, bool)
             if not self.settings.value(f"{app_name}/auto_sync_cloud", default, bool):
                 return False
 
         igame = self.core.get_installed_game(app_name)
+
+        if not igame.save_path:
+            try:
+                savepath = self.core.get_save_path(app_name)
+            except Exception as e:
+                logger.error(e)
+                savepath = ""
+            if savepath:
+                igame.save_path = savepath
+                self.core.lgd.set_installed_game(app_name, igame)
+                logger.info(f"Set save path of {igame.title} to {savepath}")
+            elif not ignore_settings:  # sync on startup
+                if QMessageBox.question(None, "Warning", self.tr(
+                        "Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {} anyway?").format(
+                    igame.title, QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes):
+                    return False
+                else:
+                    raise ValueError("No savepath detected")
+            else:
+                QMessageBox.warning(None, "Warning",
+                                    self.tr("No savepath found. Please set it in Game Settings manually"))
+                return False
+
         res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
 
+        if res == SaveGameStatus.NO_SAVE:
+            return False
+
         if res != SaveGameStatus.SAME_AGE:
-            newer = None
+            newer = ""
             if res == SaveGameStatus.REMOTE_NEWER:
                 newer = "remote"
             elif res == SaveGameStatus.LOCAL_NEWER:
@@ -164,12 +190,12 @@ class CloudSaveUtils(QObject):
             elif result == CloudSaveDialog.DOWNLOAD:
                 self.download_saves(igame)
             elif result == CloudSaveDialog.CANCEL:
-                return False
+                raise AssertionError()
             return True
 
         return False
 
-    def game_finished(self, app_name, ignore_settings=False):
+    def game_finished(self, app_name, ignore_settings=False, always_ask: bool = False):
         if not ignore_settings:
             default = self.settings.value("auto_sync_cloud", True, bool)
             if not self.settings.value(f"{app_name}/auto_sync_cloud", default, bool):
@@ -177,26 +203,43 @@ class CloudSaveUtils(QObject):
                 return
 
         igame = self.core.get_installed_game(app_name)
+
+        if not igame.save_path:
+            try:
+                savepath = self.core.get_save_path(app_name)
+            except Exception as e:
+                logger.error(e)
+                savepath = ""
+            if savepath:
+                igame.save_path = savepath
+                self.core.lgd.set_installed_game(app_name, igame)
+                logger.info(f"Set save path of {igame.title} to {savepath}")
+            else:
+                logger.warning(None, "Warning", self.tr("No savepath set. Skip syncing with cloud"))
+                return False
+
         res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
 
-        if res == SaveGameStatus.LOCAL_NEWER:
+        if res == SaveGameStatus.LOCAL_NEWER and not always_ask:
             self.upload_saves(igame, dt_local)
             return
 
-        elif res == SaveGameStatus.NO_SAVE:
+        elif res == SaveGameStatus.NO_SAVE and not always_ask:
             QMessageBox.warning(None, "No saves", self.tr(
                 "There are no saves local and online. Maybe you have to change save path of {}").format(igame.title))
             self.sync_finished.emit(app_name)
             return
 
-        elif res == SaveGameStatus.SAME_AGE:
+        elif res == SaveGameStatus.SAME_AGE and not always_ask:
             self.sync_finished.emit(app_name)
             return
 
         # Remote newer
-        newer = None
+        newer = ""
         if res == SaveGameStatus.REMOTE_NEWER:
             newer = "remote"
+        elif res == SaveGameStatus.LOCAL_NEWER:
+            newer = "local"
         result = CloudSaveDialog(igame, dt_local, dt_remote, newer).get_action()
         if result == CloudSaveDialog.UPLOAD:
             self.upload_saves(igame, dt_local)

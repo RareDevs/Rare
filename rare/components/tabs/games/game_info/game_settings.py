@@ -118,26 +118,32 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.cloud_save_path_edit.setDisabled(True)
                 self.compute_save_path_button.setDisabled(True)
                 resolver = WineResolver(get_raw_save_path(self.game), self.game.app_name, self.core)
-                resolver.signals.result_ready.connect(self.wine_resolver_finished)
+                app_name = self.game.app_name[:]
+                resolver.signals.result_ready.connect(lambda x: self.wine_resolver_finished(x, app_name))
                 QThreadPool.globalInstance().start(resolver)
                 return
             self.cloud_save_path_edit.setText(new_path)
 
-    def wine_resolver_finished(self, path):
-        self.cloud_save_path_edit.setDisabled(False)
-        self.compute_save_path_button.setDisabled(False)
-        if path and not os.path.exists(path):
-            try:
-                os.makedirs(path)
-            except PermissionError:
-                self.cloud_save_path_edit.setText("")
-                QMessageBox.warning(None, "Error", self.tr(
-                    "Error while launching {}. No permission to create {}").format(
-                    self.game.app_title, path))
+    def wine_resolver_finished(self, path, app_name):
+        if app_name == self.game.app_name:
+            self.cloud_save_path_edit.setDisabled(False)
+            self.compute_save_path_button.setDisabled(False)
+            if path and not os.path.exists(path):
+                try:
+                    os.makedirs(path)
+                except PermissionError:
+                    self.cloud_save_path_edit.setText("")
+                    QMessageBox.warning(None, "Error", self.tr(
+                        "Error while launching {}. No permission to create {}").format(
+                        self.game.app_title, path))
+                    return
+            if not path:
                 return
-        if not path:
-            return
-        self.cloud_save_path_edit.setText(path)
+            self.cloud_save_path_edit.setText(path)
+        else:
+            igame = self.core.get_installed_game(app_name)
+            igame.save_path = path
+            self.core.lgd.set_installed_game(app_name, igame)
 
     def save_save_path(self, text):
         if self.game.supports_cloud_saves and self.change:

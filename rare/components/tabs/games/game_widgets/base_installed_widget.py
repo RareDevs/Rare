@@ -154,6 +154,7 @@ class BaseInstalledWidget(QGroupBox):
         self.syncing_cloud_saves = False
 
     def sync_game(self):
+
         if self.game_utils.cloud_save_utils.sync_before_launch_game(self.game.app_name, True):
             self.syncing_cloud_saves = True
 

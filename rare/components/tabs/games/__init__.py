@@ -41,15 +41,14 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.core = shared.core
         self.signals = shared.signals
         self.settings = QSettings()
-        self.game_utils = GameUtils(parent=self)
-        self.before_launch_sync = dict()
-        shared.api_results.saves = []
 
         self.game_list = shared.api_results.game_list
         self.dlcs = shared.api_results.dlcs
         self.bit32 = shared.api_results.bit32_games
         self.mac_games = shared.api_results.mac_games
         self.no_assets = shared.api_results.no_asset_games
+
+        self.game_utils = GameUtils(parent=self)
 
         self.head_bar = GameListHeadBar(self)
         self.head_bar.import_clicked.connect(self.show_import)
@@ -61,6 +60,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.addWidget(self.game_info_tabs)
 
         self.game_info_tabs.info.verification_finished.connect(self.verification_finished)
+        self.game_info_tabs.info.uninstalled.connect(lambda x: self.setCurrentIndex(0))
 
         self.import_sync_tabs = ImportSyncTabs(self)
         self.import_sync_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
@@ -79,7 +79,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                 self.no_asset_names.append(game.app_name)
         else:
             self.no_assets = []
-
         self.setup_game_list()
 
         if not self.settings.value("icon_view", True, bool):
@@ -103,6 +102,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.signals.update_gamelist.connect(self.update_list)
         self.signals.installation_finished.connect(lambda x: self.installing_widget.setVisible(False))
         self.signals.uninstall_game.connect(self.uninstall_game)
+
+        self.game_utils.update_list.connect(self.update_list)
 
         self.game_list_scroll_area.horizontalScrollBar().setDisabled(True)
 

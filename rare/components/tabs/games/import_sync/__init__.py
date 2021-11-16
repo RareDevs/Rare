@@ -9,7 +9,6 @@ class ImportSyncTabs(SideTabWidget):
 
     def __init__(self, parent=None):
         super(ImportSyncTabs, self).__init__(show_back=True, parent=parent)
-
         self.import_widget = ImportSyncWidget(
             ImportGroup(self),
             self.tr('Import Game'),

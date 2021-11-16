@@ -16,7 +16,7 @@ class GameInfoTabs(SideTabWidget):
         self.core = shared.core
         self.signals = shared.signals
 
-        self.info = GameInfo(self)
+        self.info = GameInfo(self, game_utils)
         self.addTab(self.info, self.tr("Information"))
 
         self.settings = GameSettings(self.core, self)
