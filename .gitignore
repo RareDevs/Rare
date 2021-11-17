@@ -12,3 +12,4 @@ __pycache__
 /Rare.egg-info/
 /venv
 /venv310/
+/test.py

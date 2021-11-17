@@ -215,7 +215,7 @@ class CloudSaveUtils(QObject):
                 self.core.lgd.set_installed_game(app_name, igame)
                 logger.info(f"Set save path of {igame.title} to {savepath}")
             else:
-                logger.warning(None, "Warning", self.tr("No savepath set. Skip syncing with cloud"))
+                QMessageBox.warning(None, "Warning", self.tr("No savepath set. Skip syncing with cloud"))
                 return False
 
         res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
