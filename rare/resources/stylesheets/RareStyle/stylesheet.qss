@@ -480,14 +480,6 @@ QTabBar::tab:bottom {
     padding-left: 12px;
     padding-right: 12px;
 }
-QTabBar::tab:top:first,
-QTabBar::tab:bottom:first {
-    border-left: transparent;
-}
-QTabBar::tab:top:last,
-QTabBar::tab:bottom:last {
-    border-right: transparent;
-}
 QTabBar::tab:top:hover,
 QTabBar::tab:bottom:hover {
     border-color: #483d8b;
@@ -519,12 +511,12 @@ QTabBar::tab:bottom:hover {
 QTabBar::tab:top:selected {
     border-color: #483d8b;
     border-bottom-color: transparent;
-    background: transparent;
+    background: #202225;
 }
 QTabBar::tab:bottom:selected {
     border-color: #483d8b;
     border-top-color: transparent;
-    background: transparent;
+    background: #202225;
 }
 QTabBar::tab:top:disabled {
     border-bottom-color: #3c3f41;
@@ -535,25 +527,15 @@ QTabBar::tab:bottom:disabled {
 QTabBar::tab:top:selected:disabled {
     border-color: #3c3f41;
     border-bottom-color: transparent;
-    background: transparent;
 }
 QTabBar::tab:bottom:selected:disabled {
     border-color: #3c3f41;
     border-top-color: transparent;
-    background: transparent;
 }
 QTabBar::tab:left,
 QTabBar::tab:right {
     padding-top: 2px;
     padding-bottom: 2px;
-}
-QTabBar::tab:left:first,
-QTabBar::tab:right:first {
-    border-top: transparent;
-}
-QTabBar::tab:left:last,
-QTabBar::tab:right:last {
-    border-bottom: transparent;
 }
 QTabBar::tab:left:hover,
 QTabBar::tab:right:hover {
@@ -580,19 +562,18 @@ QTabBar::tab:left:hover {
         x1: -1, y1: 0, x2: 1, y2: 0, stop: 0 #483d8b, stop: 1 #202225);
 }
 QTabBar::tab:right:hover {
-    border-color: #483d8b;
     background: qlineargradient(
         x1: 2, y1: 0, x2: 0, y2: 0, stop: 0 #483d8b, stop: 1 #202225);
 }
 QTabBar::tab:left:selected {
     border-color: #483d8b;
     border-right-color: transparent;
-    background: transparent;
+    background: #202225;
 }
 QTabBar::tab:right:selected {
     border-color: #483d8b;
     border-left-color: transparent;
-    background: transparent;
+    background: #202225;
 }
 QTabBar::tab:left:disabled {
     border-right-color: #3c3f41;
@@ -603,28 +584,75 @@ QTabBar::tab:right:disabled {
 QTabBar::tab:left:selected:disabled {
     border-color: #3c3f41;
     border-right-color: transparent;
-    background: transparent;
 }
 QTabBar::tab:right:selected:disabled {
     border-color: #3c3f41;
     border-left-color: transparent;
-    background: transparent;
 }
 
-QTabBar::tab:top#main_tab_bar {
+QTabBar#MainTabBar {
+    border-width: 1px;
+    border-style: solid;
     border-color: transparent;
     border-bottom-color: #483d8b;
-    padding: 5px;
+    background: qlineargradient(
+        x1: 0, y1: -3, x2: 0, y2: 1, stop: 0 #3c3f41, stop: 1 #202225);
 }
-QTabBar::tab:top:hover#main_tab_bar {
+QTabBar#MainTabBar:disabled {
+    border-color: transparent;
+    border-bottom-color: #3c3f41;
+}
+QTabBar#MainTabBar::tab {
+    margin-left: 3px;
+    margin-right: 3px;
+    border-top-color: transparent;
+    border-bottom-color: #483d8b;
+    padding: 5px;
+}/*
+QTabBar#MainTabBar::tab:top:first,
+QTabBar#MainTabBar::tab:bottom:first {
+    margin-left: 0px;
+    border-left: transparent;
+}
+QTabBar#MainTabBar::tab:top:last,
+QTabBar#MainTabBar::tab:bottom:last {
+    margin-right: 0px;
+    border-right: transparent;
+}*/
+QTabBar#MainTabBar::tab:top:hover {
     border-top-color: #483d8b;
 }
-QTabBar::tab:top:selected#main_tab_bar {
+QTabBar#MainTabBar::tab:top:selected {
     border-color: #483d8b;
     border-bottom-color: #202225;
 }
-
-QTabBar::tab:disabled#SideTabBar {
+QTabBar#SideTabBar {
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    border-right-color: #483d8b;
+    background: qlineargradient(
+        x1: -3, y1: 0, x2: 1, y2: 0, stop: 0 #3c3f41, stop: 1 #202225);
+}
+QTabBar#SideTabBar:disabled {
+    border-color: transparent;
+    border-right-color: #3c3f41;
+}
+QTabBar#SideTabBar::tab {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}/*
+QTabBar#SideTabBar::tab:left:first,
+QTabBar#SideTabBar::tab:right:first {
+    margin-top: 0px;
+    border-top: transparent;
+}
+QTabBar#SideTabBar::tab:left:last,
+QTabBar#SideTabBar::tab:right:last {
+    margin-bottom: 0px;
+    border-bottom: transparent;
+}*/
+QTabBar#SideTabBar::tab:disabled {
     color: transparent;
     border-color: transparent;
     background-color: transparent;

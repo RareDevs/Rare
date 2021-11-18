@@ -9,7 +9,7 @@ from rare.components.tabs.games import GamesTab
 from rare.components.tabs.settings import SettingsTab
 from rare.components.tabs.settings.debug import DebugSettings
 from rare.components.tabs.shop import Shop
-from rare.components.tabs.tab_utils import TabBar, TabButtonWidget
+from rare.components.tabs.tab_utils import MainTabBar, TabButtonWidget
 
 
 class TabWidget(QTabWidget):
@@ -20,7 +20,10 @@ class TabWidget(QTabWidget):
         disabled_tab = 3 if not shared.args.offline else 1
         self.core = shared.core
         self.signals = shared.signals
-        self.setTabBar(TabBar(disabled_tab))
+        self.setTabBar(MainTabBar(disabled_tab))
+        # lk: Figure out why this adds a white line at the top
+        # lk: despite setting qproperty-drawBase to 0 in the stylesheet
+        # self.setDocumentMode(True)
         # Generate Tabs
         self.games_tab = GamesTab()
         self.addTab(self.games_tab, self.tr("Games"))
