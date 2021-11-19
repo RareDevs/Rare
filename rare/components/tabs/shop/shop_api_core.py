@@ -27,7 +27,7 @@ class ShopApiCore(QObject):
         self.next_browse_request = tuple(())
 
     def get_free_games(self, handle_func: callable):
-        url = "https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions"
+        url = f"https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale={self.language_code}&country={self.country_code}&allowCountries={self.country_code}"
 
         self.manager.get(url, lambda data: self._handle_free_games(data, handle_func))
 

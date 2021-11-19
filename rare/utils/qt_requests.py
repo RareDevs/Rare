@@ -48,7 +48,6 @@ class QtRequestManager(QObject):
 
             self.request_active = RequestQueueItem(handle_func=handle_func)
             self.request = self.manager.get(request)
-
             self.request.finished.connect(self.prepare_data)
         else:
             self.request_queue.append(RequestQueueItem(method="get", url=url, handle_func=handle_func))
@@ -64,7 +63,6 @@ class QtRequestManager(QObject):
                         json_data = QJsonDocument.fromJson(self.request.readAll().data(), error)
                         if QJsonParseError.NoError == error.error:
                             data = json.loads(json_data.toJson().data().decode())
-
                         else:
                             logger.error(error.errorString())
                     else:

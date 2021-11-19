@@ -86,25 +86,9 @@ class TabWidget(QTabWidget):
         if tab_num == 0:
             self.games_tab.layout().setCurrentIndex(0)
 
-        if not shared.args.offline and tab_num == 3:
+        if not shared.args.offline and tab_num == 2:
             self.store.load()
-
-    def game_imported(self, app_name: str):
-        igame = self.core.get_installed_game(app_name)
-        if self.core.get_asset(app_name, False).build_version != igame.version:
-            self.downloadTab.add_update(igame)
-            downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys())
-            self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
-        self.games_tab.update_list(app_name)
-        self.games_tab.setCurrentIndex(0)
 
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
         super(TabWidget, self).resizeEvent(event)
-
-    # Remove text "sync game"
-    def finished_sync(self, app_name):
-        if self.core.is_installed(app_name):
-            self.games_tab.widgets[app_name][0].info_text = ""
-            self.games_tab.widgets[app_name][0].info_label.setText("")
-            self.games_tab.widgets[app_name][1].info_label.setText("")

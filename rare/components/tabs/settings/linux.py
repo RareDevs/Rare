@@ -43,7 +43,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         if not text:
             self.core.lgd.config.remove_option(self.name, setting_name)
         else:
-            logger.info("Set config of wine_prefix to " + text)
+            logger.debug("Set config of wine_prefix to " + text)
         if self.core.lgd.config[self.name] == {}:
             self.core.lgd.config.remove_section(self.name)
         self.core.lgd.save_config()

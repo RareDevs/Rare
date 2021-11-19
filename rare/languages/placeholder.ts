@@ -76,63 +76,88 @@
 <context>
     <name>BaseInstalledWidget</name>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="50"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="67"/>
         <source>Launch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="109"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="133"/>
         <source>Remove Desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="119"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="143"/>
         <source>Create Desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="70"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="92"/>
         <source>Remove start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="72"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="94"/>
         <source>Create start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="77"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="99"/>
         <source>Reload Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="81"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="103"/>
         <source>Uninstall</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="111"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="135"/>
         <source>Remove Start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="121"/>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="145"/>
         <source>Create Start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="125"/>
-        <source>Do you want to launch {}</source>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="32"/>
+        <source>Please verify game before playing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="134"/>
-        <source>Game cannot run offline. Please start game in Online mode</source>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="34"/>
+        <source>Start game without version check</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="211"/>
-        <source>Origin is not installed. Do you want to download installer file? </source>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="35"/>
+        <source>Launch Game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="36"/>
+        <source>Launch/Link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="40"/>
+        <source>Game running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="41"/>
+        <source>Syncing cloud saves</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="42"/>
+        <source>Update available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_widgets/base_installed_widget.py" line="72"/>
+        <source>Sync with cloud</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -177,29 +202,73 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
-<context>
-    <name>ConsoleWindow</name>
-    <message>
-        <location filename="../components/extra/console.py" line="14"/>
-        <source>Save output to file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/extra/console.py" line="28"/>
-        <source>Saved</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Constants</name>
-    <message>
-        <location filename="../components/tabs/shop/constants.py" line="8"/>
-        <source>Action</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/shop/constants.py" line="8"/>
-        <source>Adventure</source>
+    <context>
+        <name>CloudSaveDialog</name>
+        <message>
+            <location filename="../components/tabs/games/cloud_save_utils.py" line="86"/>
+            <source>(newer)</source>
+            <translation type="unfinished"></translation>
+        </message>
+    </context>
+    <context>
+        <name>CloudSaveUtils</name>
+        <message>
+            <location filename="../components/tabs/games/cloud_save_utils.py" line="156"/>
+            <source>Could not compute cloud save path. Please set it in Game settings manually.
+                Do you want to launch {} anyway?
+            </source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/games/cloud_save_utils.py" line="163"/>
+            <source>No savepath found. Please set it in Game Settings manually</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/games/cloud_save_utils.py" line="218"/>
+            <source>No savepath set. Skip syncing with cloud</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/games/cloud_save_utils.py" line="228"/>
+            <source>There are no saves local and online. Maybe you have to change save path of {}</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/games/cloud_save_utils.py" line="267"/>
+            <source>Syncing with cloud failed:
+            </source>
+            <translation type="unfinished"></translation>
+        </message>
+    </context>
+    <context>
+        <name>ConsoleWindow</name>
+        <message>
+            <location filename="../components/extra/console.py" line="14"/>
+            <source>Save output to file</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/extra/console.py" line="32"/>
+            <source>Saved</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/extra/console.py" line="18"/>
+            <source>Clear</source>
+            <translation type="unfinished"></translation>
+        </message>
+    </context>
+    <context>
+        <name>Constants</name>
+        <message>
+            <location filename="../components/tabs/shop/constants.py" line="8"/>
+            <source>Action</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/shop/constants.py" line="8"/>
+            <source>Adventure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -471,44 +540,6 @@
     </message>
 </context>
 <context>
-    <name>DxvkWidget</name>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="106"/>
-        <source>GPU usage</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="107"/>
-        <source>Used Memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="108"/>
-        <source>Device info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="109"/>
-        <source>DXVK version</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="110"/>
-        <source>D3D Level of application</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="111"/>
-        <source>Frame time graph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/settings/dxvk.py" line="116"/>
-        <source>dxvk settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>EGLSyncGroup</name>
     <message>
         <location filename="../ui/components/tabs/games/import_sync/egl_sync_group.py" line="54"/>
@@ -632,7 +663,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_dlc.py" line="74"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="71"/>
         <source>Base Game is not installed. Please install {} first</source>
         <translation type="unfinished"></translation>
     </message>
@@ -660,7 +691,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_dlc.py" line="106"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="103"/>
         <source>Install DLC</source>
         <translation type="unfinished"></translation>
     </message>
@@ -670,27 +701,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_dlc.py" line="100"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="97"/>
         <source>Installed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_dlc.py" line="105"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="102"/>
         <source>Not installed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_dlc.py" line="115"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="112"/>
         <source>Installing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_dlc.py" line="101"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="98"/>
         <source>Uninstall DLC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_dlc.py" line="110"/>
+        <location filename="../components/tabs/games/game_info/game_dlc.py" line="107"/>
         <source>Uninstalling</source>
         <translation type="unfinished"></translation>
     </message>
@@ -758,40 +789,45 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_info.py" line="39"/>
+        <location filename="../components/tabs/games/game_info/game_info.py" line="42"/>
         <source>Link to Origin/Launch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_info.py" line="52"/>
+        <location filename="../components/tabs/games/game_info/game_info.py" line="60"/>
         <source>Repair file does not exist or game does not need a repair. Please verify game first</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_info.py" line="83"/>
+        <location filename="../components/tabs/games/game_info/game_info.py" line="95"/>
         <source>Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_info.py" line="128"/>
+        <location filename="../components/tabs/games/game_info/game_info.py" line="140"/>
         <source>Loading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_info/game_info.py" line="69"/>
+        <source>Installation path of {} does not exist. Cannot verify</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GameInfoTabs</name>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="19"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="20"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="22"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="23"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/__init__.py" line="26"/>
+        <location filename="../components/tabs/games/game_info/__init__.py" line="27"/>
         <source>Downloadable Content</source>
         <translation type="unfinished"></translation>
     </message>
@@ -842,144 +878,221 @@
 <context>
     <name>GameSettings</name>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="134"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="139"/>
         <source>GameSettings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="135"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="140"/>
         <source>Launch Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="136"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="141"/>
         <source>Skip update check</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="141"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="146"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="142"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="147"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="143"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="148"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="140"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="145"/>
         <source>Offline mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="144"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="160"/>
         <source>Sync with cloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="145"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="149"/>
         <source>Launch parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="146"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="150"/>
         <source>parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="150"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="154"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="148"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="152"/>
         <source>Wrapper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="149"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="153"/>
         <source>e.g. optirun</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="151"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="155"/>
         <source>Linux Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="152"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="156"/>
         <source>Proton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="153"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="157"/>
         <source>Don&apos;t use Proton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="154"/>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="158"/>
         <source>Prefix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_info/game_settings.py" line="219"/>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="286"/>
         <source>Please select path for proton prefix</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>GameWidget</name>
     <message>
-        <location filename="../components/tabs/shop/game_widgets.py" line="52"/>
-        <source>Free</source>
+        <location filename="../ui/components/tabs/games/game_info/game_settings.py" line="159"/>
+        <source>Cloud Saves</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="59"/>
+        <source>Cloud save path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="65"/>
+        <source>Auto compute save path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="69"/>
+        <source>Save path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="117"/>
+        <source>Loading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_info/game_settings.py" line="136"/>
+        <source>Error while launching {}. No permission to create {}</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>GamesTab</name>
+    <name>GameUtils</name>
     <message>
-        <location filename="../components/tabs/games/__init__.py" line="174"/>
-        <source>Installed Games: {}    Available Games: {}</source>
+        <location filename="../components/tabs/games/game_utils.py" line="57"/>
+        <source>Game files of {} do not exist. Remove it from installed games?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/__init__.py" line="238"/>
-        <source>Launch</source>
+        <location filename="../components/tabs/games/game_utils.py" line="98"/>
+        <source>Do you want to launch {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/__init__.py" line="247"/>
-        <source>Sync CLoud saves</source>
+        <location filename="../components/tabs/games/game_utils.py" line="108"/>
+        <source>Game not found in available games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/__init__.py" line="256"/>
-        <source>Game running</source>
+        <location filename="../components/tabs/games/game_utils.py" line="112"/>
+        <source>Game is a DLC. Please launch base game instead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_utils.py" line="116"/>
+        <source>Game files of {} do not exist. Please install game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_utils.py" line="130"/>
+        <source>Metadata doesn&apos;t exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_utils.py" line="133"/>
+        <source>Please update game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_utils.py" line="161"/>
+        <source>Error while launching {}. No permission to create {} for {}
+            Launch anyway?
+        </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_utils.py" line="194"/>
+        <source>No wine executable selected. Please set it in settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_utils.py" line="221"/>
+        <source>Origin is not installed. Do you want to download installer file?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../components/tabs/games/game_utils.py" line="238"/>
+        <source>Game exited with code {}, which is not a normal code. It could be caused by a crash. Do you want to sync
+            cloud saves
+        </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
-<context>
-    <name>IconWidgetUninstalled</name>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="41"/>
-        <source>Game Info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="43"/>
-        <source>Installation running</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ImportGroup</name>
-    <message>
-        <location filename="../ui/components/tabs/games/import_sync/import_group.py" line="51"/>
+    <context>
+        <name>GameWidget</name>
+        <message>
+            <location filename="../components/tabs/shop/game_widgets.py" line="52"/>
+            <source>Free</source>
+            <translation type="unfinished"></translation>
+        </message>
+    </context>
+    <context>
+        <name>GamesTab</name>
+        <message>
+            <location filename="../components/tabs/games/__init__.py" line="184"/>
+            <source>Installed Games: {} Available Games: {}</source>
+            <translation type="unfinished"></translation>
+        </message>
+    </context>
+    <context>
+        <name>IconWidgetUninstalled</name>
+        <message>
+            <location filename="../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="41"/>
+            <source>Game Info</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="43"/>
+            <source>Installation running</source>
+            <translation type="unfinished"></translation>
+        </message>
+    </context>
+    <context>
+        <name>ImportGroup</name>
+        <message>
+            <location filename="../ui/components/tabs/games/import_sync/import_group.py" line="51"/>
         <source>ImportGroup</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1090,27 +1203,27 @@
 <context>
     <name>ImportSyncTabs</name>
     <message>
-        <location filename="../components/tabs/games/import_sync/__init__.py" line="13"/>
+        <location filename="../components/tabs/games/import_sync/__init__.py" line="12"/>
         <source>Import Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/import_sync/__init__.py" line="13"/>
+        <location filename="../components/tabs/games/import_sync/__init__.py" line="12"/>
         <source>To import games from Epic Games Store, please enable EGL Sync.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/import_sync/__init__.py" line="19"/>
+        <location filename="../components/tabs/games/import_sync/__init__.py" line="18"/>
         <source>Import Games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/import_sync/__init__.py" line="27"/>
+        <location filename="../components/tabs/games/import_sync/__init__.py" line="26"/>
         <source>Sync with EGL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/import_sync/__init__.py" line="21"/>
+        <location filename="../components/tabs/games/import_sync/__init__.py" line="20"/>
         <source>To import EGL games from directories, please use Import Game.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1231,55 +1344,25 @@
 <context>
     <name>InstalledIconWidget</name>
     <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="31"/>
-        <source>Update available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="67"/>
-        <source>Game needs verification</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="85"/>
-        <source>Game running</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="77"/>
-        <source>Please verify game before playing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="79"/>
-        <source>Start game without version check</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="81"/>
-        <source>Start Game</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="81"/>
-        <source>Launch/Link</source>
+        <location filename="../components/tabs/games/game_widgets/installed_icon_widget.py" line="46"/>
+        <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>InstalledListWidget</name>
     <message>
-        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="38"/>
+        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="39"/>
         <source>Launch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="38"/>
+        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="39"/>
         <source>Link/Play</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="52"/>
+        <location filename="../components/tabs/games/game_widgets/installed_list_widget.py" line="56"/>
         <source>Developer: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -1307,7 +1390,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/dialogs/launch_dialog.py" line="152"/>
+        <location filename="../components/dialogs/launch_dialog.py" line="159"/>
         <source>Starting...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1472,7 +1555,7 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../components/main_window.py" line="78"/>
+        <location filename="../components/main_window.py" line="77"/>
         <source>There is a download active. Do you really want to exit app?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1480,22 +1563,22 @@
 <context>
     <name>MiniWidget</name>
     <message>
-        <location filename="../components/tabs/account/__init__.py" line="20"/>
+        <location filename="../components/tabs/account/__init__.py" line="19"/>
         <source>Logged in as </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/account/__init__.py" line="22"/>
+        <location filename="../components/tabs/account/__init__.py" line="21"/>
         <source>Account settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/account/__init__.py" line="27"/>
+        <location filename="../components/tabs/account/__init__.py" line="26"/>
         <source>Logout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/account/__init__.py" line="33"/>
+        <location filename="../components/tabs/account/__init__.py" line="32"/>
         <source>Do you really want to logout</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1513,7 +1596,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../utils/extra_widgets.py" line="289"/>
+        <location filename="../utils/extra_widgets.py" line="290"/>
         <source>Choose path</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1900,161 +1983,58 @@
 <context>
     <name>SideTabWidget</name>
     <message>
-        <location filename="../utils/extra_widgets.py" line="342"/>
+        <location filename="../utils/extra_widgets.py" line="343"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>SyncSaves</name>
+    <name>SyncSaveDialog</name>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="65"/>
-        <source>Cloud Saves</source>
+        <location filename="../ui/components/dialogs/sync_save_dialog.py" line="91"/>
+        <source>Sync saves with cloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="55"/>
-        <source>Found Saves for folowing Games</source>
+        <location filename="../ui/components/dialogs/sync_save_dialog.py" line="92"/>
+        <source>Select save, you want to use for</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="65"/>
-        <source>Your games does not support Cloud Saves</source>
+        <location filename="../ui/components/dialogs/sync_save_dialog.py" line="93"/>
+        <source>Local</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="70"/>
-        <source>Sync all games</source>
+        <location filename="../ui/components/dialogs/sync_save_dialog.py" line="94"/>
+        <source>Upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="126"/>
-        <source>You finished playing game, but Remote game is newer. Do you want to download anyway? This could remove your game progress. Please check your save path or make a backup</source>
+        <location filename="../ui/components/dialogs/sync_save_dialog.py" line="95"/>
+        <source>Cloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="145"/>
-        <source>Found no savepath</source>
+        <location filename="../ui/components/dialogs/sync_save_dialog.py" line="96"/>
+        <source>Download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/cloud_saves/__init__.py" line="145"/>
-        <source>No save path was found. Please select path or skip</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SyncWidget</name>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="90"/>
-        <source>Please edit save path of game {} manually in Cload saves tab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="105"/>
-        <source>Local Save date: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="108"/>
-        <source>No Local Save files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="110"/>
-        <source>Cloud save date: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="112"/>
-        <source>No Cloud saves</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="116"/>
-        <source>Game is up to date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="117"/>
-        <source>Upload anyway</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="118"/>
-        <source>Download anyway</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="120"/>
-        <source>Cloud save is newer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="121"/>
-        <source>Download Cloud saves</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="123"/>
-        <source>Upload Saves</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="134"/>
-        <source>Local save is newer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="135"/>
-        <source>Upload saves</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="137"/>
-        <source>Download saves</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="165"/>
-        <source>Change path</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="195"/>
-        <source>Uploading...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="204"/>
-        <source>Upload finished</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="207"/>
-        <source>Upload failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="217"/>
-        <source>Downloading...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/cloud_saves/sync_widget.py" line="224"/>
-        <source>Download finished</source>
+        <location filename="../ui/components/dialogs/sync_save_dialog.py" line="97"/>
+        <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TabWidget</name>
     <message>
-        <location filename="../components/tabs/tab_widget.py" line="28"/>
+        <location filename="../components/tabs/__init__.py" line="26"/>
         <source>Games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/tab_widget.py" line="37"/>
+        <location filename="../components/tabs/__init__.py" line="34"/>
         <source>Store (Beta)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2132,12 +2112,12 @@
 <context>
     <name>VerifyWorker</name>
     <message>
-        <location filename="../utils/legendary_utils.py" line="184"/>
+        <location filename="../utils/legendary_utils.py" line="138"/>
         <source>Path does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../utils/legendary_utils.py" line="187"/>
+        <location filename="../utils/legendary_utils.py" line="141"/>
         <source>No files to validate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2281,24 +2261,6 @@
     <message>
         <location filename="../ui/components/tabs/store/browse_games.py" line="126"/>
         <source>Other Tags</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>dlg</name>
-    <message>
-        <location filename="../utils/extra_widgets.py" line="491"/>
-        <source>Yes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../utils/extra_widgets.py" line="492"/>
-        <source>No</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../utils/extra_widgets.py" line="495"/>
-        <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

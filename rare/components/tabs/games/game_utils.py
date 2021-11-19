@@ -95,7 +95,7 @@ class GameUtils(QObject):
         igame = self.core.get_installed_game(app_name)
 
         if QSettings().value("confirm_start", False, bool):
-            if not QMessageBox.question(None, "Launch", self.tr("Do you want to launch {}").format(self.game.app_title),
+            if not QMessageBox.question(None, "Launch", self.tr("Do you want to launch {}").format(game.app_title),
                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
                 logger.info("Cancel Startup")
         logger.info("Launching " + game.app_title)
