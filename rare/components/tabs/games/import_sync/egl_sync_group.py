@@ -81,13 +81,12 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
     def egl_path_edit_edit_cb(path) -> Tuple[bool, str]:
         if not path:
             return True, path
-        if platform.system() != "Windows":
-            if os.path.exists(os.path.join(path, 'system.reg')) and os.path.exists(os.path.join(path, 'dosdevices/c:')):
-                # path is a wine prefix
-                path = os.path.join(path, 'dosdevices/c:', 'ProgramData/Epic/EpicGamesLauncher/Data/Manifests')
-            elif not path.rstrip('/').endswith('ProgramData/Epic/EpicGamesLauncher/Data/Manifests'):
-                # lower() might or might not be needed in the check
-                return False, path
+        if os.path.exists(os.path.join(path, 'system.reg')) and os.path.exists(os.path.join(path, 'dosdevices/c:')):
+            # path is a wine prefix
+            path = os.path.join(path, 'dosdevices/c:', 'ProgramData/Epic/EpicGamesLauncher/Data/Manifests')
+        elif not path.rstrip('/').endswith('ProgramData/Epic/EpicGamesLauncher/Data/Manifests'):
+            # lower() might or might not be needed in the check
+            return False, path
         if os.path.exists(path):
             return True, path
         return False, path
