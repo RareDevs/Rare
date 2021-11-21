@@ -4,20 +4,20 @@ from PyQt5.QtWidgets import QTabBar, QToolButton
 from qtawesome import icon
 
 
-class TabBar(QTabBar):
+class MainTabBar(QTabBar):
     def __init__(self, expanded):
-        super(TabBar, self).__init__()
+        super(MainTabBar, self).__init__()
         self._expanded = expanded
-        self.setObjectName("main_tab_bar")
+        self.setObjectName("MainTabBar")
         self.setFont(QFont("Arial", 13))
         # self.setContentsMargins(0,10,0,10)
 
     def tabSizeHint(self, index):
-        size = super(TabBar, self).tabSizeHint(index)
+        size = super(MainTabBar, self).tabSizeHint(index)
         if index == self._expanded:
             offset = self.width()
             for index in range(self.count()):
-                offset -= super(TabBar, self).tabSizeHint(index).width()
+                offset -= super(MainTabBar, self).tabSizeHint(index).width()
             size.setWidth(max(size.width(), size.width() + offset))
         return size
 

@@ -11,7 +11,7 @@ from rare import cache_dir, shared
 from rare.components.tabs.settings.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
-from rare.utils.utils import get_translations, get_color_schemes, get_style_sheets
+from rare.utils.utils import get_translations, get_color_schemes, set_color_pallete, get_style_sheets,  set_style_sheet
 
 logger = getLogger("RareSettings")
 
@@ -163,9 +163,11 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.style_select.setCurrentIndex(0)
             self.style_select.setDisabled(True)
             self.settings.setValue("color_scheme", self.color_select.currentText())
+            set_color_pallete(self.color_select.currentText())
         else:
             self.settings.setValue("color_scheme", "")
             self.style_select.setDisabled(False)
+            set_color_pallete("")
         self.interface_info.setVisible(True)
 
     def on_style_select_changed(self, style):
@@ -173,9 +175,11 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.color_select.setCurrentIndex(0)
             self.color_select.setDisabled(True)
             self.settings.setValue("style_sheet", self.style_select.currentText())
+            set_style_sheet(self.style_select.currentText())
         else:
             self.settings.setValue("style_sheet", "")
             self.color_select.setDisabled(False)
+            set_style_sheet("")
         self.interface_info.setVisible(True)
 
     def open_dir(self):

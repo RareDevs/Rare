@@ -1,15 +1,13 @@
 import configparser
 import logging
 import os
-import platform
 import sys
 import time
 import traceback
 
-import qtawesome
 from PyQt5.QtCore import QThreadPool, QSettings, QTranslator
-from PyQt5.QtGui import QIcon, QPalette
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QStyleFactory, QMessageBox
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
 
 import rare.shared as shared
@@ -17,7 +15,7 @@ from rare import languages_path, resources_path, cache_dir
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
-from rare.utils.utils import load_color_scheme
+from rare.utils.utils import set_color_pallete, set_style_sheet
 
 start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
 file_name = os.path.join(cache_dir, f"logs/Rare_{start_time}.log")
@@ -113,27 +111,20 @@ class App(QApplication):
             self.installTranslator(self.qt_translator)
 
         # Style
+        # lk: this is a bit silly but serves well until we have a class
+        # lk: store the default qt style name from the system on startup as a property for later reference
+        self.setProperty('rareDefaultQtStyle', self.style().objectName())
+
         if self.settings.value("color_scheme", None) is None and self.settings.value("style_sheet", None) is None:
             self.settings.setValue("color_scheme", "")
             self.settings.setValue("style_sheet", "RareStyle")
 
-        if color := self.settings.value("color_scheme", False):
-            self.setStyle(QStyleFactory.create("Fusion"))
+        if color_scheme := self.settings.value("color_scheme", False):
             self.settings.setValue("style_sheet", "")
-            custom_palette = load_color_scheme(os.path.join(resources_path, "colors", color + ".scheme"))
-            if custom_palette is not None:
-                self.setPalette(custom_palette)
-                qtawesome.set_defaults(color=custom_palette.color(QPalette.Text))
-
-        elif style := self.settings.value("style_sheet", False):
-            self.setStyle(QStyleFactory.create("Fusion"))
+            set_color_pallete(color_scheme)
+        elif style_sheet := self.settings.value("style_sheet", False):
             self.settings.setValue("color_scheme", "")
-            stylesheet = open(os.path.join(resources_path, "stylesheets", style, "stylesheet.qss")).read()
-            style_resource_path = os.path.join(resources_path, "stylesheets", style, "")
-            if platform.system() == "Windows":
-                style_resource_path = style_resource_path.replace('\\', '/')
-            self.setStyleSheet(stylesheet.replace("@path@", style_resource_path))
-            qtawesome.set_defaults(color="white")
+            set_style_sheet(style_sheet)
         self.setWindowIcon(QIcon(os.path.join(resources_path, "images", "Rare.png")))
 
         # launch app

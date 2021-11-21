@@ -338,6 +338,7 @@ class SideTabWidget(QTabWidget):
     def __init__(self, show_back: bool = False, parent=None):
         super(SideTabWidget, self).__init__(parent=parent)
         self.setTabBar(SideTabBar())
+        self.setDocumentMode(True)
         self.setTabPosition(QTabWidget.West)
         if show_back:
             self.addTab(QWidget(), qta_icon("mdi.keyboard-backspace"), self.tr("Back"))
