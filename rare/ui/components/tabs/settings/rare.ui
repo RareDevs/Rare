@@ -247,14 +247,14 @@
                             </property>
                             <layout class="QVBoxLayout" name="shortcuts_layout">
                                 <item>
-                                    <widget class="QPushButton" name="desktop_link">
+                                    <widget class="QPushButton" name="desktop_link_btn">
                                         <property name="text">
                                             <string>Create Desktop link</string>
                                         </property>
                                     </widget>
                                 </item>
                                 <item>
-                                    <widget class="QPushButton" name="startmenu_link">
+                                    <widget class="QPushButton" name="startmenu_link_btn">
                                         <property name="text">
                                             <string>Create start menu link</string>
                                         </property>

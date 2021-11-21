@@ -52,6 +52,8 @@ class GameWidget(QWidget):
             mini_layout.addWidget(QLabel(discount_price if discount_price != "0" else self.tr("Free")))
             mini_layout.addWidget(price_label)
         else:
+            if price == "0":
+                price_label.setText(self.tr("Free"))
             mini_layout.addWidget(price_label)
 
         for c in r'<>?":|\/*':
@@ -71,6 +73,8 @@ class GameWidget(QWidget):
             logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
 
         self.setLayout(self.layout)
+
+        self.setFixedSize(self.width + 10, self.width * 9 // 16 + 50)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.show_info.emit(self.json_info)

@@ -6,12 +6,12 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
 
 from legendary.core import LegendaryCore
-from rare.components.tabs.shop import ShopApiCore
-from rare.components.tabs.shop.constants import Constants
-from rare.components.tabs.shop.game_widgets import GameWidget
-from rare.components.tabs.shop.shop_models import BrowseModel
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
 from rare.utils.extra_widgets import WaitingSpinner, FlowLayout, ButtonLineEdit
+from . import ShopApiCore
+from .constants import Constants
+from .game_widgets import GameWidget
+from .shop_models import BrowseModel
 
 logger = logging.getLogger("Shop")
 
@@ -221,6 +221,8 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.update_games_allowed = True
         self.prepare_request("")
 
+        self.on_discount.setChecked(False)
+
     def prepare_request(self, price: str = None, added_tag: int = 0, removed_tag: int = 0,
                         added_type: str = "", removed_type: str = ""):
         if not self.update_games_allowed:
@@ -258,9 +260,8 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.api_core.browse_games(browse_model, self.show_games)
 
     def show_games(self, data):
-        for child in self.game_widget.layout().children():
-            child.deleteLater()
-            del child
+        for item in (self.game_widget.layout().itemAt(i) for i in range(self.game_widget.layout().count())):
+            item.widget().deleteLater()
 
         if data:
             for game in data:
@@ -275,6 +276,8 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             layout.addStretch(1)
             self.game_widget.setLayout(layout)
         self.game_stack.setCurrentIndex(0)
+
+        self.game_widget.layout().update()
 
 
 class CheckBox(QCheckBox):

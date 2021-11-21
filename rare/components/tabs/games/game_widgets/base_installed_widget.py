@@ -88,13 +88,14 @@ class BaseInstalledWidget(QGroupBox):
             start_menu_file = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
             start_menu_file = ""
-        if os.path.exists(start_menu_file):
-            self.create_start_menu = QAction(self.tr("Remove start menu link"))
-        else:
-            self.create_start_menu = QAction(self.tr("Create start menu link"))
-        if not self.is_origin:
-            self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
-            self.addAction(self.create_start_menu)
+        if platform.system() in ["Windows", "Linux"]:
+            if os.path.exists(start_menu_file):
+                self.create_start_menu = QAction(self.tr("Remove start menu link"))
+            else:
+                self.create_start_menu = QAction(self.tr("Create start menu link"))
+            if not self.is_origin:
+                self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
+                self.addAction(self.create_start_menu)
 
         reload_image = QAction(self.tr("Reload Image"), self)
         reload_image.triggered.connect(self.reload_image)

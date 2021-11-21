@@ -1,5 +1,4 @@
 import datetime
-import random
 from dataclasses import dataclass
 
 
@@ -117,31 +116,37 @@ class BrowseModel:
     tag: str = ""
     withMapping: bool = True
     withPrice: bool = True
-    date: str = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.{str(random.randint(0, 999)).zfill(3)}Z]"
+    date: str = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.999Z]"
     price: str = ""
     onSale: bool = False
 
     @property
     def __dict__(self):
-        payload = {"category": self.category,
-                   "count": self.count,
-                   "country": self.country_code,
-                   "keywords": self.keywords,
-                   "locale": self.language_code + "-" + self.country_code,
-                   "sortDir": self.sortDir,
-                   "allowCountries": self.country_code,
-                   "start": self.start,
-                   "tag": self.tag,
-                   "withMapping": self.withMapping,
-                   "withPrice": self.withPrice,
-                   "releaseDate": self.date,
-                   "effectiveDate": self.date,
-                   }
-
+        payload = {
+            "allowCountries": self.country_code,
+            "category": self.category,
+            "count": self.count,
+            "country": self.country_code,
+            "keywords": self.keywords,
+            "locale": self.language_code,
+            "priceRange": self.price,
+            "releaseDate": self.date,
+            "sortBy": "releaseDate",
+            "sortDir": self.sortDir,
+            "start": self.start,
+            "tag": self.tag,
+            "withPrice": self.withPrice,
+        }
         if self.price == "free":
             payload["freeGame"] = True
+            payload.pop("priceRange")
         elif self.price.startswith("<price>"):
             payload["priceRange"] = self.price.replace("<price>", "")
         if self.onSale:
             payload["onSale"] = True
+
+        if self.price:
+            payload["effectiveDate"] = self.date
+        else:
+            payload.pop("priceRange")
         return payload

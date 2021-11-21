@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QSize, pyqtSignal
+from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 from qtawesome import icon
 
@@ -13,8 +13,6 @@ from rare.components.tabs.tab_utils import MainTabBar, TabButtonWidget
 
 
 class TabWidget(QTabWidget):
-    delete_presence = pyqtSignal()
-
     def __init__(self, parent):
         super(TabWidget, self).__init__(parent=parent)
         disabled_tab = 3 if not shared.args.offline else 1

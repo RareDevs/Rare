@@ -1,8 +1,9 @@
+import urllib.parse
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from rare.components.tabs.shop.constants import wishlist_query, search_query, game_query, add_to_wishlist_query, \
+from rare.components.tabs.shop.constants import wishlist_query, search_query, add_to_wishlist_query, \
     remove_from_wishlist_query
 from rare.components.tabs.shop.shop_models import BrowseModel
 from rare.utils.qt_requests import QtRequestManager
@@ -90,12 +91,16 @@ class ShopApiCore(QObject):
             self.next_browse_request = (browse_model, handle_func)
             return
         self.browse_active = True
-        payload = {
-            "variables": browse_model.__dict__,
-            "query": game_query
-        }
+        url = "https://www.epicgames.com/graphql?operationName=searchStoreQuery&variables="
+        args = urllib.parse.quote_plus(str(browse_model.__dict__))
 
-        self.auth_manager.post(graphql_url, payload, lambda data: self._handle_browse_games(data, handle_func))
+        for old, new in [("%27", "%22"), ("+", ""), ("%3A", ":"), ("%2C", ","), ("%5B", "["), ("%5D", "]"),
+                         ("True", "true")]:
+            args = args.replace(old, new)
+
+        url = url + args + "&extensions=%7B%22persistedQuery%22:%7B%22version%22:1,%22sha256Hash%22:%220304d711e653a2914f3213a6d9163cc17153c60aef0ef52279731b02779231d2%22%7D%7D"
+
+        self.auth_manager.get(url, lambda data: self._handle_browse_games(data, handle_func))
 
     def _handle_browse_games(self, data, handle_func):
         self.browse_active = False

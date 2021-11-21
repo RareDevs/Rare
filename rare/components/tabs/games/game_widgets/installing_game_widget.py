@@ -1,22 +1,23 @@
 from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QPaintEvent, QPainter, QPixmap, QPen, QFont, QColor
-from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QLabel, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QHBoxLayout, QWidget
 
 from legendary.models.game import Game
 from rare.utils.utils import get_pixmap, get_uninstalled_pixmap, optimal_text_background, text_color_for_background
 
 
-class InstallingGameWidget(QGroupBox):
+class InstallingGameWidget(QWidget):
     def __init__(self):
         super(InstallingGameWidget, self).__init__()
         self.setObjectName("game_widget_icon")
-
+        self.setProperty("noBorder", 1)
         self.setLayout(QVBoxLayout())
 
         self.pixmap = QPixmap()
         w = 200
         # self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3), transformMode=Qt.SmoothTransformation)
         self.image_widget = PaintWidget()
+        self.setContentsMargins(4, 4, 4, 4)
         self.image_widget.setFixedSize(w, int(w * 4 / 3))
         self.layout().addWidget(self.image_widget)
 

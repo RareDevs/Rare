@@ -11,7 +11,7 @@ from rare import cache_dir, shared
 from rare.components.tabs.settings.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
-from rare.utils.utils import get_translations, get_color_schemes, set_color_pallete, get_style_sheets,  set_style_sheet
+from rare.utils.utils import get_translations, get_color_schemes, set_color_pallete, get_style_sheets, set_style_sheet
 
 logger = getLogger("RareSettings")
 
@@ -109,13 +109,20 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.desktop_file = ""
             self.start_menu_link = ""
 
-        if os.path.exists(self.desktop_file):
-            self.desktop_link.setText(self.tr("Remove desktop link"))
-        if os.path.exists(self.start_menu_link):
-            self.startmenu_link.setText(self.tr("Remove start menu link"))
+        if self.desktop_file:
+            if os.path.exists(self.desktop_file):
+                self.desktop_link_btn.setText(self.tr("Remove desktop link"))
+        else:
+            self.desktop_link.setDisabled(True)
 
-        self.desktop_link.clicked.connect(self.create_desktop_link)
-        self.startmenu_link.clicked.connect(self.create_start_menu_link)
+        if self.start_menu_link:
+            if os.path.exists(self.start_menu_link):
+                self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
+        else:
+            self.startmenu_link_btn.setDisabled(True)
+
+        self.desktop_link_btn.clicked.connect(self.create_desktop_link)
+        self.startmenu_link_btn.clicked.connect(self.create_start_menu_link)
 
         self.log_dir_open_button.clicked.connect(self.open_dir)
         self.log_dir_clean_button.clicked.connect(self.clean_logdir)
@@ -139,10 +146,10 @@ class RareSettings(QWidget, Ui_RareSettings):
         try:
             if not os.path.exists(self.start_menu_link):
                 utils.create_rare_desktop_link("start_menu")
-                self.startmenu_link.setText(self.tr("Remove start menu link"))
+                self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
             else:
                 os.remove(self.start_menu_link)
-                self.startmenu_link.setText(self.tr("Create start menu link"))
+                self.startmenu_link_btn.setText(self.tr("Create start menu link"))
         except PermissionError as e:
             logger.error(str(e))
             QMessageBox.warning(self, "Error", "Permission error, cannot remove " + str(self.start_menu_link))
@@ -151,10 +158,10 @@ class RareSettings(QWidget, Ui_RareSettings):
         try:
             if not os.path.exists(self.desktop_file):
                 utils.create_rare_desktop_link("desktop")
-                self.desktop_link.setText(self.tr("Remove Desktop link"))
+                self.desktop_link_btn.setText(self.tr("Remove Desktop link"))
             else:
                 os.remove(self.desktop_file)
-                self.desktop_link.setText(self.tr("Create desktop link"))
+                self.desktop_link_btn.setText(self.tr("Create desktop link"))
         except PermissionError as e:
             logger.warning(self, "Error", "Permission error, cannot remove " + str(self.desktop_file))
 

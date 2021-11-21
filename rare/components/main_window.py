@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QSettings, QTimer, QSize, QRect
+from PyQt5.QtCore import Qt, QSettings, QTimer, QSize
 from PyQt5.QtGui import QCloseEvent, QCursor
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
 
         if not shared.args.offline:
             self.rpc = DiscordRPC()
-            self.tab_widget.delete_presence.connect(self.rpc.set_discord_rpc)
+
         if shared.args.subparser == "launch":
             if shared.args.app_name in [i.app_name for i in self.tab_widget.games_tab.installed]:
                 logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
