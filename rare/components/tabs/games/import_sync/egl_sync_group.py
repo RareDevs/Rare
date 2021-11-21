@@ -24,7 +24,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_path_info.setProperty('infoLabel', 1)
 
         self.core = shared.core
-        self.threadpool = QThreadPool.globalInstance()
+        self.thread_pool = QThreadPool.globalInstance()
         if not self.core.egl.programdata_path:
             if platform.system() == 'Windows':
                 self.egl_path_info.setText(os.path.expandvars(PathSpec.egl_programdata))
@@ -32,7 +32,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                 self.egl_path_info.setText(self.tr('Updating...'))
                 wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
                 wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
-                self.threadpool.start(wine_resolver)
+                self.thread_pool.start(wine_resolver)
 
         else:
             self.egl_path_info.setText(self.core.egl.programdata_path)
@@ -134,7 +134,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             self.import_list.mark(Qt.Checked)
             self.export_list.mark(Qt.Checked)
             sync_worker = EGLSyncWorker(self.import_list, self.export_list)
-            self.threadpool.start(sync_worker)
+            self.thread_pool.start(sync_worker)
             self.import_list.setEnabled(False)
             self.export_list.setEnabled(False)
             # self.update_lists()
