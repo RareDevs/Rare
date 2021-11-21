@@ -24,41 +24,32 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_path_info.setProperty('infoLabel', 1)
 
         self.thread_pool = QThreadPool.globalInstance()
-        if not shared.core.egl.programdata_path:
-            if platform.system() == 'Windows':
-                self.egl_path_info.setText(os.path.expandvars(PathSpec.egl_programdata))
-            else:
+
+        if platform.system() == 'Windows':
+            self.egl_path_edit_label.setVisible(False)
+            self.egl_path_edit.setVisible(False)
+            self.egl_path_info_label.setVisible(False)
+            self.egl_path_info.setVisible(False)
+        else:
+            self.egl_path_edit = PathEdit(
+                path=shared.core.egl.programdata_path,
+                ph_text=self.tr('Path to the Wine prefix where EGL is installed, or the Manifests folder'),
+                file_type=QFileDialog.DirectoryOnly,
+                edit_func=self.egl_path_edit_edit_cb,
+                save_func=self.egl_path_edit_save_cb,
+                parent=self
+            )
+            self.egl_path_edit.textChanged.connect(self.egl_path_changed)
+            self.egl_path_edit_layout.addWidget(self.egl_path_edit)
+
+            if not shared.core.egl.programdata_path:
                 self.egl_path_info.setText(self.tr('Updating...'))
                 wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
                 wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
                 self.thread_pool.start(wine_resolver)
-
-        else:
-            self.egl_path_info.setText(shared.core.egl.programdata_path)
-
-        egl_path = shared.core.egl.programdata_path
-        if egl_path is None:
-            egl_path = shared.core.lgd.config.get(
-                "default",
-                "wine_prefix",
-                fallback=PathSpec().wine_egl_prefixes(results=1))
-
-        self.egl_path_edit = PathEdit(
-            path=egl_path,
-            ph_text=self.tr('Path to the Wine prefix where EGL is installed, or the Manifests folder'),
-            file_type=QFileDialog.DirectoryOnly,
-            edit_func=self.egl_path_edit_edit_cb,
-            save_func=self.egl_path_edit_save_cb,
-            parent=self
-        )
-        self.egl_path_edit.textChanged.connect(self.egl_path_changed)
-        self.egl_path_edit_layout.addWidget(self.egl_path_edit)
-
-        if platform.system() == "Windows":
-            self.egl_path_label.setVisible(False)
-            self.egl_path_edit.setVisible(False)
-            self.egl_path_info_label.setVisible(False)
-            self.egl_path_info.setVisible(False)
+            else:
+                self.egl_path_info_label.setVisible(False)
+                self.egl_path_info.setVisible(False)
 
         self.egl_sync_check.setChecked(shared.core.egl_sync_enabled)
         self.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
