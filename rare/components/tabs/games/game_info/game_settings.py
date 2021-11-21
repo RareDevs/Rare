@@ -99,6 +99,13 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.proton_prefix_layout.addWidget(self.proton_prefix)
 
             self.linux_settings = LinuxAppSettings()
+            # FIXME: Remove the spacerItem from the linux settings
+            # FIXME: This should be handled differently at soem point in the future
+            for item in [self.linux_settings.layout().itemAt(idx) for idx in range(self.linux_settings.layout().count())]:
+                if item.spacerItem():
+                    self.linux_settings.layout().removeItem(item)
+                    del item
+            # FIXME: End of FIXME
             self.linux_layout.addWidget(self.linux_settings)
         else:
             self.proton_groupbox.setVisible(False)
