@@ -176,17 +176,17 @@ class GameUtils(QObject):
             self.running_games[game.app_name] = running_game
 
         else:
-            origin_uri = self.core.get_origin_uri(self.game.app_name, self.offline)
+            origin_uri = self.core.get_origin_uri(game.app_name, self.offline)
             logger.info("Launch Origin Game: ")
             if platform.system() == "Windows":
                 webbrowser.open(origin_uri)
                 self.finished.emit(app_name, "")
                 return
-            wine_pfx = self.core.lgd.config.get(self.game.app_name, 'wine_prefix',
+            wine_pfx = self.core.lgd.config.get(game.app_name, 'wine_prefix',
                                                 fallback=os.path.expanduser("~/.wine"))
             if not wine_bin:
                 wine_bin = self.core.lgd.config.get(self.game.app_name, 'wine_executable', fallback="/usr/bin/wine")
-            env = self.core.get_app_environment(self.game.app_name, wine_pfx=wine_pfx)
+            env = self.core.get_app_environment(game.app_name, wine_pfx=wine_pfx)
 
             if not wine_bin or not env.get('WINEPREFIX') and not os.path.exists("/usr/bin/wine"):
                 logger.error(f'In order to launch Origin correctly you must specify the wine binary and prefix '
@@ -207,7 +207,6 @@ class GameUtils(QObject):
                 bytes(process.readAllStandardOutput()).decode("utf-8", errors="ignore")))
             process.readyReadStandardError.connect(lambda: self.console.error(
                 bytes(process.readAllStandardOutput()).decode("utf-8", errors="ignore")))
-
         else:
             process.readyReadStandardOutput.connect(
                 lambda: print(bytes(process.readAllStandardOutput()).decode("utf-8", errors="ignore")))
