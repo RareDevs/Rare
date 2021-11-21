@@ -195,7 +195,10 @@
      <property name="title">
       <string>Cloud Saves</string>
      </property>
-     <layout class="QFormLayout" name="formLayout">
+     <layout class="QFormLayout" name="cloud_saves_layout">
+      <property name="labelAlignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="cloud_sync_label">
         <property name="text">

@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import Tuple
 
 from PyQt5.QtCore import QSettings, QThreadPool
-from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QLabel, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QLabel, QPushButton, QSizePolicy
 from qtawesome import icon
 
 from legendary.core import LegendaryCore
@@ -54,19 +54,16 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.core = core
         self.settings = QSettings()
 
-        save_widget = QWidget()
-        save_widget.setLayout(QVBoxLayout())
         self.cloud_save_path_edit = PathEdit("", file_type=QFileDialog.DirectoryOnly,
                                              ph_text=self.tr("Cloud save path"),
                                              edit_func=lambda text: (os.path.exists(text), text),
                                              save_func=self.save_save_path)
-        save_widget.layout().addWidget(self.cloud_save_path_edit)
+        self.cloud_gb.layout().addRow(QLabel(self.tr("Save path")), self.cloud_save_path_edit)
 
         self.compute_save_path_button = QPushButton(icon("fa.magic"), self.tr("Auto compute save path"))
-        save_widget.layout().addWidget(self.compute_save_path_button)
+        self.compute_save_path_button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         self.compute_save_path_button.clicked.connect(self.compute_save_path)
-
-        self.cloud_gb.layout().addRow(QLabel(self.tr("Save path")), save_widget)
+        self.cloud_gb.layout().addRow(None, self.compute_save_path_button)
 
         self.offline.currentIndexChanged.connect(
             lambda x: self.update_combobox(x, "offline")
