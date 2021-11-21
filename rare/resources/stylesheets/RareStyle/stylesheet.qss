@@ -297,7 +297,7 @@ QPushButton#menu_button {
     width: 18px;
     height: 18px;
 }
-QPushButton:hover#menu_button {
+QPushButton#menu_button:hover {
     background-color: "#334";
 }
 QPushButton[install="1"],
@@ -305,11 +305,11 @@ QPushButton#install_button {
     background-color: "#090";
 }
 QPushButton[install="1"]:hover,
-QPushButton:hover#install_button {
+QPushButton#install_button:hover {
     background-color: "#060";
 }
 QPushButton[install="1"]:disabled,
-QPushButton:disabled#install_button {
+QPushButton#install_button:disabled {
     background-color: "#020";
 }
 QPushButton[uninstall="1"],
@@ -317,17 +317,17 @@ QPushButton#uninstall_button {
     background-color: "#900";
 }
 QPushButton[uninstall="1"]:hover,
-QPushButton:hover#uninstall_button {
+QPushButton#uninstall_button:hover {
     background-color: "#600";
 }
 QPushButton[uninstall="1"]:disabled,
-QPushButton:disabled#uninstall_button {
+QPushButton#uninstall_button:disabled {
     background-color: "#200";
 }
 QPushButton#success{
     background-color: "lime";
 }
-QPushButton:hover#installed_menu_button {
+QPushButton#installed_menu_button:hover {
     background-color: green;
 }
 
@@ -595,8 +595,10 @@ QTabBar#MainTabBar {
     border-style: solid;
     border-color: transparent;
     border-bottom-color: #483d8b;
+    /*
     background: qlineargradient(
         x1: 0, y1: -3, x2: 0, y2: 1, stop: 0 #3c3f41, stop: 1 #202225);
+    */
 }
 QTabBar#MainTabBar:disabled {
     border-color: transparent;
@@ -631,8 +633,10 @@ QTabBar#SideTabBar {
     border-style: solid;
     border-color: transparent;
     border-right-color: #483d8b;
+    /*
     background: qlineargradient(
         x1: -3, y1: 0, x2: 1, y2: 0, stop: 0 #3c3f41, stop: 1 #202225);
+    */
 }
 QTabBar#SideTabBar:disabled {
     border-color: transparent;
