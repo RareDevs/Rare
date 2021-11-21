@@ -23,9 +23,8 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.setupUi(self)
         self.egl_path_info.setProperty('infoLabel', 1)
 
-        self.core = shared.core
         self.thread_pool = QThreadPool.globalInstance()
-        if not self.core.egl.programdata_path:
+        if not shared.core.egl.programdata_path:
             if platform.system() == 'Windows':
                 self.egl_path_info.setText(os.path.expandvars(PathSpec.egl_programdata))
             else:
@@ -35,7 +34,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                 self.thread_pool.start(wine_resolver)
 
         else:
-            self.egl_path_info.setText(self.core.egl.programdata_path)
+            self.egl_path_info.setText(shared.core.egl.programdata_path)
 
         egl_path = shared.core.egl.programdata_path
         if egl_path is None:
@@ -131,9 +130,9 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         if state == Qt.Unchecked:
             self.import_list.setEnabled(bool(self.import_list.items))
             self.export_list.setEnabled(bool(self.export_list.items))
-            self.core.lgd.config.remove_option('Legendary', 'egl_sync')
+            shared.core.lgd.config.remove_option('Legendary', 'egl_sync')
         else:
-            self.core.lgd.config.set('Legendary', 'egl_sync', str(True))
+            shared.core.lgd.config.set('Legendary', 'egl_sync', str(True))
             # lk: do import/export here since automatic sync was selected
             self.import_list.mark(Qt.Checked)
             self.export_list.mark(Qt.Checked)
@@ -142,7 +141,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             self.import_list.setEnabled(False)
             self.export_list.setEnabled(False)
             # self.update_lists()
-        self.core.lgd.save_config()
+        shared.core.lgd.save_config()
 
     def update_lists(self):
         # self.egl_watcher.blockSignals(True)
