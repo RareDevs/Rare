@@ -48,12 +48,12 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             path=egl_path,
             ph_text=self.tr('Path to the Wine prefix where EGL is installed, or the Manifests folder'),
             file_type=QFileDialog.DirectoryOnly,
-            edit_func=self.egl_path_edit_cb,
-            save_func=self.egl_path_save_cb,
+            edit_func=self.egl_path_edit_edit_cb,
+            save_func=self.egl_path_edit_save_cb,
             parent=self
         )
         self.egl_path_edit.textChanged.connect(self.egl_path_changed)
-        self.egl_path_layout.addWidget(self.egl_path_edit)
+        self.egl_path_edit_layout.addWidget(self.egl_path_edit)
 
         if platform.system() == "Windows":
             self.egl_path_label.setVisible(False)
@@ -84,7 +84,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                         'Create it or configure it in Settings -> Linux'))
 
     @staticmethod
-    def egl_path_edit_cb(path) -> Tuple[bool, str]:
+    def egl_path_edit_edit_cb(path) -> Tuple[bool, str]:
         if not path:
             return True, path
         if platform.system() != "Windows":
@@ -99,7 +99,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         return False, path
 
     @staticmethod
-    def egl_path_save_cb(path):
+    def egl_path_edit_save_cb(path):
         if not path or not os.path.exists(path):
             # This is the same as "--unlink"
             shared.core.egl.programdata_path = None
@@ -145,7 +145,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         if have_path := bool(shared.core.egl.programdata_path) and self.egl_path_edit.is_valid:
             # NOTE: need to clear known manifests to force refresh
             shared.core.egl.manifests.clear()
-        self.egl_sync_label.setEnabled(have_path)
+        self.egl_sync_check_label.setEnabled(have_path)
         self.egl_sync_check.setEnabled(have_path)
         self.import_list.populate(have_path)
         self.import_list.setEnabled(have_path)
