@@ -27,7 +27,7 @@ if p := os.getenv("XDG_DATA_HOME"):
 if os.name == "nt":
     data_dir = os.path.expandvars("%APPDATA%/rare/")
 elif platform.system() == "Darwin":
-    cache_dir = os.path.expanduser("~/Library/rare/")
+    data_dir = os.path.expanduser("~/Library/rare/")
 else:
     data_dir = os.path.expanduser("~/.local/share/rare/")
 if not os.path.exists(data_dir):

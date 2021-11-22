@@ -99,7 +99,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.signals.installation_started.connect(self.installation_started)
         self.signals.update_gamelist.connect(self.update_list)
         self.signals.installation_finished.connect(lambda x: self.installing_widget.setVisible(False))
-        self.signals.uninstall_game.connect(self.uninstall_game)
 
         self.game_utils.update_list.connect(self.update_list)
 

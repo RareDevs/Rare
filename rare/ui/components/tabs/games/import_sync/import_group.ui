@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string notr="true">ImportGroup</string>
   </property>
+  <property name="windowFilePath">
+   <string notr="true"/>
+  </property>
   <property name="title">
    <string>Import EGL game from a directory</string>
   </property>
