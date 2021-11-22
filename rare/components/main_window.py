@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         self.tab_widget = TabWidget(self)
         self.setCentralWidget(self.tab_widget)
 
-        width, height = 1200, 800
+        width, height = 1280, 720
         if self.settings.value("save_size", False):
             width, height = self.settings.value("window_size", (width, height), tuple)
 

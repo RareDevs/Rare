@@ -1,9 +1,9 @@
 import datetime
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal, QSettings
+from PyQt5.QtCore import QThread, pyqtSignal, QSettings, Qt, QRect
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, \
-    QHBoxLayout, QGroupBox
+    QHBoxLayout, QGroupBox, QScrollArea, QFrame, QSizePolicy
 
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate
@@ -57,12 +57,37 @@ class DownloadTab(QWidget):
 
         self.layout.addLayout(self.mini_layout)
 
+        # FIXME: Redisign this whole thing for the next release (current: 1.7.0)
+        self.scroll = QScrollArea(self)
+        self.scroll.setFocusPolicy(Qt.WheelFocus)
+        self.scroll.setFrameShape(QFrame.NoFrame)
+        self.scroll.setFrameShadow(QFrame.Sunken)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setAlignment(Qt.AlignLeading | Qt.AlignLeft | Qt.AlignTop)
+        self.scroll.setObjectName("scroll")
+        self.scroll_contents = QWidget()
+        self.scroll_contents.setGeometry(QRect(0, 0, 255, 16))
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scroll_contents.sizePolicy().hasHeightForWidth())
+        self.scroll_contents.setSizePolicy(sizePolicy)
+        self.scroll_contents.setObjectName("scroll_contents")
+        self.scroll_contents_layout = QVBoxLayout(self.scroll_contents)
+        self.scroll_contents_layout.setContentsMargins(0, 0, -1, 0)
+        self.scroll_contents_layout.setSpacing(6)
+        self.scroll_contents_layout.setObjectName("scroll_contents_layout")
+        self.scroll.setWidget(self.scroll_contents)
+        self.layout.addWidget(self.scroll)
+        # FIXME: End of FIXME
+
         self.queue_widget = DlQueueWidget()
-        self.layout.addWidget(self.queue_widget)
+        self.scroll_contents_layout.addWidget(self.queue_widget)
         self.queue_widget.update_list.connect(self.update_dl_queue)
 
         self.updates = QGroupBox(self.tr("Updates"))
-        self.layout.addWidget(self.updates)
+        self.scroll_contents_layout.addWidget(self.updates)
         self.update_layout = QVBoxLayout()
         self.updates.setLayout(self.update_layout)
 
@@ -76,8 +101,6 @@ class DownloadTab(QWidget):
 
         for name in updates:
             self.add_update(self.core.get_installed_game(name))
-
-        self.layout.addStretch(1)
 
         self.setLayout(self.layout)
 

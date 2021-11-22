@@ -24,7 +24,7 @@
      </property>
     </widget>
    </item>
-   <item alignment="Qt::AlignTop">
+   <item>
     <widget class="QGroupBox" name="launch_settings_groupbox">
      <property name="title">
       <string>Launch Settings</string>
@@ -216,69 +216,86 @@
      </layout>
     </widget>
    </item>
-   <item alignment="Qt::AlignTop">
-    <widget class="QGroupBox" name="proton_groupbox">
-     <property name="title">
-      <string>Linux Settings</string>
-     </property>
-     <layout class="QFormLayout" name="proton_layout">
-      <property name="labelAlignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <item row="1" column="0">
-       <widget class="QLabel" name="proton_wrapper_label">
-        <property name="text">
-         <string>Proton</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="proton_wrapper">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <item>
-         <property name="text">
-          <string>Don't use Proton</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="proton_prefix_label">
-        <property name="text">
-         <string>Prefix</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <layout class="QVBoxLayout" name="proton_prefix_layout"/>
-      </item>
-      <item row="3" column="0" colspan="2">
-       <layout class="QVBoxLayout" name="linux_layout">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item>
-    <spacer name="game_settings_vspacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+    <widget class="QScrollArea" name="linux_settings_scroll">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
      </property>
-    </spacer>
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContents</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="linux_settings_contents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>747</width>
+        <height>343</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="linux_settings_contents_layout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item alignment="Qt::AlignTop">
+        <widget class="QGroupBox" name="proton_groupbox">
+         <property name="title">
+          <string>Proton Settings</string>
+         </property>
+         <layout class="QFormLayout" name="proton_layout">
+          <property name="labelAlignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <item row="1" column="0">
+           <widget class="QLabel" name="proton_wrapper_label">
+            <property name="text">
+             <string>Proton</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="proton_wrapper">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>Don't use Proton</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="proton_prefix_label">
+            <property name="text">
+             <string>Prefix</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <layout class="QVBoxLayout" name="proton_prefix_layout"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>

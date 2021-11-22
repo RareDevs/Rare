@@ -3,7 +3,7 @@ import platform
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import QSettings, QThreadPool
+from PyQt5.QtCore import QSettings, QThreadPool, Qt
 from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QLabel, QPushButton, QSizePolicy
 from qtawesome import icon
 
@@ -99,14 +99,16 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.proton_prefix_layout.addWidget(self.proton_prefix)
 
             self.linux_settings = LinuxAppSettings()
-            # FIXME: Remove the spacerItem from the linux settings
+            # FIXME: Remove the spacerItem and margins from the linux settings
             # FIXME: This should be handled differently at soem point in the future
+            self.linux_settings.layout().setContentsMargins(0, 0, 0, 0)
             for item in [self.linux_settings.layout().itemAt(idx) for idx in range(self.linux_settings.layout().count())]:
                 if item.spacerItem():
                     self.linux_settings.layout().removeItem(item)
                     del item
             # FIXME: End of FIXME
-            self.linux_layout.addWidget(self.linux_settings)
+            self.linux_settings_contents_layout.addWidget(self.linux_settings)
+            self.linux_settings_contents_layout.setAlignment(Qt.AlignTop)
         else:
             self.proton_groupbox.setVisible(False)
 
@@ -230,9 +232,7 @@ class GameSettings(QWidget, Ui_GameSettings):
 
                 # Dont use Wine
                 self.linux_settings.wine_exec.setText("")
-                self.linux_settings.save_setting(self.linux_settings.wine_exec.text(), "wine_exec")
                 self.linux_settings.wine_prefix.setText("")
-                self.linux_settings.save_setting(self.linux_settings.wine_prefix.text(), "wine_prefix")
 
         self.core.lgd.save_config()
 
@@ -319,8 +319,8 @@ class LinuxAppSettings(LinuxSettings):
 
     def update_game(self, app_name):
         self.name = app_name
-        self.wine_prefix.setText(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""))
-        self.wine_exec.setText(self.core.lgd.config.get(self.name, "wine_executable", fallback=""))
+        self.wine_prefix.setText(self.load_prefix())
+        self.wine_exec.setText(self.load_setting(self.name, "wine_executable"))
 
         self.dxvk.name = app_name
         self.dxvk.load_settings()
