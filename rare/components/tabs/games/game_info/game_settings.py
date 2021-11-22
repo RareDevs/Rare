@@ -3,7 +3,7 @@ import platform
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import QSettings, QThreadPool
+from PyQt5.QtCore import QSettings, QThreadPool, Qt
 from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QLabel, QPushButton, QSizePolicy
 from qtawesome import icon
 
@@ -99,14 +99,16 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.proton_prefix_layout.addWidget(self.proton_prefix)
 
             self.linux_settings = LinuxAppSettings()
-            # FIXME: Remove the spacerItem from the linux settings
+            # FIXME: Remove the spacerItem and margins from the linux settings
             # FIXME: This should be handled differently at soem point in the future
+            self.linux_settings.layout().setContentsMargins(0, 0, 0, 0)
             for item in [self.linux_settings.layout().itemAt(idx) for idx in range(self.linux_settings.layout().count())]:
                 if item.spacerItem():
                     self.linux_settings.layout().removeItem(item)
                     del item
             # FIXME: End of FIXME
-            self.linux_layout.addWidget(self.linux_settings)
+            self.linux_settings_contents_layout.addWidget(self.linux_settings)
+            self.linux_settings_contents_layout.setAlignment(Qt.AlignTop)
         else:
             self.proton_groupbox.setVisible(False)
 
