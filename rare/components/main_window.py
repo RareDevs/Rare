@@ -3,7 +3,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer, QSize
 from PyQt5.QtGui import QCloseEvent, QCursor
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from rare import data_dir, shared
 from rare.components.tabs import TabWidget
@@ -82,19 +82,13 @@ class MainWindow(QMainWindow):
         self.timer.start(1000)
 
     def closeEvent(self, e: QCloseEvent):
+        if self.settings.value("save_size", False, bool):
+            size = self.size().width(), self.size().height()
+            self.settings.setValue("window_size", size)
         if self.settings.value("sys_tray", True, bool):
             self.hide()
             e.ignore()
             return
         elif self.offline:
             pass
-        elif self.tab_widget.downloadTab.active_game is not None:
-            if not QMessageBox.question(self, "Close",
-                                        self.tr("There is a download active. Do you really want to exit app?"),
-                                        QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
-                e.ignore()
-                return
-        if self.settings.value("save_size", False, bool):
-            size = self.size().width(), self.size().height()
-            self.settings.setValue("window_size", size)
         e.accept()

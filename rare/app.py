@@ -154,6 +154,19 @@ class App(QApplication):
             logger.info("Show App")
 
     def exit_app(self, exit_code=0):
+        # FIXME: Fix this with the downlaod tab redesign
+        if self.mainwindow is not None:
+            if self.mainwindow.tab_widget.downloadTab.active_game is not None:
+                question = QMessageBox.question(
+                    self.mainwindow,
+                    self.tr("Close"),
+                    self.tr("There is a download active. Do you really want to exit app?"),
+                    QMessageBox.Yes, QMessageBox.No)
+                if question == QMessageBox.No:
+                    return
+                else:
+                    self.mainwindow.tab_widget.downloadTab.stop_download()
+        # FIXME: End of FIXME
         self.mainwindow.hide()
         threadpool = QThreadPool.globalInstance()
         threadpool.waitForDone()
