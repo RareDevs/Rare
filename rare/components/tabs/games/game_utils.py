@@ -67,6 +67,7 @@ class GameUtils(QObject):
         if infos == 0:
             return False
         legendary_utils.uninstall(game.app_name, self.core, infos)
+        shared.signals.game_uninstalled.emit(app_name)
         return True
 
     def prepare_launch(self, app_name, offline: bool = False, skip_update_check: bool = False):

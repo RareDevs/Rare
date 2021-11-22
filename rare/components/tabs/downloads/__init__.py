@@ -107,6 +107,8 @@ class DownloadTab(QWidget):
         self.setLayout(self.layout)
 
         self.signals.install_game.connect(self.get_install_options)
+        self.signals.game_uninstalled.connect(self.queue_item_removed)
+        self.signals.game_uninstalled.connect(self.remove_update)
 
     def queue_item_removed(self, app_name):
         if w := self.update_widgets.get(app_name):
@@ -121,6 +123,10 @@ class DownloadTab(QWidget):
         if QSettings().value("auto_update", False, bool):
             self.get_install_options(InstallOptionsModel(app_name=igame.app_name, update=True, silent=True))
             widget.update_button.setDisabled(True)
+
+    def remove_update(self, app_name):
+        if w := self.update_widgets.get(app_name):
+            w.delete_later()
 
     def update_dl_queue(self, dl_queue):
         self.dl_queue = dl_queue

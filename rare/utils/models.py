@@ -127,6 +127,6 @@ class Signals(QObject):
     installation_finished = pyqtSignal(bool, str)
 
     update_gamelist = pyqtSignal(list)
-    uninstall_game = pyqtSignal(Game)  # deprecated
+    game_uninstalled = pyqtSignal(str)
 
     set_discord_rpc = pyqtSignal(str)  # app_name of running game

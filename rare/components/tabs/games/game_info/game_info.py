@@ -76,6 +76,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         verify_worker.signals.summary.connect(self.finish_verify)
         self.verify_progress.setValue(0)
         self.verify_threads[self.game.app_name] = verify_worker
+        self.verify_pool.start(verify_worker)
 
     def verify_staistics(self, progress):
         # checked, max, app_name

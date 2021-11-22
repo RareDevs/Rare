@@ -79,6 +79,9 @@ class VerifySignals(QObject):
 
 
 class VerifyWorker(QRunnable):
+    num: int = 0
+    total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized
+
     def __init__(self, core, app_name):
         super(VerifyWorker, self).__init__()
         self.core, self.app_name = core, app_name
