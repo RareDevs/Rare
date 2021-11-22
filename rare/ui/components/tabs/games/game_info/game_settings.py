@@ -111,7 +111,7 @@ class Ui_GameSettings(object):
         self.linux_settings_contents.setGeometry(QtCore.QRect(0, 0, 747, 343))
         self.linux_settings_contents.setObjectName("linux_settings_contents")
         self.linux_settings_contents_layout = QtWidgets.QVBoxLayout(self.linux_settings_contents)
-        self.linux_settings_contents_layout.setContentsMargins(0, 0, 0, 0)
+        self.linux_settings_contents_layout.setContentsMargins(0, 0, -1, 0)
         self.linux_settings_contents_layout.setObjectName("linux_settings_contents_layout")
         self.proton_groupbox = QtWidgets.QGroupBox(self.linux_settings_contents)
         self.proton_groupbox.setObjectName("proton_groupbox")
