@@ -106,20 +106,19 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.desktop_file = os.path.expanduser("~/Desktop/Rare.lnk")
             self.start_menu_link = os.path.expandvars("%appdata%\\Microsoft\\Windows\\Start Menu")
         else:
+            self.desktop_link_btn.setText(self.tr("Not supported"))
+            self.desktop_link_btn.setDisabled(True)
+            self.startmenu_link_btn.setText(self.tr("Not supported"))
+            self.startmenu_link_btn.setDisabled(True)
+
             self.desktop_file = ""
             self.start_menu_link = ""
 
-        if self.desktop_file:
-            if os.path.exists(self.desktop_file):
-                self.desktop_link_btn.setText(self.tr("Remove desktop link"))
-        else:
-            self.desktop_link.setDisabled(True)
+        if self.desktop_file and os.path.exists(self.desktop_file):
+            self.desktop_link_btn.setText(self.tr("Remove desktop link"))
 
-        if self.start_menu_link:
-            if os.path.exists(self.start_menu_link):
-                self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
-        else:
-            self.startmenu_link_btn.setDisabled(True)
+        if self.start_menu_link and os.path.exists(self.start_menu_link):
+            self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
 
         self.desktop_link_btn.clicked.connect(self.create_desktop_link)
         self.startmenu_link_btn.clicked.connect(self.create_start_menu_link)

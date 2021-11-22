@@ -131,3 +131,40 @@ jobs:
           asset_name: Rare-${{github.ref}}.msi
           tag: ${{ github.ref }}
           overwrite: true
+  mac_os:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Pip Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install ./legendary
+          pip install pyinstaller
+
+      - name: copy files
+        run: mv rare/__main__.py __main__.py
+
+      - name: run pyinstaller
+        run: |
+          pyinstaller -F --name Rare --add-data "rare/languages/*:rare/languages" --add-data "rare/resources/colors/*:rare/resources/colors" --add-data "rare/resources/images/*:rare/resources/images/" --add-data "rare/resources/stylesheets/RareStyle/*:rare/resources/stylesheets/RareStyle/" --windowed --icon rare/resources/images/Rare.icns --hidden-import=legendary __main__.py
+
+      - name: create dmg
+        run: |
+          git clone https://github.com/create-dmg/create-dmg
+          create-dmg/create-dmg Rare-${{github.ref}}.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
+
+      - name: upload to GitHub
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Rare-${{github.ref}}.dmg
+          asset_name: Rare-${{github.ref}}.dmg
+          tag: ${{ github.ref }}
+          overwrite: true

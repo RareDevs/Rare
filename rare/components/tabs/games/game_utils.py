@@ -98,6 +98,8 @@ class GameUtils(QObject):
             if not QMessageBox.question(None, "Launch", self.tr("Do you want to launch {}").format(game.app_title),
                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
                 logger.info("Cancel Startup")
+                self.finished.emit(app_name, "")
+                return
         logger.info("Launching " + game.app_title)
 
         if game.third_party_store == "Origin":

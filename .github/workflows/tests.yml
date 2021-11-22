@@ -101,3 +101,36 @@ jobs:
         with:
           name: Rare-Windows.msi
           path: dist/*.msi
+  mac_os:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Pip Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install ./legendary
+          pip install pyinstaller
+
+      - name: copy files
+        run: mv rare/__main__.py __main__.py
+
+      - name: run pyinstaller
+        run: |
+          pyinstaller -F --name Rare --add-data "rare/languages/*:rare/languages" --add-data "rare/resources/colors/*:rare/resources/colors" --add-data "rare/resources/images/*:rare/resources/images/" --add-data "rare/resources/stylesheets/RareStyle/*:rare/resources/stylesheets/RareStyle/" --windowed --icon rare/resources/images/Rare.icns --hidden-import=legendary __main__.py
+
+      - name: create dmg
+        run: |
+          git clone https://github.com/create-dmg/create-dmg
+          create-dmg/create-dmg Rare-${{github.ref}}.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Rare-MacOS.dmg
+          path: ./*.dmg

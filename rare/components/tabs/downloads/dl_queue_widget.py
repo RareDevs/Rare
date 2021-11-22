@@ -57,6 +57,7 @@ class DlWidget(QWidget):
 
 class DlQueueWidget(QGroupBox):
     update_list = pyqtSignal(list)
+    item_removed = pyqtSignal(str)
     dl_queue = []
 
     def __init__(self):
@@ -93,6 +94,7 @@ class DlQueueWidget(QGroupBox):
         for index, i in enumerate(self.dl_queue):
             if i.download.game.app_name == app_name:
                 self.dl_queue.pop(index)
+                self.item_removed.emit(app_name)
                 break
         else:
             logger.warning("BUG! " + app_name)

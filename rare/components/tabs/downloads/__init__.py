@@ -10,7 +10,7 @@ from legendary.models.downloading import UIUpdate
 from legendary.models.game import Game, InstalledGame
 from rare import shared
 from rare.components.dialogs.install_dialog import InstallDialog
-from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget
+from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
 from rare.utils.models import InstallOptionsModel, InstallQueueItemModel
 from rare.utils.utils import get_size
@@ -102,9 +102,16 @@ class DownloadTab(QWidget):
         for name in updates:
             self.add_update(self.core.get_installed_game(name))
 
+        self.queue_widget.item_removed.connect(self.queue_item_removed)
+
         self.setLayout(self.layout)
 
         self.signals.install_game.connect(self.get_install_options)
+
+    def queue_item_removed(self, app_name):
+        if w := self.update_widgets.get(app_name):
+            w.update_button.setDisabled(False)
+            w.update_with_settings.setDisabled(False)
 
     def add_update(self, igame: InstalledGame):
         widget = UpdateWidget(self.core, igame, self)
