@@ -230,9 +230,7 @@ class GameSettings(QWidget, Ui_GameSettings):
 
                 # Dont use Wine
                 self.linux_settings.wine_exec.setText("")
-                self.linux_settings.save_setting(self.linux_settings.wine_exec.text(), "wine_exec")
                 self.linux_settings.wine_prefix.setText("")
-                self.linux_settings.save_setting(self.linux_settings.wine_prefix.text(), "wine_prefix")
 
         self.core.lgd.save_config()
 
@@ -319,8 +317,8 @@ class LinuxAppSettings(LinuxSettings):
 
     def update_game(self, app_name):
         self.name = app_name
-        self.wine_prefix.setText(self.core.lgd.config.get(self.name, "wine_prefix", fallback=""))
-        self.wine_exec.setText(self.core.lgd.config.get(self.name, "wine_executable", fallback=""))
+        self.wine_prefix.setText(self.load_prefix())
+        self.wine_exec.setText(self.load_setting(self.name, "wine_executable"))
 
         self.dxvk.name = app_name
         self.dxvk.load_settings()
