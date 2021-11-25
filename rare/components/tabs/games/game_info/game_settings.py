@@ -110,7 +110,8 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.linux_settings_contents_layout.addWidget(self.linux_settings)
             self.linux_settings_contents_layout.setAlignment(Qt.AlignTop)
         else:
-            self.proton_groupbox.setVisible(False)
+            self.game_settings_layout.setAlignment(Qt.AlignTop)
+            self.linux_settings_scroll.setVisible(False)
 
         # skip_update_check
 

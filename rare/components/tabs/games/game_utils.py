@@ -20,6 +20,7 @@ logger = getLogger("GameUtils")
 class GameProcess(QProcess):
     game_finished = pyqtSignal(int, str)
 
+    # noinspection PyUnresolvedReferences
     def __init__(self, app_name):
         super(GameProcess, self).__init__()
         self.app_name = app_name
@@ -95,6 +96,11 @@ class GameUtils(QObject):
         game = self.core.get_game(app_name)
         igame = self.core.get_installed_game(app_name)
 
+        if not game:
+            logger.error(f"{app_name} not found")
+            self.finished.emit(app_name, self.tr("Game not found in available games"))
+            return
+
         if QSettings().value("confirm_start", False, bool):
             if not QMessageBox.question(None, "Launch", self.tr("Do you want to launch {}").format(game.app_title),
                                         QMessageBox.Yes | QMessageBox.No) == QMessageBox.Yes:
@@ -106,10 +112,8 @@ class GameUtils(QObject):
         if game.third_party_store == "Origin":
             offline = False
         else:
-            if not game:
-                logger.error("Game not found")
-                self.finished.emit(app_name, self.tr("Game not found in available games"))
-                return
+            if not igame:
+                logger.error(f"{app_name} is not installed")
             if game.is_dlc:
                 logger.error("Game is dlc")
                 self.finished.emit(app_name, self.tr("Game is a DLC. Please launch base game instead"))
@@ -175,6 +179,7 @@ class GameUtils(QObject):
             running_game = RunningGameModel(process=process, app_name=app_name, always_ask_sync=ask_always_sync)
             process.start(full_params[0], full_params[1:])
             self.game_launched.emit(app_name)
+            logger.info(f"{game.app_title} launched")
 
             self.running_games[game.app_name] = running_game
 

@@ -93,7 +93,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             lambda: self.settings.setValue("notification", self.notification.isChecked())
         )
         self.save_size.stateChanged.connect(
-            lambda: self.settings.setValue("save_size", self.save_size.isChecked())
+            self.save_window_size
         )
         self.log_games.stateChanged.connect(
             lambda: self.settings.setValue("show_console", self.log_games.isChecked())

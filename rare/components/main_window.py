@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tab_widget)
 
         width, height = 1280, 720
-        if self.settings.value("save_size", False):
+        if self.settings.value("save_size", False, bool):
             width, height = self.settings.value("window_size", (width, height), tuple)
 
         # move the window outside the viewport
@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         if shared.args.subparser == "launch":
             if shared.args.app_name in [i.app_name for i in self.tab_widget.games_tab.installed]:
                 logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
-                self.tab_widget.games_tab.widgets[shared.args.app_name][1].prepare_launch()
+                self.tab_widget.games_tab.game_utils.prepare_launch(shared.args.app_name)
             else:
                 logger.info(
                     f"Could not find {shared.args.app_name} in Games or it is not installed")

@@ -27,7 +27,6 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
         if platform.system() == 'Windows':
             self.egl_path_edit_label.setVisible(False)
-            self.egl_path_edit.setVisible(False)
             self.egl_path_info_label.setVisible(False)
             self.egl_path_info.setVisible(False)
         else:
@@ -135,7 +134,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
     def update_lists(self):
         # self.egl_watcher.blockSignals(True)
-        if have_path := bool(shared.core.egl.programdata_path) and self.egl_path_edit.is_valid:
+        if have_path := bool(shared.core.egl.programdata_path) and os.path.exists(shared.core.egl.programdata_path):
             # NOTE: need to clear known manifests to force refresh
             shared.core.egl.manifests.clear()
         self.egl_sync_check_label.setEnabled(have_path)
@@ -244,8 +243,8 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         self.populate(True)
         if errors:
             QMessageBox.warning(
-                self,
-                self.tr('The following errors occured while {}.').format(
+                self.parent(),
+                self.tr('The following errors occurred while {}.').format(
                     self.tr('exporting') if self.export else self.tr('importing')),
                 '\n'.join(errors)
             )
