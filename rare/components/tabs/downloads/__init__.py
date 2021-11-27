@@ -126,7 +126,7 @@ class DownloadTab(QWidget):
 
     def remove_update(self, app_name):
         if w := self.update_widgets.get(app_name):
-            w.delete_later()
+            w.deleteLater()
 
     def update_dl_queue(self, dl_queue):
         self.dl_queue = dl_queue
@@ -212,14 +212,14 @@ class DownloadTab(QWidget):
         self.analysis = None
 
     def statistics(self, ui_update: UIUpdate):
-        self.prog_bar.setValue(int(ui_update.progress))
+        self.prog_bar.setValue(100 * ui_update.total_downloaded // self.analysis.dl_size)
         self.dl_speed.setText(self.tr("Download speed") + f": {get_size(ui_update.download_speed)}/s")
         self.cache_used.setText(
             self.tr("Cache used") + f": {get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}")
         self.downloaded.setText(
             self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
         self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
-        self.signals.dl_progress.emit(int(100 * ui_update.total_downloaded / self.analysis.dl_size))
+        self.signals.dl_progress.emit(100 * ui_update.total_downloaded // self.analysis.dl_size)
 
     def get_time(self, seconds: int) -> str:
         return str(datetime.timedelta(seconds=seconds))

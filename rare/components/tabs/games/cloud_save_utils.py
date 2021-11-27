@@ -115,13 +115,15 @@ class CloudSaveUtils(QObject):
         super(CloudSaveUtils, self).__init__()
         self.core = shared.core
         saves = shared.api_results.saves
-
-        self.latest_saves = self.get_latest_saves(saves)
+        if not shared.args.offline:
+            self.latest_saves = self.get_latest_saves(saves)
+        else:
+            self.latest_saves = dict
         self.settings = QSettings()
 
         self.thread_pool = QThreadPool.globalInstance()
 
-    def get_latest_saves(self, saves):
+    def get_latest_saves(self, saves) -> dict:
         save_games = set()
         for igame in self.core.get_installed_list():
             game = self.core.get_game(igame.app_name)

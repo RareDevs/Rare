@@ -54,9 +54,9 @@ class TabWidget(QTabWidget):
         account_button.menu().addAction(account_action)
         self.tabBar().setTabButton(disabled_tab + 1, self.tabBar().RightSide, account_button)
 
-        self.addTab(self.settings, icon("fa.gear"),
-                    "(!)" if self.settings.about.update_available else "")
+        self.addTab(self.settings, icon("fa.gear"), "")
 
+        self.settings.about.update_available_ready.connect(lambda: self.tabBar().setTabText(5, "(!)"))
         # Signals
         # set current index
         self.signals.set_main_tab_index.connect(self.setCurrentIndex)

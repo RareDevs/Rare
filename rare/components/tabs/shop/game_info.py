@@ -77,6 +77,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
 
         self.dev.setText(self.tr("Loading"))
         self.price.setText(self.tr("Loading"))
+        self.wishlist_button.setVisible(False)
         # self.title.setText(self.tr("Loading"))
         self.image.setPixmap(QPixmap())
         self.data = data

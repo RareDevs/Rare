@@ -46,7 +46,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Error</string>
+          <string/>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
@@ -61,7 +61,7 @@
           </font>
          </property>
          <property name="text">
-          <string notr="true">TextLabel</string>
+          <string notr="true"/>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
@@ -78,7 +78,7 @@
        <item>
         <widget class="QLabel" name="price">
          <property name="text">
-          <string notr="true">TextLabel</string>
+          <string notr="true"/>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
@@ -88,14 +88,14 @@
        <item>
         <widget class="QLabel" name="discount_price">
          <property name="text">
-          <string notr="true">TextLabel</string>
+          <string notr="true"/>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="tags">
          <property name="text">
-          <string notr="true">TextLabel</string>
+          <string notr="true"/>
          </property>
         </widget>
        </item>

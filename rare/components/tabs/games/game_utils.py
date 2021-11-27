@@ -93,6 +93,8 @@ class GameUtils(QObject):
 
     def launch_game(self, app_name: str, offline: bool = False, skip_update_check: bool = False, wine_bin: str = None,
                     wine_pfx: str = None, ask_always_sync: bool = False):
+        if shared.args.offline:
+            offline = True
         game = self.core.get_game(app_name)
         igame = self.core.get_installed_game(app_name)
 
@@ -132,13 +134,14 @@ class GameUtils(QObject):
                 if not skip_update_check and not self.core.is_noupdate_game(app_name):
                     # check updates
                     try:
-                        latest = self.core.get_asset(app_name, update=True)
+                        latest = self.core.get_asset(app_name, update=False)
                     except ValueError:
                         self.finished.emit(app_name, self.tr("Metadata doesn't exist"))
                         return
-                    if latest.build_version != igame.version:
-                        self.finished.emit(app_name, self.tr("Please update game"))
-                        return
+                    else:
+                        if latest.build_version != igame.version:
+                            self.finished.emit(app_name, self.tr("Please update game"))
+                            return
 
             params: LaunchParameters = self.core.get_launch_parameters(app_name=app_name, offline=offline,
                                                                        wine_bin=wine_bin, wine_pfx=wine_pfx)
@@ -184,7 +187,7 @@ class GameUtils(QObject):
             self.running_games[game.app_name] = running_game
 
         else:
-            origin_uri = self.core.get_origin_uri(game.app_name, self.offline)
+            origin_uri = self.core.get_origin_uri(game.app_name, shared.args.offline)
             logger.info("Launch Origin Game: ")
             if platform.system() == "Windows":
                 webbrowser.open(origin_uri)
@@ -193,7 +196,7 @@ class GameUtils(QObject):
             wine_pfx = self.core.lgd.config.get(game.app_name, 'wine_prefix',
                                                 fallback=os.path.expanduser("~/.wine"))
             if not wine_bin:
-                wine_bin = self.core.lgd.config.get(self.game.app_name, 'wine_executable', fallback="/usr/bin/wine")
+                wine_bin = self.core.lgd.config.get(game.app_name, 'wine_executable', fallback="/usr/bin/wine")
             env = self.core.get_app_environment(game.app_name, wine_pfx=wine_pfx)
 
             if not wine_bin or not env.get('WINEPREFIX') and not os.path.exists("/usr/bin/wine"):
@@ -207,7 +210,7 @@ class GameUtils(QObject):
                 environment.insert(e, env[e])
             process.setProcessEnvironment(environment)
             process.finished.connect(lambda x: self.game_finished(x, game.app_name))
-            process.start(wine_bin, origin_uri)
+            process.start(wine_bin, [origin_uri])
 
         if QSettings().value("show_console", False, bool):
             self.console.show()
@@ -223,7 +226,8 @@ class GameUtils(QObject):
 
     def game_finished(self, exit_code, app_name):
         logger.info("Game exited with exit code: " + str(exit_code))
-        if exit_code == 53 and self.is_origin:
+        is_origin = self.core.get_game(app_name).third_party_store == "Origin"
+        if exit_code == 53 and is_origin:
             msg_box = QMessageBox()
             msg_box.setText(self.tr("Origin is not installed. Do you want to download installer file? "))
             msg_box.addButton(QPushButton("Download"), QMessageBox.YesRole)
@@ -232,9 +236,13 @@ class GameUtils(QObject):
             # click install button
             if resp == 0:
                 webbrowser.open("https://www.dm.origin.com/download")
+        if is_origin and exit_code == 1:
+            QMessageBox.warning(None, "Warning",
+                                self.tr("Failed to launch {}").format(self.core.get_game(app_name).app_title))
 
         game: RunningGameModel = self.running_games.get(app_name, None)
-        self.running_games.pop(app_name)
+        if app_name in self.running_games.keys():
+            self.running_games.pop(app_name)
         self.finished.emit(app_name, "")
 
         if QSettings().value("show_console", False, bool):

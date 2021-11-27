@@ -1,6 +1,8 @@
 import json
 from dataclasses import dataclass
 from logging import getLogger
+from typing import Callable
+from typing import Union
 
 from PyQt5.QtCore import QObject, pyqtSignal, QUrl, QJsonParseError, QJsonDocument
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
@@ -40,7 +42,7 @@ class QtRequestManager(QObject):
             self.request_queue.append(
                 RequestQueueItem(method="post", url=url, payload=payload, handle_func=handle_func))
 
-    def get(self, url: str, handle_func: callable):
+    def get(self, url: str, handle_func: Callable[[Union[dict, bytes]], None]):
         if not self.request_active:
             request = QNetworkRequest(QUrl(url))
             request.setHeader(QNetworkRequest.UserAgentHeader,
@@ -86,5 +88,5 @@ class QtRequestManager(QObject):
 class RequestQueueItem:
     method: str = None
     url: str = None
-    handle_func: callable = None
+    handle_func: Callable[[Union[dict, bytes]], None] = None
     payload: dict = None
