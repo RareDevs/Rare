@@ -1,7 +1,7 @@
 import datetime
 from dataclasses import dataclass
 from logging import getLogger
-from typing import Union
+from typing import Union, List
 
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, Qt, QSettings
 from PyQt5.QtWidgets import QDialog, QMessageBox, QSizePolicy, QLayout
@@ -118,12 +118,12 @@ class CloudSaveUtils(QObject):
         if not shared.args.offline:
             self.latest_saves = self.get_latest_saves(saves)
         else:
-            self.latest_saves = dict
+            self.latest_saves = dict()
         self.settings = QSettings()
 
         self.thread_pool = QThreadPool.globalInstance()
 
-    def get_latest_saves(self, saves) -> dict:
+    def get_latest_saves(self, saves: List[SaveGameFile]) -> dict:
         save_games = set()
         for igame in self.core.get_installed_list():
             game = self.core.get_game(igame.app_name)

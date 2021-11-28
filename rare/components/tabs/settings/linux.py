@@ -59,10 +59,11 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
             logger.debug(f"Set {setting} in {f'[{section}]'} to {text}")
 
         else:
-            shared.core.lgd.config.remove_option(section, setting)
-            logger.debug(f"Unset {setting} from {f'[{section}]'}")
-            if not shared.core.lgd.config[section]:
-                shared.core.lgd.config.remove_section(section)
-                logger.debug(f"Removed {f'[{section}]'} configuration section")
+            if shared.core.lgd.config.has_section(section) and shared.core.lgd.config.has_option(section, setting):
+                shared.core.lgd.config.remove_option(section, setting)
+                logger.debug(f"Unset {setting} from {f'[{section}]'}")
+                if not shared.core.lgd.config[section]:
+                    shared.core.lgd.config.remove_section(section)
+                    logger.debug(f"Removed {f'[{section}]'} configuration section")
 
         shared.core.lgd.save_config()

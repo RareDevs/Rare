@@ -102,7 +102,8 @@ class GameSettings(QWidget, Ui_GameSettings):
             # FIXME: Remove the spacerItem and margins from the linux settings
             # FIXME: This should be handled differently at soem point in the future
             self.linux_settings.layout().setContentsMargins(0, 0, 0, 0)
-            for item in [self.linux_settings.layout().itemAt(idx) for idx in range(self.linux_settings.layout().count())]:
+            for item in [self.linux_settings.layout().itemAt(idx) for idx in
+                         range(self.linux_settings.layout().count())]:
                 if item.spacerItem():
                     self.linux_settings.layout().removeItem(item)
                     del item
@@ -129,9 +130,11 @@ class GameSettings(QWidget, Ui_GameSettings):
                 resolver.signals.result_ready.connect(lambda x: self.wine_resolver_finished(x, app_name))
                 QThreadPool.globalInstance().start(resolver)
                 return
-            self.cloud_save_path_edit.setText(new_path)
+            else:
+                self.cloud_save_path_edit.setText(new_path)
 
     def wine_resolver_finished(self, path, app_name):
+        logger.info(f"Wine resolver finished for {app_name}. Computed save path: {path}")
         if app_name == self.game.app_name:
             self.cloud_save_path_edit.setDisabled(False)
             self.compute_save_path_button.setDisabled(False)
@@ -145,9 +148,10 @@ class GameSettings(QWidget, Ui_GameSettings):
                         self.game.app_title, path))
                     return
             if not path:
+                self.cloud_save_path_edit.setText("")
                 return
             self.cloud_save_path_edit.setText(path)
-        else:
+        elif path:
             igame = self.core.get_installed_game(app_name)
             igame.save_path = path
             self.core.lgd.set_installed_game(app_name, igame)
@@ -285,7 +289,7 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.linux_settings.update_game(app_name)
 
             proton = self.core.lgd.config.get(f"{app_name}", "wrapper", fallback="").replace('"', "")
-            if proton != "":
+            if proton and "proton" in proton:
                 self.proton_prefix.setEnabled(True)
                 self.proton_wrapper.setCurrentText(f'"{proton.replace(" run", "")}" run')
                 proton_prefix = self.core.lgd.config.get(f"{app_name}.env", "STEAM_COMPAT_DATA_PATH",
