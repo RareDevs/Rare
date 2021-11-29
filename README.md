@@ -6,9 +6,9 @@
 Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, based on PyQt5
 
 <div align="center">
-    <img src="https://github.com/Dummerle/Rare/blob/main/rare/resources/images/Rare.png?raw=true" alt="Logo" width="200"/>
+    <img src="https://github.com/Dummerle/Rare/blob/main/rare/resources/images/Rare_nonsquared.png?raw=true" alt="Logo" width="200"/>
     <p><i>Logo by <a href="https://github.com/MultisampledNight">@MultisampledNight</a> available
-        <a href="https://github.com/Dummerle/Rare/blob/main/rare/resources/images/Rare.svg">here</a>,
+        <a href="https://github.com/Dummerle/Rare/blob/main/rare/resources/images/">here</a>,
         licensed under CC BY-SA 4.0</i></p>
 </div>
 
