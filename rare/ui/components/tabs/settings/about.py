@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_About(object):
     def setupUi(self, About):
         About.setObjectName("About")
-        About.resize(722, 345)
+        About.resize(720, 317)
         self.about_layout = QtWidgets.QFormLayout(About)
         self.about_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.about_layout.setObjectName("about_layout")
@@ -85,11 +85,6 @@ class Ui_About(object):
         self.license = QtWidgets.QLabel(About)
         self.license.setObjectName("license")
         self.about_layout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.license)
-        self.info_text = QtWidgets.QLabel(About)
-        self.info_text.setWordWrap(True)
-        self.info_text.setOpenExternalLinks(True)
-        self.info_text.setObjectName("info_text")
-        self.about_layout.setWidget(7, QtWidgets.QFormLayout.SpanningRole, self.info_text)
 
         self.retranslateUi(About)
         QtCore.QMetaObject.connectSlotsByName(About)
@@ -107,8 +102,6 @@ class Ui_About(object):
         self.lgd_dev.setToolTip(_translate("About", "Github"))
         self.license_label.setText(_translate("About", "License"))
         self.license.setText(_translate("About", "GNU General Public License v3.0"))
-        self.info_text.setText(_translate("About", "This is a beta version, so you can get bugs. If you get a bug, please report it by creating an Issue on <a href=\'https://github.com/Dummerle/Rare/issues\'>Github</a>. You can also contact me on Discord (Dummerle#7419). Or you can join the <a href=\'https://discord.gg/YvmABK9YSk\'>Discord server</a>\n"
-""))
 
 
 if __name__ == "__main__":
