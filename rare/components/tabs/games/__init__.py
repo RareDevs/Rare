@@ -77,6 +77,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                 self.no_asset_names.append(game.app_name)
         else:
             self.no_assets = []
+        self.installed = self.core.get_installed_list()
         self.setup_game_list()
 
         if not self.settings.value("icon_view", True, bool):
@@ -143,7 +144,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.list_view = QWidget()
         self.list_view.setLayout(QVBoxLayout())
 
-        self.installed = sorted(self.core.get_installed_list(), key=lambda x: x.title)
         self.update_count_games_label()
 
         # add installing game widget for icon view: List view not supported
@@ -152,7 +152,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.installing_widget.setVisible(False)
 
         # add installed games
-        for igame in self.installed:
+        for igame in sorted(self.core.get_installed_list(), key=lambda x: x.title):
             icon_widget, list_widget = self.add_installed_widget(igame.app_name)
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
@@ -164,7 +164,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         self.uninstalled_games = []
         for game in sorted(self.game_list, key=lambda x: x.app_title):
-            if game.app_name not in [i.app_name for i in self.installed]:
+            if not self.core.is_installed(game.app_name):
                 self.uninstalled_games.append(game)
                 icon_widget, list_widget = self.add_uninstalled_widget(game)
                 self.icon_view.layout().addWidget(icon_widget)
@@ -337,6 +337,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
                     self.icon_view.layout().addWidget(i_widget)
                     self.list_view.layout().addWidget(list_widget)
+                self.installed = self.core.get_installed_list()
 
                 for game in self.no_assets:
                     i_widget, list_widget = self.widgets[game.app_name]
@@ -344,12 +345,14 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     self.list_view.layout().addWidget(list_widget)
 
                 # get Uninstalled games
+                self.uninstalled_games = []
                 games, self.dlcs = self.core.get_game_and_dlc_list()
                 for game in sorted(games, key=lambda x: x.app_title):
                     if not self.core.is_installed(game.app_name) and game.app_name not in self.no_asset_names:
                         i_widget, list_widget = self.widgets[game.app_name]
                         self.icon_view.layout().addWidget(i_widget)
                         self.list_view.layout().addWidget(list_widget)
+                        self.uninstalled_games.append(game)
         self.update_count_games_label()
 
     def _update_games(self):

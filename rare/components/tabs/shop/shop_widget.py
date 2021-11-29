@@ -8,9 +8,9 @@ from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLab
 from legendary.core import LegendaryCore
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
 from rare.utils.extra_widgets import WaitingSpinner, FlowLayout, ButtonLineEdit
-from . import ShopApiCore
 from .constants import Constants
 from .game_widgets import GameWidget
+from .shop_api_core import ShopApiCore
 from .shop_models import BrowseModel
 
 logger = logging.getLogger("Shop")
@@ -99,6 +99,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 logger.warning(str(game) + str(e))
                 continue
         self.discounts_gb.setVisible(discounts > 0)
+        self.discount_widget.update()
         self.discount_stack.setCurrentIndex(0)
 
     def add_free_games(self, free_games: list):

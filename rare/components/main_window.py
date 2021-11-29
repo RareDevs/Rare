@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
             self.rpc = DiscordRPC()
 
         if shared.args.subparser == "launch":
-            if shared.args.app_name in [i.app_name for i in self.tab_widget.games_tab.installed]:
+            if shared.args.app_name in [i.app_name for i in self.core.get_installed_list()]:
                 logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
                 self.tab_widget.games_tab.game_utils.prepare_launch(shared.args.app_name)
             else:

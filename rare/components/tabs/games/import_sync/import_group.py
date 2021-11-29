@@ -81,7 +81,7 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
 
         self.app_name = IndicatorLineEdit(
             ph_text=self.tr("Use in case the app name was not found automatically"),
-            completer=AppNameCompleter(app_names=[(i.app_name, i.app_title) for i in self.core.get_game_list()]),
+            completer=AppNameCompleter(app_names=[(i.app_name, i.app_title) for i in shared.api_results.game_list]),
             edit_func=self.app_name_edit_cb,
             parent=self
         )

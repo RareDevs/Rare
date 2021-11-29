@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QStackedWidget, QTabWidget
 
 from legendary.core import LegendaryCore
-from rare import cache_dir
+from rare import cache_dir, shared
 from rare.components.tabs.shop.game_info import ShopGameInfo
 from rare.components.tabs.shop.search_results import SearchResults
 from rare.components.tabs.shop.shop_api_core import ShopApiCore
@@ -24,7 +24,6 @@ class Shop(QStackedWidget):
         self.store_tabs = QTabWidget()
         self.store_tabs.addTab(self.shop, self.tr("Games"))
         self.store_tabs.addTab(self.wishlist_widget, self.tr("Wishlist"))
-        # self.store_tabs.addTab(self.browse_games, self.tr("Browse"))
 
         self.addWidget(self.store_tabs)
 
@@ -32,7 +31,7 @@ class Shop(QStackedWidget):
         self.addWidget(self.search_results)
         self.search_results.show_info.connect(self.show_game_info)
 
-        self.info = ShopGameInfo([i.asset_info.namespace for i in self.core.get_game_list(True)], self.api_core)
+        self.info = ShopGameInfo([i.asset_info.namespace for i in shared.api_results.game_list], self.api_core)
         self.addWidget(self.info)
         self.info.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
 
