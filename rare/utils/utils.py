@@ -8,11 +8,11 @@ import sys
 from logging import getLogger
 from typing import Tuple, List
 
-import requests
 import qtawesome
+import requests
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings, Qt
-from PyQt5.QtWidgets import QApplication, QStyleFactory, QStyle
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
+from PyQt5.QtWidgets import QApplication, QStyleFactory
 from requests import HTTPError
 
 from legendary.models.game import Game
@@ -21,6 +21,7 @@ from .models import PathSpec
 # Windows
 
 if platform.system() == "Windows":
+    # noinspection PyUnresolvedReferences
     from win32com.client import Dispatch  # pylint: disable=E0401
 
 from rare import languages_path, resources_path, image_dir, shared
@@ -32,18 +33,20 @@ logger = getLogger("Utils")
 settings = QSettings("Rare", "Rare")
 
 
-def download_images(signal: pyqtSignal, core: LegendaryCore):
+def download_images(progress: pyqtSignal, results: pyqtSignal, core: LegendaryCore):
     if not os.path.isdir(image_dir):
         os.makedirs(image_dir)
         logger.info("Create Image dir")
 
     # Download Images
-    games, dlcs = core.get_game_and_dlc_list()
+    games, dlcs = core.get_game_and_dlc_list(True)
+    results.emit((games, dlcs), "gamelist")
     dlc_list = []
     for i in dlcs.values():
         dlc_list.append(i[0])
 
     no_assets = core.get_non_asset_library_items()[0]
+    results.emit(no_assets, "no_assets")
 
     game_list = games + dlc_list + no_assets
     for i, game in enumerate(game_list):
@@ -52,7 +55,7 @@ def download_images(signal: pyqtSignal, core: LegendaryCore):
         except json.decoder.JSONDecodeError:
             shutil.rmtree(f"{image_dir}/{game.app_name}")
             download_image(game)
-        signal.emit(i * 100 // len(game_list))
+        progress.emit(i * 100 // len(game_list))
 
 
 def download_image(game, force=False):

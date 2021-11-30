@@ -51,8 +51,8 @@ jobs:
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.deb
-          asset_name: Rare.deb
+          file: Rare-${{ github.event.release.tag_name }}.deb
+          asset_name: Rare-${{ github.event.release.tag_name }}.deb
           tag: ${{ github.ref }}
           overwrite: true
 
@@ -90,7 +90,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare.AppImage
-          asset_name: Rare-${{github.ref}}.AppImage
+          asset_name: Rare-${{ github.event.release.tag_name }}.AppImage
           tag: ${{ github.ref }}
           overwrite: true
       - name: Upload to GitHub
@@ -98,7 +98,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare.AppImage.zsync
-          asset_name: Rare-${{github.ref}}.AppImage.zsync
+          asset_name: Rare-${{ github.event.release.tag_name }}.AppImage.zsync
           tag: ${{ github.ref }}
           overwrite: true
 
@@ -122,13 +122,13 @@ jobs:
         run: python freeze.py bdist_msi
 
       - name: Rename File
-        run: mv dist/* dist/Rare.msi
+        run: mv dist/*.msi dist/Rare.msi
       - name: Upload to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: dist/Rare.msi
-          asset_name: Rare-${{github.ref}}.msi
+          asset_name: Rare-${{ github.event.release.tag_name }}.msi
           tag: ${{ github.ref }}
           overwrite: true
   mac_os:
@@ -158,13 +158,13 @@ jobs:
       - name: create dmg
         run: |
           git clone https://github.com/create-dmg/create-dmg
-          create-dmg/create-dmg Rare-${{github.ref}}.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
+          create-dmg/create-dmg Rare.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
 
       - name: upload to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare-${{github.ref}}.dmg
-          asset_name: Rare-${{github.ref}}.dmg
+          file: Rare.dmg
+          asset_name: Rare-${{ github.event.release.tag_name }}.dmg
           tag: ${{ github.ref }}
           overwrite: true

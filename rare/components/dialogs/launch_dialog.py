@@ -22,8 +22,6 @@ class ApiSignals(QObject):
 
 
 class ImageWorker(QRunnable):
-    download_progress = pyqtSignal(int)
-
     def __init__(self, core: LegendaryCore):
         super(ImageWorker, self).__init__()
         self.core = core
@@ -31,24 +29,24 @@ class ImageWorker(QRunnable):
         self.setAutoDelete(True)
 
     def run(self):
-        download_images(self.signal.image_progress, self.core)
+        download_images(self.signal.image_progress, self.signal.result, self.core)
         self.signal.image_progress.emit(100)
 
 
 class ApiRequestWorker(QRunnable):
-    def __init__(self, text: str, function: callable, args: tuple):
+    def __init__(self, api_requests: list):
         super(ApiRequestWorker, self).__init__()
-        self.function, self.args = function, args
+        self.api_requests = api_requests
         self.signals = ApiSignals()
-        self.text = text
         self.setAutoDelete(True)
 
     def run(self) -> None:
-        try:
-            result = self.function(*self.args)
-        except HTTPError():
-            result = None
-        self.signals.result.emit(result, self.text)
+        for text, function, args in self.api_requests:
+            try:
+                result = function(*args)
+            except HTTPError():
+                result = None
+            self.signals.result.emit(result, text)
 
 
 class LaunchDialog(QDialog, Ui_LaunchDialog):
@@ -98,20 +96,20 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.image_info.setText(self.tr("Downloading Images"))
             image_worker = ImageWorker(self.core)
             image_worker.signal.image_progress.connect(self.update_image_progbar)
+            image_worker.signal.result.connect(self.handle_api_worker_result)
             self.thread_pool.start(image_worker)
 
             api_requests = [
-                ["gamelist", self.core.get_game_and_dlc_list, (True,)],
                 ["32bit", self.core.get_game_and_dlc_list, (True, "Win32")],
                 ["mac", self.core.get_game_and_dlc_list, (True, "Mac")],
                 ["assets", self.core.egs.get_game_assets, ()],
-                ["no_assets", self.core.get_non_asset_library_items, ()],
             ]
-            for r in api_requests:
-                worker = ApiRequestWorker(*r)
-                worker.signals.result.connect(self.handle_api_worker_result)
-                self.thread_pool.start(worker)
+            # gamelist and no_asset games are from Image worker
+            worker = ApiRequestWorker(api_requests)
+            worker.signals.result.connect(self.handle_api_worker_result)
+            self.thread_pool.start(worker)
 
+            # cloud save from another worker, because it is used in cloud_save_utils too
             cloud_worker = CloudWorker()
             cloud_worker.signals.result_ready.connect(lambda x: self.handle_api_worker_result(x, "saves"))
             self.thread_pool.start(cloud_worker)
@@ -140,7 +138,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.core.lgd.assets = assets
             self.api_results.assets = assets
         elif text == "no_assets":
-            self.api_results.no_asset_games = result[0] if result else []
+            self.api_results.no_asset_games = result if result else []
 
         elif text == "saves":
             self.api_results.saves = result
@@ -158,7 +156,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             logger.info("App starting")
             self.image_info.setText(self.tr("Starting..."))
             shared.args.offline = self.offline
-            shared.api_results = self.api_results
+            shared.init_api_response(self.api_results)
             self.start_app.emit()
         else:
             self.finished = True
