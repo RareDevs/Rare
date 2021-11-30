@@ -1,9 +1,9 @@
 import datetime
 from logging import getLogger
 
-from PyQt5.QtCore import QThread, pyqtSignal, QSettings, Qt, QRect
-from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QPushButton, \
-    QHBoxLayout, QGroupBox, QScrollArea, QFrame, QSizePolicy
+from PyQt5.QtCore import QThread, pyqtSignal, QSettings
+from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QPushButton, \
+    QGroupBox
 
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate
@@ -11,6 +11,7 @@ from legendary.models.game import Game, InstalledGame
 from rare import shared
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
+from rare.components.tabs.downloads.dl_tab import Ui_DownloadWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
 from rare.utils.models import InstallOptionsModel, InstallQueueItemModel
 from rare.utils.utils import get_size
@@ -18,76 +19,28 @@ from rare.utils.utils import get_size
 logger = getLogger("Download")
 
 
-class DownloadTab(QWidget):
+class DownloadTab(QWidget, Ui_DownloadWidget):
     thread: QThread
     dl_queue = list()
     dl_status = pyqtSignal(int)
 
     def __init__(self, updates: list):
         super(DownloadTab, self).__init__()
+        self.setupUi(self)
         self.core = shared.core
         self.layout = QVBoxLayout()
         self.active_game: Game = None
         self.analysis = None
         self.signals = shared.signals
-        self.info_layout = QGridLayout()
 
-        self.installing_game = QLabel(self.tr("No active Download"))
-        self.info_layout.addWidget(self.installing_game, 0, 0)
-        self.dl_speed = QLabel()
-        self.info_layout.addWidget(self.dl_speed, 0, 1)
-        self.cache_used = QLabel()
-        self.info_layout.addWidget(self.cache_used, 1, 0)
-        self.downloaded = QLabel()
-        self.info_layout.addWidget(self.downloaded, 1, 1)
-        self.time_left = QLabel()
-        self.info_layout.addWidget(self.time_left, 2, 0)
-
-        self.layout.addLayout(self.info_layout)
-
-        self.mini_layout = QHBoxLayout()
-        self.prog_bar = QProgressBar()
-        self.mini_layout.addWidget(self.prog_bar)
-        self.prog_bar.setMaximum(100)
-
-        self.kill_button = QPushButton(self.tr("Stop Download"))
-        self.mini_layout.addWidget(self.kill_button)
-        self.kill_button.setDisabled(True)
         self.kill_button.clicked.connect(self.stop_download)
 
-        self.layout.addLayout(self.mini_layout)
-
-        # FIXME: Redisign this whole thing for the next release (current: 1.7.0)
-        self.scroll = QScrollArea(self)
-        self.scroll.setFocusPolicy(Qt.WheelFocus)
-        self.scroll.setFrameShape(QFrame.NoFrame)
-        self.scroll.setFrameShadow(QFrame.Sunken)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setAlignment(Qt.AlignLeading | Qt.AlignLeft | Qt.AlignTop)
-        self.scroll.setObjectName("scroll")
-        self.scroll_contents = QWidget()
-        self.scroll_contents.setGeometry(QRect(0, 0, 255, 16))
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.scroll_contents.sizePolicy().hasHeightForWidth())
-        self.scroll_contents.setSizePolicy(sizePolicy)
-        self.scroll_contents.setObjectName("scroll_contents")
-        self.scroll_contents_layout = QVBoxLayout(self.scroll_contents)
-        self.scroll_contents_layout.setContentsMargins(0, 0, -1, 0)
-        self.scroll_contents_layout.setSpacing(6)
-        self.scroll_contents_layout.setObjectName("scroll_contents_layout")
-        self.scroll.setWidget(self.scroll_contents)
-        self.layout.addWidget(self.scroll)
-        # FIXME: End of FIXME
-
         self.queue_widget = DlQueueWidget()
-        self.scroll_contents_layout.addWidget(self.queue_widget)
+        self.scroll_widget.layout().addWidget(self.queue_widget)
         self.queue_widget.update_list.connect(self.update_dl_queue)
 
         self.updates = QGroupBox(self.tr("Updates"))
-        self.scroll_contents_layout.addWidget(self.updates)
+        self.scroll_widget.layout().addWidget(self.updates)
         self.update_layout = QVBoxLayout()
         self.updates.setLayout(self.update_layout)
 
@@ -211,7 +164,7 @@ class DownloadTab(QWidget):
 
     def reset_infos(self):
         self.kill_button.setDisabled(True)
-        self.installing_game.setText(self.tr("Installing Game: No active download"))
+        self.installing_game.setText(self.tr("No active download"))
         self.prog_bar.setValue(0)
         self.dl_speed.setText("")
         self.time_left.setText("")

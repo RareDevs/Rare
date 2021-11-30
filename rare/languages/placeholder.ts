@@ -298,16 +298,16 @@
         <message>
             <location filename="../components/tabs/shop/constants.py" line="8"/>
             <source>RPG</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/shop/constants.py" line="8"/>
-        <source>Shooter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/shop/constants.py" line="8"/>
-        <source>Strategy</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/shop/constants.py" line="8"/>
+            <source>Shooter</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/shop/constants.py" line="8"/>
+            <source>Strategy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -415,60 +415,63 @@
 <context>
     <name>DownloadTab</name>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="35"/>
-        <source>No active Download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="53"/>
-        <source>Stop Download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="89"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="42"/>
         <source>Updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="98"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="51"/>
         <source>No updates available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="155"/>
-        <source>Installing Game: </source>
+        <location filename="../components/tabs/downloads/__init__.py" line="116"/>
+        <source>Installing Game:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="161"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="122"/>
         <source>Download finished. Reload library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="206"/>
-        <source>Installing Game: No active download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="216"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="177"/>
         <source>Download speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="217"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="178"/>
         <source>Cache used</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="219"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="180"/>
         <source>Downloaded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="221"/>
-        <source>Time left: </source>
+        <location filename="../components/tabs/downloads/__init__.py" line="182"/>
+        <source>Time left:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../components/tabs/downloads/__init__.py" line="167"/>
+        <source>No active download</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+    <context>
+        <name>DownloadWidget</name>
+        <message>
+            <location filename="../components/tabs/downloads/dl_tab.py" line="121"/>
+            <source>No active download</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/downloads/dl_tab.py" line="122"/>
+            <source>Stop Download</source>
+            <translation type="unfinished"></translation>
+        </message>
 </context>
 <context>
     <name>DxvkSettings</name>
@@ -1059,6 +1062,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../components/tabs/games/game_utils.py" line="240"/>
+        <source>Failed to launch {}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../components/tabs/games/game_utils.py" line="171"/>
         <source>Error while launching {}. No permission to create {} for {}
             Launch anyway?
@@ -1068,11 +1076,6 @@
     <message>
         <location filename="../components/tabs/games/game_utils.py" line="232"/>
         <source>Origin is not installed. Do you want to download installer file?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/game_utils.py" line="240"/>
-        <source>Failed to launch {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1136,21 +1139,21 @@
         </message>
         <message>
             <location filename="../components/tabs/games/import_sync/import_group.py" line="82"/>
-        <source>Use in case the app name was not found automatically</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_sync/import_group.py" line="145"/>
-        <source>Could not find app name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../components/tabs/games/import_sync/import_group.py" line="149"/>
+            <source>Use in case the app name was not found automatically</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/games/import_sync/import_group.py" line="145"/>
+            <source>Could not find app name</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../components/tabs/games/import_sync/import_group.py" line="150"/>
         <source>Successfully imported {}. Reload library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/games/import_sync/import_group.py" line="156"/>
+        <location filename="../components/tabs/games/import_sync/import_group.py" line="163"/>
         <source>Failed to import {}</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1403,12 +1406,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/dialogs/launch_dialog.py" line="98"/>
+        <location filename="../components/dialogs/launch_dialog.py" line="96"/>
         <source>Downloading Images</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/dialogs/launch_dialog.py" line="159"/>
+        <location filename="../components/dialogs/launch_dialog.py" line="157"/>
         <source>Starting...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1975,7 +1978,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/shop/shop_widget.py" line="275"/>
+        <location filename="../components/tabs/shop/shop_widget.py" line="273"/>
         <source>Could not get games matching the filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2114,12 +2117,12 @@
 <context>
     <name>UpdateWidget</name>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="263"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="224"/>
         <source>Update Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../components/tabs/downloads/__init__.py" line="269"/>
+        <location filename="../components/tabs/downloads/__init__.py" line="230"/>
         <source>Version: </source>
         <translation type="unfinished"></translation>
     </message>
