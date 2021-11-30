@@ -3,7 +3,7 @@ import logging
 import random
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QLabel, QPushButton, QHBoxLayout
 
 from legendary.core import LegendaryCore
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
@@ -263,7 +263,6 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
     def show_games(self, data):
         for item in (self.game_widget.layout().itemAt(i) for i in range(self.game_widget.layout().count())):
             item.widget().deleteLater()
-
         if data:
             for game in data:
                 w = GameWidget(self.path, game, 275)
@@ -271,11 +270,8 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 w.show_info.connect(self.show_game.emit)
 
         else:
-            layout = QVBoxLayout()
-            layout.addWidget(
+            self.game_widget.layout().addWidget(
                 QLabel(self.tr("Could not get games matching the filter")))
-            layout.addStretch(1)
-            self.game_widget.setLayout(layout)
         self.game_stack.setCurrentIndex(0)
 
         self.game_widget.layout().update()
