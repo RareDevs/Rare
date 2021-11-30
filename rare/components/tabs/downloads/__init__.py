@@ -110,6 +110,8 @@ class DownloadTab(QWidget):
         self.signals.game_uninstalled.connect(self.queue_item_removed)
         self.signals.game_uninstalled.connect(self.remove_update)
 
+        self.signals.add_download.connect(lambda app_name: self.add_update(self.core.get_installed_game(app_name)))
+
     def queue_item_removed(self, app_name):
         if w := self.update_widgets.get(app_name):
             w.update_button.setDisabled(False)
@@ -127,6 +129,12 @@ class DownloadTab(QWidget):
     def remove_update(self, app_name):
         if w := self.update_widgets.get(app_name):
             w.deleteLater()
+            self.update_widgets.pop(app_name)
+
+        if len(self.update_widgets) == 0:
+            self.update_text.setVisible(True)
+
+        self.signals.update_download_tab_text.emit()
 
     def update_dl_queue(self, dl_queue):
         self.dl_queue = dl_queue

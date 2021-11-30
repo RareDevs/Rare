@@ -122,6 +122,7 @@ class Signals(QObject):
     dl_progress = pyqtSignal(int)  # 0-100
     # set visibility of installing widget in games tab
     installation_started = pyqtSignal(str)  # app_name
+    add_download = pyqtSignal(str)
 
     install_game = pyqtSignal(InstallOptionsModel)
     installation_finished = pyqtSignal(bool, str)

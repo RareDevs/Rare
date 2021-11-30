@@ -146,11 +146,18 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
                 return
 
         if legendary_utils.import_game(self.core, app_name=app_name, path=path):
+            igame = self.core.get_installed_game(app_name)
             self.info_label.setText(self.tr("Successfully imported {}. Reload library").format(
-                self.core.get_installed_game(app_name).title))
+                igame.title))
             self.app_name.setText(str())
 
             shared.signals.update_gamelist.emit([app_name])
+
+            if igame.version != self.core.get_asset(app_name, False).build_version:
+                # update available
+                shared.signals.add_download.emit(igame.app_name)
+                shared.signals.update_download_tab_text.emit()
+
         else:
             logger.warning(f'Failed to import "{app_name}"')
             self.info_label.setText(self.tr("Failed to import {}").format(app_name))
