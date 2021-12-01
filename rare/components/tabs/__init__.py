@@ -4,7 +4,7 @@ from qtawesome import icon
 
 from rare import shared
 from rare.components.tabs.account import MiniWidget
-from rare.components.tabs.downloads import DownloadTab
+from rare.components.tabs.downloads import DownloadsTab
 from rare.components.tabs.games import GamesTab
 from rare.components.tabs.settings import SettingsTab
 from rare.components.tabs.settings.debug import DebugSettings
@@ -28,7 +28,7 @@ class TabWidget(QTabWidget):
 
         if not shared.args.offline:
             # updates = self.games_tab.default_widget.game_list.updates
-            self.downloadTab = DownloadTab(self.games_tab.updates)
+            self.downloadTab = DownloadsTab(self.games_tab.updates)
             self.addTab(self.downloadTab, "Downloads" + (
                 " (" + str(len(self.games_tab.updates)) + ")" if len(self.games_tab.updates) != 0 else ""))
             self.store = Shop(self.core)

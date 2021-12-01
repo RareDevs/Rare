@@ -463,12 +463,12 @@
     <context>
         <name>DownloadWidget</name>
         <message>
-            <location filename="../components/tabs/downloads/dl_tab.py" line="121"/>
+            <location filename="../ui/components/tabs/downloads/downloads_tab.py" line="121"/>
             <source>No active download</source>
             <translation type="unfinished"></translation>
         </message>
         <message>
-            <location filename="../components/tabs/downloads/dl_tab.py" line="122"/>
+            <location filename="../ui/components/tabs/downloads/downloads_tab.py" line="122"/>
             <source>Stop Download</source>
             <translation type="unfinished"></translation>
         </message>
