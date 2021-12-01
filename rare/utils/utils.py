@@ -363,11 +363,9 @@ def get_pixmap(app_name: str) -> QPixmap:
 
 
 def get_uninstalled_pixmap(app_name: str) -> QPixmap:
-    if os.path.exists(image := os.path.join(image_dir, app_name, "UninstalledArt.png")):
-        pixmap = QPixmap(image)
-    else:
-        pixmap = QPixmap()
-    return pixmap
+    pm = get_pixmap(app_name)
+    grey_image = pm.toImage().convertToFormat(QImage.Format_Grayscale8)
+    return QPixmap.fromImage(grey_image)
 
 
 def optimal_text_background(image: list) -> Tuple[int, int, int]:

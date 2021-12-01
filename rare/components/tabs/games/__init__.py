@@ -8,7 +8,7 @@ import rare.shared as shared
 from legendary.models.game import InstalledGame
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils.extra_widgets import FlowLayout
-from rare.utils.utils import get_pixmap, download_image
+from rare.utils.utils import get_pixmap, download_image, get_uninstalled_pixmap
 from .cloud_save_utils import CloudSaveUtils
 from .cloud_save_utils import CloudSaveUtils
 from .game_info import GameInfoTabs
@@ -110,7 +110,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         game = self.core.get_game(app_name, False)
         if game.is_dlc:
             return
-        self.installing_widget.set_game(game)
+        self.installing_widget.set_game(app_name)
         self.installing_widget.setVisible(True)
 
     def verification_finished(self, igame: InstalledGame):
@@ -197,10 +197,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         return icon_widget, list_widget
 
     def add_uninstalled_widget(self, game):
-        pixmap = get_pixmap(game.app_name)
-        img = pixmap.toImage()
-        img = img.convertToFormat(QImage.Format_Grayscale8)
-        pixmap = QPixmap.fromImage(img)
+        pixmap = get_uninstalled_pixmap(game.app_name)
         if pixmap.isNull():
             logger.warning(game.app_title + " has a corrupt image. Reloading...")
             download_image(game, force=True)
