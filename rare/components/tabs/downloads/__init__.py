@@ -12,23 +12,22 @@ from rare import shared
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
-from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadWidget
+from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab
 from rare.utils.models import InstallOptionsModel, InstallQueueItemModel
 from rare.utils.utils import get_size
 
 logger = getLogger("Download")
 
 
-class DownloadTab(QWidget, Ui_DownloadWidget):
+class DownloadsTab(QWidget, Ui_DownloadsTab):
     thread: QThread
     dl_queue = list()
     dl_status = pyqtSignal(int)
 
     def __init__(self, updates: list):
-        super(DownloadTab, self).__init__()
+        super(DownloadsTab, self).__init__()
         self.setupUi(self)
         self.core = shared.core
-        self.layout = QVBoxLayout()
         self.active_game: Game = None
         self.analysis = None
         self.signals = shared.signals
@@ -36,15 +35,13 @@ class DownloadTab(QWidget, Ui_DownloadWidget):
         self.kill_button.clicked.connect(self.stop_download)
 
         self.queue_widget = DlQueueWidget()
-        self.scroll_widget.layout().addWidget(self.queue_widget)
         self.queue_widget.update_list.connect(self.update_dl_queue)
+        self.queue_scroll_contents_layout.addWidget(self.queue_widget)
 
         self.updates = QGroupBox(self.tr("Updates"))
-        self.scroll_widget.layout().addWidget(self.updates)
-        self.update_layout = QVBoxLayout()
-        self.updates.setLayout(self.update_layout)
-
-        self.updates.setObjectName("group")
+        self.updates.setObjectName("updates_group")
+        self.update_layout = QVBoxLayout(self.updates)
+        self.queue_scroll_contents_layout.addWidget(self.updates)
 
         self.update_widgets = {}
 
@@ -57,13 +54,13 @@ class DownloadTab(QWidget, Ui_DownloadWidget):
 
         self.queue_widget.item_removed.connect(self.queue_item_removed)
 
-        self.setLayout(self.layout)
-
         self.signals.install_game.connect(self.get_install_options)
         self.signals.game_uninstalled.connect(self.queue_item_removed)
         self.signals.game_uninstalled.connect(self.remove_update)
 
         self.signals.add_download.connect(lambda app_name: self.add_update(self.core.get_installed_game(app_name)))
+
+        self.reset_infos()
 
     def queue_item_removed(self, app_name):
         if w := self.update_widgets.get(app_name):
@@ -113,13 +110,13 @@ class DownloadTab(QWidget, Ui_DownloadWidget):
         self.thread.start()
         self.kill_button.setDisabled(False)
         self.analysis = queue_item.download.analysis
-        self.installing_game.setText(self.tr("Installing Game: ") + self.active_game.app_title)
+        self.dl_name.setText(self.active_game.app_title)
 
         self.signals.installation_started.emit(self.active_game.app_name)
 
     def status(self, text):
         if text == "finish":
-            self.installing_game.setText(self.tr("Download finished. Reload library"))
+            self.dl_name.setText(self.tr("Download finished. Reload library"))
             logger.info("Download finished: " + self.active_game.app_title)
 
             game = self.active_game
@@ -164,22 +161,20 @@ class DownloadTab(QWidget, Ui_DownloadWidget):
 
     def reset_infos(self):
         self.kill_button.setDisabled(True)
-        self.installing_game.setText(self.tr("No active download"))
-        self.prog_bar.setValue(0)
-        self.dl_speed.setText("")
-        self.time_left.setText("")
-        self.cache_used.setText("")
-        self.downloaded.setText("")
+        self.dl_name.setText(self.tr("No active download"))
+        self.progress_bar.setValue(0)
+        self.dl_speed.setText("n/a")
+        self.time_left.setText("n/a")
+        self.cache_used.setText("n/a")
+        self.downloaded.setText("n/a")
         self.analysis = None
 
     def statistics(self, ui_update: UIUpdate):
-        self.prog_bar.setValue(100 * ui_update.total_downloaded // self.analysis.dl_size)
-        self.dl_speed.setText(self.tr("Download speed") + f": {get_size(ui_update.download_speed)}/s")
-        self.cache_used.setText(
-            self.tr("Cache used") + f": {get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}")
-        self.downloaded.setText(
-            self.tr("Downloaded") + f": {get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
-        self.time_left.setText(self.tr("Time left: ") + self.get_time(ui_update.estimated_time_left))
+        self.progress_bar.setValue(100 * ui_update.total_downloaded // self.analysis.dl_size)
+        self.dl_speed.setText(f"{get_size(ui_update.download_speed)}/s")
+        self.cache_used.setText(f"{get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}")
+        self.downloaded.setText(f"{get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
+        self.time_left.setText(self.get_time(ui_update.estimated_time_left))
         self.signals.dl_progress.emit(100 * ui_update.total_downloaded // self.analysis.dl_size)
 
     def get_time(self, seconds: int) -> str:
