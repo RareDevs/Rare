@@ -12,7 +12,7 @@ from rare import shared
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
-from rare.ui.components.tabs.downloads.dl_tab import Ui_DownloadWidget
+from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadWidget
 from rare.utils.models import InstallOptionsModel, InstallQueueItemModel
 from rare.utils.utils import get_size
 

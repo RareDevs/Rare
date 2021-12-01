@@ -680,7 +680,7 @@ Download < /translation>
 < context >
 <name>DownloadWidget < /name>
 < message >
-<location filename = "../ui/components/tabs/downloads/dl_tab.py"
+<location filename = "../ui/components/tabs/downloads/downloads_tab.py"
 line = "121" / >
     <source>No
 active
@@ -690,7 +690,7 @@ aktiver
 Download < /translation>
 < /message>
 < message >
-<location filename = "../ui/components/tabs/downloads/dl_tab.py"
+<location filename = "../ui/components/tabs/downloads/downloads_tab.py"
 line = "122" / >
     <source>Stop
 Download < /source>
