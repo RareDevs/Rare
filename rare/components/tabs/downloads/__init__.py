@@ -4,15 +4,15 @@ from logging import getLogger
 from PyQt5.QtCore import QThread, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QPushButton, \
     QGroupBox
-
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate
 from legendary.models.game import Game, InstalledGame
+
 from rare import shared
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
-from rare.components.tabs.downloads.dl_tab import Ui_DownloadWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
+from rare.ui.components.tabs.downloads.dl_tab import Ui_DownloadWidget
 from rare.utils.models import InstallOptionsModel, InstallQueueItemModel
 from rare.utils.utils import get_size
 
