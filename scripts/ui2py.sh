@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if [ ! -z "${1}" ]; then
+    echo "Generating python file for ${1}"
+    pyuic5 "${1}" -x -o "${1%.ui}.py"
+    exit 0
+fi
+
 cwd="$(pwd)"
 cd "$(dirname "$0")"/.. || exit
 
