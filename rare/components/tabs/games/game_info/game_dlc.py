@@ -31,7 +31,7 @@ class GameDlc(QWidget, Ui_GameDlc):
 
     def update_dlcs(self, app_name):
         self.game = self.core.get_game(app_name)
-        dlcs = self.dlcs[self.game.asset_info.catalog_item_id]
+        dlcs = self.dlcs[self.game.catalog_item_id]
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
         if self.installed_dlc_widgets:
@@ -43,8 +43,8 @@ class GameDlc(QWidget, Ui_GameDlc):
                 dlc_widget.install.disconnect()
                 dlc_widget.deleteLater()
         self.available_dlc_widgets.clear()
-        for dlc in sorted(dlcs, key=lambda x: x.app_title):
 
+        for dlc in sorted(dlcs, key=lambda x: x.app_title):
             if self.core.is_installed(dlc.app_name):
                 dlc_widget = GameDlcWidget(dlc, True)
                 self.installed_dlc_contents_layout.addWidget(dlc_widget)
@@ -86,7 +86,7 @@ class GameDlcWidget(QFrame, Ui_GameDlcWidget):
         self.dlc = dlc
 
         self.dlc_name.setText(dlc.app_title)
-        self.version.setText(dlc.app_version)
+        self.version.setText(dlc.app_version())
         self.app_name.setText(dlc.app_name)
 
         self.pixmap = get_pixmap(dlc.app_name)
