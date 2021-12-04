@@ -662,6 +662,15 @@ QTabBar#SideTabBar::tab:disabled {
     background-color: transparent;
 }
 
+QStatusBar {
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: #483d8b;
+    border-bottom-color: #3c3f41;
+    background: qlineargradient(
+        x1: 0, y1: 3, x2: 0, y2: 0, stop: 0 #3c3f41, stop: 1 #202225);
+}
 
 QToolTip {
     border-width: 1px;

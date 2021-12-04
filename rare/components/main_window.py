@@ -3,7 +3,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer, QSize
 from PyQt5.QtGui import QCloseEvent, QCursor
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar
 
 from rare import data_dir, shared
 from rare.components.tabs import TabWidget
@@ -26,6 +26,9 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Rare - GUI for legendary")
         self.tab_widget = TabWidget(self)
         self.setCentralWidget(self.tab_widget)
+
+        self.status_bar = QStatusBar()
+        self.setStatusBar(self.status_bar)
 
         width, height = 1280, 720
         if self.settings.value("save_size", False, bool):
