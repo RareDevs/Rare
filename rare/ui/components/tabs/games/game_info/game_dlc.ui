@@ -88,8 +88,17 @@
           </sizepolicy>
          </property>
          <layout class="QVBoxLayout" name="installed_dlc_contents_layout">
-          <property name="spacing">
-           <number>6</number>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>9</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
           </property>
          </layout>
         </widget>
@@ -153,8 +162,17 @@
           </sizepolicy>
          </property>
          <layout class="QVBoxLayout" name="available_dlc_contents_layout">
-          <property name="spacing">
-           <number>6</number>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>9</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
           </property>
          </layout>
         </widget>
