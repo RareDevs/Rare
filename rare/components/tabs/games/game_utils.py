@@ -134,7 +134,7 @@ class GameUtils(QObject):
                 if not skip_update_check and not self.core.is_noupdate_game(app_name):
                     # check updates
                     try:
-                        latest = self.core.get_asset(app_name, update=False)
+                        latest = self.core.get_asset(app_name, igame.platform, update=False)
                     except ValueError:
                         self.finished.emit(app_name, self.tr("Metadata doesn't exist"))
                         return

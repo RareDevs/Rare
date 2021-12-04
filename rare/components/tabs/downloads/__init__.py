@@ -207,10 +207,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 class UpdateWidget(QWidget):
     update_signal = pyqtSignal(InstallOptionsModel)
 
-    def __init__(self, core: LegendaryCore, game: InstalledGame, parent):
+    def __init__(self, core: LegendaryCore, igame: InstalledGame, parent):
         super(UpdateWidget, self).__init__(parent=parent)
         self.core = core
-        self.game = game
+        self.game = igame
 
         self.layout = QVBoxLayout()
         self.title = QLabel(self.game.title)
@@ -223,8 +223,8 @@ class UpdateWidget(QWidget):
         self.layout.addWidget(self.update_button)
         self.layout.addWidget(self.update_with_settings)
         self.layout.addWidget(QLabel(
-            self.tr("Version: ") + self.game.version + " -> " + self.core.get_asset(self.game.app_name,
-                                                                                    True).build_version))
+            self.tr("Version: ") + self.game.version + " -> " +
+            self.core.get_asset(self.game.app_name, self.game.platform, True).build_version))
 
         self.setLayout(self.layout)
 

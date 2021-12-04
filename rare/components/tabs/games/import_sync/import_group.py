@@ -153,7 +153,7 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
 
             shared.signals.update_gamelist.emit([app_name])
 
-            if igame.version != self.core.get_asset(app_name, False).build_version:
+            if igame.version != self.core.get_asset(app_name, igame.platform, False).build_version:
                 # update available
                 shared.signals.add_download.emit(igame.app_name)
                 shared.signals.update_download_tab_text.emit()

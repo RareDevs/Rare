@@ -49,10 +49,34 @@ class ApiRequestWorker(QRunnable):
             self.signals.result.emit(result, text)
 
 
+class AssetWorker(QRunnable):
+    def __init__(self):
+        super(AssetWorker, self).__init__()
+        self.signals = ApiSignals()
+        self.setAutoDelete(True)
+        self.assets = dict()
+
+    def run(self) -> None:
+        for platform in shared.core.get_installed_platforms():
+            self.assets.update({platform: self.get_asset(platform)})
+        self.signals.result.emit(self.assets, "assets")
+
+    @staticmethod
+    def get_asset(platform):
+        if not shared.core.egs.user:
+            return []
+        assets = [
+            GameAsset.from_egs_json(a) for a in
+            shared.core.egs.get_game_assets(platform=platform)
+        ]
+
+        return assets
+
+
 class LaunchDialog(QDialog, Ui_LaunchDialog):
     quit_app = pyqtSignal(int)
     start_app = pyqtSignal()
-    finished = False
+    finished = 0
 
     def __init__(self, parent=None):
         super(LaunchDialog, self).__init__(parent=parent)
@@ -102,12 +126,15 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             api_requests = [
                 ["32bit", self.core.get_game_and_dlc_list, (True, "Win32")],
                 ["mac", self.core.get_game_and_dlc_list, (True, "Mac")],
-                ["assets", self.core.egs.get_game_assets, ()],
             ]
             # gamelist and no_asset games are from Image worker
             worker = ApiRequestWorker(api_requests)
             worker.signals.result.connect(self.handle_api_worker_result)
             self.thread_pool.start(worker)
+
+            asset_worker = AssetWorker()
+            asset_worker.signals.result.connect(self.handle_api_worker_result)
+            self.thread_pool.start(asset_worker)
 
             # cloud save from another worker, because it is used in cloud_save_utils too
             cloud_worker = CloudWorker()
@@ -115,7 +142,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.thread_pool.start(cloud_worker)
 
         else:
-            self.finished = True
+            self.finished = 2
             self.api_results.game_list, self.api_results.dlcs = self.core.get_game_and_dlc_list(False)
             self.finish()
 
@@ -130,18 +157,16 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.api_results.bit32_games = [i.app_name for i in result[0]] if result else []
         elif text == "mac":
             self.api_results.mac_games = [i.app_name for i in result[0]] if result else []
-        elif text == "assets":
-            if not result:
-                assets = self.core.lgd.assets
-            else:
-                assets = [GameAsset.from_egs_json(a) for a in result]
-            self.core.lgd.assets = assets
-            self.api_results.assets = assets
+
         elif text == "no_assets":
             self.api_results.no_asset_games = result if result else []
 
         elif text == "saves":
             self.api_results.saves = result
+        elif text == "assets":
+            self.core.lgd.assets = result
+            self.finish()
+            return
 
         if self.api_results:
             self.finish()
@@ -152,11 +177,11 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.finish()
 
     def finish(self):
-        if self.finished:
+        if self.finished == 2:
             logger.info("App starting")
             self.image_info.setText(self.tr("Starting..."))
             shared.args.offline = self.offline
             shared.init_api_response(self.api_results)
             self.start_app.emit()
         else:
-            self.finished = True
+            self.finished += 1

@@ -13,7 +13,7 @@ import requests
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings, Qt
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QStyleFactory
-from requests import HTTPError
+from requests.exceptions import HTTPError
 
 from legendary.models.game import Game
 from .models import PathSpec
@@ -474,3 +474,11 @@ class CloudWorker(QRunnable):
 def get_raw_save_path(game: Game):
     if game.supports_cloud_saves:
         return game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
+
+
+def get_default_platform(app_name):
+    if platform.system() != "Darwin" or app_name not in shared.api_results.mac_games:
+        return "Windows"
+
+    else:
+        return "Mac"

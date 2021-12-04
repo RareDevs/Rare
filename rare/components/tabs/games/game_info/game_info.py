@@ -113,7 +113,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.image.setPixmap(pixmap)
 
         self.app_name.setText(self.game.app_name)
-        self.version.setText(self.game.app_version)
+        self.version.setText(self.game.app_version(self.igame.platform if self.igame else "Windows"))
         self.dev.setText(self.game.metadata["developer"])
 
         if self.igame:
@@ -121,9 +121,11 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.install_path.setText(self.igame.install_path)
             self.install_size.setVisible(True)
             self.install_path.setVisible(True)
+            self.platform.setText(self.igame.platform)
         else:
             self.install_size.setVisible(False)
             self.install_path.setVisible(False)
+            self.platform.setText("Windows")
 
         if not self.igame:
             # origin game

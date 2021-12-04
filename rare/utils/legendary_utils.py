@@ -162,20 +162,21 @@ class VerifyWorker(QRunnable):
 
 def import_game(core: LegendaryCore, app_name: str, path: str):
     logger.info("Import " + app_name)
-    game = core.get_game(app_name)
+    game = core.get_game(app_name, update_meta=False)
     manifest, igame = core.import_game(game, path)
     exe_path = os.path.join(path, manifest.meta.launch_exe.lstrip('/'))
     total = len(manifest.file_manifest_list.elements)
     found = sum(os.path.exists(os.path.join(path, f.filename))
                 for f in manifest.file_manifest_list.elements)
     ratio = found / total
+
     if not os.path.exists(exe_path):
         logger.error(f"Game {game.app_title} failed to import")
         return False
     if ratio < 0.95:
-        logger.error(
-            "Game files are missing. It may be not the lates version ore it is corrupt")
-        return False
+        logger.warning(
+            "Game files are missing. It may be not the latest version or it is corrupt")
+        # return False
     core.install_game(igame)
     if igame.needs_verification:
         logger.info(logger.info(

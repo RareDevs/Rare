@@ -74,6 +74,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
 
         self.game_actions_stack.setCurrentIndex(1)
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
+        self.lbl_platform.setText(self.tr("Platforms"))
 
     def install_game(self):
         self.signals.install_game.emit(InstallOptionsModel(app_name=self.game.app_name))
@@ -81,6 +82,12 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
     def update_game(self, game: Game):
         self.game = game
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
+        available_platforms = ["Windows"]
+        if self.game.app_name in shared.api_results.bit32_games:
+            available_platforms.append("32 Bit")
+        if self.game.app_name in shared.api_results.mac_games:
+            available_platforms.append("macOS")
+        self.platform.setText(", ".join(available_platforms))
 
         pixmap = get_pixmap(game.app_name)
         w = 200
@@ -88,7 +95,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.image.setPixmap(pixmap)
 
         self.app_name.setText(self.game.app_name)
-        self.version.setText(self.game.app_version)
+        self.version.setText(self.game.app_version("Windows"))
         self.dev.setText(self.game.metadata["developer"])
         self.install_size.setText("N/A")
         self.install_path.setText("N/A")
