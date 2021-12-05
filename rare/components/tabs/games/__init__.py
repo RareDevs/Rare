@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Tuple, Dict
 
 from PyQt5.QtCore import QSettings, QObjectCleanupHandler
 from PyQt5.QtGui import QImage, QPixmap
@@ -28,7 +29,7 @@ logger = getLogger("GamesTab")
 
 
 class GamesTab(QStackedWidget, Ui_GamesTab):
-    widgets = dict()
+    widgets: Dict[str, Tuple[InstalledIconWidget, InstalledListWidget]] = dict()
     running_games = list()
     updates = set()
     active_filter = 0

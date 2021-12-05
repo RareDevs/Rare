@@ -1,13 +1,14 @@
 import datetime
 from logging import getLogger
+from typing import List, Dict
 
 from PyQt5.QtCore import QThread, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QPushButton, \
     QGroupBox
+
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate
 from legendary.models.game import Game, InstalledGame
-
 from rare import shared
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
@@ -21,7 +22,7 @@ logger = getLogger("Download")
 
 class DownloadsTab(QWidget, Ui_DownloadsTab):
     thread: QThread
-    dl_queue = list()
+    dl_queue: List[InstallQueueItemModel] = []
     dl_status = pyqtSignal(int)
 
     def __init__(self, updates: list):
@@ -43,7 +44,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.update_layout = QVBoxLayout(self.updates)
         self.queue_scroll_contents_layout.addWidget(self.updates)
 
-        self.update_widgets = {}
+        self.update_widgets: Dict[str, UpdateWidget] = {}
 
         self.update_text = QLabel(self.tr("No updates available"))
         self.update_layout.addWidget(self.update_text)
@@ -59,6 +60,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.signals.game_uninstalled.connect(self.remove_update)
 
         self.signals.add_download.connect(lambda app_name: self.add_update(self.core.get_installed_game(app_name)))
+        shared.signals.game_uninstalled.connect(self.game_uninstalled)
 
         self.reset_infos()
 
@@ -75,6 +77,23 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         if QSettings().value("auto_update", False, bool):
             self.get_install_options(InstallOptionsModel(app_name=igame.app_name, update=True, silent=True))
             widget.update_button.setDisabled(True)
+        self.update_text.setVisible(False)
+
+    def game_uninstalled(self, app_name):
+        # game in dl_queue
+        for i, item in enumerate(self.dl_queue):
+            if item.options.app_name == app_name:
+                self.dl_queue.pop(i)
+                self.queue_widget.update_queue(self.dl_queue)
+            break
+
+        # game has available update
+        if app_name in self.update_widgets.keys():
+            self.remove_update(app_name)
+
+        # if game is updating
+        if self.active_game and self.active_game.app_name == app_name:
+            self.stop_download()
 
     def remove_update(self, app_name):
         if w := self.update_widgets.get(app_name):
