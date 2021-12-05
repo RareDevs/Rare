@@ -80,8 +80,8 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
 
         self.title_label.setText(self.title_label.text() + igame.title)
 
-        self.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %I:%M%p"))
-        self.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %I:%M%p"))
+        self.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X"))
+        self.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X"))
 
         new_text = self.tr(" (newer)")
         if newer == "remote":
