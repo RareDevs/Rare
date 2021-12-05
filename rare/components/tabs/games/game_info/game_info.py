@@ -92,6 +92,9 @@ class GameInfo(QWidget, Ui_GameInfo):
                 igame.needs_verification = False
                 self.core.lgd.set_installed_game(self.igame.app_name, igame)
                 self.verification_finished.emit(igame)
+        elif failed == missing == -1:
+            QMessageBox.warning(self, "Warning", self.tr("Something went wrong"))
+
         else:
             ans = QMessageBox.question(self, "Summary", self.tr(
                 'Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?').format(
@@ -113,7 +116,10 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.image.setPixmap(pixmap)
 
         self.app_name.setText(self.game.app_name)
-        self.version.setText(self.game.app_version(self.igame.platform if self.igame else "Windows"))
+        if self.igame:
+            self.version.setText(self.igame.version)
+        else:
+            self.version.setText(self.game.app_version(self.igame.platform if self.igame else "Windows"))
         self.dev.setText(self.game.metadata["developer"])
 
         if self.igame:

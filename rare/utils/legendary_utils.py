@@ -100,7 +100,7 @@ class VerifyWorker(QRunnable):
             update_manifest(self.app_name, self.core)
         manifest_data, _ = self.core.get_installed_manifest(self.app_name)
         if not manifest_data:
-            self.signals.summary.emit(0, 0, self.app_name)
+            self.signals.summary.emit(-1, -1, self.app_name)
             return
 
         manifest = self.core.load_manifest(manifest_data)
