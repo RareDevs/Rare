@@ -102,12 +102,12 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
 
-    def update_game(self, game: Game):
-        self.game = game
-        self.igame = self.core.get_installed_game(game.app_name)
+    def update_game(self, app_name: str):
+        self.game = self.core.get_game(app_name)
+        self.igame = self.core.get_installed_game(self.game.app_name)
         self.game_title.setText(f'<h2>{self.game.app_title}</h2>')
 
-        pixmap = get_pixmap(game.app_name)
+        pixmap = get_pixmap(self.game.app_name)
         w = 200
         pixmap = pixmap.scaled(w, int(w * 4 / 3))
         self.image.setPixmap(pixmap)
@@ -141,13 +141,13 @@ class GameInfo(QWidget, Ui_GameInfo):
 
         if platform.system() != "Windows":
             self.grade.setText(self.tr("Loading"))
-            self.steam_worker.set_app_name(game.app_name)
+            self.steam_worker.set_app_name(self.game.app_name)
             QThreadPool.globalInstance().start(self.steam_worker)
 
-        if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(game.app_name):
+        if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(self.game.app_name):
             self.verify_widget.setCurrentIndex(0)
-        elif self.verify_threads.get(game.app_name):
+        elif self.verify_threads.get(self.game.app_name):
             self.verify_widget.setCurrentIndex(1)
             self.verify_progress.setValue(
-                self.verify_threads[game.app_name].num / self.verify_threads[game.app_name].total * 100
+                self.verify_threads[self.game.app_name].num / self.verify_threads[self.game.app_name].total * 100
             )

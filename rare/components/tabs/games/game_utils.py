@@ -1,5 +1,6 @@
 import os
 import platform
+import shutil
 import webbrowser
 from dataclasses import dataclass
 from logging import getLogger
@@ -161,6 +162,7 @@ class GameUtils(QObject):
                 environment.insert(env, value)
 
             if platform.system() != "Windows":
+                # wine prefixes
                 for env in ["STEAM_COMPAT_DATA_PATH", "WINEPREFIX"]:
                     if val := full_env.get(env):
                         if not os.path.exists(val):
@@ -168,18 +170,24 @@ class GameUtils(QObject):
                                 os.makedirs(val)
                             except PermissionError as e:
                                 logger.error(str(e))
-                                if QMessageBox.question(None, "Error",
-                                                        self.tr(
-                                                            "Error while launching {}. No permission to create {} for {}\nLaunch anyway?").format(
-                                                            game.app_title, val, env),
-                                                        buttons=QMessageBox.Yes | QMessageBox.No,
-                                                        defaultButton=QMessageBox.Yes) == QMessageBox.No:
-                                    process.deleteLater()
-                                    return
+                                QMessageBox.warning(None, "Error",
+                                                    self.tr(
+                                                        "Error while launching {}. No permission to create {} for {}").format(
+                                                        game.app_title, val, env))
+                                process.deleteLater()
+                                return
+                # check wine executable
+                if shutil.which(full_params[0]) is None:
+                    # wine binary does not exist
+                    QMessageBox.warning(None, "Warning", self.tr(
+                        "Wine executable '{}' does not exist. Please change it in Settings").format(full_params[0]))
+                    process.deleteLater()
+                    return
 
             process.setProcessEnvironment(environment)
             process.game_finished.connect(self.game_finished)
             running_game = RunningGameModel(process=process, app_name=app_name, always_ask_sync=ask_always_sync)
+
             process.start(full_params[0], full_params[1:])
             self.game_launched.emit(app_name)
             logger.info(f"{game.app_title} launched")
@@ -197,9 +205,18 @@ class GameUtils(QObject):
                                                 fallback=os.path.expanduser("~/.wine"))
             if not wine_bin:
                 wine_bin = self.core.lgd.config.get(game.app_name, 'wine_executable', fallback="/usr/bin/wine")
+
+            if shutil.which(wine_bin) is None:
+                # wine binary does not exist
+                QMessageBox.warning(None, "Warning",
+                                    self.tr("Wine executable '{}' does not exist. Please change it in Settings").format(
+                                        wine_bin))
+                process.deleteLater()
+                return
+
             env = self.core.get_app_environment(game.app_name, wine_pfx=wine_pfx)
 
-            if not wine_bin or not env.get('WINEPREFIX') and not os.path.exists("/usr/bin/wine"):
+            if not env.get('WINEPREFIX') and not os.path.exists("/usr/bin/wine"):
                 logger.error(f'In order to launch Origin correctly you must specify the wine binary and prefix '
                              f'to use in the configuration file or command line. See the README for details.')
                 self.finished.emit(app_name, self.tr("No wine executable selected. Please set it in settings"))
@@ -215,14 +232,9 @@ class GameUtils(QObject):
         if QSettings().value("show_console", False, bool):
             self.console.show()
             process.readyReadStandardOutput.connect(lambda: self.console.log(
-                bytes(process.readAllStandardOutput()).decode("utf-8", errors="ignore")))
+                str(process.readAllStandardOutput().data(), "utf-8", "ignore")))
             process.readyReadStandardError.connect(lambda: self.console.error(
-                bytes(process.readAllStandardOutput()).decode("utf-8", errors="ignore")))
-        else:
-            process.readyReadStandardOutput.connect(
-                lambda: print(bytes(process.readAllStandardOutput()).decode("utf-8", errors="ignore")))
-            process.readyReadStandardError.connect(
-                lambda: print(bytes(process.readAllStandardError()).decode("utf-8", errors="ignore")))
+                str(process.readAllStandardError().data(), "utf-8", "ignore")))
 
     def game_finished(self, exit_code, app_name):
         logger.info("Game exited with exit code: " + str(exit_code))

@@ -130,8 +130,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.setCurrentIndex(2)
         self.import_sync_tabs.show_egl_sync()
 
-    def show_game_info(self, game):
-        self.game_info_tabs.update_game(game)
+    def show_game_info(self, app_name):
+        self.game_info_tabs.update_game(app_name)
         self.setCurrentIndex(1)
 
     def show_uninstalled_info(self, game):

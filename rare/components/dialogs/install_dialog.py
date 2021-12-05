@@ -69,7 +69,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.platform_combo_box.currentIndexChanged.connect(lambda: self.option_changed(None))
         self.platform_combo_box.currentIndexChanged.connect(lambda i: QMessageBox.warning(self, "Warning", self.tr(
             "You will not be able to run the Game if you choose {}").format(self.platform_combo_box.itemText(i)))
-                if (self.platform_combo_box.currentText() == "Mac" and platform.system() != "Darwin") else None)
+        if (self.platform_combo_box.currentText() == "Mac" and platform.system() != "Darwin") else None)
+
+        if platform.system() == "Darwin" and "Mac" in platforms:
+            self.platform_combo_box.setCurrentIndex(platforms.index("Mac"))
 
         if self.core.lgd.config.has_option("Legendary", "max_workers"):
             max_workers = self.core.lgd.config.get("Legendary", "max_workers")

@@ -49,7 +49,7 @@ class InstalledIconWidget(BaseInstalledWidget):
 
         self.menu_btn.setObjectName("menu_button")
 
-        self.menu_btn.clicked.connect(lambda: self.show_info.emit(self.game))
+        self.menu_btn.clicked.connect(lambda: self.show_info.emit(self.game.app_name))
         self.menu_btn.setFixedWidth(17)
         minilayout.addWidget(self.menu_btn)
         minilayout.addStretch(1)
@@ -86,6 +86,8 @@ class InstalledIconWidget(BaseInstalledWidget):
             self.info_label.setText(self.texts["default"]["syncing"])
         elif self.update_available:
             self.info_label.setText(self.texts["default"]["update_available"])
+        elif self.igame and self.igame.needs_verification:
+            self.info_label.setText(self.texts["needs_verification"])
         else:
             self.info_label.setText("")
 

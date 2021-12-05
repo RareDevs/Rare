@@ -6,7 +6,6 @@ from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
 
-from legendary.models.game import Game
 from rare import shared
 from rare.components.tabs.games.game_utils import GameUtils
 from rare.utils import utils
@@ -17,7 +16,7 @@ logger = getLogger("Game")
 
 class BaseInstalledWidget(QGroupBox):
     launch_signal = pyqtSignal(str, QProcess, list)
-    show_info = pyqtSignal(Game)
+    show_info = pyqtSignal(str)
     finish_signal = pyqtSignal(str, int)
     proc: QProcess()
 
