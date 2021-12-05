@@ -1,4 +1,5 @@
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QPixmap, QResizeEvent
 from PyQt5.QtWidgets import QFrame, QWidget, QMessageBox
 
 from legendary.models.game import Game
@@ -84,23 +85,35 @@ class GameDlcWidget(QFrame, Ui_GameDlcWidget):
         self.setupUi(self)
         self.dlc = dlc
 
-        pixmap = get_pixmap(dlc.app_name)
-        self.image.setPixmap(pixmap.scaledToHeight(int(pixmap.height() * 0.5)))
-
         self.dlc_name.setText(dlc.app_title)
         self.version.setText(dlc.app_version)
         self.app_name.setText(dlc.app_name)
 
+        self.pixmap = get_pixmap(dlc.app_name)
+
         if installed:
             self.action_button.setProperty("uninstall", 1)
             self.action_button.clicked.connect(self.uninstall_dlc)
-            self.status.setText(self.tr("Installed"))
             self.action_button.setText(self.tr("Uninstall DLC"))
         else:
             self.action_button.setProperty("install", 1)
             self.action_button.clicked.connect(self.install_game)
-            self.status.setText(self.tr("Not installed"))
             self.action_button.setText(self.tr("Install DLC"))
+
+    def resizeEvent(self, a0: QResizeEvent) -> None:
+        self.image.clear()
+        super(GameDlcWidget, self).resizeEvent(a0)
+        self.setPixmap(self.pixmap)
+
+    def setPixmap(self, a0: QPixmap) -> None:
+        self.pixmap = a0
+        self.image.setPixmap(
+            self.pixmap.scaledToHeight(
+                self.dlc_info.size().height() - (self.image.contentsMargins().top() +
+                                                 self.image.contentsMargins().bottom() +
+                                                 self.image.lineWidth()*2),
+                Qt.SmoothTransformation))
+        self.image.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
     def uninstall_dlc(self):
         self.action_button.setDisabled(True)

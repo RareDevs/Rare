@@ -1,5 +1,4 @@
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QTabBar, QToolButton
 from qtawesome import icon
 
@@ -9,7 +8,10 @@ class MainTabBar(QTabBar):
         super(MainTabBar, self).__init__()
         self._expanded = expanded
         self.setObjectName("MainTabBar")
-        self.setFont(QFont("Arial", 13))
+        font = self.font()
+        font.setPointSize(font.pointSize()+2)
+        font.setBold(True)
+        self.setFont(font)
         # self.setContentsMargins(0,10,0,10)
 
     def tabSizeHint(self, index):
