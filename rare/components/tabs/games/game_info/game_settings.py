@@ -278,17 +278,17 @@ class GameSettings(QWidget, Ui_GameSettings):
         else:
             self.skip_update.setCurrentIndex(0)
 
-        if self.igame and self.igame.platform == "Mac":
-            self.linux_settings_scroll.setVisible(False)
-        else:
-            self.linux_settings_scroll.setVisible(True)
-
         wrapper = self.core.lgd.config.get(self.game.app_name, "wrapper", fallback="")
         self.wrapper.setText(wrapper)
 
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
         if platform.system() != "Windows":
             self.linux_settings.update_game(app_name)
+
+            if self.igame and self.igame.platform == "Mac":
+                self.linux_settings_scroll.setVisible(False)
+            else:
+                self.linux_settings_scroll.setVisible(True)
 
             proton = self.core.lgd.config.get(f"{app_name}", "wrapper", fallback="").replace('"', "")
             if proton and "proton" in proton:
