@@ -1,10 +1,11 @@
 from logging import getLogger
 
-from PyQt5.QtCore import QProcess, pyqtSignal
+from PyQt5.QtCore import QProcess, pyqtSignal, Qt
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 from qtawesome import icon
 
 from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
+from rare.utils.utils import get_size
 
 logger = getLogger("GameWidget")
 
@@ -19,17 +20,16 @@ class InstalledListWidget(BaseInstalledWidget):
         self.dev = self.game.metadata["developer"]
         if self.game.third_party_store != "Origin":
             self.size = self.igame.install_size
-            self.launch_params = self.igame.launch_parameters
         else:
             self.size = 0
-            self.launch_params = ""
 
         self.layout = QHBoxLayout()
+        self.setLayout(self.layout)
+        self.layout.addWidget(self.image)
 
         ##Layout on the right
         self.childLayout = QVBoxLayout()
-
-        self.layout.addWidget(self.image)
+        self.layout.addLayout(self.childLayout)
 
         play_icon = icon("ei.play")
         self.title_label = QLabel(f"<h1>{self.game.app_title}</h1>")
@@ -57,15 +57,13 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.developer_label)
         if not self.is_origin:
             self.version_label = QLabel("Version: " + str(self.igame.version))
-            self.size_label = QLabel(f"{self.tr('Installed size')}: {round(self.size / (1024 ** 3), 2)} GB")
+            self.size_label = QLabel(f"{self.tr('Installed size')}: {get_size(self.size)}")
 
             self.childLayout.addWidget(self.version_label)
             self.childLayout.addWidget(self.size_label)
 
-        self.childLayout.addStretch(1)
-        self.layout.addLayout(self.childLayout)
-        self.layout.addStretch(1)
-        self.setLayout(self.layout)
+        self.childLayout.setAlignment(Qt.AlignTop)
+        self.layout.setAlignment(Qt.AlignLeft)
 
         self.game_utils.cloud_save_finished.connect(self.sync_finished)
         self.game_utils.finished.connect(self.game_finished)
