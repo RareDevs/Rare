@@ -147,10 +147,9 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
                     self.queue_widget.update_queue(self.dl_queue)
 
             if game.app_name in self.update_widgets.keys():
-                self.update_widgets[game.app_name].setVisible(False)
-                self.update_widgets.pop(game.app_name)
-                if len(self.update_widgets) == 0:
-                    self.update_text.setVisible(True)
+                igame = self.core.get_installed_game(game.app_name)
+                if self.core.get_asset(game.app_name, igame.platform, False).build_version == igame.version:
+                    self.remove_update(game.app_name)
 
             self.signals.send_notification.emit(game.app_title)
             self.signals.update_gamelist.emit([game.app_name])
