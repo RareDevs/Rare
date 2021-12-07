@@ -5,12 +5,9 @@ import pathlib
 import sys
 from argparse import ArgumentParser
 
-# from PyQt5.QtGui import QOpenGLDebugLogger, QOpenGLDebugMessage
-
 
 def main():
-    # disable debug.log file
-    # QOpenGLDebugLogger.disableMessages(QOpenGLDebugLogger(), QOpenGLDebugMessage.AnySource, QOpenGLDebugMessage.AnyType)
+
     # fix cx_freeze
     import multiprocessing
     multiprocessing.freeze_support()
@@ -18,9 +15,6 @@ def main():
     # insert legendary for installed via pip/setup.py submodule to path
     if not __name__ == "__main__":
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "legendary"))
-
-    # insert source directory
-    sys.path.insert(0, str(pathlib.Path(__file__).parent.parent.absolute()))
 
     # CLI Options
     parser = ArgumentParser()
@@ -82,5 +76,10 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "legendary"))
+    # run from source
+    # insert raw legendary submodule
+    sys.path.insert(0, os.path.join(pathlib.Path(__file__).parents[2].absolute(), "legendary"))
+    # insert source directory
+    sys.path.insert(0, str(pathlib.Path(__file__).parent.parent.absolute()))
+
     main()
