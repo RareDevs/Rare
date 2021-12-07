@@ -40,7 +40,7 @@ jobs:
           sudo pip install -r requirements.txt
       - name: Install legendary
         run: |
-          pip install ./legendary
+          pip install ./rare/legendary
       - name: run python setup
         run: |
           python3 setup.py sdist
@@ -73,7 +73,7 @@ jobs:
           sudo pip3 install appimage-builder
       - name: Install legendary
         run: |
-          pip install ./legendary
+          pip install ./rare/legendary
       - name: Prepare Build directory
         run: |
           mkdir build
@@ -117,7 +117,7 @@ jobs:
         run: pip3 install --upgrade cx_freeze wheel
       - name: Install legendary
         run: |
-          pip install ./legendary
+          pip install ./rare/legendary
       - name: Build
         run: python freeze.py bdist_msi
 
@@ -145,7 +145,7 @@ jobs:
       - name: Pip Dependencies
         run: |
           pip install -r requirements.txt
-          pip install ./legendary
+          pip install ./rare/legendary
           pip install pyinstaller
 
       - name: copy files

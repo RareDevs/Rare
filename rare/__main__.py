@@ -15,8 +15,9 @@ def main():
     import multiprocessing
     multiprocessing.freeze_support()
 
-    # insert legendary submodule to path
-    sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "legendary"))
+    # insert legendary for installed via pip/setup.py submodule to path
+    if not __name__ == "__main__":
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "legendary"))
 
     # insert source directory
     sys.path.insert(0, str(pathlib.Path(__file__).parent.parent.absolute()))
@@ -81,4 +82,5 @@ def main():
 
 
 if __name__ == '__main__':
+    sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.parent.absolute(), "legendary"))
     main()
