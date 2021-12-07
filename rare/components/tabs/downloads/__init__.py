@@ -1,13 +1,14 @@
 import datetime
 from logging import getLogger
+from typing import List, Dict
 
 from PyQt5.QtCore import QThread, pyqtSignal, QSettings
 from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QPushButton, \
     QGroupBox
+
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate
 from legendary.models.game import Game, InstalledGame
-
 from rare import shared
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
@@ -21,7 +22,7 @@ logger = getLogger("Download")
 
 class DownloadsTab(QWidget, Ui_DownloadsTab):
     thread: QThread
-    dl_queue = list()
+    dl_queue: List[InstallQueueItemModel] = []
     dl_status = pyqtSignal(int)
 
     def __init__(self, updates: list):
@@ -43,7 +44,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.update_layout = QVBoxLayout(self.updates)
         self.queue_scroll_contents_layout.addWidget(self.updates)
 
-        self.update_widgets = {}
+        self.update_widgets: Dict[str, UpdateWidget] = {}
 
         self.update_text = QLabel(self.tr("No updates available"))
         self.update_layout.addWidget(self.update_text)
@@ -59,6 +60,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.signals.game_uninstalled.connect(self.remove_update)
 
         self.signals.add_download.connect(lambda app_name: self.add_update(self.core.get_installed_game(app_name)))
+        shared.signals.game_uninstalled.connect(self.game_uninstalled)
 
         self.reset_infos()
 
@@ -75,6 +77,23 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         if QSettings().value("auto_update", False, bool):
             self.get_install_options(InstallOptionsModel(app_name=igame.app_name, update=True, silent=True))
             widget.update_button.setDisabled(True)
+        self.update_text.setVisible(False)
+
+    def game_uninstalled(self, app_name):
+        # game in dl_queue
+        for i, item in enumerate(self.dl_queue):
+            if item.options.app_name == app_name:
+                self.dl_queue.pop(i)
+                self.queue_widget.update_queue(self.dl_queue)
+            break
+
+        # game has available update
+        if app_name in self.update_widgets.keys():
+            self.remove_update(app_name)
+
+        # if game is updating
+        if self.active_game and self.active_game.app_name == app_name:
+            self.stop_download()
 
     def remove_update(self, app_name):
         if w := self.update_widgets.get(app_name):
@@ -128,10 +147,9 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
                     self.queue_widget.update_queue(self.dl_queue)
 
             if game.app_name in self.update_widgets.keys():
-                self.update_widgets[game.app_name].setVisible(False)
-                self.update_widgets.pop(game.app_name)
-                if len(self.update_widgets) == 0:
-                    self.update_text.setVisible(True)
+                igame = self.core.get_installed_game(game.app_name)
+                if self.core.get_asset(game.app_name, igame.platform, False).build_version == igame.version:
+                    self.remove_update(game.app_name)
 
             self.signals.send_notification.emit(game.app_title)
             self.signals.update_gamelist.emit([game.app_name])
@@ -207,10 +225,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 class UpdateWidget(QWidget):
     update_signal = pyqtSignal(InstallOptionsModel)
 
-    def __init__(self, core: LegendaryCore, game: InstalledGame, parent):
+    def __init__(self, core: LegendaryCore, igame: InstalledGame, parent):
         super(UpdateWidget, self).__init__(parent=parent)
         self.core = core
-        self.game = game
+        self.game = igame
 
         self.layout = QVBoxLayout()
         self.title = QLabel(self.game.title)
@@ -223,8 +241,8 @@ class UpdateWidget(QWidget):
         self.layout.addWidget(self.update_button)
         self.layout.addWidget(self.update_with_settings)
         self.layout.addWidget(QLabel(
-            self.tr("Version: ") + self.game.version + " -> " + self.core.get_asset(self.game.app_name,
-                                                                                    True).build_version))
+            self.tr("Version: ") + self.game.version + " -> " +
+            self.core.get_asset(self.game.app_name, self.game.platform, True).build_version))
 
         self.setLayout(self.layout)
 

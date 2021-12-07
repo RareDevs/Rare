@@ -1,4 +1,5 @@
 import os
+import platform
 from multiprocessing import Queue as MPQueue
 
 from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
@@ -59,6 +60,20 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.warn_label.setVisible(False)
         self.warn_message.setVisible(False)
 
+        platforms = ["Windows"]
+        if dl_item.options.app_name in shared.api_results.bit32_games:
+            platforms.append("Win32")
+        if dl_item.options.app_name in shared.api_results.mac_games:
+            platforms.append("Mac")
+        self.platform_combo_box.addItems(platforms)
+        self.platform_combo_box.currentIndexChanged.connect(lambda: self.option_changed(None))
+        self.platform_combo_box.currentIndexChanged.connect(lambda i: QMessageBox.warning(self, "Warning", self.tr(
+            "You will not be able to run the Game if you choose {}").format(self.platform_combo_box.itemText(i)))
+        if (self.platform_combo_box.currentText() == "Mac" and platform.system() != "Darwin") else None)
+
+        if platform.system() == "Darwin" and "Mac" in platforms:
+            self.platform_combo_box.setCurrentIndex(platforms.index("Mac"))
+
         if self.core.lgd.config.has_option("Legendary", "max_workers"):
             max_workers = self.core.lgd.config.get("Legendary", "max_workers")
         else:
@@ -110,6 +125,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.dl_item.options.force = self.force_download_check.isChecked()
         self.dl_item.options.ignore_space_req = self.ignore_space_check.isChecked()
         self.dl_item.options.no_install = self.download_only_check.isChecked()
+        self.dl_item.options.platform = self.platform_combo_box.currentText()
         self.dl_item.options.sdl_list = ['']
         for cb in self.sdl_list_checks:
             if data := cb.isChecked():
@@ -232,7 +248,7 @@ class InstallInfoWorker(QRunnable):
                 # override_manifest=,
                 # override_old_manifest=,
                 # override_base_url=,
-                # platform_override=,
+                platform=self.dl_item.options.platform,
                 # file_prefix_filter=,
                 # file_exclude_filter=,
                 # file_install_tag=,

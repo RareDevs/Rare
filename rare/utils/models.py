@@ -23,6 +23,7 @@ class InstallOptionsModel:
     sdl_list: list = field(default_factory=lambda: [''])
     update: bool = False
     silent: bool = False
+    platform: str = ""
 
     def set_no_install(self, enabled: bool) -> None:
         self.no_install = enabled
@@ -98,7 +99,6 @@ class ApiResults:
     dlcs: list = None
     bit32_games: list = None
     mac_games: list = None
-    assets: list = None
     no_asset_games: list = None
     saves: list = None
 
@@ -107,7 +107,6 @@ class ApiResults:
                and self.dlcs is not None \
                and self.bit32_games is not None \
                and self.mac_games is not None \
-               and self.assets is not None \
                and self.no_asset_games is not None \
                and self.saves is not None
 

@@ -6,7 +6,6 @@ from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
 
-from legendary.models.game import Game
 from rare import shared
 from rare.components.tabs.games.game_utils import GameUtils
 from rare.utils import utils
@@ -17,7 +16,7 @@ logger = getLogger("Game")
 
 class BaseInstalledWidget(QGroupBox):
     launch_signal = pyqtSignal(str, QProcess, list)
-    show_info = pyqtSignal(Game)
+    show_info = pyqtSignal(str)
     finish_signal = pyqtSignal(str, int)
     proc: QProcess()
 
@@ -55,10 +54,12 @@ class BaseInstalledWidget(QGroupBox):
         self.image.setPixmap(pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
         self.game_running = False
         self.offline = shared.args.offline
-        if self.game.third_party_store == "Origin":
-            self.update_available = False
-        else:
-            self.update_available = self.core.get_asset(self.game.app_name, False).build_version != self.igame.version
+        self.update_available = False
+        if self.game.third_party_store != "Origin" or self.igame:
+            remote_version = self.core.get_asset(self.game.app_name, platform=self.igame.platform, update=False).build_version
+            if remote_version != self.igame.version:
+                self.update_available = True
+
         self.data = QByteArray()
         self.setContentsMargins(0, 0, 0, 0)
         self.settings = QSettings()

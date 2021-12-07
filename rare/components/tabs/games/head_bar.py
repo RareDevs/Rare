@@ -21,10 +21,11 @@ class GameListHeadBar(QWidget):
                               self.tr("Installed only"),
                               self.tr("Offline Games"),
                               self.tr("32 Bit Games"),
+                              self.tr("Mac games"),
                               self.tr("Exclude Origin")])
         self.layout().addWidget(self.filter)
 
-        self.available_filters = ["all", "installed", "offline", "32bit", "installable"]
+        self.available_filters = ["all", "installed", "offline", "32bit", "mac", "installable"]
 
         try:
             self.filter.setCurrentIndex(self.settings.value("filter", 0, int))

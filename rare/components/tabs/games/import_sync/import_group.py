@@ -127,11 +127,10 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         for i in os.listdir(os.path.join(path, ".egstore")):
             if i.endswith(".mancpn"):
                 file = os.path.join(path, ".egstore", i)
-                break
+                return json.load(open(file, "r")).get("AppName")
         else:
             logger.warning("File was not found")
             return None
-        return json.load(open(file, "r"))["AppName"]
 
     def import_game(self, path=None):
         app_name = self.app_name.text()
@@ -145,20 +144,18 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
                 self.info_label.setText(self.tr("Could not find app name"))
                 return
 
-        if legendary_utils.import_game(self.core, app_name=app_name, path=path):
+        if not (err := legendary_utils.import_game(self.core, app_name=app_name, path=path)):
             igame = self.core.get_installed_game(app_name)
-            self.info_label.setText(self.tr("Successfully imported {}. Reload library").format(
-                igame.title))
+            self.info_label.setText(self.tr("Successfully imported {}").format(igame.title))
             self.app_name.setText(str())
-
             shared.signals.update_gamelist.emit([app_name])
 
-            if igame.version != self.core.get_asset(app_name, False).build_version:
+            if igame.version != self.core.get_asset(app_name, igame.platform, False).build_version:
                 # update available
                 shared.signals.add_download.emit(igame.app_name)
                 shared.signals.update_download_tab_text.emit()
 
         else:
             logger.warning(f'Failed to import "{app_name}"')
-            self.info_label.setText(self.tr("Failed to import {}").format(app_name))
+            self.info_label.setText(self.tr("Could not import {}: ").format(app_name) + err)
             return

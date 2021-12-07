@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Tuple, Dict
 
 from PyQt5.QtCore import QSettings, QObjectCleanupHandler
 from PyQt5.QtGui import QImage, QPixmap
@@ -28,7 +29,7 @@ logger = getLogger("GamesTab")
 
 
 class GamesTab(QStackedWidget, Ui_GamesTab):
-    widgets = dict()
+    widgets: Dict[str, Tuple[InstalledIconWidget, InstalledListWidget]] = dict()
     running_games = list()
     updates = set()
     active_filter = 0
@@ -130,8 +131,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.setCurrentIndex(2)
         self.import_sync_tabs.show_egl_sync()
 
-    def show_game_info(self, game):
-        self.game_info_tabs.update_game(game)
+    def show_game_info(self, app_name):
+        self.game_info_tabs.update_game(app_name)
         self.setCurrentIndex(1)
 
     def show_uninstalled_info(self, game):
@@ -237,7 +238,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                         visible = False
                 elif filter_name == "32bit" and self.bit32:
                     visible = w.game.app_name in self.bit32
-                elif filter_name == "mac":
+                elif filter_name == "mac" and self.mac_games:
                     visible = w.game.app_name in self.mac_games
                 elif filter_name == "installable":
                     visible = w.game.app_name not in self.no_asset_names
@@ -263,7 +264,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                         igame = self.core.get_installed_game(app_name)
                         for w in widgets:
                             w.igame = igame
-                            w.update_available = self.core.get_asset(w.game.app_name,
+                            w.update_available = self.core.get_asset(w.game.app_name, w.igame.platform,
                                                                      True).build_version != igame.version
                         widgets[0].leaveEvent(None)
                     # new installed

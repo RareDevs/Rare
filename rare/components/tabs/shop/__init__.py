@@ -30,8 +30,7 @@ class Shop(QStackedWidget):
         self.search_results = SearchResults(self.api_core)
         self.addWidget(self.search_results)
         self.search_results.show_info.connect(self.show_game_info)
-
-        self.info = ShopGameInfo([i.asset_info.namespace for i in shared.api_results.game_list], self.api_core)
+        self.info = ShopGameInfo([i.asset_infos["Windows"].namespace for i in shared.api_results.game_list], self.api_core)
         self.addWidget(self.info)
         self.info.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
 

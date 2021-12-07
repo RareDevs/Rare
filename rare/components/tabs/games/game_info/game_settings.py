@@ -111,10 +111,8 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.linux_settings_contents_layout.addWidget(self.linux_settings)
             self.linux_settings_contents_layout.setAlignment(Qt.AlignTop)
         else:
-            self.game_settings_layout.setAlignment(Qt.AlignTop)
             self.linux_settings_scroll.setVisible(False)
-
-        # skip_update_check
+        self.game_settings_layout.setAlignment(Qt.AlignTop)
 
     def compute_save_path(self):
         if self.core.is_installed(self.game.app_name) and self.game.supports_cloud_saves:
@@ -252,11 +250,10 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.core.lgd.config.set(self.game.app_name + ".env", "STEAM_COMPAT_DATA_PATH", text)
         self.core.lgd.save_config()
 
-    def update_game(self, game: Game):
+    def update_game(self, app_name: str):
         self.change = False
-        self.game = game
-        self.igame = self.core.get_installed_game(game.app_name)
-        app_name = game.app_name
+        self.game = self.core.get_game(app_name)
+        self.igame = self.core.get_installed_game(self.game.app_name)
         if self.igame:
             if self.igame.can_run_offline:
                 offline = self.core.lgd.config.get(self.game.app_name, "offline", fallback="unset")
@@ -287,6 +284,11 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
         if platform.system() != "Windows":
             self.linux_settings.update_game(app_name)
+
+            if self.igame and self.igame.platform == "Mac":
+                self.linux_settings_scroll.setVisible(False)
+            else:
+                self.linux_settings_scroll.setVisible(True)
 
             proton = self.core.lgd.config.get(f"{app_name}", "wrapper", fallback="").replace('"', "")
             if proton and "proton" in proton:

@@ -3,7 +3,7 @@ import webbrowser
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QSpacerItem, QGroupBox
+from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QSpacerItem, QGroupBox, QTabWidget, QGridLayout
 from qtawesome import icon
 
 from rare import shared
@@ -75,7 +75,9 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.open_store_button.setText(self.tr("Buy Game in Epic Games Store"))
             self.owned_label.setVisible(False)
 
-        self.dev.setText(self.tr("Loading"))
+        for i in range(self.req_group_box.layout().count()):
+            self.req_group_box.layout().itemAt(i).widget().deleteLater()
+
         self.price.setText(self.tr("Loading"))
         self.wishlist_button.setVisible(False)
         # self.title.setText(self.tr("Loading"))
@@ -124,6 +126,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.dev.setText(self.data.get("seller", {}).get("name", ""))
             return
         self.title.setText(self.game.title)
+
         self.price.setFont(QFont())
         if self.game.price == "0" or self.game.price == 0:
             self.price.setText(self.tr("Free"))
@@ -141,22 +144,28 @@ class ShopGameInfo(QWidget, Ui_shop_info):
 
         bold_font = QFont()
         bold_font.setBold(True)
-        min_label = QLabel(self.tr("Minimum"))
-        min_label.setFont(bold_font)
-        rec_label = QLabel(self.tr("Recommend"))
-        rec_label.setFont(bold_font)
 
         if self.game.reqs:
-            self.req_group_box.layout().addWidget(min_label, 0, 1)
-            self.req_group_box.layout().addWidget(rec_label, 0, 2)
-            for i, (key, value) in enumerate(self.game.reqs.get("Windows", {}).items()):
-                self.req_group_box.layout().addWidget(QLabel(key), i + 1, 0)
-                min_label = QLabel(value[0])
-                min_label.setWordWrap(True)
-                self.req_group_box.layout().addWidget(min_label, i + 1, 1)
-                rec_label = QLabel(value[1])
-                rec_label.setWordWrap(True)
-                self.req_group_box.layout().addWidget(rec_label, i + 1, 2)
+            req_tabs = QTabWidget()
+            for system in self.game.reqs:
+                min_label = QLabel(self.tr("Minimum"))
+                min_label.setFont(bold_font)
+                rec_label = QLabel(self.tr("Recommend"))
+                rec_label.setFont(bold_font)
+                req_widget = QWidget()
+                req_widget.setLayout(QGridLayout())
+                req_widget.layout().addWidget(min_label, 0, 1)
+                req_widget.layout().addWidget(rec_label, 0, 2)
+                for i, (key, value) in enumerate(self.game.reqs.get(system, {}).items()):
+                    req_widget.layout().addWidget(QLabel(key), i + 1, 0)
+                    min_label = QLabel(value[0])
+                    min_label.setWordWrap(True)
+                    req_widget.layout().addWidget(min_label, i + 1, 1)
+                    rec_label = QLabel(value[1])
+                    rec_label.setWordWrap(True)
+                    req_widget.layout().addWidget(rec_label, i + 1, 2)
+                req_tabs.addTab(req_widget, system)
+            self.req_group_box.layout().addWidget(req_tabs)
         else:
             self.req_group_box.layout().addWidget(QLabel(self.tr("Could not get requirements")))
         self.req_group_box.setVisible(True)
