@@ -12,8 +12,8 @@ script:
   - cp AppDir/usr/src/rare/__main__.py AppDir/usr/src/__main__.py
   - cp AppDir/usr/src/rare/resources/images/Rare.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
-  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir -r Rare/requirements.txt
-  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir ./Rare/legendary
+  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir pypresence qtawesome
+  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir ./Rare/rare/legendary
 
 AppDir:
   path: AppDir
@@ -21,7 +21,7 @@ AppDir:
     id: org.dummerle.rare
     name: Rare
     icon: Rare
-    version: 1.5.0
+    version: 1.7.0
     exec: usr/bin/python3
     exec_args: $APPDIR/usr/src/__main__.py $@
   apt:
@@ -44,6 +44,9 @@ AppDir:
       - python3-pkg-resources
       - python3-distutils
       - python3-pyqt5
+      - python3-pyqt5
+      - python3-psutil
+      - python3-requests
 
   runtime:
     env:
@@ -80,6 +83,7 @@ AppDir:
       image: appimagecrafters/tests-env:ubuntu-xenial
       command: ./AppRun
       use_host_x: true
+
 AppImage:
   arch: x86_64
-  update-information: gh-releases-zsync|Dummerle|Rare|latest|Rare-*x86_64.AppImage.zsync
+  update-information: gh-releases-zsync|Dummerle|Rare|latest|Rare*.AppImage.zsync
