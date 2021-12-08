@@ -47,14 +47,6 @@ jobs:
           sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
           sudo chmod +x /usr/local/bin/appimagetool
           sudo pip3 install appimage-builder
-      - name: Install legendary
-        run: |
-          pip install ./rare/legendary
-      - name: Prepare Build directory
-        run: |
-          mkdir build
-          cp AppImageBuilder.yml build/
-          cd build
       - name: Build Appimage
         run: |
           appimage-builder --skip-test
