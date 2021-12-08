@@ -31,8 +31,10 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     include_package_data=True,
     url="https://github.com/Dummerle/Rare",
-    packages=setuptools.find_packages() + setuptools.find_packages(where='legendary'),
-    package_dir={'rare': 'rare', '': 'legendary'},
+    packages=setuptools.find_packages() + [
+        "rare.legendary." + i for i in setuptools.find_packages(where="rare/legendary")
+    ],
+    # package_dir={'rare': 'rare'},
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",

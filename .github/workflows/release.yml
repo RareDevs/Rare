@@ -40,7 +40,7 @@ jobs:
           sudo pip install -r requirements.txt
       - name: Install legendary
         run: |
-          pip install ./legendary
+          pip install ./rare/legendary
       - name: run python setup
         run: |
           python3 setup.py sdist
@@ -71,21 +71,13 @@ jobs:
           sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
           sudo chmod +x /usr/local/bin/appimagetool
           sudo pip3 install appimage-builder
-      - name: Install legendary
-        run: |
-          pip install ./legendary
-      - name: Prepare Build directory
-        run: |
-          mkdir build
-          cp AppImageBuilder.yml build/
-          cd build
       - name: Build Appimage
         run: |
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
           mv Rare-*.AppImage.zsync Rare.AppImage.zsync
 
-      - name: Upload to GitHub
+      - name: Upload AppImage to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -93,7 +85,7 @@ jobs:
           asset_name: Rare-${{ github.event.release.tag_name }}.AppImage
           tag: ${{ github.ref }}
           overwrite: true
-      - name: Upload to GitHub
+      - name: Upload zsync file to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -117,7 +109,7 @@ jobs:
         run: pip3 install --upgrade cx_freeze wheel
       - name: Install legendary
         run: |
-          pip install ./legendary
+          pip install ./rare/legendary
       - name: Build
         run: python freeze.py bdist_msi
 
@@ -145,7 +137,7 @@ jobs:
       - name: Pip Dependencies
         run: |
           pip install -r requirements.txt
-          pip install ./legendary
+          pip install ./rare/legendary
           pip install pyinstaller
 
       - name: copy files

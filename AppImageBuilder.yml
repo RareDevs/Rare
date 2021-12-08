@@ -7,13 +7,11 @@ script:
   # Make usr and icons dirs
   - mkdir -p AppDir/usr/src
   - mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps/
-  - git clone https://github.com/Dummerle/Rare --recurse-submodules
-  - cp -r Rare/rare AppDir/usr/src/rare
-  - cp AppDir/usr/src/rare/__main__.py AppDir/usr/src/__main__.py
+  - cp -r rare AppDir/usr/src/rare
   - cp AppDir/usr/src/rare/resources/images/Rare.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
-  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir -r Rare/requirements.txt
-  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir ./Rare/legendary
+  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir pypresence qtawesome
+  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir ./rare/legendary
 
 AppDir:
   path: AppDir
@@ -21,9 +19,9 @@ AppDir:
     id: org.dummerle.rare
     name: Rare
     icon: Rare
-    version: 1.5.0
+    version: 1.7.0
     exec: usr/bin/python3
-    exec_args: $APPDIR/usr/src/__main__.py $@
+    exec_args: $APPDIR/usr/src/rare/__main__.py $@
   apt:
     arch: amd64
     allow_unauthenticated: true
@@ -41,9 +39,10 @@ AppDir:
       - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security multiverse
     include:
       - python3
-      - python3-pkg-resources
       - python3-distutils
       - python3-pyqt5
+      - python3-psutil
+      - python3-requests
 
   runtime:
     env:
@@ -53,11 +52,6 @@ AppDir:
       # Path to the site-packages dir or other modules dirs
       # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH
       PYTHONPATH: '${APPDIR}/usr/lib/python3.8/site-packages'
-
-
-  files:
-    include: [ ]
-    exclude: [ ]
 
   test:
     fedora:
@@ -80,6 +74,7 @@ AppDir:
       image: appimagecrafters/tests-env:ubuntu-xenial
       command: ./AppRun
       use_host_x: true
+
 AppImage:
   arch: x86_64
-  update-information: gh-releases-zsync|Dummerle|Rare|latest|Rare-*x86_64.AppImage.zsync
+  update-information: gh-releases-zsync|Dummerle|Rare|latest|Rare*.AppImage.zsync

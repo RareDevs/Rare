@@ -1,14 +1,4 @@
-# For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
-#
-# You may wish to alter this file to override the set of languages analyzed,
-# or to provide custom queries or build logic.
-#
-# ******** NOTE ********
-# We have attempted to detect the languages in your repository. Please check
-# the `language` matrix defined below to confirm you have the correct set of
-# supported CodeQL languages.
-#
+
 name: "Test"
 
 on:
@@ -37,9 +27,7 @@ jobs:
           pip install -r requirements.txt
       - name: Install legendary
         run: |
-          pushd legendary
-          python setup.py install
-          popd
+          pip install ./rare/legendary
       - name: Analysing the code with pylint
         run: |
           pylint -E rare --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
@@ -59,14 +47,6 @@ jobs:
           sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
           sudo chmod +x /usr/local/bin/appimagetool
           sudo pip3 install appimage-builder
-      - name: Install legendary
-        run: |
-          pip install ./legendary
-      - name: Prepare Build directory
-        run: |
-          mkdir build
-          cp AppImageBuilder.yml build/
-          cd build
       - name: Build Appimage
         run: |
           appimage-builder --skip-test
@@ -93,7 +73,7 @@ jobs:
         run: pip3 install --upgrade cx_freeze wheel
       - name: Install legendary
         run: |
-          pip install ./legendary
+          pip install ./rare/legendary
       - name: Build
         run: python freeze.py bdist_msi
 
@@ -115,7 +95,7 @@ jobs:
       - name: Pip Dependencies
         run: |
           pip install -r requirements.txt
-          pip install ./legendary
+          pip install ./rare/legendary
           pip install pyinstaller
 
       - name: copy files
