@@ -5,7 +5,6 @@ __version__ = "1.7.0"
 import platform
 
 resources_path = os.path.join(os.path.dirname(__file__), "resources")
-languages_path = os.path.join(os.path.dirname(__file__), "languages")
 data_dir = ""
 
 # Cache Directory: Store images

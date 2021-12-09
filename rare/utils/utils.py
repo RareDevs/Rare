@@ -10,7 +10,7 @@ from typing import Tuple, List
 
 import qtawesome
 import requests
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings, Qt
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings, Qt, QFile, QDir
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QStyleFactory
 from requests.exceptions import HTTPError
@@ -24,7 +24,7 @@ if platform.system() == "Windows":
     # noinspection PyUnresolvedReferences
     from win32com.client import Dispatch  # pylint: disable=E0401
 
-from rare import languages_path, resources_path, image_dir, shared
+from rare import image_dir, shared, resources_path
 # Mac not supported
 
 from legendary.core import LegendaryCore
@@ -150,7 +150,7 @@ def set_color_pallete(color_scheme: str):
         QApplication.instance().setPalette(QApplication.instance().style().standardPalette())
         return
     QApplication.instance().setStyle(QStyleFactory.create("Fusion"))
-    custom_palette = load_color_scheme(os.path.join(resources_path, "colors", color_scheme + ".scheme"))
+    custom_palette = load_color_scheme(f":/schemes/{color_scheme}")
     if custom_palette is not None:
         QApplication.instance().setPalette(custom_palette)
         qtawesome.set_defaults(color=custom_palette.color(QPalette.Text))
@@ -158,8 +158,8 @@ def set_color_pallete(color_scheme: str):
 
 def get_color_schemes() -> List[str]:
     colors = []
-    for file in os.listdir(os.path.join(resources_path, "colors")):
-        if file.endswith(".scheme") and os.path.isfile(os.path.join(resources_path, "colors", file)):
+    for file in QDir(":/schemes"):
+        if file.endswith(".scheme"):
             colors.append(file.replace(".scheme", ""))
     return colors
 
@@ -170,25 +170,24 @@ def set_style_sheet(style_sheet: str):
         QApplication.instance().setStyleSheet("")
         return
     QApplication.instance().setStyle(QStyleFactory.create("Fusion"))
-    stylesheet = open(os.path.join(resources_path, "stylesheets", style_sheet, "stylesheet.qss")).read()
-    style_resource_path = os.path.join(resources_path, "stylesheets", style_sheet, "")
-    if platform.system() == "Windows":
-        style_resource_path = style_resource_path.replace('\\', '/')
-    QApplication.instance().setStyleSheet(stylesheet.replace("@path@", style_resource_path))
+    file = QFile(f":/stylesheets/{style_sheet}")
+    file.open(QFile.ReadOnly)
+    stylesheet = file.readAll().data().decode("utf-8")
+
+    QApplication.instance().setStyleSheet(stylesheet)
     qtawesome.set_defaults(color="white")
 
 
 def get_style_sheets() -> List[str]:
     styles = []
-    for folder in os.listdir(os.path.join(resources_path, "stylesheets")):
-        if os.path.isfile(os.path.join(resources_path, "stylesheets", folder, "stylesheet.qss")):
-            styles.append(folder)
+    for file in QDir(":/stylesheets/"):
+        styles.append(file)
     return styles
 
 
 def get_translations():
     langs = ["en"]
-    for i in os.listdir(languages_path):
+    for i in QDir(":/languages"):
         if i.endswith(".qm"):
             langs.append(i.split(".")[0])
     return langs

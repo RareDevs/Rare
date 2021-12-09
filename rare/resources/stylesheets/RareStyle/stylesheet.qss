@@ -140,7 +140,7 @@ QComboBox QAbstractItemView {
 *::drop-down,
 *::drop-down:editable {
     width: 14px;
-    image: url("@path@drop-down.svg");
+    image: url(":/icons/drop-down.svg");
 }
 *::up-button,
 *::down-button {
@@ -149,12 +149,12 @@ QComboBox QAbstractItemView {
 *::up-button {
     subcontrol-position: top right; /* position at the top right corner */
     border-bottom-width: 1;
-    image: url("@path@sort-up.svg");
+    image: url(":/icons/sort-up.svg");
 }
 *::down-button {
     subcontrol-position: bottom right; /* position at bottom right corner */
     border-top-width: 1;
-    image: url("@path@sort-down.svg");
+    image: url(":/icons/sort-down.svg");
 }
 QProgressBar {
     text-align: center;
@@ -379,7 +379,7 @@ QListView::indicator:checked,
 QTreeView::indicator:checked,
 QTableView::indicator:checked {
     border-radius: 2px;
-    image: url("@path@square.svg");
+    image: url(":/icons/square.svg");
 }
 QGroupBox::indicator:indeterminate,
 QCheckBox::indicator:indeterminate,
@@ -387,28 +387,28 @@ QListView::indicator:indeterminate,
 QTreeView::indicator:indeterminate,
 QTableView::indicator:indeterminate {
     border-radius: 2px;
-    image: url("@path@half-square.svg");
+    image: url(":/icons/half-square.svg");
 }
 QRadioButton::indicator:checked {
     border-radius: 5%;
-    image: url("@path@circle.svg");
+    image: url(":/icons/circle.svg");
 }
 QGroupBox::indicator:checked:disabled,
 QCheckBox::indicator:checked:disabled,
 QListView::indicator:checked:disabled,
 QTreeView::indicator:checked:disabled,
 QTableView::indicator:checked:disabled {
-    image: url("@path@square-disabled.svg");
+    image: url(":/icons/square-disabled.svg");
 }
 QGroupBox::indicator:indeterminate:disabled,
 QCheckBox::indicator:indeterminate:disabled,
 QListView::indicator:indeterminate:disabled,
 QTreeView::indicator:indeterminate:disabled,
 QTableView::indicator:indeterminate:disabled {
-    image: url("@path@half-square-disabled.svg");
+    image: url(":/icons/half-square-disabled.svg");
 }
 QRadioButton::indicator:checked:disabled {
-    image: url("@path@circle-disabled.svg");
+    image: url(":/icons/circle-disabled.svg");
 }
 
 QGroupBox,

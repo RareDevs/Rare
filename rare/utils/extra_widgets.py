@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLabel, QFileDialog, Q
     QStyledItemDelegate, QFileIconProvider
 from qtawesome import icon as qta_icon
 
-from rare import resources_path, cache_dir
+from rare import cache_dir
 from rare.utils.qt_requests import QtRequestManager
 
 logger = getLogger("ExtraWidgets")
@@ -357,7 +357,7 @@ class WaitingSpinner(QLabel):
             margin-left: auto;
             margin-right: auto;
         """)
-        self.movie = QMovie(os.path.join(resources_path, "images", "loader.gif"))
+        self.movie = QMovie(":/images/loader.gif")
         self.setMovie(self.movie)
         self.movie.start()
 
