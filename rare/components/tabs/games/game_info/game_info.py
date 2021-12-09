@@ -44,10 +44,13 @@ class GameInfo(QWidget, Ui_GameInfo):
 
         self.uninstall_button.clicked.connect(self.uninstall)
         self.verify_button.clicked.connect(self.verify)
-        self.repair_button.clicked.connect(self.repair)
 
         self.verify_pool = QThreadPool()
         self.verify_pool.setMaxThreadCount(2)
+        if shared.args.offline:
+            self.repair_button.setDisabled(True)
+        else:
+            self.repair_button.clicked.connect(self.repair)
 
     def uninstall(self):
         if self.game_utils.uninstall_game(self.game.app_name):
@@ -142,7 +145,8 @@ class GameInfo(QWidget, Ui_GameInfo):
         else:
             self.uninstall_button.setDisabled(False)
             self.verify_button.setDisabled(False)
-            self.repair_button.setDisabled(False)
+            if not shared.args.offline:
+                self.repair_button.setDisabled(False)
             self.game_actions_stack.setCurrentIndex(0)
 
         if platform.system() != "Windows":

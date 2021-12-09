@@ -96,7 +96,7 @@ class PathSpec:
 @dataclass
 class ApiResults:
     game_list: list = None
-    dlcs: list = None
+    dlcs: dict = None
     bit32_games: list = None
     mac_games: list = None
     no_asset_games: list = None

@@ -15,7 +15,7 @@ class GameDlc(QWidget, Ui_GameDlc):
     install_dlc = pyqtSignal(str, bool)
     game: Game
 
-    def __init__(self, dlcs: list, game_utils: GameUtils, parent=None):
+    def __init__(self, dlcs: dict, game_utils: GameUtils, parent=None):
         super(GameDlc, self).__init__(parent=parent)
         self.setupUi(self)
         self.game_utils = game_utils

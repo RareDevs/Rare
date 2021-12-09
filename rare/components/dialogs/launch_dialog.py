@@ -106,7 +106,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.offline = True
         finally:
             if do_launch:
-                self.show()
+                if not shared.args.silent:
+                    self.show()
                 self.launch()
             else:
                 self.quit_app.emit(0)
@@ -143,7 +144,14 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
         else:
             self.finished = 2
-            self.api_results.game_list, self.api_results.dlcs = self.core.get_game_and_dlc_list(False)
+            if self.core.lgd.assets:
+                self.api_results.game_list, self.api_results.dlcs = self.core.get_game_and_dlc_list(False)
+                self.api_results.bit32_games = list(map(lambda i: i.app_name, self.core.get_game_list(False, "Win32")))
+                self.api_results.mac_games = list(map(lambda i: i.app_name, self.core.get_game_list(False, "Mac")))
+            else:
+                logger.warning("No assets found. Falling back to empty game lists")
+                self.api_results.game_list, self.api_results.dlcs = [], {}
+                self.api_results.mac_games = self.api_results.bit32_games = []
             self.finish()
 
     def handle_api_worker_result(self, result, text):

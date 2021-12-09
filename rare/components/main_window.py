@@ -55,14 +55,6 @@ class MainWindow(QMainWindow):
         if not shared.args.offline:
             self.rpc = DiscordRPC()
 
-        if shared.args.subparser == "launch":
-            if shared.args.app_name in [i.app_name for i in self.core.get_installed_list()]:
-                logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
-                self.tab_widget.games_tab.game_utils.prepare_launch(shared.args.app_name)
-            else:
-                logger.info(
-                    f"Could not find {shared.args.app_name} in Games or it is not installed")
-
         self.timer = QTimer()
         self.timer.timeout.connect(self.timer_finished)
         self.timer.start(1000)

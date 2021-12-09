@@ -71,7 +71,7 @@ class ShopApiCore(QObject):
     def search_game(self, name, handle_func):
         payload = {
             "query": search_query,
-            "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base", "count": 1,
+            "variables": {"category": "games/edition/base|bundles/games|editors|software/edition/base", "count": 10,
                           "country": self.country_code, "keywords": name, "locale": self.locale, "sortDir": "DESC",
                           "allowCountries": self.country_code,
                           "start": 0, "tag": "", "withMapping": False, "withPrice": True}

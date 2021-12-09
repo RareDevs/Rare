@@ -10,7 +10,7 @@ from ..game_utils import GameUtils
 
 
 class GameInfoTabs(SideTabWidget):
-    def __init__(self, dlcs: list, game_utils: GameUtils, parent=None):
+    def __init__(self, dlcs: dict, game_utils: GameUtils, parent=None):
         super(GameInfoTabs, self).__init__(show_back=True, parent=parent)
         self.core = shared.core
         self.signals = shared.signals
@@ -33,7 +33,7 @@ class GameInfoTabs(SideTabWidget):
         self.settings.update_game(app_name)
 
         # DLC Tab: Disable if no dlcs available
-        if len(self.dlc_list[self.core.get_game(app_name).catalog_item_id]) == 0:
+        if len(self.dlc_list.get(self.core.get_game(app_name).catalog_item_id, [])) == 0:
             self.setTabEnabled(3, False)
         else:
             self.setTabEnabled(3, True)

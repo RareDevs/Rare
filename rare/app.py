@@ -134,8 +134,7 @@ class App(QApplication):
         self.launch_dialog.start_app.connect(self.start_app)
         self.launch_dialog.start_app.connect(self.launch_dialog.close)
 
-        if not self.args.silent or self.args.subparser == "launch":
-            self.launch_dialog.login()
+        self.launch_dialog.login()
 
     def start_app(self):
         self.mainwindow = MainWindow()
@@ -147,6 +146,18 @@ class App(QApplication):
 
         if not self.args.silent:
             self.mainwindow.show()
+
+        if shared.args.subparser == "launch":
+            if shared.args.app_name in [i.app_name for i in self.core.get_installed_list()]:
+                logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
+                self.mainwindow.tab_widget.games_tab.game_utils.prepare_launch(shared.args.app_name)
+            else:
+                logger.error(
+                    f"Could not find {shared.args.app_name} in Games or it is not installed")
+                QMessageBox.warning(self.mainwindow, "Warning",
+                                    self.tr(
+                                        "Could not find {} in installed games. Did you modify the shortcut? ").format(
+                                        shared.args.app_name))
 
     def tray(self, reason):
         if reason == QSystemTrayIcon.DoubleClick:
