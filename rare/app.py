@@ -5,7 +5,7 @@ import sys
 import time
 import traceback
 
-from PyQt5.QtCore import QThreadPool, QSettings, QTranslator, QFile
+from PyQt5.QtCore import QThreadPool, QSettings, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
@@ -13,7 +13,7 @@ from requests import HTTPError
 # noinspection PyUnresolvedReferences
 import rare.resources.resources
 import rare.shared as shared
-from rare import cache_dir
+from rare import cache_dir, resources_path
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
@@ -100,17 +100,17 @@ class App(QApplication):
         self.translator = QTranslator()
         lang = self.settings.value("language", self.core.language_code, type=str)
 
-        if QFile(f":/languages/{lang}.qm").exists():
-            self.translator.load(f":/languages/{lang}.qm")
+        if os.path.isfile(f := os.path.join(resources_path, "languages", f"{lang}.qm")):
+            self.translator.load(f)
             logger.info("Your language is supported: " + lang)
         elif not lang == "en":
             logger.info("Your language is not supported")
         self.installTranslator(self.translator)
 
         # translator for qt stuff
-        if QFile(f":/languages/{lang}.qm").exists():
+        if os.path.isfile(f := os.path.join(resources_path, f"qt_{lang}.qm")):
             self.qt_translator = QTranslator()
-            self.qt_translator.load(f":/languages/qt_{lang}.qm")
+            self.qt_translator.load(f)
             self.installTranslator(self.qt_translator)
 
         # Style

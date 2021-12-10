@@ -187,8 +187,8 @@ def get_style_sheets() -> List[str]:
 
 def get_translations():
     langs = ["en"]
-    for i in QDir(":/languages"):
-        if i.endswith(".qm"):
+    for i in os.listdir(os.path.join(resources_path, "languages")):
+        if i.endswith(".qm") and not i.startswith("qt_"):
             langs.append(i.split(".")[0])
     return langs
 

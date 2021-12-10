@@ -25,10 +25,6 @@
         <file alias="square.svg">stylesheets/RareStyle/square.svg</file>
         <file alias="square-disabled.svg">stylesheets/RareStyle/square-disabled.svg</file>
     </qresource>
-    <qresource prefix="languages">
-        <file alias="de.qm">languages/de.qm</file>
-        <file alias="qt_de.qm">languages/qt_de.qm</file>
-    </qresource>
     <qresource prefix="images">
         <file alias="Rare.png">images/Rare.png</file>
         <file alias="loader.gif">images/loader.gif</file>
