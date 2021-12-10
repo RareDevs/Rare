@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QSizePolicy, QLayout, QDialog, QMessageBox
 
 from legendary.core import LegendaryCore
+from rare import shared
 from rare.components.dialogs.login.browser_login import BrowserLogin
 from rare.components.dialogs.login.import_login import ImportLogin
 from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
@@ -79,6 +80,8 @@ class LoginDialog(QDialog, Ui_LoginDialog):
             self.import_page.do_login()
 
     def login(self):
+        if shared.args.test_start:
+            return False
         self.exec_()
         return self.logged_in
 

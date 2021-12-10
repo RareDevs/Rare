@@ -23,6 +23,7 @@ def main():
                         help="Launch Rare in background. Open it from System Tray Icon")
     parser.add_argument("--debug", action="store_true", help="Launch in debug mode")
     parser.add_argument("--offline", action="store_true", help="Launch Rare in offline mode")
+    parser.add_argument("--test-start", action="store_true", help="Quit immediately after launch")
 
     parser.add_argument("--desktop-shortcut", action="store_true", dest="desktop_shortcut",
                         help="Use this, if there is no link on desktop to start Rare")

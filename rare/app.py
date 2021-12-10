@@ -139,6 +139,7 @@ class App(QApplication):
 
         self.launch_dialog.login()
 
+
     def start_app(self):
         self.mainwindow = MainWindow()
         self.launch_dialog.close()
@@ -161,6 +162,9 @@ class App(QApplication):
                                     self.tr(
                                         "Could not find {} in installed games. Did you modify the shortcut? ").format(
                                         shared.args.app_name))
+
+        if shared.args.test_start:
+            self.exit_app(0)
 
     def tray(self, reason):
         if reason == QSystemTrayIcon.DoubleClick:
