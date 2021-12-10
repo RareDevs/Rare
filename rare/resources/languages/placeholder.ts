@@ -72,17 +72,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app.py" line="174"/>
+        <location filename="../../app.py" line="178"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app.py" line="174"/>
+        <location filename="../../app.py" line="178"/>
         <source>There is a download active. Do you really want to exit app?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app.py" line="160"/>
+        <location filename="../../app.py" line="161"/>
         <source>Could not find {} in installed games. Did you modify the shortcut?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -323,16 +323,16 @@
         <message>
             <location filename="../../components/tabs/shop/constants.py" line="8"/>
             <source>First Person</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/shop/constants.py" line="8"/>
-        <source>Indie</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/shop/constants.py" line="8"/>
-        <source>Simulation</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/shop/constants.py" line="8"/>
+            <source>Indie</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/shop/constants.py" line="8"/>
+            <source>Simulation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1160,16 +1160,16 @@
     </context>
     <context>
         <name>ImportLogin</name>
-    <message>
-        <location filename="../../ui/components/dialogs/login/import_login.py" line="68"/>
-        <source>You will get logged out from EGL in the process.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../ui/components/dialogs/login/import_login.py" line="69"/>
-        <source>Import existing session from EGL</source>
-        <translation type="unfinished"></translation>
-    </message>
+        <message>
+            <location filename="../../ui/components/dialogs/login/import_login.py" line="68"/>
+            <source>You will get logged out from EGL in the process.</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../ui/components/dialogs/login/import_login.py" line="69"/>
+            <source>Import existing session from EGL</source>
+            <translation type="unfinished"></translation>
+        </message>
     <message>
         <location filename="../../ui/components/dialogs/login/import_login.py" line="70"/>
         <source>Select path</source>
