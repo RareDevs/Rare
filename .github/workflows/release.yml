@@ -73,6 +73,7 @@ jobs:
           sudo pip3 install appimage-builder
       - name: Build Appimage
         run: |
+          cp rare/__main__.py .
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
           mv Rare-*.AppImage.zsync Rare.AppImage.zsync
@@ -145,7 +146,7 @@ jobs:
 
       - name: run pyinstaller
         run: |
-          pyinstaller -F --name Rare --add-data "rare/languages/*:rare/languages" --add-data "rare/resources/images/*:rare/resources/images/" --windowed --icon rare/resources/images/Rare.icns --hidden-import=legendary __main__.py
+          pyinstaller -F --name Rare --add-data "rare/resources/languages/*:rare/resources/languages" --add-data "rare/resources/images/*:rare/resources/images/" --windowed --icon rare/resources/images/Rare.icns --hidden-import=legendary __main__.py
 
       - name: create dmg
         run: |

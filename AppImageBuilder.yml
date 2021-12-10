@@ -21,8 +21,8 @@ AppDir:
     icon: Rare
     version: 1.7.0
     exec: usr/bin/python3
-    exec_args: $APPDIR/usr/src/rare/__main__.py $@
-  apt:
+    exec_args: $APPDIR/usr/src/__main__.py $@
+  apt:d
   arch: amd64
   allow_unauthenticated: true
   sources:
