@@ -103,7 +103,7 @@ jobs:
 
       - name: run pyinstaller
         run: |
-          pyinstaller -F --name Rare --add-data "rare/languages/*:rare/languages" --add-data "rare/resources/colors/*:rare/resources/colors" --add-data "rare/resources/images/*:rare/resources/images/" --add-data "rare/resources/stylesheets/RareStyle/*:rare/resources/stylesheets/RareStyle/" --windowed --icon rare/resources/images/Rare.icns --hidden-import=legendary __main__.py
+          pyinstaller -F --name Rare --add-data "rare/languages/*:rare/languages" --add-data "rare/resources/images/*:rare/resources/images/" --windowed --icon rare/resources/images/Rare.icns --hidden-import=legendary __main__.py
 
       - name: create dmg
         run: |
