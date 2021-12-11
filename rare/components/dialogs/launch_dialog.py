@@ -34,19 +34,23 @@ class ImageWorker(QRunnable):
 
 
 class ApiRequestWorker(QRunnable):
-    def __init__(self, api_requests: list):
+    def __init__(self):
         super(ApiRequestWorker, self).__init__()
-        self.api_requests = api_requests
         self.signals = ApiSignals()
         self.setAutoDelete(True)
 
     def run(self) -> None:
-        for text, function, args in self.api_requests:
-            try:
-                result = function(*args)
-            except HTTPError():
-                result = None
-            self.signals.result.emit(result, text)
+        try:
+            result = shared.core.get_game_and_dlc_list(True, "Mac")
+        except HTTPError():
+            result = [], {}
+        self.signals.result.emit(result, "mac")
+
+        try:
+            result = shared.core.get_game_and_dlc_list(True, "Win32")
+        except HTTPError():
+            result = [], {}
+        self.signals.result.emit(result, "32bit")
 
 
 class AssetWorker(QRunnable):
@@ -124,12 +128,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             image_worker.signal.result.connect(self.handle_api_worker_result)
             self.thread_pool.start(image_worker)
 
-            api_requests = [
-                ["32bit", self.core.get_game_and_dlc_list, (True, "Win32")],
-                ["mac", self.core.get_game_and_dlc_list, (True, "Mac")],
-            ]
             # gamelist and no_asset games are from Image worker
-            worker = ApiRequestWorker(api_requests)
+            worker = ApiRequestWorker()
             worker.signals.result.connect(self.handle_api_worker_result)
             self.thread_pool.start(worker)
 
