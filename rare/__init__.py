@@ -1,6 +1,7 @@
 import os
 
 __version__ = "1.7.0"
+code_name = "Finch Quail"
 
 import platform
 

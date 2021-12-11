@@ -1,6 +1,7 @@
 import configparser
 import logging
 import os
+import platform
 import sys
 import time
 import traceback
@@ -10,6 +11,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
 
+import legendary
 # noinspection PyUnresolvedReferences
 import rare.resources.resources
 import rare.shared as shared
@@ -20,7 +22,7 @@ from rare.components.tray_icon import TrayIcon
 from rare.utils.utils import set_color_pallete, set_style_sheet
 
 start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
-file_name = os.path.join(cache_dir, f"logs/Rare_{start_time}.log")
+file_name = os.path.join(cache_dir, "logs", f"Rare_{start_time}.log")
 if not os.path.exists(os.path.dirname(file_name)):
     os.makedirs(os.path.dirname(file_name))
 
@@ -50,6 +52,7 @@ class App(QApplication):
     def __init__(self):
         super(App, self).__init__(sys.argv)
         self.args = shared.args  # add some options
+
         # init Legendary
         try:
             self.core = shared.init_legendary()
@@ -139,7 +142,6 @@ class App(QApplication):
 
         self.launch_dialog.login()
 
-
     def start_app(self):
         self.mainwindow = MainWindow()
         self.launch_dialog.close()
@@ -209,6 +211,10 @@ def start(args):
         logging.getLogger('requests').setLevel(logging.WARNING)
         logging.getLogger('urllib3').setLevel(logging.WARNING)
         logging.getLogger("asyncio").setLevel(logging.WARNING)
+        logger.info(f"Launching Rare version {rare.__version__} Codename: {rare.code_name}\n"
+                    f"Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
+                    f"Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
+                    f"Running {sys.executable} {' '.join(sys.argv)}")
     else:
         logging.basicConfig(
             format='[%(name)s] %(levelname)s: %(message)s',

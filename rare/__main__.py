@@ -36,9 +36,6 @@ def main():
 
     args = parser.parse_args()
 
-    if args.debug:
-        print(sys.path)
-
     if args.desktop_shortcut:
         from rare.utils import utils
         utils.create_rare_desktop_link("desktop")
@@ -50,8 +47,8 @@ def main():
         print("link created")
 
     if args.version:
-        from rare import __version__
-        print(__version__)
+        from rare import __version__, code_name
+        print(f"Rare {__version__} Codename: {code_name}")
         return
     from rare.utils import singleton
     try:
