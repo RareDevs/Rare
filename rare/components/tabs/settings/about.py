@@ -4,7 +4,7 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
-from rare import __version__
+from rare import __version__, code_name
 from rare.ui.components.tabs.settings.about import Ui_About
 from rare.utils.qt_requests import QtRequestManager
 
@@ -26,7 +26,7 @@ class About(QWidget, Ui_About):
         super(About, self).__init__()
         self.setupUi(self)
 
-        self.version.setText(__version__)
+        self.version.setText(f"{__version__}  {code_name}")
 
         self.update_label.setVisible(False)
         self.update_lbl.setVisible(False)
