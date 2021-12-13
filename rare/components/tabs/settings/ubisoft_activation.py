@@ -1,3 +1,4 @@
+import time
 import webbrowser
 from logging import getLogger
 
@@ -13,7 +14,7 @@ logger = getLogger("Ubisoft")
 
 class Signals(QObject):
     worker_finished = pyqtSignal(set, set, str)
-    connected = pyqtSignal(str)
+    linked = pyqtSignal(str)
 
 
 class UbiGetInfoWorker(QRunnable):
@@ -55,14 +56,18 @@ class UbiConnectWorker(QRunnable):
         self.partner_link_id = partner_link_id
 
     def run(self) -> None:
+        if not self.ubi_account_id:  # debug
+            time.sleep(2)
+            self.signals.linked.emit("")
+            return
         try:
             shared.core.egs.store_claim_uplay_code(self.ubi_account_id, self.partner_link_id)
             shared.core.egs.store_redeem_uplay_codes(self.ubi_account_id)
         except Exception as e:
-            self.signals.connected.emit(str(e))
+            self.signals.linked.emit(str(e))
             return
         else:
-            self.signals.connected.emit("")
+            self.signals.linked.emit("")
 
 
 class UbiLinkWidget(QWidget):
@@ -72,37 +77,40 @@ class UbiLinkWidget(QWidget):
         self.game = game
         self.ubi_account_id = ubi_account_id
 
+        self.title_label = QLabel(game.app_title)
+        self.layout().addWidget(self.title_label)
+
         self.ok_indicator = QLabel()
-        self.ok_indicator.setVisible(False)
+        self.ok_indicator.setPixmap(icon("fa.info-circle", color="grey").pixmap(20, 20))
         self.ok_indicator.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         self.layout().addWidget(self.ok_indicator)
 
-        self.title_label = QLabel(game.app_title)
-        self.layout().addWidget(self.title_label)
-        if not shared.args.debug:
-            self.link_button = QPushButton(self.tr("Redeem to Ubisoft"))
-            self.layout().addWidget(self.link_button)
-            self.link_button.clicked.connect(self.activate)
-        else:
-            btn = QPushButton("Redeem to ubisoft: Test")
-            self.layout().addWidget(btn)
-            btn.clicked.connect(lambda: self.worker_finished("Any Error"))
+        self.link_button = QPushButton(self.tr("Redeem to Ubisoft") + ": Test" if shared.args.debug else "")
+        self.layout().addWidget(self.link_button)
+        self.link_button.clicked.connect(self.activate)
 
     def activate(self):
+        self.link_button.setDisabled(True)
+        # self.ok_indicator.setPixmap(icon("mdi.loading", color="grey").pixmap(20, 20))
+        self.ok_indicator.setPixmap(icon("mdi.transit-connection-horizontal", color="grey").pixmap(20, 20))
+
         if shared.args.debug:
-            self.worker_finished("Connection Error")
-            return
-        worker = UbiConnectWorker(self.ubi_account_id, self.game.partner_link_id)
-        worker.signals.worker_finished.connect(self.worker_finished)
+            worker = UbiConnectWorker(None, None)
+        else:
+            worker = UbiConnectWorker(self.ubi_account_id, self.game.partner_link_id)
+        worker.signals.linked.connect(self.worker_finished)
         QThreadPool.globalInstance().start(worker)
 
     def worker_finished(self, error):
-        self.ok_indicator.setVisible(True)
         if not error:
             self.ok_indicator.setPixmap(icon("ei.ok-circle", color="green").pixmap(QSize(20, 20)))
+            self.link_button.setDisabled(True)
+            self.link_button.setText(self.tr("Already activated"))
         else:
             self.ok_indicator.setPixmap(icon("fa.info-circle", color="red").pixmap(QSize(20, 20)))
             self.ok_indicator.setToolTip(error)
+            self.link_button.setText(self.tr("Try again"))
+            self.link_button.setDisabled(False)
 
 
 class UbiActivationHelper(QObject):
