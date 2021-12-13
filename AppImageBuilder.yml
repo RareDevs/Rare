@@ -22,27 +22,28 @@ AppDir:
     version: 1.7.0
     exec: usr/bin/python3
     exec_args: $APPDIR/usr/src/__main__.py $@
-  apt:d
-  arch: amd64
-  allow_unauthenticated: true
-  sources:
-    - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy main restricted
-    - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-updates main restricted
-    - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy universe
-    - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-updates universe
-    - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy multiverse
-    - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-updates multiverse
-    - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-backports main restricted
-        universe multiverse
-        - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security main restricted
-        - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security universe
-        - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security multiverse
-    include:
-      - python3
-      - python3-distutils
-      - python3-pyqt5
-      - python3-psutil
-      - python3-requests
+  apt:
+    arch: amd64
+    allow_unauthenticated: true
+    sources:
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy main restricted
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-updates main restricted
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy universe
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-updates universe
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy multiverse
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-updates multiverse
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-backports main restricted
+          universe multiverse
+      - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security main restricted
+      - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security universe
+      - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security multiverse
+
+      include:
+        - python3
+        - python3-distutils
+        - python3-pyqt5
+        - python3-psutil
+        - python3-requests
 
   runtime:
     env:

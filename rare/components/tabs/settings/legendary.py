@@ -5,6 +5,7 @@ from typing import Tuple
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 import rare.shared as shared
+from rare.components.tabs.settings.ubisoft_activation import UbiActivationHelper
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit
 from rare.utils.utils import get_size
@@ -59,6 +60,8 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         )
         self.locale_layout.addWidget(self.locale_edit)
 
+        self.ubi_helper = UbiActivationHelper(self.ubisoft_gb)
+
     @staticmethod
     def locale_edit_cb(text: str) -> Tuple[bool, str]:
         if text:
@@ -111,7 +114,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.core.lgd.config.set("Legendary", "disable_https", str(bool(checked)).lower())
         self.core.lgd.save_config()
 
-    def cleanup(self, keep_manifests):
+    def cleanup(self, keep_manifests: bool):
         before = self.core.lgd.get_dir_size()
         logger.debug('Removing app metadata...')
         app_names = set(g.app_name for g in self.core.get_assets(update_assets=False))

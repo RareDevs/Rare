@@ -78,6 +78,6 @@ if __name__ == '__main__':
     # insert raw legendary submodule
     sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.absolute(), "legendary"))
     # insert source directory
-    sys.path.insert(0, str(pathlib.Path(__file__).parents[2].absolute()))
+    sys.path.insert(0, str(pathlib.Path(__file__).parents[1].absolute()))
 
     main()
