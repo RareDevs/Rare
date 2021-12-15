@@ -1,7 +1,7 @@
 import os
 
-__version__ = "1.7.0"
-code_name = "Finch Quail"
+__version__ = "1.8.0"
+code_name = "Stellula Kakopo"
 
 import platform
 

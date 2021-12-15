@@ -52,7 +52,8 @@ Install via `pip` or use the AppImage.
 
 There is a .dmg file available in [releases page](https://github.com/Dummerle/Rare/releases).
 
-**Note**: You have to enable it manually in settings. Otherwise, Gatekeeper will block Rare from running.
+**Note**: You have to enable it manually in `Settings -> Security and Privacy`. Otherwise, Gatekeeper will block Rare
+from running.
 
 You can also use `pip`.
 
