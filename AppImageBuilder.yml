@@ -7,11 +7,16 @@ script:
   # Make usr and icons dirs
   - mkdir -p AppDir/usr/src
   - mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps/
+  # Copy source files
   - cp -r rare AppDir/usr/src/rare
+  - mv AppDir/usr/src/rare/__main__.py AppDir/usr/src/
+  # copy Logo
   - cp AppDir/usr/src/rare/resources/images/Rare.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
   - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir pypresence qtawesome
   - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir ./rare/legendary
+  # remove duplicate legendary
+  - rm -rf AppDir/usr/src/rare/legendary
 
 AppDir:
   path: AppDir
@@ -38,12 +43,12 @@ AppDir:
       - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security universe
       - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security multiverse
 
-      include:
-        - python3
-        - python3-distutils
-        - python3-pyqt5
-        - python3-psutil
-        - python3-requests
+    include:
+      - python3
+      - python3-distutils
+      - python3-pyqt5
+      - python3-psutil
+      - python3-requests
 
   runtime:
     env:
@@ -73,7 +78,7 @@ AppDir:
       use_host_x: true
     ubuntu-xenial:
       image: appimagecrafters/tests-env:ubuntu-xenial
-      command: ./AppRun --test.start
+      command: ./AppRun --test-start
       use_host_x: true
 
 AppImage:
