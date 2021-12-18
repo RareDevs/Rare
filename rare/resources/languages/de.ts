@@ -99,7 +99,7 @@ verfügbar: </translation>
 <name>App < /name>
 < message >
 <location filename = "../../app.py"
-line = "91" / >
+line = "94" / >
     <source>Download
 finished < /source>
 < translation > Download
@@ -107,7 +107,7 @@ abgeschlossen < /translation>
 < /message>
 < message >
 <location filename = "../../app.py"
-line = "91" / >
+line = "94" / >
     <source>Download
 finished.
 {
@@ -126,13 +126,13 @@ werden < /translation>
 < /message>
 < message >
 <location filename = "../../app.py"
-line = "178" / >
+line = "180" / >
 <source>Close < /source>
 < translation > Schließen < /translation>
 < /message>
 < message >
 <location filename = "../../app.py"
-line = "178" / >
+line = "180" / >
     <source>There
 is
 a
@@ -155,7 +155,7 @@ wirklich
 beenden ? </translation>
 < /message>
 < message >
-<location filename = "../../app.py" line = "161" / >
+<location filename = "../../app.py" line = "163" / >
     <source>Could
 not
 find
@@ -181,13 +181,13 @@ verändert ? </translation>
 < context >
 <name>BaseInstalledWidget < /name>
 < message >
-<location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py" line = "69" / >
+<location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py" line = "74" / >
 <source>Launch < /source>
 < translation > Starten < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "136" / >
+line = "141" / >
     <source>Remove
 Desktop
 link < /source>
@@ -196,7 +196,7 @@ löschen < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "146" / >
+line = "151" / >
     <source>Create
 Desktop
 link < /source>
@@ -205,27 +205,27 @@ erstellen < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "95" / >
+line = "100" / >
     <source>Remove
 start
 menu
 link < /source>
 < translation > Startmenüvernküfpung
 löschen < /translation>
-< /message>
-< message >
-<location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "97" / >
-    <source>Create
-start
-menu
-link < /source>
-< translation > Startmenüvernküfpung
-erstellen < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
 line = "102" / >
+    <source>Create
+start
+menu
+link < /source>
+< translation > Startmenüvernküfpung
+erstellen < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "107" / >
     <source>Reload
 Image < /source>
 < translation > Bild
@@ -234,13 +234,13 @@ laden < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "106" / >
+line = "111" / >
 <source>Uninstall < /source>
 < translation > Deinstallieren < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "138" / >
+line = "143" / >
     <source>Remove
 Start
 menu
@@ -250,7 +250,7 @@ löschen < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "148" / >
+line = "153" / >
     <source>Create
 Start
 menu
@@ -326,7 +326,7 @@ verfügbar < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "74" / >
+line = "79" / >
     <source>Sync
 with cloud < /source>
 < translation > Mit Cloud
@@ -2837,7 +2837,7 @@ herunterladen < /translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/launch_dialog.py"
-line = "121" / >
+line = "130" / >
     <source>Downloading
 Images < /source>
 < translation > Bilder
@@ -2845,7 +2845,7 @@ herunterladen < /translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/launch_dialog.py"
-line = "190" / >
+line = "195" / >
     <source>Starting
 ...
 </source>
@@ -2858,7 +2858,7 @@ line = "190" / >
 <name>LegendarySettings < /name>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "134" / >
+line = "142" / >
     <source>Default
 Installation
 Directory < /source>
@@ -2866,14 +2866,14 @@ Directory < /source>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "135" / >
+line = "143" / >
     <source>Download
 Settings < /source>
 < translation > Downloadeinstellungen < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "136" / >
+line = "144" / >
     <source>Max
 Workers < /source>
 < translation > Maximale
@@ -2883,7 +2883,7 @@ Threads < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "140" / >
+line = "148" / >
     <source>Less
 is
 slower(0
@@ -2901,7 +2901,7 @@ Standardeinstellung
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "138" / >
+line = "146" / >
     <source>Max
 Memory < /source>
 < translation > Maximaler
@@ -2909,13 +2909,13 @@ RAM < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "139" / >
+line = "147" / >
 <source>MiB < /source>
 < translation > MiB < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "141" / >
+line = "149" / >
     <source>Preferred
 CDN < /source>
 < translation > Vorgezogenes
@@ -2923,13 +2923,13 @@ CDN < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "142" / >
+line = "150" / >
 <source>Default < /source>
 < translation > Standard < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "143" / >
+line = "151" / >
     <source>Disable
 HTTPS < /source>
 < translation > HTTPS
@@ -2937,19 +2937,19 @@ deaktivieren < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "144" / >
+line = "137" / >
 <source>Locale < /source>
 < translation > Sprache < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "145" / >
+line = "138" / >
 <source>Cleanup < /source>
 < translation > Aufräumen < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "146" / >
+line = "139" / >
     <source>Clean, but
 keep
 manifests < /source>
@@ -2959,7 +2959,7 @@ behalten < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "147" / >
+line = "140" / >
     <source>Remove
 everything < /source>
 < translation > Entferne
@@ -2967,7 +2967,7 @@ alles < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/legendary.py"
-line = "132" / >
+line = "135" / >
     <source>Cleanup
 complete!
 Successfully
@@ -2980,6 +2980,16 @@ abgeschlossen.Erfolgreich
 {
 }
 gelöscht < /translation>
+< /message>
+< message >
+<location filename = "../../ui/components/tabs/settings/legendary.py"
+line = "141" / >
+    <source>Link
+Ubisoft
+Games < /source>
+< translation > Ubisoft
+Spiele
+verknüpfen < /translation>
 < /message>
 < /context>
 < context >
@@ -3194,7 +3204,7 @@ line = "25" / >
 <name>QApplication < /name>
 < message >
 <location filename = "../../app.py"
-line = "41" / >
+line = "43" / >
     <source>Failed
 to
 login < /source>
@@ -3921,6 +3931,116 @@ line = "35" / >
 line = "17" / >
 <source>Exit < /source>
 < translation > Beenden < /translation>
+< /message>
+< /context>
+< context >
+<name>UbiActivationHelper < /name>
+< message >
+<location filename = "../../components/tabs/settings/ubisoft_activation.py"
+line = "130" / >
+    <source>Your
+account
+is
+not
+linked
+with Ubisoft.Please link
+your
+account
+first < /source>
+< translation > Dein
+Account
+ist
+nicht
+mit
+Ubisoft
+verbunden.Bitte
+zuerst
+verknüfpen < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/settings/ubisoft_activation.py"
+line = "132" / >
+    <source>Open
+link
+page < /source>
+< translation > Öffne
+Seite
+zum
+Verbinden < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/settings/ubisoft_activation.py"
+line = "137" / >
+    <source>An
+error
+occurred < /source>
+< translation > Ein
+Fehler
+ist
+passiert < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/settings/ubisoft_activation.py"
+line = "169" / >
+    <source>All
+your
+Ubisoft
+games
+have
+already
+been
+activated < /source>
+< translation > Alle
+Ubisoft
+Spiele
+wurden
+bereits
+aktiviert < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/settings/ubisoft_activation.py"
+line = "172" / >
+    <source>You
+don & apos;
+t
+own
+any
+Ubisoft
+games < /source>
+< translation > Du
+besitzt
+keine
+Ubisoft
+Spiele < /translation>
+< /message>
+< /context>
+< context >
+<name>UbiLinkWidget < /name>
+< message >
+<location filename = "../../components/tabs/settings/ubisoft_activation.py"
+line = "88" / >
+    <source>Redeem
+to
+Ubisoft < /source>
+< translation > Bei
+Ubisoft
+aktivieren < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/settings/ubisoft_activation.py"
+line = "108" / >
+    <source>Already
+activated < /source>
+< translation > Bereits
+aktiviert < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/settings/ubisoft_activation.py"
+line = "112" / >
+    <source>Try
+again < /source>
+< translation > Erneut
+versuchen < /translation>
 < /message>
 < /context>
 < context >

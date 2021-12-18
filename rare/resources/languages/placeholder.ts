@@ -62,27 +62,27 @@
 <context>
     <name>App</name>
     <message>
-        <location filename="../../app.py" line="91"/>
+        <location filename="../../app.py" line="94"/>
         <source>Download finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app.py" line="91"/>
+        <location filename="../../app.py" line="94"/>
         <source>Download finished. {} is playable now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app.py" line="178"/>
+        <location filename="../../app.py" line="180"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app.py" line="178"/>
+        <location filename="../../app.py" line="180"/>
         <source>There is a download active. Do you really want to exit app?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app.py" line="161"/>
+        <location filename="../../app.py" line="163"/>
         <source>Could not find {} in installed games. Did you modify the shortcut?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -90,47 +90,47 @@
 <context>
     <name>BaseInstalledWidget</name>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="69"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="74"/>
         <source>Launch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="136"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="141"/>
         <source>Remove Desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="146"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="151"/>
         <source>Create Desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="95"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="100"/>
         <source>Remove start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="97"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="102"/>
         <source>Create start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="102"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="107"/>
         <source>Reload Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="106"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="111"/>
         <source>Uninstall</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="138"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="143"/>
         <source>Remove Start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="148"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="153"/>
         <source>Create Start menu link</source>
         <translation type="unfinished"></translation>
     </message>
@@ -170,7 +170,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="74"/>
+        <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="79"/>
         <source>Sync with cloud</source>
         <translation type="unfinished"></translation>
     </message>
@@ -333,16 +333,16 @@
         <message>
             <location filename="../../components/tabs/shop/constants.py" line="8"/>
             <source>Simulation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/shop/constants.py" line="8"/>
-        <source>Sport</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/shop/constants.py" line="29"/>
-        <source>Single player</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/shop/constants.py" line="8"/>
+            <source>Sport</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/shop/constants.py" line="29"/>
+            <source>Single player</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1170,16 +1170,16 @@
             <source>Import existing session from EGL</source>
             <translation type="unfinished"></translation>
         </message>
-    <message>
-        <location filename="../../ui/components/dialogs/login/import_login.py" line="70"/>
-        <source>Select path</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../ui/components/dialogs/login/import_login.py" line="71"/>
-        <source>Browse</source>
-        <translation type="unfinished"></translation>
-    </message>
+        <message>
+            <location filename="../../ui/components/dialogs/login/import_login.py" line="70"/>
+            <source>Select path</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../ui/components/dialogs/login/import_login.py" line="71"/>
+            <source>Browse</source>
+            <translation type="unfinished"></translation>
+        </message>
     <message>
         <location filename="../../components/dialogs/login/import_login.py" line="30"/>
         <source>Found EGL Program Data. Click &apos;Next&apos; to import them.</source>
@@ -1416,12 +1416,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/launch_dialog.py" line="121"/>
+        <location filename="../../components/dialogs/launch_dialog.py" line="130"/>
         <source>Downloading Images</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/launch_dialog.py" line="190"/>
+        <location filename="../../components/dialogs/launch_dialog.py" line="195"/>
         <source>Starting...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1429,73 +1429,78 @@
 <context>
     <name>LegendarySettings</name>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="134"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="142"/>
         <source>Default Installation Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="135"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="143"/>
         <source>Download Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="136"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="144"/>
         <source>Max Workers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="140"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="148"/>
         <source>Less is slower (0: Default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="138"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="146"/>
         <source>Max Memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="139"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="147"/>
         <source>MiB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="141"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="149"/>
         <source>Preferred CDN</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="142"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="150"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="143"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="151"/>
         <source>Disable HTTPS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="144"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="137"/>
         <source>Locale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="145"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="138"/>
         <source>Cleanup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="146"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="139"/>
         <source>Clean, but keep manifests</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/legendary.py" line="147"/>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="140"/>
         <source>Remove everything</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/legendary.py" line="132"/>
+        <location filename="../../components/tabs/settings/legendary.py" line="135"/>
         <source>Cleanup complete! Successfully removed {}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../ui/components/tabs/settings/legendary.py" line="141"/>
+        <source>Link Ubisoft Games</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1635,7 +1640,7 @@
 <context>
     <name>QApplication</name>
     <message>
-        <location filename="../../app.py" line="41"/>
+        <location filename="../../app.py" line="43"/>
         <source>Failed to login</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2067,21 +2072,67 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
-<context>
-    <name>TrayIcon</name>
-    <message>
-        <location filename="../../components/tray_icon.py" line="17"/>
-        <source>Exit</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>UninstallDialog</name>
-    <message>
-        <location filename="../../components/dialogs/uninstall_dialog.py" line="15"/>
-        <source>Do you really want to uninstall {}</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <context>
+        <name>TrayIcon</name>
+        <message>
+            <location filename="../../components/tray_icon.py" line="17"/>
+            <source>Exit</source>
+            <translation type="unfinished"></translation>
+        </message>
+    </context>
+    <context>
+        <name>UbiActivationHelper</name>
+        <message>
+            <location filename="../../components/tabs/settings/ubisoft_activation.py" line="130"/>
+            <source>Your account is not linked with Ubisoft. Please link your account first</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/settings/ubisoft_activation.py" line="132"/>
+            <source>Open link page</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/settings/ubisoft_activation.py" line="137"/>
+            <source>An error occurred</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/settings/ubisoft_activation.py" line="169"/>
+            <source>All your Ubisoft games have already been activated</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/settings/ubisoft_activation.py" line="172"/>
+            <source>You don&apos;t own any Ubisoft games</source>
+            <translation type="unfinished"></translation>
+        </message>
+    </context>
+    <context>
+        <name>UbiLinkWidget</name>
+        <message>
+            <location filename="../../components/tabs/settings/ubisoft_activation.py" line="88"/>
+            <source>Redeem to Ubisoft</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/settings/ubisoft_activation.py" line="108"/>
+            <source>Already activated</source>
+            <translation type="unfinished"></translation>
+        </message>
+        <message>
+            <location filename="../../components/tabs/settings/ubisoft_activation.py" line="112"/>
+            <source>Try again</source>
+            <translation type="unfinished"></translation>
+        </message>
+    </context>
+    <context>
+        <name>UninstallDialog</name>
+        <message>
+            <location filename="../../components/dialogs/uninstall_dialog.py" line="15"/>
+            <source>Do you really want to uninstall {}</source>
+            <translation type="unfinished"></translation>
+        </message>
     <message>
         <location filename="../../components/dialogs/uninstall_dialog.py" line="17"/>
         <source>Keep Files</source>

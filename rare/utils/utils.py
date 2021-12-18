@@ -218,6 +218,8 @@ def create_rare_desktop_link(type_of_link):
             path = os.path.expanduser("~/.local/share/applications/")
         else:
             return
+        if not os.path.exists(path):
+            return
 
         if p := os.environ.get("APPIMAGE"):
             executable = p
