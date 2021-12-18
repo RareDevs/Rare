@@ -1,4 +1,5 @@
 import os
+import platform
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool
@@ -61,17 +62,20 @@ class AssetWorker(QRunnable):
         self.assets = dict()
 
     def run(self) -> None:
-        for platform in shared.core.get_installed_platforms():
-            self.assets.update({platform: self.get_asset(platform)})
+        platforms = list(set(shared.core.get_installed_platforms() + ["Windows"]))
+        if platform.system() == "Darwin" and "Mac" not in platforms:
+            platforms.append("Mac")
+        for p in platforms:
+            self.assets.update({p: self.get_asset(p)})
         self.signals.result.emit(self.assets, "assets")
 
     @staticmethod
-    def get_asset(platform):
+    def get_asset(p):
         if not shared.core.egs.user:
             return []
         assets = [
             GameAsset.from_egs_json(a) for a in
-            shared.core.egs.get_game_assets(platform=platform)
+            shared.core.egs.get_game_assets(platform=p)
         ]
 
         return assets
