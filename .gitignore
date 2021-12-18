@@ -15,3 +15,5 @@ __pycache__
 /venv311/
 /test.py
 /.eggs
+/appimage-builder-cache/
+/AppDir/

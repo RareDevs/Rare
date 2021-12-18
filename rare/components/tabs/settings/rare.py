@@ -104,7 +104,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.start_menu_link = os.path.expanduser("~/.local/share/applications/Rare.desktop")
         elif platform.system() == "Windows":
             self.desktop_file = os.path.expanduser("~/Desktop/Rare.lnk")
-            self.start_menu_link = os.path.expandvars("%appdata%\\Microsoft\\Windows\\Start Menu")
+            self.start_menu_link = os.path.expandvars("%appdata%\\Microsoft\\Windows\\Start Menu\\Rare.lnk")
         else:
             self.desktop_link_btn.setText(self.tr("Not supported"))
             self.desktop_link_btn.setDisabled(True)

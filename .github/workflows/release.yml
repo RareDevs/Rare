@@ -38,9 +38,6 @@ jobs:
         run: |
           sudo apt install python3-all python3-stdeb dh-python python3-setuptools python3-wheel
           sudo pip install -r requirements.txt
-      - name: Install legendary
-        run: |
-          pip install ./rare/legendary
       - name: run python setup
         run: |
           python3 setup.py sdist
