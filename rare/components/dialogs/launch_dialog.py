@@ -62,9 +62,10 @@ class AssetWorker(QRunnable):
         self.assets = dict()
 
     def run(self) -> None:
-        platforms = list(set(shared.core.get_installed_platforms() + ["Windows"]))
-        if platform.system() == "Darwin" and "Mac" not in platforms:
-            platforms.append("Mac")
+        platforms = shared.core.get_installed_platforms()
+        platforms.add("Windows")
+        if platform.system() == "Darwin":
+            platforms.add("Mac")
         for p in platforms:
             self.assets.update({p: self.get_asset(p)})
         self.signals.result.emit(self.assets, "assets")
