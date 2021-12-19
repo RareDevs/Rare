@@ -1,11 +1,11 @@
 from logging import getLogger
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Union, List
 
 from PyQt5.QtCore import QSettings, QObjectCleanupHandler
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 import rare.shared as shared
-from legendary.models.game import InstalledGame
+from legendary.models.game import InstalledGame, Game
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils.extra_widgets import FlowLayout
 from rare.utils.utils import get_pixmap, download_image, get_uninstalled_pixmap
@@ -28,7 +28,8 @@ logger = getLogger("GamesTab")
 
 
 class GamesTab(QStackedWidget, Ui_GamesTab):
-    widgets: Dict[str, Tuple[InstalledIconWidget, InstalledListWidget]] = dict()
+    widgets: Dict[str, Tuple[
+        Union[InstalledIconWidget, IconWidgetUninstalled], Union[InstalledListWidget, ListWidgetUninstalled]]] = dict()
     running_games = list()
     updates = set()
     active_filter = 0
@@ -40,7 +41,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.signals = shared.signals
         self.settings = QSettings()
 
-        self.game_list = shared.api_results.game_list
+        self.game_list: List[Game] = shared.api_results.game_list
         self.dlcs = shared.api_results.dlcs
         self.bit32 = shared.api_results.bit32_games
         self.mac_games = shared.api_results.mac_games
@@ -79,6 +80,15 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                 self.no_asset_names.append(game.app_name)
         else:
             self.no_assets = []
+
+        for i in self.game_list:
+            if i.app_name.startswith("UE"):
+                self.ue_name = i.app_name
+                break
+        else:
+            logger.warning("No Unreal engine in library found")
+            self.ue_name = ""
+
         self.installed = self.core.get_installed_list()
         self.setup_game_list()
 
@@ -185,11 +195,15 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
     def add_installed_widget(self, app_name):
         pixmap = get_pixmap(app_name)
-        if pixmap.isNull():
-            logger.info(app_name + " has a corrupt image.")
-            download_image(self.core.get_game(app_name), force=True)
-            pixmap = get_pixmap(app_name)
         try:
+            if pixmap.isNull():
+                logger.info(app_name + " has a corrupt image.")
+                if app_name in self.no_asset_names and self.core.get_asset(app_name).namespace != "ue":
+                    download_image(self.core.get_game(app_name), force=True)
+                    pixmap = get_pixmap(app_name)
+                elif self.ue_name:
+                    pixmap = get_pixmap(self.ue_name)
+
             icon_widget = InstalledIconWidget(app_name, pixmap, self.game_utils)
             list_widget = InstalledListWidget(app_name, pixmap, self.game_utils)
         except Exception as e:
@@ -207,11 +221,15 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
     def add_uninstalled_widget(self, game):
         pixmap = get_uninstalled_pixmap(game.app_name)
-        if pixmap.isNull():
-            logger.warning(game.app_title + " has a corrupt image. Reloading...")
-            download_image(game, force=True)
-            pixmap = get_uninstalled_pixmap(game.app_name)
         try:
+            if pixmap.isNull():
+                if self.core.get_asset(game.app_name).namespace != "ue":
+                    logger.warning(game.app_title + " has a corrupt image. Reloading...")
+                    download_image(game, force=True)
+                    pixmap = get_uninstalled_pixmap(game.app_name)
+                elif self.ue_name:
+                    pixmap = get_uninstalled_pixmap(self.ue_name)
+
             icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
             list_widget = ListWidgetUninstalled(self.core, game, pixmap)
         except Exception as e:
@@ -235,31 +253,38 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             filter_name = t
 
         for t in self.widgets.values():
+            app_name = t[0].game.app_name
             # icon and list widget
-            for w in t:
-                if filter_name == "installed":
-                    visible = self.core.is_installed(w.game.app_name)
-                elif filter_name == "offline":
-                    if self.core.is_installed(w.game.app_name):
-                        visible = w.igame.can_run_offline
-                    else:
-                        visible = False
-                elif filter_name == "32bit" and self.bit32:
-                    visible = w.game.app_name in self.bit32
-                elif filter_name == "mac" and self.mac_games:
-                    visible = w.game.app_name in self.mac_games
-                elif filter_name == "installable":
-                    visible = w.game.app_name not in self.no_asset_names
-                elif filter_name == "all":
-                    # All visible
-                    visible = True
+            if filter_name == "installed":
+                visible = self.core.is_installed(app_name)
+            elif filter_name == "offline":
+                if self.core.is_installed(app_name):
+                    visible = t[0].igame.can_run_offline
                 else:
-                    visible = True
-                if (
-                        search_text.lower() not in w.game.app_name.lower()
-                        and search_text.lower() not in w.game.app_title.lower()
-                ):
                     visible = False
+            elif filter_name == "32bit" and self.bit32:
+                visible = app_name in self.bit32
+            elif filter_name == "mac" and self.mac_games:
+                visible = app_name in self.mac_games
+            elif filter_name == "installable":
+                visible = app_name not in self.no_asset_names
+            elif filter_name == "include_ue":
+                visible = True
+            elif filter_name == "all":
+                # All visible except ue
+                try:
+                    visible = self.core.get_asset(app_name, update=False).namespace != "ue"
+                except ValueError:
+                    visible = True
+            else:
+                visible = True
+
+            if (
+                    search_text.lower() not in app_name.lower()
+                    and search_text.lower() not in t[0].game.app_title.lower()
+            ):
+                visible = False
+            for w in t:
                 w.setVisible(visible)
 
     def update_list(self, app_names: list = None):

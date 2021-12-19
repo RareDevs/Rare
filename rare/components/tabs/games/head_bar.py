@@ -30,11 +30,9 @@ class GameListHeadBar(QWidget):
                 self.tr("All"),
                 self.tr("Installed only"),
                 self.tr("Offline Games"),
-                #         ,
-                #
-                #        self.tr(),
-            ]
-        )
+            ])
+        self.layout().addWidget(self.filter)
+
         self.available_filters = [
             "all",
             "installed",
@@ -52,7 +50,8 @@ class GameListHeadBar(QWidget):
             self.filter.addItem(self.tr("Exclude Origin"))
             self.available_filters.append("installable")
 
-        self.layout().addWidget(self.filter)
+        self.filter.addItem(self.tr("Include Unreal Engine"))
+        self.available_filters.append("include_ue")
 
         try:
             self.filter.setCurrentIndex(self.settings.value("filter", 0, int))

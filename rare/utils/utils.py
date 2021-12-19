@@ -49,7 +49,7 @@ def download_images(progress: pyqtSignal, results: pyqtSignal, core: LegendaryCo
         logger.info("Create Image dir")
 
     # Download Images
-    games, dlcs = core.get_game_and_dlc_list(True)
+    games, dlcs = core.get_game_and_dlc_list(True, skip_ue=False)
     results.emit((games, dlcs), "gamelist")
     dlc_list = []
     for i in dlcs.values():

@@ -90,6 +90,8 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.platform.setText(", ".join(available_platforms))
 
         pixmap = get_pixmap(game.app_name)
+        if pixmap.isNull():
+            pixmap = get_pixmap(self.parent().parent().parent().ue_name)
         w = 200
         pixmap = pixmap.scaled(w, int(w * 4 / 3))
         self.image.setPixmap(pixmap)

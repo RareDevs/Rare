@@ -138,6 +138,8 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
         pixmap = get_pixmap(self.game.app_name)
+        if pixmap.isNull():
+            pixmap = get_pixmap(self.parent().parent().parent().ue_name)
         w = 200
         pixmap = pixmap.scaled(w, int(w * 4 / 3))
         self.image.setPixmap(pixmap)
