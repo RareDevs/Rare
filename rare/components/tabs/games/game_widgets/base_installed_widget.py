@@ -55,7 +55,7 @@ class BaseInstalledWidget(QGroupBox):
         self.game_running = False
         self.offline = shared.args.offline
         self.update_available = False
-        if (self.game.third_party_store != "Origin" or self.igame) and self.core.lgd.assets:
+        if self.igame and self.core.lgd.assets:
             try:
                 remote_version = self.core.get_asset(self.game.app_name, platform=self.igame.platform,
                                                      update=False).build_version
