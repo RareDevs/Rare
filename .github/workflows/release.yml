@@ -31,24 +31,28 @@ jobs:
   deb-package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Install Deps
+      - name: Install Makedeb
         run: |
-          sudo apt install python3-all python3-stdeb dh-python python3-setuptools python3-wheel
-          sudo pip install -r requirements.txt
-      - name: run python setup
+          wget -qO - 'https://proget.hunterwittenborn.com/debian-feeds/makedeb.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/makedeb-archive-keyring.gpg &> /dev/null
+          echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.hunterwittenborn.com/ makedeb main' | sudo tee /etc/apt/sources.list.d/makedeb.list
+          sudo apt update
+          sudo apt install makedeb
+      - name: prepare pkgbuild
         run: |
-          python3 setup.py sdist
-          python3 setup.py --command-packages=stdeb.command bdist_deb
-      - name: move file
-        run: mv deb_dist/*.deb Rare.deb
+          git clone https://mpr.hunterwittenborn.com/rare.git build
+          sed -i "s/pkgver=.*/pkgver=${{ github.event.release.tag_name }}/g" build/PKGBUILD
+
+      - name: build deb
+        run: |
+          cd build
+          makedeb -d
+          mv *.deb Rare.deb
+
       - name: Upload files to GitHub
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare-${{ github.event.release.tag_name }}.deb
+          file: Rare.deb
           asset_name: Rare-${{ github.event.release.tag_name }}.deb
           tag: ${{ github.ref }}
           overwrite: true

@@ -31,6 +31,31 @@ jobs:
       - name: Analysing the code with pylint
         run: |
           pylint -E rare --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
+  deb-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Makedeb
+        run: |
+          wget -qO - 'https://proget.hunterwittenborn.com/debian-feeds/makedeb.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/makedeb-archive-keyring.gpg &> /dev/null
+          echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.hunterwittenborn.com/ makedeb main' | sudo tee /etc/apt/sources.list.d/makedeb.list
+          sudo apt update
+          sudo apt install makedeb
+      - name: prepare source directory
+        run: |
+          git clone https://mpr.hunterwittenborn.com/rare.git build
+          sed -i 's/source=.*/source=("rare-test::git+$url")/g' build/PKGBUILD
+          sed -i "s/\$pkgver/test/g" build/PKGBUILD
+
+      - name: build deb
+        run: |
+          cd build
+          makedeb -d
+          mv *.deb Rare.deb
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Rare.deb
+          path: Rare.deb
 
   appimage:
     runs-on: ubuntu-20.04
