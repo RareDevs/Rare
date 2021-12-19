@@ -14,6 +14,8 @@ from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSetting
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import WineResolver, get_raw_save_path
 
+logger = getLogger("GameSettings")
+
 
 def find_proton_wrappers():
     possible_proton_wrappers = []
@@ -33,11 +35,8 @@ def find_proton_wrappers():
                     wrapper = '"' + proton + '" run'
                     possible_proton_wrappers.append(wrapper)
     if not possible_proton_wrappers:
-        print("Unable to find any Proton version")
+        logger.warning("Unable to find any Proton version")
     return possible_proton_wrappers
-
-
-logger = getLogger("GameSettings")
 
 
 class GameSettings(QWidget, Ui_GameSettings):
@@ -74,16 +73,15 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.cloud_sync.stateChanged.connect(
             lambda: self.settings.setValue(f"{self.game.app_name}/auto_sync_cloud", self.cloud_sync.isChecked())
         )
-        self.launch_params.textChanged.connect(lambda: self.launch_params_button.setEnabled(True))
-        self.launch_params_button.clicked.connect(
-            lambda: self.save_line_edit("start_params", self.launch_params.text())
+        self.launch_params.textChanged.connect(
+            lambda x: self.save_line_edit("start_params", x)
         )
-        self.launch_params_button.setEnabled(False)
-        self.wrapper.textChanged.connect(lambda: self.wrapper_button.setEnabled(True))
-        self.wrapper_button.clicked.connect(
-            lambda: self.save_line_edit("wrapper", self.wrapper.text())
+        self.wrapper.textChanged.connect(
+            lambda x: self.save_line_edit("wrapper", x)
         )
-        self.wrapper_button.setEnabled(False)
+        self.override_exe_edit.textChanged.connect(
+            lambda x: self.save_line_edit("override_exe", x)
+        )
 
         if platform.system() != "Windows":
             self.possible_proton_wrappers = find_proton_wrappers()
@@ -171,7 +169,6 @@ class GameSettings(QWidget, Ui_GameSettings):
                 if not self.core.lgd.config[self.game.app_name]:
                     self.core.lgd.config.remove_section(self.game.app_name)
         self.core.lgd.save_config()
-        self.sender().setEnabled(False)
 
         if option == "wine_prefix":
             if self.game.supports_cloud_saves:
@@ -215,12 +212,11 @@ class GameSettings(QWidget, Ui_GameSettings):
                 # lk: TODO: This has to be fixed properly.
                 # lk: It happens because of the widget update. Mask it for now behind disabling the save button
                 self.wrapper.setText(self.core.lgd.config.get(f"{self.game.app_name}", "wrapper", fallback=""))
-                self.wrapper_button.setDisabled(True)
-                self.wrapper_widget.setEnabled(True)
+                self.wrapper.setEnabled(True)
                 self.linux_settings.wine_groupbox.setEnabled(True)
             else:
                 self.proton_prefix.setEnabled(True)
-                self.wrapper_widget.setEnabled(False)
+                self.wrapper.setEnabled(False)
                 self.linux_settings.wine_groupbox.setEnabled(False)
                 wrapper = self.possible_proton_wrappers[i - 1]
                 if self.game.app_name not in self.core.lgd.config.sections():
@@ -298,11 +294,11 @@ class GameSettings(QWidget, Ui_GameSettings):
                                                          fallback=self.tr(
                                                              "Please select path for proton prefix"))
                 self.proton_prefix.setText(proton_prefix)
-                self.wrapper_widget.setEnabled(False)
+                self.wrapper.setEnabled(False)
             else:
                 self.proton_wrapper.setCurrentIndex(0)
                 self.proton_prefix.setEnabled(False)
-                self.wrapper_widget.setEnabled(True)
+                self.wrapper.setEnabled(True)
 
         if not self.game.supports_cloud_saves:
             self.cloud_gb.setEnabled(False)
@@ -317,6 +313,7 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.cloud_save_path_edit.setText("")
 
         self.launch_params.setText(self.core.lgd.config.get(self.game.app_name, "start_params", fallback=""))
+        self.override_exe_edit.setText(self.core.lgd.config.get(self.game.app_name, "override_exe", fallback=""))
         self.change = True
 
 

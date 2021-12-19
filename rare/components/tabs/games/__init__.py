@@ -93,6 +93,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.head_bar.view.toggled.connect(self.toggle_view)
 
         f = self.settings.value("filter", 0, int)
+        if f >= len(self.head_bar.available_filters):
+            f = 0
         self.active_filter = self.head_bar.available_filters[f]
         self.filter_games(self.active_filter)
 

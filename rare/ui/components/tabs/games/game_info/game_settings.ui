@@ -26,16 +26,22 @@
    </item>
    <item>
     <widget class="QGroupBox" name="launch_settings_groupbox">
-     <property name="title">
-      <string>Launch Settings</string>
-     </property>
-     <layout class="QFormLayout" name="launch_settings_layout">
-      <property name="labelAlignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="skip_update_label">
-        <property name="text">
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="title">
+            <string>Launch Settings</string>
+        </property>
+        <layout class="QFormLayout" name="launch_settings_layout">
+            <property name="labelAlignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <item row="0" column="0">
+                <widget class="QLabel" name="skip_update_label">
+                    <property name="text">
          <string>Skip update check</string>
         </property>
        </widget>
@@ -104,90 +110,54 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QWidget" name="launch_params_widget" native="true">
-        <layout class="QHBoxLayout" name="launch_params_layout">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLineEdit" name="launch_params">
-           <property name="minimumSize">
-            <size>
-             <width>400</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="placeholderText">
-            <string>parameters</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="launch_params_button">
-           <property name="text">
-            <string>Save</string>
-           </property>
-          </widget>
-         </item>
+            <item row="2" column="1">
+                <widget class="QLineEdit" name="launch_params">
+                    <property name="minimumSize">
+                        <size>
+                            <width>400</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="placeholderText">
+                        <string>parameters</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="3" column="0">
+                <widget class="QLabel" name="wrapper_label">
+                    <property name="text">
+                        <string>Wrapper</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="3" column="1">
+                <widget class="QLineEdit" name="wrapper">
+                    <property name="minimumSize">
+                        <size>
+                            <width>400</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="placeholderText">
+                        <string>e.g. optirun</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="4" column="0">
+                <widget class="QLabel" name="override_exe_label">
+                    <property name="text">
+                        <string>Override Exe</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="4" column="1">
+                <widget class="QLineEdit" name="override_exe_edit">
+                    <property name="placeholderText">
+                        <string>Relative path to launch executable</string>
+                    </property>
+                </widget>
+            </item>
         </layout>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="wrapper_label">
-        <property name="text">
-         <string>Wrapper</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QWidget" name="wrapper_widget" native="true">
-        <layout class="QHBoxLayout" name="wrapper_layout">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLineEdit" name="wrapper">
-           <property name="minimumSize">
-            <size>
-             <width>400</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="placeholderText">
-            <string>e.g. optirun</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="wrapper_button">
-           <property name="text">
-            <string>Save</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </item>
    <item>
@@ -232,12 +202,12 @@
      </property>
      <widget class="QWidget" name="linux_settings_contents">
       <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>747</width>
-        <height>343</height>
-       </rect>
+          <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>741</width>
+              <height>328</height>
+          </rect>
       </property>
       <layout class="QVBoxLayout" name="linux_settings_contents_layout">
        <property name="leftMargin">
