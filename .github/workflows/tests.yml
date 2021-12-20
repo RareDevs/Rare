@@ -55,7 +55,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: Rare.deb
-          path: Rare.deb
+          path: build/Rare.deb
 
   appimage:
     runs-on: ubuntu-20.04
