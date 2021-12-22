@@ -61,7 +61,6 @@ class DlQueueWidget(QGroupBox):
     dl_queue = []
 
     def __init__(self):
-
         super(DlQueueWidget, self).__init__()
         self.setTitle(self.tr("Download Queue"))
         self.setLayout(QVBoxLayout())

@@ -49,9 +49,14 @@ def excepthook(exc_type, exc_value, exc_tb):
 
 
 class App(QApplication):
+    mainwindow: MainWindow = None
+    tray_icon: QSystemTrayIcon = None
+
     def __init__(self):
         super(App, self).__init__(sys.argv)
         self.args = shared.args  # add some options
+        self.window_launched = False
+        self.setQuitOnLastWindowClosed(False)
 
         # init Legendary
         try:
@@ -81,8 +86,6 @@ class App(QApplication):
                     self.core.lgd.save_config()
 
         # set Application name for settings
-        self.mainwindow = None
-        self.tray_icon = None
         self.launch_dialog = None
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")
@@ -90,7 +93,7 @@ class App(QApplication):
 
         self.signals = shared.init_signals()
 
-        self.signals.exit_app.connect(self.exit)
+        self.signals.exit_app.connect(self.exit_app)
         self.signals.send_notification.connect(
             lambda title:
             self.tray_icon.showMessage(
@@ -142,16 +145,23 @@ class App(QApplication):
 
         self.launch_dialog.login()
 
+    def show_mainwindow(self):
+        if self.window_launched:
+            self.mainwindow.show()
+        else:
+            self.mainwindow.show_window_centralized()
+
     def start_app(self):
         self.mainwindow = MainWindow()
         self.launch_dialog.close()
         self.tray_icon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(self.exit_app)
-        self.tray_icon.start_rare.triggered.connect(self.mainwindow.show)
-        self.tray_icon.activated.connect(self.tray)
+        self.tray_icon.start_rare.triggered.connect(self.show_mainwindow)
+        self.tray_icon.activated.connect(lambda r: self.show_mainwindow() if r == QSystemTrayIcon.DoubleClick else None)
 
         if not self.args.silent:
-            self.mainwindow.show()
+            self.mainwindow.show_window_centralized()
+            self.window_launched = True
 
         if shared.args.subparser == "launch":
             if shared.args.app_name in [i.app_name for i in self.core.get_installed_list()]:
@@ -176,7 +186,7 @@ class App(QApplication):
     def exit_app(self, exit_code=0):
         # FIXME: Fix this with the downlaod tab redesign
         if self.mainwindow is not None:
-            if self.mainwindow.tab_widget.downloadTab.active_game is not None:
+            if self.mainwindow.tab_widget.downloadTab.is_download_active:
                 question = QMessageBox.question(
                     self.mainwindow,
                     self.tr("Close"),
@@ -185,8 +195,11 @@ class App(QApplication):
                 if question == QMessageBox.No:
                     return
                 else:
+                    # clear queue
+                    self.mainwindow.tab_widget.downloadTab.queue_widget.update_queue([])
                     self.mainwindow.tab_widget.downloadTab.stop_download()
         # FIXME: End of FIXME
+        self.mainwindow.timer.stop()
         self.mainwindow.hide()
         threadpool = QThreadPool.globalInstance()
         threadpool.waitForDone()

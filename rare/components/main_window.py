@@ -34,11 +34,17 @@ class MainWindow(QMainWindow):
         if self.settings.value("save_size", False, bool):
             width, height = self.settings.value("window_size", (width, height), tuple)
 
-        # move the window outside the viewport
-        self.move(-50000, -50000)
-        # show the window in order for it to get decorated, otherwise windowHandle() is null
-        self.show()
+        self.resize(width, height)
 
+        if not shared.args.offline:
+            self.rpc = DiscordRPC()
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timer_finished)
+        self.timer.start(1000)
+
+    def show_window_centralized(self):
+        self.show()
         # get the margins of the decorated window
         margins = self.windowHandle().frameMargins()
         # get the screen the cursor is on
@@ -47,20 +53,11 @@ class MainWindow(QMainWindow):
         screen_rect = current_screen.availableGeometry()
         decor_width = margins.left() + margins.right()
         decor_height = margins.top() + margins.bottom()
-        window_size = QSize(width, height).boundedTo(screen_rect.size() - QSize(decor_width, decor_height))
-
-        # hide the window again because we don't want to show it at this point
-        self.hide()
+        window_size = QSize(self.width(), self.height()).boundedTo(
+            screen_rect.size() - QSize(decor_width, decor_height))
 
         self.resize(window_size)
         self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
-
-        if not shared.args.offline:
-            self.rpc = DiscordRPC()
-
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.timer_finished)
-        self.timer.start(1000)
 
     def timer_finished(self):
         file_path = os.path.join(data_dir, "lockfile")
@@ -89,4 +86,5 @@ class MainWindow(QMainWindow):
             return
         elif self.offline:
             pass
-        e.accept()
+        self.signals.exit_app.emit(0)
+        e.ignore()

@@ -221,6 +221,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.downloadTab.install_game(download_item)
         self.games_tab.start_download(download_item.options.app_name)
 
+    @property
+    def is_download_active(self):
+        return self.active_game is not None
+
 
 class UpdateWidget(QWidget):
     update_signal = pyqtSignal(InstallOptionsModel)
