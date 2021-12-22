@@ -38,10 +38,9 @@ class MainWindow(QMainWindow):
         self.move(-50000, -50000)
         # show the window in order for it to get decorated, otherwise windowHandle() is null
         self.show()
+
         # get the margins of the decorated window
         margins = self.windowHandle().frameMargins()
-        # hide the window again because we don't want to show it at this point
-        self.hide()
         # get the screen the cursor is on
         current_screen = QApplication.screenAt(QCursor.pos())
         # get the available screen geometry (excludes panels/docks)
@@ -49,6 +48,10 @@ class MainWindow(QMainWindow):
         decor_width = margins.left() + margins.right()
         decor_height = margins.top() + margins.bottom()
         window_size = QSize(width, height).boundedTo(screen_rect.size() - QSize(decor_width, decor_height))
+
+        # hide the window again because we don't want to show it at this point
+        self.hide()
+
         self.resize(window_size)
         self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
 
