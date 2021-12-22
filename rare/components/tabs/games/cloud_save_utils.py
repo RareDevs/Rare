@@ -157,7 +157,7 @@ class CloudSaveUtils(QObject):
             elif not ignore_settings:  # sync on startup
                 if QMessageBox.question(None, "Warning", self.tr(
                         "Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {} anyway?").format(
-                    igame.title, QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes):
+                    igame.title), QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
                     return False
                 else:
                     raise ValueError("No savepath detected")

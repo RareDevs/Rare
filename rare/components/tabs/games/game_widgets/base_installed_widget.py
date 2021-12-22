@@ -43,12 +43,7 @@ class BaseInstalledWidget(QGroupBox):
         }
 
         self.game = self.core.get_game(app_name)
-        if self.game.third_party_store != "Origin":
-            self.igame = self.core.get_installed_game(app_name)
-            self.is_origin = False
-        else:
-            self.igame = None
-            self.is_origin = True
+        self.igame = self.core.get_installed_game(app_name)  # None if origin
 
         self.image = QLabel()
         self.image.setPixmap(pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
@@ -85,7 +80,7 @@ class BaseInstalledWidget(QGroupBox):
             self.create_desktop = QAction(self.tr("Remove Desktop link"))
         else:
             self.create_desktop = QAction(self.tr("Create Desktop link"))
-        if not self.is_origin:
+        if self.igame:
             self.create_desktop.triggered.connect(lambda: self.create_desktop_link("desktop"))
             self.addAction(self.create_desktop)
 
@@ -100,7 +95,7 @@ class BaseInstalledWidget(QGroupBox):
                 self.create_start_menu = QAction(self.tr("Remove start menu link"))
             else:
                 self.create_start_menu = QAction(self.tr("Create start menu link"))
-            if not self.is_origin:
+            if self.igame:
                 self.create_start_menu.triggered.connect(lambda: self.create_desktop_link("start_menu"))
                 self.addAction(self.create_start_menu)
 

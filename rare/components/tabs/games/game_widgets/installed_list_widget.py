@@ -36,7 +36,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.title_label.setWordWrap(True)
         self.childLayout.addWidget(self.title_label)
         self.app_name_label = QLabel(self.game.app_name)
-        self.launch_button = QPushButton(play_icon, self.tr("Launch") if not self.is_origin else self.tr("Link/Play"))
+        self.launch_button = QPushButton(play_icon, self.tr("Launch") if self.igame else self.tr("Link/Play"))
         self.launch_button.setObjectName("launch_game_button")
         self.launch_button.setFixedWidth(150)
 
@@ -55,7 +55,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.app_name_label)
         self.developer_label = QLabel(self.tr("Developer: ") + self.dev)
         self.childLayout.addWidget(self.developer_label)
-        if not self.is_origin:
+        if self.igame:
             self.version_label = QLabel("Version: " + str(self.igame.version))
             self.size_label = QLabel(f"{self.tr('Installed size')}: {get_size(self.size)}")
 

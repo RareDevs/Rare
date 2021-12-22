@@ -61,7 +61,7 @@ class InstalledIconWidget(BaseInstalledWidget):
         self.info_label.setObjectName("info_label")
         self.layout.addWidget(self.info_label)
 
-        if not self.is_origin and self.igame.needs_verification:
+        if self.igame and self.igame.needs_verification:
             self.info_label.setText(self.texts["needs_verification"])
 
         self.setLayout(self.layout)
@@ -72,12 +72,12 @@ class InstalledIconWidget(BaseInstalledWidget):
     def enterEvent(self, a0: QEvent = None) -> None:
         if self.game_running:
             self.info_label.setText(self.texts["hover"]["running"])
-        elif not self.is_origin and self.igame.needs_verification:
+        elif not self.igame and self.igame.needs_verification:
             self.info_label.setText(self.texts["needs_verification"])
         elif self.update_available:
             self.info_label.setText(self.texts["hover"]["update_available"])
         else:
-            self.info_label.setText(self.texts["hover"]["launch" if not self.is_origin else "launch_origin"])
+            self.info_label.setText(self.texts["hover"]["launch" if self.igame else "launch_origin"])
 
     def leaveEvent(self, a0: QEvent = None) -> None:
         if self.game_running:
@@ -94,7 +94,7 @@ class InstalledIconWidget(BaseInstalledWidget):
     def mousePressEvent(self, e: QMouseEvent):
         # left button
         if e.button() == 1 and not self.game_running:
-            if not self.is_origin and self.igame.needs_verification:
+            if self.igame and self.igame.needs_verification:
                 return
             if self.update_available:
                 self.launch(skip_version_check=True)
