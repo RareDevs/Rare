@@ -31,17 +31,17 @@ AppDir:
     arch: amd64
     allow_unauthenticated: true
     sources:
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy main restricted
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-updates main restricted
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy universe
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-updates universe
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy multiverse
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-updates multiverse
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ groovy-backports main restricted
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish main restricted
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish-updates main restricted
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish universe
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish-updates universe
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish multiverse
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish-updates multiverse
+      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish-backports main restricted
           universe multiverse
-      - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security main restricted
-      - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security universe
-      - sourceline: deb http://security.ubuntu.com/ubuntu groovy-security multiverse
+      - sourceline: deb http://security.ubuntu.com/ubuntu impish-security main restricted
+      - sourceline: deb http://security.ubuntu.com/ubuntu impish-security universe
+      - sourceline: deb http://security.ubuntu.com/ubuntu impish-security multiverse
 
     include:
       - python3
