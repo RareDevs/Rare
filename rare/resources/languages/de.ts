@@ -181,13 +181,13 @@ verändert ? </translation>
 < context >
 <name>BaseInstalledWidget < /name>
 < message >
-<location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py" line = "74" / >
+<location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py" line = "69" / >
 <source>Launch < /source>
 < translation > Starten < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "141" / >
+line = "136" / >
     <source>Remove
 Desktop
 link < /source>
@@ -196,7 +196,7 @@ löschen < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "151" / >
+line = "146" / >
     <source>Create
 Desktop
 link < /source>
@@ -205,27 +205,27 @@ erstellen < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "100" / >
+line = "95" / >
     <source>Remove
 start
 menu
 link < /source>
 < translation > Startmenüvernküfpung
 löschen < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
+line = "97" / >
+    <source>Create
+start
+menu
+link < /source>
+< translation > Startmenüvernküfpung
+erstellen < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
 line = "102" / >
-    <source>Create
-start
-menu
-link < /source>
-< translation > Startmenüvernküfpung
-erstellen < /translation>
-< /message>
-< message >
-<location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "107" / >
     <source>Reload
 Image < /source>
 < translation > Bild
@@ -234,13 +234,13 @@ laden < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "111" / >
+line = "106" / >
 <source>Uninstall < /source>
 < translation > Deinstallieren < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "143" / >
+line = "138" / >
     <source>Remove
 Start
 menu
@@ -250,7 +250,7 @@ löschen < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "153" / >
+line = "148" / >
     <source>Create
 Start
 menu
@@ -326,7 +326,7 @@ verfügbar < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "79" / >
+line = "74" / >
     <source>Sync
 with cloud < /source>
 < translation > Mit Cloud
@@ -1680,13 +1680,13 @@ Spiele < /translation>
 <name>GameSettings < /name>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "148" / >
+line = "143" / >
 <source>GameSettings < /source>
 < translation > Spieleinstellungen < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "149" / >
+line = "144" / >
     <source>Launch
 Settings < /source>
 < translation > Start
@@ -1694,7 +1694,7 @@ Einstellungen < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "150" / >
+line = "145" / >
     <source>Skip
 update
 check < /source>
@@ -1703,32 +1703,32 @@ Updateüberprüfung < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "155" / >
+line = "150" / >
 <source>Default < /source>
 < translation > Standard < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "156" / >
+line = "151" / >
 <source>Yes < /source>
 < translation > Ja < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "157" / >
+line = "152" / >
 <source>No < /source>
 < translation > Nein < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "154" / >
+line = "149" / >
     <source>Offline
 mode < /source>
 < translation > Offlinemodus < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "165" / >
+line = "160" / >
     <source>Sync
 with cloud < /source>
 < translation > Mit der
@@ -1737,7 +1737,7 @@ Synchronisieren < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "158" / >
+line = "153" / >
     <source>Launch
 parameters < /source>
 < translation > Start
@@ -1745,37 +1745,31 @@ Parameter < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "159" / >
+line = "154" / >
 <source>parameters < /source>
 < translation > Parameter < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "163" / >
-<source>Save < /source>
-< translation > Speichern < /translation>
-< /message>
-< message >
-<location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "161" / >
+line = "155" / >
 <source>Wrapper < /source>
 < translation > Wrapper < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "162" / >
+line = "156" / >
 <source>e.g.optirun < /source>
 < translation > Z.B.Optirun < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "167" / >
+line = "162" / >
 <source>Proton < /source>
 < translation > Proton < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "168" / >
+line = "163" / >
     <source>Don & apos;
 t
 use
@@ -1786,13 +1780,13 @@ benutzen < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "169" / >
+line = "164" / >
 <source>Prefix < /source>
 < translation > Prefix < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "297" / >
+line = "293" / >
     <source>Please
 select
 path
@@ -1806,7 +1800,7 @@ auswählen < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "164" / >
+line = "159" / >
     <source>Cloud
 Saves < /source>
 < translation > Online
@@ -1814,7 +1808,7 @@ Spielstände < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "57" / >
+line = "56" / >
     <source>Cloud
 save
 path < /source>
@@ -1822,7 +1816,7 @@ path < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "63" / >
+line = "62" / >
     <source>Auto
 compute
 save
@@ -1833,7 +1827,7 @@ ermitteln < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "61" / >
+line = "60" / >
     <source>Save
 path < /source>
 < translation > Ordner
@@ -1842,13 +1836,13 @@ Spielstände < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "123" / >
+line = "121" / >
 <source>Loading < /source>
 < translation > Laden < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "144" / >
+line = "142" / >
     <source>Error
 while launching {
 }
@@ -1877,11 +1871,33 @@ erstellen < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
-line = "166" / >
+line = "161" / >
     <source>Proton
 Settings < /source>
 < translation > Proton
 Einstellungen < /translation>
+< /message>
+< message >
+<location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
+line = "157" / >
+    <source>Override
+Exe < /source>
+< translation > Exe
+überschreiben < /translation>
+< /message>
+< message >
+<location filename = "../../ui/components/tabs/games/game_info/game_settings.py"
+line = "158" / >
+    <source>Relative
+path
+to
+launch
+executable < /source>
+< translation > Relativer
+Pfad
+zur
+ausführbaren
+Datei < /translation>
 < /message>
 < /context>
 < context >
@@ -2166,7 +2182,7 @@ synchronisieren ? </translation>
 <name>GamesTab < /name>
 < message >
 <location filename = "../../components/tabs/games/__init__.py"
-line = "175" / >
+line = "177" / >
     <source>Installed
 Games: {
 }
