@@ -163,11 +163,15 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             if start_date > date:
                 coming_free_games.append(game)
         # free games now
+        now_free = 0
         for free_game in free_games_now:
             w = GameWidget(self.path, free_game)
             w.show_info.connect(self.show_game.emit)
             self.free_games_now.layout().addWidget(w)
             self.free_game_widgets.append(w)
+            now_free += 1
+        if now_free == 0:
+            self.free_games_now.layout().addWidget(QLabel(self.tr("Could not find current free game")))
 
         # free games next week
         for free_game in coming_free_games:

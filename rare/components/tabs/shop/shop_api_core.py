@@ -28,7 +28,7 @@ class ShopApiCore(QObject):
         self.next_browse_request = tuple(())
 
     def get_free_games(self, handle_func: callable):
-        url = f"https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale={self.language_code}&country={self.country_code}&allowCountries={self.country_code}"
+        url = f"https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale={self.language_code}&country={self.country_code}&allowCountries={self.country_code}"
 
         self.manager.get(url, lambda data: self._handle_free_games(data, handle_func))
 
@@ -85,6 +85,10 @@ class ShopApiCore(QObject):
         except KeyError as e:
             logger.error(str(e))
             handle_func([])
+        except Exception as e:
+            logger.error("Search Api request failed: " + str(e))
+            handle_func([])
+            return
 
     def browse_games(self, browse_model: BrowseModel, handle_func):
         if self.browse_active:
@@ -104,12 +108,19 @@ class ShopApiCore(QObject):
 
     def _handle_browse_games(self, data, handle_func):
         self.browse_active = False
+        if data is None:
+            data = {}
         if not self.next_browse_request:
+
             try:
                 handle_func(data["data"]["Catalog"]["searchStore"]["elements"])
             except KeyError as e:
                 logger.error(str(e))
                 handle_func([])
+            except Exception as e:
+                logger.error("Browse games Api request failed: " + str(e))
+                handle_func([])
+                return
         else:
             self.browse_games(*self.next_browse_request)  # pylint: disable=E1120
             self.next_browse_request = tuple(())
@@ -119,7 +130,11 @@ class ShopApiCore(QObject):
         self.manager.get(url, lambda data: self._handle_get_game(data, handle_func))
 
     def _handle_get_game(self, data, handle_func):
-        handle_func(data)
+        try:
+            handle_func(data)
+        except Exception as e:
+            logger.error(str(e))
+            handle_func({})
 
     # needs a captcha
     def add_to_wishlist(self, namespace, offer_id, handle_func: callable):
