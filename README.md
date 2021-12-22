@@ -44,6 +44,9 @@ There are some AUR packages available:
 - DUR package: [rare](https://mpr.hunterwittenborn.com/packages/rare)
 - .deb file in [releases page](https://github.com/Dummerle/Rare/releases)
 
+**Note**: You probably need to install pypresene manually,
+from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip
+
 #### Other
 
 Install via `pip` or use the AppImage.
