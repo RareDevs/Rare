@@ -72,7 +72,7 @@ class InstalledIconWidget(BaseInstalledWidget):
     def enterEvent(self, a0: QEvent = None) -> None:
         if self.game_running:
             self.info_label.setText(self.texts["hover"]["running"])
-        elif not self.igame and self.igame.needs_verification:
+        elif self.igame and self.igame.needs_verification:
             self.info_label.setText(self.texts["needs_verification"])
         elif self.update_available:
             self.info_label.setText(self.texts["hover"]["update_available"])
