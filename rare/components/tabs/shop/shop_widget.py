@@ -253,7 +253,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 self.discounts_gb.setVisible(True)
 
         self.game_stack.setCurrentIndex(1)
-        date = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.{str(random.randint(0, 999)).zfill(3)}Z]"
+        date = f"[{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d')},]"
 
         browse_model = BrowseModel(language_code=self.core.language_code, country_code=self.core.country_code,
                                    date=date, count=20, price=self.price,
