@@ -29,8 +29,15 @@ class TabWidget(QTabWidget):
         if not shared.args.offline:
             # updates = self.games_tab.default_widget.game_list.updates
             self.downloadTab = DownloadsTab(self.games_tab.updates)
-            self.addTab(self.downloadTab, "Downloads" + (
-                " (" + str(len(self.games_tab.updates)) + ")" if len(self.games_tab.updates) != 0 else ""))
+            self.addTab(
+                self.downloadTab,
+                "Downloads"
+                + (
+                    " (" + str(len(self.games_tab.updates)) + ")"
+                    if len(self.games_tab.updates) != 0
+                    else ""
+                ),
+            )
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
 
@@ -49,14 +56,18 @@ class TabWidget(QTabWidget):
         self.mini_widget = MiniWidget()
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.mini_widget)
-        account_button = TabButtonWidget('mdi.account-circle', 'Account')
+        account_button = TabButtonWidget("mdi.account-circle", "Account")
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)
-        self.tabBar().setTabButton(disabled_tab + 1, self.tabBar().RightSide, account_button)
+        self.tabBar().setTabButton(
+            disabled_tab + 1, self.tabBar().RightSide, account_button
+        )
 
         self.addTab(self.settings, icon("fa.gear"), "")
 
-        self.settings.about.update_available_ready.connect(lambda: self.tabBar().setTabText(5, "(!)"))
+        self.settings.about.update_available_ready.connect(
+            lambda: self.tabBar().setTabText(5, "(!)")
+        )
         # Signals
         # set current index
         self.signals.set_main_tab_index.connect(self.setCurrentIndex)
@@ -75,8 +86,12 @@ class TabWidget(QTabWidget):
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(5))
 
     def update_dl_tab_text(self):
-        num_downloads = len(set([i.options.app_name for i in self.downloadTab.dl_queue] + [i for i in
-                                                                                           self.downloadTab.update_widgets.keys()]))
+        num_downloads = len(
+            set(
+                [i.options.app_name for i in self.downloadTab.dl_queue]
+                + [i for i in self.downloadTab.update_widgets.keys()]
+            )
+        )
 
         if num_downloads != 0:
             self.setTabText(1, f"Downloads ({num_downloads})")

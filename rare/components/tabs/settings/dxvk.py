@@ -9,7 +9,6 @@ logger = getLogger("DXVK Settings")
 
 
 class DxvkSettings(QGroupBox, Ui_DxvkSettings):
-
     def __init__(self, name=None):
         super(DxvkSettings, self).__init__()
         self.setupUi(self)
@@ -39,7 +38,9 @@ class DxvkSettings(QGroupBox, Ui_DxvkSettings):
     # Custom Options, index 3, adds DXVK_HUD=devinfo,fps and enables the customization panel
 
     def load_settings(self):
-        dxvk_options = self.core.lgd.config.get(f"{self.name}.env", "DXVK_HUD", fallback=None)
+        dxvk_options = self.core.lgd.config.get(
+            f"{self.name}.env", "DXVK_HUD", fallback=None
+        )
         self.gb_dxvk_options.setDisabled(True)
         if dxvk_options is not None:
             if dxvk_options == "0":
@@ -74,16 +75,23 @@ class DxvkSettings(QGroupBox, Ui_DxvkSettings):
                         dxvk_options.append(opt)
                 if not dxvk_options:
                     # Check if this is the first activation
-                    stored = self.core.lgd.config.get(f"{self.name}.env", "DXVK_HUD", fallback=None)
+                    stored = self.core.lgd.config.get(
+                        f"{self.name}.env", "DXVK_HUD", fallback=None
+                    )
                     if stored not in [None, "0", "1"]:
                         self.core.lgd.config[f"{self.name}.env"]["DXVK_HUD"] = "0"
                     else:
                         dxvk_options = ["devinfo", "fps"]
                 # Check again if dxvk_options changed due to first activation
                 if dxvk_options:
-                    self.core.lgd.config[f"{self.name}.env"]["DXVK_HUD"] = ",".join(dxvk_options)
+                    self.core.lgd.config[f"{self.name}.env"]["DXVK_HUD"] = ",".join(
+                        dxvk_options
+                    )
         else:
-            if self.core.lgd.config.get(f"{self.name}.env", "DXVK_HUD", fallback=None) is not None:
+            if (
+                self.core.lgd.config.get(f"{self.name}.env", "DXVK_HUD", fallback=None)
+                is not None
+            ):
                 self.core.lgd.config.remove_option(f"{self.name}.env", "DXVK_HUD")
                 if not self.core.lgd.config[f"{self.name}.env"]:
                     self.core.lgd.config.remove_section(f"{self.name}.env")

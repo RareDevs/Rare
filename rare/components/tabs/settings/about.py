@@ -33,10 +33,14 @@ class About(QWidget, Ui_About):
         self.open_browser.setVisible(False)
 
         self.manager = QtRequestManager("json")
-        self.manager.get("https://api.github.com/repos/Dummerle/Rare/releases/latest", self.update_available_finished)
+        self.manager.get(
+            "https://api.github.com/repos/Dummerle/Rare/releases/latest",
+            self.update_available_finished,
+        )
 
         self.open_browser.clicked.connect(
-            lambda: webbrowser.open("https://github.com/Dummerle/Rare/releases/latest"))
+            lambda: webbrowser.open("https://github.com/Dummerle/Rare/releases/latest")
+        )
 
     def update_available_finished(self, data: dict):
         if latest_tag := data.get("tag_name"):
@@ -46,7 +50,9 @@ class About(QWidget, Ui_About):
 
         if self.update_available:
             logger.info(f"Update available: {__version__} -> {latest_tag}")
-            self.update_lbl.setText(self.tr("Update available: ") + f"{__version__} -> {latest_tag}")
+            self.update_lbl.setText(
+                self.tr("Update available: ") + f"{__version__} -> {latest_tag}"
+            )
             self.update_label.setVisible(True)
             self.update_lbl.setVisible(True)
             self.open_browser.setVisible(True)

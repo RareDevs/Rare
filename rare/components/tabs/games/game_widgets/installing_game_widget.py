@@ -3,7 +3,12 @@ from PyQt5.QtGui import QPaintEvent, QPainter, QPixmap, QPen, QFont, QColor
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QHBoxLayout, QWidget
 
 from rare import shared
-from rare.utils.utils import get_pixmap, optimal_text_background, text_color_for_background, get_uninstalled_pixmap
+from rare.utils.utils import (
+    get_pixmap,
+    optimal_text_background,
+    text_color_for_background,
+    get_uninstalled_pixmap,
+)
 
 
 class InstallingGameWidget(QWidget):
@@ -53,17 +58,23 @@ class PaintWidget(QWidget):
         game = shared.core.get_game(app_name, False)
         self.color_image = get_pixmap(game.app_name)
         w = 200
-        self.color_image = self.color_image.scaled(w, int(w * 4 // 3), transformMode=Qt.SmoothTransformation)
+        self.color_image = self.color_image.scaled(
+            w, int(w * 4 // 3), transformMode=Qt.SmoothTransformation
+        )
         self.setFixedSize(self.color_image.size())
         self.bw_image = get_uninstalled_pixmap(app_name)
-        self.bw_image = self.bw_image.scaled(w, int(w * 4 // 3), transformMode=Qt.SmoothTransformation)
+        self.bw_image = self.bw_image.scaled(
+            w, int(w * 4 // 3), transformMode=Qt.SmoothTransformation
+        )
         self.progress = 0
 
         pixel_list = []
         for x in range(self.color_image.width()):
             for y in range(self.color_image.height()):
                 # convert pixmap to qimage, get pixel and remove alpha channel
-                pixel_list.append(self.color_image.toImage().pixelColor(x, y).getRgb()[:-1])
+                pixel_list.append(
+                    self.color_image.toImage().pixelColor(x, y).getRgb()[:-1]
+                )
 
         self.rgb_tuple = optimal_text_background(pixel_list)
 
@@ -74,14 +85,21 @@ class PaintWidget(QWidget):
 
         w = self.bw_image.width() * self.progress // 100
 
-        painter.drawPixmap(0, 0, w, self.color_image.height(),
-                           self.color_image.copy(QRect(0, 0, w, self.color_image.height())))
+        painter.drawPixmap(
+            0,
+            0,
+            w,
+            self.color_image.height(),
+            self.color_image.copy(QRect(0, 0, w, self.color_image.height())),
+        )
 
         # Draw Circle
         pen = QPen(QColor(*self.rgb_tuple), 3)
         painter.setPen(pen)
         painter.setBrush(QColor(*self.rgb_tuple))
-        painter.drawEllipse(int(self.width() / 2) - 20, int(self.height() / 2) - 20, 40, 40)
+        painter.drawEllipse(
+            int(self.width() / 2) - 20, int(self.height() / 2) - 20, 40, 40
+        )
 
         # draw text
         painter.setPen(QColor(*text_color_for_background(self.rgb_tuple)))

@@ -69,11 +69,18 @@ class GameDlc(QWidget, Ui_GameDlc):
 
     def install(self, app_name):
         if not self.core.is_installed(self.game.app_name):
-            QMessageBox.warning(self, "Error", self.tr("Base Game is not installed. Please install {} first").format(
-                self.game.app_title))
+            QMessageBox.warning(
+                self,
+                "Error",
+                self.tr("Base Game is not installed. Please install {} first").format(
+                    self.game.app_title
+                ),
+            )
             return
 
-        self.signals.install_game.emit(InstallOptionsModel(app_name=app_name, update=True))
+        self.signals.install_game.emit(
+            InstallOptionsModel(app_name=app_name, update=True)
+        )
 
 
 class GameDlcWidget(QFrame, Ui_GameDlcWidget):
@@ -109,10 +116,15 @@ class GameDlcWidget(QFrame, Ui_GameDlcWidget):
         self.pixmap = a0
         self.image.setPixmap(
             self.pixmap.scaledToHeight(
-                self.dlc_info.size().height() - (self.image.contentsMargins().top() +
-                                                 self.image.contentsMargins().bottom() +
-                                                 self.image.lineWidth()*2),
-                Qt.SmoothTransformation))
+                self.dlc_info.size().height()
+                - (
+                    self.image.contentsMargins().top()
+                    + self.image.contentsMargins().bottom()
+                    + self.image.lineWidth() * 2
+                ),
+                Qt.SmoothTransformation,
+            )
+        )
         self.image.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
 
     def uninstall_dlc(self):

@@ -29,30 +29,41 @@ class QtRequestManager(QObject):
             self.request_active = RequestQueueItem(handle_func=handle_func)
             payload = json.dumps(payload).encode("utf-8")
 
-            request.setHeader(QNetworkRequest.UserAgentHeader,
-                              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36")
+            request.setHeader(
+                QNetworkRequest.UserAgentHeader,
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
+            )
 
             if self.authorization_token is not None:
-                request.setRawHeader(b"Authorization", self.authorization_token.encode())
+                request.setRawHeader(
+                    b"Authorization", self.authorization_token.encode()
+                )
 
             self.request = self.manager.post(request, payload)
             self.request.finished.connect(self.prepare_data)
 
         else:
             self.request_queue.append(
-                RequestQueueItem(method="post", url=url, payload=payload, handle_func=handle_func))
+                RequestQueueItem(
+                    method="post", url=url, payload=payload, handle_func=handle_func
+                )
+            )
 
     def get(self, url: str, handle_func: Callable[[Union[dict, bytes]], None]):
         if not self.request_active:
             request = QNetworkRequest(QUrl(url))
-            request.setHeader(QNetworkRequest.UserAgentHeader,
-                              "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36")
+            request.setHeader(
+                QNetworkRequest.UserAgentHeader,
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
+            )
 
             self.request_active = RequestQueueItem(handle_func=handle_func)
             self.request = self.manager.get(request)
             self.request.finished.connect(self.prepare_data)
         else:
-            self.request_queue.append(RequestQueueItem(method="get", url=url, handle_func=handle_func))
+            self.request_queue.append(
+                RequestQueueItem(method="get", url=url, handle_func=handle_func)
+            )
 
     def prepare_data(self):
         # self.request_active = False
@@ -62,7 +73,9 @@ class QtRequestManager(QObject):
                 if self.request.error() == QNetworkReply.NoError:
                     if self.type == "json":
                         error = QJsonParseError()
-                        json_data = QJsonDocument.fromJson(self.request.readAll().data(), error)
+                        json_data = QJsonDocument.fromJson(
+                            self.request.readAll().data(), error
+                        )
                         if QJsonParseError.NoError == error.error:
                             data = json.loads(json_data.toJson().data().decode())
                         else:
@@ -78,7 +91,11 @@ class QtRequestManager(QObject):
 
         if self.request_queue:
             if self.request_queue[0].method == "post":
-                self.post(self.request_queue[0].url, self.request_queue[0].payload, self.request_queue[0].handle_func)
+                self.post(
+                    self.request_queue[0].url,
+                    self.request_queue[0].payload,
+                    self.request_queue[0].handle_func,
+                )
             else:
                 self.get(self.request_queue[0].url, self.request_queue[0].handle_func)
             self.request_queue.pop(0)

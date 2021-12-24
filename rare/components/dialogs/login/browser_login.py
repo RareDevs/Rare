@@ -25,9 +25,7 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
         self.core = core
 
         self.sid_edit = IndicatorLineEdit(
-            ph_text=self.tr("Insert SID here"),
-            edit_func=self.text_changed,
-            parent=self
+            ph_text=self.tr("Insert SID here"), edit_func=self.text_changed, parent=self
         )
         self.sid_layout.addWidget(self.sid_edit)
 
@@ -58,7 +56,9 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
         try:
             token = self.core.auth_sid(sid)
             if self.core.auth_code(token):
-                logger.info(f"Successfully logged in as {self.core.lgd.userdata['displayName']}")
+                logger.info(
+                    f"Successfully logged in as {self.core.lgd.userdata['displayName']}"
+                )
                 self.success.emit()
             else:
                 self.status_label.setText(self.tr("Login failed."))

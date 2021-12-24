@@ -34,14 +34,16 @@ class SteamWorker(QRunnable):
             "bronze": _tr("SteamWorker", "Bronze"),
             "fail": _tr("SteamWorker", "Could not get grade"),
             "borked": _tr("SteamWorker", "unplayable"),
-            "pending": _tr("SteamWorker", "Could not get grade")
+            "pending": _tr("SteamWorker", "Could not get grade"),
         }
 
     def set_app_name(self, app_name: str):
         self.app_name = app_name
 
     def run(self) -> None:
-        self.signals.rating_signal.emit(self.ratings.get(get_rating(self.app_name), self.ratings["fail"]))
+        self.signals.rating_signal.emit(
+            self.ratings.get(get_rating(self.app_name), self.ratings["fail"])
+        )
 
 
 def get_rating(app_name: str):
@@ -57,10 +59,7 @@ def get_rating(app_name: str):
 
         steam_id = get_steam_id(game.app_title)
         grade = get_grade(steam_id)
-        grades[app_name] = {
-            "steam_id": steam_id,
-            "grade": grade
-        }
+        grades[app_name] = {"steam_id": steam_id, "grade": grade}
         with open(os.path.join(data_dir, "steam_ids.json"), "w") as f:
             f.write(json.dumps(grades))
             f.close()
@@ -74,14 +73,14 @@ def get_grade(steam_code):
     if steam_code == 0:
         return "fail"
     steam_code = str(steam_code)
-    url = 'https://www.protondb.com/api/v1/reports/summaries/'
-    res = requests.get(url + steam_code + '.json')
+    url = "https://www.protondb.com/api/v1/reports/summaries/"
+    res = requests.get(url + steam_code + ".json")
     try:
         lista = json.loads(res.text)
     except json.decoder.JSONDecodeError:
         return "fail"
 
-    return lista['tier']
+    return lista["tier"]
 
 
 def load_json() -> dict:
@@ -129,18 +128,18 @@ def get_steam_id(title: str):
 
 def check_time():  # this function check if it's time to update
     global file
-    text = open(file, 'r')
+    text = open(file, "r")
     json_table = json.load(text)
     text.close()
 
     today = date.today()
     day = 0  # it controls how many days it's necessary for an update
-    for i in 'ymd':
-        if i == 'd':
+    for i in "ymd":
+        if i == "d":
             day = 7
         else:
             day = 0
-        if int(today.strftime('%' + i)) > int(json_table['data'][i]) + day:
+        if int(today.strftime("%" + i)) > int(json_table["data"][i]) + day:
             return 1
         else:
             return 0

@@ -3,8 +3,14 @@ from logging import getLogger
 from typing import List, Dict
 
 from PyQt5.QtCore import QThread, pyqtSignal, QSettings
-from PyQt5.QtWidgets import QWidget, QMessageBox, QVBoxLayout, QLabel, QPushButton, \
-    QGroupBox
+from PyQt5.QtWidgets import (
+    QWidget,
+    QMessageBox,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+    QGroupBox,
+)
 
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate
@@ -59,7 +65,9 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.signals.game_uninstalled.connect(self.queue_item_removed)
         self.signals.game_uninstalled.connect(self.remove_update)
 
-        self.signals.add_download.connect(lambda app_name: self.add_update(self.core.get_installed_game(app_name)))
+        self.signals.add_download.connect(
+            lambda app_name: self.add_update(self.core.get_installed_game(app_name))
+        )
         shared.signals.game_uninstalled.connect(self.game_uninstalled)
 
         self.reset_infos()
@@ -75,7 +83,9 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.update_widgets[igame.app_name] = widget
         widget.update_signal.connect(self.get_install_options)
         if QSettings().value("auto_update", False, bool):
-            self.get_install_options(InstallOptionsModel(app_name=igame.app_name, update=True, silent=True))
+            self.get_install_options(
+                InstallOptionsModel(app_name=igame.app_name, update=True, silent=True)
+            )
             widget.update_button.setDisabled(True)
         self.update_text.setVisible(False)
 
@@ -148,7 +158,12 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 
             if game.app_name in self.update_widgets.keys():
                 igame = self.core.get_installed_game(game.app_name)
-                if self.core.get_asset(game.app_name, igame.platform, False).build_version == igame.version:
+                if (
+                    self.core.get_asset(
+                        game.app_name, igame.platform, False
+                    ).build_version
+                    == igame.version
+                ):
                     self.remove_update(game.app_name)
 
             self.signals.send_notification.emit(game.app_title)
@@ -188,12 +203,20 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.analysis = None
 
     def statistics(self, ui_update: UIUpdate):
-        self.progress_bar.setValue(100 * ui_update.total_downloaded // self.analysis.dl_size)
+        self.progress_bar.setValue(
+            100 * ui_update.total_downloaded // self.analysis.dl_size
+        )
         self.dl_speed.setText(f"{get_size(ui_update.download_speed)}/s")
-        self.cache_used.setText(f"{get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}")
-        self.downloaded.setText(f"{get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}")
+        self.cache_used.setText(
+            f"{get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}"
+        )
+        self.downloaded.setText(
+            f"{get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}"
+        )
         self.time_left.setText(self.get_time(ui_update.estimated_time_left))
-        self.signals.dl_progress.emit(100 * ui_update.total_downloaded // self.analysis.dl_size)
+        self.signals.dl_progress.emit(
+            100 * ui_update.total_downloaded // self.analysis.dl_size
+        )
 
     def get_time(self, seconds: int) -> str:
         return str(datetime.timedelta(seconds=seconds))
@@ -209,14 +232,24 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 
     def get_install_options(self, options: InstallOptionsModel):
 
-        install_dialog = InstallDialog(InstallQueueItemModel(options=options),
-                                       update=options.update, silent=options.silent, parent=self)
+        install_dialog = InstallDialog(
+            InstallQueueItemModel(options=options),
+            update=options.update,
+            silent=options.silent,
+            parent=self,
+        )
         install_dialog.result_ready.connect(self.on_install_dialog_closed)
         install_dialog.execute()
 
     def start_download(self, download_item: InstallQueueItemModel):
-        downloads = len(self.downloadTab.dl_queue) + len(self.downloadTab.update_widgets.keys()) + 1
-        self.setTabText(1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else ""))
+        downloads = (
+            len(self.downloadTab.dl_queue)
+            + len(self.downloadTab.update_widgets.keys())
+            + 1
+        )
+        self.setTabText(
+            1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else "")
+        )
         self.setCurrentIndex(1)
         self.downloadTab.install_game(download_item)
         self.games_tab.start_download(download_item.options.app_name)
@@ -244,13 +277,22 @@ class UpdateWidget(QWidget):
         self.update_with_settings.clicked.connect(lambda: self.update_game(False))
         self.layout.addWidget(self.update_button)
         self.layout.addWidget(self.update_with_settings)
-        self.layout.addWidget(QLabel(
-            self.tr("Version: ") + self.game.version + " -> " +
-            self.core.get_asset(self.game.app_name, self.game.platform, True).build_version))
+        self.layout.addWidget(
+            QLabel(
+                self.tr("Version: ")
+                + self.game.version
+                + " -> "
+                + self.core.get_asset(
+                    self.game.app_name, self.game.platform, True
+                ).build_version
+            )
+        )
 
         self.setLayout(self.layout)
 
     def update_game(self, auto: bool):
         self.update_button.setDisabled(True)
         self.update_with_settings.setDisabled(True)
-        self.update_signal.emit(InstallOptionsModel(app_name=self.game.app_name, silent=auto))  # True if settings
+        self.update_signal.emit(
+            InstallOptionsModel(app_name=self.game.app_name, silent=auto)
+        )  # True if settings

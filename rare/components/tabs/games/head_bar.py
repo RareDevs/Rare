@@ -1,5 +1,12 @@
 from PyQt5.QtCore import QSize, QSettings, pyqtSignal
-from PyQt5.QtWidgets import QLineEdit, QLabel, QPushButton, QWidget, QHBoxLayout, QComboBox
+from PyQt5.QtWidgets import (
+    QLineEdit,
+    QLabel,
+    QPushButton,
+    QWidget,
+    QHBoxLayout,
+    QComboBox,
+)
 from qtawesome import icon
 
 from rare.utils.extra_widgets import SelectViewWidget
@@ -17,15 +24,26 @@ class GameListHeadBar(QWidget):
         # self.layout.addWidget(self.installed_only)
 
         self.filter = QComboBox()
-        self.filter.addItems([self.tr("All"),
-                              self.tr("Installed only"),
-                              self.tr("Offline Games"),
-                              self.tr("32 Bit Games"),
-                              self.tr("Mac games"),
-                              self.tr("Exclude Origin")])
+        self.filter.addItems(
+            [
+                self.tr("All"),
+                self.tr("Installed only"),
+                self.tr("Offline Games"),
+                self.tr("32 Bit Games"),
+                self.tr("Mac games"),
+                self.tr("Exclude Origin"),
+            ]
+        )
         self.layout().addWidget(self.filter)
 
-        self.available_filters = ["all", "installed", "offline", "32bit", "mac", "installable"]
+        self.available_filters = [
+            "all",
+            "installed",
+            "offline",
+            "32bit",
+            "mac",
+            "installable",
+        ]
 
         try:
             self.filter.setCurrentIndex(self.settings.value("filter", 0, int))

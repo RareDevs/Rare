@@ -15,8 +15,11 @@ class Shop(QStackedWidget):
     def __init__(self, core: LegendaryCore):
         super(Shop, self).__init__()
         self.core = core
-        self.api_core = ShopApiCore(self.core.egs.session.headers["Authorization"], self.core.language_code,
-                                    self.core.country_code)
+        self.api_core = ShopApiCore(
+            self.core.egs.session.headers["Authorization"],
+            self.core.language_code,
+            self.core.country_code,
+        )
 
         self.shop = ShopWidget(cache_dir, core, self.api_core)
         self.wishlist_widget = Wishlist(self.api_core)
@@ -30,7 +33,10 @@ class Shop(QStackedWidget):
         self.search_results = SearchResults(self.api_core)
         self.addWidget(self.search_results)
         self.search_results.show_info.connect(self.show_game_info)
-        self.info = ShopGameInfo([i.asset_infos["Windows"].namespace for i in shared.api_results.game_list], self.api_core)
+        self.info = ShopGameInfo(
+            [i.asset_infos["Windows"].namespace for i in shared.api_results.game_list],
+            self.api_core,
+        )
         self.addWidget(self.info)
         self.info.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
 

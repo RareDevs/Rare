@@ -33,7 +33,10 @@ class GameInfoTabs(SideTabWidget):
         self.settings.update_game(app_name)
 
         # DLC Tab: Disable if no dlcs available
-        if len(self.dlc_list.get(self.core.get_game(app_name).catalog_item_id, [])) == 0:
+        if (
+            len(self.dlc_list.get(self.core.get_game(app_name).catalog_item_id, []))
+            == 0
+        ):
             self.setTabEnabled(3, False)
         else:
             self.setTabEnabled(3, True)

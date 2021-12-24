@@ -21,7 +21,8 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         self.wine_prefix = PathEdit(
             self.load_prefix(),
             file_type=QFileDialog.DirectoryOnly,
-            save_func=self.save_prefix)
+            save_func=self.save_prefix,
+        )
         self.prefix_layout.addWidget(self.wine_prefix)
 
         # Wine executable
@@ -29,7 +30,10 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
             self.load_setting(self.name, "wine_executable"),
             file_type=QFileDialog.ExistingFile,
             name_filter="Wine executable (wine wine64)",
-            save_func=lambda text: self.save_setting(text, section=self.name, setting="wine_executable"))
+            save_func=lambda text: self.save_setting(
+                text, section=self.name, setting="wine_executable"
+            ),
+        )
         self.exec_layout.addWidget(self.wine_exec)
 
         # dxvk
@@ -37,13 +41,15 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         self.dxvk_layout.addWidget(self.dxvk)
 
     def load_prefix(self) -> str:
-        return self.load_setting(f'{self.name}.env',
-                                 'WINEPREFIX',
-                                 fallback=self.load_setting(self.name, 'wine_prefix'))
+        return self.load_setting(
+            f"{self.name}.env",
+            "WINEPREFIX",
+            fallback=self.load_setting(self.name, "wine_prefix"),
+        )
 
     def save_prefix(self, text: str):
-        self.save_setting(text, f'{self.name}.env', 'WINEPREFIX')
-        self.save_setting(text, self.name, 'wine_prefix')
+        self.save_setting(text, f"{self.name}.env", "WINEPREFIX")
+        self.save_setting(text, self.name, "wine_prefix")
 
     @staticmethod
     def load_setting(section: str, setting: str, fallback: str = str()):
@@ -59,7 +65,9 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
             logger.debug(f"Set {setting} in {f'[{section}]'} to {text}")
 
         else:
-            if shared.core.lgd.config.has_section(section) and shared.core.lgd.config.has_option(section, setting):
+            if shared.core.lgd.config.has_section(
+                section
+            ) and shared.core.lgd.config.has_option(section, setting):
                 shared.core.lgd.config.remove_option(section, setting)
                 logger.debug(f"Unset {setting} from {f'[{section}]'}")
                 if not shared.core.lgd.config[section]:

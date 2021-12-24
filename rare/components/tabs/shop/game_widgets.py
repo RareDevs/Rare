@@ -42,14 +42,16 @@ class GameWidget(QWidget):
         mini_layout.addWidget(self.title_label)
         mini_layout.addStretch(1)
 
-        price = json_info['price']['totalPrice']['fmtPrice']['originalPrice']
-        discount_price = json_info['price']['totalPrice']['fmtPrice']['discountPrice']
+        price = json_info["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
+        discount_price = json_info["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
         price_label = QLabel(price)
         if price != discount_price:
             font = QFont()
             font.setStrikeOut(True)
             price_label.setFont(font)
-            mini_layout.addWidget(QLabel(discount_price if discount_price != "0" else self.tr("Free")))
+            mini_layout.addWidget(
+                QLabel(discount_price if discount_price != "0" else self.tr("Free"))
+            )
             mini_layout.addWidget(price_label)
         else:
             if price == "0":
@@ -64,10 +66,19 @@ class GameWidget(QWidget):
 
         self.title = json_info["title"]
         for img in json_info["keyImages"]:
-            if img["type"] in ["DieselStoreFrontWide", "OfferImageWide", "VaultClosed", "ProductLogo"]:
+            if img["type"] in [
+                "DieselStoreFrontWide",
+                "OfferImageWide",
+                "VaultClosed",
+                "ProductLogo",
+            ]:
                 if img["type"] == "VaultClosed" and self.title != "Mystery Game":
                     continue
-                self.image.update_image(img["url"], json_info["title"], (self.width, int(self.width * 9 / 16)))
+                self.image.update_image(
+                    img["url"],
+                    json_info["title"],
+                    (self.width, int(self.width * 9 / 16)),
+                )
                 break
         else:
             logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
@@ -95,8 +106,8 @@ class WishlistWidget(QWidget, Ui_WishlistWidget):
                 break
         else:
             self.developer.setText(game["seller"]["name"])
-        original_price = game['price']['totalPrice']['fmtPrice']['originalPrice']
-        discount_price = game['price']['totalPrice']['fmtPrice']['discountPrice']
+        original_price = game["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
+        discount_price = game["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
 
         self.price.setText(original_price if original_price != "0" else self.tr("Free"))
         # if discount
@@ -118,7 +129,9 @@ class WishlistWidget(QWidget, Ui_WishlistWidget):
             url = image_model.offer_image_wide
         self.image.update_image(url, game.get("title"), (240, 135))
         self.delete_button.setIcon(icon("mdi.delete", color="white"))
-        self.delete_button.clicked.connect(lambda: self.delete_from_wishlist.emit(self.game))
+        self.delete_button.clicked.connect(
+            lambda: self.delete_from_wishlist.emit(self.game)
+        )
 
     def mousePressEvent(self, e: QtGui.QMouseEvent) -> None:
         # left button

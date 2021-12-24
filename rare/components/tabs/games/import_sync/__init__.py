@@ -6,22 +6,21 @@ from .import_group import ImportGroup
 
 
 class ImportSyncTabs(SideTabWidget):
-
     def __init__(self, parent=None):
         super(ImportSyncTabs, self).__init__(show_back=True, parent=parent)
         self.import_widget = ImportSyncWidget(
             ImportGroup(self),
-            self.tr('Import Game'),
-            self.tr('To import games from Epic Games Store, please enable EGL Sync.'),
-            self
+            self.tr("Import Game"),
+            self.tr("To import games from Epic Games Store, please enable EGL Sync."),
+            self,
         )
         self.addTab(self.import_widget, self.tr("Import Games"))
 
         self.egl_sync_widget = ImportSyncWidget(
             EGLSyncGroup(self),
-            self.tr('Sync with EGL'),
-            self.tr('To import EGL games from directories, please use Import Game.'),
-            self
+            self.tr("Sync with EGL"),
+            self.tr("To import EGL games from directories, please use Import Game."),
+            self,
         )
         self.addTab(self.egl_sync_widget, self.tr("Sync with EGL"))
         # FIXME: Until it is ready
@@ -37,7 +36,6 @@ class ImportSyncTabs(SideTabWidget):
 
 
 class ImportSyncWidget(QWidget):
-
     def __init__(self, widget: QWidget, title: str, info: str, parent=None):
         super(ImportSyncWidget, self).__init__(parent=parent)
         self.layout = QVBoxLayout()
@@ -48,5 +46,7 @@ class ImportSyncWidget(QWidget):
         self.layout.addWidget(self.group)
         self.info = QLabel(f"<h4>{info}</h4>")
         self.layout.addWidget(self.info)
-        self.layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        self.layout.addItem(
+            QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        )
         self.setLayout(self.layout)

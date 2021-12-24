@@ -75,8 +75,8 @@ class AssetWorker(QRunnable):
         if not shared.core.egs.user:
             return []
         assets = [
-            GameAsset.from_egs_json(a) for a in
-            shared.core.egs.get_game_assets(platform=p)
+            GameAsset.from_egs_json(a)
+            for a in shared.core.egs.get_game_assets(platform=p)
         ]
 
         return assets
@@ -144,15 +144,24 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
             # cloud save from another worker, because it is used in cloud_save_utils too
             cloud_worker = CloudWorker()
-            cloud_worker.signals.result_ready.connect(lambda x: self.handle_api_worker_result(x, "saves"))
+            cloud_worker.signals.result_ready.connect(
+                lambda x: self.handle_api_worker_result(x, "saves")
+            )
             self.thread_pool.start(cloud_worker)
 
         else:
             self.finished = 2
             if self.core.lgd.assets:
-                self.api_results.game_list, self.api_results.dlcs = self.core.get_game_and_dlc_list(False)
-                self.api_results.bit32_games = list(map(lambda i: i.app_name, self.core.get_game_list(False, "Win32")))
-                self.api_results.mac_games = list(map(lambda i: i.app_name, self.core.get_game_list(False, "Mac")))
+                (
+                    self.api_results.game_list,
+                    self.api_results.dlcs,
+                ) = self.core.get_game_and_dlc_list(False)
+                self.api_results.bit32_games = list(
+                    map(lambda i: i.app_name, self.core.get_game_list(False, "Win32"))
+                )
+                self.api_results.mac_games = list(
+                    map(lambda i: i.app_name, self.core.get_game_list(False, "Mac"))
+                )
             else:
                 logger.warning("No assets found. Falling back to empty game lists")
                 self.api_results.game_list, self.api_results.dlcs = [], {}
@@ -165,11 +174,18 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             if result:
                 self.api_results.game_list, self.api_results.dlcs = result
             else:
-                self.api_results.game_list, self.api_results.dlcs = self.core.get_game_and_dlc_list(False)
+                (
+                    self.api_results.game_list,
+                    self.api_results.dlcs,
+                ) = self.core.get_game_and_dlc_list(False)
         elif text == "32bit":
-            self.api_results.bit32_games = [i.app_name for i in result[0]] if result else []
+            self.api_results.bit32_games = (
+                [i.app_name for i in result[0]] if result else []
+            )
         elif text == "mac":
-            self.api_results.mac_games = [i.app_name for i in result[0]] if result else []
+            self.api_results.mac_games = (
+                [i.app_name for i in result[0]] if result else []
+            )
 
         elif text == "no_assets":
             self.api_results.no_asset_games = result if result else []

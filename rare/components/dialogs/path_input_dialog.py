@@ -1,5 +1,12 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QLabel, QDialog, QFileDialog
+from PyQt5.QtWidgets import (
+    QHBoxLayout,
+    QPushButton,
+    QVBoxLayout,
+    QLabel,
+    QDialog,
+    QFileDialog,
+)
 
 from rare.utils.extra_widgets import PathEdit
 

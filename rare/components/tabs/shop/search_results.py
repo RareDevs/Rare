@@ -1,8 +1,16 @@
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea, QGroupBox, QPushButton, \
-    QStackedWidget
+from PyQt5.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QScrollArea,
+    QGroupBox,
+    QPushButton,
+    QStackedWidget,
+)
 
 from rare.utils.extra_widgets import ImageLabel, FlowLayout, WaitingSpinner
 
@@ -79,8 +87,8 @@ class _SearchResultItem(QGroupBox):
         self.title.setFont(title_font)
         self.title.setWordWrap(True)
         self.layout.addWidget(self.title)
-        price = result['price']['totalPrice']['fmtPrice']['originalPrice']
-        discount_price = result['price']['totalPrice']['fmtPrice']['discountPrice']
+        price = result["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
+        discount_price = result["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
         price_layout = QHBoxLayout()
         price_label = QLabel(price if price != "0" else self.tr("Free"))
         price_layout.addWidget(price_label)

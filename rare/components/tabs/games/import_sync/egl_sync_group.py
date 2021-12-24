@@ -8,7 +8,9 @@ from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox
 
 import rare.shared as shared
 from rare.ui.components.tabs.games.import_sync.egl_sync_group import Ui_EGLSyncGroup
-from rare.ui.components.tabs.games.import_sync.egl_sync_list_group import Ui_EGLSyncListGroup
+from rare.ui.components.tabs.games.import_sync.egl_sync_list_group import (
+    Ui_EGLSyncListGroup,
+)
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.models import PathSpec
 from rare.utils.utils import WineResolver
@@ -17,33 +19,36 @@ logger = getLogger("EGLSync")
 
 
 class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
-
     def __init__(self, parent=None):
         super(EGLSyncGroup, self).__init__(parent=parent)
         self.setupUi(self)
-        self.egl_path_info.setProperty('infoLabel', 1)
+        self.egl_path_info.setProperty("infoLabel", 1)
 
         self.thread_pool = QThreadPool.globalInstance()
 
-        if platform.system() == 'Windows':
+        if platform.system() == "Windows":
             self.egl_path_edit_label.setVisible(False)
             self.egl_path_info_label.setVisible(False)
             self.egl_path_info.setVisible(False)
         else:
             self.egl_path_edit = PathEdit(
                 path=shared.core.egl.programdata_path,
-                ph_text=self.tr('Path to the Wine prefix where EGL is installed, or the Manifests folder'),
+                ph_text=self.tr(
+                    "Path to the Wine prefix where EGL is installed, or the Manifests folder"
+                ),
                 file_type=QFileDialog.DirectoryOnly,
                 edit_func=self.egl_path_edit_edit_cb,
                 save_func=self.egl_path_edit_save_cb,
-                parent=self
+                parent=self,
             )
             self.egl_path_edit.textChanged.connect(self.egl_path_changed)
             self.egl_path_edit_layout.addWidget(self.egl_path_edit)
 
             if not shared.core.egl.programdata_path:
-                self.egl_path_info.setText(self.tr('Updating...'))
-                wine_resolver = WineResolver(PathSpec.egl_programdata, 'default', shared.core)
+                self.egl_path_info.setText(self.tr("Updating..."))
+                wine_resolver = WineResolver(
+                    PathSpec.egl_programdata, "default", shared.core
+                )
                 wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
                 self.thread_pool.start(wine_resolver)
             else:
@@ -67,12 +72,18 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.egl_path_info.setText(path)
         if not path:
             self.egl_path_info.setText(
-                self.tr('Default Wine prefix is unset, or path does not exist. '
-                        'Create it or configure it in Settings -> Linux.'))
+                self.tr(
+                    "Default Wine prefix is unset, or path does not exist. "
+                    "Create it or configure it in Settings -> Linux."
+                )
+            )
         elif not os.path.exists(path):
             self.egl_path_info.setText(
-                self.tr('Default Wine prefix is set but EGL manifests path does not exist. '
-                        'Your configured default Wine prefix might not be where EGL is installed.'))
+                self.tr(
+                    "Default Wine prefix is set but EGL manifests path does not exist. "
+                    "Your configured default Wine prefix might not be where EGL is installed."
+                )
+            )
         else:
             self.egl_path_edit.setText(path)
 
@@ -80,10 +91,18 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
     def egl_path_edit_edit_cb(path) -> Tuple[bool, str]:
         if not path:
             return True, path
-        if os.path.exists(os.path.join(path, 'system.reg')) and os.path.exists(os.path.join(path, 'dosdevices/c:')):
+        if os.path.exists(os.path.join(path, "system.reg")) and os.path.exists(
+            os.path.join(path, "dosdevices/c:")
+        ):
             # path is a wine prefix
-            path = os.path.join(path, 'dosdevices/c:', 'ProgramData/Epic/EpicGamesLauncher/Data/Manifests')
-        elif not path.rstrip('/').endswith('ProgramData/Epic/EpicGamesLauncher/Data/Manifests'):
+            path = os.path.join(
+                path,
+                "dosdevices/c:",
+                "ProgramData/Epic/EpicGamesLauncher/Data/Manifests",
+            )
+        elif not path.rstrip("/").endswith(
+            "ProgramData/Epic/EpicGamesLauncher/Data/Manifests"
+        ):
             # lower() might or might not be needed in the check
             return False, path
         if os.path.exists(path):
@@ -95,11 +114,11 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         if not path or not os.path.exists(path):
             # This is the same as "--unlink"
             shared.core.egl.programdata_path = None
-            shared.core.lgd.config.remove_option('Legendary', 'egl_programdata')
-            shared.core.lgd.config.remove_option('Legendary', 'egl_sync')
+            shared.core.lgd.config.remove_option("Legendary", "egl_programdata")
+            shared.core.lgd.config.remove_option("Legendary", "egl_sync")
             # remove EGL GUIDs from all games, DO NOT remove .egstore folders because that would fuck things up.
             for igame in shared.core.get_installed_list():
-                igame.egl_guid = ''
+                igame.egl_guid = ""
                 shared.core.install_game(igame)
         else:
             shared.core.egl.programdata_path = path
@@ -119,9 +138,9 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         if state == Qt.Unchecked:
             self.import_list.setEnabled(bool(self.import_list.items))
             self.export_list.setEnabled(bool(self.export_list.items))
-            shared.core.lgd.config.remove_option('Legendary', 'egl_sync')
+            shared.core.lgd.config.remove_option("Legendary", "egl_sync")
         else:
-            shared.core.lgd.config.set('Legendary', 'egl_sync', str(True))
+            shared.core.lgd.config.set("Legendary", "egl_sync", str(True))
             # lk: do import/export here since automatic sync was selected
             self.import_list.mark(Qt.Checked)
             self.export_list.mark(Qt.Checked)
@@ -134,7 +153,9 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
     def update_lists(self):
         # self.egl_watcher.blockSignals(True)
-        if have_path := bool(shared.core.egl.programdata_path) and os.path.exists(shared.core.egl.programdata_path):
+        if have_path := bool(shared.core.egl.programdata_path) and os.path.exists(
+            shared.core.egl.programdata_path
+        ):
             # NOTE: need to clear known manifests to force refresh
             shared.core.egl.manifests.clear()
         self.egl_sync_check_label.setEnabled(have_path)
@@ -178,7 +199,6 @@ class EGLSyncListItem(QListWidgetItem):
 
 
 class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
-
     def __init__(self, export: bool, parent=None):
         super(EGLSyncListGroup, self).__init__(parent=parent)
         self.setupUi(self)
@@ -187,19 +207,20 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         self.export = export
 
         if export:
-            self.setTitle(self.tr('Exportable games'))
-            self.label.setText(self.tr('No games to export to EGL'))
-            self.action_button.setText(self.tr('Export'))
+            self.setTitle(self.tr("Exportable games"))
+            self.label.setText(self.tr("No games to export to EGL"))
+            self.action_button.setText(self.tr("Export"))
             self.list_func = shared.core.egl_get_exportable
         else:
-            self.setTitle(self.tr('Importable games'))
-            self.label.setText(self.tr('No games to import from EGL'))
-            self.action_button.setText(self.tr('Import'))
+            self.setTitle(self.tr("Importable games"))
+            self.label.setText(self.tr("No games to import from EGL"))
+            self.action_button.setText(self.tr("Import"))
             self.list_func = shared.core.egl_get_importable
 
         self.list.itemDoubleClicked.connect(
-            lambda item:
-            item.setCheckState(Qt.Unchecked) if item.checkState() != Qt.Unchecked else item.setCheckState(Qt.Checked)
+            lambda item: item.setCheckState(Qt.Unchecked)
+            if item.checkState() != Qt.Unchecked
+            else item.setCheckState(Qt.Checked)
         )
         self.list.itemChanged.connect(self.has_selected)
 
@@ -244,9 +265,10 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         if errors:
             QMessageBox.warning(
                 self.parent(),
-                self.tr('The following errors occurred while {}.').format(
-                    self.tr('exporting') if self.export else self.tr('importing')),
-                '\n'.join(errors)
+                self.tr("The following errors occurred while {}.").format(
+                    self.tr("exporting") if self.export else self.tr("importing")
+                ),
+                "\n".join(errors),
             )
 
     @property
@@ -269,7 +291,7 @@ class EGLSyncWorker(QRunnable):
         self.export_list.action()
 
 
-'''
+"""
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QCheckBox, QPushButton, QDialog
 
 
@@ -348,4 +370,4 @@ class EGLSyncItemWidget(QGroupBox):
         # FIXME: on update_egl_widget this is going to crash because
         # FIXME: the item is not removed from the list in the python's side
         self.deleteLater()
-'''
+"""
