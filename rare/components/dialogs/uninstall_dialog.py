@@ -1,5 +1,13 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QCheckBox, QFormLayout, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import (
+    QDialog,
+    QLabel,
+    QVBoxLayout,
+    QCheckBox,
+    QFormLayout,
+    QHBoxLayout,
+    QPushButton,
+)
 from qtawesome import icon
 
 from legendary.models.game import Game
@@ -12,7 +20,9 @@ class UninstallDialog(QDialog):
         self.info = 0
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.layout = QVBoxLayout()
-        self.info_text = QLabel(self.tr("Do you really want to uninstall {}").format(game.app_title))
+        self.info_text = QLabel(
+            self.tr("Do you really want to uninstall {}").format(game.app_title)
+        )
         self.layout.addWidget(self.info_text)
         self.keep_files = QCheckBox(self.tr("Keep Files"))
         self.form = QFormLayout()
@@ -21,7 +31,9 @@ class UninstallDialog(QDialog):
         self.layout.addLayout(self.form)
 
         self.button_layout = QHBoxLayout()
-        self.ok_button = QPushButton(icon("ei.remove-circle", color="red"), self.tr("Uninstall"))
+        self.ok_button = QPushButton(
+            icon("ei.remove-circle", color="red"), self.tr("Uninstall")
+        )
         self.ok_button.clicked.connect(self.ok)
 
         self.cancel_button = QPushButton(self.tr("Cancel"))

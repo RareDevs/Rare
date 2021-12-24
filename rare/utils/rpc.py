@@ -61,7 +61,9 @@ class DiscordRPC(QObject):
     def set_discord_rpc(self, app_name=None):
         if not self.RPC:
             try:
-                self.RPC = Presence(client_id)  # Rare app: https://discord.com/developers/applications
+                self.RPC = Presence(
+                    client_id
+                )  # Rare app: https://discord.com/developers/applications
                 self.RPC.connect()
             except ConnectionRefusedError as e:
                 logger.warning("Discord is not active\n" + str(e))
@@ -83,13 +85,15 @@ class DiscordRPC(QObject):
 
     def update_rpc(self, app_name=None):
         if self.settings.value("rpc_enable", 0, int) == 2 or (
-                app_name is None and self.settings.value("rpc_enable", 0, int) == 0):
+            app_name is None and self.settings.value("rpc_enable", 0, int) == 0
+        ):
             self.remove_rpc()
             return
         title = None
         if not app_name:
-            self.RPC.update(large_image="logo",
-                            details="https://github.com/Dummerle/Rare")
+            self.RPC.update(
+                large_image="logo", details="https://github.com/Dummerle/Rare"
+            )
             return
         if self.settings.value("rpc_name", True, bool):
             try:
@@ -104,9 +108,7 @@ class DiscordRPC(QObject):
         if self.settings.value("rpc_os", True, bool):
             os = "via Rare on " + platform.system()
 
-        self.RPC.update(large_image="logo",
-                        details=title,
-                        large_text=title,
-                        state=os,
-                        start=start)
+        self.RPC.update(
+            large_image="logo", details=title, large_text=title, state=os, start=start
+        )
         self.state = 0

@@ -17,7 +17,9 @@ class ImportLogin(QWidget, Ui_ImportLogin):
     if os.name == "nt":
         localappdata = os.path.expandvars("%LOCALAPPDATA%")
     else:
-        localappdata = os.path.join("drive_c/users", getuser(), "Local Settings/Application Data")
+        localappdata = os.path.join(
+            "drive_c/users", getuser(), "Local Settings/Application Data"
+        )
     appdata_path = os.path.join(localappdata, "EpicGamesLauncher/Saved/Config/Windows")
     found = False
 
@@ -27,7 +29,9 @@ class ImportLogin(QWidget, Ui_ImportLogin):
 
         self.core = core
 
-        self.text_egl_found = self.tr("Found EGL Program Data. Click 'Next' to import them.")
+        self.text_egl_found = self.tr(
+            "Found EGL Program Data. Click 'Next' to import them."
+        )
         self.text_egl_notfound = self.tr("Could not find EGL Program Data. ")
 
         if os.name == "nt":
@@ -39,14 +43,19 @@ class ImportLogin(QWidget, Ui_ImportLogin):
                 self.status_label.setText(self.text_egl_found)
                 self.found = True
         else:
-            self.info_label.setText(self.tr(
-                "Please select the Wine prefix"
-                " where Epic Games Launcher is installed. ") + self.info_label.text()
-                                    )
+            self.info_label.setText(
+                self.tr(
+                    "Please select the Wine prefix"
+                    " where Epic Games Launcher is installed. "
+                )
+                + self.info_label.text()
+            )
             prefixes = self.get_wine_prefixes()
             if len(prefixes):
                 self.prefix_combo.addItems(prefixes)
-                self.status_label.setText(self.tr("Select the Wine prefix you want to import."))
+                self.status_label.setText(
+                    self.tr("Select the Wine prefix you want to import.")
+                )
             else:
                 self.status_label.setText(self.text_egl_notfound)
 
@@ -65,7 +74,9 @@ class ImportLogin(QWidget, Ui_ImportLogin):
         return prefixes
 
     def prefix_path(self):
-        prefix_dialog = QFileDialog(self, self.tr("Choose path"), os.path.expanduser("~/"))
+        prefix_dialog = QFileDialog(
+            self, self.tr("Choose path"), os.path.expanduser("~/")
+        )
         prefix_dialog.setFileMode(QFileDialog.DirectoryOnly)
         if prefix_dialog.exec_():
             names = prefix_dialog.selectedFiles()
@@ -75,14 +86,18 @@ class ImportLogin(QWidget, Ui_ImportLogin):
         if os.name == "nt":
             return self.found
         else:
-            return os.path.exists(os.path.join(self.prefix_combo.currentText(), self.appdata_path))
+            return os.path.exists(
+                os.path.join(self.prefix_combo.currentText(), self.appdata_path)
+            )
 
     def do_login(self):
         self.status_label.setText(self.tr("Loading..."))
         if os.name == "nt":
             pass
         else:
-            self.core.egl.appdata_path = os.path.join(self.prefix_combo.currentText(), self.appdata_path)
+            self.core.egl.appdata_path = os.path.join(
+                self.prefix_combo.currentText(), self.appdata_path
+            )
         try:
             if self.core.auth_import():
                 logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")

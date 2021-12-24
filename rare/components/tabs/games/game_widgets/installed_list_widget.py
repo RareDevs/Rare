@@ -4,7 +4,9 @@ from PyQt5.QtCore import QProcess, pyqtSignal, Qt
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 from qtawesome import icon
 
-from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
+from rare.components.tabs.games.game_widgets.base_installed_widget import (
+    BaseInstalledWidget,
+)
 from rare.utils.utils import get_size
 
 logger = getLogger("GameWidget")
@@ -36,7 +38,9 @@ class InstalledListWidget(BaseInstalledWidget):
         self.title_label.setWordWrap(True)
         self.childLayout.addWidget(self.title_label)
         self.app_name_label = QLabel(self.game.app_name)
-        self.launch_button = QPushButton(play_icon, self.tr("Launch") if self.igame else self.tr("Link/Play"))
+        self.launch_button = QPushButton(
+            play_icon, self.tr("Launch") if self.igame else self.tr("Link/Play")
+        )
         self.launch_button.setObjectName("launch_game_button")
         self.launch_button.setFixedWidth(150)
 
@@ -57,7 +61,9 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.developer_label)
         if self.igame:
             self.version_label = QLabel("Version: " + str(self.igame.version))
-            self.size_label = QLabel(f"{self.tr('Installed size')}: {get_size(self.size)}")
+            self.size_label = QLabel(
+                f"{self.tr('Installed size')}: {get_size(self.size)}"
+            )
 
             self.childLayout.addWidget(self.version_label)
             self.childLayout.addWidget(self.size_label)

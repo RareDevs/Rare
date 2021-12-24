@@ -4,13 +4,14 @@ from PyQt5.QtWidgets import QVBoxLayout, QLabel
 
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
-from rare.components.tabs.games.game_widgets.base_uninstalled_widget import BaseUninstalledWidget
+from rare.components.tabs.games.game_widgets.base_uninstalled_widget import (
+    BaseUninstalledWidget,
+)
 
 logger = getLogger("Uninstalled")
 
 
 class IconWidgetUninstalled(BaseUninstalledWidget):
-
     def __init__(self, game: Game, core: LegendaryCore, pixmap):
         super(IconWidgetUninstalled, self).__init__(game, core, pixmap)
         self.layout = QVBoxLayout()

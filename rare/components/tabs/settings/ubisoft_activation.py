@@ -27,20 +27,20 @@ class UbiGetInfoWorker(QRunnable):
         try:
             external_auths = shared.core.egs.get_external_auths()
             for ext_auth in external_auths:
-                if ext_auth['type'] != 'ubisoft':
+                if ext_auth["type"] != "ubisoft":
                     continue
-                ubi_account_id = ext_auth['externalAuthId']
+                ubi_account_id = ext_auth["externalAuthId"]
                 break
             else:
                 self.signals.worker_finished.emit(set(), set(), "")
                 return
 
             uplay_keys = shared.core.egs.store_get_uplay_codes()
-            key_list = uplay_keys['data']['PartnerIntegration']['accountUplayCodes']
-            redeemed = {k['gameId'] for k in key_list if k['redeemedOnUplay']}
+            key_list = uplay_keys["data"]["PartnerIntegration"]["accountUplayCodes"]
+            redeemed = {k["gameId"] for k in key_list if k["redeemedOnUplay"]}
 
             entitlements = shared.core.egs.get_user_entitlements()
-            entitlements = {i['entitlementName'] for i in entitlements}
+            entitlements = {i["entitlementName"] for i in entitlements}
             self.signals.worker_finished.emit(redeemed, entitlements, ubi_account_id)
         except Exception as e:
             logger.error(str(e))
@@ -61,7 +61,9 @@ class UbiConnectWorker(QRunnable):
             self.signals.linked.emit("")
             return
         try:
-            shared.core.egs.store_claim_uplay_code(self.ubi_account_id, self.partner_link_id)
+            shared.core.egs.store_claim_uplay_code(
+                self.ubi_account_id, self.partner_link_id
+            )
             shared.core.egs.store_redeem_uplay_codes(self.ubi_account_id)
         except Exception as e:
             self.signals.linked.emit(str(e))
@@ -85,14 +87,18 @@ class UbiLinkWidget(QWidget):
         self.ok_indicator.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         self.layout().addWidget(self.ok_indicator)
 
-        self.link_button = QPushButton(self.tr("Redeem to Ubisoft") + ": Test" if shared.args.debug else "")
+        self.link_button = QPushButton(
+            self.tr("Redeem to Ubisoft") + ": Test" if shared.args.debug else ""
+        )
         self.layout().addWidget(self.link_button)
         self.link_button.clicked.connect(self.activate)
 
     def activate(self):
         self.link_button.setDisabled(True)
         # self.ok_indicator.setPixmap(icon("mdi.loading", color="grey").pixmap(20, 20))
-        self.ok_indicator.setPixmap(icon("mdi.transit-connection-horizontal", color="grey").pixmap(20, 20))
+        self.ok_indicator.setPixmap(
+            icon("mdi.transit-connection-horizontal", color="grey").pixmap(20, 20)
+        )
 
         if shared.args.debug:
             worker = UbiConnectWorker(None, None)
@@ -103,11 +109,15 @@ class UbiLinkWidget(QWidget):
 
     def worker_finished(self, error):
         if not error:
-            self.ok_indicator.setPixmap(icon("ei.ok-circle", color="green").pixmap(QSize(20, 20)))
+            self.ok_indicator.setPixmap(
+                icon("ei.ok-circle", color="green").pixmap(QSize(20, 20))
+            )
             self.link_button.setDisabled(True)
             self.link_button.setText(self.tr("Already activated"))
         else:
-            self.ok_indicator.setPixmap(icon("fa.info-circle", color="red").pixmap(QSize(20, 20)))
+            self.ok_indicator.setPixmap(
+                icon("fa.info-circle", color="red").pixmap(QSize(20, 20))
+            )
             self.ok_indicator.setToolTip(error)
             self.link_button.setText(self.tr("Try again"))
             self.link_button.setDisabled(False)
@@ -126,11 +136,20 @@ class UbiActivationHelper(QObject):
 
     def show_ubi_games(self, redeemed: set, entitlements: set, ubi_account_id: str):
         if not redeemed and ubi_account_id != "error":
-            logger.error('No linked ubisoft account found! Link your accounts via your browser and try again.')
+            logger.error(
+                "No linked ubisoft account found! Link your accounts via your browser and try again."
+            )
             self.widget.layout().addWidget(
-                QLabel(self.tr("Your account is not linked with Ubisoft. Please link your account first")))
+                QLabel(
+                    self.tr(
+                        "Your account is not linked with Ubisoft. Please link your account first"
+                    )
+                )
+            )
             open_browser_button = QPushButton(self.tr("Open link page"))
-            open_browser_button.clicked.connect(lambda: webbrowser.open("https://www.epicgames.com/id/link/ubisoft"))
+            open_browser_button.clicked.connect(
+                lambda: webbrowser.open("https://www.epicgames.com/id/link/ubisoft")
+            )
             self.widget.layout().addWidget(open_browser_button)
             return
         elif ubi_account_id == "error":
@@ -141,17 +160,19 @@ class UbiActivationHelper(QObject):
         uplay_games = []
         activated = 0
         for game in games:
-            for dlc_data in game.metadata.get('dlcItemList', []):
-                if dlc_data['entitlementName'] not in entitlements:
+            for dlc_data in game.metadata.get("dlcItemList", []):
+                if dlc_data["entitlementName"] not in entitlements:
                     continue
 
                 try:
-                    app_name = dlc_data['releaseInfo'][0]['appId']
+                    app_name = dlc_data["releaseInfo"][0]["appId"]
                 except (IndexError, KeyError):
-                    app_name = 'unknown'
+                    app_name = "unknown"
 
-                dlc_game = Game(app_name=app_name, app_title=dlc_data['title'], metadata=dlc_data)
-                if dlc_game.partner_link_type != 'ubisoft':
+                dlc_game = Game(
+                    app_name=app_name, app_title=dlc_data["title"], metadata=dlc_data
+                )
+                if dlc_game.partner_link_type != "ubisoft":
                     continue
                 if dlc_game.partner_link_id in redeemed:
                     continue
@@ -167,14 +188,22 @@ class UbiActivationHelper(QObject):
         if not uplay_games:
             if activated >= 1:
                 self.widget.layout().addWidget(
-                    QLabel(self.tr("All your Ubisoft games have already been activated")))
+                    QLabel(
+                        self.tr("All your Ubisoft games have already been activated")
+                    )
+                )
             else:
-                self.widget.layout().addWidget(QLabel(self.tr("You don't own any Ubisoft games")))
+                self.widget.layout().addWidget(
+                    QLabel(self.tr("You don't own any Ubisoft games"))
+                )
             if shared.args.debug:
-                widget = UbiLinkWidget(Game(app_name="Test", app_title="This is a test game"), ubi_account_id)
+                widget = UbiLinkWidget(
+                    Game(app_name="Test", app_title="This is a test game"),
+                    ubi_account_id,
+                )
                 self.widget.layout().addWidget(widget)
             return
-        logger.info(f'Found {len(uplay_games)} game(s) to redeem')
+        logger.info(f"Found {len(uplay_games)} game(s) to redeem")
 
         for game in uplay_games:
             widget = UbiLinkWidget(game, ubi_account_id)

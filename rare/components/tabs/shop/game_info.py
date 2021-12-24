@@ -3,7 +3,16 @@ import webbrowser
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QSpacerItem, QGroupBox, QTabWidget, QGridLayout
+from PyQt5.QtWidgets import (
+    QWidget,
+    QLabel,
+    QPushButton,
+    QHBoxLayout,
+    QSpacerItem,
+    QGroupBox,
+    QTabWidget,
+    QGridLayout,
+)
 from qtawesome import icon
 
 from rare import shared
@@ -29,7 +38,9 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.image_stack.addWidget(self.image)
         self.image_stack.addWidget(WaitingSpinner())
         warn_label = QLabel()
-        warn_label.setPixmap(icon("fa.warning").pixmap(160, 160).scaled(240, 320, Qt.IgnoreAspectRatio))
+        warn_label.setPixmap(
+            icon("fa.warning").pixmap(160, 160).scaled(240, 320, Qt.IgnoreAspectRatio)
+        )
         self.image_stack.addWidget(warn_label)
 
         self.wishlist_button.clicked.connect(self.add_to_wishlist)
@@ -101,9 +112,13 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             #                             lambda success: self.wishlist_button.setText(self.tr("Remove from wishlist"))
             #                              if success else self.wishlist_button.setText("Something goes wrong"))
         else:
-            self.api_core.remove_from_wishlist(self.game.namespace, self.game.offer_id,
-                                               lambda success: self.wishlist_button.setVisible(False)
-                                               if success else self.wishlist_button.setText("Something goes wrong"))
+            self.api_core.remove_from_wishlist(
+                self.game.namespace,
+                self.game.offer_id,
+                lambda success: self.wishlist_button.setVisible(False)
+                if success
+                else self.wishlist_button.setText("Something goes wrong"),
+            )
 
     def data_received(self, game):
         try:
@@ -113,7 +128,12 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.price.setText("Error")
             self.req_group_box.setVisible(False)
             for img in self.data.get("keyImages"):
-                if img["type"] in ["DieselStoreFrontWide", "OfferImageTall", "VaultClosed", "ProductLogo"]:
+                if img["type"] in [
+                    "DieselStoreFrontWide",
+                    "OfferImageTall",
+                    "VaultClosed",
+                    "ProductLogo",
+                ]:
                     self.image.update_image(img["url"], size=(240, 320))
                     self.image_stack.setCurrentIndex(0)
                     break
@@ -137,7 +157,10 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             font.setStrikeOut(True)
             self.price.setFont(font)
             self.discount_price.setText(
-                self.game.discount_price if self.game.discount_price != "0" else self.tr("Free"))
+                self.game.discount_price
+                if self.game.discount_price != "0"
+                else self.tr("Free")
+            )
             self.discount_price.setVisible(True)
         else:
             self.discount_price.setVisible(False)
@@ -156,7 +179,9 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 req_widget.setLayout(QGridLayout())
                 req_widget.layout().addWidget(min_label, 0, 1)
                 req_widget.layout().addWidget(rec_label, 0, 2)
-                for i, (key, value) in enumerate(self.game.reqs.get(system, {}).items()):
+                for i, (key, value) in enumerate(
+                    self.game.reqs.get(system, {}).items()
+                ):
                     req_widget.layout().addWidget(QLabel(key), i + 1, 0)
                     min_label = QLabel(value[0])
                     min_label.setWordWrap(True)
@@ -167,7 +192,9 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 req_tabs.addTab(req_widget, system)
             self.req_group_box.layout().addWidget(req_tabs)
         else:
-            self.req_group_box.layout().addWidget(QLabel(self.tr("Could not get requirements")))
+            self.req_group_box.layout().addWidget(
+                QLabel(self.tr("Could not get requirements"))
+            )
         self.req_group_box.setVisible(True)
         if self.game.image_urls.front_tall:
             img_url = self.game.image_urls.front_tall
@@ -190,7 +217,10 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.tags.setText(", ".join(self.game.tags))
 
         # clear Layout
-        for widget in (self.social_link_gb.layout().itemAt(i) for i in range(self.social_link_gb.layout().count())):
+        for widget in (
+            self.social_link_gb.layout().itemAt(i)
+            for i in range(self.social_link_gb.layout().count())
+        ):
             if not isinstance(widget, QSpacerItem):
                 widget.widget().deleteLater()
         self.social_link_gb.deleteLater()
@@ -229,7 +259,10 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.wishlist.append(game["offer"]["title"])
 
     def button_clicked(self):
-        webbrowser.open(f"https://www.epicgames.com/store/{shared.core.language_code}/p/" + self.slug)
+        webbrowser.open(
+            f"https://www.epicgames.com/store/{shared.core.language_code}/p/"
+            + self.slug
+        )
 
 
 class SocialButton(QPushButton):

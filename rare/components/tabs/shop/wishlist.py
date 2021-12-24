@@ -21,22 +21,31 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
         self.wishlist = []
         self.widgets = []
 
-        self.sort_cb.currentIndexChanged.connect(lambda i: self.set_wishlist(self.wishlist, i))
+        self.sort_cb.currentIndexChanged.connect(
+            lambda i: self.set_wishlist(self.wishlist, i)
+        )
         self.filter_cb.currentIndexChanged.connect(self.set_filter)
         self.reload_button.clicked.connect(self.update_wishlist)
         self.reload_button.setIcon(icon("fa.refresh", color="white"))
 
-        self.reverse.stateChanged.connect(lambda: self.set_wishlist(sort=self.sort_cb.currentIndex()))
+        self.reverse.stateChanged.connect(
+            lambda: self.set_wishlist(sort=self.sort_cb.currentIndex())
+        )
 
     def update_wishlist(self):
         self.setCurrentIndex(1)
         self.api_core.get_wishlist(self.set_wishlist)
 
     def delete_from_wishlist(self, game):
-        self.api_core.remove_from_wishlist(game["namespace"], game["id"],
-                                           lambda success: self.update_wishlist() if success else
-                                           QMessageBox.warning(self, "Error",
-                                                               self.tr("Could not remove game from wishlist")))
+        self.api_core.remove_from_wishlist(
+            game["namespace"],
+            game["id"],
+            lambda success: self.update_wishlist()
+            if success
+            else QMessageBox.warning(
+                self, "Error", self.tr("Could not remove game from wishlist")
+            ),
+        )
         self.update_wishlist_signal.emit()
 
     def set_filter(self, i):
@@ -69,14 +78,26 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
         if sort == 0:
             sorted_list = sorted(self.wishlist, key=lambda x: x["offer"]["title"])
         elif sort == 1:
-            sorted_list = sorted(self.wishlist,
-                                 key=lambda x: x["offer"]['price']['totalPrice']['fmtPrice']['discountPrice'])
+            sorted_list = sorted(
+                self.wishlist,
+                key=lambda x: x["offer"]["price"]["totalPrice"]["fmtPrice"][
+                    "discountPrice"
+                ],
+            )
         elif sort == 2:
-            sorted_list = sorted(self.wishlist, key=lambda x: x["offer"]["seller"]["name"])
+            sorted_list = sorted(
+                self.wishlist, key=lambda x: x["offer"]["seller"]["name"]
+            )
         elif sort == 3:
-            sorted_list = sorted(self.wishlist, reverse=True, key=lambda x: 1 - (
-                    x["offer"]["price"]["totalPrice"]["discountPrice"] / x["offer"]["price"]["totalPrice"][
-                "originalPrice"]))
+            sorted_list = sorted(
+                self.wishlist,
+                reverse=True,
+                key=lambda x: 1
+                - (
+                    x["offer"]["price"]["totalPrice"]["discountPrice"]
+                    / x["offer"]["price"]["totalPrice"]["originalPrice"]
+                ),
+            )
         else:
             sorted_list = self.wishlist
         self.widgets.clear()

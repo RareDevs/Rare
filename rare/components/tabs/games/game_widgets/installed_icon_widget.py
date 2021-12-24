@@ -6,7 +6,9 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from qtawesome import icon
 
 from rare import shared
-from rare.components.tabs.games.game_widgets.base_installed_widget import BaseInstalledWidget
+from rare.components.tabs.games.game_widgets.base_installed_widget import (
+    BaseInstalledWidget,
+)
 
 logger = getLogger("GameWidgetInstalled")
 
@@ -43,7 +45,9 @@ class InstalledIconWidget(BaseInstalledWidget):
         self.menu_btn.setIcon(icon("ei.info-circle"))
         # self.menu_btn.setObjectName("installed_menu_button")
         self.menu_btn.setIconSize(QSize(18, 18))
-        self.menu_btn.enterEvent = lambda x: self.info_label.setText(self.tr("Information"))
+        self.menu_btn.enterEvent = lambda x: self.info_label.setText(
+            self.tr("Information")
+        )
         self.menu_btn.leaveEvent = lambda x: self.enterEvent(None)
         # remove Border
 
@@ -77,7 +81,9 @@ class InstalledIconWidget(BaseInstalledWidget):
         elif self.update_available:
             self.info_label.setText(self.texts["hover"]["update_available"])
         else:
-            self.info_label.setText(self.texts["hover"]["launch" if self.igame else "launch_origin"])
+            self.info_label.setText(
+                self.texts["hover"]["launch" if self.igame else "launch_origin"]
+            )
 
     def leaveEvent(self, a0: QEvent = None) -> None:
         if self.game_running:

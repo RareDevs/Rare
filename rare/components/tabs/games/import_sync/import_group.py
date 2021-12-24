@@ -21,7 +21,9 @@ class AppNameCompleter(QCompleter):
     def __init__(self, app_names: List, parent=None):
         super(AppNameCompleter, self).__init__(parent)
         # pylint: disable=E1136
-        super(AppNameCompleter, self).activated[QModelIndex].connect(self.__activated_idx)
+        super(AppNameCompleter, self).activated[QModelIndex].connect(
+            self.__activated_idx
+        )
 
         model = QStandardItemModel(len(app_names), 2)
         for idx, game in enumerate(app_names):
@@ -51,9 +53,7 @@ class AppNameCompleter(QCompleter):
         # lk: Getting the index from the popup and trying to use it in the completer will return invalid results
         if isinstance(idx, QModelIndex):
             self.activated.emit(
-                self.popup().model().data(
-                    self.popup().model().index(idx.row(), 1)
-                )
+                self.popup().model().data(self.popup().model().index(idx.row(), 1))
             )
         # TODO: implement conversion from app_name to app_title (signal loop here)
         # if isinstance(idx_str, str):
@@ -67,23 +67,31 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         self.core = shared.core
         self.app_name_list = [game.app_name for game in shared.api_results.game_list]
         self.install_dir_list = [
-            game.metadata.get('customAttributes', {}).get('FolderName', {}).get('value', game.app_name)
-            for game in shared.api_results.game_list if not game.is_dlc]
+            game.metadata.get("customAttributes", {})
+            .get("FolderName", {})
+            .get("value", game.app_name)
+            for game in shared.api_results.game_list
+            if not game.is_dlc
+        ]
 
         self.path_edit = PathEdit(
             self.core.get_default_install_dir(),
             QFileDialog.DirectoryOnly,
             edit_func=self.path_edit_cb,
-            parent=self
+            parent=self,
         )
         self.path_edit.textChanged.connect(self.path_changed)
         self.path_edit_layout.addWidget(self.path_edit)
 
         self.app_name = IndicatorLineEdit(
             ph_text=self.tr("Use in case the app name was not found automatically"),
-            completer=AppNameCompleter(app_names=[(i.app_name, i.app_title) for i in shared.api_results.game_list]),
+            completer=AppNameCompleter(
+                app_names=[
+                    (i.app_name, i.app_title) for i in shared.api_results.game_list
+                ]
+            ),
             edit_func=self.app_name_edit_cb,
-            parent=self
+            parent=self,
         )
         self.app_name.textChanged.connect(self.app_name_changed)
         self.app_name_layout.addWidget(self.app_name)
@@ -144,18 +152,27 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
                 self.info_label.setText(self.tr("Could not find app name"))
                 return
 
-        if not (err := legendary_utils.import_game(self.core, app_name=app_name, path=path)):
+        if not (
+            err := legendary_utils.import_game(self.core, app_name=app_name, path=path)
+        ):
             igame = self.core.get_installed_game(app_name)
-            self.info_label.setText(self.tr("Successfully imported {}").format(igame.title))
+            self.info_label.setText(
+                self.tr("Successfully imported {}").format(igame.title)
+            )
             self.app_name.setText(str())
             shared.signals.update_gamelist.emit([app_name])
 
-            if igame.version != self.core.get_asset(app_name, igame.platform, False).build_version:
+            if (
+                igame.version
+                != self.core.get_asset(app_name, igame.platform, False).build_version
+            ):
                 # update available
                 shared.signals.add_download.emit(igame.app_name)
                 shared.signals.update_download_tab_text.emit()
 
         else:
             logger.warning(f'Failed to import "{app_name}"')
-            self.info_label.setText(self.tr("Could not import {}: ").format(app_name) + err)
+            self.info_label.setText(
+                self.tr("Could not import {}: ").format(app_name) + err
+            )
             return

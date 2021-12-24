@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
 
 import legendary
+
 # noinspection PyUnresolvedReferences
 import rare.resources.resources
 import rare.shared as shared
@@ -21,7 +22,7 @@ from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
 from rare.utils.utils import set_color_pallete, set_style_sheet
 
-start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
+start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
 file_name = os.path.join(cache_dir, "logs", f"Rare_{start_time}.log")
 if not os.path.exists(os.path.dirname(file_name)):
     os.makedirs(os.path.dirname(file_name))
@@ -63,10 +64,10 @@ class App(QApplication):
             self.core = shared.init_legendary()
         except configparser.MissingSectionHeaderError as e:
             logger.warning(f"Config is corrupt: {e}")
-            if config_path := os.environ.get('XDG_CONFIG_HOME'):
-                path = os.path.join(config_path, 'legendary')
+            if config_path := os.environ.get("XDG_CONFIG_HOME"):
+                path = os.path.join(config_path, "legendary")
             else:
-                path = os.path.expanduser('~/.config/legendary')
+                path = os.path.expanduser("~/.config/legendary")
             with open(os.path.join(path, "config.ini"), "w") as config_file:
                 config_file.write("[Legendary]")
             self.core = shared.init_legendary()
@@ -95,12 +96,15 @@ class App(QApplication):
 
         self.signals.exit_app.connect(self.exit_app)
         self.signals.send_notification.connect(
-            lambda title:
-            self.tray_icon.showMessage(
+            lambda title: self.tray_icon.showMessage(
                 self.tr("Download finished"),
                 self.tr("Download finished. {} is playable now").format(title),
-                QSystemTrayIcon.Information, 4000)
-            if self.settings.value("notification", True, bool) else None)
+                QSystemTrayIcon.Information,
+                4000,
+            )
+            if self.settings.value("notification", True, bool)
+            else None
+        )
 
         # Translator
         self.translator = QTranslator()
@@ -122,9 +126,12 @@ class App(QApplication):
         # Style
         # lk: this is a bit silly but serves well until we have a class
         # lk: store the default qt style name from the system on startup as a property for later reference
-        self.setProperty('rareDefaultQtStyle', self.style().objectName())
+        self.setProperty("rareDefaultQtStyle", self.style().objectName())
 
-        if self.settings.value("color_scheme", None) is None and self.settings.value("style_sheet", None) is None:
+        if (
+            self.settings.value("color_scheme", None) is None
+            and self.settings.value("style_sheet", None) is None
+        ):
             self.settings.setValue("color_scheme", "")
             self.settings.setValue("style_sheet", "RareStyle")
 
@@ -157,23 +164,38 @@ class App(QApplication):
         self.tray_icon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(self.exit_app)
         self.tray_icon.start_rare.triggered.connect(self.show_mainwindow)
-        self.tray_icon.activated.connect(lambda r: self.show_mainwindow() if r == QSystemTrayIcon.DoubleClick else None)
+        self.tray_icon.activated.connect(
+            lambda r: self.show_mainwindow()
+            if r == QSystemTrayIcon.DoubleClick
+            else None
+        )
 
         if not self.args.silent:
             self.mainwindow.show_window_centralized()
             self.window_launched = True
 
         if shared.args.subparser == "launch":
-            if shared.args.app_name in [i.app_name for i in self.core.get_installed_list()]:
-                logger.info("Launching " + self.core.get_installed_game(shared.args.app_name).title)
-                self.mainwindow.tab_widget.games_tab.game_utils.prepare_launch(shared.args.app_name)
+            if shared.args.app_name in [
+                i.app_name for i in self.core.get_installed_list()
+            ]:
+                logger.info(
+                    "Launching "
+                    + self.core.get_installed_game(shared.args.app_name).title
+                )
+                self.mainwindow.tab_widget.games_tab.game_utils.prepare_launch(
+                    shared.args.app_name
+                )
             else:
                 logger.error(
-                    f"Could not find {shared.args.app_name} in Games or it is not installed")
-                QMessageBox.warning(self.mainwindow, "Warning",
-                                    self.tr(
-                                        "Could not find {} in installed games. Did you modify the shortcut? ").format(
-                                        shared.args.app_name))
+                    f"Could not find {shared.args.app_name} in Games or it is not installed"
+                )
+                QMessageBox.warning(
+                    self.mainwindow,
+                    "Warning",
+                    self.tr(
+                        "Could not find {} in installed games. Did you modify the shortcut? "
+                    ).format(shared.args.app_name),
+                )
 
         if shared.args.test_start:
             self.exit_app(0)
@@ -190,8 +212,12 @@ class App(QApplication):
                 question = QMessageBox.question(
                     self.mainwindow,
                     self.tr("Close"),
-                    self.tr("There is a download active. Do you really want to exit app?"),
-                    QMessageBox.Yes, QMessageBox.No)
+                    self.tr(
+                        "There is a download active. Do you really want to exit app?"
+                    ),
+                    QMessageBox.Yes,
+                    QMessageBox.No,
+                )
                 if question == QMessageBox.No:
                     return
                 else:
@@ -218,19 +244,23 @@ def start(args):
 
     # configure logging
     if args.debug:
-        logging.basicConfig(format='[%(name)s] %(levelname)s: %(message)s', level=logging.DEBUG)
+        logging.basicConfig(
+            format="[%(name)s] %(levelname)s: %(message)s", level=logging.DEBUG
+        )
         logging.getLogger().setLevel(level=logging.DEBUG)
         # keep requests, asyncio and pillow quiet
-        logging.getLogger('requests').setLevel(logging.WARNING)
-        logging.getLogger('urllib3').setLevel(logging.WARNING)
+        logging.getLogger("requests").setLevel(logging.WARNING)
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
         logging.getLogger("asyncio").setLevel(logging.WARNING)
-        logger.info(f"Launching Rare version {rare.__version__} Codename: {rare.code_name}\n"
-                    f"Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
-                    f"Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
-                    f"Running {sys.executable} {' '.join(sys.argv)}")
+        logger.info(
+            f"Launching Rare version {rare.__version__} Codename: {rare.code_name}\n"
+            f"Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
+            f"Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
+            f"Running {sys.executable} {' '.join(sys.argv)}"
+        )
     else:
         logging.basicConfig(
-            format='[%(name)s] %(levelname)s: %(message)s',
+            format="[%(name)s] %(levelname)s: %(message)s",
             level=logging.INFO,
             filename=file_name,
         )

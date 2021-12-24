@@ -21,42 +21,46 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.core = shared.core
 
         # Default installation directory
-        self.install_dir = PathEdit(self.core.get_default_install_dir(),
-                                    file_type=QFileDialog.DirectoryOnly,
-                                    save_func=self.path_save)
+        self.install_dir = PathEdit(
+            self.core.get_default_install_dir(),
+            file_type=QFileDialog.DirectoryOnly,
+            save_func=self.path_save,
+        )
         self.install_dir_layout.addWidget(self.install_dir)
 
         # Max Workers
-        max_workers = self.core.lgd.config['Legendary'].getint('max_workers', fallback=0)
+        max_workers = self.core.lgd.config["Legendary"].getint(
+            "max_workers", fallback=0
+        )
         self.max_worker_spin.setValue(max_workers)
         self.max_worker_spin.valueChanged.connect(self.max_worker_save)
         # Max memory
-        max_memory = self.core.lgd.config['Legendary'].getint('max_memory', fallback=0)
+        max_memory = self.core.lgd.config["Legendary"].getint("max_memory", fallback=0)
         self.max_memory_spin.setValue(max_memory)
         self.max_memory_spin.valueChanged.connect(self.max_memory_save)
         # Preferred CDN
-        preferred_cdn = self.core.lgd.config['Legendary'].get('preferred_cdn', fallback="")
+        preferred_cdn = self.core.lgd.config["Legendary"].get(
+            "preferred_cdn", fallback=""
+        )
         self.preferred_cdn_line.setText(preferred_cdn)
         self.preferred_cdn_line.textChanged.connect(self.preferred_cdn_save)
         # Disable HTTPS
-        disable_https = self.core.lgd.config['Legendary'].getboolean('disable_https', fallback=False)
+        disable_https = self.core.lgd.config["Legendary"].getboolean(
+            "disable_https", fallback=False
+        )
         self.disable_https_check.setChecked(disable_https)
         self.disable_https_check.stateChanged.connect(self.disable_https_save)
 
         # Cleanup
-        self.clean_button.clicked.connect(
-            lambda: self.cleanup(False)
-        )
-        self.clean_keep_manifests_button.clicked.connect(
-            lambda: self.cleanup(True)
-        )
+        self.clean_button.clicked.connect(lambda: self.cleanup(False))
+        self.clean_keep_manifests_button.clicked.connect(lambda: self.cleanup(True))
 
         self.locale_edit = IndicatorLineEdit(
             f"{self.core.language_code}-{self.core.country_code}",
             edit_func=self.locale_edit_cb,
             save_func=self.locale_save_cb,
             horiz_policy=QSizePolicy.Minimum,
-            parent=self
+            parent=self,
         )
         self.locale_layout.addWidget(self.locale_edit)
 
@@ -111,28 +115,41 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.core.lgd.save_config()
 
     def disable_https_save(self, checked: int):
-        self.core.lgd.config.set("Legendary", "disable_https", str(bool(checked)).lower())
+        self.core.lgd.config.set(
+            "Legendary", "disable_https", str(bool(checked)).lower()
+        )
         self.core.lgd.save_config()
 
     def cleanup(self, keep_manifests: bool):
         before = self.core.lgd.get_dir_size()
-        logger.debug('Removing app metadata...')
+        logger.debug("Removing app metadata...")
         app_names = set(g.app_name for g in self.core.get_assets(update_assets=False))
         self.core.lgd.clean_metadata(app_names)
 
         if not keep_manifests:
-            logger.debug('Removing manifests...')
-            installed = [(ig.app_name, ig.version) for ig in self.core.get_installed_list()]
-            installed.extend((ig.app_name, ig.version) for ig in self.core.get_installed_dlc_list())
+            logger.debug("Removing manifests...")
+            installed = [
+                (ig.app_name, ig.version) for ig in self.core.get_installed_list()
+            ]
+            installed.extend(
+                (ig.app_name, ig.version) for ig in self.core.get_installed_dlc_list()
+            )
             self.core.lgd.clean_manifests(installed)
 
-        logger.debug('Removing tmp data')
+        logger.debug("Removing tmp data")
         self.core.lgd.clean_tmp_data()
 
         after = self.core.lgd.get_dir_size()
-        logger.info(f'Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.')
+        logger.info(
+            f"Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB."
+        )
         if (before - after) > 0:
-            QMessageBox.information(self, "Cleanup", self.tr("Cleanup complete! Successfully removed {}").format(
-                get_size(before - after)))
+            QMessageBox.information(
+                self,
+                "Cleanup",
+                self.tr("Cleanup complete! Successfully removed {}").format(
+                    get_size(before - after)
+                ),
+            )
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")

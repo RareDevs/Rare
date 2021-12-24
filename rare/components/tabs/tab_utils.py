@@ -9,7 +9,7 @@ class MainTabBar(QTabBar):
         self._expanded = expanded
         self.setObjectName("MainTabBar")
         font = self.font()
-        font.setPointSize(font.pointSize()+2)
+        font.setPointSize(font.pointSize() + 2)
         font.setBold(True)
         self.setFont(font)
         # self.setContentsMargins(0,10,0,10)

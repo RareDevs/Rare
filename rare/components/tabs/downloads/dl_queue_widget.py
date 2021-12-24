@@ -1,7 +1,14 @@
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QWidget
+from PyQt5.QtWidgets import (
+    QGroupBox,
+    QVBoxLayout,
+    QLabel,
+    QHBoxLayout,
+    QPushButton,
+    QWidget,
+)
 from qtawesome import icon
 
 from rare.utils.models import InstallQueueItemModel
@@ -28,7 +35,9 @@ class DlWidget(QWidget):
         self.left_layout.addWidget(self.move_up_button)
 
         self.move_down_buttton = QPushButton(icon("fa.arrow-down"), "")
-        self.move_down_buttton.clicked.connect(lambda: self.move_down.emit(self.app_name))
+        self.move_down_buttton.clicked.connect(
+            lambda: self.move_down.emit(self.app_name)
+        )
         self.left_layout.addWidget(self.move_down_buttton)
         self.move_down_buttton.setFixedWidth(20)
 
@@ -43,8 +52,18 @@ class DlWidget(QWidget):
 
         self.size = QHBoxLayout()
 
-        self.size.addWidget(QLabel(self.tr("Download size: {} GB").format(round(dl_size / 1024 ** 3, 2))))
-        self.size.addWidget(QLabel(self.tr("Install size: {} GB").format(round(install_size / 1024 ** 3, 2))))
+        self.size.addWidget(
+            QLabel(
+                self.tr("Download size: {} GB").format(round(dl_size / 1024 ** 3, 2))
+            )
+        )
+        self.size.addWidget(
+            QLabel(
+                self.tr("Install size: {} GB").format(
+                    round(install_size / 1024 ** 3, 2)
+                )
+            )
+        )
         self.right_layout.addLayout(self.size)
 
         self.delete = QPushButton(self.tr("Remove Download"))
@@ -69,7 +88,9 @@ class DlQueueWidget(QGroupBox):
         self.layout().addWidget(self.text)
 
     def update_queue(self, dl_queue: list):
-        logger.debug("Update Queue " + ", ".join(i.download.game.app_title for i in dl_queue))
+        logger.debug(
+            "Update Queue " + ", ".join(i.download.game.app_title for i in dl_queue)
+        )
         self.dl_queue = dl_queue
 
         for item in (self.layout().itemAt(i) for i in range(self.layout().count())):

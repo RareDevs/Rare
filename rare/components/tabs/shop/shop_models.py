@@ -3,9 +3,15 @@ from dataclasses import dataclass
 
 
 class ImageUrlModel:
-    def __init__(self, front_tall: str = "", offer_image_tall: str = "",
-                 thumbnail: str = "", front_wide: str = "", offer_image_wide: str = "",
-                 product_logo: str = ""):
+    def __init__(
+        self,
+        front_tall: str = "",
+        offer_image_tall: str = "",
+        thumbnail: str = "",
+        front_wide: str = "",
+        offer_image_wide: str = "",
+        product_logo: str = "",
+    ):
         self.front_tall = front_tall
         self.offer_image_tall = offer_image_tall
         self.thumbnail = thumbnail
@@ -34,17 +40,30 @@ class ImageUrlModel:
 
 class ShopGame:
     # TODO: Copyrights etc
-    def __init__(self, title: str = "", image_urls: ImageUrlModel = None, social_links: dict = None,
-                 langs: list = None, reqs: dict = None, publisher: str = "", developer: str = "",
-                 original_price: str = "", discount_price: str = "", tags: list = None, namespace: str = "",
-                 offer_id: str = ""):
+    def __init__(
+        self,
+        title: str = "",
+        image_urls: ImageUrlModel = None,
+        social_links: dict = None,
+        langs: list = None,
+        reqs: dict = None,
+        publisher: str = "",
+        developer: str = "",
+        original_price: str = "",
+        discount_price: str = "",
+        tags: list = None,
+        namespace: str = "",
+        offer_id: str = "",
+    ):
         self.title = title
         self.image_urls = image_urls
         self.links = []
         if social_links:
             for item in social_links:
                 if item.startswith("link"):
-                    self.links.append(tuple((item.replace("link", ""), social_links[item])))
+                    self.links.append(
+                        tuple((item.replace("link", ""), social_links[item]))
+                    )
         else:
             self.links = []
         self.languages = langs
@@ -77,7 +96,9 @@ class ShopGame:
         for item in links:
             if item.startswith("link"):
                 tmp.links.append(tuple((item.replace("link", ""), links[item])))
-        tmp.available_voice_langs = api_data["data"]["requirements"].get("languages", "Failed")
+        tmp.available_voice_langs = api_data["data"]["requirements"].get(
+            "languages", "Failed"
+        )
         tmp.reqs = {}
         for i, system in enumerate(api_data["data"]["requirements"].get("systems", [])):
             try:
@@ -86,7 +107,10 @@ class ShopGame:
                 continue
             for req in system["details"]:
                 try:
-                    tmp.reqs[system["systemType"]][req["title"]] = (req["minimum"], req["recommended"])
+                    tmp.reqs[system["systemType"]][req["title"]] = (
+                        req["minimum"],
+                        req["recommended"],
+                    )
                 except KeyError:
                     pass
         tmp.publisher = api_data["data"]["meta"].get("publisher", "")
@@ -95,9 +119,14 @@ class ShopGame:
             for i in search_data["customAttributes"]:
                 if i["key"] == "developerName":
                     tmp.developer = i["value"]
-        tmp.price = search_data['price']['totalPrice']['fmtPrice']['originalPrice']
-        tmp.discount_price = search_data['price']['totalPrice']['fmtPrice']['discountPrice']
-        tmp.tags = [i.replace("_", " ").capitalize() for i in api_data["data"]["meta"].get("tags", [])]
+        tmp.price = search_data["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
+        tmp.discount_price = search_data["price"]["totalPrice"]["fmtPrice"][
+            "discountPrice"
+        ]
+        tmp.tags = [
+            i.replace("_", " ").capitalize()
+            for i in api_data["data"]["meta"].get("tags", [])
+        ]
         tmp.namespace = search_data["namespace"]
         tmp.offer_id = search_data["id"]
 
@@ -116,7 +145,9 @@ class BrowseModel:
     tag: str = ""
     withMapping: bool = True
     withPrice: bool = True
-    date: str = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.999Z]"
+    date: str = (
+        f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.999Z]"
+    )
     price: str = ""
     onSale: bool = False
 

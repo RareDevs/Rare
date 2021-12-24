@@ -11,15 +11,17 @@ from rare import cache_dir, shared
 from rare.components.tabs.settings.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
-from rare.utils.utils import get_translations, get_color_schemes, set_color_pallete, get_style_sheets, set_style_sheet
+from rare.utils.utils import (
+    get_translations,
+    get_color_schemes,
+    set_color_pallete,
+    get_style_sheets,
+    set_style_sheet,
+)
 
 logger = getLogger("RareSettings")
 
-languages = [
-    ("en", "English"),
-    ("de", "Deutsch"),
-    ("fr", "Français")
-]
+languages = [("en", "English"), ("de", "Deutsch"), ("fr", "Français")]
 
 
 class RareSettings(QWidget, Ui_RareSettings):
@@ -84,27 +86,35 @@ class RareSettings(QWidget, Ui_RareSettings):
             lambda: self.settings.setValue("auto_update", self.auto_update.isChecked())
         )
         self.confirm_start.stateChanged.connect(
-            lambda: self.settings.setValue("confirm_start", self.confirm_start.isChecked())
+            lambda: self.settings.setValue(
+                "confirm_start", self.confirm_start.isChecked()
+            )
         )
         self.auto_sync_cloud.stateChanged.connect(
-            lambda: self.settings.setValue("auto_sync_cloud", self.auto_sync_cloud.isChecked())
+            lambda: self.settings.setValue(
+                "auto_sync_cloud", self.auto_sync_cloud.isChecked()
+            )
         )
         self.notification.stateChanged.connect(
-            lambda: self.settings.setValue("notification", self.notification.isChecked())
+            lambda: self.settings.setValue(
+                "notification", self.notification.isChecked()
+            )
         )
-        self.save_size.stateChanged.connect(
-            self.save_window_size
-        )
+        self.save_size.stateChanged.connect(self.save_window_size)
         self.log_games.stateChanged.connect(
             lambda: self.settings.setValue("show_console", self.log_games.isChecked())
         )
 
         if platform.system() == "Linux":
             self.desktop_file = os.path.expanduser("~/Desktop/Rare.desktop")
-            self.start_menu_link = os.path.expanduser("~/.local/share/applications/Rare.desktop")
+            self.start_menu_link = os.path.expanduser(
+                "~/.local/share/applications/Rare.desktop"
+            )
         elif platform.system() == "Windows":
             self.desktop_file = os.path.expanduser("~/Desktop/Rare.lnk")
-            self.start_menu_link = os.path.expandvars("%appdata%\\Microsoft\\Windows\\Start Menu\\Rare.lnk")
+            self.start_menu_link = os.path.expandvars(
+                "%appdata%\\Microsoft\\Windows\\Start Menu\\Rare.lnk"
+            )
         else:
             self.desktop_link_btn.setText(self.tr("Not supported"))
             self.desktop_link_btn.setDisabled(True)
@@ -151,7 +161,11 @@ class RareSettings(QWidget, Ui_RareSettings):
                 self.startmenu_link_btn.setText(self.tr("Create start menu link"))
         except PermissionError as e:
             logger.error(str(e))
-            QMessageBox.warning(self, "Error", "Permission error, cannot remove " + str(self.start_menu_link))
+            QMessageBox.warning(
+                self,
+                "Error",
+                "Permission error, cannot remove " + str(self.start_menu_link),
+            )
 
     def create_desktop_link(self):
         try:
@@ -162,7 +176,11 @@ class RareSettings(QWidget, Ui_RareSettings):
                 os.remove(self.desktop_file)
                 self.desktop_link_btn.setText(self.tr("Create desktop link"))
         except PermissionError as e:
-            logger.warning(self, "Error", "Permission error, cannot remove " + str(self.desktop_file))
+            logger.warning(
+                self,
+                "Error",
+                "Permission error, cannot remove " + str(self.desktop_file),
+            )
 
     def on_color_select_changed(self, color):
         if color:

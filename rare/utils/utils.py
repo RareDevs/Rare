@@ -10,7 +10,16 @@ from typing import Tuple, List
 
 import qtawesome
 import requests
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRunnable, QSettings, Qt, QFile, QDir
+from PyQt5.QtCore import (
+    pyqtSignal,
+    pyqtSlot,
+    QObject,
+    QRunnable,
+    QSettings,
+    Qt,
+    QFile,
+    QDir,
+)
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QStyleFactory
 from requests.exceptions import HTTPError
@@ -25,6 +34,7 @@ if platform.system() == "Windows":
     from win32com.client import Dispatch  # pylint: disable=E0401
 
 from rare import image_dir, shared, resources_path
+
 # Mac not supported
 
 from legendary.core import LegendaryCore
@@ -66,27 +76,46 @@ def download_image(game, force=False):
 
     # to get picture updates
     if not os.path.isfile(f"{image_dir}/{game.app_name}/image.json"):
-        json_data = {"DieselGameBoxTall": None, "DieselGameBoxLogo": None, "Thumbnail": None}
+        json_data = {
+            "DieselGameBoxTall": None,
+            "DieselGameBoxLogo": None,
+            "Thumbnail": None,
+        }
     else:
         json_data = json.load(open(f"{image_dir}/{game.app_name}/image.json", "r"))
     # Download
     for image in game.metadata["keyImages"]:
-        if image["type"] == "DieselGameBoxTall" or image["type"] == "DieselGameBoxLogo" or image["type"] == "Thumbnail":
+        if (
+            image["type"] == "DieselGameBoxTall"
+            or image["type"] == "DieselGameBoxLogo"
+            or image["type"] == "Thumbnail"
+        ):
             if image["type"] not in json_data.keys():
                 json_data[image["type"]] = None
             if json_data[image["type"]] != image["md5"] or not os.path.isfile(
-                    f"{image_dir}/{game.app_name}/{image['type']}.png"):
+                f"{image_dir}/{game.app_name}/{image['type']}.png"
+            ):
                 # Download
                 json_data[image["type"]] = image["md5"]
                 # os.remove(f"{image_dir}/{game.app_name}/{image['type']}.png")
-                json.dump(json_data, open(f"{image_dir}/{game.app_name}/image.json", "w"))
+                json.dump(
+                    json_data, open(f"{image_dir}/{game.app_name}/image.json", "w")
+                )
                 logger.info(f"Download Image for Game: {game.app_title}")
                 url = image["url"]
                 resp = requests.get(url)
                 img = QImage()
                 img.loadFromData(resp.content)
-                img = img.scaled(200, 200 * 4 // 3, Qt.KeepAspectRatio, transformMode=Qt.SmoothTransformation)
-                img.save(os.path.join(image_dir, game.app_name, image["type"] + ".png"), format="PNG")
+                img = img.scaled(
+                    200,
+                    200 * 4 // 3,
+                    Qt.KeepAspectRatio,
+                    transformMode=Qt.SmoothTransformation,
+                )
+                img.save(
+                    os.path.join(image_dir, game.app_name, image["type"] + ".png"),
+                    format="PNG",
+                )
 
 
 color_role_map = {
@@ -145,9 +174,13 @@ def load_color_scheme(path: str) -> QPalette:
 
 def set_color_pallete(color_scheme: str):
     if not color_scheme:
-        QApplication.instance().setStyle(QStyleFactory.create(QApplication.instance().property('rareDefaultQtStyle')))
+        QApplication.instance().setStyle(
+            QStyleFactory.create(QApplication.instance().property("rareDefaultQtStyle"))
+        )
         QApplication.instance().setStyleSheet("")
-        QApplication.instance().setPalette(QApplication.instance().style().standardPalette())
+        QApplication.instance().setPalette(
+            QApplication.instance().style().standardPalette()
+        )
         return
     QApplication.instance().setStyle(QStyleFactory.create("Fusion"))
     custom_palette = load_color_scheme(f":/schemes/{color_scheme}")
@@ -166,7 +199,9 @@ def get_color_schemes() -> List[str]:
 
 def set_style_sheet(style_sheet: str):
     if not style_sheet:
-        QApplication.instance().setStyle(QStyleFactory.create(QApplication.instance().property('rareDefaultQtStyle')))
+        QApplication.instance().setStyle(
+            QStyleFactory.create(QApplication.instance().property("rareDefaultQtStyle"))
+        )
         QApplication.instance().setStyleSheet("")
         return
     QApplication.instance().setStyle(QStyleFactory.create("Fusion"))
@@ -195,7 +230,9 @@ def get_translations():
 
 def get_latest_version():
     try:
-        resp = requests.get("https://api.github.com/repos/Dummerle/Rare/releases/latest")
+        resp = requests.get(
+            "https://api.github.com/repos/Dummerle/Rare/releases/latest"
+        )
         tag = resp.json()["tag_name"]
         return tag
     except requests.exceptions.ConnectionError:
@@ -203,7 +240,7 @@ def get_latest_version():
 
 
 def get_size(b: int) -> str:
-    for i in ['', 'K', 'M', 'G', 'T', 'P', 'E']:
+    for i in ["", "K", "M", "G", "T", "P", "E"]:
         if b < 1024:
             return f"{b:.2f}{i}B"
         b /= 1024
@@ -226,21 +263,22 @@ def create_rare_desktop_link(type_of_link):
         else:
             executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
         with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
-            desktop_file.write("[Desktop Entry]\n"
-                               f"Name=Rare\n"
-                               f"Type=Application\n"
-                               f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
-                               f"Exec={executable}\n"
-                               "Terminal=false\n"
-                               "StartupWMClass=rare\n"
-                               )
+            desktop_file.write(
+                "[Desktop Entry]\n"
+                f"Name=Rare\n"
+                f"Type=Application\n"
+                f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
+                f"Exec={executable}\n"
+                "Terminal=false\n"
+                "StartupWMClass=rare\n"
+            )
             desktop_file.close()
         os.chmod(os.path.expanduser(os.path.join(path, "Rare.desktop")), 0o755)
 
     elif platform.system() == "Windows":
         # Target of shortcut
         if type_of_link == "desktop":
-            target_folder = os.path.expanduser('~/Desktop/')
+            target_folder = os.path.expanduser("~/Desktop/")
         elif type_of_link == "start_menu":
             target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
@@ -255,7 +293,7 @@ def create_rare_desktop_link(type_of_link):
         executable = executable.replace("python.exe", "pythonw.exe")
         logger.debug(executable)
         # Add shortcut
-        shell = Dispatch('WScript.Shell')
+        shell = Dispatch("WScript.Shell")
         shortcut = shell.CreateShortCut(pathLink)
         shortcut.Targetpath = executable
         if not sys.executable.endswith("Rare.exe"):
@@ -270,12 +308,16 @@ def create_rare_desktop_link(type_of_link):
 def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -> bool:
     igame = core.get_installed_game(app_name)
 
-    if os.path.exists(p := os.path.join(image_dir, igame.app_name, 'Thumbnail.png')):
+    if os.path.exists(p := os.path.join(image_dir, igame.app_name, "Thumbnail.png")):
         icon = p
-    elif os.path.exists(p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")):
+    elif os.path.exists(
+        p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")
+    ):
         icon = p
     else:
-        icon = os.path.join(os.path.join(image_dir, igame.app_name, "DieselGameBoxTall.png"))
+        icon = os.path.join(
+            os.path.join(image_dir, igame.app_name, "DieselGameBoxTall.png")
+        )
     icon = icon.replace(".png", "")
 
     # Linux
@@ -293,14 +335,15 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
         else:
             executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
         with open(f"{path}{igame.title}.desktop", "w") as desktop_file:
-            desktop_file.write("[Desktop Entry]\n"
-                               f"Name={igame.title}\n"
-                               f"Type=Application\n"
-                               f"Icon={icon}.png\n"
-                               f"Exec={executable} launch {app_name}\n"
-                               "Terminal=false\n"
-                               "StartupWMClass=rare-game\n"
-                               )
+            desktop_file.write(
+                "[Desktop Entry]\n"
+                f"Name={igame.title}\n"
+                f"Type=Application\n"
+                f"Icon={icon}.png\n"
+                f"Exec={executable} launch {app_name}\n"
+                "Terminal=false\n"
+                "StartupWMClass=rare-game\n"
+            )
             desktop_file.close()
         os.chmod(os.path.expanduser(f"{path}{igame.title}.desktop"), 0o755)
 
@@ -308,7 +351,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
     elif platform.system() == "Windows":
         # Target of shortcut
         if type_of_link == "desktop":
-            target_folder = os.path.expanduser('~/Desktop/')
+            target_folder = os.path.expanduser("~/Desktop/")
         elif type_of_link == "start_menu":
             target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
@@ -322,20 +365,20 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
         for c in r'<>?":|\/*':
             linkName.replace(c, "")
 
-        linkName = linkName.strip() + '.lnk'
+        linkName = linkName.strip() + ".lnk"
 
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)
 
         # Add shortcut
-        shell = Dispatch('WScript.Shell')
+        shell = Dispatch("WScript.Shell")
         shortcut = shell.CreateShortCut(pathLink)
         if sys.executable.endswith("Rare.exe"):
             executable = sys.executable
         else:
             executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
         shortcut.Targetpath = executable
-        shortcut.Arguments = f'launch {app_name}'
+        shortcut.Arguments = f"launch {app_name}"
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
@@ -383,9 +426,7 @@ def optimal_text_background(image: list) -> Tuple[int, int, int]:
     return tuple(inverted)
 
 
-def text_color_for_background(background: Tuple[int, int, int]) -> Tuple[int,
-                                                                         int,
-                                                                         int]:
+def text_color_for_background(background: Tuple[int, int, int]) -> Tuple[int, int, int]:
     """
     Calculates whether a black or white text color would fit better for the
     given background, and returns that color. This is done by calculating the
@@ -393,10 +434,7 @@ def text_color_for_background(background: Tuple[int, int, int]) -> Tuple[int,
     """
     # see https://alienryderflex.com/hsp.html
     (red, green, blue) = background
-    luminance = math.sqrt(
-        0.299 * red ** 2 +
-        0.587 * green ** 2 +
-        0.114 * blue ** 2)
+    luminance = math.sqrt(0.299 * red ** 2 + 0.587 * green ** 2 + 0.114 * blue ** 2)
     if luminance < 127:
         return 255, 255, 255
     else:
@@ -408,45 +446,62 @@ class WineResolverSignals(QObject):
 
 
 class WineResolver(QRunnable):
-
     def __init__(self, path: str, app_name: str, core: LegendaryCore):
         super(WineResolver, self).__init__()
         self.setAutoDelete(True)
         self.signals = WineResolverSignals()
         self.wine_env = os.environ.copy()
         self.wine_env.update(core.get_app_environment(app_name))
-        self.wine_env['WINEDLLOVERRIDES'] = 'winemenubuilder=d;mscoree=d;mshtml=d;'
-        self.wine_env['DISPLAY'] = ''
+        self.wine_env["WINEDLLOVERRIDES"] = "winemenubuilder=d;mscoree=d;mshtml=d;"
+        self.wine_env["DISPLAY"] = ""
         self.wine_binary = core.lgd.config.get(
-            app_name, 'wine_executable',
-            fallback=core.lgd.config.get('default', 'wine_executable', fallback='wine'))
-        self.winepath_binary = os.path.join(os.path.dirname(self.wine_binary), 'winepath')
+            app_name,
+            "wine_executable",
+            fallback=core.lgd.config.get("default", "wine_executable", fallback="wine"),
+        )
+        self.winepath_binary = os.path.join(
+            os.path.dirname(self.wine_binary), "winepath"
+        )
         self.path = PathSpec(core, app_name).cook(path)
 
     @pyqtSlot()
     def run(self):
-        if 'WINEPREFIX' not in self.wine_env or not os.path.exists(self.wine_env['WINEPREFIX']):
+        if "WINEPREFIX" not in self.wine_env or not os.path.exists(
+            self.wine_env["WINEPREFIX"]
+        ):
             # pylint: disable=E1136
             self.signals.result_ready[str].emit(str())
             return
-        if not os.path.exists(self.wine_binary) or not os.path.exists(self.winepath_binary):
+        if not os.path.exists(self.wine_binary) or not os.path.exists(
+            self.winepath_binary
+        ):
             # pylint: disable=E1136
             self.signals.result_ready[str].emit(str())
             return
-        path = self.path.strip().replace('/', '\\')
+        path = self.path.strip().replace("/", "\\")
         # lk: if path does not exist form
-        cmd = [self.wine_binary, 'cmd', '/c', 'echo', path]
+        cmd = [self.wine_binary, "cmd", "/c", "echo", path]
         # lk: if path exists and needs a case sensitive interpretation form
         # cmd = [self.wine_binary, 'cmd', '/c', f'cd {path} & cd']
-        proc = subprocess.Popen(cmd,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                env=self.wine_env, shell=False, text=True)
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=self.wine_env,
+            shell=False,
+            text=True,
+        )
         out, err = proc.communicate()
         # Clean wine output
         out = out.strip().strip('"')
-        proc = subprocess.Popen([self.winepath_binary, '-u', out],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                env=self.wine_env, shell=False, text=True)
+        proc = subprocess.Popen(
+            [self.winepath_binary, "-u", out],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=self.wine_env,
+            shell=False,
+            text=True,
+        )
         out, err = proc.communicate()
         real_path = os.path.realpath(out.strip())
         # pylint: disable=E1136
@@ -474,7 +529,11 @@ class CloudWorker(QRunnable):
 
 def get_raw_save_path(game: Game):
     if game.supports_cloud_saves:
-        return game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
+        return (
+            game.metadata.get("customAttributes", {})
+            .get("CloudSaveFolder", {})
+            .get("value")
+        )
 
 
 def get_default_platform(app_name):

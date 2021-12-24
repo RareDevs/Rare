@@ -20,7 +20,10 @@ class MiniWidget(QWidget):
 
         self.open_browser = QPushButton(self.tr("Account settings"))
         self.open_browser.clicked.connect(
-            lambda: webbrowser.open("https://www.epicgames.com/account/personal?productName=epicgames"))
+            lambda: webbrowser.open(
+                "https://www.epicgames.com/account/personal?productName=epicgames"
+            )
+        )
         self.layout.addWidget(self.open_browser)
 
         self.logout_button = QPushButton(self.tr("Logout"))
@@ -29,9 +32,13 @@ class MiniWidget(QWidget):
         self.setLayout(self.layout)
 
     def logout(self):
-        reply = QMessageBox.question(self.parent().parent(), 'Message',
-                                     self.tr("Do you really want to logout"), QMessageBox.Yes |
-                                     QMessageBox.No, QMessageBox.No)
+        reply = QMessageBox.question(
+            self.parent().parent(),
+            "Message",
+            self.tr("Do you really want to logout"),
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
 
         if reply == QMessageBox.Yes:
             self.core.lgd.invalidate_userdata()

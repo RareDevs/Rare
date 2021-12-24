@@ -17,7 +17,9 @@ class BaseUninstalledWidget(QGroupBox):
         self.game = game
         self.core = core
         self.image = QLabel()
-        self.image.setPixmap(pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
+        self.image.setPixmap(
+            pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation)
+        )
         self.installing = False
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.setContentsMargins(0, 0, 0, 0)
@@ -29,7 +31,9 @@ class BaseUninstalledWidget(QGroupBox):
     def reload_image(self):
         utils.download_image(self.game, True)
         pm = utils.get_uninstalled_pixmap(self.game.app_name)
-        self.image.setPixmap(pm.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation))
+        self.image.setPixmap(
+            pm.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation)
+        )
 
     def install(self):
         self.show_uninstalled_info.emit(self.game)

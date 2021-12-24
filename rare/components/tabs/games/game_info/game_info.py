@@ -58,20 +58,32 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.uninstalled.emit(self.game.app_name)
 
     def repair(self):
-        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.game.app_name}.repair')
+        repair_file = os.path.join(
+            self.core.lgd.get_tmp_path(), f"{self.game.app_name}.repair"
+        )
         if not os.path.exists(repair_file):
-            QMessageBox.warning(self, "Warning", self.tr(
-                "Repair file does not exist or game does not need a repair. Please verify game first"))
+            QMessageBox.warning(
+                self,
+                "Warning",
+                self.tr(
+                    "Repair file does not exist or game does not need a repair. Please verify game first"
+                ),
+            )
             return
-        self.signals.install_game.emit(InstallOptionsModel(app_name=self.game.app_name, repair=True,
-                                                           update=True))
+        self.signals.install_game.emit(
+            InstallOptionsModel(app_name=self.game.app_name, repair=True, update=True)
+        )
 
     def verify(self):
         if not os.path.exists(self.igame.install_path):
             logger.error("Path does not exist")
-            QMessageBox.warning(self, "Warning",
-                                self.tr("Installation path of {} does not exist. Cannot verify").format(
-                                    self.igame.title))
+            QMessageBox.warning(
+                self,
+                "Warning",
+                self.tr("Installation path of {} does not exist. Cannot verify").format(
+                    self.igame.title
+                ),
+            )
             return
         self.verify_widget.setCurrentIndex(1)
         verify_worker = VerifyWorker(self.core, self.game.app_name)
@@ -88,8 +100,11 @@ class GameInfo(QWidget, Ui_GameInfo):
 
     def finish_verify(self, failed, missing, app_name):
         if failed == missing == 0:
-            QMessageBox.information(self, "Summary",
-                                    "Game was verified successfully. No missing or corrupt files found")
+            QMessageBox.information(
+                self,
+                "Summary",
+                "Game was verified successfully. No missing or corrupt files found",
+            )
             igame = self.core.get_installed_game(app_name)
             if igame.needs_verification:
                 igame.needs_verification = False
@@ -99,19 +114,28 @@ class GameInfo(QWidget, Ui_GameInfo):
             QMessageBox.warning(self, "Warning", self.tr("Something went wrong"))
 
         else:
-            ans = QMessageBox.question(self, "Summary", self.tr(
-                'Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?').format(
-                failed, missing), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            ans = QMessageBox.question(
+                self,
+                "Summary",
+                self.tr(
+                    "Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?"
+                ).format(failed, missing),
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes,
+            )
             if ans == QMessageBox.Yes:
-                self.signals.install_game.emit(InstallOptionsModel(app_name=self.game.app_name, repair=True,
-                                                                   update=True))
+                self.signals.install_game.emit(
+                    InstallOptionsModel(
+                        app_name=self.game.app_name, repair=True, update=True
+                    )
+                )
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
 
     def update_game(self, app_name: str):
         self.game = self.core.get_game(app_name)
         self.igame = self.core.get_installed_game(self.game.app_name)
-        self.game_title.setText(f'<h2>{self.game.app_title}</h2>')
+        self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
 
         pixmap = get_pixmap(self.game.app_name)
         w = 200
@@ -122,7 +146,9 @@ class GameInfo(QWidget, Ui_GameInfo):
         if self.igame:
             self.version.setText(self.igame.version)
         else:
-            self.version.setText(self.game.app_version(self.igame.platform if self.igame else "Windows"))
+            self.version.setText(
+                self.game.app_version(self.igame.platform if self.igame else "Windows")
+            )
         self.dev.setText(self.game.metadata["developer"])
 
         if self.igame:
@@ -154,10 +180,14 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.steam_worker.set_app_name(self.game.app_name)
             QThreadPool.globalInstance().start(self.steam_worker)
 
-        if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(self.game.app_name):
+        if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(
+            self.game.app_name
+        ):
             self.verify_widget.setCurrentIndex(0)
         elif self.verify_threads.get(self.game.app_name):
             self.verify_widget.setCurrentIndex(1)
             self.verify_progress.setValue(
-                self.verify_threads[self.game.app_name].num / self.verify_threads[self.game.app_name].total * 100
+                self.verify_threads[self.game.app_name].num
+                / self.verify_threads[self.game.app_name].total
+                * 100
             )

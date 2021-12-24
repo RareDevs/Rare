@@ -20,7 +20,7 @@ class InstallOptionsModel:
     no_install: bool = False
     ignore_space_req: bool = False
     force: bool = False
-    sdl_list: list = field(default_factory=lambda: [''])
+    sdl_list: list = field(default_factory=lambda: [""])
     update: bool = False
     silent: bool = False
     platform: str = ""
@@ -47,32 +47,38 @@ class InstallQueueItemModel:
     options: InstallOptionsModel = None
 
     def __bool__(self):
-        return (self.status_q is not None) and (self.download is not None) and (self.options is not None)
+        return (
+            (self.status_q is not None)
+            and (self.download is not None)
+            and (self.options is not None)
+        )
 
 
 class PathSpec:
     __egl_path_vars = {
-        '{appdata}': os.path.expandvars('%LOCALAPPDATA%'),
-        '{userdir}': os.path.expandvars('%USERPROFILE%/Documents'),
+        "{appdata}": os.path.expandvars("%LOCALAPPDATA%"),
+        "{userdir}": os.path.expandvars("%USERPROFILE%/Documents"),
         # '{userprofile}': os.path.expandvars('%userprofile%'),  # possibly wrong
-        '{usersavedgames}': os.path.expandvars('%USERPROFILE%/Saved Games'),
+        "{usersavedgames}": os.path.expandvars("%USERPROFILE%/Saved Games"),
     }
-    egl_appdata: str = r'%LOCALAPPDATA%\EpicGamesLauncher\Saved\Config\Windows'
-    egl_programdata: str = r'%PROGRAMDATA%\Epic\EpicGamesLauncher\Data\Manifests'
-    wine_programdata: str = r'dosdevices/c:/ProgramData'
+    egl_appdata: str = r"%LOCALAPPDATA%\EpicGamesLauncher\Saved\Config\Windows"
+    egl_programdata: str = r"%PROGRAMDATA%\Epic\EpicGamesLauncher\Data\Manifests"
+    wine_programdata: str = r"dosdevices/c:/ProgramData"
 
-    def __init__(self, core: LegendaryCore = None, app_name: str = 'default'):
+    def __init__(self, core: LegendaryCore = None, app_name: str = "default"):
         if core is not None:
-            self.__egl_path_vars.update({'{epicid}': core.lgd.userdata['account_id']})
+            self.__egl_path_vars.update({"{epicid}": core.lgd.userdata["account_id"]})
         self.app_name = app_name
 
     def cook(self, path: str) -> str:
-        cooked_path = [self.__egl_path_vars.get(p.lower(), p) for p in path.split('/')]
+        cooked_path = [self.__egl_path_vars.get(p.lower(), p) for p in path.split("/")]
         return os.path.join(*cooked_path)
 
     @property
     def wine_egl_programdata(self):
-        return self.egl_programdata.replace('\\', '/').replace('%PROGRAMDATA%', self.wine_programdata)
+        return self.egl_programdata.replace("\\", "/").replace(
+            "%PROGRAMDATA%", self.wine_programdata
+        )
 
     def wine_egl_prefixes(self, results: int = 0) -> Union[List[str], str]:
         possible_prefixes = [
@@ -103,12 +109,14 @@ class ApiResults:
     saves: list = None
 
     def __bool__(self):
-        return self.game_list is not None \
-               and self.dlcs is not None \
-               and self.bit32_games is not None \
-               and self.mac_games is not None \
-               and self.no_asset_games is not None \
-               and self.saves is not None
+        return (
+            self.game_list is not None
+            and self.dlcs is not None
+            and self.bit32_games is not None
+            and self.mac_games is not None
+            and self.no_asset_games is not None
+            and self.saves is not None
+        )
 
 
 class Signals(QObject):

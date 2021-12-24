@@ -3,7 +3,14 @@ import logging
 import random
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QGroupBox, QScrollArea, QCheckBox, QLabel, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QGroupBox,
+    QScrollArea,
+    QCheckBox,
+    QLabel,
+    QPushButton,
+    QHBoxLayout,
+)
 
 from legendary.core import LegendaryCore
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
@@ -49,7 +56,9 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.game_stack.addWidget(WaitingSpinner())
         self.game_stack.setCurrentIndex(1)
 
-        self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Games"))
+        self.search_bar = ButtonLineEdit(
+            "fa.search", placeholder_text=self.tr("Search Games")
+        )
         self.layout().insertWidget(0, self.search_bar)
 
         # self.search_bar.textChanged.connect(self.search_games)
@@ -78,10 +87,14 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             if item:
                 item.widget().deleteLater()
         if wishlist and wishlist[0] == "error":
-            self.discount_widget.layout().addWidget(QLabel(self.tr("Failed to get wishlist: ") + wishlist[1]))
+            self.discount_widget.layout().addWidget(
+                QLabel(self.tr("Failed to get wishlist: ") + wishlist[1])
+            )
             btn = QPushButton(self.tr("Reload"))
             self.discount_widget.layout().addWidget(btn)
-            btn.clicked.connect(lambda: self.api_core.get_wishlist(self.add_wishlist_items))
+            btn.clicked.connect(
+                lambda: self.api_core.get_wishlist(self.add_wishlist_items)
+            )
             self.discount_stack.setCurrentIndex(0)
             return
 
@@ -109,10 +122,14 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 item.widget().deleteLater()
 
         if free_games and free_games[0] == "error":
-            self.free_widget.layout().addWidget(QLabel(self.tr("Failed to fetch free games: ") + free_games[1]))
+            self.free_widget.layout().addWidget(
+                QLabel(self.tr("Failed to fetch free games: ") + free_games[1])
+            )
             btn = QPushButton(self.tr("Reload"))
             self.free_widget.layout().addWidget(btn)
-            btn.clicked.connect(lambda: self.api_core.get_free_games(self.add_free_games))
+            btn.clicked.connect(
+                lambda: self.api_core.get_free_games(self.add_free_games)
+            )
             self.free_stack.setCurrentIndex(0)
             return
 
@@ -129,9 +146,11 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         coming_free_games = []
         for game in free_games:
             try:
-                if game['price']['totalPrice']['fmtPrice']['discountPrice'] == "0" and \
-                        game['price']['totalPrice']['fmtPrice']['originalPrice'] != \
-                        game['price']['totalPrice']['fmtPrice']['discountPrice']:
+                if (
+                    game["price"]["totalPrice"]["fmtPrice"]["discountPrice"] == "0"
+                    and game["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
+                    != game["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
+                ):
                     free_games_now.append(game)
                     continue
 
@@ -145,13 +164,19 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 # parse datetime to check if game is next week or now
                 try:
                     start_date = datetime.datetime.strptime(
-                        game["promotions"]["upcomingPromotionalOffers"][0]["promotionalOffers"][0]["startDate"],
-                        '%Y-%m-%dT%H:%M:%S.%fZ')
+                        game["promotions"]["upcomingPromotionalOffers"][0][
+                            "promotionalOffers"
+                        ][0]["startDate"],
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    )
                 except Exception:
                     try:
                         start_date = datetime.datetime.strptime(
-                            game["promotions"]["promotionalOffers"][0]["promotionalOffers"][0]["startDate"],
-                            '%Y-%m-%dT%H:%M:%S.%fZ')
+                            game["promotions"]["promotionalOffers"][0][
+                                "promotionalOffers"
+                            ][0]["startDate"],
+                            "%Y-%m-%dT%H:%M:%S.%fZ",
+                        )
                     except Exception as e:
 
                         continue
@@ -171,7 +196,9 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             self.free_game_widgets.append(w)
             now_free += 1
         if now_free == 0:
-            self.free_games_now.layout().addWidget(QLabel(self.tr("Could not find current free game")))
+            self.free_games_now.layout().addWidget(
+                QLabel(self.tr("Could not find current free game"))
+            )
 
         # free games next week
         for free_game in coming_free_games:
@@ -187,30 +214,53 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
     def init_filter(self):
 
-        self.none_price.toggled.connect(lambda: self.prepare_request("") if self.none_price.isChecked() else None)
-        self.free_button.toggled.connect(lambda: self.prepare_request("free") if self.free_button.isChecked() else None)
+        self.none_price.toggled.connect(
+            lambda: self.prepare_request("") if self.none_price.isChecked() else None
+        )
+        self.free_button.toggled.connect(
+            lambda: self.prepare_request("free")
+            if self.free_button.isChecked()
+            else None
+        )
         self.under10.toggled.connect(
-            lambda: self.prepare_request("<price>[0, 1000)") if self.under10.isChecked() else None)
+            lambda: self.prepare_request("<price>[0, 1000)")
+            if self.under10.isChecked()
+            else None
+        )
         self.under20.toggled.connect(
-            lambda: self.prepare_request("<price>[0, 2000)") if self.under20.isChecked() else None)
+            lambda: self.prepare_request("<price>[0, 2000)")
+            if self.under20.isChecked()
+            else None
+        )
         self.under30.toggled.connect(
-            lambda: self.prepare_request("<price>[0, 3000)") if self.under30.isChecked() else None)
-        self.above.toggled.connect(lambda: self.prepare_request("<price>[1499,]") if self.above.isChecked() else None)
+            lambda: self.prepare_request("<price>[0, 3000)")
+            if self.under30.isChecked()
+            else None
+        )
+        self.above.toggled.connect(
+            lambda: self.prepare_request("<price>[1499,]")
+            if self.above.isChecked()
+            else None
+        )
         # self.on_discount.toggled.connect(lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None)
         self.on_discount.toggled.connect(lambda: self.prepare_request())
         constants = Constants()
 
         self.checkboxes = []
 
-        for groupbox, variables in [(self.genre_gb, constants.categories),
-                                    (self.platform_gb, constants.platforms),
-                                    (self.others_gb, constants.others),
-                                    (self.type_gb, constants.types)]:
+        for groupbox, variables in [
+            (self.genre_gb, constants.categories),
+            (self.platform_gb, constants.platforms),
+            (self.others_gb, constants.others),
+            (self.type_gb, constants.types),
+        ]:
 
             for text, tag in variables:
                 checkbox = CheckBox(text, tag)
                 checkbox.activated.connect(lambda x: self.prepare_request(added_tag=x))
-                checkbox.deactivated.connect(lambda x: self.prepare_request(removed_tag=x))
+                checkbox.deactivated.connect(
+                    lambda x: self.prepare_request(removed_tag=x)
+                )
                 groupbox.layout().addWidget(checkbox)
                 self.checkboxes.append(checkbox)
         self.reset_button.clicked.connect(self.reset_filters)
@@ -228,8 +278,14 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
         self.on_discount.setChecked(False)
 
-    def prepare_request(self, price: str = None, added_tag: int = 0, removed_tag: int = 0,
-                        added_type: str = "", removed_type: str = ""):
+    def prepare_request(
+        self,
+        price: str = None,
+        added_tag: int = 0,
+        removed_tag: int = 0,
+        added_type: str = "",
+        removed_type: str = "",
+    ):
         if not self.update_games_allowed:
             return
         if price is not None:
@@ -255,9 +311,14 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.game_stack.setCurrentIndex(1)
         date = f"[{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d')},]"
 
-        browse_model = BrowseModel(language_code=self.core.language_code, country_code=self.core.country_code,
-                                   date=date, count=20, price=self.price,
-                                   onSale=self.on_discount.isChecked())
+        browse_model = BrowseModel(
+            language_code=self.core.language_code,
+            country_code=self.core.country_code,
+            date=date,
+            count=20,
+            price=self.price,
+            onSale=self.on_discount.isChecked(),
+        )
         browse_model.tag = "|".join(self.tags)
 
         if self.types:
@@ -265,7 +326,10 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.api_core.browse_games(browse_model, self.show_games)
 
     def show_games(self, data):
-        for item in (self.game_widget.layout().itemAt(i) for i in range(self.game_widget.layout().count())):
+        for item in (
+            self.game_widget.layout().itemAt(i)
+            for i in range(self.game_widget.layout().count())
+        ):
             item.widget().deleteLater()
         if data:
             for game in data:
@@ -275,7 +339,8 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
         else:
             self.game_widget.layout().addWidget(
-                QLabel(self.tr("Could not get games matching the filter")))
+                QLabel(self.tr("Could not get games matching the filter"))
+            )
         self.game_stack.setCurrentIndex(0)
 
         self.game_widget.layout().update()

@@ -44,9 +44,15 @@ class SaveWorker(QRunnable):
     def run(self) -> None:
         try:
             if isinstance(self.model, DownloadModel):
-                shared.core.download_saves(self.model.app_name, self.model.latest_save.manifest_name, self.model.path)
+                shared.core.download_saves(
+                    self.model.app_name,
+                    self.model.latest_save.manifest_name,
+                    self.model.path,
+                )
             else:
-                shared.core.upload_save(self.model.app_name, self.model.path, self.model.date_time)
+                shared.core.upload_save(
+                    self.model.app_name, self.model.path, self.model.date_time
+                )
         except Exception as e:
             self.signals.finished.emit(str(e), self.model.app_name)
             logger.error(str(e))
@@ -69,7 +75,13 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
     UPLOAD = 1
     CANCEL = 0
 
-    def __init__(self, igame: InstalledGame, dt_local: datetime.datetime, dt_remote: datetime.datetime, newer: str):
+    def __init__(
+        self,
+        igame: InstalledGame,
+        dt_local: datetime.datetime,
+        dt_remote: datetime.datetime,
+        newer: str,
+    ):
         super(CloudSaveDialog, self).__init__()
         self.setupUi(self)
 
@@ -155,18 +167,34 @@ class CloudSaveUtils(QObject):
                 self.core.lgd.set_installed_game(app_name, igame)
                 logger.info(f"Set save path of {igame.title} to {savepath}")
             elif not ignore_settings:  # sync on startup
-                if QMessageBox.question(None, "Warning", self.tr(
-                        "Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {} anyway?").format(
-                    igame.title), QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
+                if (
+                    QMessageBox.question(
+                        None,
+                        "Warning",
+                        self.tr(
+                            "Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {} anyway?"
+                        ).format(igame.title),
+                        QMessageBox.Yes | QMessageBox.No,
+                        QMessageBox.No,
+                    )
+                    == QMessageBox.Yes
+                ):
                     return False
                 else:
                     raise ValueError("No savepath detected")
             else:
-                QMessageBox.warning(None, "Warning",
-                                    self.tr("No savepath found. Please set it in Game Settings manually"))
+                QMessageBox.warning(
+                    None,
+                    "Warning",
+                    self.tr(
+                        "No savepath found. Please set it in Game Settings manually"
+                    ),
+                )
                 return False
 
-        res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
+        res, (dt_local, dt_remote) = self.core.check_savegame_state(
+            igame.save_path, self.latest_saves.get(app_name)
+        )
 
         if res == SaveGameStatus.NO_SAVE:
             return False
@@ -217,18 +245,27 @@ class CloudSaveUtils(QObject):
                 self.core.lgd.set_installed_game(app_name, igame)
                 logger.info(f"Set save path of {igame.title} to {savepath}")
             else:
-                QMessageBox.warning(None, "Warning", self.tr("No savepath set. Skip syncing with cloud"))
+                QMessageBox.warning(
+                    None, "Warning", self.tr("No savepath set. Skip syncing with cloud")
+                )
                 return False
 
-        res, (dt_local, dt_remote) = self.core.check_savegame_state(igame.save_path, self.latest_saves.get(app_name))
+        res, (dt_local, dt_remote) = self.core.check_savegame_state(
+            igame.save_path, self.latest_saves.get(app_name)
+        )
 
         if res == SaveGameStatus.LOCAL_NEWER and not always_ask:
             self.upload_saves(igame, dt_local)
             return
 
         elif res == SaveGameStatus.NO_SAVE and not always_ask:
-            QMessageBox.warning(None, "No saves", self.tr(
-                "There are no saves local and online. Maybe you have to change save path of {}").format(igame.title))
+            QMessageBox.warning(
+                None,
+                "No saves",
+                self.tr(
+                    "There are no saves local and online. Maybe you have to change save path of {}"
+                ).format(igame.title),
+            )
             self.sync_finished.emit(app_name)
             return
 
@@ -256,7 +293,11 @@ class CloudSaveUtils(QObject):
 
     def download_saves(self, igame):
         logger.info("Downloading saves for " + igame.title)
-        w = SaveWorker(DownloadModel(igame.app_name, self.latest_saves.get(igame.app_name), igame.save_path))
+        w = SaveWorker(
+            DownloadModel(
+                igame.app_name, self.latest_saves.get(igame.app_name), igame.save_path
+            )
+        )
         w.signals.finished.connect(self.worker_finished)
         self.thread_pool.start(w)
 
@@ -266,5 +307,9 @@ class CloudSaveUtils(QObject):
             self.sync_finished.emit(app_name)
             self.latest_saves = self.get_latest_saves(shared.api_results.saves)
         else:
-            QMessageBox.warning(None, "Warning", self.tr("Syncing with cloud failed: \n ") + error_message)
+            QMessageBox.warning(
+                None,
+                "Warning",
+                self.tr("Syncing with cloud failed: \n ") + error_message,
+            )
             self.sync_finished.emit(app_name)

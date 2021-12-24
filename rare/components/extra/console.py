@@ -1,5 +1,11 @@
 from PyQt5.QtGui import QTextCursor, QFont
-from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QPushButton, QFileDialog, QVBoxLayout
+from PyQt5.QtWidgets import (
+    QPlainTextEdit,
+    QWidget,
+    QPushButton,
+    QFileDialog,
+    QVBoxLayout,
+)
 
 
 class ConsoleWindow(QWidget):
@@ -22,7 +28,9 @@ class ConsoleWindow(QWidget):
         self.setLayout(self.layout)
 
     def save(self):
-        file, ok = QFileDialog.getSaveFileName(self, "Save output", "", "Log Files (*.log);;All Files (*)")
+        file, ok = QFileDialog.getSaveFileName(
+            self, "Save output", "", "Log Files (*.log);;All Files (*)"
+        )
         if ok:
             if "." not in file:
                 file += ".log"
@@ -39,7 +47,6 @@ class ConsoleWindow(QWidget):
 
 
 class Console(QPlainTextEdit):
-
     def __init__(self):
         super().__init__()
         self.setReadOnly(True)
@@ -51,12 +58,13 @@ class Console(QPlainTextEdit):
         self.scroll_to_last_line()
 
     def error(self, text):
-        self._cursor_output.insertHtml(f"<font color=\"Red\">{text}</font>")
+        self._cursor_output.insertHtml(f'<font color="Red">{text}</font>')
         self.scroll_to_last_line()
 
     def scroll_to_last_line(self):
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.End)
-        cursor.movePosition(QTextCursor.Up if cursor.atBlockStart() else
-                            QTextCursor.StartOfLine)
+        cursor.movePosition(
+            QTextCursor.Up if cursor.atBlockStart() else QTextCursor.StartOfLine
+        )
         self.setTextCursor(cursor)

@@ -48,8 +48,12 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         self.next_button.setEnabled(False)
         self.back_button.setEnabled(False)
 
-        self.login_browser_radio.clicked.connect(lambda: self.next_button.setEnabled(True))
-        self.login_import_radio.clicked.connect(lambda: self.next_button.setEnabled(True))
+        self.login_browser_radio.clicked.connect(
+            lambda: self.next_button.setEnabled(True)
+        )
+        self.login_import_radio.clicked.connect(
+            lambda: self.next_button.setEnabled(True)
+        )
         self.exit_button.clicked.connect(self.close)
         self.back_button.clicked.connect(self.back_clicked)
         self.next_button.clicked.connect(self.next_clicked)
@@ -97,4 +101,3 @@ class LoginDialog(QDialog, Ui_LoginDialog):
             self.next_button.setEnabled(False)
             self.logged_in = False
             QMessageBox.warning(self, "Error", str(e))
-
