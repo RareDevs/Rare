@@ -190,10 +190,12 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             logger.info(app_name + " has a corrupt image.")
             download_image(self.core.get_game(app_name), force=True)
             pixmap = get_pixmap(app_name)
-
-        icon_widget = InstalledIconWidget(app_name, pixmap, self.game_utils)
-
-        list_widget = InstalledListWidget(app_name, pixmap, self.game_utils)
+        try:
+            icon_widget = InstalledIconWidget(app_name, pixmap, self.game_utils)
+            list_widget = InstalledListWidget(app_name, pixmap, self.game_utils)
+        except Exception as e:
+            logger.error(app_name + " is broken. Don't add it to game list: " + str(e))
+            return
 
         self.widgets[app_name] = (icon_widget, list_widget)
 
@@ -202,7 +204,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         if icon_widget.update_available:
             self.updates.add(app_name)
-
         return icon_widget, list_widget
 
     def add_uninstalled_widget(self, game):
@@ -214,11 +215,14 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             img = pixmap.toImage()
             img = img.convertToFormat(QImage.Format_Grayscale8)
             pixmap = QPixmap.fromImage(img)
+        try:
+            icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
+            list_widget = ListWidgetUninstalled(self.core, game, pixmap)
+        except Exception as e:
+            logger.error(game.app_name + " is broken. Don't add it to game list: " + str(e))
+            return
 
-        icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
         icon_widget.show_uninstalled_info.connect(self.show_uninstalled_info)
-
-        list_widget = ListWidgetUninstalled(self.core, game, pixmap)
         list_widget.show_uninstalled_info.connect(self.show_uninstalled_info)
 
         self.widgets[game.app_name] = (icon_widget, list_widget)

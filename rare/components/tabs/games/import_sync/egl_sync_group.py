@@ -176,11 +176,11 @@ class EGLSyncListItem(QListWidgetItem):
         self.export = export
         if export:
             self.setText(game.title)
-        else:
+        else:  # import
             self.setText(shared.core.get_game(game.app_name).app_title)
 
     def is_checked(self) -> bool:
-        return True if self.checkState() == Qt.Checked else False
+        return self.checkState() == Qt.Checked
 
     def action(self) -> None:
         if self.export:
@@ -244,7 +244,12 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         if enabled:
             self.list.clear()
             for item in self.list_func():
-                self.list.addItem(EGLSyncListItem(item, self.export, self.list))
+                try:
+                    i = EGLSyncListItem(item, self.export, self.list)
+                except AttributeError:
+                    logger.error(item.app_name + " does not work. Ignoring")
+                else:
+                    self.list.addItem(i)
         self.label.setVisible(not enabled or not bool(self.list.count()))
         self.list.setVisible(enabled and bool(self.list.count()))
         self.buttons_widget.setVisible(enabled and bool(self.list.count()))
