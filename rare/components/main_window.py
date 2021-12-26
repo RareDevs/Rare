@@ -36,7 +36,10 @@ class MainWindow(QMainWindow):
         self.resize(width, height)
 
         if not shared.args.offline:
-            self.rpc = DiscordRPC()
+            try:
+                self.rpc = DiscordRPC()
+            except ModuleNotFoundError:
+                logger.warning("Discord RPC module not found")
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.timer_finished)
