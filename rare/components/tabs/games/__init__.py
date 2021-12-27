@@ -2,7 +2,6 @@ from logging import getLogger
 from typing import Tuple, Dict
 
 from PyQt5.QtCore import QSettings, QObjectCleanupHandler
-from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
 import rare.shared as shared
@@ -211,10 +210,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         if pixmap.isNull():
             logger.warning(game.app_title + " has a corrupt image. Reloading...")
             download_image(game, force=True)
-            pixmap = get_pixmap(game.app_name)
-            img = pixmap.toImage()
-            img = img.convertToFormat(QImage.Format_Grayscale8)
-            pixmap = QPixmap.fromImage(img)
+            pixmap = get_uninstalled_pixmap(game.app_name)
         try:
             icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
             list_widget = ListWidgetUninstalled(self.core, game, pixmap)
@@ -260,8 +256,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                 else:
                     visible = True
                 if (
-                    search_text.lower() not in w.game.app_name.lower()
-                    and search_text.lower() not in w.game.app_title.lower()
+                        search_text.lower() not in w.game.app_name.lower()
+                        and search_text.lower() not in w.game.app_title.lower()
                 ):
                     visible = False
                 w.setVisible(visible)
@@ -275,22 +271,22 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
                     # from update
                     if self.core.is_installed(widgets[0].game.app_name) and isinstance(
-                        widgets[0], BaseInstalledWidget
+                            widgets[0], BaseInstalledWidget
                     ):
                         logger.debug("Update Gamelist: Updated: " + app_name)
                         igame = self.core.get_installed_game(app_name)
                         for w in widgets:
                             w.igame = igame
                             w.update_available = (
-                                self.core.get_asset(
-                                    w.game.app_name, w.igame.platform, True
-                                ).build_version
-                                != igame.version
+                                    self.core.get_asset(
+                                        w.game.app_name, w.igame.platform, False
+                                    ).build_version
+                                    != igame.version
                             )
                         widgets[0].leaveEvent(None)
                     # new installed
                     elif self.core.is_installed(app_name) and isinstance(
-                        widgets[0], BaseUninstalledWidget
+                            widgets[0], BaseUninstalledWidget
                     ):
                         logger.debug("Update Gamelist: New installed " + app_name)
                         self.widgets[app_name][0].deleteLater()
@@ -302,7 +298,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
                     # uninstalled
                     elif not self.core.is_installed(
-                        widgets[0].game.app_name
+                            widgets[0].game.app_name
                     ) and isinstance(widgets[0], BaseInstalledWidget):
                         logger.debug("Update list: Uninstalled: " + app_name)
                         self.widgets[app_name][0].deleteLater()
@@ -344,8 +340,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     self.widgets[name][1].deleteLater()
                     self.widgets.pop(name)
 
-                    igame = self.core.get_installed_game(name)
-                    self.add_installed_widget(igame.app_name)
+                    self.add_installed_widget(name)
 
                 for name in new_uninstalled_games:
                     self.icon_view.layout().removeWidget(self.widgets[name][0])
@@ -360,7 +355,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     self.add_uninstalled_widget(game)
 
                 for igame in sorted(
-                    self.core.get_installed_list(), key=lambda x: x.title
+                        self.core.get_installed_list(), key=lambda x: x.title
                 ):
                     i_widget, list_widget = self.widgets[igame.app_name]
 
@@ -378,8 +373,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                 games, self.dlcs = self.core.get_game_and_dlc_list()
                 for game in sorted(games, key=lambda x: x.app_title):
                     if (
-                        not self.core.is_installed(game.app_name)
-                        and game.app_name not in self.no_asset_names
+                            not self.core.is_installed(game.app_name)
+                            and game.app_name not in self.no_asset_names
                     ):
                         i_widget, list_widget = self.widgets[game.app_name]
                         self.icon_view.layout().addWidget(i_widget)
@@ -392,26 +387,41 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         list_layout = QVBoxLayout()
 
         icon_layout.addWidget(self.installing_widget)
-        for igame in sorted(self.core.get_installed_list(), key=lambda x: x.title):
-            i_widget, l_widget = self.widgets[igame.app_name]
-            icon_layout.addWidget(i_widget)
-            list_layout.addWidget(l_widget)
 
-        for game in self.no_assets:
-            i_widget, l_widget = self.widgets[game.app_name]
-            icon_layout.addWidget(i_widget)
-            list_layout.addWidget(l_widget)
+        for igame in sorted(self.core.get_installed_list(), key=lambda x: x.title) + self.no_assets:
+            i_widget, l_widget = self.widgets.get(igame.app_name, (None, None))
+            if i_widget and l_widget:
+                icon_layout.addWidget(i_widget)
+                list_layout.addWidget(l_widget)
+            else:
+                logger.warning("Found installed game, without widget. Generating widget... ")
+                try:
+                    i_widget, l_widget = self.add_installed_widget(igame.app_name)
+                    icon_layout.addWidget(i_widget)
+                    list_layout.addWidget(l_widget)
+                except Exception as e:
+                    logger.error(str(e))
+                    continue
 
-        self.uninstalled_names = []
-        installed_names = [i.app_name for i in self.core.get_installed_list()]
         # get Uninstalled games
         self.game_list, self.dlcs = self.core.get_game_and_dlc_list(update_assets=False)
         # add uninstalled games
         for game in sorted(self.game_list, key=lambda x: x.app_title):
-            if game.app_name not in installed_names:
-                i_widget, list_widget = self.widgets[game.app_name]
+            if self.core.is_installed(game.app_name) or game.app_name in self.no_asset_names:
+                continue
+            i_widget, list_widget = self.widgets.get(game.app_name, (None, None))
+            if i_widget and list_widget:
                 icon_layout.addWidget(i_widget)
                 list_layout.addWidget(list_widget)
+            else:
+                logger.warning("Found installed game, without widget. Generating widget... ")
+                try:
+                    i_widget, l_widget = self.add_uninstalled_widget(game)
+                    icon_layout.addWidget(i_widget)
+                    list_layout.addWidget(l_widget)
+                except Exception as e:
+                    logger.error(str(e))
+                    continue
 
         QObjectCleanupHandler().add(self.icon_view.layout())
         QObjectCleanupHandler().add(self.list_view.layout())

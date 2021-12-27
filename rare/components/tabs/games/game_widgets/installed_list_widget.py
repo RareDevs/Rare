@@ -20,7 +20,7 @@ class InstalledListWidget(BaseInstalledWidget):
     def __init__(self, app_name, pixmap, game_utils):
         super(InstalledListWidget, self).__init__(app_name, pixmap, game_utils)
         self.dev = self.game.metadata["developer"]
-        if self.game.third_party_store != "Origin":
+        if self.igame:
             self.size = self.igame.install_size
         else:
             self.size = 0

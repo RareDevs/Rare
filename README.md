@@ -18,8 +18,6 @@ Rare is a graphical interface for Legendary, a command line alternative to Epic 
 
 Execute `pip install Rare` for all users, or `pip install Rare --user` for the current user only.
 
-To install latest git version use `pip install --upgrade https://github.com/Dummerle/Rare/archive/refs/heads/main.zip`.
-
 Linux and Mac: execute `rare` in your terminal.
 
 Windows: execute `pythonw -m rare` in cmd
