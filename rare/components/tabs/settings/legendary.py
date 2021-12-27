@@ -2,6 +2,7 @@ import re
 from logging import getLogger
 from typing import Tuple
 
+from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 import rare.shared as shared
@@ -11,6 +12,24 @@ from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit
 from rare.utils.utils import get_size
 
 logger = getLogger("LegendarySettings")
+
+
+class WorkerSignals(QObject):
+    finished = pyqtSignal()
+
+    def __init__(self):
+        super(WorkerSignals, self).__init__()
+
+
+class RefreshGameMetaWorker(QRunnable):
+    def __init__(self):
+        super(RefreshGameMetaWorker, self).__init__()
+        self.setAutoDelete(True)
+        self.signals = WorkerSignals()
+
+    def run(self) -> None:
+        shared.core.get_game_and_dlc_list(True, force_refresh=True)
+        self.signals.finished.emit()
 
 
 class LegendarySettings(QWidget, Ui_LegendarySettings):
@@ -65,6 +84,16 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.locale_layout.addWidget(self.locale_edit)
 
         self.ubi_helper = UbiActivationHelper(self.ubisoft_gb)
+
+        self.refresh_game_meta_btn.clicked.connect(self.refresh_game_meta)
+
+    def refresh_game_meta(self):
+        self.refresh_game_meta_btn.setDisabled(True)
+        self.refresh_game_meta_btn.setText(self.tr("Loading"))
+        worker = RefreshGameMetaWorker()
+        worker.signals.finished.connect(lambda: self.refresh_game_meta_btn.setDisabled(False))
+        worker.signals.finished.connect(lambda: self.refresh_game_meta_btn.setText(self.tr("Refresh game meta")))
+        QThreadPool.globalInstance().start(worker)
 
     @staticmethod
     def locale_edit_cb(text: str) -> Tuple[bool, str]:

@@ -43,13 +43,20 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QPushButton" name="clean_button">
-          <property name="text">
-           <string>Remove everything</string>
-          </property>
-         </widget>
-        </item>
+           <item>
+               <widget class="QPushButton" name="clean_button">
+                   <property name="text">
+                       <string>Remove everything</string>
+                   </property>
+               </widget>
+           </item>
+           <item>
+               <widget class="QPushButton" name="refresh_game_meta_btn">
+                   <property name="text">
+                       <string>Refresh game meta</string>
+                   </property>
+               </widget>
+           </item>
        </layout>
       </widget>
      </item>
@@ -112,7 +119,7 @@
              <number>16</number>
             </property>
             <property name="value">
-             <number>4</number>
+                <number>0</number>
             </property>
            </widget>
           </item>
