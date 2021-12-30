@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar
 
 from rare import data_dir, shared
 from rare.components.tabs import TabWidget
-from rare.utils.rpc import DiscordRPC
 
 logger = getLogger("Window")
 
@@ -37,6 +36,7 @@ class MainWindow(QMainWindow):
 
         if not shared.args.offline:
             try:
+                from rare.utils.rpc import DiscordRPC
                 self.rpc = DiscordRPC()
             except ModuleNotFoundError:
                 logger.warning("Discord RPC module not found")
