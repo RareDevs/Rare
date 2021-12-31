@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
 
 import legendary
-
 # noinspection PyUnresolvedReferences
 import rare.resources.resources
 import rare.shared as shared
@@ -208,7 +207,7 @@ class App(QApplication):
     def exit_app(self, exit_code=0):
         # FIXME: Fix this with the downlaod tab redesign
         if self.mainwindow is not None:
-            if self.mainwindow.tab_widget.downloadTab.is_download_active:
+            if not shared.args.offline and self.mainwindow.tab_widget.downloadTab.is_download_active:
                 question = QMessageBox.question(
                     self.mainwindow,
                     self.tr("Close"),

@@ -1,6 +1,5 @@
 import datetime
 import logging
-import random
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import (
@@ -86,6 +85,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
             item = self.discount_widget.layout().itemAt(i)
             if item:
                 item.widget().deleteLater()
+
         if wishlist and wishlist[0] == "error":
             self.discount_widget.layout().addWidget(
                 QLabel(self.tr("Failed to get wishlist: ") + wishlist[1])
@@ -112,8 +112,9 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                 logger.warning(str(game) + str(e))
                 continue
         self.discounts_gb.setVisible(discounts > 0)
-        self.discount_widget.update()
         self.discount_stack.setCurrentIndex(0)
+        # fix widget overlay
+        self.discount_widget.layout().update()
 
     def add_free_games(self, free_games: list):
         for i in range(self.free_widget.layout().count()):

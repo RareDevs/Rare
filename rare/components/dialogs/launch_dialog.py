@@ -3,7 +3,7 @@ import platform
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QApplication
 from requests.exceptions import ConnectionError, HTTPError
 
 from legendary.core import LegendaryCore
@@ -43,13 +43,13 @@ class ApiRequestWorker(QRunnable):
     def run(self) -> None:
         try:
             result = shared.core.get_game_and_dlc_list(True, "Mac")
-        except HTTPError():
+        except HTTPError:
             result = [], {}
         self.signals.result.emit(result, "mac")
 
         try:
             result = shared.core.get_game_and_dlc_list(True, "Win32")
-        except HTTPError():
+        except HTTPError:
             result = [], {}
         self.signals.result.emit(result, "32bit")
 
@@ -103,6 +103,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             if self.offline:
                 pass
             else:
+                QApplication.processEvents()
                 if self.core.login():
                     logger.info("You are logged in")
                 else:
