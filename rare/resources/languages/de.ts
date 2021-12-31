@@ -90,9 +90,9 @@ v3
 <location filename = "../../components/tabs/settings/about.py"
 line = "49" / >
     <source>Update
-available: </source>
+available:</source>
 < translation > Update
-verfügbar: </translation>
+verfügbar < /translation>
 < /message>
 < /context>
 < context >
@@ -525,7 +525,8 @@ to
 launch
 {
 }
-anyway ? </source>
+anyway ?
+    </source>
     < translation > Konnte nicht
 den
 Speicherort
@@ -548,10 +549,7 @@ line = "269" / >
 with cloud failed:
     </source>
     < translation > Synchronisierung
-mit
-der
-Cloud
-fehlgeschlagen < /translation>
+fehlgeschlagen: </translation>
 < /message>
 < /context>
 < context >
@@ -1083,21 +1081,22 @@ exist.Create
 it
 or
 configure
-it in Settings - &gt; Linux. < /source>
-< translation > Standard
+it in Settings - &gt;
+Linux.
+< /source>
+< translation > Das
+Standard
 Wine
 Prefix
 ist
 nicht
 gesetzt
 oder
-der
-Pfad
 existiert
 nicht.Erstelle
 es
 oder
-ändere
+setze
 es in Einstellungen - &gt; Linux < /translation>
 < /message>
 < message >
@@ -1125,7 +1124,8 @@ be
 where
 EGL
 is
-installed. < /source>
+installed.
+< /source>
 < translation > Standard
 Wine
 Prefix
@@ -2144,7 +2144,8 @@ want
 to
 sync
 cloud
-saves < /source>
+saves
+< /source>
 < translation > Spiel
 wurde
 mit
@@ -3918,8 +3919,8 @@ save, you
 want
 to
 use
-for </source>
-    < translation > Wähle den
+for</source>
+   < translation > Wähle den
 Speicherstand
 aus
 für < /translation>
