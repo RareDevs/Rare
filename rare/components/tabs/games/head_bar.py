@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
 )
 from qtawesome import icon
 
+from rare import shared
 from rare.utils.extra_widgets import SelectViewWidget
 
 
@@ -29,21 +30,29 @@ class GameListHeadBar(QWidget):
                 self.tr("All"),
                 self.tr("Installed only"),
                 self.tr("Offline Games"),
-                self.tr("32 Bit Games"),
-                self.tr("Mac games"),
-                self.tr("Exclude Origin"),
+                #         ,
+                #
+                #        self.tr(),
             ]
         )
-        self.layout().addWidget(self.filter)
-
         self.available_filters = [
             "all",
             "installed",
             "offline",
-            "32bit",
-            "mac",
-            "installable",
         ]
+        if shared.api_results.bit32_games:
+            self.filter.addItem(self.tr("32 Bit Games"))
+            self.available_filters.append("32bit")
+
+        if shared.api_results.mac_games:
+            self.filter.addItem(self.tr("Mac games"))
+            self.available_filters.append("mac")
+
+        if shared.api_results.no_asset_games:
+            self.filter.addItem(self.tr("Exclude Origin"))
+            self.available_filters.append("installable")
+
+        self.layout().addWidget(self.filter)
 
         try:
             self.filter.setCurrentIndex(self.settings.value("filter", 0, int))
