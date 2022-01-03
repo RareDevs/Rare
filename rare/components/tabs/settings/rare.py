@@ -21,7 +21,7 @@ from rare.utils.utils import (
 
 logger = getLogger("RareSettings")
 
-languages = [("en", "English"), ("de", "Deutsch"), ("fr", "Français")]
+languages = [("en", "English"), ("de", "Deutsch"), ("fr", "Français"), ("zh-Hans", "Simplified Chinese")]
 
 
 class RareSettings(QWidget, Ui_RareSettings):
