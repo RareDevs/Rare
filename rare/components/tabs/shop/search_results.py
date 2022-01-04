@@ -48,7 +48,7 @@ class SearchResults(QStackedWidget):
             self.api_core.search_game(text, self.show_results)
 
     def show_results(self, results: dict):
-        QVBoxLayout().addWidget(self.widget)
+        self.widget.deleteLater()
         self.widget = QWidget()
         self.layout = FlowLayout()
         if not results:
