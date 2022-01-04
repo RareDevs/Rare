@@ -21,7 +21,11 @@ from rare.utils.utils import (
 
 logger = getLogger("RareSettings")
 
-languages = [("en", "English"), ("de", "Deutsch"), ("fr", "Français"), ("zh-Hans", "Simplified Chinese")]
+languages = [("en", "English"),
+             ("de", "Deutsch"),
+             ("fr", "Français"),
+             ("zh-Hans", "Simplified Chinese"),
+             ("pt_BR", "Portuguese (Brazil)")]
 
 
 class RareSettings(QWidget, Ui_RareSettings):
@@ -75,8 +79,8 @@ class RareSettings(QWidget, Ui_RareSettings):
 
         self.interface_info.setVisible(False)
 
-        self.rpc = RPCSettings()
-        self.rpc_layout.addWidget(self.rpc, alignment=Qt.AlignTop)
+        self.rpc = RPCSettings(self)
+        self.right_layout.insertWidget(1, self.rpc, alignment=Qt.AlignTop)
 
         self.init_checkboxes(self.checkboxes)
         self.sys_tray.stateChanged.connect(
