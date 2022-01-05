@@ -42,8 +42,12 @@ There are some AUR packages available:
 - DUR package: [rare](https://mpr.hunterwittenborn.com/packages/rare)
 - .deb file in [releases page](https://github.com/Dummerle/Rare/releases)
 
-**Note**: You probably need to install pypresene manually,
-from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip
+**Note**:
+
+- pypresene is an optional package. You can install it
+  from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip
+- Do not wonder if some icons look strange, because the official python3-qtawesome package is too old. Many icons were
+  replaced
 
 #### Other
 
@@ -53,8 +57,8 @@ Install via `pip` or use the AppImage.
 
 There is a .dmg file available in [releases page](https://github.com/Dummerle/Rare/releases).
 
-**Note**: You have to enable it manually in `Settings -> Security and Privacy`. Otherwise, Gatekeeper will block Rare
-from running.
+**Note**: When you launch it, you will see and error, that the package is from an unknown source. You have to enable it
+manually in `Settings -> Security and Privacy`. Otherwise, Gatekeeper will block Rare from running.
 
 You can also use `pip`.
 
@@ -74,7 +78,7 @@ In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find pack
 1. Clone the repo with Submodule: `git clone https://github.com/Dummerle/Rare --recurse-submodules`.
 2. Change your working directory to the project folder: `cd Rare`
 3. Run `pip install -r requirements.txt` to install all required dependencies. If you are on Arch you can
-   run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-pillow`
+   run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-psutil`
 3. Run `python3 -m rare`
 
 ## Why Rare?
