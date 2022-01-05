@@ -7,10 +7,10 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QComboBox,
 )
-from qtawesome import icon
 
 from rare import shared
 from rare.utils.extra_widgets import SelectViewWidget
+from rare.utils.utils import icon
 
 
 class GameListHeadBar(QWidget):
@@ -62,11 +62,11 @@ class GameListHeadBar(QWidget):
         self.filter.currentIndexChanged.connect(self.filter_changed)
         self.layout().addStretch(1)
 
-        self.import_game = QPushButton(icon("mdi.import"), self.tr("Import Game"))
+        self.import_game = QPushButton(icon("mdi.import", "fa.arrow-down"), self.tr("Import Game"))
         self.import_clicked = self.import_game.clicked
         self.layout().addWidget(self.import_game)
 
-        self.egl_sync = QPushButton(icon("mdi.sync"), self.tr("Sync with EGL"))
+        self.egl_sync = QPushButton(icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"))
         self.egl_sync_clicked = self.egl_sync.clicked
         self.layout().addWidget(self.egl_sync)
         # FIXME: Until it is ready

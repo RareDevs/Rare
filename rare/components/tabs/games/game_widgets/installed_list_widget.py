@@ -2,12 +2,12 @@ from logging import getLogger
 
 from PyQt5.QtCore import QProcess, pyqtSignal, Qt
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
-from qtawesome import icon
 
 from rare.components.tabs.games.game_widgets.base_installed_widget import (
     BaseInstalledWidget,
 )
 from rare.utils.utils import get_size
+from rare.utils.utils import icon
 
 logger = getLogger("GameWidget")
 

@@ -1,15 +1,17 @@
 import datetime
+import sys
 from dataclasses import dataclass
 from logging import getLogger
 from typing import Union, List
 
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, Qt, QSettings
-from PyQt5.QtWidgets import QDialog, QMessageBox, QSizePolicy, QLayout
-from qtawesome import icon
+from PyQt5.QtWidgets import QDialog, QMessageBox, QSizePolicy, QLayout, QApplication
 
+from legendary.core import LegendaryCore
 from legendary.models.game import SaveGameStatus, InstalledGame, SaveGameFile
 from rare import shared
 from rare.ui.components.dialogs.sync_save_dialog import Ui_SyncSaveDialog
+from rare.utils.utils import icon
 
 logger = getLogger("Cloud Saves")
 
@@ -76,11 +78,11 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
     CANCEL = 0
 
     def __init__(
-        self,
-        igame: InstalledGame,
-        dt_local: datetime.datetime,
-        dt_remote: datetime.datetime,
-        newer: str,
+            self,
+            igame: InstalledGame,
+            dt_local: datetime.datetime,
+            dt_remote: datetime.datetime,
+            newer: str,
     ):
         super(CloudSaveDialog, self).__init__()
         self.setupUi(self)
@@ -101,8 +103,8 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
         elif newer == "local":
             self.local_gb.setTitle(self.local_gb.title() + new_text)
 
-        self.icon_local.setPixmap(icon("mdi.harddisk").pixmap(128, 128))
-        self.icon_remote.setPixmap(icon("mdi.cloud-outline").pixmap(128, 128))
+        self.icon_local.setPixmap(icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
+        self.icon_remote.setPixmap(icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))
 
         self.upload_button.clicked.connect(lambda: self.btn_clicked(self.UPLOAD))
         self.download_button.clicked.connect(lambda: self.btn_clicked(self.DOWNLOAD))
@@ -168,16 +170,16 @@ class CloudSaveUtils(QObject):
                 logger.info(f"Set save path of {igame.title} to {savepath}")
             elif not ignore_settings:  # sync on startup
                 if (
-                    QMessageBox.question(
-                        None,
-                        "Warning",
-                        self.tr(
-                            "Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {} anyway?"
-                        ).format(igame.title),
-                        QMessageBox.Yes | QMessageBox.No,
-                        QMessageBox.No,
-                    )
-                    == QMessageBox.Yes
+                        QMessageBox.question(
+                            None,
+                            "Warning",
+                            self.tr(
+                                "Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {} anyway?"
+                            ).format(igame.title),
+                            QMessageBox.Yes | QMessageBox.No,
+                            QMessageBox.No,
+                        )
+                        == QMessageBox.Yes
                 ):
                     return False
                 else:
@@ -313,3 +315,16 @@ class CloudSaveUtils(QObject):
                 self.tr("Syncing with cloud failed: \n ") + error_message,
             )
             self.sync_finished.emit(app_name)
+
+
+def test_dialog():
+    app = QApplication(sys.argv)
+    core = LegendaryCore()
+    dlg = CloudSaveDialog(core.get_installed_list()[0], datetime.datetime.now(),
+                          datetime.datetime.strptime("2021,1", "%Y,%M"), "local")
+    dlg.show()
+    app.exec_()
+
+
+if __name__ == '__main__':
+    test_dialog()

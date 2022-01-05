@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QTabBar, QToolButton
-from qtawesome import icon
+
+from rare.utils.utils import icon
 
 
 class MainTabBar(QTabBar):
@@ -25,10 +26,10 @@ class MainTabBar(QTabBar):
 
 
 class TabButtonWidget(QToolButton):
-    def __init__(self, button_icon: str, tool_tip: str):
+    def __init__(self, button_icon: str, tool_tip: str, fallback_icon=None):
         super(TabButtonWidget, self).__init__()
         self.setText("Icon")
         self.setPopupMode(QToolButton.InstantPopup)
-        self.setIcon(icon(button_icon, scale_factor=1.25))
+        self.setIcon(icon(button_icon, fallback_icon, scale_factor=1.25))
         self.setToolTip(tool_tip)
         self.setIconSize(QSize(25, 25))

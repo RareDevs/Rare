@@ -5,11 +5,11 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QFont
 from PyQt5.QtNetwork import QNetworkAccessManager
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
-from qtawesome import icon
 
 from rare.components.tabs.shop.shop_models import ImageUrlModel
 from rare.ui.components.tabs.store.wishlist_widget import Ui_WishlistWidget
 from rare.utils.extra_widgets import ImageLabel
+from rare.utils.utils import icon
 
 logger = logging.getLogger("GameWidgets")
 

@@ -13,12 +13,12 @@ from PyQt5.QtWidgets import (
     QTabWidget,
     QGridLayout,
 )
-from qtawesome import icon
 
 from rare import shared
 from rare.components.tabs.shop.shop_models import ShopGame
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
 from rare.utils.extra_widgets import WaitingSpinner, ImageLabel
+from rare.utils.utils import icon
 
 logger = logging.getLogger("ShopInfo")
 
@@ -234,10 +234,10 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         for name, url in self.game.links:
 
             if name.lower() == "homepage":
-                icn = icon("mdi.web", scale_factor=1.5)
+                icn = icon("mdi.web", "fa.search", scale_factor=1.5)
             else:
                 try:
-                    icn = icon("mdi." + name.lower(), scale_factor=1.5)
+                    icn = icon("mdi." + name.lower(), "fa." + name.lower(), scale_factor=1.5)
                 except Exception as e:
                     logger.error(str(e))
                     continue

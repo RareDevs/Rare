@@ -1,6 +1,5 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
-from qtawesome import icon
 
 from rare import shared
 from rare.components.tabs.account import MiniWidget
@@ -10,6 +9,7 @@ from rare.components.tabs.settings import SettingsTab
 from rare.components.tabs.settings.debug import DebugSettings
 from rare.components.tabs.shop import Shop
 from rare.components.tabs.tab_utils import MainTabBar, TabButtonWidget
+from rare.utils.utils import icon
 
 
 class TabWidget(QTabWidget):
@@ -56,7 +56,7 @@ class TabWidget(QTabWidget):
         self.mini_widget = MiniWidget()
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.mini_widget)
-        account_button = TabButtonWidget("mdi.account-circle", "Account")
+        account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)
         self.tabBar().setTabButton(

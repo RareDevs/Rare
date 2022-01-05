@@ -8,9 +8,9 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QPushButton,
 )
-from qtawesome import icon
 
 from legendary.models.game import Game
+from rare.utils.utils import icon
 
 
 class UninstallDialog(QDialog):

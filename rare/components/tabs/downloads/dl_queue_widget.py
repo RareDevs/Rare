@@ -9,9 +9,9 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QWidget,
 )
-from qtawesome import icon
 
 from rare.utils.models import InstallQueueItemModel
+from rare.utils.utils import icon
 
 logger = getLogger("QueueWidget")
 

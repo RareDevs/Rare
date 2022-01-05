@@ -4,10 +4,10 @@ from logging import getLogger
 
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSize
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QSizePolicy, QPushButton
-from qtawesome import icon
 
 from legendary.models.game import Game
 from rare import shared
+from rare.utils.utils import icon
 
 logger = getLogger("Ubisoft")
 

@@ -3,12 +3,12 @@ from logging import getLogger
 from PyQt5.QtCore import QEvent, pyqtSignal, QSize, Qt
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel
-from qtawesome import icon
 
 from rare import shared
 from rare.components.tabs.games.game_widgets.base_installed_widget import (
     BaseInstalledWidget,
 )
+from rare.utils.utils import icon
 
 logger = getLogger("GameWidgetInstalled")
 

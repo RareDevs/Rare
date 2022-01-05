@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QSizePolicy,
 )
-from qtawesome import icon
 
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
@@ -20,6 +19,7 @@ from rare.components.tabs.settings.linux import LinuxSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import WineResolver, get_raw_save_path
+from rare.utils.utils import icon
 
 logger = getLogger("GameSettings")
 

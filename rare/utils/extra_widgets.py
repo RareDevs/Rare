@@ -32,10 +32,10 @@ from PyQt5.QtWidgets import (
     QStyledItemDelegate,
     QFileIconProvider,
 )
-from qtawesome import icon as qta_icon
 
 from rare import cache_dir
 from rare.utils.qt_requests import QtRequestManager
+from rare.utils.utils import icon as qta_icon
 
 logger = getLogger("ExtraWidgets")
 
@@ -244,22 +244,22 @@ class IndicatorLineEdit(QWidget):
 
 class PathEditIconProvider(QFileIconProvider):
     icons = [
-        "mdi.file-cancel",  # Unknown
-        "mdi.desktop-classic",  # Computer
-        "mdi.desktop-mac",  # Desktop
-        "mdi.trash-can",  # Trashcan
-        "mdi.server-network",  # Network
-        "mdi.harddisk",  # Drive
-        "mdi.folder",  # Folder
-        "mdi.file",  # File
-        "mdi.cog",  # Executable
+        ("mdi.file-cancel", "fa.file-excel-o"),  # Unknown
+        ("mdi.desktop-classic", "fa.desktop"),  # Computer
+        ("mdi.desktop-mac", "fa.desktop"),  # Desktop
+        ("mdi.trash-can", "fa.trash"),  # Trashcan
+        ("mdi.server-network", "fa.server"),  # Network
+        ("mdi.harddisk", "fa.desktop"),  # Drive
+        ("mdi.folder", "fa.folder"),  # Folder
+        ("mdi.file", "fa.file"),  # File
+        ("mdi.cog", "fa.cog"),  # Executable
     ]
 
     def __init__(self):
         super(PathEditIconProvider, self).__init__()
         self.icon_types = dict()
-        for idx, icn in enumerate(self.icons):
-            self.icon_types.update({idx - 1: qta_icon(icn, color="#eeeeee")})
+        for idx, (icn, fallback) in enumerate(self.icons):
+            self.icon_types.update({idx - 1: qta_icon(icn, fallback, color="#eeeeee")})
 
     def icon(self, info_type):
         if isinstance(info_type, QFileInfo):
@@ -281,21 +281,24 @@ class PathEdit(IndicatorLineEdit):
 
     def __init__(
         self,
-        path: str = "",
-        file_type: QFileDialog.FileType = QFileDialog.AnyFile,
-        type_filter: str = "",
-        name_filter: str = "",
-        ph_text: str = "",
-        edit_func: Callable[[str], Tuple[bool, str]] = None,
-        save_func: Callable[[str], None] = None,
-        horiz_policy: QSizePolicy = QSizePolicy.Expanding,
-        parent=None,
+            path: str = "",
+            file_type: QFileDialog.FileType = QFileDialog.AnyFile,
+            type_filter: str = "",
+            name_filter: str = "",
+            ph_text: str = "",
+            edit_func: Callable[[str], Tuple[bool, str]] = None,
+            save_func: Callable[[str], None] = None,
+            horiz_policy: QSizePolicy = QSizePolicy.Expanding,
+            parent=None,
     ):
-        self.compl_model.setOptions(
-            QFileSystemModel.DontWatchForChanges
-            | QFileSystemModel.DontResolveSymlinks
-            | QFileSystemModel.DontUseCustomDirectoryIcons
-        )
+        try:
+            self.compl_model.setOptions(
+                QFileSystemModel.DontWatchForChanges
+                | QFileSystemModel.DontResolveSymlinks
+                | QFileSystemModel.DontUseCustomDirectoryIcons
+            )
+        except AttributeError as e:  # Error on Ubuntu
+            logger.warning(e)
         self.compl_model.setIconProvider(PathEditIconProvider())
         self.compl_model.setRootPath(path)
         self.completer.setModel(self.compl_model)
@@ -381,7 +384,7 @@ class SideTabWidget(QTabWidget):
         self.setDocumentMode(True)
         self.setTabPosition(QTabWidget.West)
         if show_back:
-            self.addTab(QWidget(), qta_icon("mdi.keyboard-backspace"), self.tr("Back"))
+            self.addTab(QWidget(), qta_icon("mdi.keyboard-backspace", "ei.backward"), self.tr("Back"))
             self.tabBarClicked.connect(self.back_func)
 
     def back_func(self, tab):
@@ -417,12 +420,12 @@ class SelectViewWidget(QWidget):
         self.list_view = QPushButton()
         if icon_view:
             self.icon_view_button.setIcon(
-                qta_icon("mdi.view-grid-outline", color="orange")
+                qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange")
             )
-            self.list_view.setIcon(qta_icon("fa5s.list"))
+            self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list"))
         else:
-            self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline"))
-            self.list_view.setIcon(qta_icon("fa5s.list", color="orange"))
+            self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
+            self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
 
         self.icon_view_button.clicked.connect(self.icon)
         self.list_view.clicked.connect(self.list)
@@ -437,14 +440,14 @@ class SelectViewWidget(QWidget):
         return self.icon_view
 
     def icon(self):
-        self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", color="orange"))
-        self.list_view.setIcon(qta_icon("fa5s.list"))
+        self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
+        self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list"))
         self.icon_view = False
         self.toggled.emit()
 
     def list(self):
-        self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline"))
-        self.list_view.setIcon(qta_icon("fa5s.list", color="orange"))
+        self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
+        self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
         self.icon_view = True
         self.toggled.emit()
 
