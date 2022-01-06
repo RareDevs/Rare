@@ -103,7 +103,6 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.download_only_check.stateChanged.connect(
             lambda: self.non_reload_option_changed("download_only")
         )
-
         self.sdl_list_checks = list()
         try:
             for key, info in games[self.app_name].items():
@@ -118,6 +117,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             for cb in self.sdl_list_checks:
                 cb.stateChanged.connect(self.option_changed)
         except KeyError:
+            self.sdl_list_frame.setVisible(False)
+            self.sdl_list_label.setVisible(False)
+        except AttributeError:
             self.sdl_list_frame.setVisible(False)
             self.sdl_list_label.setVisible(False)
 

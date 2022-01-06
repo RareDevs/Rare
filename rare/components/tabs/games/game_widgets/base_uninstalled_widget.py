@@ -2,8 +2,8 @@ from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QGroupBox, QLabel, QAction
-from legendary.models.game import Game
 
+from legendary.models.game import Game
 from rare.utils import utils
 
 logger = getLogger("Uninstalled")
@@ -15,6 +15,9 @@ class BaseUninstalledWidget(QGroupBox):
     def __init__(self, game, core, pixmap):
         super(BaseUninstalledWidget, self).__init__()
         self.game = game
+        if self.game.app_title == "Unreal Engine":
+            self.game.app_title = f"{self.game.app_title} {self.game.app_name.split('_')[-1]}"
+
         self.core = core
         self.image = QLabel()
         self.image.setPixmap(
