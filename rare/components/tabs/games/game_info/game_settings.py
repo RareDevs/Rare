@@ -368,10 +368,12 @@ class GameSettings(QWidget, Ui_GameSettings):
                 )
                 self.proton_prefix.setText(proton_prefix)
                 self.wrapper.setEnabled(False)
+                self.linux_settings.wine_groupbox.setEnabled(False)
             else:
                 self.proton_wrapper.setCurrentIndex(0)
                 self.proton_prefix.setEnabled(False)
                 self.wrapper.setEnabled(True)
+                self.linux_settings.wine_groupbox.setEnabled(True)
 
         if not self.game.supports_cloud_saves:
             self.cloud_gb.setEnabled(False)
