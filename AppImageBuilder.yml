@@ -24,7 +24,7 @@ AppDir:
     id: org.dummerle.rare
     name: Rare
     icon: Rare
-    version: 1.8.4
+    version: 1.8.5
     exec: usr/bin/python3
     exec_args: $APPDIR/usr/src/__main__.py $@
   apt:
