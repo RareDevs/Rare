@@ -57,6 +57,7 @@ class GameListHeadBar(QWidget):
             self.filter.setCurrentIndex(self.settings.value("filter", 0, int))
         except TypeError:
             self.settings.setValue("filter", 0)
+            self.filter.setCurrentIndex(0)
 
         self.filter.currentIndexChanged.connect(self.filter_changed)
         self.layout().addStretch(1)

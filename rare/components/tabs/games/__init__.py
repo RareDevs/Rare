@@ -82,8 +82,12 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             self.no_assets = []
 
         for i in self.game_list:
-            if i.app_name.startswith("UE"):
+            if i.app_name.startswith("UE_4"):
+                pixmap = get_pixmap(i.app_name)
+                if pixmap.isNull():
+                    continue
                 self.ue_name = i.app_name
+                logger.debug(f"Found Unreal AppName {self.ue_name}")
                 break
         else:
             logger.warning("No Unreal engine in library found")
