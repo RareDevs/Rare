@@ -12,6 +12,7 @@ class ConsoleWindow(QWidget):
     def __init__(self):
         super(ConsoleWindow, self).__init__()
         self.layout = QVBoxLayout()
+        self.setWindowTitle("Rare Console")
         self.setGeometry(0, 0, 600, 400)
 
         self.console = Console()
