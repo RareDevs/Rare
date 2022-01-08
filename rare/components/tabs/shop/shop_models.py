@@ -146,7 +146,7 @@ class BrowseModel:
     withMapping: bool = True
     withPrice: bool = True
     date: str = (
-        f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%X')}.999Z]"
+        f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%H:%M:%S')}.420Z]"
     )
     price: str = ""
     onSale: bool = False
@@ -180,4 +180,5 @@ class BrowseModel:
             payload["effectiveDate"] = self.date
         else:
             payload.pop("priceRange")
+        print(self.date)
         return payload

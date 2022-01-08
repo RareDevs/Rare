@@ -114,10 +114,22 @@ class ShopApiCore(QObject):
             self.next_browse_request = (browse_model, handle_func)
             return
         self.browse_active = True
-        url = "https://www.epicgames.com/graphql?operationName=searchStoreQuery&variables="
-        args = urllib.parse.quote_plus(str(browse_model.__dict__))
+        url = "https://www.epicgames.com/graphql?operationName=searchStoreQuery&variables={}&extensions={}"
+        variables = urllib.parse.quote_plus(str(
+            dict(browse_model.__dict__))
+        )
+        extensions = urllib.parse.quote_plus(str(
+            dict(
+                persistedQuery=dict(
+                    version=1,
+                    sha256Hash="6e7c4dd0177150eb9a47d624be221929582df8648e7ec271c821838ff4ee148e"
+                )
+            )
+        )
+        )
 
         for old, new in [
+            ("%26", "&"),
             ("%27", "%22"),
             ("+", ""),
             ("%3A", ":"),
@@ -126,19 +138,16 @@ class ShopApiCore(QObject):
             ("%5D", "]"),
             ("True", "true"),
         ]:
-            args = args.replace(old, new)
+            variables = variables.replace(old, new)
+            extensions = extensions.replace(old, new)
 
-        url = (
-            url
-            + args
-            + "&extensions=%7B%22persistedQuery%22:%7B%22version%22:1,%22sha256Hash%22:%220304d711e653a2914f3213a6d9163cc17153c60aef0ef52279731b02779231d2%22%7D%7D"
-        )
-
+        url = url.format(variables, extensions)
         self.auth_manager.get(
             url, lambda data: self._handle_browse_games(data, handle_func)
         )
 
     def _handle_browse_games(self, data, handle_func):
+        print(data)
         self.browse_active = False
         if data is None:
             data = {}
