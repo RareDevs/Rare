@@ -1,8 +1,7 @@
 import logging
-import webbrowser
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QFont
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QPixmap, QFont, QDesktopServices
 from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
@@ -180,7 +179,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 req_widget.layout().addWidget(min_label, 0, 1)
                 req_widget.layout().addWidget(rec_label, 0, 2)
                 for i, (key, value) in enumerate(
-                    self.game.reqs.get(system, {}).items()
+                        self.game.reqs.get(system, {}).items()
                 ):
                     req_widget.layout().addWidget(QLabel(key), i + 1, 0)
                     min_label = QLabel(value[0])
@@ -218,8 +217,8 @@ class ShopGameInfo(QWidget, Ui_shop_info):
 
         # clear Layout
         for widget in (
-            self.social_link_gb.layout().itemAt(i)
-            for i in range(self.social_link_gb.layout().count())
+                self.social_link_gb.layout().itemAt(i)
+                for i in range(self.social_link_gb.layout().count())
         ):
             if not isinstance(widget, QSpacerItem):
                 widget.widget().deleteLater()
@@ -259,15 +258,12 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.wishlist.append(game["offer"]["title"])
 
     def button_clicked(self):
-        webbrowser.open(
-            f"https://www.epicgames.com/store/{shared.core.language_code}/p/"
-            + self.slug
-        )
+        QDesktopServices.openUrl(QUrl(f"https://www.epicgames.com/store/{shared.core.language_code}/p/{self.slug}"))
 
 
 class SocialButton(QPushButton):
     def __init__(self, icn, url):
         super(SocialButton, self).__init__(icn, "")
         self.url = url
-        self.clicked.connect(lambda: webbrowser.open(url))
+        self.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(url)))
         self.setToolTip(url)

@@ -147,7 +147,6 @@ class ShopApiCore(QObject):
         )
 
     def _handle_browse_games(self, data, handle_func):
-        print(data)
         self.browse_active = False
         if data is None:
             data = {}

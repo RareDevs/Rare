@@ -180,5 +180,5 @@ class BrowseModel:
             payload["effectiveDate"] = self.date
         else:
             payload.pop("priceRange")
-        print(self.date)
+
         return payload
