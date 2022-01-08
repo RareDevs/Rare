@@ -40,8 +40,8 @@ class ConsoleWindow(QWidget):
                 f.close()
                 self.save_button.setText(self.tr("Saved"))
 
-    def log(self, text):
-        self.console.log(text)
+    def log(self, text: str, end: str = "\n"):
+        self.console.log(text + end)
 
     def error(self, text):
         self.console.error(text)
