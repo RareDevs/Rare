@@ -60,6 +60,9 @@ def download_images(progress: pyqtSignal, results: pyqtSignal, core: LegendaryCo
 
     game_list = games + dlc_list + no_assets
     for i, game in enumerate(game_list):
+        if game.app_title == "Unreal Engine":
+            game.app_title += f" {game.app_name.split('_')[-1]}"
+            shared.core.lgd.set_game_meta(game.app_name, game)
         try:
             download_image(game)
         except json.decoder.JSONDecodeError:
