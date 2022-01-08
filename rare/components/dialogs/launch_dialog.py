@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QDialog, QApplication
 from requests.exceptions import ConnectionError, HTTPError
 
 from legendary.core import LegendaryCore
-from legendary.models.game import GameAsset
 from rare import image_dir, shared
 from rare.components.dialogs.login import LoginDialog
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
@@ -54,34 +53,6 @@ class ApiRequestWorker(QRunnable):
         except HTTPError:
             result = [], {}
         self.signals.result.emit(result, "32bit")
-
-
-class AssetWorker(QRunnable):
-    def __init__(self):
-        super(AssetWorker, self).__init__()
-        self.signals = ApiSignals()
-        self.setAutoDelete(True)
-        self.assets = dict()
-
-    def run(self) -> None:
-        platforms = shared.core.get_installed_platforms()
-        platforms.add("Windows")
-        if platform.system() == "Darwin":
-            platforms.add("Mac")
-        for p in platforms:
-            self.assets.update({p: self.get_asset(p)})
-        self.signals.result.emit(self.assets, "assets")
-
-    @staticmethod
-    def get_asset(p):
-        if not shared.core.egs.user:
-            return []
-        assets = [
-            GameAsset.from_egs_json(a)
-            for a in shared.core.egs.get_game_assets(platform=p)
-        ]
-
-        return assets
 
 
 class LaunchDialog(QDialog, Ui_LaunchDialog):
@@ -141,10 +112,6 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             worker.signals.result.connect(self.handle_api_worker_result)
             self.thread_pool.start(worker)
 
-            asset_worker = AssetWorker()
-            asset_worker.signals.result.connect(self.handle_api_worker_result)
-            self.thread_pool.start(asset_worker)
-
             # cloud save from another worker, because it is used in cloud_save_utils too
             cloud_worker = CloudWorker()
             cloud_worker.signals.result_ready.connect(
@@ -195,10 +162,6 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
         elif text == "saves":
             self.api_results.saves = result
-        elif text == "assets":
-            self.core.lgd.assets = result
-            self.finish()
-            return
 
         if self.api_results:
             self.finish()
@@ -209,7 +172,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.finish()
 
     def finish(self):
-        if self.finished == 2:
+        if self.finished == 1:
             logger.info("App starting")
             self.image_info.setText(self.tr("Starting..."))
             shared.args.offline = self.offline
