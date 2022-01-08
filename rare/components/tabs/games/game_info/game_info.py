@@ -177,13 +177,17 @@ class GameInfo(QWidget, Ui_GameInfo):
                 self.repair_button.setDisabled(False)
             self.game_actions_stack.setCurrentIndex(0)
 
-        if platform.system() != "Windows":
+        is_ue = self.core.get_asset(app_name).namespace == "ue"
+        self.grade.setVisible(not is_ue)
+        self.lbl_grade.setVisible(not is_ue)
+
+        if platform.system() != "Windows" and not is_ue:
             self.grade.setText(self.tr("Loading"))
             self.steam_worker.set_app_name(self.game.app_name)
             QThreadPool.globalInstance().start(self.steam_worker)
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(
-            self.game.app_name
+                self.game.app_name
         ):
             self.verify_widget.setCurrentIndex(0)
         elif self.verify_threads.get(self.game.app_name):
