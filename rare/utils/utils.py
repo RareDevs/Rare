@@ -49,7 +49,7 @@ def download_images(progress: pyqtSignal, results: pyqtSignal, core: LegendaryCo
         logger.info("Create Image dir")
 
     # Download Images
-    games, dlcs = core.get_game_and_dlc_list(True)
+    games, dlcs = core.get_game_and_dlc_list(True, skip_ue=False)
     results.emit((games, dlcs), "gamelist")
     dlc_list = []
     for i in dlcs.values():
@@ -60,6 +60,9 @@ def download_images(progress: pyqtSignal, results: pyqtSignal, core: LegendaryCo
 
     game_list = games + dlc_list + no_assets
     for i, game in enumerate(game_list):
+        if game.app_title == "Unreal Engine":
+            game.app_title += f" {game.app_name.split('_')[-1]}"
+            shared.core.lgd.set_game_meta(game.app_name, game)
         try:
             download_image(game)
         except json.decoder.JSONDecodeError:

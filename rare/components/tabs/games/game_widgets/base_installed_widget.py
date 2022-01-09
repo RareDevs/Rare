@@ -45,6 +45,9 @@ class BaseInstalledWidget(QGroupBox):
         self.game = self.core.get_game(app_name)
         self.igame = self.core.get_installed_game(app_name)  # None if origin
 
+        if self.game.app_title == "Unreal Engine":
+            self.game.app_title = f"{self.game.app_title} {self.game.app_name.split('_')[-1]}"
+
         self.image = QLabel()
         self.image.setPixmap(
             pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation)

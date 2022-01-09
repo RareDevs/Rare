@@ -90,6 +90,8 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.platform.setText(", ".join(available_platforms))
 
         pixmap = get_pixmap(game.app_name)
+        if pixmap.isNull():
+            pixmap = get_pixmap(self.parent().parent().parent().ue_name)
         w = 200
         pixmap = pixmap.scaled(w, int(w * 4 / 3))
         self.image.setPixmap(pixmap)
@@ -100,7 +102,11 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.install_size.setText("N/A")
         self.install_path.setText("N/A")
 
-        if platform.system() != "Windows":
+        is_ue = self.core.get_asset(game.app_name).namespace == "ue"
+        self.grade.setVisible(not is_ue)
+        self.lbl_grade.setVisible(not is_ue)
+
+        if platform.system() != "Windows" and not is_ue:
             self.grade.setText(self.tr("Loading"))
             self.steam_worker.set_app_name(game.app_name)
             QThreadPool.globalInstance().start(self.steam_worker)
