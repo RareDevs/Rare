@@ -4,10 +4,10 @@
  <widget class="QWidget" name="LegendarySettings">
   <property name="geometry">
    <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>564</width>
-    <height>374</height>
+       <x>0</x>
+       <y>0</y>
+       <width>905</width>
+       <height>568</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,84 +17,88 @@
    <item row="0" column="1">
     <layout class="QVBoxLayout" name="right_layout">
      <item>
-      <widget class="QGroupBox" name="locale_group">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Locale</string>
-       </property>
-       <layout class="QVBoxLayout" name="locale_layout"/>
-      </widget>
+         <widget class="QGroupBox" name="locale_group">
+             <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                 </sizepolicy>
+             </property>
+             <property name="title">
+                 <string>Locale</string>
+             </property>
+             <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <layout class="QVBoxLayout" name="locale_layout"/>
+         </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="cleanup_group">
-       <property name="title">
-        <string>Cleanup</string>
-       </property>
-       <layout class="QVBoxLayout" name="cleanup_layout">
-        <item>
-         <widget class="QPushButton" name="clean_keep_manifests_button">
-          <property name="text">
-           <string>Clean, but keep manifests</string>
-          </property>
-         </widget>
-        </item>
-           <item>
-               <widget class="QPushButton" name="clean_button">
-                   <property name="text">
-                       <string>Remove everything</string>
-                   </property>
-               </widget>
-           </item>
-           <item>
-               <widget class="QPushButton" name="refresh_game_meta_btn">
-                   <property name="text">
-                       <string>Refresh game meta</string>
-                   </property>
-               </widget>
-           </item>
-       </layout>
+         <widget class="QGroupBox" name="cleanup_group">
+             <property name="title">
+                 <string>Cleanup</string>
+             </property>
+             <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <layout class="QVBoxLayout" name="cleanup_layout">
+                 <item>
+                     <widget class="QPushButton" name="clean_keep_manifests_button">
+                         <property name="text">
+                             <string>Clean, but keep manifests</string>
+                         </property>
+                     </widget>
+                 </item>
+                 <item>
+                     <widget class="QPushButton" name="clean_button">
+                         <property name="text">
+                             <string>Remove everything</string>
+                         </property>
+                     </widget>
+                 </item>
+                 <item>
+                     <widget class="QPushButton" name="refresh_game_meta_btn">
+                         <property name="text">
+                             <string>Refresh game meta</string>
+                         </property>
+                     </widget>
+                 </item>
+             </layout>
       </widget>
      </item>
     </layout>
    </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="QGroupBox" name="ubisoft_gb">
-     <property name="title">
-      <string>Link Ubisoft Games</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout"/>
-    </widget>
-   </item>
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="left_layout">
      <item>
-      <widget class="QGroupBox" name="install_dir_group">
-       <property name="title">
-        <string>Default Installation Directory</string>
-       </property>
-       <layout class="QVBoxLayout" name="install_dir_layout"/>
-      </widget>
+         <widget class="QGroupBox" name="install_dir_group">
+             <property name="title">
+                 <string>Default Installation Directory</string>
+             </property>
+             <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <layout class="QVBoxLayout" name="install_dir_layout"/>
+         </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="download_group">
-       <property name="title">
-        <string>Download Settings</string>
-       </property>
-       <layout class="QFormLayout" name="download_layout">
-        <property name="labelAlignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="max_workers_label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
+         <widget class="QGroupBox" name="download_group">
+             <property name="title">
+                 <string>Download Settings</string>
+             </property>
+             <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <layout class="QFormLayout" name="download_layout">
+                 <property name="labelAlignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                 <item row="0" column="0">
+                     <widget class="QLabel" name="max_workers_label">
+                         <property name="sizePolicy">
+                             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                                 <horstretch>0</horstretch>
+                                 <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="text">
@@ -209,28 +213,46 @@
         <item row="3" column="1">
          <widget class="QCheckBox" name="disable_https_check">
           <property name="text">
-           <string/>
+              <string/>
           </property>
          </widget>
         </item>
-       </layout>
-      </widget>
+             </layout>
+         </widget>
      </item>
     </layout>
    </item>
-   <item row="2" column="0" colspan="2">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
+      <item row="2" column="0" colspan="2">
+          <widget class="QGroupBox" name="ubisoft_gb">
+              <property name="title">
+                  <string>Link Ubisoft Games</string>
+              </property>
+              <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout"/>
+          </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+          <widget class="QGroupBox" name="eos_placeholder">
+              <property name="title">
+                  <string notr="true">GroupBox</string>
+              </property>
+          </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+          <spacer name="verticalSpacer">
+              <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+                  <size>
+                      <width>20</width>
+                      <height>40</height>
+                  </size>
+              </property>
+          </spacer>
+      </item>
   </layout>
  </widget>
  <resources/>

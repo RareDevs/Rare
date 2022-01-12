@@ -24,6 +24,7 @@ class InstallOptionsModel:
     update: bool = False
     silent: bool = False
     platform: str = ""
+    overlay: bool = False
 
     def set_no_install(self, enabled: bool) -> None:
         self.no_install = enabled
@@ -133,6 +134,8 @@ class Signals(QObject):
 
     install_game = pyqtSignal(InstallOptionsModel)
     installation_finished = pyqtSignal(bool, str)
+
+    overlay_installation_finished = pyqtSignal()
 
     update_gamelist = pyqtSignal(list)
     game_uninstalled = pyqtSignal(str)
