@@ -16,7 +16,7 @@ from legendary.models.downloading import UIUpdate, WriterTask
 from rare import shared
 from rare.utils.models import InstallQueueItemModel
 
-logger = getLogger("Download")
+logger = getLogger("DownloadThread")
 
 
 class DownloadThread(QThread):
@@ -142,7 +142,7 @@ class DownloadThread(QThread):
                 return
             self.status.emit("dl_finished")
             end_t = time.time()
-            logger.info(f"Download finished in {start_time - end_t}s")
+            logger.info(f"Download finished in {end_t - start_time}s")
             game = self.core.get_game(self.igame.app_name)
 
             if self.queue_item.options.overlay:
