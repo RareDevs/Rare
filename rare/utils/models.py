@@ -14,7 +14,7 @@ from legendary.models.game import Game, InstalledGame
 @dataclass
 class InstallOptionsModel:
     app_name: str
-    base_path: str = os.path.expanduser("~/legendary")
+    base_path: str = ""
     max_workers: int = os.cpu_count() * 2
     repair: bool = False
     no_install: bool = False

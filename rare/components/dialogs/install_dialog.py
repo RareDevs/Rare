@@ -49,15 +49,12 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_dialog_label.setText(f'<h3>{header} "{self.game.app_title}"</h3>')
         self.setWindowTitle(f'{self.windowTitle()} - {header} "{self.game.app_title}"')
 
-        default_path = os.path.expanduser("~/legendary")
-
-        if self.core.lgd.config.has_option("Legendary", "install_dir"):
-            default_path = self.core.lgd.config.get("Legendary", "install_dir")
-        if self.dl_item.options.overlay:
-            default_path = os.path.expanduser("~/legendary/.overlay")
+        if not self.dl_item.options.base_path:
+            self.dl_item.options.base_path = shared.core.lgd.config.get("Legendary", "install_dir",
+                                                                        fallback=os.path.expanduser("~/legendary"))
 
         self.install_dir_edit = PathEdit(
-            path=default_path,
+            path=self.dl_item.options.base_path,
             file_type=QFileDialog.DirectoryOnly,
             edit_func=self.option_changed,
             parent=self,
@@ -201,7 +198,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.options_changed = True
         self.install_button.setEnabled(False)
         self.verify_button.setEnabled(not self.worker_running)
+
         return True, path
+        # TODO Add check, if directory is empty
 
     def non_reload_option_changed(self, option: str):
         if option == "download_only":
