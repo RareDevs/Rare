@@ -36,9 +36,11 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.game = self.core.get_game(self.app_name) \
             if not self.dl_item.options.overlay \
             else Game(app_name=self.app_name, app_title="Epic Overlay")
-
-        self.game_path = self.game.metadata.get('customAttributes', {}). \
-            get('FolderName', {}).get('value', self.game.app_name)
+        if not self.dl_item.options.app_name:
+            self.game_path = self.game.metadata.get('customAttributes', {}). \
+                get('FolderName', {}).get('value', self.game.app_name)
+        else:
+            self.game_path = ""
 
         self.update = update
         self.silent = silent
@@ -206,7 +208,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
         # directory is not empty
         full_path = os.path.join(self.dl_item.options.base_path, self.game_path)
-        if not self.dl_item.options.update and os.path.exists(full_path) and os.listdir(full_path) != 0:
+        if not self.dl_item.options.update and os.path.exists(full_path) and len(os.listdir(full_path)) != 0:
             return False, path, PathEdit.reasons.dir_not_empty
 
         return True, path, ""
@@ -330,9 +332,6 @@ class InstallInfoWorker(QRunnable):
             else:
                 if not os.path.exists(path := self.dl_item.options.base_path):
                     os.makedirs(path)
-                if len(os.listdir(self.dl_item.options.base_path)) != 0:
-                    new_path = os.path.join(self.dl_item.options.base_path, "overlay")
-                    os.mkdir(new_path)
 
                 dlm, analysis, igame = self.core.prepare_overlay_install(
                     path=self.dl_item.options.base_path,
