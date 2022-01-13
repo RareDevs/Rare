@@ -1,6 +1,7 @@
 import os
 import platform
 from multiprocessing import Queue as MPQueue
+from typing import Tuple
 
 from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
@@ -35,6 +36,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.game = self.core.get_game(self.app_name) \
             if not self.dl_item.options.overlay \
             else Game(app_name=self.app_name, app_title="Epic Overlay")
+
+        self.game_path = self.game.metadata.get('customAttributes', {}). \
+            get('FolderName', {}).get('value', self.game.app_name)
+
         self.update = update
         self.silent = silent
 
@@ -194,13 +199,17 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.get_options()
         self.get_download_info()
 
-    def option_changed(self, path):
+    def option_changed(self, path) -> Tuple[bool, str, str]:
         self.options_changed = True
         self.install_button.setEnabled(False)
         self.verify_button.setEnabled(not self.worker_running)
 
-        return True, path
-        # TODO Add check, if directory is empty
+        # directory is not empty
+        full_path = os.path.join(self.dl_item.options.base_path, self.game_path)
+        if not self.dl_item.options.update and os.path.exists(full_path) and os.listdir(full_path) != 0:
+            return False, path, PathEdit.reasons.dir_not_empty
+
+        return True, path, ""
 
     def non_reload_option_changed(self, option: str):
         if option == "download_only":

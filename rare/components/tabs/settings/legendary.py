@@ -100,14 +100,18 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod
-    def locale_edit_cb(text: str) -> Tuple[bool, str]:
+    def locale_edit_cb(text: str) -> Tuple[bool, str, str]:
         if text:
             if re.match("^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$", text):
                 language, country = text.replace("_", "-").split("-")
                 text = "-".join([language.lower(), country.upper()])
-            return bool(re.match("^[a-z]{2,3}-[A-Z]{2,3}$", text)), text
+            if bool(re.match("^[a-z]{2,3}-[A-Z]{2,3}$", text)):
+                return True, text, ""
+            else:
+                return False, text, IndicatorLineEdit.reasons.wrong_format
+
         else:
-            return True, text
+            return True, text, ""
 
     def locale_save_cb(self, text: str):
         if text:

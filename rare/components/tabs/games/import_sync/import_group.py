@@ -99,13 +99,15 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         self.import_button.setEnabled(False)
         self.import_button.clicked.connect(self.import_game)
 
-    def path_edit_cb(self, path) -> Tuple[bool, str]:
+    def path_edit_cb(self, path) -> Tuple[bool, str, str]:
         if os.path.exists(path):
             if os.path.exists(os.path.join(path, ".egstore")):
-                return True, path
+                return True, path, ""
             elif os.path.basename(path) in self.install_dir_list:
-                return True, path
-        return False, path
+                return True, path, ""
+        else:
+            return False, path, PathEdit.reasons.dir_not_exist
+        return False, path, ""
 
     def path_changed(self, path):
         self.info_label.setText(str())
@@ -114,13 +116,13 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         else:
             self.app_name.setText(str())
 
-    def app_name_edit_cb(self, text) -> Tuple[bool, str]:
+    def app_name_edit_cb(self, text) -> Tuple[bool, str, str]:
         if not text:
-            return False, text
+            return False, text, ""
         if text in self.app_name_list:
-            return True, text
+            return True, text, ""
         else:
-            return False, text
+            return False, text, IndicatorLineEdit.reasons.game_not_installed
 
     def app_name_changed(self, text):
         self.info_label.setText(str())

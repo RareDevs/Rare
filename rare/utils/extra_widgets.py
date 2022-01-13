@@ -143,19 +143,28 @@ class FlowLayout(QLayout):
             return parent.spacing()
 
 
+class IndicatorReasons:
+    dir_not_empty = QCoreApplication.translate("IndicatorReasons", "Directory is not empty")
+    wrong_format = QCoreApplication.translate("IndicatorReasons", "Given text has wrong format")
+    game_not_installed = QCoreApplication.translate("IndicatorReasons", "Game is not installed or does not exist")
+    dir_not_exist = QCoreApplication.translate("IndicatorReasons", "Directory does not exist")
+    wrong_path = QCoreApplication.translate("IndicatorReasons", "Wrong Directory")
+
+
 class IndicatorLineEdit(QWidget):
     textChanged = pyqtSignal(str)
     is_valid = False
+    reasons = IndicatorReasons()
 
     def __init__(
-        self,
-        text: str = "",
-        ph_text: str = "",
-        completer: QCompleter = None,
-        edit_func: Callable[[str], Tuple[bool, str]] = None,
-        save_func: Callable[[str], None] = None,
-        horiz_policy: QSizePolicy = QSizePolicy.Expanding,
-        parent=None,
+            self,
+            text: str = "",
+            ph_text: str = "",
+            completer: QCompleter = None,
+            edit_func: Callable[[str], Tuple[bool, str, str]] = None,
+            save_func: Callable[[str], None] = None,
+            horiz_policy: QSizePolicy = QSizePolicy.Expanding,
+            parent=None,
     ):
         super(IndicatorLineEdit, self).__init__(parent=parent)
         self.setObjectName("IndicatorLineEdit")
@@ -219,20 +228,25 @@ class IndicatorLineEdit(QWidget):
         self.hint_label.setFrameRect(self.line_edit.rect())
         self.hint_label.setText(text)
 
-    def __indicator(self, res):
+    def __indicator(self, res, reason=None):
         color = "green" if res else "red"
         self.indicator_label.setPixmap(
             qta_icon("ei.info-circle", color=color).pixmap(16, 16)
         )
+        if reason:
+            self.indicator_label.setToolTip(reason)
+        else:
+            self.indicator_label.setToolTip("")
 
     def __edit(self, text):
         if self.edit_func is not None:
             self.line_edit.blockSignals(True)
-            self.is_valid, text = self.edit_func(text)
+
+            self.is_valid, text, reason = self.edit_func(text)
             if text != self.line_edit.text():
                 self.line_edit.setText(text)
             self.line_edit.blockSignals(False)
-            self.__indicator(self.is_valid)
+            self.__indicator(self.is_valid, reason)
             if self.is_valid:
                 self.__save(text)
             self.textChanged.emit(text)
@@ -280,13 +294,13 @@ class PathEdit(IndicatorLineEdit):
     compl_model = QFileSystemModel()
 
     def __init__(
-        self,
+            self,
             path: str = "",
             file_type: QFileDialog.FileType = QFileDialog.AnyFile,
             type_filter: str = "",
             name_filter: str = "",
             ph_text: str = "",
-            edit_func: Callable[[str], Tuple[bool, str]] = None,
+            edit_func: Callable[[str], Tuple[bool, str, str]] = None,
             save_func: Callable[[str], None] = None,
             horiz_policy: QSizePolicy = QSizePolicy.Expanding,
             parent=None,
