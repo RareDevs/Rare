@@ -158,6 +158,12 @@ class App(QApplication):
             self.mainwindow.show_window_centralized()
 
     def start_app(self):
+
+        for igame in self.core.get_installed_list():
+            if not os.path.exists(igame.executable):
+                igame.needs_verification = True
+                self.core.lgd.set_installed_game(igame.app_name, igame)
+
         self.mainwindow = MainWindow()
         self.launch_dialog.close()
         self.tray_icon = TrayIcon(self)
