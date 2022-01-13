@@ -3,6 +3,7 @@ import platform
 from logging import getLogger
 from typing import List
 
+from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QGroupBox, QFormLayout, QMessageBox
 
 from legendary.utils import eos
@@ -34,7 +35,19 @@ def get_wine_prefixes() -> List[str]:
     return prefixes
 
 
-# TODO Update Button
+class WorkerSignals(QObject):
+    update_available = pyqtSignal(bool)
+
+
+class CheckForUpdateWorker(QRunnable):
+    def __init__(self):
+        super(CheckForUpdateWorker, self).__init__()
+        self.setAutoDelete(True)
+        self.signals = WorkerSignals()
+
+    def run(self) -> None:
+        shared.core.check_for_overlay_updates()
+        self.signals.update_available.emit(shared.core.overlay_update_available)
 
 
 class EosWidget(QGroupBox, Ui_EosWidget):
@@ -52,12 +65,14 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.uninstall_button.clicked.connect(self.uninstall_overlay)
 
         self.update_button.setVisible(False)
+        self.update_info_lbl.setVisible(False)
         self.overlay = self.core.lgd.get_overlay_install_info()
 
         shared.signals.overlay_installation_finished.connect(self.overlay_installation_finished)
 
         self.update_check_button.clicked.connect(self.check_for_update)
         self.install_button.clicked.connect(self.install_overlay)
+        self.update_button.clicked.connect(lambda: self.install_overlay(True))
 
         if self.overlay:  # installed
             self.installed_version_lbl.setText(self.overlay.version)
@@ -85,9 +100,15 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.enabled_info_label.setText("")
 
     def check_for_update(self):
-        self.core.check_for_overlay_updates()
-        if self.core.overlay_update_available:
-            self.update_button.setVisible(True)
+        def worker_finished(update_available):
+            self.update_button.setVisible(update_available)
+            self.update_info_lbl.setVisible(update_available)
+            self.update_check_button.setDisabled(False)
+
+        self.update_check_button.setDisabled(True)
+        worker = CheckForUpdateWorker()
+        worker.signals.update_available.connect(worker_finished)
+        QThreadPool.globalInstance().start(worker)
 
     def overlay_installation_finished(self):
         self.overlay = self.core.lgd.get_overlay_install_info()
@@ -100,6 +121,9 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.info_stack.setCurrentIndex(0)
         self.installed_version_lbl.setText(self.overlay.version)
         self.installed_path_lbl.setText(self.overlay.install_path)
+
+        self.update_button.setVisible(False)
+        self.update_info_lbl.setVisible(False)
 
         self.enable_gb.setEnabled(True)
 
@@ -156,8 +180,18 @@ class EosWidget(QGroupBox, Ui_EosWidget):
             enabled = True
         self.enabled_cb.setChecked(enabled)
 
-    def install_overlay(self):
-        options = InstallOptionsModel(app_name="", base_path=os.path.expanduser("~/legendary/.overlay"),
+    def install_overlay(self, update=False):
+
+        base_path = os.path.expanduser("~/legendary/.overlay")
+        if update:
+            if not self.overlay:
+                self.info_stack.setCurrentIndex(1)
+                self.enable_gb.setDisabled(True)
+                QMessageBox.warning(self, "Warning", self.tr("Overlay is not installed. Could not update"))
+                return
+            base_path = self.overlay.install_path
+
+        options = InstallOptionsModel(app_name="", base_path=base_path,
                                       platform="Windows", overlay=True)
 
         shared.signals.install_game.emit(options)
