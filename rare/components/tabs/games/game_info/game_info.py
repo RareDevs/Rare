@@ -88,17 +88,17 @@ class GameInfo(QWidget, Ui_GameInfo):
             )
             return
         self.verify_widget.setCurrentIndex(1)
-        verify_worker = VerifyWorker(self.core, self.game.app_name)
+        verify_worker = VerifyWorker(self.game.app_name)
         verify_worker.signals.status.connect(self.verify_staistics)
         verify_worker.signals.summary.connect(self.finish_verify)
         self.verify_progress.setValue(0)
         self.verify_threads[self.game.app_name] = verify_worker
         self.verify_pool.start(verify_worker)
 
-    def verify_staistics(self, progress):
+    def verify_staistics(self, num, total, app_name):
         # checked, max, app_name
-        if progress[2] == self.game.app_name:
-            self.verify_progress.setValue(progress[0] * 100 // progress[1])
+        if app_name == self.game.app_name:
+            self.verify_progress.setValue(num * 100 // total)
 
     def finish_verify(self, failed, missing, app_name):
         if failed == missing == 0:
