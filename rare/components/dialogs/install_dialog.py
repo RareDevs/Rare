@@ -36,11 +36,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.game = self.core.get_game(self.app_name) \
             if not self.dl_item.options.overlay \
             else Game(app_name=self.app_name, app_title="Epic Overlay")
-        if not self.dl_item.options.app_name:
-            self.game_path = self.game.metadata.get('customAttributes', {}). \
-                get('FolderName', {}).get('value', self.game.app_name)
-        else:
-            self.game_path = ""
+
+        self.game_path = self.game.metadata.get('customAttributes', {}). \
+            get('FolderName', {}).get('value', "")
 
         self.update = update
         self.silent = silent
@@ -205,7 +203,6 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.options_changed = True
         self.install_button.setEnabled(False)
         self.verify_button.setEnabled(not self.worker_running)
-
         # directory is not empty
         full_path = os.path.join(self.dl_item.options.base_path, self.game_path)
         if not self.dl_item.options.update and os.path.exists(full_path) and len(os.listdir(full_path)) != 0:
