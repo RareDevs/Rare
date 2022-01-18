@@ -82,7 +82,7 @@ class BaseInstalledWidget(QGroupBox):
             self.addAction(sync)
 
         if os.path.exists(
-            os.path.expanduser(f"~/Desktop/{self.game.app_title}.desktop")
+                os.path.expanduser(f"~/Desktop/{self.game.app_title}.desktop")
         ) or os.path.exists(os.path.expanduser(f"~/Desktop/{self.game.app_title}.lnk")):
             self.create_desktop = QAction(self.tr("Remove Desktop link"))
         else:
@@ -148,8 +148,8 @@ class BaseInstalledWidget(QGroupBox):
         else:
             return
         if not (
-            os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
-            or os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk"))
+                os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
+                or os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk"))
         ):
             try:
                 if not create_desktop_link(self.game.app_name, self.core, type_of_link):
@@ -164,7 +164,7 @@ class BaseInstalledWidget(QGroupBox):
                 self.create_start_menu.setText(self.tr("Remove Start menu link"))
         else:
             if os.path.exists(
-                os.path.expanduser(f"{path}{self.game.app_title}.desktop")
+                    os.path.expanduser(f"{path}{self.game.app_title}.desktop")
             ):
                 os.remove(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
             elif os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk")):
@@ -187,10 +187,13 @@ class BaseInstalledWidget(QGroupBox):
         self.syncing_cloud_saves = False
 
     def sync_game(self):
-
-        if self.game_utils.cloud_save_utils.sync_before_launch_game(
-            self.game.app_name, True
-        ):
+        try:
+            sync = self.game_utils.cloud_save_utils.sync_before_launch_game(
+                self.game.app_name, True
+            )
+        except Exception:
+            sync = False
+        if sync:
             self.syncing_cloud_saves = True
 
     def game_finished(self, app_name, error):
