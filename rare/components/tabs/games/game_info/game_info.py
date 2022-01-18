@@ -52,6 +52,8 @@ class GameInfo(QWidget, Ui_GameInfo):
         else:
             self.repair_button.clicked.connect(self.repair)
 
+        self.install_button.clicked.connect(lambda: self.game_utils.launch_game(self.game.app_name))
+
     def uninstall(self):
         if self.game_utils.uninstall_game(self.game.app_name):
             self.game_utils.update_list.emit(self.game.app_name)
@@ -177,7 +179,10 @@ class GameInfo(QWidget, Ui_GameInfo):
                 self.repair_button.setDisabled(False)
             self.game_actions_stack.setCurrentIndex(0)
 
-        is_ue = self.core.get_asset(app_name).namespace == "ue"
+        try:
+            is_ue = self.core.get_asset(app_name).namespace == "ue"
+        except ValueError:
+            is_ue = False
         self.grade.setVisible(not is_ue)
         self.lbl_grade.setVisible(not is_ue)
 
