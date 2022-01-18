@@ -1,6 +1,6 @@
 import os
 
-__version__ = "1.8.6"
+__version__ = "1.8.7"
 code_name = "Stellula Kakopo"
 
 import platform
