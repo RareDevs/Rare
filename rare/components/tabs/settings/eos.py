@@ -4,27 +4,20 @@ from logging import getLogger
 from typing import List
 
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
-from PyQt5.QtWidgets import QGroupBox, QFormLayout, QMessageBox
+from PyQt5.QtWidgets import QGroupBox, QMessageBox
 
 from legendary.utils import eos
 from rare import shared
-from rare.components.dialogs.install_dialog import InstallDialog
 from rare.ui.components.tabs.settings.eos_widget import Ui_EosWidget
 from rare.utils.models import InstallOptionsModel
 
 logger = getLogger("EOS")
 
 
-class InstallOverlayDialog(InstallDialog):
-    def __init__(self):
-        super(InstallOverlayDialog, self).__init__()
-
-        self.layout = QFormLayout()
-
-
 def get_wine_prefixes() -> List[str]:
     prefixes = [os.path.expanduser("~/.wine")]
     for i in shared.core.get_installed_list():
+        # get prefix from environment
         env = shared.core.get_app_environment(i.app_name)
         if pfx := env.get("WINEPREFIX"):
             if pfx not in prefixes:
@@ -99,11 +92,15 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.enabled_cb.setChecked(enabled)
         self.enabled_info_label.setText("")
 
+        self.threadpool = QThreadPool.globalInstance()
+
     def check_for_update(self):
         def worker_finished(update_available):
             self.update_button.setVisible(update_available)
             self.update_info_lbl.setVisible(update_available)
             self.update_check_button.setDisabled(False)
+            if not update_available:
+                self.update_check_button.setText(self.tr("No update available"))
 
         self.update_check_button.setDisabled(True)
         worker = CheckForUpdateWorker()
@@ -211,10 +208,11 @@ class EosWidget(QGroupBox, Ui_EosWidget):
             eos.remove_registry_entries(None)
         else:
             for prefix in [self.select_pfx_combo.itemText(i) for i in range(self.select_pfx_combo.count())]:
+                logger.info(f"Removing registry entries from {prefix}")
                 try:
                     eos.remove_registry_entries(os.path.expanduser(prefix))
-                except:
-                    pass
+                except Exception as e:
+                    logger.warning(f"{prefix}: {e}")
 
         self.core.remove_overlay_install()
         self.info_stack.setCurrentIndex(1)
