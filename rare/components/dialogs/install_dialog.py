@@ -140,6 +140,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.ignore_space_info_label.setVisible(False)
             self.ignore_space_check.setVisible(False)
             self.ignore_space_label.setVisible(False)
+            self.download_only_check.setVisible(False)
+            self.download_only_info_label.setVisible(False)
+            self.download_only_label.setVisible(False)
 
         self.cancel_button.clicked.connect(self.cancel_clicked)
         self.verify_button.clicked.connect(self.verify_clicked)
