@@ -15,15 +15,18 @@ logger = getLogger("EOS")
 
 
 def get_wine_prefixes() -> List[str]:
-    prefixes = [os.path.expanduser("~/.wine")]
+    if os.path.exists(p := os.path.expanduser("~/.wine")):
+        prefixes = [p]
+    else:
+        prefixes = []
     for i in shared.core.get_installed_list():
         # get prefix from environment
         env = shared.core.get_app_environment(i.app_name)
         if pfx := env.get("WINEPREFIX"):
-            if pfx not in prefixes:
+            if pfx not in prefixes and os.path.exists(os.path.join(pfx, "user.reg")):
                 prefixes.append(pfx)
         if steam_pfx := env.get("STEAM_COMPAT_DATA_PATH"):
-            if steam_pfx not in prefixes:
+            if steam_pfx not in prefixes and os.path.exists(os.path.join(steam_pfx, "user.reg")):
                 prefixes.append(os.path.join(steam_pfx, "pfx"))
     return prefixes
 
@@ -62,6 +65,7 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.overlay = self.core.lgd.get_overlay_install_info()
 
         shared.signals.overlay_installation_finished.connect(self.overlay_installation_finished)
+        shared.signals.wine_prefix_updated.connect(self.update_prefixes)
 
         self.update_check_button.clicked.connect(self.check_for_update)
         self.install_button.clicked.connect(self.install_overlay)
@@ -78,21 +82,36 @@ class EosWidget(QGroupBox, Ui_EosWidget):
             self.current_prefix = None
             self.select_pfx_combo.setVisible(False)
         else:
-            self.current_prefix = os.path.expanduser("~/.wine")
-            for pfx in get_wine_prefixes():
+            self.current_prefix = os.path.expanduser("~/.wine") \
+                if os.path.exists(os.path.expanduser("~/.wine")) \
+                else None
+            pfxs = get_wine_prefixes()
+            for pfx in pfxs:
                 self.select_pfx_combo.addItem(pfx.replace(os.path.expanduser("~/"), "~/"))
+            if not pfxs:
+                self.enable_gb.setDisabled(True)
+            else:
+                self.select_pfx_combo.setCurrentIndex(0)
+
             self.select_pfx_combo.currentIndexChanged.connect(self.update_select_combo)
-            self.update_select_combo(None)
+            if pfxs:
+                self.update_select_combo(None)
 
-        reg_paths = eos.query_registry_entries(self.current_prefix)
-        enabled = False
-        if reg_paths['overlay_path'] and self.core.is_overlay_install(reg_paths['overlay_path']):
-            enabled = True
-
-        self.enabled_cb.setChecked(enabled)
         self.enabled_info_label.setText("")
 
         self.threadpool = QThreadPool.globalInstance()
+
+    def update_prefixes(self):
+        logger.debug("Updated prefixes")
+        pfxs = get_wine_prefixes()  # returns /home/whatever
+        self.select_pfx_combo.clear()
+
+        for pfx in pfxs:
+            self.select_pfx_combo.addItem(pfx.replace(os.path.expanduser("~/"), "~/"))
+
+        if self.current_prefix in pfxs:
+            self.select_pfx_combo.setCurrentIndex(
+                self.select_pfx_combo.findText(self.current_prefix.replace(os.path.expanduser("~/"), "~/")))
 
     def check_for_update(self):
         def worker_finished(update_available):
@@ -127,7 +146,9 @@ class EosWidget(QGroupBox, Ui_EosWidget):
     def update_select_combo(self, i: None):
         if i is None:
             i = self.select_pfx_combo.currentIndex()
-        prefix = self.select_pfx_combo.itemText(i).replace("~/", os.path.expanduser("~/"))
+        prefix = os.path.expanduser(self.select_pfx_combo.itemText(i))
+        if platform.system() != "Windows" and not os.path.exists(prefix):
+            return
         self.current_prefix = prefix
         reg_paths = eos.query_registry_entries(self.current_prefix)
 

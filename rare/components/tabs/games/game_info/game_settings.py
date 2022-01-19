@@ -301,7 +301,7 @@ class GameSettings(QWidget, Ui_GameSettings):
             text = os.path.expanduser("~/.proton")
             return True, text, ""
         parent = os.path.dirname(text)
-        return os.path.exists(parent), text
+        return os.path.exists(parent), text, PathEdit.reasons.dir_not_exist
 
     def proton_prefix_save(self, text: str):
         self.core.lgd.config.set(
