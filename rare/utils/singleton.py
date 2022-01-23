@@ -42,9 +42,9 @@ class SingleInstance(object):
                 + "-%s" % flavor_id
                 + ".lock"
             )
-            self.lockfile = os.path.normpath(tempfile.gettempdir() + "/" + basename)
+            self.lockfile = os.path.normpath(f"{tempfile.gettempdir()}/{basename}")
 
-        logger.debug("SingleInstance lockfile: " + self.lockfile)
+        logger.debug(f"SingleInstance lockfile: {self.lockfile}")
         if sys.platform == "win32":
             try:
                 # file already exists, we try to remove (in case previous

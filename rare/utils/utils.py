@@ -74,8 +74,8 @@ def download_images(progress: pyqtSignal, results: pyqtSignal, core: LegendaryCo
 def download_image(game, force=False):
     if force and os.path.exists(f"{image_dir}/{game.app_name}"):
         shutil.rmtree(f"{image_dir}/{game.app_name}")
-    if not os.path.isdir(f"{image_dir}/" + game.app_name):
-        os.mkdir(f"{image_dir}/" + game.app_name)
+    if not os.path.isdir(f"{image_dir}/{game.app_name}"):
+        os.mkdir(f"{image_dir}/{game.app_name}")
 
     # to get picture updates
     if not os.path.isfile(f"{image_dir}/{game.app_name}/image.json"):
@@ -385,12 +385,12 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
         shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
-        if not os.path.exists(icon + ".ico"):
+        if not os.path.exists(f"{icon}.ico"):
             img = QImage()
-            img.load(icon + ".png")
-            img.save(icon + ".ico")
+            img.load(f"{icon}.png")
+            img.save(f"{icon}.ico")
             logger.info("Create Icon")
-        shortcut.IconLocation = os.path.join(icon + ".ico")
+        shortcut.IconLocation = os.path.join(f"{icon}.ico")
 
         shortcut.save()
         return True

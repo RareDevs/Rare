@@ -214,7 +214,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         pixmap = get_pixmap(app_name)
         try:
             if pixmap.isNull():
-                logger.info(app_name + " has a corrupt image.")
+                logger.info(f"{app_name} has a corrupt image.")
                 if app_name in self.no_asset_names and self.core.get_asset(app_name).namespace != "ue":
                     download_image(self.core.get_game(app_name), force=True)
                     pixmap = get_pixmap(app_name)
@@ -224,7 +224,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             icon_widget = InstalledIconWidget(app_name, pixmap, self.game_utils)
             list_widget = InstalledListWidget(app_name, pixmap, self.game_utils)
         except Exception as e:
-            logger.error(app_name + " is broken. Don't add it to game list: " + str(e))
+            logger.error(f"{app_name} is broken. Don't add it to game list: {str(e)}")
             return
 
         self.widgets[app_name] = (icon_widget, list_widget)
@@ -241,7 +241,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         try:
             if pixmap.isNull():
                 if self.core.get_asset(game.app_name).namespace != "ue":
-                    logger.warning(game.app_title + " has a corrupt image. Reloading...")
+                    logger.warning(f"{game.app_title} has a corrupt image. Reloading...")
                     download_image(game, force=True)
                     pixmap = get_uninstalled_pixmap(game.app_name)
                 elif self.ue_name:
@@ -250,7 +250,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
             list_widget = ListWidgetUninstalled(self.core, game, pixmap)
         except Exception as e:
-            logger.error(game.app_name + " is broken. Don't add it to game list: " + str(e))
+            logger.error(f"{game.app_name} is broken. Don't add it to game list: {str(e)}")
             return
 
         icon_widget.show_uninstalled_info.connect(self.show_uninstalled_info)
@@ -315,7 +315,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             self.installing_widget.setVisible(get_visibility(self.installing_widget))
 
     def update_list(self, app_names: list = None):
-        logger.debug("Updating list for " + str(app_names))
+        logger.debug(f"Updating list for {str(app_names)}")
         if app_names:
             update_list = False
             for app_name in app_names:
@@ -325,7 +325,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     if self.core.is_installed(widgets[0].game.app_name) and isinstance(
                             widgets[0], BaseInstalledWidget
                     ):
-                        logger.debug("Update Gamelist: Updated: " + app_name)
+                        logger.debug(f"Update Gamelist: Updated: {app_name}")
                         igame = self.core.get_installed_game(app_name)
                         for w in widgets:
                             w.igame = igame
@@ -340,7 +340,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     elif self.core.is_installed(app_name) and isinstance(
                             widgets[0], BaseUninstalledWidget
                     ):
-                        logger.debug("Update Gamelist: New installed " + app_name)
+                        logger.debug(f"Update Gamelist: New installed {app_name}")
                         self.widgets[app_name][0].deleteLater()
                         self.widgets[app_name][1].deleteLater()
                         self.widgets.pop(app_name)
@@ -352,7 +352,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     elif not self.core.is_installed(
                             widgets[0].game.app_name
                     ) and isinstance(widgets[0], BaseInstalledWidget):
-                        logger.debug("Update list: Uninstalled: " + app_name)
+                        logger.debug(f"Update list: Uninstalled: {app_name}")
                         self.widgets[app_name][0].deleteLater()
                         self.widgets[app_name][1].deleteLater()
 

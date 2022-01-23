@@ -159,7 +159,7 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         ):
             igame = self.core.get_installed_game(app_name)
             self.info_label.setText(
-                self.tr("Successfully imported {}").format(igame.title)
+                self.tr(f"Successfully imported {igame.title}")
             )
             self.app_name.setText(str())
             shared.signals.update_gamelist.emit([app_name])
@@ -175,6 +175,6 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         else:
             logger.warning(f'Failed to import "{app_name}"')
             self.info_label.setText(
-                self.tr("Could not import {}: ").format(app_name) + err
+                self.tr(f"Could not import {app_name}: ") + err
             )
             return

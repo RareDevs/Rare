@@ -98,7 +98,7 @@ class App(QApplication):
         self.signals.send_notification.connect(
             lambda title: self.tray_icon.showMessage(
                 self.tr("Download finished"),
-                self.tr("Download finished. {} is playable now").format(title),
+                self.tr(f"Download finished. {title} is playable now"),
                 QSystemTrayIcon.Information,
                 4000,
             )
@@ -112,7 +112,7 @@ class App(QApplication):
 
         if os.path.isfile(f := os.path.join(resources_path, "languages", f"{lang}.qm")):
             self.translator.load(f)
-            logger.info("Your language is supported: " + lang)
+            logger.info(f"Your language is supported: {lang}")
         elif not lang == "en":
             logger.info("Your language is not supported")
         self.installTranslator(self.translator)
@@ -203,8 +203,8 @@ class App(QApplication):
                     self.mainwindow,
                     "Warning",
                     self.tr(
-                        "Could not find {} in installed games. Did you modify the shortcut? "
-                    ).format(shared.args.app_name),
+                        f"Could not find {shared.args.app_name} in installed games. Did you modify the shortcut? "
+                    ),
                 )
 
         if shared.args.test_start:
