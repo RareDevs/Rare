@@ -17,3 +17,5 @@ __pycache__
 /.eggs
 /appimage-builder-cache/
 /AppDir/
+/System Volume Information/
+/test_files/

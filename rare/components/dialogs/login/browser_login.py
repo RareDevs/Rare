@@ -4,11 +4,12 @@ from typing import Tuple
 
 from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QApplication
 
 from legendary.core import LegendaryCore
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
 from rare.utils.extra_widgets import IndicatorLineEdit
+from rare.utils.utils import icon
 
 logger = getLogger("BrowserLogin")
 
@@ -27,10 +28,19 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
         self.sid_edit = IndicatorLineEdit(
             ph_text=self.tr("Insert SID here"), edit_func=self.text_changed, parent=self
         )
+        self.link_text.setText(self.login_url)
+        self.copy_button.setIcon(icon("mdi.content-copy", "fa.copy"))
+        self.copy_button.clicked.connect(self.copy_link)
+
         self.sid_layout.addWidget(self.sid_edit)
 
         self.open_button.clicked.connect(self.open_browser)
         self.sid_edit.textChanged.connect(self.changed.emit)
+
+    def copy_link(self):
+        clipboard = QApplication.instance().clipboard()
+        clipboard.setText(self.login_url)
+        self.status_label.setText(self.tr("Copied to clipboard"))
 
     def is_valid(self):
         return self.sid_edit.is_valid
