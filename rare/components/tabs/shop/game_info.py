@@ -236,7 +236,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 icn = icon("mdi.web", "fa.search", scale_factor=1.5)
             else:
                 try:
-                    icn = icon("mdi." + name.lower(), "fa." + name.lower(), scale_factor=1.5)
+                    icn = icon(f"mdi.{name.lower()}", f"fa.{name.lower()}", scale_factor=1.5)
                 except Exception as e:
                     logger.error(str(e))
                     continue

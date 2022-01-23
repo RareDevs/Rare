@@ -119,7 +119,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         if not text and "install_dir" in self.core.lgd.config["Legendary"].keys():
             self.core.lgd.config["Legendary"].pop("install_dir")
         else:
-            logger.debug("Set config install_dir to " + text)
+            logger.debug(f"Set config install_dir to {text}")
         self.core.lgd.save_config()
 
     def max_worker_save(self, workers: str):

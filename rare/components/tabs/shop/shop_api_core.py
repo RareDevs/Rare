@@ -24,7 +24,7 @@ class ShopApiCore(QObject):
         self.token = auth_token
         self.language_code: str = lc
         self.country_code: str = cc
-        self.locale = self.language_code + "-" + self.country_code
+        self.locale = f"{self.language_code}-{self.country_code}"
         self.manager = QtRequestManager()
         self.auth_manager = QtRequestManager(authorization_token=auth_token)
 
@@ -56,7 +56,7 @@ class ShopApiCore(QObject):
                 "query": wishlist_query,
                 "variables": {
                     "country": self.country_code,
-                    "locale": self.language_code + "-" + self.country_code,
+                    "locale": f"{self.language_code}-{self.country_code}",
                 },
             },
             lambda data: self._handle_wishlist(data, handle_func),

@@ -29,7 +29,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.setLayout(self.layout)
         self.layout.addWidget(self.image)
 
-        ##Layout on the right
+        # Layout on the right
         self.childLayout = QVBoxLayout()
         self.layout.addLayout(self.childLayout)
 
@@ -39,13 +39,15 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.title_label)
         self.app_name_label = QLabel(self.game.app_name)
         self.launch_button = QPushButton(
-            play_icon, self.tr("Launch") if self.igame else self.tr("Link/Play")
+            play_icon, self.tr(
+                "Launch") if self.igame else self.tr("Link/Play")
         )
         self.launch_button.setObjectName("launch_game_button")
         self.launch_button.setFixedWidth(150)
 
         self.info = QPushButton("Info")
-        self.info.clicked.connect(lambda: self.show_info.emit(self.game.app_name))
+        self.info.clicked.connect(
+            lambda: self.show_info.emit(self.game.app_name))
         self.info.setFixedWidth(80)
 
         self.info_label = QLabel("")
@@ -57,10 +59,10 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.launch_button)
         self.childLayout.addWidget(self.info)
         self.childLayout.addWidget(self.app_name_label)
-        self.developer_label = QLabel(self.tr("Developer: ") + self.dev)
+        self.developer_label = QLabel(self.tr(f"Developer: {self.dev}"))
         self.childLayout.addWidget(self.developer_label)
         if self.igame:
-            self.version_label = QLabel("Version: " + str(self.igame.version))
+            self.version_label = QLabel(f"Version: {str(self.igame.version)}")
             self.size_label = QLabel(
                 f"{self.tr('Installed size')}: {get_size(self.size)}"
             )
