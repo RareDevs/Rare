@@ -132,7 +132,7 @@ class DownloadThread(QThread):
             logger.error(
                 f"Installation failed after {time.time() - start_time:.02f} seconds: {e}"
             )
-            self.status.emit("error " + str(e))
+            self.status.emit(f"error {str(e)}")
             return
 
         else:

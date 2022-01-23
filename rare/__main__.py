@@ -84,7 +84,7 @@ def main():
 
         with open(os.path.join(data_dir, "lockfile"), "w") as file:
             if args.subparser == "launch":
-                file.write("launch " + args.app_name)
+                file.write(f"launch {args.app_name}")
             else:
                 file.write("start")
             file.close()

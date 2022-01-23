@@ -74,7 +74,7 @@ def get_grade(steam_code):
         return "fail"
     steam_code = str(steam_code)
     url = "https://www.protondb.com/api/v1/reports/summaries/"
-    res = requests.get(url + steam_code + ".json")
+    res = requests.get(f"{url}{steam_code}.json")
     try:
         lista = json.loads(res.text)
     except json.decoder.JSONDecodeError:
@@ -139,7 +139,7 @@ def check_time():  # this function check if it's time to update
             day = 7
         else:
             day = 0
-        if int(today.strftime("%" + i)) > int(json_table["data"][i]) + day:
+        if int(today.strftime(f"%{i}")) > int(json_table["data"][i]) + day:
             return 1
         else:
             return 0

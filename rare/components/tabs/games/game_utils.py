@@ -66,8 +66,8 @@ class GameUtils(QObject):
                     None,
                     "Uninstall",
                     self.tr(
-                        "Game files of {} do not exist. Remove it from installed games?"
-                    ).format(igame.title),
+                        f"Game files of {igame.title} do not exist. Remove it from installed games?"
+                    ),
                     QMessageBox.Yes | QMessageBox.No,
                     QMessageBox.Yes,
             ):
@@ -135,7 +135,7 @@ class GameUtils(QObject):
                     not QMessageBox.question(
                         None,
                         "Launch",
-                        self.tr("Do you want to launch {}").format(game.app_title),
+                        self.tr(f"Do you want to launch {game.app.title}"),
                         QMessageBox.Yes | QMessageBox.No,
                     )
                         == QMessageBox.Yes
@@ -161,8 +161,8 @@ class GameUtils(QObject):
                 self.finished.emit(
                     app_name,
                     self.tr(
-                        "Game files of {} do not exist. Please install game"
-                    ).format(game.app_title),
+                        f"Game files of {game.app.title} do not exist. Please install game"
+                    ),
                 )
                 return
 
@@ -218,8 +218,8 @@ class GameUtils(QObject):
                                     None,
                                     "Error",
                                     self.tr(
-                                        "Error while launching {}. No permission to create {} for {}"
-                                    ).format(game.app_title, val, env),
+                                        f"Error while launching {game.app_title}. No permission to create {val} for {env}"
+                                    ),
                                 )
                                 process.deleteLater()
                                 return
@@ -230,8 +230,8 @@ class GameUtils(QObject):
                         None,
                         "Warning",
                         self.tr(
-                            "Wine executable '{}' does not exist. Please change it in Settings"
-                        ).format(full_params[0]),
+                            f"Wine executable '{full_params[0]}' does not exist. Please change it in Settings"
+                        ),
                     )
                     process.deleteLater()
                     return
@@ -269,8 +269,8 @@ class GameUtils(QObject):
                     None,
                     "Warning",
                     self.tr(
-                        "Wine executable '{}' does not exist. Please change it in Settings"
-                    ).format(wine_bin),
+                        f"Wine executable '{wine_bin}' does not exist. Please change it in Settings"
+                    ),
                 )
                 process.deleteLater()
                 return
@@ -328,9 +328,7 @@ class GameUtils(QObject):
             QMessageBox.warning(
                 None,
                 "Warning",
-                self.tr("Failed to launch {}").format(
-                    self.core.get_game(app_name).app_title
-                ),
+                self.tr(f"Failed to launch {self.core.get_game(app_name).app_title}"),
             )
 
         game: RunningGameModel = self.running_games.get(app_name, None)
@@ -347,8 +345,8 @@ class GameUtils(QObject):
                     None,
                     "Question",
                     self.tr(
-                        "Game exited with code {}, which is not a normal code. It could be caused by a crash. Do you want to sync cloud saves"
-                    ).format(exit_code),
+                        f"Game exited with code {exit_code}, which is not a normal code. It could be caused by a crash. Do you want to sync cloud saves"
+                    ),
                     buttons=QMessageBox.Yes | QMessageBox.No,
                     defaultButton=QMessageBox.Yes,
                 )

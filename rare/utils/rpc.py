@@ -66,15 +66,15 @@ class DiscordRPC(QObject):
                 )  # Rare app: https://discord.com/developers/applications
                 self.RPC.connect()
             except ConnectionRefusedError as e:
-                logger.warning("Discord is not active\n" + str(e))
+                logger.warning(f"Discord is not active\n{str(e)}")
                 self.RPC = None
                 return
             except FileNotFoundError as e:
-                logger.warning("File not found error\n" + str(e))
+                logger.warning(f"File not found error\n{str(e)}")
                 self.RPC = None
                 return
             except pypresence.exceptions.InvalidPipe as e:
-                logger.error("Is Discord running? \n" + str(e))
+                logger.error(f"Is Discord running? \n{str(e)}")
                 self.RPC = None
                 return
             except Exception as e:
@@ -99,14 +99,14 @@ class DiscordRPC(QObject):
             try:
                 title = self.core.get_installed_game(app_name).title
             except AttributeError:
-                logger.error("Could not get title of game: " + app_name)
+                logger.error(f"Could not get title of game: {app_name}")
                 title = app_name
         start = None
         if self.settings.value("rpc_time", True, bool):
             start = str(time.time()).split(".")[0]
         os = None
         if self.settings.value("rpc_os", True, bool):
-            os = "via Rare on " + platform.system()
+            os = f"via Rare on {platform.system()}"
 
         self.RPC.update(
             large_image="logo", details=title, large_text=title, state=os, start=start

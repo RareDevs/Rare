@@ -61,7 +61,7 @@ class BaseInstalledWidget(QGroupBox):
                     self.game.app_name, platform=self.igame.platform, update=False
                 ).build_version
             except ValueError:
-                logger.error("Asset error for " + self.game.app_title)
+                logger.error(f"Asset error for {self.game.app_title}")
                 self.update_available = False
             else:
                 if remote_version != self.igame.version:
