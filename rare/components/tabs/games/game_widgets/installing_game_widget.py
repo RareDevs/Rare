@@ -2,6 +2,7 @@ from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QPaintEvent, QPainter, QPixmap, QPen, QFont, QColor
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QHBoxLayout, QWidget
 
+from legendary.models.game import Game
 from rare import shared
 from rare.utils.utils import (
     get_pixmap,
@@ -12,6 +13,8 @@ from rare.utils.utils import (
 
 
 class InstallingGameWidget(QWidget):
+    game: Game = None
+
     def __init__(self):
         super(InstallingGameWidget, self).__init__()
         self.setObjectName("game_widget_icon")
@@ -36,10 +39,13 @@ class InstallingGameWidget(QWidget):
         self.layout().addLayout(minilayout)
 
     def set_game(self, app_name):
-        game = shared.core.get_game(app_name)
-        self.title_label.setText(f"<h4>{game.app_title}</h4>")
+        if not app_name:
+            self.game = None
+            return
+        self.game = shared.core.get_game(app_name)
+        self.title_label.setText(f"<h4>{self.game.app_title}</h4>")
 
-        self.image_widget.set_game(game.app_name)
+        self.image_widget.set_game(self.game.app_name)
 
     def set_status(self, s: int):
         self.image_widget.progress = s
@@ -81,6 +87,7 @@ class PaintWidget(QWidget):
     def paintEvent(self, a0: QPaintEvent) -> None:
         painter = QPainter()
         painter.begin(self)
+        painter.setRenderHint(QPainter.Antialiasing)
         painter.drawPixmap(self.rect(), self.bw_image)
 
         w = self.bw_image.width() * self.progress // 100

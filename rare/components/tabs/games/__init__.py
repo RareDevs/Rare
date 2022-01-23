@@ -118,7 +118,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.signals.installation_started.connect(self.installation_started)
         self.signals.update_gamelist.connect(self.update_list)
         self.signals.installation_finished.connect(
-            lambda x: self.installing_widget.setVisible(False)
+            self.installation_finished
         )
         self.signals.game_uninstalled.connect(lambda name: self.update_list([name]))
 
@@ -126,12 +126,23 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         self.game_list_scroll_area.horizontalScrollBar().setDisabled(True)
 
+    def installation_finished(self, app_name: str):
+        self.installing_widget.setVisible(False)
+        self.installing_widget.set_game("")
+        self.filter_games("")
+
     def installation_started(self, app_name: str):
         game = self.core.get_game(app_name, False)
         if game.is_dlc:
             return
         self.installing_widget.set_game(app_name)
         self.installing_widget.setVisible(True)
+
+        i_widget, l_widget = self.widgets.get(app_name, (None, None))
+        if not i_widget or not l_widget:
+            return
+        i_widget.setVisible(False)
+        l_widget.setVisible(False)
 
     def verification_finished(self, igame: InstalledGame):
         # only if igame needs verification
@@ -256,14 +267,17 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         if not filter_name and (t := self.active_filter):
             filter_name = t
 
-        for t in self.widgets.values():
-            app_name = t[0].game.app_name
-            # icon and list widget
-            if filter_name == "installed":
+        def get_visibility(widget):
+            app_name = widget.game.app_name
+
+            if not isinstance(widget,
+                              InstallingGameWidget) and self.installing_widget.game and self.installing_widget.game.app_name == app_name:
+                visible = False
+            elif filter_name == "installed":
                 visible = self.core.is_installed(app_name)
             elif filter_name == "offline":
-                if self.core.is_installed(app_name):
-                    visible = t[0].igame.can_run_offline
+                if self.core.is_installed(app_name) and not isinstance(widget, InstallingGameWidget):
+                    visible = widget.igame.can_run_offline
                 else:
                     visible = False
             elif filter_name == "32bit" and self.bit32:
@@ -285,11 +299,18 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
             if (
                     search_text.lower() not in app_name.lower()
-                    and search_text.lower() not in t[0].game.app_title.lower()
+                    and search_text.lower() not in widget.game.app_title.lower()
             ):
                 visible = False
+            return visible
+
+        for t in self.widgets.values():
+            visible = get_visibility(t[0])
             for w in t:
                 w.setVisible(visible)
+
+        if self.installing_widget.game:
+            self.installing_widget.setVisible(get_visibility(self.installing_widget))
 
     def update_list(self, app_names: list = None):
         logger.debug("Updating list for " + str(app_names))
