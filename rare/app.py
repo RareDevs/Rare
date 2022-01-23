@@ -41,7 +41,8 @@ def excepthook(exc_type, exc_value, exc_tb):
                 raise ValueError
         except Exception as e:
             logger.fatal(str(e))
-            QMessageBox.warning(None, "Error", QApplication.tr("Failed to login"))
+            QMessageBox.warning(
+                None, "Error", QApplication.tr("Failed to login"))
             QApplication.exit(1)
             return
     logger.fatal(tb)
@@ -108,7 +109,8 @@ class App(QApplication):
 
         # Translator
         self.translator = QTranslator()
-        lang = self.settings.value("language", self.core.language_code, type=str)
+        lang = self.settings.value(
+            "language", self.core.language_code, type=str)
 
         if os.path.isfile(f := os.path.join(resources_path, "languages", f"{lang}.qm")):
             self.translator.load(f)
@@ -189,8 +191,7 @@ class App(QApplication):
                 i.app_name for i in self.core.get_installed_list()
             ]:
                 logger.info(
-                    "Launching "
-                    + self.core.get_installed_game(shared.args.app_name).title
+                    f"Launching {self.core.get_installed_game(shared.args.app_name).title}"
                 )
                 self.mainwindow.tab_widget.games_tab.game_utils.prepare_launch(
                     shared.args.app_name
@@ -232,7 +233,8 @@ class App(QApplication):
                     return
                 else:
                     # clear queue
-                    self.mainwindow.tab_widget.downloadTab.queue_widget.update_queue([])
+                    self.mainwindow.tab_widget.downloadTab.queue_widget.update_queue([
+                    ])
                     self.mainwindow.tab_widget.downloadTab.stop_download()
         # FIXME: End of FIXME
         self.mainwindow.timer.stop()

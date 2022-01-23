@@ -368,7 +368,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
         for c in r'<>?":|\/*':
             linkName.replace(c, "")
 
-        linkName = linkName.strip() + ".lnk"
+        linkName = "{linkName.strip()}.lnk"
 
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)
@@ -551,7 +551,7 @@ def icon(icn_str: str, fallback: str = None, **kwargs):
         return qtawesome.icon(icn_str, **kwargs)
     except Exception as e:
         if not fallback:
-            logger.warning(str(e) + " " + icn_str)
+            logger.warning(f"{str(e)} {icn_str}")
     if fallback:
         try:
             return qtawesome.icon(fallback, **kwargs)
