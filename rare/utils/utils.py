@@ -525,7 +525,7 @@ class CloudWorker(QRunnable):
     def run(self) -> None:
         try:
             result = shared.core.get_save_games()
-        except HTTPError():
+        except HTTPError:
             result = None
         self.signals.result_ready.emit(result)
 
