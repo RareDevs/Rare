@@ -60,7 +60,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.developer_label = QLabel(self.tr(f"Developer: {self.dev}"))
         self.childLayout.addWidget(self.developer_label)
         if self.igame:
-            self.version_label = QLabel(f"Version: {str(self.igame.version)}")
+            self.version_label = QLabel(f"Version: {self.igame.version}")
             self.size_label = QLabel(
                 f"{self.tr('Installed size')}: {get_size(self.size)}"
             )

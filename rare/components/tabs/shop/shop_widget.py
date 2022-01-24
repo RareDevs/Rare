@@ -109,7 +109,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
                     self.discount_widget.layout().addWidget(w)
                     discounts += 1
             except Exception as e:
-                logger.warning(f"{str(game)}{str(e)}")
+                logger.warning(f"{game}{e}")
                 continue
         self.discounts_gb.setVisible(discounts > 0)
         self.discount_stack.setCurrentIndex(0)
