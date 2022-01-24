@@ -270,7 +270,7 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         if errors:
             QMessageBox.warning(
                 self.parent(),
-                self.tr(f"The following errors occurred while {}.").format(
+                self.tr("The following errors occurred while {}.").format(
                     self.tr("exporting") if self.export else self.tr("importing")
                 ),
                 "\n".join(errors),
