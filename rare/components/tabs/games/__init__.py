@@ -228,7 +228,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             icon_widget = InstalledIconWidget(app_name, pixmap, self.game_utils)
             list_widget = InstalledListWidget(app_name, pixmap, self.game_utils)
         except Exception as e:
-            logger.error(f"{app_name} is broken. Don't add it to game list: {str(e)}")
+            logger.error(f"{app_name} is broken. Don't add it to game list: {e}")
             return
 
         self.widgets[app_name] = (icon_widget, list_widget)
@@ -257,7 +257,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             list_widget = ListWidgetUninstalled(self.core, game, pixmap)
         except Exception as e:
             logger.error(
-                f"{game.app_name} is broken. Don't add it to game list: {str(e)}"
+                f"{game.app_name} is broken. Don't add it to game list: {e}"
             )
             return
 
@@ -330,7 +330,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             self.installing_widget.setVisible(get_visibility(self.installing_widget))
 
     def update_list(self, app_names: list = None):
-        logger.debug(f"Updating list for {str(app_names)}")
+        logger.debug(f"Updating list for {app_names}")
         if app_names:
             update_list = False
             for app_name in app_names:

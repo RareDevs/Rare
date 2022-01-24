@@ -44,7 +44,7 @@ class ShopApiCore(QObject):
             handle_func(["error", "Key error"])
             return
         except Exception as e:
-            logger.error(f"Free games Api request failed: {str(e)}")
+            logger.error(f"Free games Api request failed: {e}")
             handle_func(["error", e])
             return
         handle_func(results)
@@ -70,7 +70,7 @@ class ShopApiCore(QObject):
             handle_func(["error", "Key error"])
             return
         except Exception as e:
-            logger.error(f"Free games Api request failed: {str(e)}")
+            logger.error(f"Free games Api request failed: {e}")
             handle_func(["error", e])
             return
 
@@ -105,7 +105,7 @@ class ShopApiCore(QObject):
             logger.error(str(e))
             handle_func([])
         except Exception as e:
-            logger.error(f"Search Api request failed: {str(e)}")
+            logger.error(f"Search Api request failed: {e}")
             handle_func([])
             return
 
@@ -157,7 +157,7 @@ class ShopApiCore(QObject):
                 logger.error(str(e))
                 handle_func([])
             except Exception as e:
-                logger.error(f"Browse games Api request failed: {str(e)}")
+                logger.error(f"Browse games Api request failed: {e}")
                 handle_func([])
                 return
         else:
