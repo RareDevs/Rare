@@ -66,15 +66,15 @@ class DiscordRPC(QObject):
                 )  # Rare app: https://discord.com/developers/applications
                 self.RPC.connect()
             except ConnectionRefusedError as e:
-                logger.warning(f"Discord is not active\n{str(e)}")
+                logger.warning(f"Discord is not active\n{e}")
                 self.RPC = None
                 return
             except FileNotFoundError as e:
-                logger.warning(f"File not found error\n{str(e)}")
+                logger.warning(f"File not found error\n{e}")
                 self.RPC = None
                 return
             except pypresence.exceptions.InvalidPipe as e:
-                logger.error(f"Is Discord running? \n{str(e)}")
+                logger.error(f"Is Discord running? \n{e}")
                 self.RPC = None
                 return
             except Exception as e:
