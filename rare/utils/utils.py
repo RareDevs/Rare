@@ -551,7 +551,7 @@ def icon(icn_str: str, fallback: str = None, **kwargs):
         return qtawesome.icon(icn_str, **kwargs)
     except Exception as e:
         if not fallback:
-            logger.warning(f"{str(e)} {icn_str}")
+            logger.warning(f"{e} {icn_str}")
     if fallback:
         try:
             return qtawesome.icon(fallback, **kwargs)
