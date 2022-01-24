@@ -63,13 +63,13 @@ class GameUtils(QObject):
         igame = self.core.get_installed_game(app_name)
         if not os.path.exists(igame.install_path):
             if QMessageBox.Yes == QMessageBox.question(
-                    None,
-                    "Uninstall",
-                    self.tr(
-                        f"Game files of {igame.title} do not exist. Remove it from installed games?"
-                    ),
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.Yes,
+                None,
+                "Uninstall",
+                self.tr(
+                    f"Game files of {igame.title} do not exist. Remove it from installed games?"
+                ),
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes,
             ):
                 self.core.lgd.remove_installed_game(app_name)
                 return True
@@ -84,7 +84,7 @@ class GameUtils(QObject):
         return True
 
     def prepare_launch(
-            self, app_name, offline: bool = False, skip_update_check: bool = False
+        self, app_name, offline: bool = False, skip_update_check: bool = False
     ):
         game = self.core.get_game(app_name)
         dont_sync_after_finish = False
@@ -108,13 +108,13 @@ class GameUtils(QObject):
         )
 
     def launch_game(
-            self,
-            app_name: str,
-            offline: bool = False,
-            skip_update_check: bool = False,
-            wine_bin: str = None,
-            wine_pfx: str = None,
-            ask_always_sync: bool = False,
+        self,
+        app_name: str,
+        offline: bool = False,
+        skip_update_check: bool = False,
+        wine_bin: str = None,
+        wine_pfx: str = None,
+        ask_always_sync: bool = False,
     ):
         if shared.args.offline:
             offline = True
@@ -132,13 +132,13 @@ class GameUtils(QObject):
 
         if QSettings().value("confirm_start", False, bool):
             if (
-                    not QMessageBox.question(
-                        None,
-                        "Launch",
-                        self.tr(f"Do you want to launch {game.app.title}"),
-                        QMessageBox.Yes | QMessageBox.No,
-                    )
-                        == QMessageBox.Yes
+                not QMessageBox.question(
+                    None,
+                    "Launch",
+                    self.tr(f"Do you want to launch {game.app.title}"),
+                    QMessageBox.Yes | QMessageBox.No,
+                )
+                == QMessageBox.Yes
             ):
                 logger.info("Cancel Startup")
                 self.finished.emit(app_name, "")

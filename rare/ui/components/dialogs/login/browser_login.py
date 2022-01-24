@@ -22,13 +22,17 @@ class Ui_BrowserLogin(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.link_text = QtWidgets.QLineEdit(BrowserLogin)
         self.link_text.setText("")
-        self.link_text.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        self.link_text.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop
+        )
         self.link_text.setReadOnly(True)
         self.link_text.setPlaceholderText("")
         self.link_text.setObjectName("link_text")
         self.horizontalLayout.addWidget(self.link_text)
         self.copy_button = QtWidgets.QPushButton(BrowserLogin)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.copy_button.sizePolicy().hasHeightForWidth())
@@ -38,7 +42,9 @@ class Ui_BrowserLogin(object):
         self.horizontalLayout.addWidget(self.copy_button)
         self.browser_layout.addLayout(self.horizontalLayout, 2, 0, 1, 3)
         self.open_button = QtWidgets.QPushButton(BrowserLogin)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.open_button.sizePolicy().hasHeightForWidth())
@@ -60,13 +66,17 @@ class Ui_BrowserLogin(object):
         self.title_label.setObjectName("title_label")
         self.browser_layout.addWidget(self.title_label, 0, 0, 1, 3, QtCore.Qt.AlignTop)
         self.status_label = QtWidgets.QLabel(BrowserLogin)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.status_label.sizePolicy().hasHeightForWidth())
         self.status_label.setSizePolicy(sizePolicy)
         self.status_label.setText("")
-        self.status_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft)
+        self.status_label.setAlignment(
+            QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft
+        )
         self.status_label.setObjectName("status_label")
         self.browser_layout.addWidget(self.status_label, 3, 0, 1, 3)
         self.sid_layout = QtWidgets.QHBoxLayout()
@@ -79,13 +89,18 @@ class Ui_BrowserLogin(object):
     def retranslateUi(self, BrowserLogin):
         _translate = QtCore.QCoreApplication.translate
         self.open_button.setText(_translate("BrowserLogin", "Open Browser"))
-        self.info_label.setText(_translate("BrowserLogin",
-                                           "Click the button to open the login page in a browser or copy the link and paste it in a browser. After logging in, copy the SID code in the input above."))
+        self.info_label.setText(
+            _translate(
+                "BrowserLogin",
+                "Click the button to open the login page in a browser or copy the link and paste it in a browser. After logging in, copy the SID code in the input above.",
+            )
+        )
         self.title_label.setText(_translate("BrowserLogin", "Login through browser"))
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     BrowserLogin = QtWidgets.QWidget()
     ui = Ui_BrowserLogin()

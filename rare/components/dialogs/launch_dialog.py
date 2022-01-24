@@ -40,7 +40,10 @@ class ApiRequestWorker(QRunnable):
         self.setAutoDelete(True)
 
     def run(self) -> None:
-        if platform.system() == "Darwin" or "Mac" in shared.core.get_installed_platforms():
+        if (
+            platform.system() == "Darwin"
+            or "Mac" in shared.core.get_installed_platforms()
+        ):
             try:
                 result = shared.core.get_game_and_dlc_list(True, "Mac")
             except HTTPError:

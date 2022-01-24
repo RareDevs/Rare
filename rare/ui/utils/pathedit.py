@@ -38,6 +38,7 @@ class Ui_PathEdit(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     PathEdit = QtWidgets.QWidget()
     ui = Ui_PathEdit()

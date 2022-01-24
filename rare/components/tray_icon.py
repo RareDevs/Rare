@@ -25,13 +25,19 @@ class TrayIcon(QSystemTrayIcon):
         self.menu.addAction(self.text_action)
 
         if len(installed := shared.core.get_installed_list()) < 5:
-            last_played = [GameMeta(i.app_name) for i in sorted(installed, key=lambda x: x.title)]
+            last_played = [
+                GameMeta(i.app_name) for i in sorted(installed, key=lambda x: x.title)
+            ]
         elif games := sorted(
-                parent.mainwindow.tab_widget.games_tab.game_utils.game_meta.get_games(),
-                key=lambda x: x.last_played, reverse=True):
+            parent.mainwindow.tab_widget.games_tab.game_utils.game_meta.get_games(),
+            key=lambda x: x.last_played,
+            reverse=True,
+        ):
             last_played: List[GameMeta] = games[0:5]
         else:
-            last_played = [GameMeta(i.app_name) for i in sorted(installed, key=lambda x: x.title)][0:5]
+            last_played = [
+                GameMeta(i.app_name) for i in sorted(installed, key=lambda x: x.title)
+            ][0:5]
 
         self.game_actions = []
 
@@ -41,7 +47,8 @@ class TrayIcon(QSystemTrayIcon):
             self.game_actions.append(a)
             a.triggered.connect(
                 lambda: parent.mainwindow.tab_widget.games_tab.game_utils.prepare_launch(
-                    self.sender().property("app_name"))
+                    self.sender().property("app_name")
+                )
             )
 
         self.menu.addActions(self.game_actions)

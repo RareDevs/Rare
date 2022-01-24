@@ -281,15 +281,15 @@ class PathEdit(IndicatorLineEdit):
 
     def __init__(
         self,
-            path: str = "",
-            file_type: QFileDialog.FileType = QFileDialog.AnyFile,
-            type_filter: str = "",
-            name_filter: str = "",
-            ph_text: str = "",
-            edit_func: Callable[[str], Tuple[bool, str]] = None,
-            save_func: Callable[[str], None] = None,
-            horiz_policy: QSizePolicy = QSizePolicy.Expanding,
-            parent=None,
+        path: str = "",
+        file_type: QFileDialog.FileType = QFileDialog.AnyFile,
+        type_filter: str = "",
+        name_filter: str = "",
+        ph_text: str = "",
+        edit_func: Callable[[str], Tuple[bool, str]] = None,
+        save_func: Callable[[str], None] = None,
+        horiz_policy: QSizePolicy = QSizePolicy.Expanding,
+        parent=None,
     ):
         try:
             self.compl_model.setOptions(
@@ -384,7 +384,11 @@ class SideTabWidget(QTabWidget):
         self.setDocumentMode(True)
         self.setTabPosition(QTabWidget.West)
         if show_back:
-            self.addTab(QWidget(), qta_icon("mdi.keyboard-backspace", "ei.backward"), self.tr("Back"))
+            self.addTab(
+                QWidget(),
+                qta_icon("mdi.keyboard-backspace", "ei.backward"),
+                self.tr("Back"),
+            )
             self.tabBarClicked.connect(self.back_func)
 
     def back_func(self, tab):
@@ -424,7 +428,9 @@ class SelectViewWidget(QWidget):
             )
             self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list"))
         else:
-            self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
+            self.icon_view_button.setIcon(
+                qta_icon("mdi.view-grid-outline", "ei.th-large")
+            )
             self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
 
         self.icon_view_button.clicked.connect(self.icon)
@@ -440,7 +446,9 @@ class SelectViewWidget(QWidget):
         return self.icon_view
 
     def icon(self):
-        self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
+        self.icon_view_button.setIcon(
+            qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange")
+        )
         self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list"))
         self.icon_view = False
         self.toggled.emit()

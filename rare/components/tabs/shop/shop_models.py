@@ -145,9 +145,7 @@ class BrowseModel:
     tag: str = ""
     withMapping: bool = True
     withPrice: bool = True
-    date: str = (
-        f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%H:%M:%S')}.420Z]"
-    )
+    date: str = f"[,{datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%dT%H:%M:%S')}.420Z]"
     price: str = ""
     onSale: bool = False
 

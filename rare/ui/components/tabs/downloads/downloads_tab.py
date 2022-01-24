@@ -15,7 +15,9 @@ class Ui_DownloadsTab(object):
     def setupUi(self, DownloadsTab):
         DownloadsTab.setObjectName("DownloadsTab")
         DownloadsTab.resize(677, 195)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(DownloadsTab.sizePolicy().hasHeightForWidth())
@@ -30,11 +32,15 @@ class Ui_DownloadsTab(object):
         font.setBold(True)
         font.setWeight(75)
         self.dl_speed_label.setFont(font)
-        self.dl_speed_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.dl_speed_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.dl_speed_label.setObjectName("dl_speed_label")
         self.download_layout.addWidget(self.dl_speed_label, 1, 2, 1, 1)
         self.dl_speed = QtWidgets.QLabel(DownloadsTab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dl_speed.sizePolicy().hasHeightForWidth())
@@ -43,7 +49,9 @@ class Ui_DownloadsTab(object):
         self.dl_speed.setObjectName("dl_speed")
         self.download_layout.addWidget(self.dl_speed, 1, 3, 1, 1)
         self.cache_used = QtWidgets.QLabel(DownloadsTab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.cache_used.sizePolicy().hasHeightForWidth())
@@ -52,7 +60,9 @@ class Ui_DownloadsTab(object):
         self.cache_used.setObjectName("cache_used")
         self.download_layout.addWidget(self.cache_used, 2, 1, 1, 1)
         self.time_left = QtWidgets.QLabel(DownloadsTab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.time_left.sizePolicy().hasHeightForWidth())
@@ -61,7 +71,9 @@ class Ui_DownloadsTab(object):
         self.time_left.setObjectName("time_left")
         self.download_layout.addWidget(self.time_left, 1, 1, 1, 1)
         self.dl_name = QtWidgets.QLabel(DownloadsTab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dl_name.sizePolicy().hasHeightForWidth())
@@ -78,7 +90,9 @@ class Ui_DownloadsTab(object):
         font.setBold(True)
         font.setWeight(75)
         self.dl_name_label.setFont(font)
-        self.dl_name_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.dl_name_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.dl_name_label.setObjectName("dl_name_label")
         self.download_layout.addWidget(self.dl_name_label, 0, 0, 1, 1)
         self.time_left_label = QtWidgets.QLabel(DownloadsTab)
@@ -86,7 +100,9 @@ class Ui_DownloadsTab(object):
         font.setBold(True)
         font.setWeight(75)
         self.time_left_label.setFont(font)
-        self.time_left_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.time_left_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.time_left_label.setObjectName("time_left_label")
         self.download_layout.addWidget(self.time_left_label, 1, 0, 1, 1)
         self.downloaded_label = QtWidgets.QLabel(DownloadsTab)
@@ -94,11 +110,15 @@ class Ui_DownloadsTab(object):
         font.setBold(True)
         font.setWeight(75)
         self.downloaded_label.setFont(font)
-        self.downloaded_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.downloaded_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.downloaded_label.setObjectName("downloaded_label")
         self.download_layout.addWidget(self.downloaded_label, 2, 2, 1, 1)
         self.downloaded = QtWidgets.QLabel(DownloadsTab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.downloaded.sizePolicy().hasHeightForWidth())
@@ -111,7 +131,9 @@ class Ui_DownloadsTab(object):
         font.setBold(True)
         font.setWeight(75)
         self.cache_used_label.setFont(font)
-        self.cache_used_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.cache_used_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.cache_used_label.setObjectName("cache_used_label")
         self.download_layout.addWidget(self.cache_used_label, 2, 0, 1, 1)
         self.download_layout.setColumnStretch(1, 1)
@@ -120,7 +142,9 @@ class Ui_DownloadsTab(object):
         self.progress_layout = QtWidgets.QHBoxLayout()
         self.progress_layout.setObjectName("progress_layout")
         self.progress_bar = QtWidgets.QProgressBar(DownloadsTab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.progress_bar.sizePolicy().hasHeightForWidth())
@@ -129,7 +153,9 @@ class Ui_DownloadsTab(object):
         self.progress_bar.setObjectName("progress_bar")
         self.progress_layout.addWidget(self.progress_bar)
         self.kill_button = QtWidgets.QPushButton(DownloadsTab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.kill_button.sizePolicy().hasHeightForWidth())
@@ -138,7 +164,9 @@ class Ui_DownloadsTab(object):
         self.progress_layout.addWidget(self.kill_button)
         self.downloads_tab_layout.addLayout(self.progress_layout)
         self.queue_scroll = QtWidgets.QScrollArea(DownloadsTab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.queue_scroll.sizePolicy().hasHeightForWidth())
@@ -147,17 +175,25 @@ class Ui_DownloadsTab(object):
         self.queue_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.queue_scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.queue_scroll.setWidgetResizable(True)
-        self.queue_scroll.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.queue_scroll.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop
+        )
         self.queue_scroll.setObjectName("queue_scroll")
         self.queue_scroll_contents = QtWidgets.QWidget()
         self.queue_scroll_contents.setGeometry(QtCore.QRect(0, 0, 665, 16))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.queue_scroll_contents.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.queue_scroll_contents.sizePolicy().hasHeightForWidth()
+        )
         self.queue_scroll_contents.setSizePolicy(sizePolicy)
         self.queue_scroll_contents.setObjectName("queue_scroll_contents")
-        self.queue_scroll_contents_layout = QtWidgets.QVBoxLayout(self.queue_scroll_contents)
+        self.queue_scroll_contents_layout = QtWidgets.QVBoxLayout(
+            self.queue_scroll_contents
+        )
         self.queue_scroll_contents_layout.setContentsMargins(0, 0, 9, 0)
         self.queue_scroll_contents_layout.setObjectName("queue_scroll_contents_layout")
         self.queue_scroll.setWidget(self.queue_scroll_contents)
@@ -178,6 +214,7 @@ class Ui_DownloadsTab(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     DownloadsTab = QtWidgets.QWidget()
     ui = Ui_DownloadsTab()

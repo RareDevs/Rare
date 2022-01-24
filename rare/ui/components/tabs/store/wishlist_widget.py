@@ -19,7 +19,9 @@ class Ui_WishlistWidget(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(WishlistWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.widget = QtWidgets.QWidget(WishlistWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
@@ -45,10 +47,14 @@ class Ui_WishlistWidget(object):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.discount_price = QtWidgets.QLabel(self.widget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.discount_price.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.discount_price.sizePolicy().hasHeightForWidth()
+        )
         self.discount_price.setSizePolicy(sizePolicy)
         self.discount_price.setText("TextLabel")
         self.discount_price.setObjectName("discount_price")
@@ -58,14 +64,20 @@ class Ui_WishlistWidget(object):
         self.price.setObjectName("price")
         self.horizontalLayout_2.addWidget(self.price)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_2.addItem(spacerItem)
         self.horizontalLayout.addWidget(self.widget)
         self.delete_button = QtWidgets.QPushButton(WishlistWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.delete_button.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.delete_button.sizePolicy().hasHeightForWidth()
+        )
         self.delete_button.setSizePolicy(sizePolicy)
         self.delete_button.setText("")
         self.delete_button.setObjectName("delete_button")
@@ -80,6 +92,7 @@ class Ui_WishlistWidget(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     WishlistWidget = QtWidgets.QWidget()
     ui = Ui_WishlistWidget()

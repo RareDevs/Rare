@@ -56,7 +56,9 @@ class TabWidget(QTabWidget):
         self.mini_widget = MiniWidget()
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.mini_widget)
-        account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")
+        account_button = TabButtonWidget(
+            "mdi.account-circle", "Account", fallback_icon="fa.user"
+        )
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)
         self.tabBar().setTabButton(

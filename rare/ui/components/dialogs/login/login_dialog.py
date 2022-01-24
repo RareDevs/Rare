@@ -15,19 +15,25 @@ class Ui_LoginDialog(object):
     def setupUi(self, LoginDialog):
         LoginDialog.setObjectName("LoginDialog")
         LoginDialog.resize(498, 311)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(LoginDialog.sizePolicy().hasHeightForWidth())
         LoginDialog.setSizePolicy(sizePolicy)
         self.dialog_layout = QtWidgets.QVBoxLayout(LoginDialog)
         self.dialog_layout.setObjectName("dialog_layout")
-        spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed
+        )
         self.dialog_layout.addItem(spacerItem)
         self.welcome_label = QtWidgets.QLabel(LoginDialog)
         self.welcome_label.setObjectName("welcome_label")
         self.dialog_layout.addWidget(self.welcome_label)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed
+        )
         self.dialog_layout.addItem(spacerItem1)
         self.login_stack = QtWidgets.QStackedWidget(LoginDialog)
         self.login_stack.setEnabled(True)
@@ -52,7 +58,9 @@ class Ui_LoginDialog(object):
         font.setWeight(75)
         self.login_label.setFont(font)
         self.login_label.setObjectName("login_label")
-        self.login_page_layout.addWidget(self.login_label, 0, 0, 1, 3, QtCore.Qt.AlignTop)
+        self.login_page_layout.addWidget(
+            self.login_label, 0, 0, 1, 3, QtCore.Qt.AlignTop
+        )
         self.login_import_label = QtWidgets.QLabel(self.login_page)
         font = QtGui.QFont()
         font.setItalic(True)
@@ -60,20 +68,30 @@ class Ui_LoginDialog(object):
         self.login_import_label.setObjectName("login_import_label")
         self.login_page_layout.addWidget(self.login_import_label, 2, 1, 1, 1)
         self.login_import_radio = QtWidgets.QRadioButton(self.login_page)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.login_import_radio.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.login_import_radio.sizePolicy().hasHeightForWidth()
+        )
         self.login_import_radio.setSizePolicy(sizePolicy)
         self.login_import_radio.setObjectName("login_import_radio")
         self.login_page_layout.addWidget(self.login_import_radio, 2, 0, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.login_page_layout.addItem(spacerItem2, 1, 2, 2, 1)
         self.login_browser_radio = QtWidgets.QRadioButton(self.login_page)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.login_browser_radio.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.login_browser_radio.sizePolicy().hasHeightForWidth()
+        )
         self.login_browser_radio.setSizePolicy(sizePolicy)
         self.login_browser_radio.setObjectName("login_browser_radio")
         self.login_page_layout.addWidget(self.login_browser_radio, 1, 0, 1, 1)
@@ -81,7 +99,9 @@ class Ui_LoginDialog(object):
         self.dialog_layout.addWidget(self.login_stack)
         self.button_layout = QtWidgets.QHBoxLayout()
         self.button_layout.setObjectName("button_layout")
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.button_layout.addItem(spacerItem3)
         self.exit_button = QtWidgets.QPushButton(LoginDialog)
         self.exit_button.setObjectName("exit_button")
@@ -101,10 +121,16 @@ class Ui_LoginDialog(object):
     def retranslateUi(self, LoginDialog):
         _translate = QtCore.QCoreApplication.translate
         LoginDialog.setWindowTitle(_translate("LoginDialog", "Welcome to Rare"))
-        self.welcome_label.setText(_translate("LoginDialog", "<h1>Welcome to Rare</h1>"))
-        self.login_browser_label.setText(_translate("LoginDialog", "Login using a browser."))
+        self.welcome_label.setText(
+            _translate("LoginDialog", "<h1>Welcome to Rare</h1>")
+        )
+        self.login_browser_label.setText(
+            _translate("LoginDialog", "Login using a browser.")
+        )
         self.login_label.setText(_translate("LoginDialog", "Select login method"))
-        self.login_import_label.setText(_translate("LoginDialog", "Import from Epic Games Launcher"))
+        self.login_import_label.setText(
+            _translate("LoginDialog", "Import from Epic Games Launcher")
+        )
         self.login_import_radio.setText(_translate("LoginDialog", "Import"))
         self.login_browser_radio.setText(_translate("LoginDialog", "Browser"))
         self.exit_button.setText(_translate("LoginDialog", "Exit"))
@@ -114,6 +140,7 @@ class Ui_LoginDialog(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     LoginDialog = QtWidgets.QDialog()
     ui = Ui_LoginDialog()

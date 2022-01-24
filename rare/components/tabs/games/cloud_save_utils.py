@@ -78,11 +78,11 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
     CANCEL = 0
 
     def __init__(
-            self,
-            igame: InstalledGame,
-            dt_local: datetime.datetime,
-            dt_remote: datetime.datetime,
-            newer: str,
+        self,
+        igame: InstalledGame,
+        dt_local: datetime.datetime,
+        dt_remote: datetime.datetime,
+        newer: str,
     ):
         super(CloudSaveDialog, self).__init__()
         self.setupUi(self)
@@ -104,7 +104,9 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
             self.local_gb.setTitle(self.local_gb.title() + new_text)
 
         self.icon_local.setPixmap(icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
-        self.icon_remote.setPixmap(icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))
+        self.icon_remote.setPixmap(
+            icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128)
+        )
 
         self.upload_button.clicked.connect(lambda: self.btn_clicked(self.UPLOAD))
         self.download_button.clicked.connect(lambda: self.btn_clicked(self.DOWNLOAD))
@@ -170,16 +172,16 @@ class CloudSaveUtils(QObject):
                 logger.info(f"Set save path of {igame.title} to {savepath}")
             elif not ignore_settings:  # sync on startup
                 if (
-                        QMessageBox.question(
-                            None,
-                            "Warning",
-                            self.tr(
-                                f"Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {igame.title} anyway?"
-                            ),
-                            QMessageBox.Yes | QMessageBox.No,
-                            QMessageBox.No,
-                        )
-                        == QMessageBox.Yes
+                    QMessageBox.question(
+                        None,
+                        "Warning",
+                        self.tr(
+                            f"Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {igame.title} anyway?"
+                        ),
+                        QMessageBox.Yes | QMessageBox.No,
+                        QMessageBox.No,
+                    )
+                    == QMessageBox.Yes
                 ):
                     return False
                 else:
@@ -320,11 +322,15 @@ class CloudSaveUtils(QObject):
 def test_dialog():
     app = QApplication(sys.argv)
     core = LegendaryCore()
-    dlg = CloudSaveDialog(core.get_installed_list()[0], datetime.datetime.now(),
-                          datetime.datetime.strptime("2021,1", "%Y,%M"), "local")
+    dlg = CloudSaveDialog(
+        core.get_installed_list()[0],
+        datetime.datetime.now(),
+        datetime.datetime.strptime("2021,1", "%Y,%M"),
+        "local",
+    )
     dlg.show()
     app.exec_()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_dialog()

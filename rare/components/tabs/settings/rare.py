@@ -21,11 +21,13 @@ from rare.utils.utils import (
 
 logger = getLogger("RareSettings")
 
-languages = [("en", "English"),
-             ("de", "Deutsch"),
-             ("fr", "Français"),
-             ("zh-Hans", "Simplified Chinese"),
-             ("pt_BR", "Portuguese (Brazil)")]
+languages = [
+    ("en", "English"),
+    ("de", "Deutsch"),
+    ("fr", "Français"),
+    ("zh-Hans", "Simplified Chinese"),
+    ("pt_BR", "Portuguese (Brazil)"),
+]
 
 
 class RareSettings(QWidget, Ui_RareSettings):

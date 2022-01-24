@@ -221,7 +221,9 @@ def import_game(core: LegendaryCore, app_name: str, path: str) -> str:
             main_game_appname = release_info[0]["appId"]
             main_game_title = game.metadata["mainGameItem"]["title"]
             if not core.is_installed(main_game_appname):
-                return _tr("LgdUtils", f"Game is a DLC, but {main_game_title} is not installed")
+                return _tr(
+                    "LgdUtils", f"Game is a DLC, but {main_game_title} is not installed"
+                )
         else:
             return _tr("LgdUtils", "Unable to get base game information for DLC")
 

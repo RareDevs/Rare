@@ -19,25 +19,38 @@ class Ui_GameSettings(object):
         self.game_settings_layout.setObjectName("game_settings_layout")
         self.game_title = QtWidgets.QLabel(GameSettings)
         self.game_title.setText("error")
-        self.game_title.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse)
+        self.game_title.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse
+        )
         self.game_title.setObjectName("game_title")
         self.game_settings_layout.addWidget(self.game_title, 0, QtCore.Qt.AlignTop)
         self.launch_settings_groupbox = QtWidgets.QGroupBox(GameSettings)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.launch_settings_groupbox.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.launch_settings_groupbox.sizePolicy().hasHeightForWidth()
+        )
         self.launch_settings_groupbox.setSizePolicy(sizePolicy)
         self.launch_settings_groupbox.setObjectName("launch_settings_groupbox")
-        self.launch_settings_layout = QtWidgets.QFormLayout(self.launch_settings_groupbox)
+        self.launch_settings_layout = QtWidgets.QFormLayout(
+            self.launch_settings_groupbox
+        )
         self.launch_settings_layout.setLabelAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.launch_settings_layout.setObjectName("launch_settings_layout")
         self.skip_update_label = QtWidgets.QLabel(self.launch_settings_groupbox)
         self.skip_update_label.setObjectName("skip_update_label")
-        self.launch_settings_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.skip_update_label)
+        self.launch_settings_layout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.skip_update_label
+        )
         self.skip_update = QtWidgets.QComboBox(self.launch_settings_groupbox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.skip_update.sizePolicy().hasHeightForWidth())
@@ -46,12 +59,18 @@ class Ui_GameSettings(object):
         self.skip_update.addItem("")
         self.skip_update.addItem("")
         self.skip_update.addItem("")
-        self.launch_settings_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.skip_update)
+        self.launch_settings_layout.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.skip_update
+        )
         self.offline_label = QtWidgets.QLabel(self.launch_settings_groupbox)
         self.offline_label.setObjectName("offline_label")
-        self.launch_settings_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.offline_label)
+        self.launch_settings_layout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.offline_label
+        )
         self.offline = QtWidgets.QComboBox(self.launch_settings_groupbox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.offline.sizePolicy().hasHeightForWidth())
@@ -60,78 +79,121 @@ class Ui_GameSettings(object):
         self.offline.addItem("")
         self.offline.addItem("")
         self.offline.addItem("")
-        self.launch_settings_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.offline)
+        self.launch_settings_layout.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.offline
+        )
         self.launch_params_label = QtWidgets.QLabel(self.launch_settings_groupbox)
         self.launch_params_label.setObjectName("launch_params_label")
-        self.launch_settings_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.launch_params_label)
+        self.launch_settings_layout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.launch_params_label
+        )
         self.launch_params = QtWidgets.QLineEdit(self.launch_settings_groupbox)
         self.launch_params.setMinimumSize(QtCore.QSize(400, 0))
         self.launch_params.setObjectName("launch_params")
-        self.launch_settings_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.launch_params)
+        self.launch_settings_layout.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.launch_params
+        )
         self.wrapper_label = QtWidgets.QLabel(self.launch_settings_groupbox)
         self.wrapper_label.setObjectName("wrapper_label")
-        self.launch_settings_layout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.wrapper_label)
+        self.launch_settings_layout.setWidget(
+            3, QtWidgets.QFormLayout.LabelRole, self.wrapper_label
+        )
         self.wrapper = QtWidgets.QLineEdit(self.launch_settings_groupbox)
         self.wrapper.setMinimumSize(QtCore.QSize(400, 0))
         self.wrapper.setObjectName("wrapper")
-        self.launch_settings_layout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.wrapper)
+        self.launch_settings_layout.setWidget(
+            3, QtWidgets.QFormLayout.FieldRole, self.wrapper
+        )
         self.override_exe_label = QtWidgets.QLabel(self.launch_settings_groupbox)
         self.override_exe_label.setObjectName("override_exe_label")
-        self.launch_settings_layout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.override_exe_label)
+        self.launch_settings_layout.setWidget(
+            4, QtWidgets.QFormLayout.LabelRole, self.override_exe_label
+        )
         self.override_exe_edit = QtWidgets.QLineEdit(self.launch_settings_groupbox)
         self.override_exe_edit.setObjectName("override_exe_edit")
-        self.launch_settings_layout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.override_exe_edit)
+        self.launch_settings_layout.setWidget(
+            4, QtWidgets.QFormLayout.FieldRole, self.override_exe_edit
+        )
         self.game_settings_layout.addWidget(self.launch_settings_groupbox)
         self.cloud_gb = QtWidgets.QGroupBox(GameSettings)
         self.cloud_gb.setObjectName("cloud_gb")
         self.cloud_saves_layout = QtWidgets.QFormLayout(self.cloud_gb)
         self.cloud_saves_layout.setLabelAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.cloud_saves_layout.setObjectName("cloud_saves_layout")
         self.cloud_sync_label = QtWidgets.QLabel(self.cloud_gb)
         self.cloud_sync_label.setObjectName("cloud_sync_label")
-        self.cloud_saves_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.cloud_sync_label)
+        self.cloud_saves_layout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.cloud_sync_label
+        )
         self.cloud_sync = QtWidgets.QCheckBox(self.cloud_gb)
         self.cloud_sync.setText("")
         self.cloud_sync.setObjectName("cloud_sync")
-        self.cloud_saves_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.cloud_sync)
+        self.cloud_saves_layout.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.cloud_sync
+        )
         self.game_settings_layout.addWidget(self.cloud_gb)
         self.linux_settings_scroll = QtWidgets.QScrollArea(GameSettings)
         self.linux_settings_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.linux_settings_scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.linux_settings_scroll.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.linux_settings_scroll.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff
+        )
+        self.linux_settings_scroll.setSizeAdjustPolicy(
+            QtWidgets.QAbstractScrollArea.AdjustToContents
+        )
         self.linux_settings_scroll.setWidgetResizable(True)
         self.linux_settings_scroll.setObjectName("linux_settings_scroll")
         self.linux_settings_contents = QtWidgets.QWidget()
         self.linux_settings_contents.setGeometry(QtCore.QRect(0, 0, 741, 328))
         self.linux_settings_contents.setObjectName("linux_settings_contents")
-        self.linux_settings_contents_layout = QtWidgets.QVBoxLayout(self.linux_settings_contents)
+        self.linux_settings_contents_layout = QtWidgets.QVBoxLayout(
+            self.linux_settings_contents
+        )
         self.linux_settings_contents_layout.setContentsMargins(0, 0, 9, 0)
-        self.linux_settings_contents_layout.setObjectName("linux_settings_contents_layout")
+        self.linux_settings_contents_layout.setObjectName(
+            "linux_settings_contents_layout"
+        )
         self.proton_groupbox = QtWidgets.QGroupBox(self.linux_settings_contents)
         self.proton_groupbox.setObjectName("proton_groupbox")
         self.proton_layout = QtWidgets.QFormLayout(self.proton_groupbox)
-        self.proton_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.proton_layout.setLabelAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.proton_layout.setObjectName("proton_layout")
         self.proton_wrapper_label = QtWidgets.QLabel(self.proton_groupbox)
         self.proton_wrapper_label.setObjectName("proton_wrapper_label")
-        self.proton_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.proton_wrapper_label)
+        self.proton_layout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.proton_wrapper_label
+        )
         self.proton_wrapper = QtWidgets.QComboBox(self.proton_groupbox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.proton_wrapper.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.proton_wrapper.sizePolicy().hasHeightForWidth()
+        )
         self.proton_wrapper.setSizePolicy(sizePolicy)
         self.proton_wrapper.setObjectName("proton_wrapper")
         self.proton_wrapper.addItem("")
-        self.proton_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.proton_wrapper)
+        self.proton_layout.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.proton_wrapper
+        )
         self.proton_prefix_label = QtWidgets.QLabel(self.proton_groupbox)
         self.proton_prefix_label.setObjectName("proton_prefix_label")
-        self.proton_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.proton_prefix_label)
+        self.proton_layout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.proton_prefix_label
+        )
         self.proton_prefix_layout = QtWidgets.QVBoxLayout()
         self.proton_prefix_layout.setObjectName("proton_prefix_layout")
-        self.proton_layout.setLayout(2, QtWidgets.QFormLayout.FieldRole, self.proton_prefix_layout)
-        self.linux_settings_contents_layout.addWidget(self.proton_groupbox, 0, QtCore.Qt.AlignTop)
+        self.proton_layout.setLayout(
+            2, QtWidgets.QFormLayout.FieldRole, self.proton_prefix_layout
+        )
+        self.linux_settings_contents_layout.addWidget(
+            self.proton_groupbox, 0, QtCore.Qt.AlignTop
+        )
         self.linux_settings_scroll.setWidget(self.linux_settings_contents)
         self.game_settings_layout.addWidget(self.linux_settings_scroll)
 
@@ -141,7 +203,9 @@ class Ui_GameSettings(object):
     def retranslateUi(self, GameSettings):
         _translate = QtCore.QCoreApplication.translate
         GameSettings.setWindowTitle(_translate("GameSettings", "GameSettings"))
-        self.launch_settings_groupbox.setTitle(_translate("GameSettings", "Launch Settings"))
+        self.launch_settings_groupbox.setTitle(
+            _translate("GameSettings", "Launch Settings")
+        )
         self.skip_update_label.setText(_translate("GameSettings", "Skip update check"))
         self.skip_update.setItemText(0, _translate("GameSettings", "Default"))
         self.skip_update.setItemText(1, _translate("GameSettings", "Yes"))
@@ -150,22 +214,29 @@ class Ui_GameSettings(object):
         self.offline.setItemText(0, _translate("GameSettings", "Default"))
         self.offline.setItemText(1, _translate("GameSettings", "Yes"))
         self.offline.setItemText(2, _translate("GameSettings", "No"))
-        self.launch_params_label.setText(_translate("GameSettings", "Launch parameters"))
+        self.launch_params_label.setText(
+            _translate("GameSettings", "Launch parameters")
+        )
         self.launch_params.setPlaceholderText(_translate("GameSettings", "parameters"))
         self.wrapper_label.setText(_translate("GameSettings", "Wrapper"))
         self.wrapper.setPlaceholderText(_translate("GameSettings", "e.g. optirun"))
         self.override_exe_label.setText(_translate("GameSettings", "Override Exe"))
-        self.override_exe_edit.setPlaceholderText(_translate("GameSettings", "Relative path to launch executable"))
+        self.override_exe_edit.setPlaceholderText(
+            _translate("GameSettings", "Relative path to launch executable")
+        )
         self.cloud_gb.setTitle(_translate("GameSettings", "Cloud Saves"))
         self.cloud_sync_label.setText(_translate("GameSettings", "Sync with cloud"))
         self.proton_groupbox.setTitle(_translate("GameSettings", "Proton Settings"))
         self.proton_wrapper_label.setText(_translate("GameSettings", "Proton"))
-        self.proton_wrapper.setItemText(0, _translate("GameSettings", "Don\'t use Proton"))
+        self.proton_wrapper.setItemText(
+            0, _translate("GameSettings", "Don't use Proton")
+        )
         self.proton_prefix_label.setText(_translate("GameSettings", "Prefix"))
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     GameSettings = QtWidgets.QWidget()
     ui = Ui_GameSettings()

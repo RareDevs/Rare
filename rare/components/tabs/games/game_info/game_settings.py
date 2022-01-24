@@ -39,8 +39,7 @@ def find_proton_wrappers():
                 compatibilitytool = os.path.join(c, i, "compatibilitytool.vdf")
                 toolmanifest = os.path.join(c, i, "toolmanifest.vdf")
                 if os.path.exists(proton) and (
-                    os.path.exists(compatibilitytool) or os.path.exists(
-                        toolmanifest)
+                    os.path.exists(compatibilitytool) or os.path.exists(toolmanifest)
                 ):
                     wrapper = '"' + proton + '" run'
                     possible_proton_wrappers.append(wrapper)
@@ -97,8 +96,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.launch_params.textChanged.connect(
             lambda x: self.save_line_edit("start_params", x)
         )
-        self.wrapper.textChanged.connect(
-            lambda x: self.save_line_edit("wrapper", x))
+        self.wrapper.textChanged.connect(lambda x: self.save_line_edit("wrapper", x))
         self.override_exe_edit.textChanged.connect(
             lambda x: self.save_line_edit("override_exe", x)
         )
@@ -175,7 +173,7 @@ class GameSettings(QWidget, Ui_GameSettings):
                         "Error",
                         self.tr(
                             f"Error while launching {self.game.app_title}. No permission to create {path}"
-                        )
+                        ),
                     )
                     return
             if not path:
@@ -221,18 +219,15 @@ class GameSettings(QWidget, Ui_GameSettings):
                 if self.game.app_name not in self.core.lgd.config.sections():
                     self.core.lgd.config.add_section(self.game.app_name)
                 if i == 1:
-                    self.core.lgd.config.set(
-                        self.game.app_name, option, "true")
+                    self.core.lgd.config.set(self.game.app_name, option, "true")
                 if i == 2:
-                    self.core.lgd.config.set(
-                        self.game.app_name, option, "false")
+                    self.core.lgd.config.set(self.game.app_name, option, "false")
             else:
                 if self.game.app_name in self.core.lgd.config.sections():
                     if self.core.lgd.config.get(
                         f"{self.game.app_name}", option, fallback=False
                     ):
-                        self.core.lgd.config.remove_option(
-                            self.game.app_name, option)
+                        self.core.lgd.config.remove_option(self.game.app_name, option)
                 if not self.core.lgd.config[self.game.app_name]:
                     self.core.lgd.config.remove_section(self.game.app_name)
             self.core.lgd.save_config()
@@ -266,8 +261,7 @@ class GameSettings(QWidget, Ui_GameSettings):
                             f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH"
                         )
                     if not self.core.lgd.config[self.game.app_name + ".env"]:
-                        self.core.lgd.config.remove_section(
-                            self.game.app_name + ".env")
+                        self.core.lgd.config.remove_section(self.game.app_name + ".env")
                 self.proton_prefix.setEnabled(False)
                 # lk: TODO: This has to be fixed properly.
                 # lk: It happens because of the widget update. Mask it for now behind disabling the save button
@@ -287,8 +281,7 @@ class GameSettings(QWidget, Ui_GameSettings):
                     self.core.lgd.config[self.game.app_name] = {}
                 if self.game.app_name + ".env" not in self.core.lgd.config.sections():
                     self.core.lgd.config[self.game.app_name + ".env"] = {}
-                self.core.lgd.config.set(
-                    self.game.app_name, "wrapper", wrapper)
+                self.core.lgd.config.set(self.game.app_name, "wrapper", wrapper)
                 self.core.lgd.config.set(self.game.app_name, "no_wine", "true")
                 self.core.lgd.config.set(
                     self.game.app_name + ".env",
@@ -348,8 +341,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         else:
             self.skip_update.setCurrentIndex(0)
 
-        wrapper = self.core.lgd.config.get(
-            self.game.app_name, "wrapper", fallback="")
+        wrapper = self.core.lgd.config.get(self.game.app_name, "wrapper", fallback="")
         self.wrapper.setText(wrapper)
 
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
@@ -398,12 +390,10 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.cloud_save_path_edit.setText("")
 
         self.launch_params.setText(
-            self.core.lgd.config.get(
-                self.game.app_name, "start_params", fallback="")
+            self.core.lgd.config.get(self.game.app_name, "start_params", fallback="")
         )
         self.override_exe_edit.setText(
-            self.core.lgd.config.get(
-                self.game.app_name, "override_exe", fallback="")
+            self.core.lgd.config.get(self.game.app_name, "override_exe", fallback="")
         )
         self.change = True
 

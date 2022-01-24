@@ -21,57 +21,83 @@ class Ui_RareSettings(object):
         self.left_layout = QtWidgets.QVBoxLayout()
         self.left_layout.setObjectName("left_layout")
         self.interface_group = QtWidgets.QGroupBox(RareSettings)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.interface_group.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.interface_group.sizePolicy().hasHeightForWidth()
+        )
         self.interface_group.setSizePolicy(sizePolicy)
         self.interface_group.setObjectName("interface_group")
         self.interface_layout = QtWidgets.QFormLayout(self.interface_group)
-        self.interface_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.interface_layout.setLabelAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.interface_layout.setObjectName("interface_layout")
         self.lang_label = QtWidgets.QLabel(self.interface_group)
         self.lang_label.setObjectName("lang_label")
-        self.interface_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.lang_label)
+        self.interface_layout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.lang_label
+        )
         self.lang_select = QtWidgets.QComboBox(self.interface_group)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lang_select.sizePolicy().hasHeightForWidth())
         self.lang_select.setSizePolicy(sizePolicy)
         self.lang_select.setObjectName("lang_select")
-        self.interface_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.lang_select)
+        self.interface_layout.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.lang_select
+        )
         self.color_label = QtWidgets.QLabel(self.interface_group)
         self.color_label.setObjectName("color_label")
-        self.interface_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.color_label)
+        self.interface_layout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.color_label
+        )
         self.color_select = QtWidgets.QComboBox(self.interface_group)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.color_select.sizePolicy().hasHeightForWidth())
         self.color_select.setSizePolicy(sizePolicy)
         self.color_select.setObjectName("color_select")
         self.color_select.addItem("")
-        self.interface_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.color_select)
+        self.interface_layout.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.color_select
+        )
         self.style_label = QtWidgets.QLabel(self.interface_group)
         self.style_label.setObjectName("style_label")
-        self.interface_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.style_label)
+        self.interface_layout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.style_label
+        )
         self.style_select = QtWidgets.QComboBox(self.interface_group)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.style_select.sizePolicy().hasHeightForWidth())
         self.style_select.setSizePolicy(sizePolicy)
         self.style_select.setObjectName("style_select")
         self.style_select.addItem("")
-        self.interface_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.style_select)
+        self.interface_layout.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.style_select
+        )
         self.interface_info = QtWidgets.QLabel(self.interface_group)
         font = QtGui.QFont()
         font.setItalic(True)
         self.interface_info.setFont(font)
         self.interface_info.setWordWrap(True)
         self.interface_info.setObjectName("interface_info")
-        self.interface_layout.setWidget(3, QtWidgets.QFormLayout.SpanningRole, self.interface_info)
+        self.interface_layout.setWidget(
+            3, QtWidgets.QFormLayout.SpanningRole, self.interface_info
+        )
         self.left_layout.addWidget(self.interface_group)
         self.settings_group = QtWidgets.QGroupBox(RareSettings)
         self.settings_group.setObjectName("settings_group")
@@ -98,10 +124,14 @@ class Ui_RareSettings(object):
         self.auto_sync_cloud = QtWidgets.QCheckBox(self.settings_group)
         self.auto_sync_cloud.setObjectName("auto_sync_cloud")
         self.behavior_layout.addWidget(self.auto_sync_cloud, 3, 0, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.behavior_layout.addItem(spacerItem, 2, 1, 2, 1)
         self.left_layout.addWidget(self.settings_group)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.left_layout.addItem(spacerItem1)
         self.rare_layout.addLayout(self.left_layout)
         self.right_layout = QtWidgets.QVBoxLayout()
@@ -117,10 +147,14 @@ class Ui_RareSettings(object):
         self.log_dir_clean_button.setObjectName("log_dir_clean_button")
         self.log_dir_layout.addWidget(self.log_dir_clean_button)
         self.log_dir_size_label = QtWidgets.QLabel(self.log_dir_group)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.log_dir_size_label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.log_dir_size_label.sizePolicy().hasHeightForWidth()
+        )
         self.log_dir_size_label.setSizePolicy(sizePolicy)
         self.log_dir_size_label.setText("")
         self.log_dir_size_label.setWordWrap(True)
@@ -141,7 +175,9 @@ class Ui_RareSettings(object):
         self.startmenu_link_btn.setObjectName("startmenu_link_btn")
         self.shortcuts_layout.addWidget(self.startmenu_link_btn)
         self.right_layout.addWidget(self.groupBox)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.right_layout.addItem(spacerItem2)
         self.rare_layout.addLayout(self.right_layout)
 
@@ -156,25 +192,44 @@ class Ui_RareSettings(object):
         self.color_select.setItemText(0, _translate("RareSettings", "None"))
         self.style_label.setText(_translate("RareSettings", "Style Sheet"))
         self.style_select.setItemText(0, _translate("RareSettings", "None"))
-        self.interface_info.setText(_translate("RareSettings", "Restart Rare to apply."))
+        self.interface_info.setText(
+            _translate("RareSettings", "Restart Rare to apply.")
+        )
         self.settings_group.setTitle(_translate("RareSettings", "Behavior"))
-        self.save_size.setText(_translate("RareSettings", "Restore window size on application startup"))
-        self.notification.setText(_translate("RareSettings", "Show notification on download completion"))
-        self.log_games.setText(_translate("RareSettings", "Show console for game debug"))
+        self.save_size.setText(
+            _translate("RareSettings", "Restore window size on application startup")
+        )
+        self.notification.setText(
+            _translate("RareSettings", "Show notification on download completion")
+        )
+        self.log_games.setText(
+            _translate("RareSettings", "Show console for game debug")
+        )
         self.sys_tray.setText(_translate("RareSettings", "Exit to System tray"))
-        self.auto_update.setText(_translate("RareSettings", "Update games on application startup"))
+        self.auto_update.setText(
+            _translate("RareSettings", "Update games on application startup")
+        )
         self.confirm_start.setText(_translate("RareSettings", "Confirm game launch"))
-        self.auto_sync_cloud.setText(_translate("RareSettings", "Automatically sync with cloud"))
+        self.auto_sync_cloud.setText(
+            _translate("RareSettings", "Automatically sync with cloud")
+        )
         self.log_dir_group.setTitle(_translate("RareSettings", "Logs"))
-        self.log_dir_open_button.setText(_translate("RareSettings", "Open Log directory"))
-        self.log_dir_clean_button.setText(_translate("RareSettings", "Clean Log directory"))
+        self.log_dir_open_button.setText(
+            _translate("RareSettings", "Open Log directory")
+        )
+        self.log_dir_clean_button.setText(
+            _translate("RareSettings", "Clean Log directory")
+        )
         self.groupBox.setTitle(_translate("RareSettings", "Shortcuts"))
         self.desktop_link_btn.setText(_translate("RareSettings", "Create Desktop link"))
-        self.startmenu_link_btn.setText(_translate("RareSettings", "Create start menu link"))
+        self.startmenu_link_btn.setText(
+            _translate("RareSettings", "Create start menu link")
+        )
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     RareSettings = QtWidgets.QWidget()
     ui = Ui_RareSettings()

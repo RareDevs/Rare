@@ -17,22 +17,34 @@ class Ui_LinuxSettings(object):
         LinuxSettings.resize(569, 454)
         self.linux_layout = QtWidgets.QGridLayout(LinuxSettings)
         self.linux_layout.setObjectName("linux_layout")
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.linux_layout.addItem(spacerItem, 3, 0, 1, 1)
         self.wine_groupbox = QtWidgets.QGroupBox(LinuxSettings)
         self.wine_groupbox.setObjectName("wine_groupbox")
         self.wine_layout = QtWidgets.QFormLayout(self.wine_groupbox)
-        self.wine_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.wine_layout.setLabelAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.wine_layout.setObjectName("wine_layout")
         self.prefix_label = QtWidgets.QLabel(self.wine_groupbox)
-        self.prefix_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.prefix_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.prefix_label.setObjectName("prefix_label")
-        self.wine_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.prefix_label)
+        self.wine_layout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.prefix_label
+        )
         self.prefix_layout = QtWidgets.QVBoxLayout()
         self.prefix_layout.setObjectName("prefix_layout")
-        self.wine_layout.setLayout(0, QtWidgets.QFormLayout.FieldRole, self.prefix_layout)
+        self.wine_layout.setLayout(
+            0, QtWidgets.QFormLayout.FieldRole, self.prefix_layout
+        )
         self.exec_label = QtWidgets.QLabel(self.wine_groupbox)
-        self.exec_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.exec_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.exec_label.setObjectName("exec_label")
         self.wine_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.exec_label)
         self.exec_layout = QtWidgets.QVBoxLayout()
@@ -56,6 +68,7 @@ class Ui_LinuxSettings(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     LinuxSettings = QtWidgets.QWidget()
     ui = Ui_LinuxSettings()

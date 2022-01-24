@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
 
 import legendary
+
 # noinspection PyUnresolvedReferences
 import rare.resources.resources
 import rare.shared as shared
@@ -40,8 +41,7 @@ def excepthook(exc_type, exc_value, exc_tb):
                 raise ValueError
         except Exception as e:
             logger.fatal(str(e))
-            QMessageBox.warning(
-                None, "Error", QApplication.tr("Failed to login"))
+            QMessageBox.warning(None, "Error", QApplication.tr("Failed to login"))
             QApplication.exit(1)
             return
     logger.fatal(tb)
@@ -108,8 +108,7 @@ class App(QApplication):
 
         # Translator
         self.translator = QTranslator()
-        lang = self.settings.value(
-            "language", self.core.language_code, type=str)
+        lang = self.settings.value("language", self.core.language_code, type=str)
 
         if os.path.isfile(f := os.path.join(resources_path, "languages", f"{lang}.qm")):
             self.translator.load(f)
@@ -208,7 +207,10 @@ class App(QApplication):
     def exit_app(self, exit_code=0):
         # FIXME: Fix this with the downlaod tab redesign
         if self.mainwindow is not None:
-            if not shared.args.offline and self.mainwindow.tab_widget.downloadTab.is_download_active:
+            if (
+                not shared.args.offline
+                and self.mainwindow.tab_widget.downloadTab.is_download_active
+            ):
                 question = QMessageBox.question(
                     self.mainwindow,
                     self.tr("Close"),
@@ -222,8 +224,7 @@ class App(QApplication):
                     return
                 else:
                     # clear queue
-                    self.mainwindow.tab_widget.downloadTab.queue_widget.update_queue([
-                    ])
+                    self.mainwindow.tab_widget.downloadTab.queue_widget.update_queue([])
                     self.mainwindow.tab_widget.downloadTab.stop_download()
         # FIXME: End of FIXME
         self.mainwindow.timer.stop()

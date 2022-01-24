@@ -89,14 +89,14 @@ def download_image(game, force=False):
     # Download
     for image in game.metadata["keyImages"]:
         if (
-                image["type"] == "DieselGameBoxTall"
-                or image["type"] == "DieselGameBoxLogo"
-                or image["type"] == "Thumbnail"
+            image["type"] == "DieselGameBoxTall"
+            or image["type"] == "DieselGameBoxLogo"
+            or image["type"] == "Thumbnail"
         ):
             if image["type"] not in json_data.keys():
                 json_data[image["type"]] = None
             if json_data[image["type"]] != image["md5"] or not os.path.isfile(
-                    f"{image_dir}/{game.app_name}/{image['type']}.png"
+                f"{image_dir}/{game.app_name}/{image['type']}.png"
             ):
                 # Download
                 json_data[image["type"]] = image["md5"]
@@ -314,7 +314,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
     if os.path.exists(p := os.path.join(image_dir, igame.app_name, "Thumbnail.png")):
         icon = p
     elif os.path.exists(
-            p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")
+        p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")
     ):
         icon = p
     else:
@@ -470,13 +470,13 @@ class WineResolver(QRunnable):
     @pyqtSlot()
     def run(self):
         if "WINEPREFIX" not in self.wine_env or not os.path.exists(
-                self.wine_env["WINEPREFIX"]
+            self.wine_env["WINEPREFIX"]
         ):
             # pylint: disable=E1136
             self.signals.result_ready[str].emit(str())
             return
         if not os.path.exists(self.wine_binary) or not os.path.exists(
-                self.winepath_binary
+            self.winepath_binary
         ):
             # pylint: disable=E1136
             self.signals.result_ready[str].emit(str())
@@ -534,8 +534,8 @@ def get_raw_save_path(game: Game):
     if game.supports_cloud_saves:
         return (
             game.metadata.get("customAttributes", {})
-                .get("CloudSaveFolder", {})
-                .get("value")
+            .get("CloudSaveFolder", {})
+            .get("value")
         )
 
 
