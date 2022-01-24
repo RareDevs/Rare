@@ -72,9 +72,7 @@ class GameDlc(QWidget, Ui_GameDlc):
             QMessageBox.warning(
                 self,
                 "Error",
-                self.tr("Base Game is not installed. Please install {} first").format(
-                    self.game.app_title
-                ),
+                self.tr(f"Base Game is not installed. Please install {self.game.app_title} first"),
             )
             return
 

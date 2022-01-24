@@ -198,11 +198,11 @@ def import_game(core: LegendaryCore, app_name: str, path: str) -> str:
     logger.info(f"Import {app_name}")
     game = core.get_game(app_name, update_meta=False)
     if not game:
-        return _tr("LgdUtils", "Could not get game for {}").format(app_name)
+        return _tr("LgdUtils", f"Could not get game for {app_name}")
 
     if core.is_installed(app_name):
         logger.error(f"{game.app_title} is already installed")
-        return _tr("LgdUtils", "{} is already installed").format(game.app_title)
+        return _tr("LgdUtils", f"{game.app_title} is already installed")
 
     if not os.path.exists(path):
         logger.error("Path does not exist")
@@ -213,9 +213,7 @@ def import_game(core: LegendaryCore, app_name: str, path: str) -> str:
 
     if not os.path.exists(exe_path):
         logger.error(f"Launch Executable of {game.app_title} does not exist")
-        return _tr("LgdUtils", "Launch executable of {} does not exist").format(
-            game.app_title
-        )
+        return _tr("LgdUtils", f"Launch executable of {game.app_title} does not exist")
 
     if game.is_dlc:
         release_info = game.metadata.get("mainGameItem", {}).get("releaseInfo")
@@ -223,9 +221,7 @@ def import_game(core: LegendaryCore, app_name: str, path: str) -> str:
             main_game_appname = release_info[0]["appId"]
             main_game_title = game.metadata["mainGameItem"]["title"]
             if not core.is_installed(main_game_appname):
-                return _tr("LgdUtils", "Game is a DLC, but {} is not installed").format(
-                    main_game_title
-                )
+                return _tr("LgdUtils", f"Game is a DLC, but {main_game_title} is not installed")
         else:
             return _tr("LgdUtils", "Unable to get base game information for DLC")
 
