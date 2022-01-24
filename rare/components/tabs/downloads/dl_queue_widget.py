@@ -30,7 +30,8 @@ class DlWidget(QWidget):
         self.move_up_button = QPushButton(icon("fa.arrow-up"), "")
         if index == 0:
             self.move_up_button.setDisabled(True)
-        self.move_up_button.clicked.connect(lambda: self.move_up.emit(self.app_name))
+        self.move_up_button.clicked.connect(
+            lambda: self.move_up.emit(self.app_name))
         self.move_up_button.setFixedWidth(20)
         self.left_layout.addWidget(self.move_up_button)
 
@@ -54,14 +55,12 @@ class DlWidget(QWidget):
 
         self.size.addWidget(
             QLabel(
-                self.tr("Download size: {} GB").format(round(dl_size / 1024 ** 3, 2))
-            )
+                self.tr(f"Download size: {round(dl_size / 1024 ** 3, 2)} GB"))
         )
         self.size.addWidget(
             QLabel(
-                self.tr("Install size: {} GB").format(
-                    round(install_size / 1024 ** 3, 2)
-                )
+                self.tr(
+                    f"Install size: {round(install_size / 1024 ** 3, 2)} GB")
             )
         )
         self.right_layout.addLayout(self.size)
@@ -89,7 +88,8 @@ class DlQueueWidget(QGroupBox):
 
     def update_queue(self, dl_queue: list):
         logger.debug(
-            "Update Queue " + ", ".join(i.download.game.app_title for i in dl_queue)
+            "Update Queue " +
+            ", ".join(i.download.game.app_title for i in dl_queue)
         )
         self.dl_queue = dl_queue
 
