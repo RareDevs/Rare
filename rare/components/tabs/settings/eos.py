@@ -52,6 +52,9 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.setupUi(self)
         self.core = shared.core
 
+        if platform.system() != "Windows":
+            self.setTitle(f"{self.title()} -  {self.tr(' - This won´t work with Wine. It might work in the Future')}")
+
         self.prefix_enabled = False
 
         self.info_stack.addWidget(self.installed_info_gb)
@@ -199,6 +202,11 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.enabled_cb.setChecked(enabled)
 
     def install_overlay(self, update=False):
+        if platform.system() != "Windows":
+            if QMessageBox.No == QMessageBox.question(self, "Warning",
+                                                      self.tr("Epic overlay is currently not supported by wine, so it won't work. Install anyway? "),
+                                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No):
+                return
 
         base_path = os.path.expanduser("~/legendary/.overlay")
         if update:
