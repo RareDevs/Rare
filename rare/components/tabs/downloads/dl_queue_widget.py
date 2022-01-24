@@ -53,10 +53,10 @@ class DlWidget(QWidget):
         self.size = QHBoxLayout()
 
         self.size.addWidget(
-            QLabel(self.tr(f"Download size: {round(dl_size / 1024 ** 3, 2)} GB"))
+            QLabel(self.tr("Download size: {} GB").format(round(dl_size / 1024 ** 3, 2)))
         )
         self.size.addWidget(
-            QLabel(self.tr(f"Install size: {round(install_size / 1024 ** 3, 2)} GB"))
+            QLabel(self.tr("Install size: {} GB").format(round(install_size / 1024 ** 3, 2)))
         )
         self.right_layout.addLayout(self.size)
 
