@@ -99,7 +99,7 @@ class App(QApplication):
         self.signals.send_notification.connect(
             lambda title: self.tray_icon.showMessage(
                 self.tr("Download finished"),
-                self.tr(f"Download finished. {title} is playable now"),
+                self.tr("Download finished. {} is playable now").format(title),
                 QSystemTrayIcon.Information,
                 4000,
             )

@@ -135,7 +135,7 @@ class GameUtils(QObject):
                 not QMessageBox.question(
                     None,
                     "Launch",
-                    self.tr(f"Do you want to launch {game.app.title}"),
+                    self.tr("Do you want to launch {}").format(game.app.title),
                     QMessageBox.Yes | QMessageBox.No,
                 )
                 == QMessageBox.Yes
@@ -328,7 +328,7 @@ class GameUtils(QObject):
             QMessageBox.warning(
                 None,
                 "Warning",
-                self.tr(f"Failed to launch {self.core.get_game(app_name).app_title}"),
+                self.tr("Failed to launch {}").format(self.core.get_game(app_name).app_title),
             )
 
         game: RunningGameModel = self.running_games.get(app_name, None)

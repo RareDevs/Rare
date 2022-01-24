@@ -88,7 +88,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
         if wishlist and wishlist[0] == "error":
             self.discount_widget.layout().addWidget(
-                QLabel(self.tr(f"Failed to get wishlist: {wishlist[1]}"))
+                QLabel(self.tr("Failed to get wishlist: {}").format(wishlist[i]))
             )
             btn = QPushButton(self.tr("Reload"))
             self.discount_widget.layout().addWidget(btn)
@@ -124,7 +124,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
         if free_games and free_games[0] == "error":
             self.free_widget.layout().addWidget(
-                QLabel(self.tr(f"Failed to fetch free games: {free_games[1]}"))
+                QLabel(self.tr("Failed to fetch free games: {}").format(free_games[1]))
             )
             btn = QPushButton(self.tr("Reload"))
             self.free_widget.layout().addWidget(btn)

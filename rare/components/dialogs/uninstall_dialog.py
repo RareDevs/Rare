@@ -21,7 +21,7 @@ class UninstallDialog(QDialog):
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.layout = QVBoxLayout()
         self.info_text = QLabel(
-            self.tr(f"Do you really want to uninstall {game.app_title}")
+            self.tr("Do you really want to uninstall {}").format(game.app_title)
         )
         self.layout.addWidget(self.info_text)
         self.keep_files = QCheckBox(self.tr("Keep Files"))

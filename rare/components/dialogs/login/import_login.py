@@ -106,5 +106,5 @@ class ImportLogin(QWidget, Ui_ImportLogin):
                 self.status_label.setText(self.tr("Login failed."))
                 logger.warning("Failed to import existing session.")
         except Exception as e:
-            self.status_label.setText(self.tr(f"Login failed. {e}"))
+            self.status_label.setText(self.tr("Login failed. {}").format(e))
             logger.warning(f"Failed to import existing session: {e}")
