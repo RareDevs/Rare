@@ -78,8 +78,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                 self,
                 "Warning",
                 self.tr(
-                    f"You will not be able to run the Game if you choose {self.platform_combo_box.itemText(i)}"
-                ),
+                    "You will not be able to run the Game if you choose {}"
+                ).format(self.platform_combo_box.itemText(i)),
             )
             if (
                 self.platform_combo_box.currentText() == "Mac"

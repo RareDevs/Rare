@@ -207,8 +207,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
     def update_count_games_label(self):
         self.count_games_label.setText(
             self.tr(
-                f"Installed Games: {len(self.core.get_installed_list())}    Available Games: {len(self.game_list)}"
-            )
+                "Installed Games: {}    Available Games: {}"
+            ).format(len(self.core.get_installed_list()), len(self.game_list))
         )
 
     def add_installed_widget(self, app_name):

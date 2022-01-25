@@ -172,8 +172,8 @@ class GameSettings(QWidget, Ui_GameSettings):
                         None,
                         "Error",
                         self.tr(
-                            f"Error while launching {self.game.app_title}. No permission to create {path}"
-                        ),
+                            "Error while launching {}. No permission to create {}"
+                        ).format(self.game.app_title, path),
                     )
                     return
             if not path:

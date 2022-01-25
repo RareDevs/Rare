@@ -176,8 +176,8 @@ class CloudSaveUtils(QObject):
                         None,
                         "Warning",
                         self.tr(
-                            f"Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {igame.title} anyway?"
-                        ),
+                            "Could not compute cloud save path. Please set it in Game settings manually. \nDo you want to launch {} anyway?"
+                        ).format(igame.title),
                         QMessageBox.Yes | QMessageBox.No,
                         QMessageBox.No,
                     )
@@ -267,8 +267,8 @@ class CloudSaveUtils(QObject):
                 None,
                 "No saves",
                 self.tr(
-                    f"There are no saves local and online. Maybe you have to change save path of {igame.title}"
-                ),
+                    "There are no saves local and online. Maybe you have to change save path of {}"
+                ).format(igame.title),
             )
             self.sync_finished.emit(app_name)
             return
