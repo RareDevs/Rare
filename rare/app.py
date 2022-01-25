@@ -203,8 +203,8 @@ class App(QApplication):
                     self.mainwindow,
                     "Warning",
                     self.tr(
-                        f"Could not find {shared.args.app_name} in installed games. Did you modify the shortcut? "
-                    ),
+                        "Could not find {} in installed games. Did you modify the shortcut? "
+                    ).format(shared.args.app_name),
                 )
 
         if shared.args.test_start:
