@@ -20,6 +20,7 @@ from rare import cache_dir, resources_path
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
+from rare.utils import legendary_utils
 from rare.utils.utils import set_color_pallete, set_style_sheet
 
 start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
@@ -159,6 +160,16 @@ class App(QApplication):
             self.mainwindow.show_window_centralized()
 
     def start_app(self):
+        for igame in self.core.get_installed_list():
+            if not os.path.exists(igame.install_path):
+                legendary_utils.uninstall(igame.app_name, self.core)
+                logger.info(f"Uninstalled {igame.title}, because no game files exist")
+                continue
+            if not os.path.exists(os.path.join(igame.install_path, igame.executable)):
+                igame.needs_verification = True
+                self.core.lgd.set_installed_game(igame.app_name, igame)
+                logger.info(f"{igame.title} needs verification")
+
         self.mainwindow = MainWindow()
         self.launch_dialog.close()
         self.tray_icon = TrayIcon(self)

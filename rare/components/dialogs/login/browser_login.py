@@ -46,19 +46,19 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
         return self.sid_edit.is_valid
 
     @staticmethod
-    def text_changed(text) -> Tuple[bool, str]:
+    def text_changed(text) -> Tuple[bool, str, str]:
         if text:
             text = text.strip()
             if text.startswith("{") and text.endswith("}"):
                 try:
                     text = json.loads(text).get("sid")
                 except json.JSONDecodeError:
-                    return False, text
+                    return False, text, IndicatorLineEdit.reasons.wrong_format
             elif '"' in text:
                 text = text.strip('"')
-            return len(text) == 32, text
+            return len(text) == 32, text, IndicatorLineEdit.reasons.wrong_format
         else:
-            return False, text
+            return False, text, ""
 
     def do_login(self):
         self.status_label.setText(self.tr("Logging in..."))

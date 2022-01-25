@@ -136,6 +136,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
     def installation_started(self, app_name: str):
         game = self.core.get_game(app_name, False)
+        if not game:
+            return
         if game.is_dlc:
             return
         self.installing_widget.set_game(app_name)
