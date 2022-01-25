@@ -1,12 +1,15 @@
 import os
 import platform
 from multiprocessing import Queue as MPQueue
+from typing import Tuple
 
 from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent
+from PyQt5.QtGui import QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QMessageBox
 
 from legendary.core import LegendaryCore
+from legendary.models.downloading import ConditionCheckResult
+from legendary.models.game import Game
 from legendary.utils.selective_dl import games
 from rare import shared
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
@@ -19,7 +22,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
     result_ready = pyqtSignal(InstallQueueItemModel)
 
     def __init__(
-        self, dl_item: InstallQueueItemModel, update=False, silent=False, parent=None
+            self, dl_item: InstallQueueItemModel, update=False, silent=False, parent=None
     ):
         super(InstallDialog, self).__init__(parent)
         self.setupUi(self)
@@ -30,7 +33,13 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.dl_item = dl_item
         self.dl_item.status_q = MPQueue()
         self.app_name = self.dl_item.options.app_name
-        self.game = self.core.get_game(self.app_name)
+        self.game = self.core.get_game(self.app_name) \
+            if not self.dl_item.options.overlay \
+            else Game(app_name=self.app_name, app_title="Epic Overlay")
+
+        self.game_path = self.game.metadata.get('customAttributes', {}). \
+            get('FolderName', {}).get('value', "")
+
         self.update = update
         self.silent = silent
 
@@ -45,12 +54,12 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_dialog_label.setText(f'<h3>{header} "{self.game.app_title}"</h3>')
         self.setWindowTitle(f'{self.windowTitle()} - {header} "{self.game.app_title}"')
 
-        default_path = os.path.expanduser("~/legendary")
-        if self.core.lgd.config.has_option("Legendary", "install_dir"):
-            default_path = self.core.lgd.config.get("Legendary", "install_dir")
+        if not self.dl_item.options.base_path:
+            self.dl_item.options.base_path = shared.core.lgd.config.get("Legendary", "install_dir",
+                                                                        fallback=os.path.expanduser("~/legendary"))
 
         self.install_dir_edit = PathEdit(
-            path=default_path,
+            path=self.dl_item.options.base_path,
             file_type=QFileDialog.DirectoryOnly,
             edit_func=self.option_changed,
             parent=self,
@@ -82,8 +91,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                 ),
             )
             if (
-                self.platform_combo_box.currentText() == "Mac"
-                and platform.system() != "Darwin"
+                    self.platform_combo_box.currentText() == "Mac"
+                    and platform.system() != "Darwin"
             )
             else None
         )
@@ -125,6 +134,16 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
         self.install_button.setEnabled(False)
 
+        if self.dl_item.options.overlay:
+            self.platform_label.setVisible(False)
+            self.platform_combo_box.setVisible(False)
+            self.ignore_space_info_label.setVisible(False)
+            self.ignore_space_check.setVisible(False)
+            self.ignore_space_label.setVisible(False)
+            self.download_only_check.setVisible(False)
+            self.download_only_info_label.setVisible(False)
+            self.download_only_label.setVisible(False)
+
         self.cancel_button.clicked.connect(self.cancel_clicked)
         self.verify_button.clicked.connect(self.verify_clicked)
         self.install_button.clicked.connect(self.install_clicked)
@@ -144,6 +163,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.dl_item.options.base_path = (
             self.install_dir_edit.text() if not self.update else None
         )
+
         self.dl_item.options.max_workers = self.max_workers_spin.value()
         self.dl_item.options.force = self.force_download_check.isChecked()
         self.dl_item.options.ignore_space_req = self.ignore_space_check.isChecked()
@@ -157,7 +177,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
     def get_download_info(self):
         self.dl_item.download = None
-        info_worker = InstallInfoWorker(self.core, self.dl_item)
+        info_worker = InstallInfoWorker(self.core, self.dl_item, self.game)
         info_worker.setAutoDelete(True)
         info_worker.signals.result.connect(self.on_worker_result)
         info_worker.signals.failed.connect(self.on_worker_failed)
@@ -182,11 +202,16 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.get_options()
         self.get_download_info()
 
-    def option_changed(self, path):
+    def option_changed(self, path) -> Tuple[bool, str, str]:
         self.options_changed = True
         self.install_button.setEnabled(False)
         self.verify_button.setEnabled(not self.worker_running)
-        return True, path
+        # directory is not empty
+        full_path = os.path.join(self.dl_item.options.base_path, self.game_path)
+        if not self.dl_item.options.update and os.path.exists(full_path) and len(os.listdir(full_path)) != 0:
+            return False, path, PathEdit.reasons.dir_not_empty
+
+        return True, path, ""
 
     def non_reload_option_changed(self, option: str):
         if option == "download_only":
@@ -250,6 +275,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.result_ready.emit(self.dl_item)
             a0.accept()
 
+    def keyPressEvent(self, e: QKeyEvent) -> None:
+        if e.key() == Qt.Key_Escape:
+            self.cancel_clicked()
+
 
 class InstallInfoWorkerSignals(QObject):
     result = pyqtSignal(InstallDownloadModel)
@@ -258,45 +287,70 @@ class InstallInfoWorkerSignals(QObject):
 
 
 class InstallInfoWorker(QRunnable):
-    def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel):
+    def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel, game: Game = None):
         super(InstallInfoWorker, self).__init__()
         self.signals = InstallInfoWorkerSignals()
         self.core = core
         self.dl_item = dl_item
+        self.is_overlay_install = self.dl_item.options.overlay
+        self.game = game
 
     @pyqtSlot()
     def run(self):
         try:
-            download = InstallDownloadModel(
-                *self.core.prepare_download(
-                    app_name=self.dl_item.options.app_name,
-                    base_path=self.dl_item.options.base_path,
-                    force=self.dl_item.options.force,
-                    no_install=self.dl_item.options.no_install,
-                    status_q=self.dl_item.status_q,
-                    # max_shm=,
-                    max_workers=self.dl_item.options.max_workers,
-                    # game_folder=,
-                    # disable_patching=,
-                    # override_manifest=,
-                    # override_old_manifest=,
-                    # override_base_url=,
-                    platform=self.dl_item.options.platform,
-                    # file_prefix_filter=,
-                    # file_exclude_filter=,
-                    # file_install_tag=,
-                    # dl_optimizations=,
-                    # dl_timeout=,
-                    repair=self.dl_item.options.repair,
-                    # repair_use_latest=,
-                    ignore_space_req=self.dl_item.options.ignore_space_req,
-                    # disable_delta=,
-                    # override_delta_manifest=,
-                    # reset_sdl=,
-                    sdl_prompt=lambda app_name, title: self.dl_item.options.sdl_list,
+            if not self.is_overlay_install:
+                download = InstallDownloadModel(
+                    *self.core.prepare_download(
+                        app_name=self.dl_item.options.app_name,
+                        base_path=self.dl_item.options.base_path,
+                        force=self.dl_item.options.force,
+                        no_install=self.dl_item.options.no_install,
+                        status_q=self.dl_item.status_q,
+                        # max_shm=,
+                        max_workers=self.dl_item.options.max_workers,
+                        # game_folder=,
+                        # disable_patching=,
+                        # override_manifest=,
+                        # override_old_manifest=,
+                        # override_base_url=,
+                        platform=self.dl_item.options.platform,
+                        # file_prefix_filter=,
+                        # file_exclude_filter=,
+                        # file_install_tag=,
+                        # dl_optimizations=,
+                        # dl_timeout=,
+                        repair=self.dl_item.options.repair,
+                        # repair_use_latest=,
+                        ignore_space_req=self.dl_item.options.ignore_space_req,
+                        # disable_delta=,
+                        # override_delta_manifest=,
+                        # reset_sdl=,
+                        sdl_prompt=lambda app_name, title: self.dl_item.options.sdl_list,
+                    )
                 )
-            )
-            if not download.res.failures:
+
+            else:
+                if not os.path.exists(path := self.dl_item.options.base_path):
+                    os.makedirs(path)
+
+                dlm, analysis, igame = self.core.prepare_overlay_install(
+                    path=self.dl_item.options.base_path,
+                    status_queue=self.dl_item.status_q,
+                    max_workers=self.dl_item.options.max_workers,
+                    force=self.dl_item.options.force
+                )
+
+                download = InstallDownloadModel(
+                    dlmanager=dlm,
+                    analysis=analysis,
+                    game=self.game,
+                    igame=igame,
+                    repair=False,
+                    repair_file="",
+                    res=ConditionCheckResult()  # empty
+                )
+
+            if not download.res or not download.res.failures:
                 self.signals.result.emit(download)
             else:
                 self.signals.failed.emit(

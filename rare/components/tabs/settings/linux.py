@@ -1,3 +1,4 @@
+import os
 from logging import getLogger
 
 from PyQt5.QtWidgets import QFileDialog, QWidget
@@ -21,6 +22,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         self.wine_prefix = PathEdit(
             self.load_prefix(),
             file_type=QFileDialog.DirectoryOnly,
+            edit_func=lambda path: (os.path.isdir(path), path, PathEdit.reasons.dir_not_exist),
             save_func=self.save_prefix,
         )
         self.prefix_layout.addWidget(self.wine_prefix)
@@ -50,6 +52,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
     def save_prefix(self, text: str):
         self.save_setting(text, f"{self.name}.env", "WINEPREFIX")
         self.save_setting(text, self.name, "wine_prefix")
+        shared.signals.wine_prefix_updated.emit()
 
     @staticmethod
     def load_setting(section: str, setting: str, fallback: str = str()):

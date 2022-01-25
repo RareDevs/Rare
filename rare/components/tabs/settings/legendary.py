@@ -6,6 +6,7 @@ from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 import rare.shared as shared
+from rare.components.tabs.settings.eos import EosWidget
 from rare.components.tabs.settings.ubisoft_activation import UbiActivationHelper
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit
@@ -84,6 +85,9 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.locale_layout.addWidget(self.locale_edit)
 
         self.ubi_helper = UbiActivationHelper(self.ubisoft_gb)
+        self.eos_widget = EosWidget()
+        self.layout().replaceWidget(self.eos_placeholder, self.eos_widget)
+        self.eos_placeholder.deleteLater()
 
         self.refresh_game_meta_btn.clicked.connect(self.refresh_game_meta)
 
@@ -96,14 +100,18 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod
-    def locale_edit_cb(text: str) -> Tuple[bool, str]:
+    def locale_edit_cb(text: str) -> Tuple[bool, str, str]:
         if text:
             if re.match("^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$", text):
                 language, country = text.replace("_", "-").split("-")
                 text = "-".join([language.lower(), country.upper()])
-            return bool(re.match("^[a-z]{2,3}-[A-Z]{2,3}$", text)), text
+            if bool(re.match("^[a-z]{2,3}-[A-Z]{2,3}$", text)):
+                return True, text, ""
+            else:
+                return False, text, IndicatorLineEdit.reasons.wrong_format
+
         else:
-            return True, text
+            return True, text, ""
 
     def locale_save_cb(self, text: str):
         if text:

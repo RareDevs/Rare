@@ -66,7 +66,7 @@ class GameSettings(QWidget, Ui_GameSettings):
             "",
             file_type=QFileDialog.DirectoryOnly,
             ph_text=self.tr("Cloud save path"),
-            edit_func=lambda text: (os.path.exists(text), text),
+            edit_func=lambda text: (os.path.exists(text), text, PathEdit.reasons.dir_not_exist),
             save_func=self.save_save_path,
         )
         self.cloud_gb.layout().addRow(
@@ -296,12 +296,12 @@ class GameSettings(QWidget, Ui_GameSettings):
 
         self.core.lgd.save_config()
 
-    def proton_prefix_edit(self, text: str) -> Tuple[bool, str]:
+    def proton_prefix_edit(self, text: str) -> Tuple[bool, str, str]:
         if not text:
             text = os.path.expanduser("~/.proton")
-            return True, text
+            return True, text, ""
         parent = os.path.dirname(text)
-        return os.path.exists(parent), text
+        return os.path.exists(parent), text, PathEdit.reasons.dir_not_exist
 
     def proton_prefix_save(self, text: str):
         self.core.lgd.config.set(

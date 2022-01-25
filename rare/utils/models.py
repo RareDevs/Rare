@@ -14,7 +14,7 @@ from legendary.models.game import Game, InstalledGame
 @dataclass
 class InstallOptionsModel:
     app_name: str
-    base_path: str = os.path.expanduser("~/legendary")
+    base_path: str = ""
     max_workers: int = os.cpu_count() * 2
     repair: bool = False
     no_install: bool = False
@@ -24,6 +24,7 @@ class InstallOptionsModel:
     update: bool = False
     silent: bool = False
     platform: str = ""
+    overlay: bool = False
 
     def set_no_install(self, enabled: bool) -> None:
         self.no_install = enabled
@@ -134,7 +135,11 @@ class Signals(QObject):
     install_game = pyqtSignal(InstallOptionsModel)
     installation_finished = pyqtSignal(bool, str)
 
+    overlay_installation_finished = pyqtSignal()
+
     update_gamelist = pyqtSignal(list)
     game_uninstalled = pyqtSignal(str)
 
     set_discord_rpc = pyqtSignal(str)  # app_name of running game
+
+    wine_prefix_updated = pyqtSignal()
