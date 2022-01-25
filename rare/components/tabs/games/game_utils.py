@@ -135,7 +135,7 @@ class GameUtils(QObject):
                 not QMessageBox.question(
                     None,
                     "Launch",
-                    self.tr("Do you want to launch {}").format(game.app.title),
+                    self.tr("Do you want to launch {}").format(game.app_title),
                     QMessageBox.Yes | QMessageBox.No,
                 )
                 == QMessageBox.Yes
@@ -162,7 +162,7 @@ class GameUtils(QObject):
                     app_name,
                     self.tr(
                         "Game files of {} do not exist. Please install game"
-                    ).format(game.app.title),
+                    ).format(game.app_title),
                 )
                 return
 

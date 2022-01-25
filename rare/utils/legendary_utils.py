@@ -166,11 +166,11 @@ def import_game(core: LegendaryCore, app_name: str, path: str) -> str:
     logger.info(f"Import {app_name}")
     game = core.get_game(app_name, update_meta=False)
     if not game:
-        return _tr("LgdUtils", f"Could not get game for {app_name}")
+        return _tr("LgdUtils", "Could not get game for {}").format(app_name)
 
     if core.is_installed(app_name):
         logger.error(f"{game.app_title} is already installed")
-        return _tr("LgdUtils", f"{game.app_title} is already installed")
+        return _tr("LgdUtils", "{} is already installed").format(game.app_title)
 
     if not os.path.exists(path):
         logger.error("Path does not exist")
