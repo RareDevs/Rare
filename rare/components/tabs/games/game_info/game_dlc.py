@@ -73,8 +73,8 @@ class GameDlc(QWidget, Ui_GameDlc):
                 self,
                 "Error",
                 self.tr(
-                    f"Base Game is not installed. Please install {self.game.app_title} first"
-                ),
+                    "Base Game is not installed. Please install {} first"
+                ).format(self.game.app_title),
             )
             return
 

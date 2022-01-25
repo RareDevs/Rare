@@ -85,8 +85,8 @@ class GameInfo(QWidget, Ui_GameInfo):
                 self,
                 "Warning",
                 self.tr(
-                    f"Installation path of {self.igame.title} does not exist. Cannot verify"
-                ),
+                    "Installation path of {} does not exist. Cannot verify"
+                ).format(self.igame.title),
             )
             return
         self.verify_widget.setCurrentIndex(1)
@@ -122,8 +122,8 @@ class GameInfo(QWidget, Ui_GameInfo):
                 self,
                 "Summary",
                 self.tr(
-                    f"Verification failed, {failed} file(s) corrupted, {missing} file(s) are missing. Do you want to repair them?"
-                ),
+                    "Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?"
+                ).format(failed, missing),
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.Yes,
             )

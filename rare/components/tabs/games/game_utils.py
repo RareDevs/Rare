@@ -66,8 +66,8 @@ class GameUtils(QObject):
                 None,
                 "Uninstall",
                 self.tr(
-                    f"Game files of {igame.title} do not exist. Remove it from installed games?"
-                ),
+                    "Game files of {} do not exist. Remove it from installed games?"
+                ).format(igame.title),
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.Yes,
             ):
@@ -161,8 +161,8 @@ class GameUtils(QObject):
                 self.finished.emit(
                     app_name,
                     self.tr(
-                        f"Game files of {game.app.title} do not exist. Please install game"
-                    ),
+                        "Game files of {} do not exist. Please install game"
+                    ).format(game.app.title),
                 )
                 return
 
@@ -218,8 +218,8 @@ class GameUtils(QObject):
                                     None,
                                     "Error",
                                     self.tr(
-                                        f"Error while launching {game.app_title}. No permission to create {val} for {env}"
-                                    ),
+                                        "Error while launching {}. No permission to create {} for {}"
+                                    ).format(game.app_title, val, env),
                                 )
                                 process.deleteLater()
                                 return
@@ -230,8 +230,8 @@ class GameUtils(QObject):
                         None,
                         "Warning",
                         self.tr(
-                            f"Wine executable '{full_params[0]}' does not exist. Please change it in Settings"
-                        ),
+                            "Wine executable '{}' does not exist. Please change it in Settings"
+                        ).format(full_params[0]),
                     )
                     process.deleteLater()
                     return
@@ -269,8 +269,8 @@ class GameUtils(QObject):
                     None,
                     "Warning",
                     self.tr(
-                        f"Wine executable '{wine_bin}' does not exist. Please change it in Settings"
-                    ),
+                        "Wine executable '{}' does not exist. Please change it in Settings"
+                    ).format(wine_bin),
                 )
                 process.deleteLater()
                 return
@@ -345,8 +345,8 @@ class GameUtils(QObject):
                     None,
                     "Question",
                     self.tr(
-                        f"Game exited with code {exit_code}, which is not a normal code. It could be caused by a crash. Do you want to sync cloud saves"
-                    ),
+                        "Game exited with code {}, which is not a normal code. It could be caused by a crash. Do you want to sync cloud saves"
+                    ).format(exit_code),
                     buttons=QMessageBox.Yes | QMessageBox.No,
                     defaultButton=QMessageBox.Yes,
                 )

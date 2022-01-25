@@ -189,8 +189,8 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
                 self,
                 "Cleanup",
                 self.tr(
-                    f"Cleanup complete! Successfully removed {get_size(before - after)}"
-                ),
+                    "Cleanup complete! Successfully removed {}"
+                ).format(get_size(before - after)),
             )
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")
