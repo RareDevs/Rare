@@ -88,7 +88,7 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
         if wishlist and wishlist[0] == "error":
             self.discount_widget.layout().addWidget(
-                QLabel(self.tr("Failed to get wishlist: {}").format(wishlist[i]))
+                QLabel(self.tr("Failed to get wishlist: {}").format(wishlist[1]))
             )
             btn = QPushButton(self.tr("Reload"))
             self.discount_widget.layout().addWidget(btn)
