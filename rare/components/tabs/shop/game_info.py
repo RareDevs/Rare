@@ -179,7 +179,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 req_widget.layout().addWidget(min_label, 0, 1)
                 req_widget.layout().addWidget(rec_label, 0, 2)
                 for i, (key, value) in enumerate(
-                        self.game.reqs.get(system, {}).items()
+                    self.game.reqs.get(system, {}).items()
                 ):
                     req_widget.layout().addWidget(QLabel(key), i + 1, 0)
                     min_label = QLabel(value[0])
@@ -217,8 +217,8 @@ class ShopGameInfo(QWidget, Ui_shop_info):
 
         # clear Layout
         for widget in (
-                self.social_link_gb.layout().itemAt(i)
-                for i in range(self.social_link_gb.layout().count())
+            self.social_link_gb.layout().itemAt(i)
+            for i in range(self.social_link_gb.layout().count())
         ):
             if not isinstance(widget, QSpacerItem):
                 widget.widget().deleteLater()
@@ -236,7 +236,9 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                 icn = icon("mdi.web", "fa.search", scale_factor=1.5)
             else:
                 try:
-                    icn = icon(f"mdi.{name.lower()}", f"fa.{name.lower()}", scale_factor=1.5)
+                    icn = icon(
+                        f"mdi.{name.lower()}", f"fa.{name.lower()}", scale_factor=1.5
+                    )
                 except Exception as e:
                     logger.error(str(e))
                     continue
@@ -258,7 +260,11 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.wishlist.append(game["offer"]["title"])
 
     def button_clicked(self):
-        QDesktopServices.openUrl(QUrl(f"https://www.epicgames.com/store/{shared.core.language_code}/p/{self.slug}"))
+        QDesktopServices.openUrl(
+            QUrl(
+                f"https://www.epicgames.com/store/{shared.core.language_code}/p/{self.slug}"
+            )
+        )
 
 
 class SocialButton(QPushButton):

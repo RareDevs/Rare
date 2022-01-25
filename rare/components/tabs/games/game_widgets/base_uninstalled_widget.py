@@ -16,7 +16,9 @@ class BaseUninstalledWidget(QGroupBox):
         super(BaseUninstalledWidget, self).__init__()
         self.game = game
         if self.game.app_title == "Unreal Engine":
-            self.game.app_title = f"{self.game.app_title} {self.game.app_name.split('_')[-1]}"
+            self.game.app_title = (
+                f"{self.game.app_title} {self.game.app_name.split('_')[-1]}"
+            )
 
         self.core = core
         self.image = QLabel()

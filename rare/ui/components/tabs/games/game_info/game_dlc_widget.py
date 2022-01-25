@@ -15,7 +15,9 @@ class Ui_GameDlcWidget(object):
     def setupUi(self, GameDlcWidget):
         GameDlcWidget.setObjectName("GameDlcWidget")
         GameDlcWidget.resize(517, 70)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(GameDlcWidget.sizePolicy().hasHeightForWidth())
@@ -34,71 +36,107 @@ class Ui_GameDlcWidget(object):
         self.dlc_info = QtWidgets.QWidget(GameDlcWidget)
         self.dlc_info.setObjectName("dlc_info")
         self.dlc_info_layout = QtWidgets.QFormLayout(self.dlc_info)
-        self.dlc_info_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.dlc_info_layout.setLabelAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.dlc_info_layout.setContentsMargins(0, 0, 0, 0)
         self.dlc_info_layout.setObjectName("dlc_info_layout")
         self.dlc_name_label = QtWidgets.QLabel(self.dlc_info)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.dlc_name_label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.dlc_name_label.sizePolicy().hasHeightForWidth()
+        )
         self.dlc_name_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
         self.dlc_name_label.setFont(font)
         self.dlc_name_label.setObjectName("dlc_name_label")
-        self.dlc_info_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.dlc_name_label)
+        self.dlc_info_layout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.dlc_name_label
+        )
         self.dlc_name = QtWidgets.QLabel(self.dlc_info)
         self.dlc_name.setMinimumSize(QtCore.QSize(160, 0))
         self.dlc_name.setText("dlc_name")
-        self.dlc_name.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
+        self.dlc_name.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse
+        )
         self.dlc_name.setObjectName("dlc_name")
-        self.dlc_info_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.dlc_name)
+        self.dlc_info_layout.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.dlc_name
+        )
         self.version_label = QtWidgets.QLabel(self.dlc_info)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.version_label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.version_label.sizePolicy().hasHeightForWidth()
+        )
         self.version_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
         self.version_label.setFont(font)
         self.version_label.setObjectName("version_label")
-        self.dlc_info_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.version_label)
+        self.dlc_info_layout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.version_label
+        )
         self.version = QtWidgets.QLabel(self.dlc_info)
         self.version.setMinimumSize(QtCore.QSize(160, 0))
         self.version.setText("version")
-        self.version.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
+        self.version.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse
+        )
         self.version.setObjectName("version")
         self.dlc_info_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.version)
         self.app_name_label = QtWidgets.QLabel(self.dlc_info)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.app_name_label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.app_name_label.sizePolicy().hasHeightForWidth()
+        )
         self.app_name_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
         self.app_name_label.setFont(font)
         self.app_name_label.setObjectName("app_name_label")
-        self.dlc_info_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.app_name_label)
+        self.dlc_info_layout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.app_name_label
+        )
         self.app_name = QtWidgets.QLabel(self.dlc_info)
         self.app_name.setMinimumSize(QtCore.QSize(160, 0))
         self.app_name.setText("app_name")
-        self.app_name.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
+        self.app_name.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse
+        )
         self.app_name.setObjectName("app_name")
-        self.dlc_info_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.app_name)
+        self.dlc_info_layout.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.app_name
+        )
         self.dlc_layout.addWidget(self.dlc_info)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.dlc_layout.addItem(spacerItem)
         self.action_button = QtWidgets.QPushButton(GameDlcWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.action_button.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.action_button.sizePolicy().hasHeightForWidth()
+        )
         self.action_button.setSizePolicy(sizePolicy)
         self.action_button.setMinimumSize(QtCore.QSize(160, 0))
         self.action_button.setStyleSheet("")
@@ -119,6 +157,7 @@ class Ui_GameDlcWidget(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     GameDlcWidget = QtWidgets.QFrame()
     ui = Ui_GameDlcWidget()

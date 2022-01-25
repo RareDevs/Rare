@@ -52,7 +52,9 @@ class GameInfo(QWidget, Ui_GameInfo):
         else:
             self.repair_button.clicked.connect(self.repair)
 
-        self.install_button.clicked.connect(lambda: self.game_utils.launch_game(self.game.app_name))
+        self.install_button.clicked.connect(
+            lambda: self.game_utils.launch_game(self.game.app_name)
+        )
 
     def uninstall(self):
         if self.game_utils.uninstall_game(self.game.app_name):
@@ -82,7 +84,9 @@ class GameInfo(QWidget, Ui_GameInfo):
             QMessageBox.warning(
                 self,
                 "Warning",
-                self.tr(f"Installation path of {self.igame.title} does not exist. Cannot verify"),
+                self.tr(
+                    f"Installation path of {self.igame.title} does not exist. Cannot verify"
+                ),
             )
             return
         self.verify_widget.setCurrentIndex(1)
@@ -190,7 +194,7 @@ class GameInfo(QWidget, Ui_GameInfo):
             QThreadPool.globalInstance().start(self.steam_worker)
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(
-                self.game.app_name
+            self.game.app_name
         ):
             self.verify_widget.setCurrentIndex(0)
         elif self.verify_threads.get(self.game.app_name):

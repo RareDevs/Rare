@@ -39,15 +39,13 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.title_label)
         self.app_name_label = QLabel(self.game.app_name)
         self.launch_button = QPushButton(
-            play_icon, self.tr(
-                "Launch") if self.igame else self.tr("Link/Play")
+            play_icon, self.tr("Launch") if self.igame else self.tr("Link/Play")
         )
         self.launch_button.setObjectName("launch_game_button")
         self.launch_button.setFixedWidth(150)
 
         self.info = QPushButton("Info")
-        self.info.clicked.connect(
-            lambda: self.show_info.emit(self.game.app_name))
+        self.info.clicked.connect(lambda: self.show_info.emit(self.game.app_name))
         self.info.setFixedWidth(80)
 
         self.info_label = QLabel("")

@@ -27,8 +27,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         super(InstallDialog, self).__init__(parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowFlags(
-            Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
 
         self.core = shared.core
         self.dl_item = dl_item
@@ -52,10 +51,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.threadpool.setMaxThreadCount(1)
 
         header = self.tr("Update") if update else self.tr("Install")
-        self.install_dialog_label.setText(
-            f'<h3>{header} "{self.game.app_title}"</h3>')
-        self.setWindowTitle(
-            f'{self.windowTitle()} - {header} "{self.game.app_title}"')
+        self.install_dialog_label.setText(f'<h3>{header} "{self.game.app_title}"</h3>')
+        self.setWindowTitle(f'{self.windowTitle()} - {header} "{self.game.app_title}"')
 
         if not self.dl_item.options.base_path:
             self.dl_item.options.base_path = shared.core.lgd.config.get("Legendary", "install_dir",
@@ -89,7 +86,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             lambda i: QMessageBox.warning(
                 self,
                 "Warning",
-                self.tr(f"You will not be able to run the Game if you choose {self.platform_combo_box.itemText(i)}"),
+                self.tr(
+                    f"You will not be able to run the Game if you choose {self.platform_combo_box.itemText(i)}"
+                ),
             )
             if (
                     self.platform_combo_box.currentText() == "Mac"
@@ -232,20 +231,17 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         download_size = self.dl_item.download.analysis.dl_size
         install_size = self.dl_item.download.analysis.install_size
         if download_size:
-            self.download_size_info_label.setText(
-                f"{get_size(download_size)}")
+            self.download_size_info_label.setText(f"{get_size(download_size)}")
             self.download_size_info_label.setStyleSheet(
                 "font-style: normal; font-weight: bold"
             )
             self.install_button.setEnabled(not self.options_changed)
         else:
-            self.install_size_info_label.setText(
-                self.tr("Game already installed"))
+            self.install_size_info_label.setText(self.tr("Game already installed"))
             self.install_size_info_label.setStyleSheet(
                 "font-style: italics; font-weight: normal"
             )
-        self.install_size_info_label.setText(
-            f"{get_size(install_size)}")
+        self.install_size_info_label.setText(f"{get_size(install_size)}")
         self.install_size_info_label.setStyleSheet(
             "font-style: normal; font-weight: bold"
         )

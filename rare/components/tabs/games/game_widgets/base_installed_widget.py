@@ -46,7 +46,9 @@ class BaseInstalledWidget(QGroupBox):
         self.igame = self.core.get_installed_game(app_name)  # None if origin
 
         if self.game.app_title == "Unreal Engine":
-            self.game.app_title = f"{self.game.app_title} {self.game.app_name.split('_')[-1]}"
+            self.game.app_title = (
+                f"{self.game.app_title} {self.game.app_name.split('_')[-1]}"
+            )
 
         self.image = QLabel()
         self.image.setPixmap(
@@ -82,7 +84,7 @@ class BaseInstalledWidget(QGroupBox):
             self.addAction(sync)
 
         if os.path.exists(
-                os.path.expanduser(f"~/Desktop/{self.game.app_title}.desktop")
+            os.path.expanduser(f"~/Desktop/{self.game.app_title}.desktop")
         ) or os.path.exists(os.path.expanduser(f"~/Desktop/{self.game.app_title}.lnk")):
             self.create_desktop = QAction(self.tr("Remove Desktop link"))
         else:
@@ -148,8 +150,8 @@ class BaseInstalledWidget(QGroupBox):
         else:
             return
         if not (
-                os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
-                or os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk"))
+            os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
+            or os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk"))
         ):
             try:
                 if not create_desktop_link(self.game.app_name, self.core, type_of_link):
@@ -164,7 +166,7 @@ class BaseInstalledWidget(QGroupBox):
                 self.create_start_menu.setText(self.tr("Remove Start menu link"))
         else:
             if os.path.exists(
-                    os.path.expanduser(f"{path}{self.game.app_title}.desktop")
+                os.path.expanduser(f"{path}{self.game.app_title}.desktop")
             ):
                 os.remove(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
             elif os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk")):

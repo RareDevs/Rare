@@ -19,13 +19,15 @@ class GameMeta:
     def from_json(cls, data):
         return cls(
             app_name=data["app_name"],
-            last_played=datetime.strptime(data.get("last_played", "None"), '%Y-%m-%dT%H:%M:%S.%f')
+            last_played=datetime.strptime(
+                data.get("last_played", "None"), "%Y-%m-%dT%H:%M:%S.%f"
+            ),
         )
 
     def __dict__(self):
         return dict(
             app_name=self.app_name,
-            last_played=self.last_played.strftime("%Y-%m-%dT%H:%M:%S.%f")
+            last_played=self.last_played.strftime("%Y-%m-%dT%H:%M:%S.%f"),
         )
 
 
@@ -60,5 +62,5 @@ class RareGameMeta:
         json.dump(
             {app_name: data.__dict__() for app_name, data in self._meta.items()},
             open(os.path.join(data_dir, "game_meta.json"), "w"),
-            indent=4
+            indent=4,
         )

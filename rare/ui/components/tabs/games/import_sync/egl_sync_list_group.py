@@ -28,10 +28,14 @@ class Ui_EGLSyncListGroup(object):
         self.list.setObjectName("list")
         self.egl_sync_list_layout.addWidget(self.list)
         self.buttons_widget = QtWidgets.QWidget(EGLSyncListGroup)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.buttons_widget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.buttons_widget.sizePolicy().hasHeightForWidth()
+        )
         self.buttons_widget.setSizePolicy(sizePolicy)
         self.buttons_widget.setObjectName("buttons_widget")
         self.buttons_layout = QtWidgets.QHBoxLayout(self.buttons_widget)
@@ -43,7 +47,9 @@ class Ui_EGLSyncListGroup(object):
         self.select_none_button = QtWidgets.QPushButton(self.buttons_widget)
         self.select_none_button.setObjectName("select_none_button")
         self.buttons_layout.addWidget(self.select_none_button)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.buttons_layout.addItem(spacerItem)
         self.action_button = QtWidgets.QPushButton(self.buttons_widget)
         self.action_button.setText("Action")
@@ -63,6 +69,7 @@ class Ui_EGLSyncListGroup(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     EGLSyncListGroup = QtWidgets.QGroupBox()
     ui = Ui_EGLSyncListGroup()

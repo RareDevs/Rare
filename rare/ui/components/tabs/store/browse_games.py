@@ -40,7 +40,9 @@ class Ui_browse_games(object):
         self.error_label = QtWidgets.QLabel(self.error)
         self.error_label.setObjectName("error_label")
         self.verticalLayout_6.addWidget(self.error_label)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_6.addItem(spacerItem)
         self.stack.addWidget(self.error)
         self.horizontalLayout_2.addWidget(self.stack)
@@ -100,7 +102,9 @@ class Ui_browse_games(object):
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.others_gb)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.verticalLayout_3.addWidget(self.others_gb)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_3.addItem(spacerItem1)
         self.filter_scroll.setWidget(self.scroll_widget)
         self.horizontalLayout_2.addWidget(self.filter_scroll)
@@ -128,6 +132,7 @@ class Ui_browse_games(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     browse_games = QtWidgets.QWidget()
     ui = Ui_browse_games()

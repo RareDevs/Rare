@@ -16,7 +16,9 @@ class Ui_About(object):
         About.setObjectName("About")
         About.resize(720, 317)
         self.about_layout = QtWidgets.QFormLayout(About)
-        self.about_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.about_layout.setLabelAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.about_layout.setObjectName("about_layout")
         self.title = QtWidgets.QLabel(About)
         self.title.setObjectName("title")
@@ -27,7 +29,9 @@ class Ui_About(object):
         font.setWeight(75)
         self.version_label.setFont(font)
         self.version_label.setObjectName("version_label")
-        self.about_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.version_label)
+        self.about_layout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.version_label
+        )
         self.version = QtWidgets.QLabel(About)
         self.version.setText("error")
         self.version.setObjectName("version")
@@ -38,19 +42,25 @@ class Ui_About(object):
         font.setWeight(75)
         self.update_label.setFont(font)
         self.update_label.setObjectName("update_label")
-        self.about_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.update_label)
+        self.about_layout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.update_label
+        )
         self.update_lbl = QtWidgets.QLabel(About)
         self.update_lbl.setText("error")
         self.update_lbl.setObjectName("update_lbl")
         self.about_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.update_lbl)
         self.open_browser = QtWidgets.QPushButton(About)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.open_browser.sizePolicy().hasHeightForWidth())
         self.open_browser.setSizePolicy(sizePolicy)
         self.open_browser.setObjectName("open_browser")
-        self.about_layout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.open_browser)
+        self.about_layout.setWidget(
+            3, QtWidgets.QFormLayout.FieldRole, self.open_browser
+        )
         self.dev_label = QtWidgets.QLabel(About)
         font = QtGui.QFont()
         font.setBold(True)
@@ -59,7 +69,7 @@ class Ui_About(object):
         self.dev_label.setObjectName("dev_label")
         self.about_layout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.dev_label)
         self.dev = QtWidgets.QLabel(About)
-        self.dev.setText("<a href=\'https://github.com/Dummerle\'>Dummerle</a>")
+        self.dev.setText("<a href='https://github.com/Dummerle'>Dummerle</a>")
         self.dev.setOpenExternalLinks(True)
         self.dev.setObjectName("dev")
         self.about_layout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.dev)
@@ -69,9 +79,11 @@ class Ui_About(object):
         font.setWeight(75)
         self.lgd_dev_label.setFont(font)
         self.lgd_dev_label.setObjectName("lgd_dev_label")
-        self.about_layout.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.lgd_dev_label)
+        self.about_layout.setWidget(
+            5, QtWidgets.QFormLayout.LabelRole, self.lgd_dev_label
+        )
         self.lgd_dev = QtWidgets.QLabel(About)
-        self.lgd_dev.setText("<a href=\'https://github.com/derrod/\'>derrod</a>")
+        self.lgd_dev.setText("<a href='https://github.com/derrod/'>derrod</a>")
         self.lgd_dev.setOpenExternalLinks(True)
         self.lgd_dev.setObjectName("lgd_dev")
         self.about_layout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.lgd_dev)
@@ -81,7 +93,9 @@ class Ui_About(object):
         font.setWeight(75)
         self.license_label.setFont(font)
         self.license_label.setObjectName("license_label")
-        self.about_layout.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.license_label)
+        self.about_layout.setWidget(
+            6, QtWidgets.QFormLayout.LabelRole, self.license_label
+        )
         self.license = QtWidgets.QLabel(About)
         self.license.setObjectName("license")
         self.about_layout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.license)
@@ -106,6 +120,7 @@ class Ui_About(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     About = QtWidgets.QWidget()
     ui = Ui_About()

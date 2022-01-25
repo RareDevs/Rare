@@ -115,17 +115,16 @@ class ShopApiCore(QObject):
             return
         self.browse_active = True
         url = "https://www.epicgames.com/graphql?operationName=searchStoreQuery&variables={}&extensions={}"
-        variables = urllib.parse.quote_plus(str(
-            dict(browse_model.__dict__))
-        )
-        extensions = urllib.parse.quote_plus(str(
-            dict(
-                persistedQuery=dict(
-                    version=1,
-                    sha256Hash="6e7c4dd0177150eb9a47d624be221929582df8648e7ec271c821838ff4ee148e"
+        variables = urllib.parse.quote_plus(str(dict(browse_model.__dict__)))
+        extensions = urllib.parse.quote_plus(
+            str(
+                dict(
+                    persistedQuery=dict(
+                        version=1,
+                        sha256Hash="6e7c4dd0177150eb9a47d624be221929582df8648e7ec271c821838ff4ee148e",
+                    )
                 )
             )
-        )
         )
 
         for old, new in [

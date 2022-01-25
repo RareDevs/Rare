@@ -33,10 +33,14 @@ class Ui_ShopWidget(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.widget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.free_game_group_box = QtWidgets.QGroupBox(self.widget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.free_game_group_box.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.free_game_group_box.sizePolicy().hasHeightForWidth()
+        )
         self.free_game_group_box.setSizePolicy(sizePolicy)
         self.free_game_group_box.setObjectName("free_game_group_box")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.free_game_group_box)
@@ -72,7 +76,9 @@ class Ui_ShopWidget(object):
         self.verticalLayout.addWidget(self.filter_game_gb)
         self.horizontalLayout.addWidget(self.widget)
         self.filter_gb = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.filter_gb.sizePolicy().hasHeightForWidth())
@@ -132,7 +138,9 @@ class Ui_ShopWidget(object):
         self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.others_gb)
         self.verticalLayout_10.setObjectName("verticalLayout_10")
         self.verticalLayout_2.addWidget(self.others_gb)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_2.addItem(spacerItem)
         self.horizontalLayout.addWidget(self.filter_gb)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
@@ -145,7 +153,9 @@ class Ui_ShopWidget(object):
     def retranslateUi(self, ShopWidget):
         _translate = QtCore.QCoreApplication.translate
         self.free_game_group_box.setTitle(_translate("ShopWidget", "Free Games"))
-        self.discounts_gb.setTitle(_translate("ShopWidget", "Discounts from your wishlist"))
+        self.discounts_gb.setTitle(
+            _translate("ShopWidget", "Discounts from your wishlist")
+        )
         self.filter_game_gb.setTitle(_translate("ShopWidget", "Games"))
         self.filter_gb.setTitle(_translate("ShopWidget", "Filter"))
         self.reset_button.setText(_translate("ShopWidget", "Reset"))
@@ -165,6 +175,7 @@ class Ui_ShopWidget(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     ShopWidget = QtWidgets.QWidget()
     ui = Ui_ShopWidget()

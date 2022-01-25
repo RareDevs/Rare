@@ -19,46 +19,71 @@ class Ui_EGLSyncGroup(object):
         EGLSyncGroup.setCheckable(False)
         EGLSyncGroup.setChecked(False)
         self.egl_sync_layout = QtWidgets.QFormLayout(EGLSyncGroup)
-        self.egl_sync_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.egl_sync_layout.setLabelAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.egl_sync_layout.setObjectName("egl_sync_layout")
         self.egl_path_edit_label = QtWidgets.QLabel(EGLSyncGroup)
         self.egl_path_edit_label.setObjectName("egl_path_edit_label")
-        self.egl_sync_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.egl_path_edit_label)
+        self.egl_sync_layout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.egl_path_edit_label
+        )
         self.egl_path_edit_layout = QtWidgets.QHBoxLayout()
         self.egl_path_edit_layout.setObjectName("egl_path_edit_layout")
-        self.egl_sync_layout.setLayout(0, QtWidgets.QFormLayout.FieldRole, self.egl_path_edit_layout)
+        self.egl_sync_layout.setLayout(
+            0, QtWidgets.QFormLayout.FieldRole, self.egl_path_edit_layout
+        )
         self.egl_path_info_label = QtWidgets.QLabel(EGLSyncGroup)
         self.egl_path_info_label.setObjectName("egl_path_info_label")
-        self.egl_sync_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.egl_path_info_label)
+        self.egl_sync_layout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.egl_path_info_label
+        )
         self.egl_path_info = QtWidgets.QLabel(EGLSyncGroup)
         self.egl_path_info.setText("error")
-        self.egl_path_info.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
+        self.egl_path_info.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse | QtCore.Qt.TextSelectableByMouse
+        )
         self.egl_path_info.setObjectName("egl_path_info")
-        self.egl_sync_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.egl_path_info)
+        self.egl_sync_layout.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.egl_path_info
+        )
         self.egl_sync_check = QtWidgets.QCheckBox(EGLSyncGroup)
         self.egl_sync_check.setText("")
         self.egl_sync_check.setObjectName("egl_sync_check")
-        self.egl_sync_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.egl_sync_check)
+        self.egl_sync_layout.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.egl_sync_check
+        )
         self.import_export_layout = QtWidgets.QVBoxLayout()
         self.import_export_layout.setObjectName("import_export_layout")
-        self.egl_sync_layout.setLayout(3, QtWidgets.QFormLayout.SpanningRole, self.import_export_layout)
+        self.egl_sync_layout.setLayout(
+            3, QtWidgets.QFormLayout.SpanningRole, self.import_export_layout
+        )
         self.egl_sync_check_label = QtWidgets.QLabel(EGLSyncGroup)
         self.egl_sync_check_label.setObjectName("egl_sync_check_label")
-        self.egl_sync_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.egl_sync_check_label)
+        self.egl_sync_layout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.egl_sync_check_label
+        )
 
         self.retranslateUi(EGLSyncGroup)
         QtCore.QMetaObject.connectSlotsByName(EGLSyncGroup)
 
     def retranslateUi(self, EGLSyncGroup):
         _translate = QtCore.QCoreApplication.translate
-        EGLSyncGroup.setTitle(_translate("EGLSyncGroup", "Sync with Epic Games Launcher"))
-        self.egl_path_edit_label.setText(_translate("EGLSyncGroup", "Prefix/Manifest path"))
+        EGLSyncGroup.setTitle(
+            _translate("EGLSyncGroup", "Sync with Epic Games Launcher")
+        )
+        self.egl_path_edit_label.setText(
+            _translate("EGLSyncGroup", "Prefix/Manifest path")
+        )
         self.egl_path_info_label.setText(_translate("EGLSyncGroup", "Estimated path"))
-        self.egl_sync_check_label.setText(_translate("EGLSyncGroup", "Enable automatic sync"))
+        self.egl_sync_check_label.setText(
+            _translate("EGLSyncGroup", "Enable automatic sync")
+        )
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     EGLSyncGroup = QtWidgets.QGroupBox()
     ui = Ui_EGLSyncGroup()

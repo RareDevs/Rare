@@ -33,7 +33,9 @@ class Ui_ImportLogin(object):
         self.title_label.setObjectName("title_label")
         self.import_layout.addWidget(self.title_label, 0, 0, 1, 3, QtCore.Qt.AlignTop)
         self.prefix_combo = QtWidgets.QComboBox(ImportLogin)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.prefix_combo.sizePolicy().hasHeightForWidth())
@@ -48,7 +50,9 @@ class Ui_ImportLogin(object):
         self.prefix_tool.setObjectName("prefix_tool")
         self.import_layout.addWidget(self.prefix_tool, 1, 2, 1, 1)
         self.status_label = QtWidgets.QLabel(ImportLogin)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.status_label.sizePolicy().hasHeightForWidth())
@@ -65,8 +69,14 @@ class Ui_ImportLogin(object):
 
     def retranslateUi(self, ImportLogin):
         _translate = QtCore.QCoreApplication.translate
-        self.info_label.setText(_translate("ImportLogin", "You will get logged out from EGL in the process."))
-        self.title_label.setText(_translate("ImportLogin", "Import existing session from EGL"))
+        self.info_label.setText(
+            _translate(
+                "ImportLogin", "You will get logged out from EGL in the process."
+            )
+        )
+        self.title_label.setText(
+            _translate("ImportLogin", "Import existing session from EGL")
+        )
         self.prefix_label.setText(_translate("ImportLogin", "Select path"))
         self.prefix_tool.setText(_translate("ImportLogin", "Browse"))
 

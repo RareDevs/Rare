@@ -25,7 +25,9 @@ class Ui_RPCSettings(object):
         self.enable.addItem("")
         self.layout.addWidget(self.enable, 0, 1, 1, 1)
         self.label = QtWidgets.QLabel(RPCSettings)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
@@ -59,6 +61,7 @@ class Ui_RPCSettings(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     RPCSettings = QtWidgets.QGroupBox()
     ui = Ui_RPCSettings()

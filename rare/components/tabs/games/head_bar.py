@@ -30,7 +30,8 @@ class GameListHeadBar(QWidget):
                 self.tr("All"),
                 self.tr("Installed only"),
                 self.tr("Offline Games"),
-            ])
+            ]
+        )
         self.layout().addWidget(self.filter)
 
         self.available_filters = [
@@ -62,11 +63,15 @@ class GameListHeadBar(QWidget):
         self.filter.currentIndexChanged.connect(self.filter_changed)
         self.layout().addStretch(1)
 
-        self.import_game = QPushButton(icon("mdi.import", "fa.arrow-down"), self.tr("Import Game"))
+        self.import_game = QPushButton(
+            icon("mdi.import", "fa.arrow-down"), self.tr("Import Game")
+        )
         self.import_clicked = self.import_game.clicked
         self.layout().addWidget(self.import_game)
 
-        self.egl_sync = QPushButton(icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"))
+        self.egl_sync = QPushButton(
+            icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL")
+        )
         self.egl_sync_clicked = self.egl_sync.clicked
         self.layout().addWidget(self.egl_sync)
         # FIXME: Until it is ready

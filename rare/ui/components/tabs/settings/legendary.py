@@ -21,7 +21,9 @@ class Ui_LegendarySettings(object):
         self.right_layout = QtWidgets.QVBoxLayout()
         self.right_layout.setObjectName("right_layout")
         self.locale_group = QtWidgets.QGroupBox(LegendarySettings)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.locale_group.sizePolicy().hasHeightForWidth())
@@ -59,23 +61,35 @@ class Ui_LegendarySettings(object):
         self.download_group.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.download_group.setObjectName("download_group")
         self.download_layout = QtWidgets.QFormLayout(self.download_group)
-        self.download_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.download_layout.setLabelAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.download_layout.setObjectName("download_layout")
         self.max_workers_label = QtWidgets.QLabel(self.download_group)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.max_workers_label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.max_workers_label.sizePolicy().hasHeightForWidth()
+        )
         self.max_workers_label.setSizePolicy(sizePolicy)
         self.max_workers_label.setObjectName("max_workers_label")
-        self.download_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.max_workers_label)
+        self.download_layout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.max_workers_label
+        )
         self.max_workers_layout = QtWidgets.QHBoxLayout()
         self.max_workers_layout.setObjectName("max_workers_layout")
         self.max_worker_spin = QtWidgets.QSpinBox(self.download_group)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.max_worker_spin.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.max_worker_spin.sizePolicy().hasHeightForWidth()
+        )
         self.max_worker_spin.setSizePolicy(sizePolicy)
         self.max_worker_spin.setMinimum(0)
         self.max_worker_spin.setMaximum(16)
@@ -88,17 +102,25 @@ class Ui_LegendarySettings(object):
         self.max_workers_info_label.setFont(font)
         self.max_workers_info_label.setObjectName("max_workers_info_label")
         self.max_workers_layout.addWidget(self.max_workers_info_label)
-        self.download_layout.setLayout(0, QtWidgets.QFormLayout.FieldRole, self.max_workers_layout)
+        self.download_layout.setLayout(
+            0, QtWidgets.QFormLayout.FieldRole, self.max_workers_layout
+        )
         self.max_memory_label = QtWidgets.QLabel(self.download_group)
         self.max_memory_label.setObjectName("max_memory_label")
-        self.download_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.max_memory_label)
+        self.download_layout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.max_memory_label
+        )
         self.max_memory_layout = QtWidgets.QHBoxLayout()
         self.max_memory_layout.setObjectName("max_memory_layout")
         self.max_memory_spin = QtWidgets.QSpinBox(self.download_group)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.max_memory_spin.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.max_memory_spin.sizePolicy().hasHeightForWidth()
+        )
         self.max_memory_spin.setSizePolicy(sizePolicy)
         self.max_memory_spin.setMinimum(0)
         self.max_memory_spin.setMaximum(10240)
@@ -112,20 +134,30 @@ class Ui_LegendarySettings(object):
         self.max_memory_info_label.setFont(font)
         self.max_memory_info_label.setObjectName("max_memory_info_label")
         self.max_memory_layout.addWidget(self.max_memory_info_label)
-        self.download_layout.setLayout(1, QtWidgets.QFormLayout.FieldRole, self.max_memory_layout)
+        self.download_layout.setLayout(
+            1, QtWidgets.QFormLayout.FieldRole, self.max_memory_layout
+        )
         self.preferred_cdn_label = QtWidgets.QLabel(self.download_group)
         self.preferred_cdn_label.setObjectName("preferred_cdn_label")
-        self.download_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.preferred_cdn_label)
+        self.download_layout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.preferred_cdn_label
+        )
         self.preferred_cdn_line = QtWidgets.QLineEdit(self.download_group)
         self.preferred_cdn_line.setObjectName("preferred_cdn_line")
-        self.download_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.preferred_cdn_line)
+        self.download_layout.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.preferred_cdn_line
+        )
         self.disable_https_label = QtWidgets.QLabel(self.download_group)
         self.disable_https_label.setObjectName("disable_https_label")
-        self.download_layout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.disable_https_label)
+        self.download_layout.setWidget(
+            3, QtWidgets.QFormLayout.LabelRole, self.disable_https_label
+        )
         self.disable_https_check = QtWidgets.QCheckBox(self.download_group)
         self.disable_https_check.setText("")
         self.disable_https_check.setObjectName("disable_https_check")
-        self.download_layout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.disable_https_check)
+        self.download_layout.setWidget(
+            3, QtWidgets.QFormLayout.FieldRole, self.disable_https_check
+        )
         self.left_layout.addWidget(self.download_group)
         self.gridLayout.addLayout(self.left_layout, 0, 0, 1, 1)
         self.ubisoft_gb = QtWidgets.QGroupBox(LegendarySettings)
@@ -148,24 +180,45 @@ class Ui_LegendarySettings(object):
         _translate = QtCore.QCoreApplication.translate
         self.locale_group.setTitle(_translate("LegendarySettings", "Locale"))
         self.cleanup_group.setTitle(_translate("LegendarySettings", "Cleanup"))
-        self.clean_keep_manifests_button.setText(_translate("LegendarySettings", "Clean, but keep manifests"))
+        self.clean_keep_manifests_button.setText(
+            _translate("LegendarySettings", "Clean, but keep manifests")
+        )
         self.clean_button.setText(_translate("LegendarySettings", "Remove everything"))
         self.refresh_game_meta_btn.setText(_translate("LegendarySettings", "Refresh game meta"))
         self.install_dir_group.setTitle(_translate("LegendarySettings", "Default Installation Directory"))
         self.download_group.setTitle(_translate("LegendarySettings", "Download Settings"))
-        self.max_workers_label.setText(_translate("LegendarySettings", "Max Workers"))
-        self.max_workers_info_label.setText(_translate("LegendarySettings", "Less is slower (0: Default)"))
-        self.max_memory_label.setText(_translate("LegendarySettings", "Max Memory"))
-        self.max_memory_spin.setSuffix(_translate("LegendarySettings", "MiB"))
+            _translate("LegendarySettings", "Refresh game meta")
+        )
+        self.ubisoft_gb.setTitle(_translate("LegendarySettings", "Link Ubisoft Games"))
+        self.install_dir_group.setTitle(
+            _translate("LegendarySettings", "Default Installation Directory")
+        )
+        self.download_group.setTitle(
+            _translate("LegendarySettings", "Download Settings")
+        )
         self.max_memory_info_label.setText(_translate("LegendarySettings", "Less is slower (0: Default)"))
         self.preferred_cdn_label.setText(_translate("LegendarySettings", "Preferred CDN"))
         self.preferred_cdn_line.setPlaceholderText(_translate("LegendarySettings", "Default"))
         self.disable_https_label.setText(_translate("LegendarySettings", "Disable HTTPS"))
         self.ubisoft_gb.setTitle(_translate("LegendarySettings", "Link Ubisoft Games"))
+        self.max_memory_info_label.setText(
+            _translate("LegendarySettings", "Less is slower (0: Default)")
+        )
+        self.preferred_cdn_label.setText(
+            _translate("LegendarySettings", "Preferred CDN")
+        )
+        self.preferred_cdn_line.setPlaceholderText(
+            _translate("LegendarySettings", "Default")
+        )
+        self.disable_https_label.setText(
+            _translate("LegendarySettings", "Disable HTTPS")
+        )
+>>>>>>> b935be6 (Pass everything through black formatter)
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     LegendarySettings = QtWidgets.QWidget()
     ui = Ui_LegendarySettings()

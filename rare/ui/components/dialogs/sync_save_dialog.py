@@ -18,7 +18,9 @@ class Ui_SyncSaveDialog(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(SyncSaveDialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.title_label = QtWidgets.QLabel(SyncSaveDialog)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.title_label.sizePolicy().hasHeightForWidth())
@@ -37,7 +39,9 @@ class Ui_SyncSaveDialog(object):
         self.date_info_local.setObjectName("date_info_local")
         self.verticalLayout_2.addWidget(self.date_info_local)
         self.icon_local = QtWidgets.QLabel(self.local_gb)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.icon_local.sizePolicy().hasHeightForWidth())
@@ -60,7 +64,9 @@ class Ui_SyncSaveDialog(object):
         self.date_info_remote.setObjectName("date_info_remote")
         self.verticalLayout_3.addWidget(self.date_info_remote)
         self.icon_remote = QtWidgets.QLabel(self.cloud_gb)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.icon_remote.sizePolicy().hasHeightForWidth())
@@ -76,7 +82,9 @@ class Ui_SyncSaveDialog(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_2.addItem(spacerItem)
         self.cancel_button = QtWidgets.QPushButton(SyncSaveDialog)
         self.cancel_button.setObjectName("cancel_button")
@@ -88,8 +96,12 @@ class Ui_SyncSaveDialog(object):
 
     def retranslateUi(self, SyncSaveDialog):
         _translate = QtCore.QCoreApplication.translate
-        SyncSaveDialog.setWindowTitle(_translate("SyncSaveDialog", "Sync saves with cloud"))
-        self.title_label.setText(_translate("SyncSaveDialog", "Select save, you want to use for "))
+        SyncSaveDialog.setWindowTitle(
+            _translate("SyncSaveDialog", "Sync saves with cloud")
+        )
+        self.title_label.setText(
+            _translate("SyncSaveDialog", "Select save, you want to use for ")
+        )
         self.local_gb.setTitle(_translate("SyncSaveDialog", "Local"))
         self.upload_button.setText(_translate("SyncSaveDialog", "Upload"))
         self.cloud_gb.setTitle(_translate("SyncSaveDialog", "Cloud"))
@@ -99,6 +111,7 @@ class Ui_SyncSaveDialog(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     SyncSaveDialog = QtWidgets.QDialog()
     ui = Ui_SyncSaveDialog()

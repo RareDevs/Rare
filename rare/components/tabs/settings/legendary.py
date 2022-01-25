@@ -95,8 +95,12 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.refresh_game_meta_btn.setDisabled(True)
         self.refresh_game_meta_btn.setText(self.tr("Loading"))
         worker = RefreshGameMetaWorker()
-        worker.signals.finished.connect(lambda: self.refresh_game_meta_btn.setDisabled(False))
-        worker.signals.finished.connect(lambda: self.refresh_game_meta_btn.setText(self.tr("Refresh game meta")))
+        worker.signals.finished.connect(
+            lambda: self.refresh_game_meta_btn.setDisabled(False)
+        )
+        worker.signals.finished.connect(
+            lambda: self.refresh_game_meta_btn.setText(self.tr("Refresh game meta"))
+        )
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod
@@ -184,7 +188,9 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
             QMessageBox.information(
                 self,
                 "Cleanup",
-                self.tr(f"Cleanup complete! Successfully removed {get_size(before - after)}")
+                self.tr(
+                    f"Cleanup complete! Successfully removed {get_size(before - after)}"
+                ),
             )
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")

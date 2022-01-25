@@ -15,7 +15,7 @@ requirements = [
     "QtAwesome",
     "psutil",
     "pypresence",
-    'pywin32; platform_system == "Windows"'
+    'pywin32; platform_system == "Windows"',
 ]
 
 if os.name == "nt":
@@ -30,16 +30,16 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Dummerle/Rare",
-    packages=setuptools.find_packages() + [
-        "rare.legendary." + i for i in setuptools.find_packages(where="rare/legendary")
-    ] + ["rare.resources"],
+    packages=setuptools.find_packages()
+    + ["rare.legendary." + i for i in setuptools.find_packages(where="rare/legendary")]
+    + ["rare.resources"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-        "Operating System :: OS Independent"
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "Operating System :: OS Independent",
     ],
     include_package_data=True,
     python_requires=">=3.8",
