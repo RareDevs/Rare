@@ -24,7 +24,7 @@ class ShopApiCore(QObject):
         self.token = auth_token
         self.language_code: str = lc
         self.country_code: str = cc
-        self.locale = self.language_code + "-" + self.country_code
+        self.locale = f"{self.language_code}-{self.country_code}"
         self.manager = QtRequestManager()
         self.auth_manager = QtRequestManager(authorization_token=auth_token)
 
@@ -44,7 +44,7 @@ class ShopApiCore(QObject):
             handle_func(["error", "Key error"])
             return
         except Exception as e:
-            logger.error("Free games Api request failed: " + str(e))
+            logger.error(f"Free games Api request failed: {e}")
             handle_func(["error", e])
             return
         handle_func(results)
@@ -56,7 +56,7 @@ class ShopApiCore(QObject):
                 "query": wishlist_query,
                 "variables": {
                     "country": self.country_code,
-                    "locale": self.language_code + "-" + self.country_code,
+                    "locale": f"{self.language_code}-{self.country_code}",
                 },
             },
             lambda data: self._handle_wishlist(data, handle_func),
@@ -70,7 +70,7 @@ class ShopApiCore(QObject):
             handle_func(["error", "Key error"])
             return
         except Exception as e:
-            logger.error("Free games Api request failed: " + str(e))
+            logger.error(f"Free games Api request failed: {e}")
             handle_func(["error", e])
             return
 
@@ -105,7 +105,7 @@ class ShopApiCore(QObject):
             logger.error(str(e))
             handle_func([])
         except Exception as e:
-            logger.error("Search Api request failed: " + str(e))
+            logger.error(f"Search Api request failed: {e}")
             handle_func([])
             return
 
@@ -158,7 +158,7 @@ class ShopApiCore(QObject):
                 logger.error(str(e))
                 handle_func([])
             except Exception as e:
-                logger.error("Browse games Api request failed: " + str(e))
+                logger.error(f"Browse games Api request failed: {e}")
                 handle_func([])
                 return
         else:
