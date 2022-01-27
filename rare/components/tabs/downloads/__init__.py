@@ -180,7 +180,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
                 self.queue_widget.update_queue(self.dl_queue)
 
         elif text[:5] == "error":
-            QMessageBox.warning(self, "warn", f"Download error: {text[6:}")
+            QMessageBox.warning(self, "warn", f"Download error: {text[6:]}")
 
         elif text == "stop":
             self.reset_infos()
