@@ -175,6 +175,6 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         else:
             logger.warning(f'Failed to import "{app_name}"')
             self.info_label.setText(
-                self.tr("Could not import {}: ").format(app_name) + err
+                self.tr("Could not import {}: {}").format(app_name, err)
             )
             return

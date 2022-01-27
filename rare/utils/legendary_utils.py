@@ -69,14 +69,14 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
     logger.info("Removing sections in config file")
     if core.lgd.config.has_section(app_name):
         core.lgd.config.remove_section(app_name)
-    if core.lgd.config.has_section(app_name + ".env"):
-        core.lgd.config.remove_section(app_name + ".env")
+    if core.lgd.config.has_section(f"{app_name}.env"):
+        core.lgd.config.remove_section(f"{app_name}.env")
     core.lgd.save_config()
 
 
 def update_manifest(app_name: str, core: LegendaryCore):
     game = core.get_game(app_name)
-    logger.info("Reloading game manifest of " + game.app_title)
+    logger.info(f"Reloading game manifest of {game.app_title}")
     new_manifest_data, base_urls = core.get_cdn_manifest(game)
     # overwrite base urls in metadata with current ones to avoid using old/dead CDNs
     game.base_urls = base_urls
@@ -163,7 +163,7 @@ class VerifyWorker(QRunnable):
 
 def import_game(core: LegendaryCore, app_name: str, path: str) -> str:
     _tr = QCoreApplication.translate
-    logger.info("Import " + app_name)
+    logger.info(f"Import {app_name}")
     game = core.get_game(app_name, update_meta=False)
     if not game:
         return _tr("LgdUtils", "Could not get game for {}").format(app_name)
@@ -213,5 +213,5 @@ def import_game(core: LegendaryCore, app_name: str, path: str) -> str:
     if igame.needs_verification:
         logger.info(f"{igame.title} needs verification")
 
-    logger.info("Successfully imported Game: " + game.app_title)
+    logger.info(f"Successfully imported Game: {game.app_title}")
     return ""

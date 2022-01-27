@@ -139,7 +139,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.finish()
 
     def handle_api_worker_result(self, result, text):
-        logger.debug("Api Request got from " + text)
+        logger.debug(f"Api Request got from {text}")
         if text == "gamelist":
             if result:
                 self.api_results.game_list, self.api_results.dlcs = result

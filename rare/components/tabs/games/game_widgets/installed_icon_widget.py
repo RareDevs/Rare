@@ -25,7 +25,7 @@ class InstalledIconWidget(BaseInstalledWidget):
         self.core = shared.core
 
         if self.update_available:
-            logger.info("Update available for game: " + self.game.app_name)
+            logger.info(f"Update available for game: {self.game.app_name}")
 
         self.layout.addWidget(self.image)
 
