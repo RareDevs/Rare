@@ -16,7 +16,7 @@ class MiniWidget(QWidget):
         if not username:
             username = "Offline"
 
-        self.layout.addWidget(QLabel(self.tr("Logged in as {}").format(str(username))))
+        self.layout.addWidget(QLabel(self.tr("Logged in as {}").format(username)))
 
         self.open_browser = QPushButton(self.tr("Account settings"))
         self.open_browser.clicked.connect(
