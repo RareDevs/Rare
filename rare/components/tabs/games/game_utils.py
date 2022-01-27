@@ -143,7 +143,7 @@ class GameUtils(QObject):
                 logger.info("Cancel Startup")
                 self.finished.emit(app_name, "")
                 return
-        logger.info("Launching " + game.app_title)
+        logger.info(f"Launching {game.app_title}")
 
         if game.third_party_store == "Origin":
             offline = False

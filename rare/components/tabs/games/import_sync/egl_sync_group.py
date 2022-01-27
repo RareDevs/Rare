@@ -247,7 +247,7 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
                 try:
                     i = EGLSyncListItem(item, self.export, self.list)
                 except AttributeError:
-                    logger.error(item.app_name + " does not work. Ignoring")
+                    logger.error(f"{item.app_name} does not work. Ignoring")
                 else:
                     self.list.addItem(i)
         self.label.setVisible(not enabled or not bool(self.list.count()))
