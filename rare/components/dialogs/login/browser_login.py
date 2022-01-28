@@ -80,7 +80,7 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
     def open_browser(self):
         if webview_login.webview_available is False:
             logger.warning("You don't have webengine installed, "
-                           "you need to manually copy the SID.")
+                           "you will need to manually copy the SID.")
             QDesktopServices.openUrl(QUrl(self.login_url))
         else:
             if webview_login.do_webview_login(
