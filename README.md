@@ -44,7 +44,7 @@ There are some AUR packages available:
 
 **Note**:
 
-- pypresene is an optional package. You can install it
+- pypresence is an optional package. You can install it
   from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip
 - Do not wonder if some icons look strange, because the official python3-qtawesome package is too old. Many icons were
   replaced
@@ -75,11 +75,13 @@ In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find pack
 
 ### Run from source
 
+**Note**: Cloning **with submodules** is very important, as Rare uses a custom version of legendary and bundles it as a submodule.
+
 1. Clone the repo with Submodule: `git clone https://github.com/Dummerle/Rare --recurse-submodules`.
 2. Change your working directory to the project folder: `cd Rare`
 3. Run `pip install -r requirements.txt` to install all required dependencies. If you are on Arch you can
    run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-psutil`
-3. Run `python3 -m rare`
+4. Run `python3 -m rare`
 
 ## Why Rare?
 
