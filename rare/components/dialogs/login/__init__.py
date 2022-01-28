@@ -29,6 +29,7 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        self.setWindowModality(Qt.WindowModal)
 
         self.core = core
 
