@@ -92,4 +92,4 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
                 )
                 self.success.emit()
             else:
-                logger.warning("Failed to login. Did you cancel the login?")
+                logger.warning("Failed to login through browser.")

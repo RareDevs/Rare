@@ -18,9 +18,9 @@ requirements = [
     'pywin32; platform_system == "Windows"'
 ]
 
-optional_requirements = [
+optional_requirements = (
     "pywebview[gtk]"
-]
+)
 
 if os.name == "nt":
     requirements.append("pywin32")
