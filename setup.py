@@ -18,8 +18,14 @@ requirements = [
     'pywin32; platform_system == "Windows"'
 ]
 
+optional_requirements = [
+    "pywebview[gtk]"
+]
+
 if os.name == "nt":
     requirements.append("pywin32")
+    optional_requirements.pop(0)
+    optional_requirements.append("pywebview[cef]")
 
 setuptools.setup(
     name="Rare",
@@ -45,4 +51,5 @@ setuptools.setup(
     python_requires=">=3.8",
     entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
     install_requires=requirements,
+    extra_requires=optional_requirements
 )
