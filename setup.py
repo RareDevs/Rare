@@ -16,10 +16,10 @@ requirements = [
     'pywin32; platform_system == "Windows"'
 ]
 
-optional_requirements = (
+optional_requirements = {
     "pywebview[gtk]; platform_system == 'Linux'",
     "pywebview[cef]; platform_system == 'Windows'"
-)
+}
 
 setuptools.setup(
     name="Rare",
