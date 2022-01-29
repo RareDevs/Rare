@@ -64,6 +64,9 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         super(LaunchDialog, self).__init__(parent=parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        self.setWindowModality(Qt.WindowModal)
+
         self.core = shared.core
         self.offline = shared.args.offline
         self.thread_pool = QThreadPool()

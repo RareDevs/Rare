@@ -6,6 +6,7 @@ from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QWidget, QApplication
 
+from legendary.utils import webview_login
 from legendary.core import LegendaryCore
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
 from rare.utils.extra_widgets import IndicatorLineEdit
@@ -77,4 +78,18 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
             logger.warning(e)
 
     def open_browser(self):
-        QDesktopServices.openUrl(QUrl(self.login_url))
+        if webview_login.webview_available is False:
+            logger.warning("You don't have webengine installed, "
+                           "you will need to manually copy the SID.")
+            QDesktopServices.openUrl(QUrl(self.login_url))
+        else:
+            if webview_login.do_webview_login(
+                    callback_sid=self.core.auth_sid,
+                    callback_code=self.core.auth_code):
+                logger.info(
+                    "Successfully logged in as "
+                    f"{self.core.lgd.userdata['displayName']}"
+                )
+                self.success.emit()
+            else:
+                logger.warning("Failed to login through browser.")

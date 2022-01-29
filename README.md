@@ -79,9 +79,10 @@ In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find pack
 
 1. Clone the repo with Submodule: `git clone https://github.com/Dummerle/Rare --recurse-submodules`.
 2. Change your working directory to the project folder: `cd Rare`
-3. Run `pip install -r requirements.txt` to install all required dependencies. If you are on Arch you can
-   run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-psutil`
-4. Run `python3 -m rare`
+3. Run `pip install -r requirements.txt` to install all required dependencies. 
+   If you want to be able to use the automatic login, run `pip install -r optional_requirements.txt`
+   If you are on Arch you can run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-psutil`
+3. Run `python3 -m rare`
 
 ## Why Rare?
 

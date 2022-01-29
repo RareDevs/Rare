@@ -1,5 +1,3 @@
-import os
-
 import setuptools
 
 from rare import __version__ as version
@@ -18,8 +16,12 @@ requirements = [
     'pywin32; platform_system == "Windows"'
 ]
 
-if os.name == "nt":
-    requirements.append("pywin32")
+optional_reqs = dict(
+    webview=[
+        'pywebview[gtk]; platform_system == "Linux"',
+        'pywebview[cef]; platform_system == "Windows"'
+    ]
+)
 
 setuptools.setup(
     name="Rare",
@@ -45,4 +47,5 @@ setuptools.setup(
     python_requires=">=3.8",
     entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
     install_requires=requirements,
+    extras_require=optional_reqs
 )
