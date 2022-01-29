@@ -1,5 +1,3 @@
-import os
-
 import setuptools
 
 from rare import __version__ as version
@@ -19,13 +17,9 @@ requirements = [
 ]
 
 optional_requirements = (
-    "pywebview[gtk]"
+    "pywebview[gtk]; platform_system == 'Linux'",
+    "pywebview[cef]; platform_system == 'Windows'"
 )
-
-if os.name == "nt":
-    requirements.append("pywin32")
-    optional_requirements.pop(0)
-    optional_requirements.append("pywebview[cef]")
 
 setuptools.setup(
     name="Rare",
