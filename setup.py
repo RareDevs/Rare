@@ -16,9 +16,12 @@ requirements = [
     'pywin32; platform_system == "Windows"'
 ]
 
-optional_requirements = {
-    "pywebview[gtk]; platform_system == 'Linux'",
-    "pywebview[cef]; platform_system == 'Windows'"
+optional_reqs = {
+    "webview": [
+        "pywebview",
+        'cefpython3; platform_system == "Windows"'
+        'PyGObject; platform_system == "Linux"'
+    ]
 }
 
 setuptools.setup(
@@ -45,5 +48,5 @@ setuptools.setup(
     python_requires=">=3.8",
     entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
     install_requires=requirements,
-    extra_requires=optional_requirements
+    extra_requires=optional_reqs
 )
