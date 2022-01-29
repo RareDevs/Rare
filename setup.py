@@ -16,13 +16,12 @@ requirements = [
     'pywin32; platform_system == "Windows"'
 ]
 
-optional_reqs = {
-    "webview": [
-        "pywebview",
-        'cefpython3; platform_system == "Windows"'
-        'PyGObject; platform_system == "Linux"'
+optional_reqs = dict(
+    webview=[
+        'pywebview[gtk]; platform_system == "Linux"',
+        'pywebview[cef]; platform_system == "Windows"'
     ]
-}
+)
 
 setuptools.setup(
     name="Rare",
@@ -48,5 +47,5 @@ setuptools.setup(
     python_requires=">=3.8",
     entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
     install_requires=requirements,
-    extra_requires=optional_reqs
+    extras_require=optional_reqs
 )
