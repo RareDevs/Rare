@@ -195,8 +195,7 @@ def set_color_pallete(color_scheme: str):
 def get_color_schemes() -> List[str]:
     colors = []
     for file in QDir(":/schemes"):
-        if file.endswith(".scheme"):
-            colors.append(file.replace(".scheme", ""))
+        colors.append(file)
     return colors
 
 
