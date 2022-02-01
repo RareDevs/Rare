@@ -83,24 +83,27 @@ v3
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/about.py"
-line = "49" / >
+line = "53" / >
     <source>Update
-available:</source>
-< translation > 更新可用：</translation>
-< /message>
+available: {
+}
+- &gt; {} < /source>
+< translation
+type = "unfinished" / >
+</message>
 < /context>
 < context >
 <name>App < /name>
 < message >
 <location filename = "../../app.py"
-line = "94" / >
+line = "98" / >
     <source>Download
 finished < /source>
 < translation > 下载完成 < /translation>
 < /message>
 < message >
 <location filename = "../../app.py"
-line = "94" / >
+line = "98" / >
     <source>Download
 finished.
 {
@@ -114,13 +117,13 @@ now < /source>
 < /message>
 < message >
 <location filename = "../../app.py"
-line = "180" / >
+line = "221" / >
 <source>Close < /source>
 < translation > 关闭 < /translation>
 < /message>
 < message >
 <location filename = "../../app.py"
-line = "180" / >
+line = "221" / >
     <source>There
 is
 a
@@ -136,7 +139,7 @@ app ? </source>
 < /message>
 < message >
 <location filename = "../../app.py"
-line = "163" / >
+line = "201" / >
     <source>Could
 not
 find
@@ -149,20 +152,20 @@ you
 modify
 the
 shortcut ? </source>
-    < translation > 不能在已安装游戏中找到 {}。您是否修改过快捷方式？</translation>
+    < translation > 在已安装的游戏中找不到{}。您修改快捷方式了吗？</translation>
 < /message>
 < /context>
 < context >
 <name>BaseInstalledWidget < /name>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "69" / >
+line = "75" / >
 <source>Launch < /source>
 < translation > 启动 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "136" / >
+line = "162" / >
     <source>Remove
 Desktop
 link < /source>
@@ -170,7 +173,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "146" / >
+line = "174" / >
     <source>Create
 Desktop
 link < /source>
@@ -178,7 +181,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "95" / >
+line = "108" / >
     <source>Remove
 start
 menu
@@ -187,7 +190,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "97" / >
+line = "110" / >
     <source>Create
 start
 menu
@@ -196,20 +199,20 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "102" / >
+line = "117" / >
     <source>Reload
 Image < /source>
 < translation > 重新加载图像 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "106" / >
+line = "121" / >
 <source>Uninstall < /source>
 < translation > 卸载 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "138" / >
+line = "164" / >
     <source>Remove
 Start
 menu
@@ -218,7 +221,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "148" / >
+line = "176" / >
     <source>Create
 Start
 menu
@@ -282,7 +285,7 @@ available < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/base_installed_widget.py"
-line = "74" / >
+line = "80" / >
     <source>Sync
 with cloud < /source>
 < translation > 云同步 < /translation>
@@ -291,7 +294,7 @@ with cloud < /source>
 < context >
 <name>BaseUninstalledWidget < /name>
 < message >
-<location filename = "../../components/tabs/games/game_widgets/base_uninstalled_widget.py" line = "25" / >
+<location filename = "../../components/tabs/games/game_widgets/base_uninstalled_widget.py" line = "30" / >
     <source>Reload
 Image < /source>
 < translation > 重新加载图像 < /translation>
@@ -301,44 +304,22 @@ Image < /source>
 <name>BrowserLogin < /name>
 < message >
 <location filename = "../../ui/components/dialogs/login/browser_login.py"
-line = "56" / >
+line = "81" / >
     <source>Open
 Browser < /source>
 < translation > 打开浏览器 < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/dialogs/login/browser_login.py"
-line = "57" / >
+line = "84" / >
     <source>Login
 through
 browser < /source>
 < translation > 通过浏览器登录 < /translation>
 < /message>
 < message >
-<location filename = "../../ui/components/dialogs/login/browser_login.py"
-line = "58" / >
-    <source>Click
-the
-button
-to
-open
-the
-login
-page in a
-browser.After
-logging in, copy
-the
-SID
-code in the
-input
-above. < /source>
-< translation > 点击该按钮会在浏览器中打开登录页。登录后将
-SID
-码复制到上面的输入框中。</translation>
-< /message>
-< message >
 <location filename = "../../components/dialogs/login/browser_login.py"
-line = "27" / >
+line = "29" / >
     <source>Insert
 SID
 here < /source>
@@ -347,7 +328,7 @@ SID < /translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/login/browser_login.py"
-line = "56" / >
+line = "65" / >
     <source>Logging in
 ...
 </source>
@@ -355,26 +336,64 @@ line = "56" / >
 < /message>
 < message >
 <location filename = "../../components/dialogs/login/browser_login.py"
-line = "64" / >
+line = "75" / >
     <source>Login
 failed. < /source>
 < translation > 登录失败。</translation>
+< /message>
+< message >
+<location filename = "../../components/dialogs/login/browser_login.py"
+line = "44" / >
+    <source>Copied
+to
+clipboard < /source>
+< translation > 已复制到剪贴板 < /translation>
+< /message>
+< message >
+<location filename = "../../ui/components/dialogs/login/browser_login.py"
+line = "82" / >
+    <source>Click
+the
+button
+to
+open
+the
+login
+page in a
+browser
+or
+copy
+the
+link
+and
+paste
+it in a
+browser.After
+logging in, copy
+the
+SID
+code in the
+input
+above. < /source>
+< translation > 点击该按钮可在浏览器中打开登录页面，或者复制链接并将其粘贴到浏览器中。登录后，复制上面输入中的
+SID
+代码。</translation>
 < /message>
 < /context>
 < context >
 <name>CloudSaveDialog < /name>
 < message >
 <location filename = "../../components/tabs/games/cloud_save_utils.py"
-line = "86" / >
+line = "100" / >
 <source>(newer) < /source>
-< translation > (新的) < /translation>
+< translation > (更新版本) < /translation>
 < /message>
 < /context>
 < context >
 <name>CloudSaveUtils < /name>
 < message >
 <location filename = "../../components/tabs/games/cloud_save_utils.py"
-line = "165" / >
+line = "188" / >
     <source>No
 savepath
 found.Please
@@ -386,7 +405,7 @@ manually < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/cloud_save_utils.py"
-line = "220" / >
+line = "250" / >
     <source>No
 savepath
 set.Skip
@@ -397,7 +416,7 @@ with cloud < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/cloud_save_utils.py"
-line = "230" / >
+line = "264" / >
     <source>There
 are
 no
@@ -422,7 +441,7 @@ of
 < /message>
 < message >
 <location filename = "../../components/tabs/games/cloud_save_utils.py"
-line = "158" / >
+line = "172" / >
     <source>Could
 not
 compute
@@ -439,27 +458,29 @@ to
 launch
 {
 }
-anyway ?
-    </source>
-    < translation > 无法计算云存档路径。请在游戏设置中手动设置。
-您是否仍要启动
+anyway ? </source>
+    < translation > 无法确认云端保存路径。请在游戏设置中手动设置。
+是否仍要启动
 {
 }？</translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/cloud_save_utils.py"
-line = "269" / >
+line = "312" / >
     <source>Syncing
 with cloud failed:
-    </source>
-    < translation > 云同步失败：</translation>
-< /message>
+{
+}
+</source>
+< translation
+type = "unfinished" / >
+</message>
 < /context>
 < context >
 <name>ConsoleWindow < /name>
 < message >
 <location filename = "../../components/extra/console.py"
-line = "14" / >
+line = "21" / >
     <source>Save
 output
 to
@@ -468,13 +489,13 @@ file < /source>
 < /message>
 < message >
 <location filename = "../../components/extra/console.py"
-line = "32" / >
+line = "41" / >
 <source>Saved < /source>
 < translation > 已保存 < /translation>
 < /message>
 < message >
 <location filename = "../../components/extra/console.py"
-line = "18" / >
+line = "25" / >
 <source>Clear < /source>
 < translation > 清除 < /translation>
 < /message>
@@ -563,56 +584,56 @@ line = "8" / >
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/constants.py"
-line = "29" / >
+line = "32" / >
     <source>Single
 player < /source>
 < translation > 单人 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/constants.py"
-line = "30" / >
+line = "33" / >
 <source>Multiplayer < /source>
 < translation > 多人 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/constants.py"
-line = "31" / >
+line = "34" / >
 <source>Controller < /source>
 < translation > 控制器 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/constants.py"
-line = "32" / >
+line = "35" / >
 <source>Co - op < /source>
 < translation > 合作社 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/constants.py"
-line = "36" / >
+line = "39" / >
 <source>Editor < /source>
 < translation > 编辑 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/constants.py"
-line = "37" / >
+line = "40" / >
 <source>Game < /source>
 < translation > 游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/constants.py"
-line = "38" / >
+line = "41" / >
 <source>Bundle < /source>
 < translation > 捆绑包 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/constants.py"
-line = "39" / >
+line = "42" / >
 <source>Add - on < /source>
 < translation > 附加组件 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/constants.py"
-line = "40" / >
+line = "43" / >
 <source>Apps < /source>
 < translation > 应用程序 < /translation>
 < /message>
@@ -621,14 +642,14 @@ line = "40" / >
 <name>DlQueueWidget < /name>
 < message >
 <location filename = "../../components/tabs/downloads/dl_queue_widget.py"
-line = "66" / >
+line = "84" / >
     <source>Download
 Queue < /source>
 < translation > 下载队列 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/downloads/dl_queue_widget.py"
-line = "80" / >
+line = "100" / >
     <source>No
 downloads in queue < /source>
 < translation > 队列中没有下载 < /translation>
@@ -638,7 +659,7 @@ downloads in queue < /source>
 <name>DlWidget < /name>
 < message >
 <location filename = "../../components/tabs/downloads/dl_queue_widget.py"
-line = "46" / >
+line = "55" / >
     <source>Download
 size: {
 }
@@ -649,7 +670,7 @@ GB < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/downloads/dl_queue_widget.py"
-line = "47" / >
+line = "60" / >
     <source>Install
 size: {
 }
@@ -660,7 +681,7 @@ GB < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/downloads/dl_queue_widget.py"
-line = "50" / >
+line = "69" / >
     <source>Remove
 Download < /source>
 < translation > 删除下载 < /translation>
@@ -713,13 +734,13 @@ Download < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/downloads/__init__.py"
-line = "42" / >
+line = "48" / >
 <source>Updates < /source>
 < translation > 更新 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/downloads/__init__.py"
-line = "49" / >
+line = "55" / >
     <source>No
 updates
 available < /source>
@@ -727,7 +748,7 @@ available < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/downloads/__init__.py"
-line = "138" / >
+line = "148" / >
     <source>Download
 finished.Reload
 library < /source>
@@ -735,7 +756,7 @@ library < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/downloads/__init__.py"
-line = "182" / >
+line = "197" / >
     <source>No
 active
 download < /source>
@@ -895,7 +916,7 @@ sync < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "45" / >
+line = "48" / >
     <source>Updating
 ...
 </source>
@@ -903,7 +924,7 @@ line = "45" / >
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "33" / >
+line = "34" / >
     <source>Path
 to
 the
@@ -927,7 +948,7 @@ Manifests
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "69" / >
+line = "74" / >
     <source>Default
 Wine
 prefix
@@ -940,20 +961,16 @@ exist.Create
 it
 or
 configure
-it in Settings - &gt;
-Linux.
-< /source>
+it in Settings - &gt; Linux. < /source>
 < translation > 默认
 Wine
-prefix
-未设置，或路径不存在。在
-设置－&gt;
-Linux
-中创建或配置 < /translation>
+Prefix
+未设置或路径不存在。创建它或在设置 - &gt; Linux
+中配置。</translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "73" / >
+line = "81" / >
     <source>Default
 Wine
 prefix
@@ -976,20 +993,18 @@ be
 where
 EGL
 is
-installed.
-< /source>
+installed. < /source>
 < translation > 默认
 Wine
-prefix
+Prefix
 已设置，但
 EGL
-manifests
-路径不存在。您配置的默认
+清单路径不存在。您配置的默认
 Wine
-prefix
+Prefix
 可能不是安装
 EGL
-的地方。</translation>
+的位置。</translation>
 < /message>
 < /context>
 < context >
@@ -1010,14 +1025,14 @@ none < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "190" / >
+line = "210" / >
     <source>Exportable
 games < /source>
 < translation > 可导出的游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "191" / >
+line = "211" / >
     <source>No
 games
 to
@@ -1029,20 +1044,20 @@ EGL < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "192" / >
+line = "212" / >
 <source>Export < /source>
 < translation > 导出 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "195" / >
+line = "215" / >
     <source>Importable
 games < /source>
 < translation > 可导入的游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "196" / >
+line = "216" / >
     <source>No
 games
 to
@@ -1055,25 +1070,25 @@ EGL
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "197" / >
+line = "217" / >
 <source>Import < /source>
 < translation > 导入 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "245" / >
+line = "271" / >
 <source>exporting < /source>
 < translation > 正在导出 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "245" / >
+line = "271" / >
 <source>importing < /source>
 < translation > 正在导入 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/egl_sync_group.py"
-line = "245" / >
+line = "271" / >
     <source>The
 following
 errors
@@ -1083,6 +1098,192 @@ while {}. < /source>
 }
 时发生以下错误 < /translation>
 < /message>
+< /context>
+< context >
+<name>EosWidget < /name>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "127" / >
+    <source>Epic
+Overlay
+settings < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "128" / >
+    <source>Enable / Disable < /source>
+    < translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "129" / >
+    <source>Activated < /source>
+    < translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "130" / >
+    <source>Installed
+Info < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "131" / >
+    <source>Installed
+version:</source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "132" / >
+    <source>Installed
+path < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "133" / >
+    <source>Updates < /source>
+    < translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "134" / >
+    <source>Check
+for Update < /source>
+    < translation type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "136" / >
+    <source>Uninstall < /source>
+    < translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "137" / >
+    <source>Update < /source>
+    < translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "138" / >
+    <source>Install
+Update < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "139" / >
+    <source>Install
+Overlay < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "140" / >
+    <source>No
+overlays
+are
+installed < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../ui/components/tabs/settings/eos_widget.py"
+line = "141" / >
+    <source>Install < /source>
+    < translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../components/tabs/settings/eos.py"
+line = "125" / >
+    <source>No
+update
+available < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../components/tabs/settings/eos.py"
+line = "137" / >
+    <source>Something
+went
+wrong, when
+installing
+overlay < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../components/tabs/settings/eos.py"
+line = "168" / >
+    <source>Disabled < /source>
+    < translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../components/tabs/settings/eos.py"
+line = "194" / >
+    <source>Enabled < /source>
+    < translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../components/tabs/settings/eos.py"
+line = "206" / >
+    <source>Epic
+overlay
+is
+currently
+not
+supported
+by
+wine, so
+it
+won & apos;
+t
+work.Install
+anyway ? </source>
+    < translation type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../components/tabs/settings/eos.py"
+line = "216" / >
+    <source>Overlay
+is
+not
+installed.Could
+not
+update < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../components/tabs/settings/eos.py"
+line = "231" / >
+    <source>Do
+you
+want
+to
+uninstall
+overlay ? </source>
+    < translation type = "unfinished" / >
+</message>
 < /context>
 < context >
 <name>GameDlc < /name>
@@ -1168,7 +1369,7 @@ line = "116" / >
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_dlc.py"
-line = "101" / >
+line = "108" / >
     <source>Install
 DLC < /source>
 < translation > 安装
@@ -1182,13 +1383,13 @@ line = "117" / >
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_dlc.py"
-line = "125" / >
+line = "137" / >
 <source>Installing < /source>
 < translation > 正在安装 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_dlc.py"
-line = "97" / >
+line = "104" / >
     <source>Uninstall
 DLC < /source>
 < translation > 卸载
@@ -1196,7 +1397,7 @@ DLC < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_dlc.py"
-line = "120" / >
+line = "132" / >
 <source>Uninstalling < /source>
 < translation > 正在卸载 < /translation>
 < /message>
@@ -1296,7 +1497,7 @@ Origin / Lauch < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_info.py"
-line = "63" / >
+line = "67" / >
     <source>Repair
 file
 does
@@ -1316,7 +1517,7 @@ first < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_info.py"
-line = "102" / >
+line = "119" / >
     <source>Verification
 failed, {}
 file(s)
@@ -1337,13 +1538,13 @@ them ? </source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_info.py"
-line = "153" / >
+line = "190" / >
 <source>Loading < /source>
 < translation > 正在加载 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_info.py"
-line = "72" / >
+line = "82" / >
     <source>Installation
 path
 of
@@ -1370,7 +1571,7 @@ line = "232" / >
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_info.py"
-line = "99" / >
+line = "116" / >
     <source>Something
 went
 wrong < /source>
@@ -1403,27 +1604,27 @@ Content < /source>
 <name>GameListHeadBar < /name>
 < message >
 <location filename = "../../components/tabs/games/head_bar.py"
-line = "20" / >
+line = "28" / >
 <source>All < /source>
 < translation > 全部 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/head_bar.py"
-line = "20" / >
+line = "28" / >
     <source>Installed
 only < /source>
 < translation > 已安装 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/head_bar.py"
-line = "20" / >
+line = "28" / >
     <source>Offline
 Games < /source>
 < translation > 离线游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/head_bar.py"
-line = "20" / >
+line = "42" / >
     <source>32
 Bit
 Games < /source>
@@ -1432,7 +1633,7 @@ Games < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/head_bar.py"
-line = "20" / >
+line = "50" / >
     <source>Exclude
 Origin < /source>
 < translation > 排除
@@ -1440,21 +1641,21 @@ Origin < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/head_bar.py"
-line = "38" / >
+line = "65" / >
     <source>Import
 Game < /source>
 < translation > 导入游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/head_bar.py"
-line = "57" / >
+line = "84" / >
     <source>Search
 Game < /source>
 < translation > 搜索游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/head_bar.py"
-line = "42" / >
+line = "69" / >
     <source>Sync
 with EGL < /source>
 < translation > 与 EGL
@@ -1462,11 +1663,19 @@ with EGL < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/head_bar.py"
-line = "20" / >
+line = "46" / >
     <source>Mac
 games < /source>
 < translation > Mac
 游戏 < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/games/head_bar.py"
+line = "53" / >
+    <source>Include
+Unreal
+Engine < /source>
+< translation > 包括虚幻引擎 < /translation>
 < /message>
 < /context>
 < context >
@@ -1572,7 +1781,7 @@ line = "164" / >
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "293" / >
+line = "364" / >
     <source>Please
 select
 path
@@ -1591,7 +1800,7 @@ Saves < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "56" / >
+line = "65" / >
     <source>Cloud
 save
 path < /source>
@@ -1599,7 +1808,7 @@ path < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "62" / >
+line = "76" / >
     <source>Auto
 compute
 save
@@ -1608,20 +1817,20 @@ path < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "60" / >
+line = "72" / >
     <source>Save
 path < /source>
 < translation > 保存路径 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "121" / >
+line = "144" / >
 <source>Loading < /source>
 < translation > 正在加载 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_info/game_settings.py"
-line = "142" / >
+line = "171" / >
     <source>Error
 while launching {
 }
@@ -1670,7 +1879,7 @@ executable < /source>
 <name>GameUtils < /name>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "59" / >
+line = "65" / >
     <source>Game
 files
 of
@@ -1686,7 +1895,7 @@ games ? </source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "108" / >
+line = "134" / >
     <source>Do
 you
 want
@@ -1702,7 +1911,7 @@ launch
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "104" / >
+line = "130" / >
     <source>Game
 not
 found in available
@@ -1711,7 +1920,7 @@ games < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "122" / >
+line = "155" / >
     <source>Game
 is
 a
@@ -1725,7 +1934,7 @@ DLC。请改为启动游戏本体 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "126" / >
+line = "161" / >
     <source>Game
 files
 of
@@ -1741,7 +1950,7 @@ game < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "140" / >
+line = "181" / >
     <source>Metadata
 doesn & apos;
 t
@@ -1750,7 +1959,7 @@ exist < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "144" / >
+line = "185" / >
     <source>Please
 update
 game < /source>
@@ -1758,7 +1967,7 @@ game < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "222" / >
+line = "285" / >
     <source>No
 wine
 executable
@@ -1771,7 +1980,7 @@ Wine
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "252" / >
+line = "328" / >
     <source>Failed
 to
 launch
@@ -1783,7 +1992,7 @@ launch
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "173" / >
+line = "217" / >
     <source>Error
 while launching {
 }
@@ -1805,7 +2014,7 @@ for {} < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "211" / >
+line = "268" / >
     <source>Wine
 executable & apos;
 {
@@ -1827,7 +2036,7 @@ apos;
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_utils.py"
-line = "244" / >
+line = "316" / >
     <source>Origin
 is
 not
@@ -1838,10 +2047,11 @@ to
 download
 installer
 file ? </source>
-    < translation > 未安装 Origin。您要下载安装程序文件吗 ? </translation>
+    < translation > Origin 没有安装。您要下载安装程序文件吗？</translation>
 < /message>
 < message >
-<location filename = "../../components/tabs/games/game_utils.py" line = "265" / >
+<location filename = "../../components/tabs/games/game_utils.py"
+line = "346" / >
     <source>Game
 exited
 with code {
@@ -1864,19 +2074,18 @@ want
 to
 sync
 cloud
-saves
-< /source>
-< translation > 游戏退出代码为
+saves < /source>
+< translation > 游戏以代码
 {
-}，这不是一个正常的代码。它可能是由崩溃引起的。是否要同步
-云存档 < /translation>
+}
+退出，这不是正常代码。它可能是由崩溃引起的。是否要同步云存档 < /translation>
 < /message>
 < /context>
 < context >
 <name>GameWidget < /name>
 < message >
 <location filename = "../../components/tabs/shop/game_widgets.py"
-line = "56" / >
+line = "58" / >
 <source>Free < /source>
 < translation > 免费 < /translation>
 < /message>
@@ -1885,7 +2094,7 @@ line = "56" / >
 <name>GamesTab < /name>
 < message >
 <location filename = "../../components/tabs/games/__init__.py"
-line = "177" / >
+line = "207" / >
     <source>Installed
 Games: {
 }
@@ -1904,14 +2113,14 @@ Games: {
 <name>IconWidgetUninstalled < /name>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/uninstalled_icon_widget.py"
-line = "41" / >
+line = "42" / >
     <source>Game
 Info < /source>
 < translation > 游戏信息 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/uninstalled_icon_widget.py"
-line = "43" / >
+line = "44" / >
     <source>Installation
 running < /source>
 < translation > 正在安装 < /translation>
@@ -1956,7 +2165,7 @@ Game < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/import_group.py"
-line = "82" / >
+line = "86" / >
     <source>Use in
 case
 the
@@ -1970,7 +2179,7 @@ automatically < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/import_group.py"
-line = "144" / >
+line = "154" / >
     <source>Could
 not
 find
@@ -1980,7 +2189,7 @@ name < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/import_group.py"
-line = "149" / >
+line = "161" / >
     <source>Successfully
 imported
 {
@@ -1991,18 +2200,18 @@ imported
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/import_group.py"
-line = "160" / >
+line = "177" / >
     <source>Could
 not
 import {}
 
 :
-</source>
-< translation > 不能导入
 {
 }
-</translation>
-< /message>
+</source>
+< translation
+type = "unfinished" / >
+</message>
 < /context>
 < context >
 <name>ImportLogin < /name>
@@ -2048,7 +2257,7 @@ line = "71" / >
 < /message>
 < message >
 <location filename = "../../components/dialogs/login/import_login.py"
-line = "30" / >
+line = "32" / >
     <source>Found
 EGL
 Program
@@ -2067,20 +2276,60 @@ EGL
 < /message>
 < message >
 <location filename = "../../components/dialogs/login/import_login.py"
-line = "31" / >
+line = "56" / >
+    <source>Select
+the
+Wine
+prefix
+you
+want
+to
+import.
+</source>
+< translation > 选择要导入的
+Wine
+prefix。</translation>
+< /message>
+< message >
+<location filename = "../../components/dialogs/login/import_login.py"
+line = "77" / >
+    <source>Choose
+path < /source>
+< translation > 选择路径 < /translation>
+< /message>
+< message >
+<location filename = "../../components/dialogs/login/import_login.py"
+line = "94" / >
+    <source>Loading
+...
+</source>
+< translation > 正在加载
+...
+</translation>
+< /message>
+< message >
+<location filename = "../../components/dialogs/login/import_login.py"
+line = "106" / >
+    <source>Login
+failed. < /source>
+< translation > 登录失败 < /translation>
+< /message>
+< message >
+<location filename = "../../components/dialogs/login/import_login.py"
+line = "35" / >
     <source>Could
 not
 find
 EGL
 Program
 Data. < /source>
-< translation > 不到
+< translation > 找不到
 EGL
 程序数据。</translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/login/import_login.py"
-line = "42" / >
+line = "46" / >
     <source>Please
 select
 the
@@ -2102,64 +2351,28 @@ prefix。</translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/login/import_login.py"
-line = "49" / >
-    <source>Select
-the
-Wine
-prefix
-you
-want
-to
-import.
-</source>
-< translation > 选择要导入的
-Wine
-prefix。</translation>
-< /message>
-< message >
-<location filename = "../../components/dialogs/login/import_login.py"
-line = "68" / >
-    <source>Choose
-path < /source>
-< translation > 选择路径 < /translation>
-< /message>
-< message >
-<location filename = "../../components/dialogs/login/import_login.py"
-line = "81" / >
-    <source>Loading
-...
-</source>
-< translation > 正在加载
-...
-</translation>
-< /message>
-< message >
-<location filename = "../../components/dialogs/login/import_login.py"
-line = "91" / >
+line = "109" / >
     <source>Login
-failed. < /source>
-< translation > 登录失败 < /translation>
-< /message>
-< message >
-<location filename = "../../components/dialogs/login/import_login.py"
-line = "94" / >
-    <source>Login
-failed. < /source>
-< translation > 登录失败 < /translation>
-< /message>
+failed.
+{
+}
+</source>
+< translation
+type = "unfinished" / >
+</message>
 < /context>
 < context >
 <name>ImportSyncTabs < /name>
 < message >
 <location filename = "../../components/tabs/games/import_sync/__init__.py"
-line = "12" / >
+line = "11" / >
     <source>Import
 Game < /source>
 < translation > 导入游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/__init__.py"
-line = "12" / >
+line = "11" / >
     <source>To
 import games from
 
@@ -2177,14 +2390,14 @@ EGL
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/__init__.py"
-line = "18" / >
+line = "17" / >
     <source>Import
 Games < /source>
 < translation > 导入游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/__init__.py"
-line = "26" / >
+line = "25" / >
     <source>Sync
 with EGL < /source>
 < translation > 与 EGL
@@ -2192,7 +2405,7 @@ with EGL < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/import_sync/__init__.py"
-line = "20" / >
+line = "19" / >
     <source>To
 import EGL
 
@@ -2206,6 +2419,62 @@ Game. < /source>
 EGL
 游戏，请使用导入游戏。</translation>
 < /message>
+< /context>
+< context >
+<name>IndicatorReasons < /name>
+< message >
+<location filename = "../../utils/extra_widgets.py"
+line = "147" / >
+    <source>Directory
+is
+not
+empty < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../utils/extra_widgets.py"
+line = "148" / >
+    <source>Given
+text
+has
+wrong
+format < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../utils/extra_widgets.py"
+line = "149" / >
+    <source>Game
+is
+not
+installed
+or
+does
+not
+exist < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../utils/extra_widgets.py"
+line = "150" / >
+    <source>Directory
+does
+not
+exist < /source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../utils/extra_widgets.py"
+line = "151" / >
+    <source>Wrong
+Directory < /source>
+< translation
+type = "unfinished" / >
+</message>
 < /context>
 < context >
 <name>InstallDialog < /name>
@@ -2342,19 +2611,19 @@ line = "186" / >
 < /message>
 < message >
 <location filename = "../../components/dialogs/install_dialog.py"
-line = "42" / >
+line = "53" / >
 <source>Install < /source>
 < translation > 安装 < /translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/install_dialog.py"
-line = "42" / >
+line = "53" / >
 <source>Update < /source>
 < translation > 更新 < /translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/install_dialog.py"
-line = "146" / >
+line = "189" / >
     <source>Updating
 ...
 </source>
@@ -2362,7 +2631,7 @@ line = "146" / >
 < /message>
 < message >
 <location filename = "../../components/dialogs/install_dialog.py"
-line = "186" / >
+line = "240" / >
     <source>Game
 already
 installed < /source>
@@ -2370,7 +2639,7 @@ installed < /source>
 < /message>
 < message >
 <location filename = "../../components/dialogs/install_dialog.py"
-line = "196" / >
+line = "254" / >
 <source>Error < /source>
 < translation > 错误 < /translation>
 < /message>
@@ -2382,7 +2651,7 @@ line = "188" / >
 < /message>
 < message >
 <location filename = "../../components/dialogs/install_dialog.py"
-line = "70" / >
+line = "85" / >
     <source>You
 will
 not
@@ -2405,7 +2674,7 @@ if you choose
 <name>InstalledIconWidget < /name>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/installed_icon_widget.py"
-line = "46" / >
+line = "48" / >
 <source>Information < /source>
 < translation > 信息 < /translation>
 < /message>
@@ -2414,24 +2683,27 @@ line = "46" / >
 <name>InstalledListWidget < /name>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/installed_list_widget.py"
-line = "39" / >
+line = "41" / >
 <source>Launch < /source>
 < translation > 启动 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/installed_list_widget.py"
-line = "39" / >
+line = "41" / >
 <source>Link / Play < /source>
 < translation > 链接 / 开玩 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/installed_list_widget.py"
-line = "56" / >
+line = "60" / >
     <source>Developer
 :
+{
+}
 </source>
-< translation > 开发者：</translation>
-< /message>
+< translation
+type = "unfinished" / >
+</message>
 < /context>
 < context >
 <name>LaunchDialog < /name>
@@ -2462,14 +2734,14 @@ images < /source>
 < /message>
 < message >
 <location filename = "../../components/dialogs/launch_dialog.py"
-line = "130" / >
+line = "107" / >
     <source>Downloading
 Images < /source>
 < translation > 正在下载图片 < /translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/launch_dialog.py"
-line = "195" / >
+line = "180" / >
     <source>Starting
 ...
 </source>
@@ -2482,7 +2754,7 @@ line = "195" / >
 <name>LegendarySettings < /name>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "142" / >
+line = "154" / >
     <source>Default
 Installation
 Directory < /source>
@@ -2490,21 +2762,21 @@ Directory < /source>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "143" / >
+line = "155" / >
     <source>Download
 Settings < /source>
 < translation > 下载设置 < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "144" / >
+line = "156" / >
     <source>Max
 Workers < /source>
 < translation > 最大线程数 < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "148" / >
+line = "160" / >
     <source>Less
 is
 slower(0
@@ -2516,20 +2788,20 @@ Default
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "146" / >
+line = "158" / >
     <source>Max
 Memory < /source>
 < translation > 最大内存 < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "147" / >
+line = "159" / >
 <source>MiB < /source>
 < translation > MiB < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "149" / >
+line = "161" / >
     <source>Preferred
 CDN < /source>
 < translation > 首选
@@ -2537,13 +2809,13 @@ CDN < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "150" / >
+line = "162" / >
 <source>Default < /source>
 < translation > 默认设置 < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "151" / >
+line = "163" / >
     <source>Disable
 HTTPS < /source>
 < translation > 禁用
@@ -2551,19 +2823,19 @@ HTTPS < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "137" / >
+line = "149" / >
 <source>Locale < /source>
 < translation > 语言环境 < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "138" / >
+line = "150" / >
 <source>Cleanup < /source>
 < translation > 清理 < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "139" / >
+line = "151" / >
     <source>Clean, but
 keep
 manifests < /source>
@@ -2572,14 +2844,14 @@ manifests < /translation>
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "140" / >
+line = "152" / >
     <source>Remove
 everything < /source>
 < translation > 移除所有 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/legendary.py"
-line = "135" / >
+line = "184" / >
     <source>Cleanup
 complete!
 Successfully
@@ -2594,13 +2866,27 @@ removed
 < /message>
 < message >
 <location filename = "../../ui/components/tabs/settings/legendary.py"
-line = "141" / >
+line = "164" / >
     <source>Link
 Ubisoft
 Games < /source>
 < translation > 链接
 Ubisoft
 游戏 < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/settings/legendary.py"
+line = "99" / >
+    <source>Refresh
+game
+meta < /source>
+< translation > 刷新游戏元数据 < /translation>
+< /message>
+< message >
+<location filename = "../../components/tabs/settings/legendary.py"
+line = "96" / >
+<source>Loading < /source>
+< translation > 加载中 < /translation>
 < /message>
 < /context>
 < context >
@@ -2637,7 +2923,7 @@ line = "54" / >
 <name>ListWidgetUninstalled < /name>
 < message >
 <location filename = "../../components/tabs/games/game_widgets/uninstalled_list_widget.py"
-line = "25" / >
+line = "26" / >
 <source>Install < /source>
 < translation > 安装 < /translation>
 < /message>
@@ -2730,12 +3016,6 @@ line = "112" / >
 <name>MiniWidget < /name>
 < message >
 <location filename = "../../components/tabs/account/__init__.py"
-line = "19" / >
-<source>Logged in as < /source>
-< translation > 登录为 < /translation>
-< /message>
-< message >
-<location filename = "../../components/tabs/account/__init__.py"
 line = "21" / >
     <source>Account
 settings < /source>
@@ -2743,13 +3023,13 @@ settings < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/account/__init__.py"
-line = "26" / >
+line = "29" / >
 <source>Logout < /source>
 < translation > 登出 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/account/__init__.py"
-line = "32" / >
+line = "35" / >
     <source>Do
 you
 really
@@ -2758,6 +3038,16 @@ to
 logout < /source>
 < translation > 确定要登出吗 < /translation>
 < /message>
+< message >
+<location filename = "../../components/tabs/account/__init__.py"
+line = "19" / >
+    <source>Logged in as
+{
+}
+</source>
+< translation
+type = "unfinished" / >
+</message>
 < /context>
 < context >
 <name>PathEdit < /name>
@@ -2779,7 +3069,7 @@ line = "36" / >
 < /message>
 < message >
 <location filename = "../../utils/extra_widgets.py"
-line = "290" / >
+line = "347" / >
     <source>Choose
 path < /source>
 < translation > 选择路径 < /translation>
@@ -2789,7 +3079,7 @@ path < /source>
 <name>PathInputDialog < /name>
 < message >
 <location filename = "../../components/dialogs/path_input_dialog.py"
-line = "25" / >
+line = "32" / >
 <source>Cancel < /source>
 < translation > 取消 < /translation>
 < /message>
@@ -2798,7 +3088,7 @@ line = "25" / >
 <name>QApplication < /name>
 < message >
 <location filename = "../../app.py"
-line = "43" / >
+line = "44" / >
     <source>Failed
 to
 login < /source>
@@ -3015,7 +3305,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/rare.py"
-line = "151" / >
+line = "165" / >
     <source>Create
 start
 menu
@@ -3024,7 +3314,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/rare.py"
-line = "118" / >
+line = "132" / >
     <source>Remove
 desktop
 link < /source>
@@ -3032,7 +3322,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/rare.py"
-line = "148" / >
+line = "162" / >
     <source>Remove
 start
 menu
@@ -3041,7 +3331,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/rare.py"
-line = "160" / >
+line = "178" / >
     <source>Remove
 Desktop
 link < /source>
@@ -3049,7 +3339,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/rare.py"
-line = "163" / >
+line = "181" / >
     <source>Create
 desktop
 link < /source>
@@ -3057,7 +3347,7 @@ link < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/rare.py"
-line = "111" / >
+line = "125" / >
     <source>Not
 supported < /source>
 < translation > 不受支持 < /translation>
@@ -3067,13 +3357,13 @@ supported < /source>
 <name>SearchResults < /name>
 < message >
 <location filename = "../../components/tabs/shop/search_results.py"
-line = "19" / >
+line = "27" / >
 <source>Back < /source>
 < translation > 返回 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/search_results.py"
-line = "47" / >
+line = "55" / >
     <source>No
 results
 found < /source>
@@ -3084,13 +3374,13 @@ found < /source>
 <name>Shop < /name>
 < message >
 <location filename = "../../components/tabs/shop/__init__.py"
-line = "25" / >
+line = "28" / >
 <source>Games < /source>
 < translation > 游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/__init__.py"
-line = "26" / >
+line = "29" / >
 <source>Wishlist < /source>
 < translation > 愿望单 < /translation>
 < /message>
@@ -3099,7 +3389,7 @@ line = "26" / >
 <name>ShopGameInfo < /name>
 < message >
 <location filename = "../../components/tabs/shop/game_info.py"
-line = "46" / >
+line = "56" / >
     <source>Remove
 from
 Wishlist < /source>
@@ -3107,7 +3397,7 @@ Wishlist < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/game_info.py"
-line = "72" / >
+line = "82" / >
     <source>Show
 Game
 on
@@ -3119,7 +3409,7 @@ Epic
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/game_info.py"
-line = "75" / >
+line = "85" / >
     <source>Buy
 Game in Epic
 Games
@@ -3130,31 +3420,31 @@ Epic
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/game_info.py"
-line = "81" / >
+line = "91" / >
 <source>Loading < /source>
 < translation > 正在加载 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/game_info.py"
-line = "139" / >
+line = "158" / >
 <source>Free < /source>
 < translation > 免费 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/game_info.py"
-line = "151" / >
+line = "173" / >
 <source>Minimum < /source>
 < translation > 最低 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/game_info.py"
-line = "153" / >
+line = "175" / >
 <source>Recommend < /source>
 < translation > 推荐 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/game_info.py"
-line = "170" / >
+line = "194" / >
     <source>Could
 not
 get
@@ -3163,7 +3453,7 @@ requirements < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/game_info.py"
-line = "197" / >
+line = "226" / >
     <source>Social
 Links < /source>
 < translation > 社交媒体 < /translation>
@@ -3289,14 +3579,14 @@ Tags < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/shop_widget.py"
-line = "119" / >
+line = "137" / >
     <source>Now
 Free < /source>
 < translation > 现在免费 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/shop_widget.py"
-line = "123" / >
+line = "141" / >
     <source>Free
 Games
 next
@@ -3305,14 +3595,14 @@ week < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/shop_widget.py"
-line = "52" / >
+line = "58" / >
     <source>Search
 Games < /source>
 < translation > 搜索游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/shop_widget.py"
-line = "273" / >
+line = "340" / >
     <source>Could
 not
 get
@@ -3324,35 +3614,52 @@ filter < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/shop_widget.py"
-line = "113" / >
+line = "129" / >
 <source>Reload < /source>
 < translation > 重载 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/shop_widget.py"
-line = "81" / >
-    <source>Failed
-to
-get
-wishlist: </source>
-< translation > 获取愿望单失败：</translation>
+line = "200" / >
+    <source>Could
+not
+find
+current
+free
+game < /source>
+< translation > 找不到当前的免费游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/shop_widget.py"
-line = "112" / >
+line = "90" / >
+    <source>Failed
+to
+get
+wishlist: {
+}
+</source>
+< translation
+type = "unfinished" / >
+</message>
+< message >
+<location filename = "../../components/tabs/shop/shop_widget.py"
+line = "126" / >
     <source>Failed
 to
 fetch
 free
-games: </source>
-< translation > 无法获取免费游戏：</translation>
-< /message>
+games: {
+}
+</source>
+< translation
+type = "unfinished" / >
+</message>
 < /context>
 < context >
 <name>SideTabWidget < /name>
 < message >
 <location filename = "../../utils/extra_widgets.py"
-line = "344" / >
+line = "401" / >
 <source>Back < /source>
 < translation > 返回 < /translation>
 < /message>
@@ -3404,22 +3711,20 @@ save, you
 want
 to
 use
-for</source>
-   < translation > 选择存档，
-您要用于 < /translation>
-< /message>
-< /context>
-< context >
-<name>TabWidget < /name>
-< message >
-<location filename = "../../components/tabs/__init__.py"
-line = "27" / >
+for </source>
+    < translation > 选择您想用于的存档 < /translation>
+    < /message>
+    < /context>
+    < context >
+    <name>TabWidget < /name>
+    < message >
+    <location filename = "../../components/tabs/__init__.py" line = "27" / >
 <source>Games < /source>
 < translation > 游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/__init__.py"
-line = "35" / >
+line = "42" / >
 <source>Store(Beta) < /source>
 < translation > 商店(Beta) < /translation>
 < /message>
@@ -3428,7 +3733,7 @@ line = "35" / >
 <name>TrayIcon < /name>
 < message >
 <location filename = "../../components/tray_icon.py"
-line = "17" / >
+line = "50" / >
 <source>Exit < /source>
 < translation > 退出 < /translation>
 < /message>
@@ -3437,7 +3742,7 @@ line = "17" / >
 <name>UbiActivationHelper < /name>
 < message >
 <location filename = "../../components/tabs/settings/ubisoft_activation.py"
-line = "130" / >
+line = "142" / >
     <source>Your
 account
 is
@@ -3453,7 +3758,7 @@ Ubisoft
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/ubisoft_activation.py"
-line = "132" / >
+line = "149" / >
     <source>Open
 link
 page < /source>
@@ -3461,7 +3766,7 @@ page < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/ubisoft_activation.py"
-line = "137" / >
+line = "156" / >
     <source>An
 error
 occurred < /source>
@@ -3469,7 +3774,7 @@ occurred < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/ubisoft_activation.py"
-line = "169" / >
+line = "190" / >
     <source>All
 your
 Ubisoft
@@ -3482,7 +3787,7 @@ activated < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/ubisoft_activation.py"
-line = "172" / >
+line = "196" / >
     <source>You
 don & apos;
 t
@@ -3499,7 +3804,7 @@ Ubisoft
 <name>UbiLinkWidget < /name>
 < message >
 <location filename = "../../components/tabs/settings/ubisoft_activation.py"
-line = "88" / >
+line = "90" / >
     <source>Redeem
 to
 Ubisoft < /source>
@@ -3508,14 +3813,14 @@ Ubisoft < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/ubisoft_activation.py"
-line = "108" / >
+line = "116" / >
     <source>Already
 activated < /source>
 < translation > 已激活 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/settings/ubisoft_activation.py"
-line = "112" / >
+line = "122" / >
     <source>Try
 again < /source>
 < translation > 重试 < /translation>
@@ -3525,7 +3830,7 @@ again < /source>
 <name>UninstallDialog < /name>
 < message >
 <location filename = "../../components/dialogs/uninstall_dialog.py"
-line = "15" / >
+line = "23" / >
     <source>Do
 you
 really
@@ -3542,14 +3847,14 @@ uninstall
 < /message>
 < message >
 <location filename = "../../components/dialogs/uninstall_dialog.py"
-line = "17" / >
+line = "27" / >
     <source>Keep
 Files < /source>
 < translation > 保留文件 < /translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/uninstall_dialog.py"
-line = "20" / >
+line = "30" / >
     <source>Do
 you
 want
@@ -3560,13 +3865,13 @@ files ? </source>
 < /message>
 < message >
 <location filename = "../../components/dialogs/uninstall_dialog.py"
-line = "24" / >
+line = "34" / >
 <source>Uninstall < /source>
 < translation > 卸载 < /translation>
 < /message>
 < message >
 <location filename = "../../components/dialogs/uninstall_dialog.py"
-line = "27" / >
+line = "39" / >
 <source>Cancel < /source>
 < translation > 取消 < /translation>
 < /message>
@@ -3575,7 +3880,7 @@ line = "27" / >
 <name>UninstalledInfo < /name>
 < message >
 <location filename = "../../components/tabs/games/game_info/uninstalled_info.py"
-line = "104" / >
+line = "110" / >
 <source>Loading < /source>
 < translation > 正在加载 < /translation>
 < /message>
@@ -3605,39 +3910,18 @@ line = "32" / >
 <name>UpdateWidget < /name>
 < message >
 <location filename = "../../components/tabs/downloads/__init__.py"
-line = "237" / >
+line = "274" / >
     <source>Update
 Game < /source>
 < translation > 更新游戏 < /translation>
 < /message>
 < message >
 <location filename = "../../components/tabs/downloads/__init__.py"
-line = "243" / >
+line = "280" / >
     <source>Version
 :
 </source>
 < translation > 版本：</translation>
-< /message>
-< /context>
-< context >
-<name>VerifyWorker < /name>
-< message >
-<location filename = "../../utils/legendary_utils.py"
-line = "141" / >
-    <source>Path
-does
-not
-exist < /source>
-< translation > 路径不存在 < /translation>
-< /message>
-< message >
-<location filename = "../../utils/legendary_utils.py"
-line = "144" / >
-    <source>No
-files
-to
-validate < /source>
-< translation > 没有需验证的文件 < /translation>
 < /message>
 < /context>
 < context >
@@ -3711,7 +3995,7 @@ filter < /source>
 < /message>
 < message >
 <location filename = "../../components/tabs/shop/wishlist.py"
-line = "36" / >
+line = "40" / >
     <source>Could
 not
 remove
@@ -3725,7 +4009,7 @@ wishlist < /source>
 <name>WishlistWidget < /name>
 < message >
 <location filename = "../../components/tabs/shop/game_widgets.py"
-line = "101" / >
+line = "112" / >
 <source>Free < /source>
 < translation > 免费 < /translation>
 < /message>
@@ -3734,7 +4018,7 @@ line = "101" / >
 <name>_SearchResultItem < /name>
 < message >
 <location filename = "../../components/tabs/shop/search_results.py"
-line = "85" / >
+line = "93" / >
 <source>Free < /source>
 < translation > 免费 < /translation>
 < /message>
