@@ -54,7 +54,7 @@ class DxvkSettings(QGroupBox, Ui_DxvkSettings):
                     try:
                         self.dxvk_options_map[opt].setChecked(True)
                     except KeyError:
-                        print("Malformed DXVK Option: " + opt)
+                        print(f"Malformed DXVK Option: {opt}")
                         continue
         else:
             self.show_dxvk.setCurrentIndex(0)

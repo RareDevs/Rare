@@ -288,13 +288,13 @@ class CloudSaveUtils(QObject):
             self.download_saves(igame)
 
     def upload_saves(self, igame: InstalledGame, dt_local):
-        logger.info("Uploading saves for " + igame.title)
+        logger.info(f"Uploading saves for {igame.title}")
         w = SaveWorker(UploadModel(igame.app_name, dt_local, igame.save_path))
         w.signals.finished.connect(self.worker_finished)
         self.thread_pool.start(w)
 
     def download_saves(self, igame):
-        logger.info("Downloading saves for " + igame.title)
+        logger.info(f"Downloading saves for {igame.title}")
         w = SaveWorker(
             DownloadModel(
                 igame.app_name, self.latest_saves.get(igame.app_name), igame.save_path
@@ -312,7 +312,7 @@ class CloudSaveUtils(QObject):
             QMessageBox.warning(
                 None,
                 "Warning",
-                self.tr("Syncing with cloud failed: \n ") + error_message,
+                self.tr("Syncing with cloud failed: \n {}").format(error_message)
             )
             self.sync_finished.emit(app_name)
 

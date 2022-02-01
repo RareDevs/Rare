@@ -112,7 +112,7 @@ class App(QApplication):
 
         if os.path.isfile(f := os.path.join(resources_path, "languages", f"{lang}.qm")):
             self.translator.load(f)
-            logger.info("Your language is supported: " + lang)
+            logger.info(f"Your language is supported: {lang}")
         elif not lang == "en":
             logger.info("Your language is not supported")
         self.installTranslator(self.translator)
@@ -189,8 +189,7 @@ class App(QApplication):
                 i.app_name for i in self.core.get_installed_list()
             ]:
                 logger.info(
-                    "Launching "
-                    + self.core.get_installed_game(shared.args.app_name).title
+                    f"Launching {self.core.get_installed_game(shared.args.app_name).title}"
                 )
                 self.mainwindow.tab_widget.games_tab.game_utils.prepare_launch(
                     shared.args.app_name

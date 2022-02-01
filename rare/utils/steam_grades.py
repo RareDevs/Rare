@@ -74,7 +74,7 @@ def get_grade(steam_code):
         return "fail"
     steam_code = str(steam_code)
     url = "https://www.protondb.com/api/v1/reports/summaries/"
-    res = requests.get(url + steam_code + ".json")
+    res = requests.get(f"{url}{steam_code}.json")
     try:
         lista = json.loads(res.text)
     except json.decoder.JSONDecodeError:

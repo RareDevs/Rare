@@ -152,7 +152,7 @@ class RareSettings(QWidget, Ui_RareSettings):
 
     def clean_logdir(self):
         for i in os.listdir(os.path.join(cache_dir, "logs")):
-            os.remove(os.path.join(cache_dir, "logs/") + i)
+            os.remove(os.path.join(cache_dir, f"logs/{i}"))
         self.log_dir_size_label.setText("0KB")
 
     def create_start_menu_link(self):
@@ -168,7 +168,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             QMessageBox.warning(
                 self,
                 "Error",
-                "Permission error, cannot remove " + str(self.start_menu_link),
+                f"Permission error, cannot remove {self.start_menu_link}",
             )
 
     def create_desktop_link(self):
@@ -183,7 +183,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             logger.warning(
                 self,
                 "Error",
-                "Permission error, cannot remove " + str(self.desktop_file),
+                f"Permission error, cannot remove {self.desktop_file}",
             )
 
     def on_color_select_changed(self, color):

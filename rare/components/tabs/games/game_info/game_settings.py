@@ -41,7 +41,7 @@ def find_proton_wrappers():
                 if os.path.exists(proton) and (
                     os.path.exists(compatibilitytool) or os.path.exists(toolmanifest)
                 ):
-                    wrapper = '"' + proton + '" run'
+                    wrapper = f'"{proton}" run'
                     possible_proton_wrappers.append(wrapper)
     if not possible_proton_wrappers:
         logger.warning("Unable to find any Proton version")
@@ -260,8 +260,8 @@ class GameSettings(QWidget, Ui_GameSettings):
                         self.core.lgd.config.remove_option(
                             f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH"
                         )
-                    if not self.core.lgd.config[self.game.app_name + ".env"]:
-                        self.core.lgd.config.remove_section(self.game.app_name + ".env")
+                    if not self.core.lgd.config[f"{self.game.app_name}.env"]:
+                        self.core.lgd.config.remove_section(f"{self.game.app_name}.env")
                 self.proton_prefix.setEnabled(False)
                 # lk: TODO: This has to be fixed properly.
                 # lk: It happens because of the widget update. Mask it for now behind disabling the save button
@@ -279,12 +279,12 @@ class GameSettings(QWidget, Ui_GameSettings):
                 wrapper = self.possible_proton_wrappers[i - 1]
                 if self.game.app_name not in self.core.lgd.config.sections():
                     self.core.lgd.config[self.game.app_name] = {}
-                if self.game.app_name + ".env" not in self.core.lgd.config.sections():
-                    self.core.lgd.config[self.game.app_name + ".env"] = {}
+                if f"{self.game.app_name}.env" not in self.core.lgd.config.sections():
+                    self.core.lgd.config[f"{self.game.app_name}.env"] = {}
                 self.core.lgd.config.set(self.game.app_name, "wrapper", wrapper)
                 self.core.lgd.config.set(self.game.app_name, "no_wine", "true")
                 self.core.lgd.config.set(
-                    self.game.app_name + ".env",
+                    f"{self.game.app_name}.env",
                     "STEAM_COMPAT_DATA_PATH",
                     os.path.expanduser("~/.proton"),
                 )
@@ -305,7 +305,7 @@ class GameSettings(QWidget, Ui_GameSettings):
 
     def proton_prefix_save(self, text: str):
         self.core.lgd.config.set(
-            self.game.app_name + ".env", "STEAM_COMPAT_DATA_PATH", text
+             + f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH", text
         )
         self.core.lgd.save_config()
 

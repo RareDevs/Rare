@@ -117,7 +117,7 @@ class DlQueueWidget(QGroupBox):
                 self.item_removed.emit(app_name)
                 break
         else:
-            logger.warning("BUG! " + app_name)
+            logger.warning(f"BUG! {app_name}")
             return
         self.update_list.emit(self.dl_queue)
         self.update_queue(self.dl_queue)
@@ -130,7 +130,7 @@ class DlQueueWidget(QGroupBox):
                 index = i
                 break
         else:
-            logger.warning("Could not find appname" + app_name)
+            logger.warning(f"Could not find appname {app_name}")
             return
         self.dl_queue.insert(index - 1, self.dl_queue.pop(index))
         self.update_list.emit(self.dl_queue)
@@ -144,7 +144,7 @@ class DlQueueWidget(QGroupBox):
                 index = i
                 break
         else:
-            logger.warning("infoCould not find appname" + app_name)
+            logger.warning(f"Info: Could not find appname {app_name}")
             return
         self.dl_queue.insert(index + 1, self.dl_queue.pop(index))
         self.update_list.emit(self.dl_queue)

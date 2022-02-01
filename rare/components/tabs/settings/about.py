@@ -51,7 +51,7 @@ class About(QWidget, Ui_About):
         if self.update_available:
             logger.info(f"Update available: {__version__} -> {latest_tag}")
             self.update_lbl.setText(
-                self.tr("Update available: ") + f"{__version__} -> {latest_tag}"
+                self.tr("Update available: {} -> {}").format(__version__, latest_tag)
             )
             self.update_label.setVisible(True)
             self.update_lbl.setVisible(True)

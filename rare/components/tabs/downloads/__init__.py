@@ -146,7 +146,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
     def status(self, text):
         if text == "finish":
             self.dl_name.setText(self.tr("Download finished. Reload library"))
-            logger.info("Download finished: " + self.active_game.app_title)
+            logger.info(f"Download finished: {self.active_game.app_title}")
 
             game = self.active_game
             self.active_game = None
@@ -180,7 +180,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
                 self.queue_widget.update_queue(self.dl_queue)
 
         elif text[:5] == "error":
-            QMessageBox.warning(self, "warn", "Download error: " + text[6:])
+            QMessageBox.warning(self, "warn", f"Download error: {text[6:]}")
 
         elif text == "stop":
             self.reset_infos()

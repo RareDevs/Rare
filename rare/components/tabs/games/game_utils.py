@@ -143,7 +143,7 @@ class GameUtils(QObject):
                 logger.info("Cancel Startup")
                 self.finished.emit(app_name, "")
                 return
-        logger.info("Launching " + game.app_title)
+        logger.info(f"Launching {game.app_title}")
 
         if game.third_party_store == "Origin":
             offline = False
@@ -309,7 +309,7 @@ class GameUtils(QObject):
             )
 
     def game_finished(self, exit_code, app_name):
-        logger.info("Game exited with exit code: " + str(exit_code))
+        logger.info(f"Game exited with exit code: {exit_code}")
         is_origin = self.core.get_game(app_name).third_party_store == "Origin"
         if exit_code == 53 and is_origin:
             msg_box = QMessageBox()

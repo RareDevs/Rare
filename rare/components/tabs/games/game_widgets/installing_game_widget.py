@@ -111,5 +111,5 @@ class PaintWidget(QWidget):
         # draw text
         painter.setPen(QColor(*text_color_for_background(self.rgb_tuple)))
         painter.setFont(QFont(None, 16))
-        painter.drawText(a0.rect(), Qt.AlignCenter, str(self.progress) + "%")
+        painter.drawText(a0.rect(), Qt.AlignCenter, f"{self.progress}%")
         painter.end()
