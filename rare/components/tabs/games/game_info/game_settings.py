@@ -305,7 +305,7 @@ class GameSettings(QWidget, Ui_GameSettings):
 
     def proton_prefix_save(self, text: str):
         self.core.lgd.config.set(
-             + f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH", text
+            f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH", text
         )
         self.core.lgd.save_config()
 
