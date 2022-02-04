@@ -25,6 +25,7 @@ class InstallOptionsModel:
     silent: bool = False
     platform: str = ""
     overlay: bool = False
+    create_shortcut: bool = True
 
     def set_no_install(self, enabled: bool) -> None:
         self.no_install = enabled

@@ -15,6 +15,7 @@ from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate, WriterTask
 from rare import shared
 from rare.utils.models import InstallQueueItemModel
+from rare.utils.utils import create_desktop_link
 
 logger = getLogger("DownloadThread")
 
@@ -189,6 +190,13 @@ class DownloadThread(QThread):
             self.logger.info("Deleting now untagged files.")
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
+
+        if not self.queue_item.options.update and self.queue_item.options.create_shortcut:
+            if not create_desktop_link(self.queue_item.options.app_name, self.core, "desktop"):
+                # maybe add it to download summary, to show in finished downloads
+                pass
+            else:
+                logger.info("Desktop shortcut written")
 
         self.status.emit("finish")
 

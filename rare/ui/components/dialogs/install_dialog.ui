@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>340</width>
-    <height>296</height>
+    <height>314</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -205,50 +205,53 @@
     </widget>
    </item>
    <item row="9" column="1">
-    <widget class="QLabel" name="install_size_info_label">
-     <property name="font">
-      <font>
-       <italic>true</italic>
-      </font>
-     </property>
-     <property name="text">
-      <string>Click verify...</string>
-     </property>
-    </widget>
+       <widget class="QLabel" name="install_size_info_label">
+           <property name="font">
+               <font>
+                   <italic>true</italic>
+               </font>
+           </property>
+           <property name="text">
+               <string>Click verify...</string>
+           </property>
+           <property name="wordWrap">
+               <bool>true</bool>
+           </property>
+       </widget>
    </item>
-   <item row="10" column="0">
-    <widget class="QLabel" name="warn_label">
-     <property name="text">
-      <string>Warnings</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="1">
-    <widget class="QLabel" name="warn_message">
-     <property name="font">
-      <font>
-       <italic>true</italic>
-      </font>
-     </property>
-     <property name="text">
-      <string>None</string>
-     </property>
-     <property name="wordWrap">
+      <item row="11" column="0">
+          <widget class="QLabel" name="warn_label">
+              <property name="text">
+                  <string>Warnings</string>
+              </property>
+          </widget>
+      </item>
+      <item row="11" column="1">
+          <widget class="QLabel" name="warn_message">
+              <property name="font">
+                  <font>
+                      <italic>true</italic>
+                  </font>
+              </property>
+              <property name="text">
+                  <string>None</string>
+              </property>
+              <property name="wordWrap">
       <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="13" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="button_layout">
-     <item>
-      <spacer name="button_hspacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
+      <item row="14" column="0" colspan="2">
+          <layout class="QHBoxLayout" name="button_layout">
+              <item>
+                  <spacer name="button_hspacer">
+                      <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                          <size>
+                              <width>40</width>
+                              <height>20</height>
         </size>
        </property>
       </spacer>
@@ -274,18 +277,35 @@
        </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item row="4" column="1">
-    <widget class="QComboBox" name="platform_combo_box"/>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="platform_label">
-     <property name="text">
-      <string>Platform</string>
-     </property>
-    </widget>
-   </item>
+          </layout>
+      </item>
+      <item row="4" column="1">
+          <widget class="QComboBox" name="platform_combo_box"/>
+      </item>
+      <item row="4" column="0">
+          <widget class="QLabel" name="platform_label">
+              <property name="text">
+                  <string>Platform</string>
+              </property>
+          </widget>
+      </item>
+      <item row="12" column="0">
+          <widget class="QLabel" name="shortcut_lbl">
+              <property name="text">
+                  <string>Create shortcut</string>
+              </property>
+          </widget>
+      </item>
+      <item row="12" column="1">
+          <widget class="QCheckBox" name="shortcut_cb">
+              <property name="text">
+                  <string notr="true"/>
+              </property>
+              <property name="checked">
+                  <bool>true</bool>
+              </property>
+          </widget>
+      </item>
   </layout>
  </widget>
  <resources/>

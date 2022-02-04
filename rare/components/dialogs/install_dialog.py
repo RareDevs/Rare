@@ -69,6 +69,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         if self.update:
             self.install_dir_label.setVisible(False)
             self.install_dir_edit.setVisible(False)
+            self.shortcut_lbl.setVisible(False)
+            self.shortcut_cb.setVisible(False)
+            self.shortcut_cb.setChecked(False)
 
         self.warn_label.setVisible(False)
         self.warn_message.setVisible(False)
@@ -112,6 +115,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.download_only_check.stateChanged.connect(
             lambda: self.non_reload_option_changed("download_only")
         )
+        self.shortcut_cb.stateChanged.connect(
+            lambda: self.non_reload_option_changed("shortcut")
+        )
         self.sdl_list_checks = list()
         try:
             for key, info in games[self.app_name].items():
@@ -143,6 +149,15 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.download_only_check.setVisible(False)
             self.download_only_info_label.setVisible(False)
             self.download_only_label.setVisible(False)
+            self.shortcut_cb.setVisible(False)
+            self.shortcut_lbl.setVisible(False)
+
+        if platform.system() == "Darwin":
+            self.shortcut_cb.setDisabled(True)
+            self.shortcut_cb.setChecked(False)
+            self.shortcut_cb.setToolTip(self.tr("Creating a shortcut is not supported on MacOS"))
+
+        self.non_reload_option_changed("shortcut")
 
         self.cancel_button.clicked.connect(self.cancel_clicked)
         self.verify_button.clicked.connect(self.verify_clicked)
@@ -206,16 +221,13 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.options_changed = True
         self.install_button.setEnabled(False)
         self.verify_button.setEnabled(not self.worker_running)
-        # directory is not empty
-        full_path = os.path.join(self.dl_item.options.base_path, self.game_path)
-        if not self.dl_item.options.update and os.path.exists(full_path) and len(os.listdir(full_path)) != 0:
-            return False, path, PathEdit.reasons.dir_not_empty
-
         return True, path, ""
 
     def non_reload_option_changed(self, option: str):
         if option == "download_only":
             self.dl_item.options.no_install = self.download_only_check.isChecked()
+        elif option == "shortcut":
+            self.dl_item.options.create_shortcut = self.shortcut_cb.isChecked()
 
     def cancel_clicked(self):
         self.dl_item.download = None
@@ -254,6 +266,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         error_text = self.tr("Error")
         self.download_size_info_label.setText(error_text)
         self.install_size_info_label.setText(error_text)
+        self.warn_label.setText(error_text)
+        self.warn_message.setText(message)
+        self.warn_message.setVisible(True)
+        self.warn_label.setVisible(True)
         QMessageBox.critical(self, self.windowTitle(), message)
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)

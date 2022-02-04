@@ -45,8 +45,10 @@ class DxvkSettings(QGroupBox, Ui_DxvkSettings):
         if dxvk_options is not None:
             if dxvk_options == "0":
                 self.show_dxvk.setCurrentIndex(1)
+                return
             elif dxvk_options == "1":
                 self.show_dxvk.setCurrentIndex(2)
+                return
             else:
                 self.show_dxvk.setCurrentIndex(3)
                 self.gb_dxvk_options.setDisabled(False)

@@ -40,7 +40,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
 
         # dxvk
         self.dxvk = DxvkSettings(self.name)
-        self.dxvk_layout.addWidget(self.dxvk)
+        self.overlay_layout.addWidget(self.dxvk)
 
     def load_prefix(self) -> str:
         return self.load_setting(
