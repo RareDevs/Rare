@@ -2,6 +2,7 @@ import configparser
 import logging
 import os
 import platform
+import shutil
 import sys
 import time
 import traceback
@@ -15,7 +16,7 @@ import legendary
 # noinspection PyUnresolvedReferences
 import rare.resources.resources
 import rare.shared as shared
-from rare import cache_dir, resources_path
+from rare import cache_dir, resources_path, tmp_dir
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
@@ -233,6 +234,9 @@ class App(QApplication):
         if self.tray_icon is not None:
             self.tray_icon.deleteLater()
         self.processEvents()
+        shutil.rmtree(tmp_dir)
+        os.makedirs(tmp_dir)
+
         self.exit(exit_code)
 
 
