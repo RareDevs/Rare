@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
     QFileIconProvider,
 )
 
-from rare import cache_dir
+from rare import tmp_dir
 from rare.utils.qt_requests import QtRequestManager
 from rare.utils.utils import icon as qta_icon
 
@@ -473,7 +473,7 @@ class ImageLabel(QLabel):
 
     def __init__(self):
         super(ImageLabel, self).__init__()
-        self.path = cache_dir
+        self.path = tmp_dir
         self.manager = QtRequestManager("bytes")
 
     def update_image(self, url, name="", size: tuple = (240, 320)):
@@ -491,6 +491,7 @@ class ImageLabel(QLabel):
             self.manager.get(url, self.image_ready)
             # self.request.finished.connect(self.image_ready)
         else:
+            print("image exists")
             self.show_image()
 
     def image_ready(self, data):
@@ -506,6 +507,8 @@ class ImageLabel(QLabel):
             Qt.KeepAspectRatio,
             transformMode=Qt.SmoothTransformation,
         )
+
+        image.save(os.path.join(self.path, self.name))
 
         pixmap = QPixmap().fromImage(image)
         self.setPixmap(pixmap)

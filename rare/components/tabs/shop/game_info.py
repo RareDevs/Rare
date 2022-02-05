@@ -133,7 +133,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
                     "VaultClosed",
                     "ProductLogo",
                 ]:
-                    self.image.update_image(img["url"], size=(240, 320))
+                    self.image.update_image(img["url"], self.title_str, size=(240, 320))
                     self.image_stack.setCurrentIndex(0)
                     break
             else:
