@@ -17,6 +17,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 from rare.components.tabs.settings.linux import LinuxSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
+from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import WineResolver, get_raw_save_path
 from rare.utils.utils import icon
@@ -192,21 +193,11 @@ class GameSettings(QWidget, Ui_GameSettings):
 
     def save_line_edit(self, option, value):
         if value:
-            if self.game.app_name not in self.core.lgd.config.sections():
-                self.core.lgd.config.add_section(self.game.app_name)
-            self.core.lgd.config.set(self.game.app_name, option, value)
+
+            config_helper.add_option(self.game.app_name, option, value)
         else:
-            if (
-                self.core.lgd.config.has_section(self.game.app_name)
-                and self.core.lgd.config.get(
-                    f"{self.game.app_name}", option, fallback=None
-                )
-                is not None
-            ):
-                self.core.lgd.config.remove_option(self.game.app_name, option)
-                if not self.core.lgd.config[self.game.app_name]:
-                    self.core.lgd.config.remove_section(self.game.app_name)
-        self.core.lgd.save_config()
+            config_helper.remove_option(self.game.app_name, option)
+        config_helper.save_config()
 
         if option == "wine_prefix":
             if self.game.supports_cloud_saves:
@@ -216,52 +207,22 @@ class GameSettings(QWidget, Ui_GameSettings):
         if self.change:
             # remove section
             if i:
-                if self.game.app_name not in self.core.lgd.config.sections():
-                    self.core.lgd.config.add_section(self.game.app_name)
                 if i == 1:
-                    self.core.lgd.config.set(self.game.app_name, option, "true")
+                    config_helper.add_option(self.game.app_name, option, "true")
                 if i == 2:
-                    self.core.lgd.config.set(self.game.app_name, option, "false")
+                    config_helper.add_option(self.game.app_name, option, "false")
             else:
-                if self.game.app_name in self.core.lgd.config.sections():
-                    if self.core.lgd.config.get(
-                        f"{self.game.app_name}", option, fallback=False
-                    ):
-                        self.core.lgd.config.remove_option(self.game.app_name, option)
-                if not self.core.lgd.config[self.game.app_name]:
-                    self.core.lgd.config.remove_section(self.game.app_name)
-            self.core.lgd.save_config()
+                config_helper.remove_option(self.game.app_name, option)
+            config_helper.save_config()
 
     def change_proton(self, i):
         if self.change:
             # Dont use Proton
             if i == 0:
-                if f"{self.game.app_name}" in self.core.lgd.config.sections():
-                    if self.core.lgd.config.get(
-                        f"{self.game.app_name}", "wrapper", fallback=False
-                    ):
-                        self.core.lgd.config.remove_option(
-                            self.game.app_name, "wrapper"
-                        )
-                    if self.core.lgd.config.get(
-                        f"{self.game.app_name}", "no_wine", fallback=False
-                    ):
-                        self.core.lgd.config.remove_option(
-                            self.game.app_name, "no_wine"
-                        )
-                    if not self.core.lgd.config[self.game.app_name]:
-                        self.core.lgd.config.remove_section(self.game.app_name)
-                if f"{self.game.app_name}.env" in self.core.lgd.config.sections():
-                    if self.core.lgd.config.get(
-                        f"{self.game.app_name}.env",
-                        "STEAM_COMPAT_DATA_PATH",
-                        fallback=False,
-                    ):
-                        self.core.lgd.config.remove_option(
-                            f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH"
-                        )
-                    if not self.core.lgd.config[f"{self.game.app_name}.env"]:
-                        self.core.lgd.config.remove_section(f"{self.game.app_name}.env")
+                config_helper.remove_option(self.game.app_name, "wrapper")
+                config_helper.remove_option(self.game.app_name, "no_wine")
+                config_helper.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH")
+
                 self.proton_prefix.setEnabled(False)
                 # lk: TODO: This has to be fixed properly.
                 # lk: It happens because of the widget update. Mask it for now behind disabling the save button
@@ -277,13 +238,10 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.wrapper.setEnabled(False)
                 self.linux_settings.wine_groupbox.setEnabled(False)
                 wrapper = self.possible_proton_wrappers[i - 1]
-                if self.game.app_name not in self.core.lgd.config.sections():
-                    self.core.lgd.config[self.game.app_name] = {}
-                if f"{self.game.app_name}.env" not in self.core.lgd.config.sections():
-                    self.core.lgd.config[f"{self.game.app_name}.env"] = {}
-                self.core.lgd.config.set(self.game.app_name, "wrapper", wrapper)
-                self.core.lgd.config.set(self.game.app_name, "no_wine", "true")
-                self.core.lgd.config.set(
+
+                config_helper.add_option(self.game.app_name, "wrapper", wrapper)
+                config_helper.add_option(self.game.app_name, "no_wine", "true")
+                config_helper.add_option(
                     f"{self.game.app_name}.env",
                     "STEAM_COMPAT_DATA_PATH",
                     os.path.expanduser("~/.proton"),
@@ -294,7 +252,7 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.linux_settings.wine_exec.setText("")
                 self.linux_settings.wine_prefix.setText("")
 
-        self.core.lgd.save_config()
+        config_helper.save_config()
 
     def proton_prefix_edit(self, text: str) -> Tuple[bool, str, str]:
         if not text:
@@ -304,10 +262,10 @@ class GameSettings(QWidget, Ui_GameSettings):
         return os.path.exists(parent), text, PathEdit.reasons.dir_not_exist
 
     def proton_prefix_save(self, text: str):
-        self.core.lgd.config.set(
+        config_helper.add_option(
             f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH", text
         )
-        self.core.lgd.save_config()
+        config_helper.save_config()
 
     def update_game(self, app_name: str):
         self.change = False

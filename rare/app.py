@@ -19,7 +19,7 @@ from rare import cache_dir, resources_path
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
-from rare.utils import legendary_utils
+from rare.utils import legendary_utils, config_helper
 from rare.utils.utils import set_color_pallete, set_style_sheet
 
 start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
@@ -74,6 +74,8 @@ class App(QApplication):
         if "Legendary" not in self.core.lgd.config.sections():
             self.core.lgd.config.add_section("Legendary")
             self.core.lgd.save_config()
+
+        config_helper.init_config_handler(self.core)
 
         # workaround if egl sync enabled, but no programdata_path
         # programdata_path might be unset if logging in through the browser

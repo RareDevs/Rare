@@ -9,6 +9,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import VerifyResult
 from legendary.utils.lfs import validate_files
 from rare import shared
+from rare.utils import config_helper
 
 logger = getLogger("Legendary Utils")
 
@@ -67,11 +68,10 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
         )
 
     logger.info("Removing sections in config file")
-    if core.lgd.config.has_section(app_name):
-        core.lgd.config.remove_section(app_name)
-    if core.lgd.config.has_section(f"{app_name}.env"):
-        core.lgd.config.remove_section(f"{app_name}.env")
-    core.lgd.save_config()
+    config_helper.remove_section(app_name)
+    config_helper.remove_section(f"{app_name}.env")
+
+    config_helper.save_config()
 
 
 def update_manifest(app_name: str, core: LegendaryCore):
