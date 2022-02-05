@@ -1,42 +1,17 @@
 import os
 
 __version__ = "1.8.7"
+
+from PyQt5.QtCore import QStandardPaths
+
 code_name = "Stellula Kakopo"
 
-import platform
-
 resources_path = os.path.join(os.path.dirname(__file__), "resources")
-data_dir = ""
-
-# Cache Directory: Store images
-if p := os.getenv("XDG_CACHE_HOME"):
-    cache_dir = os.path.join(p, "rare/cache")
-elif os.name == "nt":
-    cache_dir = os.path.expandvars("%APPDATA%/rare/cache")
-elif platform.system() == "Darwin":
-    cache_dir = os.path.expanduser("~/Library/rare/cache")
-else:
-    cache_dir = os.path.expanduser("~/.cache/rare/")
-
-if not os.path.exists(cache_dir):
-    os.makedirs(cache_dir)
-
-# Data Directory: Images
-if p := os.getenv("XDG_DATA_HOME"):
-    data_dir = os.path.join(p, "rare")
-if os.name == "nt":
-    data_dir = os.path.expandvars("%APPDATA%/rare/")
-elif platform.system() == "Darwin":
-    data_dir = os.path.expanduser("~/Library/rare/")
-else:
-    data_dir = os.path.expanduser("~/.local/share/rare/")
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir)
-
+data_dir = os.path.join(QStandardPaths.writableLocation(QStandardPaths.DataLocation), "rare")
+cache_dir = os.path.join(QStandardPaths.writableLocation(QStandardPaths.CacheLocation), "rare")
 image_dir = os.path.join(data_dir, "images")
-if not os.path.exists(image_dir):
-    os.mkdir(image_dir)
-
 tmp_dir = os.path.join(cache_dir, "tmp")
-if not os.path.exists(tmp_dir):
-    os.makedirs(tmp_dir)
+
+for path in (resources_path, data_dir, cache_dir, image_dir, tmp_dir):
+    if not os.path.exists(path):
+        os.makedirs(path)

@@ -491,7 +491,6 @@ class ImageLabel(QLabel):
             self.manager.get(url, self.image_ready)
             # self.request.finished.connect(self.image_ready)
         else:
-            print("image exists")
             self.show_image()
 
     def image_ready(self, data):
