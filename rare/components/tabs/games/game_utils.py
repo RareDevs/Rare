@@ -236,6 +236,10 @@ class GameUtils(QObject):
                     process.deleteLater()
                     return
 
+            if shutil.which(full_params[0]) is None:
+                QMessageBox.warning(None, "Warning", self.tr("'{}' does not exist").format(full_params[0]))
+                return
+
             process.setProcessEnvironment(environment)
             process.game_finished.connect(self.game_finished)
             running_game = RunningGameModel(
