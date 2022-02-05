@@ -164,7 +164,7 @@ class App(QApplication):
                 legendary_utils.uninstall(igame.app_name, self.core)
                 logger.info(f"Uninstalled {igame.title}, because no game files exist")
                 continue
-            if not os.path.exists(os.path.join(igame.install_path, igame.executable)):
+            if not os.path.exists(os.path.join(igame.install_path, igame.executable.replace("\\", "/").lstrip("/"))):
                 igame.needs_verification = True
                 self.core.lgd.set_installed_game(igame.app_name, igame)
                 logger.info(f"{igame.title} needs verification")
