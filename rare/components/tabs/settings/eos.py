@@ -57,9 +57,6 @@ class EosWidget(QGroupBox, Ui_EosWidget):
 
         self.prefix_enabled = False
 
-        self.info_stack.addWidget(self.installed_info_gb)
-        self.info_stack.addWidget(self.install_overlay_gb)
-
         self.enabled_cb.stateChanged.connect(self.change_enable)
         self.uninstall_button.clicked.connect(self.uninstall_overlay)
 

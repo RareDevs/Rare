@@ -86,8 +86,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
 
         self.ubi_helper = UbiActivationHelper(self.ubisoft_gb)
         self.eos_widget = EosWidget()
-        self.layout().replaceWidget(self.eos_placeholder, self.eos_widget)
-        self.eos_placeholder.deleteLater()
+        self.eos_layout.addWidget(self.eos_widget)
 
         self.refresh_game_meta_btn.clicked.connect(self.refresh_game_meta)
 
