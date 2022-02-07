@@ -1,285 +1,282 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>RareSettings</class>
-    <widget class="QWidget" name="RareSettings">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>674</width>
-                <height>532</height>
-            </rect>
+ <class>RareSettings</class>
+ <widget class="QWidget" name="RareSettings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>674</width>
+    <height>532</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">RareSettings</string>
+  </property>
+  <layout class="QHBoxLayout" name="rare_layout">
+   <item>
+    <layout class="QVBoxLayout" name="left_layout">
+     <item>
+      <widget class="QGroupBox" name="interface_group">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>Interface</string>
+       </property>
+       <layout class="QFormLayout" name="interface_layout">
+        <property name="labelAlignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
-        <property name="windowTitle">
-            <string notr="true">RareSettings</string>
-        </property>
-        <layout class="QHBoxLayout" name="rare_layout">
-            <item>
-                <layout class="QVBoxLayout" name="left_layout">
-                    <item>
-                        <widget class="QGroupBox" name="interface_group">
-                            <property name="sizePolicy">
-                                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="title">
-                                <string>Interface</string>
-                            </property>
-                            <layout class="QFormLayout" name="interface_layout">
-                                <property name="labelAlignment">
-                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                </property>
-                                <item row="0" column="0">
-                                    <widget class="QLabel" name="lang_label">
-                                        <property name="text">
-                                            <string>Language</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="0" column="1">
-                                    <widget class="QComboBox" name="lang_select">
-                                        <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="1" column="0">
-                                    <widget class="QLabel" name="color_label">
-                                        <property name="text">
-                                            <string>Color Scheme</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="1" column="1">
-                                    <widget class="QComboBox" name="color_select">
-                                        <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <item>
-                                            <property name="text">
-                                                <string>None</string>
-                                            </property>
-                                        </item>
-                                    </widget>
-                                </item>
-                                <item row="2" column="0">
-                                    <widget class="QLabel" name="style_label">
-                                        <property name="text">
-                                            <string>Style Sheet</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="2" column="1">
-                                    <widget class="QComboBox" name="style_select">
-                                        <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <item>
-                                            <property name="text">
-                                                <string>None</string>
-                                            </property>
-                                        </item>
-                                    </widget>
-                                </item>
-                                <item row="3" column="0" colspan="2">
-                                    <widget class="QLabel" name="interface_info">
-                                        <property name="font">
-                                            <font>
-                                                <italic>true</italic>
-                                            </font>
-                                        </property>
-                                        <property name="text">
-                                            <string>Restart Rare to apply.</string>
-                                        </property>
-                                        <property name="wordWrap">
-                                            <bool>true</bool>
-                                        </property>
-                                    </widget>
-                                </item>
-                            </layout>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QGroupBox" name="settings_group">
-                            <property name="title">
-                                <string>Behavior</string>
-                            </property>
-                            <layout class="QGridLayout" name="behavior_layout">
-                                <item row="5" column="0">
-                                    <widget class="QCheckBox" name="save_size">
-                                        <property name="text">
-                                            <string>Restore window size on application startup</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="4" column="0">
-                                    <widget class="QCheckBox" name="notification">
-                                        <property name="text">
-                                            <string>Show notification on download completion</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="6" column="0">
-                                    <widget class="QCheckBox" name="log_games">
-                                        <property name="text">
-                                            <string>Show console for game debug</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="0" column="0">
-                                    <widget class="QCheckBox" name="sys_tray">
-                                        <property name="text">
-                                            <string>Exit to System tray</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="1" column="0">
-                                    <widget class="QCheckBox" name="auto_update">
-                                        <property name="text">
-                                            <string>Update games on application startup</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="2" column="0">
-                                    <widget class="QCheckBox" name="confirm_start">
-                                        <property name="text">
-                                            <string>Confirm game launch</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="3" column="0">
-                                    <widget class="QCheckBox" name="auto_sync_cloud">
-                                        <property name="text">
-                                            <string>Automatically sync with cloud</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item row="2" column="1" rowspan="2">
-                                    <spacer name="settings_hspacer">
-                                        <property name="orientation">
-                                            <enum>Qt::Horizontal</enum>
-                                        </property>
-                                        <property name="sizeHint" stdset="0">
-                                            <size>
-                                                <width>40</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                </item>
-                            </layout>
-                        </widget>
-                    </item>
-                    <item>
-                        <spacer name="left_vspacer">
-                            <property name="orientation">
-                                <enum>Qt::Vertical</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                                <size>
-                                    <width>20</width>
-                                    <height>40</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </item>
-                </layout>
-            </item>
-            <item>
-                <layout class="QVBoxLayout" name="right_layout">
-                    <item>
-                        <widget class="QGroupBox" name="log_dir_group">
-                            <property name="title">
-                                <string>Logs</string>
-                            </property>
-                            <layout class="QVBoxLayout" name="log_dir_layout">
-                                <item>
-                                    <widget class="QPushButton" name="log_dir_open_button">
-                                        <property name="text">
-                                            <string>Open Log directory</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item>
-                                    <widget class="QPushButton" name="log_dir_clean_button">
-                                        <property name="text">
-                                            <string>Clean Log directory</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item>
-                                    <widget class="QLabel" name="log_dir_size_label">
-                                        <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="text">
-                                            <string notr="true"/>
-                                        </property>
-                                        <property name="wordWrap">
-                                            <bool>true</bool>
-                                        </property>
-                                    </widget>
-                                </item>
-                            </layout>
-                        </widget>
-                    </item>
-                    <item>
-                        <layout class="QVBoxLayout" name="rpc_layout"/>
-                    </item>
-                    <item>
-                        <widget class="QGroupBox" name="groupBox">
-                            <property name="title">
-                                <string>Shortcuts</string>
-                            </property>
-                            <layout class="QVBoxLayout" name="shortcuts_layout">
-                                <item>
-                                    <widget class="QPushButton" name="desktop_link_btn">
-                                        <property name="text">
-                                            <string>Create Desktop link</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item>
-                                    <widget class="QPushButton" name="startmenu_link_btn">
-                                        <property name="text">
-                                            <string>Create start menu link</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                            </layout>
-                        </widget>
-                    </item>
-                    <item>
-                        <spacer name="right_vspacer">
-                            <property name="orientation">
-                                <enum>Qt::Vertical</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                                <size>
-                                    <width>20</width>
-                                    <height>40</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </item>
-                </layout>
-            </item>
-        </layout>
-    </widget>
-    <resources/>
-    <connections/>
+        <item row="0" column="0">
+         <widget class="QLabel" name="lang_label">
+          <property name="text">
+           <string>Language</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="lang_select">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="color_label">
+          <property name="text">
+           <string>Color Scheme</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="color_select">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text">
+            <string>None</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="style_label">
+          <property name="text">
+           <string>Style Sheet</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="style_select">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text">
+            <string>None</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QLabel" name="interface_info">
+          <property name="font">
+           <font>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string>Restart Rare to apply.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="settings_group">
+       <property name="title">
+        <string>Behavior</string>
+       </property>
+       <layout class="QGridLayout" name="behavior_layout">
+        <item row="5" column="0">
+         <widget class="QCheckBox" name="save_size">
+          <property name="text">
+           <string>Restore window size on application startup</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="notification">
+          <property name="text">
+           <string>Show notification on download completion</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QCheckBox" name="log_games">
+          <property name="text">
+           <string>Show console for game debug</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="sys_tray">
+          <property name="text">
+           <string>Exit to System tray</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="auto_update">
+          <property name="text">
+           <string>Update games on application startup</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="confirm_start">
+          <property name="text">
+           <string>Confirm game launch</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="auto_sync_cloud">
+          <property name="text">
+           <string>Automatically sync with cloud</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" rowspan="2">
+         <spacer name="settings_hspacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="left_vspacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="right_layout">
+     <item>
+      <widget class="QGroupBox" name="log_dir_group">
+       <property name="title">
+        <string>Logs</string>
+       </property>
+       <layout class="QVBoxLayout" name="log_dir_layout">
+        <item>
+         <widget class="QPushButton" name="log_dir_open_button">
+          <property name="text">
+           <string>Open Log directory</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="log_dir_clean_button">
+          <property name="text">
+           <string>Clean Log directory</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="log_dir_size_label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string notr="true"/>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Shortcuts</string>
+       </property>
+       <layout class="QVBoxLayout" name="shortcuts_layout">
+        <item>
+         <widget class="QPushButton" name="desktop_link_btn">
+          <property name="text">
+           <string>Create Desktop link</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="startmenu_link_btn">
+          <property name="text">
+           <string>Create start menu link</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="right_vspacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

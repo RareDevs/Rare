@@ -245,13 +245,6 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="eos_layout">
-       <property name="sizeConstraint">
-        <enum>QLayout::SetFixedSize</enum>
-       </property>
-      </layout>
-     </item>
-     <item>
       <spacer name="left_vspacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
