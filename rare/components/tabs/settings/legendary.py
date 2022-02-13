@@ -2,7 +2,7 @@ import re
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
+from PyQt5.QtCore import Qt, QRunnable, QObject, pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 import rare.shared as shared
@@ -86,8 +86,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
 
         self.ubi_helper = UbiActivationHelper(self.ubisoft_gb)
         self.eos_widget = EosWidget()
-        self.layout().replaceWidget(self.eos_placeholder, self.eos_widget)
-        self.eos_placeholder.deleteLater()
+        self.left_layout.insertWidget(3, self.eos_widget, alignment=Qt.AlignTop)
 
         self.refresh_game_meta_btn.clicked.connect(self.refresh_game_meta)
 
