@@ -5,8 +5,9 @@ from PyQt5.QtCore import Qt, QSettings, QTimer, QSize
 from PyQt5.QtGui import QCloseEvent, QCursor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar
 
-from rare import data_dir, shared
+from rare import shared
 from rare.components.tabs import TabWidget
+from rare.utils.paths import data_dir
 
 logger = getLogger("Window")
 

@@ -16,7 +16,7 @@ import legendary
 # noinspection PyUnresolvedReferences
 import rare.resources.resources
 import rare.shared as shared
-from rare import cache_dir, resources_path, tmp_dir
+from rare.utils.paths import cache_dir, resources_path, tmp_dir
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon

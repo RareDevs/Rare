@@ -4,13 +4,14 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool
 from PyQt5.QtWidgets import QDialog, QApplication
+from legendary.core import LegendaryCore
 from requests.exceptions import ConnectionError, HTTPError
 
-from legendary.core import LegendaryCore
-from rare import image_dir, shared
+from rare import shared
 from rare.components.dialogs.login import LoginDialog
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.models import ApiResults
+from rare.utils.paths import image_dir
 from rare.utils.utils import download_images, CloudWorker
 
 logger = getLogger("Login")

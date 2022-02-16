@@ -7,10 +7,12 @@ from logging import getLogger
 from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
-from rare import cache_dir, shared
+from rare import shared
+
 from rare.components.tabs.settings.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
+from rare.utils.paths import cache_dir
 from rare.utils.utils import (
     get_translations,
     get_color_schemes,

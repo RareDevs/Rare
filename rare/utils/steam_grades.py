@@ -7,7 +7,8 @@ import requests
 from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, QCoreApplication
 
 from legendary.core import LegendaryCore
-from rare import data_dir, cache_dir, shared
+from rare import shared
+from rare.utils.paths import data_dir, cache_dir
 
 replace_chars = ",;.:-_ "
 

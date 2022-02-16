@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
     QFileIconProvider,
 )
 
-from rare import tmp_dir
+from rare.utils.paths import tmp_dir
 from rare.utils.qt_requests import QtRequestManager
 from rare.utils.utils import icon as qta_icon
 

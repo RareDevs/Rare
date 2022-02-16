@@ -5,7 +5,7 @@ from datetime import datetime
 from logging import getLogger
 from typing import Dict
 
-from rare import data_dir
+from rare.utils.paths import data_dir
 
 logger = getLogger("GameMeta")
 

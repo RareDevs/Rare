@@ -22,9 +22,9 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QStyleFactory
+from legendary.models.game import Game
 from requests.exceptions import HTTPError
 
-from legendary.models.game import Game
 from .models import PathSpec
 
 # Windows
@@ -33,7 +33,8 @@ if platform.system() == "Windows":
     # noinspection PyUnresolvedReferences
     from win32com.client import Dispatch  # pylint: disable=E0401
 
-from rare import image_dir, shared, resources_path
+from rare import shared
+from rare.utils.paths import image_dir, resources_path
 
 # Mac not supported
 

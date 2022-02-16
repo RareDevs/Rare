@@ -1,12 +1,13 @@
 from PyQt5.QtWidgets import QStackedWidget, QTabWidget
 
 from legendary.core import LegendaryCore
-from rare import cache_dir, shared
-from rare.components.tabs.shop.game_info import ShopGameInfo
-from rare.components.tabs.shop.search_results import SearchResults
-from rare.components.tabs.shop.shop_api_core import ShopApiCore
-from rare.components.tabs.shop.shop_widget import ShopWidget
-from rare.components.tabs.shop.wishlist import WishlistWidget, Wishlist
+from rare import shared
+from rare.utils.paths import cache_dir
+from .game_info import ShopGameInfo
+from .search_results import SearchResults
+from .shop_api_core import ShopApiCore
+from .shop_widget import ShopWidget
+from .wishlist import WishlistWidget, Wishlist
 
 
 class Shop(QStackedWidget):
