@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QDialog, QMessageBox, QSizePolicy, QLayout, QApplica
 
 from legendary.core import LegendaryCore
 from legendary.models.game import SaveGameStatus, InstalledGame, SaveGameFile
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton
 from rare.ui.components.dialogs.sync_save_dialog import Ui_SyncSaveDialog
 from rare.utils.utils import icon
 
@@ -30,29 +30,29 @@ class DownloadModel:
     path: str
 
 
-class WorkerSignals(QObject):
+class SaveSignals(QObject):
     finished = pyqtSignal(str, str)
 
 
 class SaveWorker(QRunnable):
-    signals = WorkerSignals()
-
     def __init__(self, model: Union[UploadModel, DownloadModel]):
         super(SaveWorker, self).__init__()
-        self.model = model
-
+        self.signals = SaveSignals()
         self.setAutoDelete(True)
+        self.core = LegendaryCoreSingleton()
+        self.api_results = ApiResultsSingleton()
+        self.model = model
 
     def run(self) -> None:
         try:
             if isinstance(self.model, DownloadModel):
-                shared.core.download_saves(
+                self.core.download_saves(
                     self.model.app_name,
                     self.model.latest_save.manifest_name,
                     self.model.path,
                 )
             else:
-                shared.core.upload_save(
+                self.core.upload_save(
                     self.model.app_name, self.model.path, self.model.date_time
                 )
         except Exception as e:
@@ -62,8 +62,8 @@ class SaveWorker(QRunnable):
         try:
             if isinstance(self.model, UploadModel):
                 logger.info("Updating cloud saves...")
-                result = shared.core.get_save_games(self.model.app_name)
-                shared.api_results.saves = result
+                result = self.core.get_save_games(self.model.app_name)
+                self.api_results.saves = result
         except Exception as e:
             self.signals.finished.emit(str(e), self.model.app_name)
             logger.error(str(e))
@@ -127,9 +127,11 @@ class CloudSaveUtils(QObject):
 
     def __init__(self):
         super(CloudSaveUtils, self).__init__()
-        self.core = shared.core
-        saves = shared.api_results.saves
-        if not shared.args.offline:
+        self.core = LegendaryCoreSingleton()
+        self.args = ArgumentsSingleton()
+        self.api_results = ApiResultsSingleton()
+        saves = self.api_results.saves
+        if not self.args.offline:
             self.latest_saves = self.get_latest_saves(saves)
         else:
             self.latest_saves = dict()
@@ -307,7 +309,7 @@ class CloudSaveUtils(QObject):
         if not error_message:
 
             self.sync_finished.emit(app_name)
-            self.latest_saves = self.get_latest_saves(shared.api_results.saves)
+            self.latest_saves = self.get_latest_saves(self.api_results.saves)
         else:
             QMessageBox.warning(
                 None,

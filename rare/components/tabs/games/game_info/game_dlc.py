@@ -3,7 +3,7 @@ from PyQt5.QtGui import QPixmap, QResizeEvent
 from PyQt5.QtWidgets import QFrame, QWidget, QMessageBox
 
 from legendary.models.game import Game
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.components.tabs.games.game_utils import GameUtils
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
@@ -18,12 +18,13 @@ class GameDlc(QWidget, Ui_GameDlc):
     def __init__(self, dlcs: dict, game_utils: GameUtils, parent=None):
         super(GameDlc, self).__init__(parent=parent)
         self.setupUi(self)
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+
         self.game_utils = game_utils
 
         self.available_dlc_scroll.setProperty("noBorder", 1)
         self.installed_dlc_scroll.setProperty("noBorder", 1)
-        self.signals = shared.signals
-        self.core = shared.core
 
         self.dlcs = dlcs
         self.installed_dlc_widgets = list()

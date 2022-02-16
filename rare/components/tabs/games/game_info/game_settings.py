@@ -17,6 +17,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 from rare.components.tabs.settings.linux import LinuxSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
+from rare.components.tabs.games.env_vars import EnvVars
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import WineResolver, get_raw_save_path
@@ -132,6 +133,9 @@ class GameSettings(QWidget, Ui_GameSettings):
         else:
             self.linux_settings_scroll.setVisible(False)
         self.game_settings_layout.setAlignment(Qt.AlignTop)
+
+        self.env_vars = EnvVars(self)
+        self.linux_settings_contents_layout.insertWidget(0, self.env_vars)
 
     def compute_save_path(self):
         if (
@@ -354,7 +358,8 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.core.lgd.config.get(self.game.app_name, "override_exe", fallback="")
         )
         self.change = True
-
+        self.env_vars.update_game(app_name)
+    
 
 class LinuxAppSettings(LinuxSettings):
     def __init__(self):

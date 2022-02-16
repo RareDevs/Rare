@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 
-import rare.shared as shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.utils.extra_widgets import SideTabWidget
 from .game_dlc import GameDlc
 from .game_info import GameInfo
@@ -12,8 +12,8 @@ from ..game_utils import GameUtils
 class GameInfoTabs(SideTabWidget):
     def __init__(self, dlcs: dict, game_utils: GameUtils, parent=None):
         super(GameInfoTabs, self).__init__(show_back=True, parent=parent)
-        self.core = shared.core
-        self.signals = shared.signals
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
 
         self.info = GameInfo(self, game_utils)
         self.addTab(self.info, self.tr("Information"))

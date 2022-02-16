@@ -3,7 +3,7 @@ from PyQt5.QtGui import QPaintEvent, QPainter, QPixmap, QPen, QFont, QColor
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QHBoxLayout, QWidget
 
 from legendary.models.game import Game
-from rare import shared
+from rare.shared import LegendaryCoreSingleton
 from rare.utils.utils import (
     get_pixmap,
     optimal_text_background,
@@ -20,6 +20,8 @@ class InstallingGameWidget(QWidget):
         self.setObjectName("game_widget_icon")
         self.setProperty("noBorder", 1)
         self.setLayout(QVBoxLayout())
+
+        self.core = LegendaryCoreSingleton()
 
         self.pixmap = QPixmap()
         w = 200
@@ -42,7 +44,7 @@ class InstallingGameWidget(QWidget):
         if not app_name:
             self.game = None
             return
-        self.game = shared.core.get_game(app_name)
+        self.game = self.core.get_game(app_name)
         self.title_label.setText(f"<h4>{self.game.app_title}</h4>")
 
         self.image_widget.set_game(self.game.app_name)
@@ -59,9 +61,10 @@ class PaintWidget(QWidget):
 
     def __init__(self):
         super(PaintWidget, self).__init__()
+        self.core = LegendaryCoreSingleton()
 
     def set_game(self, app_name: str):
-        game = shared.core.get_game(app_name, False)
+        game = self.core.get_game(app_name, False)
         self.color_image = get_pixmap(game.app_name)
         w = 200
         self.color_image = self.color_image.scaled(

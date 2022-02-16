@@ -6,7 +6,7 @@ import pypresence.exceptions
 from PyQt5.QtCore import QObject, QSettings
 from pypresence import Presence
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 
 client_id = "830732538225360908"
 logger = getLogger("RPC")
@@ -17,8 +17,8 @@ class DiscordRPC(QObject):
         super(DiscordRPC, self).__init__()
         self.RPC = None
         self.state = 1  # 0: game, 1: always active, 2: off
-        self.core = shared.core
-        self.signals = shared.signals
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
 
         self.settings = QSettings()
         if self.settings.value("rpc_enable", 0, int) == 1:  # show always

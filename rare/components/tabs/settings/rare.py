@@ -7,10 +7,11 @@ from logging import getLogger
 from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
-from rare import cache_dir, shared
+from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.settings.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
+from rare.utils.paths import cache_dir
 from rare.utils.utils import (
     get_translations,
     get_color_schemes,
@@ -33,7 +34,7 @@ class RareSettings(QWidget, Ui_RareSettings):
     def __init__(self):
         super(RareSettings, self).__init__()
         self.setupUi(self)
-        self.core = shared.core
+        self.core = LegendaryCoreSingleton()
         # (widget_name, option_name, default)
         self.checkboxes = [
             (self.sys_tray, "sys_tray", True),

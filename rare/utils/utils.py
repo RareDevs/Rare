@@ -22,9 +22,9 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QStyleFactory
+from legendary.models.game import Game
 from requests.exceptions import HTTPError
 
-from legendary.models.game import Game
 from .models import PathSpec
 
 # Windows
@@ -33,7 +33,8 @@ if platform.system() == "Windows":
     # noinspection PyUnresolvedReferences
     from win32com.client import Dispatch  # pylint: disable=E0401
 
-from rare import image_dir, shared, resources_path
+from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton
+from rare.utils.paths import image_dir, resources_path
 
 # Mac not supported
 
@@ -62,7 +63,7 @@ def download_images(progress: pyqtSignal, results: pyqtSignal, core: LegendaryCo
     for i, game in enumerate(game_list):
         if game.app_title == "Unreal Engine":
             game.app_title += f" {game.app_name.split('_')[-1]}"
-            shared.core.lgd.set_game_meta(game.app_name, game)
+            core.lgd.set_game_meta(game.app_name, game)
         try:
             download_image(game)
         except json.decoder.JSONDecodeError:
@@ -269,6 +270,7 @@ def create_rare_desktop_link(type_of_link):
                 "[Desktop Entry]\n"
                 f"Name=Rare\n"
                 f"Type=Application\n"
+                f"Categories=Game;\n"
                 f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
                 f"Exec={executable}\n"
                 "Terminal=false\n"
@@ -341,6 +343,7 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
                 "[Desktop Entry]\n"
                 f"Name={igame.title}\n"
                 f"Type=Application\n"
+                f"Categories=Game;\n"
                 f"Icon={icon}.png\n"
                 f"Exec={executable} launch {app_name}\n"
                 "Terminal=false\n"
@@ -450,8 +453,8 @@ class WineResolverSignals(QObject):
 class WineResolver(QRunnable):
     def __init__(self, path: str, app_name: str, core: LegendaryCore):
         super(WineResolver, self).__init__()
-        self.setAutoDelete(True)
         self.signals = WineResolverSignals()
+        self.setAutoDelete(True)
         self.wine_env = os.environ.copy()
         self.wine_env.update(core.get_app_environment(app_name))
         self.wine_env["WINEDLLOVERRIDES"] = "winemenubuilder=d;mscoree=d;mshtml=d;"
@@ -511,19 +514,20 @@ class WineResolver(QRunnable):
         return
 
 
-class CloudResultSignal(QObject):
+class CloudSignals(QObject):
     result_ready = pyqtSignal(list)  # List[SaveGameFile]
 
 
 class CloudWorker(QRunnable):
     def __init__(self):
         super(CloudWorker, self).__init__()
-        self.signals = CloudResultSignal()
+        self.signals = CloudSignals()
         self.setAutoDelete(True)
+        self.core = LegendaryCoreSingleton()
 
     def run(self) -> None:
         try:
-            result = shared.core.get_save_games()
+            result = self.core.get_save_games()
         except HTTPError:
             result = None
         self.signals.result_ready.emit(result)
@@ -539,7 +543,8 @@ def get_raw_save_path(game: Game):
 
 
 def get_default_platform(app_name):
-    if platform.system() != "Darwin" or app_name not in shared.api_results.mac_games:
+    api_results = ApiResultsSingleton()
+    if platform.system() != "Darwin" or app_name not in api_results.mac_games:
         return "Windows"
     else:
         return "Mac"

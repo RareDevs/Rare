@@ -4,7 +4,7 @@ from typing import Tuple, Dict, Union, List
 from PyQt5.QtCore import QSettings, QObjectCleanupHandler
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
 
-import rare.shared as shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton, ApiResultsSingleton
 from legendary.models.game import InstalledGame, Game
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils.extra_widgets import FlowLayout
@@ -37,15 +37,17 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
     def __init__(self, parent=None):
         super(GamesTab, self).__init__(parent=parent)
         self.setupUi(self)
-        self.core = shared.core
-        self.signals = shared.signals
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+        self.args = ArgumentsSingleton()
+        self.api_results = ApiResultsSingleton()
         self.settings = QSettings()
 
-        self.game_list: List[Game] = shared.api_results.game_list
-        self.dlcs = shared.api_results.dlcs
-        self.bit32 = shared.api_results.bit32_games
-        self.mac_games = shared.api_results.mac_games
-        self.no_assets = shared.api_results.no_asset_games
+        self.game_list: List[Game] = self.api_results.game_list
+        self.dlcs = self.api_results.dlcs
+        self.bit32 = self.api_results.bit32_games
+        self.mac_games = self.api_results.mac_games
+        self.no_assets = self.api_results.no_asset_games
 
         self.game_utils = GameUtils(parent=self)
 
@@ -75,7 +77,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.head_bar.import_game.clicked.connect(lambda: self.setCurrentIndex(2))
 
         self.no_asset_names = []
-        if not shared.args.offline:
+        if not self.args.offline:
             for game in self.no_assets:
                 self.no_asset_names.append(game.app_name)
         else:

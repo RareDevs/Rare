@@ -5,7 +5,7 @@ from typing import Tuple
 from PyQt5.QtCore import Qt, QRunnable, QObject, pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
-import rare.shared as shared
+from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.settings.eos import EosWidget
 from rare.components.tabs.settings.ubisoft_activation import UbiActivationHelper
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
@@ -15,21 +15,22 @@ from rare.utils.utils import get_size
 logger = getLogger("LegendarySettings")
 
 
-class WorkerSignals(QObject):
+class RefreshGameMetaSignals(QObject):
     finished = pyqtSignal()
 
     def __init__(self):
-        super(WorkerSignals, self).__init__()
+        super(RefreshGameMetaSignals, self).__init__()
 
 
 class RefreshGameMetaWorker(QRunnable):
     def __init__(self):
         super(RefreshGameMetaWorker, self).__init__()
+        self.signals = RefreshGameMetaSignals()
         self.setAutoDelete(True)
-        self.signals = WorkerSignals()
+        self.core = LegendaryCoreSingleton()
 
     def run(self) -> None:
-        shared.core.get_game_and_dlc_list(True, force_refresh=True)
+        self.core.get_game_and_dlc_list(True, force_refresh=True)
         self.signals.finished.emit()
 
 
@@ -38,7 +39,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         super(LegendarySettings, self).__init__(parent=parent)
         self.setupUi(self)
 
-        self.core = shared.core
+        self.core = LegendaryCoreSingleton()
 
         # Default installation directory
         self.install_dir = PathEdit(

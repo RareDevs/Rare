@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QThreadPool
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTreeView
 
-import rare.shared as shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton, ApiResultsSingleton
 from legendary.models.game import Game
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabWidget
@@ -17,11 +17,12 @@ from rare.utils.utils import get_pixmap
 class UninstalledInfoTabs(SideTabWidget):
     def __init__(self, parent=None):
         super(UninstalledInfoTabs, self).__init__(show_back=True, parent=parent)
-        self.core = shared.core
-        self.signals = shared.signals
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+        self.args = ArgumentsSingleton()
 
         self.info = UninstalledInfo()
-        self.info.install_button.setDisabled(shared.args.offline)
+        self.info.install_button.setDisabled(self.args.offline)
         self.addTab(self.info, self.tr("Information"))
 
         self.view = QTreeView()
@@ -55,8 +56,9 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
     def __init__(self, parent=None):
         super(UninstalledInfo, self).__init__(parent=parent)
         self.setupUi(self)
-        self.core = shared.core
-        self.signals = shared.signals
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+        self.api_results = ApiResultsSingleton()
         self.install_button.clicked.connect(self.install_game)
         if platform.system() != "Windows":
             self.steam_worker = SteamWorker(self.core)
@@ -83,9 +85,9 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.game = game
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
         available_platforms = ["Windows"]
-        if self.game.app_name in shared.api_results.bit32_games:
+        if self.game.app_name in self.api_results.bit32_games:
             available_platforms.append("32 Bit")
-        if self.game.app_name in shared.api_results.mac_games:
+        if self.game.app_name in self.api_results.mac_games:
             available_platforms.append("macOS")
         self.platform.setText(", ".join(available_platforms))
 

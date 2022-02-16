@@ -4,7 +4,7 @@ from PyQt5.QtCore import QEvent, pyqtSignal, QSize, Qt
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.games.game_widgets.base_installed_widget import (
     BaseInstalledWidget,
 )
@@ -22,7 +22,7 @@ class InstalledIconWidget(BaseInstalledWidget):
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.layout = QVBoxLayout()
-        self.core = shared.core
+        self.core = LegendaryCoreSingleton()
 
         if self.update_available:
             logger.info(f"Update available for game: {self.game.app_name}")

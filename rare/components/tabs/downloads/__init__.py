@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate
 from legendary.models.game import Game, InstalledGame
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
@@ -34,10 +34,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
     def __init__(self, updates: list):
         super(DownloadsTab, self).__init__()
         self.setupUi(self)
-        self.core = shared.core
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
         self.active_game: Game = None
         self.analysis = None
-        self.signals = shared.signals
 
         self.kill_button.clicked.connect(self.stop_download)
 
@@ -68,7 +68,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.signals.add_download.connect(
             lambda app_name: self.add_update(self.core.get_installed_game(app_name))
         )
-        shared.signals.game_uninstalled.connect(self.game_uninstalled)
+        self.signals.game_uninstalled.connect(self.game_uninstalled)
 
         self.reset_infos()
 

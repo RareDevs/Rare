@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
 )
 
-from rare import shared
+from rare.shared import ApiResultsSingleton
 from rare.utils.extra_widgets import SelectViewWidget
 from rare.utils.utils import icon
 
@@ -18,6 +18,7 @@ class GameListHeadBar(QWidget):
 
     def __init__(self, parent=None):
         super(GameListHeadBar, self).__init__(parent=parent)
+        self.api_results = ApiResultsSingleton()
         self.setLayout(QHBoxLayout())
         # self.installed_only = QCheckBox(self.tr("Installed only"))
         self.settings = QSettings()
@@ -38,15 +39,15 @@ class GameListHeadBar(QWidget):
             "installed",
             "offline",
         ]
-        if shared.api_results.bit32_games:
+        if self.api_results.bit32_games:
             self.filter.addItem(self.tr("32 Bit Games"))
             self.available_filters.append("32bit")
 
-        if shared.api_results.mac_games:
+        if self.api_results.mac_games:
             self.filter.addItem(self.tr("Mac games"))
             self.available_filters.append("mac")
 
-        if shared.api_results.no_asset_games:
+        if self.api_results.no_asset_games:
             self.filter.addItem(self.tr("Exclude Origin"))
             self.available_filters.append("installable")
 

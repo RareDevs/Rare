@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.components.tabs.account import MiniWidget
 from rare.components.tabs.downloads import DownloadsTab
 from rare.components.tabs.games import GamesTab
@@ -15,9 +15,10 @@ from rare.utils.utils import icon
 class TabWidget(QTabWidget):
     def __init__(self, parent):
         super(TabWidget, self).__init__(parent=parent)
-        disabled_tab = 3 if not shared.args.offline else 1
-        self.core = shared.core
-        self.signals = shared.signals
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+        self.args = ArgumentsSingleton()
+        disabled_tab = 3 if not self.args.offline else 1
         self.setTabBar(MainTabBar(disabled_tab))
         # lk: Figure out why this adds a white line at the top
         # lk: despite setting qproperty-drawBase to 0 in the stylesheet
@@ -26,7 +27,7 @@ class TabWidget(QTabWidget):
         self.games_tab = GamesTab()
         self.addTab(self.games_tab, self.tr("Games"))
 
-        if not shared.args.offline:
+        if not self.args.offline:
             # updates = self.games_tab.default_widget.game_list.updates
             self.downloadTab = DownloadsTab(self.games_tab.updates)
             self.addTab(
@@ -42,7 +43,7 @@ class TabWidget(QTabWidget):
             self.addTab(self.store, self.tr("Store (Beta)"))
 
         self.settings = SettingsTab(self)
-        if shared.args.debug:
+        if self.args.debug:
             self.settings.addTab(DebugSettings(), "Debug")
 
         # Space Tab
@@ -102,7 +103,7 @@ class TabWidget(QTabWidget):
         if tab_num == 0:
             self.games_tab.layout().setCurrentIndex(0)
 
-        if not shared.args.offline and tab_num == 2:
+        if not self.args.offline and tab_num == 2:
             self.store.load()
 
     def resizeEvent(self, event):

@@ -80,7 +80,7 @@ def main():
         me = singleton.SingleInstance()
     except singleton.SingleInstanceException:
         print("Rare is already running")
-        from rare import data_dir
+        from rare.utils.paths import data_dir
 
         with open(os.path.join(data_dir, "lockfile"), "w") as file:
             if args.subparser == "launch":

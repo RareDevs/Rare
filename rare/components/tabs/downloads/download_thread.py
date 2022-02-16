@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QMessageBox
 
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate, WriterTask
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.utils.models import InstallQueueItemModel
 from rare.utils.utils import create_desktop_link
 
@@ -27,6 +27,7 @@ class DownloadThread(QThread):
     def __init__(self, core: LegendaryCore, queue_item: InstallQueueItemModel):
         super(DownloadThread, self).__init__()
         self.core = core
+        self.signals = GlobalSignalsSingleton()
         self.dlm = queue_item.download.dlmanager
         self.no_install = queue_item.options.no_install
         self.status_q = queue_item.status_q
@@ -147,7 +148,7 @@ class DownloadThread(QThread):
             game = self.core.get_game(self.igame.app_name)
 
             if self.queue_item.options.overlay:
-                shared.signals.overlay_installation_finished.emit()
+                self.signals.overlay_installation_finished.emit()
                 self.core.finish_overlay_install(self.igame)
                 self.status.emit("finish")
                 return

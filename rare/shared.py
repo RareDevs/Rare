@@ -1,31 +1,38 @@
 from argparse import Namespace
 
 from legendary.core import LegendaryCore
-from rare.utils.models import ApiResults, Signals
+from rare.utils.models import ApiResults, GlobalSignals
 
-core: LegendaryCore = None
-signals: Signals = None
-args: Namespace = None
-api_results: ApiResults = None
-
-
-def init_legendary():
-    global core
-    core = LegendaryCore()
-    return core
+_legendary_core_singleton: LegendaryCore = None
+_global_signals_singleton: GlobalSignals = None
+_arguments_singleton: Namespace = None
+_api_results_singleton: ApiResults = None
 
 
-def init_signals():
-    global signals
-    signals = Signals()
-    return signals
+def LegendaryCoreSingleton() -> LegendaryCore:
+    global _legendary_core_singleton
+    if _legendary_core_singleton is None:
+        _legendary_core_singleton = LegendaryCore()
+    return _legendary_core_singleton
 
 
-def init_args(a: Namespace):
-    global args
-    args = a
+def GlobalSignalsSingleton() -> GlobalSignals:
+    global _global_signals_singleton
+    if _global_signals_singleton is None:
+        _global_signals_singleton = GlobalSignals()
+    return _global_signals_singleton
 
 
-def init_api_response(res: ApiResults):
-    global api_results
-    api_results = res
+def ArgumentsSingleton(args: Namespace = None) -> Namespace:
+    global _arguments_singleton
+    if _arguments_singleton is None:
+        _arguments_singleton = args
+    return _arguments_singleton
+
+
+def ApiResultsSingleton(res: ApiResults = None) -> ApiResults:
+    global _api_results_singleton
+    if _api_results_singleton is None:
+        _api_results_singleton = res
+    return _api_results_singleton
+
