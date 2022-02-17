@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=Rare
 Type=Application
+Categories=Game;
 Icon=rare
 Exec=rare
 Comment=A GUI for legendary, an open source replacement for Epic Games Launcher
