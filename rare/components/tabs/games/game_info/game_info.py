@@ -6,7 +6,7 @@ from PyQt5.QtCore import pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from legendary.models.game import Game, InstalledGame
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.legendary_utils import VerifyWorker
 from rare.utils.models import InstallOptionsModel
@@ -26,8 +26,9 @@ class GameInfo(QWidget, Ui_GameInfo):
     def __init__(self, parent, game_utils):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
-        self.core = shared.core
-        self.signals = shared.signals
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+        self.args = ArgumentsSingleton()
         self.game_utils = game_utils
 
         if platform.system() == "Windows":
@@ -47,7 +48,7 @@ class GameInfo(QWidget, Ui_GameInfo):
 
         self.verify_pool = QThreadPool()
         self.verify_pool.setMaxThreadCount(2)
-        if shared.args.offline:
+        if self.args.offline:
             self.repair_button.setDisabled(True)
         else:
             self.repair_button.clicked.connect(self.repair)
@@ -175,7 +176,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         else:
             self.uninstall_button.setDisabled(False)
             self.verify_button.setDisabled(False)
-            if not shared.args.offline:
+            if not self.args.offline:
                 self.repair_button.setDisabled(False)
             self.game_actions_stack.setCurrentIndex(0)
 

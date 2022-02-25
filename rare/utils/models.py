@@ -121,7 +121,7 @@ class ApiResults:
         )
 
 
-class Signals(QObject):
+class GlobalSignals(QObject):
     exit_app = pyqtSignal(int)  # exit code
     send_notification = pyqtSignal(str)  # app_title
 

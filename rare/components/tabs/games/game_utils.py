@@ -10,7 +10,7 @@ from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqt
 from PyQt5.QtWidgets import QMessageBox, QPushButton
 
 from legendary.models.game import LaunchParameters
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.extra.console import ConsoleWindow
 from rare.components.tabs.games import CloudSaveUtils
@@ -50,8 +50,10 @@ class GameUtils(QObject):
 
     def __init__(self, parent=None):
         super(GameUtils, self).__init__(parent=parent)
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+        self.args = ArgumentsSingleton()
 
-        self.core = shared.core
         self.console = ConsoleWindow()
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
@@ -80,7 +82,7 @@ class GameUtils(QObject):
         if infos == 0:
             return False
         legendary_utils.uninstall(game.app_name, self.core, infos)
-        shared.signals.game_uninstalled.emit(app_name)
+        self.signals.game_uninstalled.emit(app_name)
         return True
 
     def prepare_launch(
@@ -116,7 +118,7 @@ class GameUtils(QObject):
             wine_pfx: str = None,
             ask_always_sync: bool = False,
     ):
-        if shared.args.offline:
+        if self.args.offline:
             offline = True
         game = self.core.get_game(app_name)
         igame = self.core.get_installed_game(app_name)
@@ -253,7 +255,7 @@ class GameUtils(QObject):
             self.running_games[game.app_name] = running_game
 
         else:
-            origin_uri = self.core.get_origin_uri(game.app_name, shared.args.offline)
+            origin_uri = self.core.get_origin_uri(game.app_name, self.args.offline)
             logger.info("Launch Origin Game: ")
             if platform.system() == "Windows":
                 webbrowser.open(origin_uri)

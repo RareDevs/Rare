@@ -3,7 +3,7 @@ from logging import getLogger
 
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.components.tabs.settings.dxvk import DxvkSettings
 from rare.ui.components.tabs.settings.linux import Ui_LinuxSettings
 from rare.utils.extra_widgets import PathEdit
@@ -15,6 +15,9 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
     def __init__(self, name=None):
         super(LinuxSettings, self).__init__()
         self.setupUi(self)
+
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
 
         self.name = name if name is not None else "default"
 
@@ -52,29 +55,27 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
     def save_prefix(self, text: str):
         self.save_setting(text, f"{self.name}.env", "WINEPREFIX")
         self.save_setting(text, self.name, "wine_prefix")
-        shared.signals.wine_prefix_updated.emit()
+        self.signals.wine_prefix_updated.emit()
 
-    @staticmethod
-    def load_setting(section: str, setting: str, fallback: str = str()):
-        return shared.core.lgd.config.get(section, setting, fallback=fallback)
+    def load_setting(self, section: str, setting: str, fallback: str = str()):
+        return self.core.lgd.config.get(section, setting, fallback=fallback)
 
-    @staticmethod
-    def save_setting(text: str, section: str, setting: str):
+    def save_setting(self, text: str, section: str, setting: str):
         if text:
-            if section not in shared.core.lgd.config.sections():
-                shared.core.lgd.config.add_section(section)
+            if section not in self.core.lgd.config.sections():
+                self.core.lgd.config.add_section(section)
                 logger.debug(f"Added {f'[{section}]'} configuration section")
-            shared.core.lgd.config.set(section, setting, text)
+            self.core.lgd.config.set(section, setting, text)
             logger.debug(f"Set {setting} in {f'[{section}]'} to {text}")
 
         else:
-            if shared.core.lgd.config.has_section(
+            if self.core.lgd.config.has_section(
                 section
-            ) and shared.core.lgd.config.has_option(section, setting):
-                shared.core.lgd.config.remove_option(section, setting)
+            ) and self.core.lgd.config.has_option(section, setting):
+                self.core.lgd.config.remove_option(section, setting)
                 logger.debug(f"Unset {setting} from {f'[{section}]'}")
-                if not shared.core.lgd.config[section]:
-                    shared.core.lgd.config.remove_section(section)
+                if not self.core.lgd.config[section]:
+                    self.core.lgd.config.remove_section(section)
                     logger.debug(f"Removed {f'[{section}]'} configuration section")
 
-        shared.core.lgd.save_config()
+        self.core.lgd.save_config()

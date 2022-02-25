@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, QSettings, QTimer, QSize
 from PyQt5.QtGui import QCloseEvent, QCursor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.components.tabs import TabWidget
 from rare.utils.paths import data_dir
 
@@ -16,11 +16,11 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setAttribute(Qt.WA_DeleteOnClose)
-        self.settings = QSettings()
-        self.core = shared.core
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+        self.args = ArgumentsSingleton()
 
-        self.signals = shared.signals
-        self.offline = shared.args.offline
+        self.settings = QSettings()
 
         self.setWindowTitle("Rare - GUI for legendary")
         self.tab_widget = TabWidget(self)
@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
 
         self.resize(width, height)
 
-        if not shared.args.offline:
+        if not self.args.offline:
             try:
                 from rare.utils.rpc import DiscordRPC
                 self.rpc = DiscordRPC()
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.timer.timeout.connect(self.timer_finished)
         self.timer.start(1000)
 
-    def show_window_centralized(self):
+    def show_window_centered(self):
         self.show()
         # get the margins of the decorated window
         margins = self.windowHandle().frameMargins()
@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
                     i.app_name for i in self.tab_widget.games_tab.game_list
                 ] and self.core.is_installed(game):
                     self.tab_widget.games_tab.game_utils.prepare_launch(
-                        game, offline=shared.args.offline
+                        game, offline=self.args.offline
                     )
                 else:
                     logger.info(f"Could not find {game} in Games")
@@ -95,7 +95,7 @@ class MainWindow(QMainWindow):
             self.hide()
             e.ignore()
             return
-        elif self.offline:
+        elif self.args.offline:
             pass
         self.signals.exit_app.emit(0)
         e.ignore()

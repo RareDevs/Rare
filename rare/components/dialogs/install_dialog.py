@@ -11,7 +11,7 @@ from legendary.core import LegendaryCore
 from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
 from legendary.utils.selective_dl import games
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.models import InstallDownloadModel, InstallQueueItemModel
@@ -29,7 +29,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
 
-        self.core = shared.core
+        self.core = LegendaryCoreSingleton()
+        self.api_results = ApiResultsSingleton()
         self.dl_item = dl_item
         self.dl_item.status_q = MPQueue()
         self.app_name = self.dl_item.options.app_name
@@ -55,8 +56,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.setWindowTitle(f'{self.windowTitle()} - {header} "{self.game.app_title}"')
 
         if not self.dl_item.options.base_path:
-            self.dl_item.options.base_path = shared.core.lgd.config.get("Legendary", "install_dir",
-                                                                        fallback=os.path.expanduser("~/legendary"))
+            self.dl_item.options.base_path = self.core.lgd.config.get("Legendary", "install_dir",
+                                                                      fallback=os.path.expanduser("~/legendary"))
 
         self.install_dir_edit = PathEdit(
             path=self.dl_item.options.base_path,
@@ -77,9 +78,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.warn_message.setVisible(False)
 
         platforms = ["Windows"]
-        if dl_item.options.app_name in shared.api_results.bit32_games:
+        if dl_item.options.app_name in self.api_results.bit32_games:
             platforms.append("Win32")
-        if dl_item.options.app_name in shared.api_results.mac_games:
+        if dl_item.options.app_name in self.api_results.mac_games:
             platforms.append("Mac")
         self.platform_combo_box.addItems(platforms)
         self.platform_combo_box.currentIndexChanged.connect(
@@ -296,7 +297,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.cancel_clicked()
 
 
-class InstallInfoWorkerSignals(QObject):
+class InstallInfoSignals(QObject):
     result = pyqtSignal(InstallDownloadModel)
     failed = pyqtSignal(str)
     finished = pyqtSignal()
@@ -305,7 +306,7 @@ class InstallInfoWorkerSignals(QObject):
 class InstallInfoWorker(QRunnable):
     def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel, game: Game = None):
         super(InstallInfoWorker, self).__init__()
-        self.signals = InstallInfoWorkerSignals()
+        self.signals = InstallInfoSignals()
         self.core = core
         self.dl_item = dl_item
         self.is_overlay_install = self.dl_item.options.overlay

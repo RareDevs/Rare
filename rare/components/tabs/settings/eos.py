@@ -7,7 +7,7 @@ from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QGroupBox, QMessageBox
 
 from legendary.utils import eos
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.settings.eos_widget import Ui_EosWidget
 from rare.utils.models import InstallOptionsModel
 
@@ -19,9 +19,9 @@ def get_wine_prefixes() -> List[str]:
         prefixes = [p]
     else:
         prefixes = []
-    for i in shared.core.get_installed_list():
+    for i in LegendaryCoreSingleton().get_installed_list():
         # get prefix from environment
-        env = shared.core.get_app_environment(i.app_name)
+        env = LegendaryCoreSingleton().get_app_environment(i.app_name)
         if pfx := env.get("WINEPREFIX"):
             if pfx not in prefixes and os.path.exists(os.path.join(pfx, "user.reg")):
                 prefixes.append(pfx)
@@ -31,26 +31,28 @@ def get_wine_prefixes() -> List[str]:
     return prefixes
 
 
-class WorkerSignals(QObject):
+class CheckForUpdateSignals(QObject):
     update_available = pyqtSignal(bool)
 
 
 class CheckForUpdateWorker(QRunnable):
     def __init__(self):
         super(CheckForUpdateWorker, self).__init__()
+        self.signals = CheckForUpdateSignals()
         self.setAutoDelete(True)
-        self.signals = WorkerSignals()
+        self.core = LegendaryCoreSingleton()
 
     def run(self) -> None:
-        shared.core.check_for_overlay_updates()
-        self.signals.update_available.emit(shared.core.overlay_update_available)
+        self.core.check_for_overlay_updates()
+        self.signals.update_available.emit(self.core.overlay_update_available)
 
 
 class EosWidget(QGroupBox, Ui_EosWidget):
     def __init__(self):
         super(EosWidget, self).__init__()
         self.setupUi(self)
-        self.core = shared.core
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
 
         if platform.system() != "Windows":
             self.setTitle(f"{self.title()} -  {self.tr(' - This won´t work with Wine. It might work in the Future')}")
@@ -64,8 +66,8 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.update_info_lbl.setVisible(False)
         self.overlay = self.core.lgd.get_overlay_install_info()
 
-        shared.signals.overlay_installation_finished.connect(self.overlay_installation_finished)
-        shared.signals.wine_prefix_updated.connect(self.update_prefixes)
+        self.signals.overlay_installation_finished.connect(self.overlay_installation_finished)
+        self.signals.wine_prefix_updated.connect(self.update_prefixes)
 
         self.update_check_button.clicked.connect(self.check_for_update)
         self.install_button.clicked.connect(self.install_overlay)
@@ -217,7 +219,7 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         options = InstallOptionsModel(app_name="", base_path=base_path,
                                       platform="Windows", overlay=True)
 
-        shared.signals.install_game.emit(options)
+        self.signals.install_game.emit(options)
 
     def uninstall_overlay(self):
         if not self.core.is_overlay_installed():

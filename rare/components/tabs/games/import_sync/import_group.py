@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView
 
-import rare.shared as shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
@@ -64,13 +64,16 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
     def __init__(self, parent=None):
         super(ImportGroup, self).__init__(parent=parent)
         self.setupUi(self)
-        self.core = shared.core
-        self.app_name_list = [game.app_name for game in shared.api_results.game_list]
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+        self.api_results = ApiResultsSingleton()
+
+        self.app_name_list = [game.app_name for game in self.api_results.game_list]
         self.install_dir_list = [
             game.metadata.get("customAttributes", {})
             .get("FolderName", {})
             .get("value", game.app_name)
-            for game in shared.api_results.game_list
+            for game in self.api_results.game_list
             if not game.is_dlc
         ]
 
@@ -87,7 +90,7 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
             ph_text=self.tr("Use in case the app name was not found automatically"),
             completer=AppNameCompleter(
                 app_names=[
-                    (i.app_name, i.app_title) for i in shared.api_results.game_list
+                    (i.app_name, i.app_title) for i in self.api_results.game_list
                 ]
             ),
             edit_func=self.app_name_edit_cb,
@@ -162,15 +165,15 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
                 self.tr("Successfully imported {}").format(igame.title)
             )
             self.app_name.setText(str())
-            shared.signals.update_gamelist.emit([app_name])
+            self.signals.update_gamelist.emit([app_name])
 
             if (
                 igame.version
                 != self.core.get_asset(app_name, igame.platform, False).build_version
             ):
                 # update available
-                shared.signals.add_download.emit(igame.app_name)
-                shared.signals.update_download_tab_text.emit()
+                self.signals.add_download.emit(igame.app_name)
+                self.signals.update_download_tab_text.emit()
 
         else:
             logger.warning(f'Failed to import "{app_name}"')

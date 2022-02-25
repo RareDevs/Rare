@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QStackedWidget, QTabWidget
 
 from legendary.core import LegendaryCore
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton
 from rare.utils.paths import cache_dir
 from .game_info import ShopGameInfo
 from .search_results import SearchResults
@@ -16,13 +16,14 @@ class Shop(QStackedWidget):
     def __init__(self, core: LegendaryCore):
         super(Shop, self).__init__()
         self.core = core
+        self.api_results = ApiResultsSingleton()
         self.api_core = ShopApiCore(
             self.core.egs.session.headers["Authorization"],
             self.core.language_code,
             self.core.country_code,
         )
 
-        self.shop = ShopWidget(cache_dir, core, self.api_core)
+        self.shop = ShopWidget(cache_dir, self.core, self.api_core)
         self.wishlist_widget = Wishlist(self.api_core)
 
         self.store_tabs = QTabWidget()
@@ -35,7 +36,7 @@ class Shop(QStackedWidget):
         self.addWidget(self.search_results)
         self.search_results.show_info.connect(self.show_game_info)
         self.info = ShopGameInfo(
-            [i.asset_infos["Windows"].namespace for i in shared.api_results.game_list],
+            [i.asset_infos["Windows"].namespace for i in self.api_results.game_list],
             self.api_core,
         )
         self.addWidget(self.info)

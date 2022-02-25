@@ -3,13 +3,15 @@ from typing import List
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton
 from rare.utils.meta import GameMeta
 
 
 class TrayIcon(QSystemTrayIcon):
     def __init__(self, parent):
         super(TrayIcon, self).__init__(parent)
+        self.core = LegendaryCoreSingleton()
+
         self.setIcon(QIcon(":/images/Rare.png"))
         self.setVisible(True)
         self.setToolTip("Rare")
@@ -24,7 +26,7 @@ class TrayIcon(QSystemTrayIcon):
         self.text_action.setEnabled(False)
         self.menu.addAction(self.text_action)
 
-        if len(installed := shared.core.get_installed_list()) < 5:
+        if len(installed := self.core.get_installed_list()) < 5:
             last_played = [GameMeta(i.app_name) for i in sorted(installed, key=lambda x: x.title)]
         elif games := sorted(
                 parent.mainwindow.tab_widget.games_tab.game_utils.game_meta.get_games(),
@@ -36,7 +38,7 @@ class TrayIcon(QSystemTrayIcon):
         self.game_actions = []
 
         for game in last_played:
-            a = QAction(shared.core.get_game(game.app_name).app_title)
+            a = QAction(self.core.get_game(game.app_name).app_title)
             a.setProperty("app_name", game.app_name)
             self.game_actions.append(a)
             a.triggered.connect(

@@ -6,7 +6,7 @@ from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.components.tabs.games.game_utils import GameUtils
 from rare.utils import utils
 from rare.utils.utils import create_desktop_link
@@ -22,7 +22,9 @@ class BaseInstalledWidget(QGroupBox):
 
     def __init__(self, app_name, pixmap: QPixmap, game_utils: GameUtils):
         super(BaseInstalledWidget, self).__init__()
-        self.core = shared.core
+        self.core = LegendaryCoreSingleton()
+        self.signals = GlobalSignalsSingleton()
+        self.args = ArgumentsSingleton()
         self.game_utils = game_utils
 
         self.syncing_cloud_saves = False
@@ -53,7 +55,7 @@ class BaseInstalledWidget(QGroupBox):
             pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation)
         )
         self.game_running = False
-        self.offline = shared.args.offline
+        self.offline = self.args.offline
         self.update_available = False
         if self.igame and self.core.lgd.assets:
             try:
@@ -120,7 +122,7 @@ class BaseInstalledWidget(QGroupBox):
 
         uninstall = QAction(self.tr("Uninstall"), self)
         uninstall.triggered.connect(
-            lambda: shared.signals.update_gamelist.emit([self.game.app_name])
+            lambda: self.signals.update_gamelist.emit([self.game.app_name])
             if self.game_utils.uninstall_game(self.game.app_name)
             else None
         )
