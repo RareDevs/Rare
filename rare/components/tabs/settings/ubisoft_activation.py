@@ -6,26 +6,26 @@ from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSize
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QSizePolicy, QPushButton
 
 from legendary.models.game import Game
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
 from rare.utils.utils import icon
 
 logger = getLogger("Ubisoft")
 
 
-class Signals(QObject):
+class UbiGetInfoSignals(QObject):
     worker_finished = pyqtSignal(set, set, str)
-    linked = pyqtSignal(str)
 
 
 class UbiGetInfoWorker(QRunnable):
     def __init__(self):
         super(UbiGetInfoWorker, self).__init__()
-        self.signals = Signals()
+        self.signals = UbiGetInfoSignals()
         self.setAutoDelete(True)
+        self.core = LegendaryCoreSingleton()
 
     def run(self) -> None:
         try:
-            external_auths = shared.core.egs.get_external_auths()
+            external_auths = self.core.egs.get_external_auths()
             for ext_auth in external_auths:
                 if ext_auth["type"] != "ubisoft":
                     continue
@@ -35,11 +35,11 @@ class UbiGetInfoWorker(QRunnable):
                 self.signals.worker_finished.emit(set(), set(), "")
                 return
 
-            uplay_keys = shared.core.egs.store_get_uplay_codes()
+            uplay_keys = self.core.egs.store_get_uplay_codes()
             key_list = uplay_keys["data"]["PartnerIntegration"]["accountUplayCodes"]
             redeemed = {k["gameId"] for k in key_list if k["redeemedOnUplay"]}
 
-            entitlements = shared.core.egs.get_user_entitlements()
+            entitlements = self.core.egs.get_user_entitlements()
             entitlements = {i["entitlementName"] for i in entitlements}
             self.signals.worker_finished.emit(redeemed, entitlements, ubi_account_id)
         except Exception as e:
@@ -47,11 +47,16 @@ class UbiGetInfoWorker(QRunnable):
             self.signals.worker_finished.emit(set(), set(), "error")
 
 
+class UbiConnectSignals(QObject):
+    linked = pyqtSignal(str)
+
+
 class UbiConnectWorker(QRunnable):
     def __init__(self, ubi_account_id, partner_link_id):
         super(UbiConnectWorker, self).__init__()
-        self.signals = Signals()
+        self.signals = UbiConnectSignals()
         self.setAutoDelete(True)
+        self.core = LegendaryCoreSingleton()
         self.ubi_account_id = ubi_account_id
         self.partner_link_id = partner_link_id
 
@@ -61,10 +66,10 @@ class UbiConnectWorker(QRunnable):
             self.signals.linked.emit("")
             return
         try:
-            shared.core.egs.store_claim_uplay_code(
+            self.core.egs.store_claim_uplay_code(
                 self.ubi_account_id, self.partner_link_id
             )
-            shared.core.egs.store_redeem_uplay_codes(self.ubi_account_id)
+            self.core.egs.store_redeem_uplay_codes(self.ubi_account_id)
         except Exception as e:
             self.signals.linked.emit(str(e))
             return
@@ -75,6 +80,7 @@ class UbiConnectWorker(QRunnable):
 class UbiLinkWidget(QWidget):
     def __init__(self, game: Game, ubi_account_id):
         super(UbiLinkWidget, self).__init__()
+        self.args = ArgumentsSingleton()
         self.setLayout(QHBoxLayout())
         self.game = game
         self.ubi_account_id = ubi_account_id
@@ -88,7 +94,7 @@ class UbiLinkWidget(QWidget):
         self.layout().addWidget(self.ok_indicator)
 
         self.link_button = QPushButton(
-            self.tr("Redeem to Ubisoft") + ": Test" if shared.args.debug else ""
+            self.tr("Redeem to Ubisoft") + ": Test" if self.args.debug else ""
         )
         self.layout().addWidget(self.link_button)
         self.link_button.clicked.connect(self.activate)
@@ -100,7 +106,7 @@ class UbiLinkWidget(QWidget):
             icon("mdi.transit-connection-horizontal", color="grey").pixmap(20, 20)
         )
 
-        if shared.args.debug:
+        if self.args.debug:
             worker = UbiConnectWorker(None, None)
         else:
             worker = UbiConnectWorker(self.ubi_account_id, self.game.partner_link_id)
@@ -126,8 +132,9 @@ class UbiLinkWidget(QWidget):
 class UbiActivationHelper(QObject):
     def __init__(self, widget: QWidget):
         super(UbiActivationHelper, self).__init__()
+        self.core = LegendaryCoreSingleton()
+        self.args = ArgumentsSingleton()
         self.widget = widget
-        self.core = shared.core
 
         self.thread_pool = QThreadPool.globalInstance()
         worker = UbiGetInfoWorker()
@@ -196,7 +203,7 @@ class UbiActivationHelper(QObject):
                 self.widget.layout().addWidget(
                     QLabel(self.tr("You don't own any Ubisoft games"))
                 )
-            if shared.args.debug:
+            if self.args.debug:
                 widget = UbiLinkWidget(
                     Game(app_name="Test", app_title="This is a test game"),
                     ubi_account_id,

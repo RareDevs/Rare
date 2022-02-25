@@ -8,7 +8,7 @@ from PyQt5.QtCore import pyqtSignal, QCoreApplication, QObject, QRunnable
 from legendary.core import LegendaryCore
 from legendary.models.game import VerifyResult
 from legendary.utils.lfs import validate_files
-from rare import shared
+from rare.shared import LegendaryCoreSingleton
 from rare.utils import config_helper
 
 logger = getLogger("Legendary Utils")
@@ -102,19 +102,20 @@ class VerifyWorker(QRunnable):
 
     def __init__(self, app_name):
         super(VerifyWorker, self).__init__()
-        self.app_name = app_name
         self.signals = VerifySignals()
         self.setAutoDelete(True)
+        self.core = LegendaryCoreSingleton()
+        self.app_name = app_name
 
     def run(self):
-        if not shared.core.is_installed(self.app_name):
+        if not self.core.is_installed(self.app_name):
             logger.error(f'Game "{self.app_name}" is not installed')
             return
 
         logger.info(f'Loading installed manifest for "{self.app_name}"')
-        igame = shared.core.get_installed_game(self.app_name)
-        manifest_data, _ = shared.core.get_installed_manifest(self.app_name)
-        manifest = shared.core.load_manifest(manifest_data)
+        igame = self.core.get_installed_game(self.app_name)
+        manifest_data, _ = self.core.get_installed_manifest(self.app_name)
+        manifest = self.core.load_manifest(manifest_data)
 
         files = sorted(manifest.file_manifest_list.elements,
                        key=lambda a: a.filename.lower())
@@ -148,7 +149,7 @@ class VerifyWorker(QRunnable):
 
         # always write repair file, even if all match
         if repair_file:
-            repair_filename = os.path.join(shared.core.lgd.get_tmp_path(), f'{self.app_name}.repair')
+            repair_filename = os.path.join(self.core.lgd.get_tmp_path(), f'{self.app_name}.repair')
             with open(repair_filename, 'w') as f:
                 f.write('\n'.join(repair_file))
             logger.debug(f'Written repair file to "{repair_filename}"')

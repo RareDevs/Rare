@@ -6,6 +6,7 @@ import shutil
 import sys
 import time
 import traceback
+from argparse import Namespace
 
 from PyQt5.QtCore import QThreadPool, QSettings, QTranslator
 from PyQt5.QtGui import QIcon
@@ -15,7 +16,7 @@ from requests import HTTPError
 import legendary
 # noinspection PyUnresolvedReferences
 import rare.resources.resources
-import rare.shared as shared
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils.paths import cache_dir, resources_path, tmp_dir
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
@@ -36,7 +37,7 @@ def excepthook(exc_type, exc_value, exc_tb):
     print("Error")
     if exc_tb == HTTPError:
         try:
-            if shared.core.login():
+            if LegendaryCoreSingleton().login():
                 return
             else:
                 raise ValueError
@@ -54,15 +55,15 @@ class App(QApplication):
     mainwindow: MainWindow = None
     tray_icon: QSystemTrayIcon = None
 
-    def __init__(self):
+    def __init__(self, args: Namespace):
         super(App, self).__init__(sys.argv)
-        self.args = shared.args  # add some options
+        self.args = ArgumentsSingleton(args)  # add some options
         self.window_launched = False
         self.setQuitOnLastWindowClosed(False)
 
         # init Legendary
         try:
-            self.core = shared.init_legendary()
+            self.core = LegendaryCoreSingleton()
         except configparser.MissingSectionHeaderError as e:
             logger.warning(f"Config is corrupt: {e}")
             if config_path := os.environ.get("XDG_CONFIG_HOME"):
@@ -71,7 +72,7 @@ class App(QApplication):
                 path = os.path.expanduser("~/.config/legendary")
             with open(os.path.join(path, "config.ini"), "w") as config_file:
                 config_file.write("[Legendary]")
-            self.core = shared.init_legendary()
+            self.core = LegendaryCoreSingleton()
         if "Legendary" not in self.core.lgd.config.sections():
             self.core.lgd.config.add_section("Legendary")
             self.core.lgd.save_config()
@@ -95,7 +96,7 @@ class App(QApplication):
         self.setOrganizationName("Rare")
         self.settings = QSettings()
 
-        self.signals = shared.init_signals()
+        self.signals = GlobalSignalsSingleton()
 
         self.signals.exit_app.connect(self.exit_app)
         self.signals.send_notification.connect(
@@ -159,7 +160,7 @@ class App(QApplication):
         if self.window_launched:
             self.mainwindow.show()
         else:
-            self.mainwindow.show_window_centralized()
+            self.mainwindow.show_window_centered()
 
     def start_app(self):
         for igame in self.core.get_installed_list():
@@ -184,32 +185,32 @@ class App(QApplication):
         )
 
         if not self.args.silent:
-            self.mainwindow.show_window_centralized()
+            self.mainwindow.show_window_centered()
             self.window_launched = True
 
-        if shared.args.subparser == "launch":
-            if shared.args.app_name in [
+        if self.args.subparser == "launch":
+            if self.args.app_name in [
                 i.app_name for i in self.core.get_installed_list()
             ]:
                 logger.info(
-                    f"Launching {self.core.get_installed_game(shared.args.app_name).title}"
+                    f"Launching {self.core.get_installed_game(self.args.app_name).title}"
                 )
                 self.mainwindow.tab_widget.games_tab.game_utils.prepare_launch(
-                    shared.args.app_name
+                    self.args.app_name
                 )
             else:
                 logger.error(
-                    f"Could not find {shared.args.app_name} in Games or it is not installed"
+                    f"Could not find {self.args.app_name} in Games or it is not installed"
                 )
                 QMessageBox.warning(
                     self.mainwindow,
                     "Warning",
                     self.tr(
                         "Could not find {} in installed games. Did you modify the shortcut? "
-                    ).format(shared.args.app_name),
+                    ).format(self.args.app_name),
                 )
 
-        if shared.args.test_start:
+        if self.args.test_start:
             self.exit_app(0)
 
     def tray(self, reason):
@@ -220,7 +221,7 @@ class App(QApplication):
     def exit_app(self, exit_code=0):
         # FIXME: Fix this with the downlaod tab redesign
         if self.mainwindow is not None:
-            if not shared.args.offline and self.mainwindow.tab_widget.downloadTab.is_download_active:
+            if not self.args.offline and self.mainwindow.tab_widget.downloadTab.is_download_active:
                 question = QMessageBox.question(
                     self.mainwindow,
                     self.tr("Close"),
@@ -255,7 +256,6 @@ class App(QApplication):
 def start(args):
     # set excepthook to show dialog with exception
     sys.excepthook = excepthook
-    shared.init_args(args)
 
     # configure logging
     if args.debug:
@@ -281,7 +281,7 @@ def start(args):
         )
 
     while True:
-        app = App()
+        app = App(args)
         exit_code = app.exec_()
         # if not restart
         # restart app

@@ -2,7 +2,7 @@ from logging import getLogger
 
 from PyQt5.QtWidgets import QGroupBox
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.dxvk import Ui_DxvkSettings
 
 logger = getLogger("DXVK Settings")
@@ -14,7 +14,7 @@ class DxvkSettings(QGroupBox, Ui_DxvkSettings):
         self.setupUi(self)
 
         self.name = name if name is not None else "default"
-        self.core = shared.core
+        self.core = LegendaryCoreSingleton()
 
         self.dxvk_options_map = {
             "devinfo": self.devinfo,

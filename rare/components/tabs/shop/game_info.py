@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
     QGridLayout,
 )
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.shop.shop_models import ShopGame
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
 from rare.utils.extra_widgets import WaitingSpinner, ImageLabel
@@ -30,6 +30,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
     def __init__(self, installed_titles: list, api_core):
         super(ShopGameInfo, self).__init__()
         self.setupUi(self)
+        self.core = LegendaryCoreSingleton()
         self.api_core = api_core
         self.installed = installed_titles
         self.open_store_button.clicked.connect(self.button_clicked)
@@ -258,7 +259,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
             self.wishlist.append(game["offer"]["title"])
 
     def button_clicked(self):
-        QDesktopServices.openUrl(QUrl(f"https://www.epicgames.com/store/{shared.core.language_code}/p/{self.slug}"))
+        QDesktopServices.openUrl(QUrl(f"https://www.epicgames.com/store/{self.core.language_code}/p/{self.slug}"))
 
 
 class SocialButton(QPushButton):

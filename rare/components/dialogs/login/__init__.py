@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QSizePolicy, QLayout, QDialog, QMessageBox
 
 from legendary.core import LegendaryCore
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
 from rare.components.dialogs.login.browser_login import BrowserLogin
 from rare.components.dialogs.login.import_login import ImportLogin
 from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
@@ -32,6 +32,7 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         self.setWindowModality(Qt.WindowModal)
 
         self.core = core
+        self.args = ArgumentsSingleton()
 
         self.browser_page = BrowserLogin(self.core, self.login_stack)
         self.login_stack.insertWidget(self.pages.browser, self.browser_page)
@@ -85,7 +86,7 @@ class LoginDialog(QDialog, Ui_LoginDialog):
             self.import_page.do_login()
 
     def login(self):
-        if shared.args.test_start:
+        if self.args.test_start:
             return False
         self.exec_()
         return self.logged_in

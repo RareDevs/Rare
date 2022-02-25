@@ -7,7 +7,7 @@ import requests
 from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, QCoreApplication
 
 from legendary.core import LegendaryCore
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
 from rare.utils.paths import data_dir, cache_dir
 
 replace_chars = ",;.:-_ "
@@ -48,15 +48,17 @@ class SteamWorker(QRunnable):
 
 
 def get_rating(app_name: str):
+    core = LegendaryCoreSingleton()
+    args = ArgumentsSingleton()
     if os.path.exists(p := os.path.join(data_dir, "steam_ids.json")):
         grades = json.load(open(p))
     else:
         grades = {}
 
     if not grades.get(app_name):
-        if shared.args.offline:
+        if args.offline:
             return "pending"
-        game = shared.core.get_game(app_name)
+        game = core.get_game(app_name)
 
         steam_id = get_steam_id(game.app_title)
         grade = get_grade(steam_id)

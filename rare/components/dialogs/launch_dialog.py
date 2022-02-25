@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QDialog, QApplication
 from legendary.core import LegendaryCore
 from requests.exceptions import ConnectionError, HTTPError
 
-from rare import shared
+from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton
 from rare.components.dialogs.login import LoginDialog
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.models import ApiResults
@@ -17,7 +17,7 @@ from rare.utils.utils import download_images, CloudWorker
 logger = getLogger("Login")
 
 
-class ApiSignals(QObject):
+class LaunchDialogSignals(QObject):
     image_progress = pyqtSignal(int)
     result = pyqtSignal(object, str)
 
@@ -25,32 +25,33 @@ class ApiSignals(QObject):
 class ImageWorker(QRunnable):
     def __init__(self, core: LegendaryCore):
         super(ImageWorker, self).__init__()
-        self.core = core
-        self.signal = ApiSignals()
+        self.signals = LaunchDialogSignals()
         self.setAutoDelete(True)
+        self.core = core
 
     def run(self):
-        download_images(self.signal.image_progress, self.signal.result, self.core)
-        self.signal.image_progress.emit(100)
+        download_images(self.signals.image_progress, self.signals.result, self.core)
+        self.signals.image_progress.emit(100)
 
 
 class ApiRequestWorker(QRunnable):
     def __init__(self):
         super(ApiRequestWorker, self).__init__()
-        self.signals = ApiSignals()
+        self.signals = LaunchDialogSignals()
         self.setAutoDelete(True)
+        self.core = LegendaryCoreSingleton()
 
     def run(self) -> None:
-        if platform.system() == "Darwin" or "Mac" in shared.core.get_installed_platforms():
+        if platform.system() == "Darwin" or "Mac" in self.core.get_installed_platforms():
             try:
-                result = shared.core.get_game_and_dlc_list(True, "Mac")
+                result = self.core.get_game_and_dlc_list(True, "Mac")
             except HTTPError:
                 result = [], {}
             self.signals.result.emit(result, "mac")
         else:
             self.signals.result.emit(([], {}), "mac")
         try:
-            result = shared.core.get_game_and_dlc_list(True, "Win32")
+            result = self.core.get_game_and_dlc_list(True, "Win32")
         except HTTPError:
             result = [], {}
         self.signals.result.emit(result, "32bit")
@@ -68,8 +69,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
         self.setWindowModality(Qt.WindowModal)
 
-        self.core = shared.core
-        self.offline = shared.args.offline
+        self.core = LegendaryCoreSingleton()
+        self.args = ArgumentsSingleton()
         self.thread_pool = QThreadPool()
         self.thread_pool.setMaxThreadCount(2)
         self.api_results = ApiResults()
@@ -77,7 +78,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
     def login(self):
         do_launch = True
         try:
-            if self.offline:
+            if self.args.offline:
                 pass
             else:
                 QApplication.processEvents()
@@ -90,10 +91,10 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             do_launch = LoginDialog(core=self.core, parent=self).login()
         except ConnectionError as e:
             logger.warning(e)
-            self.offline = True
+            self.args.offline = True
         finally:
             if do_launch:
-                if not shared.args.silent:
+                if not self.args.silent:
                     self.show()
                 self.launch()
             else:
@@ -104,11 +105,11 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         if not os.path.exists(image_dir):
             os.makedirs(image_dir)
 
-        if not self.offline:
+        if not self.args.offline:
             self.image_info.setText(self.tr("Downloading Images"))
             image_worker = ImageWorker(self.core)
-            image_worker.signal.image_progress.connect(self.update_image_progbar)
-            image_worker.signal.result.connect(self.handle_api_worker_result)
+            image_worker.signals.image_progress.connect(self.update_image_progbar)
+            image_worker.signals.result.connect(self.handle_api_worker_result)
             self.thread_pool.start(image_worker)
 
             # gamelist and no_asset games are from Image worker
@@ -179,8 +180,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         if self.finished == 1:
             logger.info("App starting")
             self.image_info.setText(self.tr("Starting..."))
-            shared.args.offline = self.offline
-            shared.init_api_response(self.api_results)
+            ApiResultsSingleton(self.api_results)
             self.start_app.emit()
         else:
             self.finished += 1
