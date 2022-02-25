@@ -8,7 +8,7 @@ import time
 import traceback
 from argparse import Namespace
 
-from PyQt5.QtCore import QThreadPool, QSettings, QTranslator
+from PyQt5.QtCore import Qt, QThreadPool, QSettings, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
@@ -60,6 +60,9 @@ class App(QApplication):
         self.args = ArgumentsSingleton(args)  # add some options
         self.window_launched = False
         self.setQuitOnLastWindowClosed(False)
+
+        if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
+            self.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
         # init Legendary
         try:
