@@ -199,7 +199,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         elif self.verify_threads.get(self.game.app_name):
             self.verify_widget.setCurrentIndex(1)
             self.verify_progress.setValue(
-                self.verify_threads[self.game.app_name].num
-                / self.verify_threads[self.game.app_name].total
-                * 100
+                int(self.verify_threads[self.game.app_name].num
+                    / self.verify_threads[self.game.app_name].total
+                    * 100)
             )
