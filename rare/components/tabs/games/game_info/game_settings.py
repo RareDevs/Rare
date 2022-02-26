@@ -17,6 +17,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 
 from rare.components.tabs.settings.linux import LinuxSettings
+from rare.components.tabs.settings.wrapper import WrapperSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
@@ -64,6 +65,12 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.core = core
         self.settings = QSettings()
 
+        self.wrapper_settings = WrapperSettings()
+
+        self.launch_settings_groupbox.layout().addRow(
+            QLabel("Wrapper"), self.wrapper_settings
+        )
+
         self.cloud_save_path_edit = PathEdit(
             "",
             file_type=QFileDialog.DirectoryOnly,
@@ -97,10 +104,6 @@ class GameSettings(QWidget, Ui_GameSettings):
         )
         self.launch_params.textChanged.connect(
             lambda x: self.save_line_edit("start_params", x)
-        )
-        self.wrapper.textChanged.connect(lambda x: self.save_line_edit("wrapper", x))
-        self.override_exe_edit.textChanged.connect(
-            lambda x: self.save_line_edit("override_exe", x)
         )
 
         if platform.system() != "Windows":
@@ -218,9 +221,9 @@ class GameSettings(QWidget, Ui_GameSettings):
 
     def change_proton(self, i):
         if self.change:
-            # Dont use Proton
+            # First combo box entry: Don't use Proton
             if i == 0:
-                config_helper.remove_option(self.game.app_name, "wrapper")
+                self.wrapper_settings.delete_wrapper("proton")
                 config_helper.remove_option(self.game.app_name, "no_wine")
                 config_helper.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH")
                 config_helper.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_CLIENT_INSTALL_PATH")
@@ -228,20 +231,14 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.proton_prefix.setEnabled(False)
                 # lk: TODO: This has to be fixed properly.
                 # lk: It happens because of the widget update. Mask it for now behind disabling the save button
-                self.wrapper.setText(
-                    self.core.lgd.config.get(
-                        f"{self.game.app_name}", "wrapper", fallback=""
-                    )
-                )
-                self.wrapper.setEnabled(True)
+
                 self.linux_settings.wine_groupbox.setEnabled(True)
             else:
                 self.proton_prefix.setEnabled(True)
-                self.wrapper.setEnabled(False)
                 self.linux_settings.wine_groupbox.setEnabled(False)
                 wrapper = self.possible_proton_wrappers[i - 1]
 
-                config_helper.add_option(self.game.app_name, "wrapper", wrapper)
+                self.wrapper_settings.add_wrapper(wrapper)
                 config_helper.add_option(self.game.app_name, "no_wine", "true")
                 config_helper.add_option(
                     f"{self.game.app_name}.env",
@@ -307,10 +304,8 @@ class GameSettings(QWidget, Ui_GameSettings):
         else:
             self.skip_update.setCurrentIndex(0)
 
-        wrapper = self.core.lgd.config.get(self.game.app_name, "wrapper", fallback="")
-        self.wrapper.setText(wrapper)
-
         self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
+        self.wrapper_settings.load_settings(app_name)
         if platform.system() != "Windows":
             self.linux_settings.update_game(app_name)
 
@@ -319,9 +314,7 @@ class GameSettings(QWidget, Ui_GameSettings):
             else:
                 self.linux_settings_widget.setVisible(True)
 
-            proton = self.core.lgd.config.get(
-                f"{app_name}", "wrapper", fallback=""
-            ).replace('"', "")
+            proton = self.wrapper_settings.extra_wrappers.get("proton", "").replace('"', "")
             if proton and "proton" in proton:
                 self.proton_prefix.setEnabled(True)
                 self.proton_wrapper.setCurrentText(
@@ -333,12 +326,10 @@ class GameSettings(QWidget, Ui_GameSettings):
                     fallback=self.tr("Please select path for proton prefix"),
                 )
                 self.proton_prefix.setText(proton_prefix)
-                self.wrapper.setEnabled(False)
                 self.linux_settings.wine_groupbox.setEnabled(False)
             else:
                 self.proton_wrapper.setCurrentIndex(0)
                 self.proton_prefix.setEnabled(False)
-                self.wrapper.setEnabled(True)
                 self.linux_settings.wine_groupbox.setEnabled(True)
 
         if not self.game.supports_cloud_saves:
