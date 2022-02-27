@@ -357,7 +357,7 @@ class GameSettings(QWidget, Ui_GameSettings):
 
 class LinuxAppSettings(LinuxSettings):
     def __init__(self):
-        super(LinuxAppSettings, self).__init__("app")
+        super(LinuxAppSettings, self).__init__()
 
     def update_game(self, app_name):
         self.name = app_name
@@ -365,4 +365,4 @@ class LinuxAppSettings(LinuxSettings):
         self.wine_exec.setText(self.load_setting(self.name, "wine_executable"))
 
         self.dxvk.name = app_name
-        self.dxvk.load_settings()
+        self.dxvk.load_settings(self.name)
