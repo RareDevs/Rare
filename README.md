@@ -36,6 +36,7 @@ On Windows:
 `PythonInstallationDirectory\Scripts` must be in your PATH.
 
 On Mac:
+
 `/Users/user/Library/Python/3.x/bin` must be in your PATH.
 
 ### Linux
@@ -108,7 +109,7 @@ If you run into any issues, please report it by creating an issue on GitHub or o
 
 There are several options to contribute.
 
-- If you know Python and PyQt you can implement new Features (Some ideas are in the Projects Tab).
+- If you know Python and PyQt, you can implement new features (Some ideas are in the projects tab).
 - If you are a designer, you can add Stylesheets or create a logo or a banner.
 - You can translate the application in your language: Check our [transifex](https://www.transifex.com/rare-1/rare) page
   for that.
