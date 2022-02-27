@@ -45,7 +45,7 @@ class WrapperSettings(QGroupBox, Ui_WrapperSettings):
         super(WrapperSettings, self).__init__("Wrapper")
         self.setupUi(self)
         self.widgets.setLayout(FlowLayout())
-        self.core = shared.core
+        self.core = shared.LegendaryCoreSingleton()
 
         self.add_button.clicked.connect(self.add_button_pressed)
 

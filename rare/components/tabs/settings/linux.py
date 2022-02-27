@@ -3,8 +3,9 @@ from logging import getLogger
 
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
+from rare.components.tabs.settings.settings_widgets.dxvk import DxvkSettings
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.components.tabs.settings.dxvk import DxvkSettings
+
 from rare.ui.components.tabs.settings.linux import Ui_LinuxSettings
 from rare.utils.extra_widgets import PathEdit
 
@@ -42,7 +43,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         self.exec_layout.addWidget(self.wine_exec)
 
         # dxvk
-        self.dxvk = DxvkSettings(self.name)
+        self.dxvk = DxvkSettings()
         self.overlay_layout.addWidget(self.dxvk)
 
     def load_prefix(self) -> str:
