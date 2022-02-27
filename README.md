@@ -25,8 +25,19 @@ Windows: execute `pythonw -m rare` in cmd
 It is possible to create a desktop link, or a start menu link. Execute the command above with `--desktop-shortcut`
 or `--startmenu-shortcut` option, alternatively you can create them in the settings.
 
-**Note**: On Linux must be `/home/user/.local/bin` in PATH and on Windows must be `PythonInstallationDirectory\Scripts`
-in PATH. On Mac is the Path `/Users/user/Library/Python/3.x/bin`.
+**Note about $PATH**:
+
+On Linux:
+
+`/home/user/.local/bin` must be in your PATH.
+
+On Windows:
+
+`PythonInstallationDirectory\Scripts` must be in your PATH.
+
+On Mac:
+
+`/Users/user/Library/Python/3.x/bin` must be in your PATH.
 
 ### Linux
 
@@ -45,9 +56,9 @@ There are some AUR packages available:
 **Note**:
 
 - pypresence is an optional package. You can install it
-  from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip
+  from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip.
 - Do not wonder if some icons look strange, because the official python3-qtawesome package is too old. Many icons were
-  replaced
+  replaced.
 
 #### Other
 
@@ -57,15 +68,15 @@ Install via `pip` or use the AppImage.
 
 There is a .dmg file available in [releases page](https://github.com/Dummerle/Rare/releases).
 
-**Note**: When you launch it, you will see and error, that the package is from an unknown source. You have to enable it
+**Note**: When you launch it, you will see an error, that the package is from an unknown source. You have to enable it
 manually in `Settings -> Security and Privacy`. Otherwise, Gatekeeper will block Rare from running.
 
 You can also use `pip`.
 
 ### Packages
 
-In [releases page](https://github.com/Dummerle/Rare/releases) are AppImages for Linux, a .msi file for windows and a .dmg
-file for macOS available
+In [releases page](https://github.com/Dummerle/Rare/releases), AppImages are available for Linux, a .msi file for windows and a .dmg
+file for macOS.
 
 ### Latest packages
 
@@ -97,7 +108,7 @@ If you run into any issues, please report it by creating an issue on GitHub or o
 
 There are several options to contribute.
 
-- If you can Python and PyQt you can implement new Features (Some ideas are in Projects).
+- If you know Python and PyQt, you can implement new features (Some ideas are in the projects tab).
 - If you are a designer, you can add Stylesheets or create a logo or a banner.
 - You can translate the application in your language: Check our [transifex](https://www.transifex.com/rare-1/rare) page
   for that.
