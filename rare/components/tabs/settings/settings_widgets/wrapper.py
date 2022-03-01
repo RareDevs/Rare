@@ -3,7 +3,7 @@ from logging import getLogger
 from typing import Dict
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QInputDialog, QFrame, QWidget
+from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QInputDialog, QFrame, QMessageBox, QSizePolicy
 
 from rare import shared
 from rare.ui.components.tabs.settings.wrapper import Ui_WrapperSettings
@@ -19,7 +19,7 @@ extra_wrapper_regex = {
 }
 
 
-class WrapperWidget(QGroupBox):
+class WrapperWidget(QFrame):
     delete_wrapper = pyqtSignal(str)
 
     def __init__(self, text: str):
@@ -27,6 +27,7 @@ class WrapperWidget(QGroupBox):
         self.setLayout(QHBoxLayout())
         self.text = text
         self.layout().addWidget(QLabel(text))
+        self.setProperty("frameShape", 6)
 
         self.delete_button = QPushButton(icon("ei.remove"), "")
         self.layout().addWidget(self.delete_button)
@@ -64,14 +65,23 @@ class WrapperSettings(QGroupBox, Ui_WrapperSettings):
                 self.extra_wrappers[key] = text
                 self.save()
                 return
+        if self.wrappers.get(text):
+            QMessageBox.warning(self, "Warning", self.tr("Wrapper is already in the list"))
+            return
+
+        self.widget_stack.setCurrentIndex(0)
+
         widget = WrapperWidget(text)
+        self.widgets.layout().addWidget(widget)
         widget.delete_wrapper.connect(self.delete_wrapper)
         self.widgets.layout().addWidget(widget)
         self.wrappers[text] = widget
-        self.widget_stack.setCurrentIndex(0)
 
-        # flow layout bug
-        self.widgets.update()
+        # flow layout bug: Workaround
+        lbl = QLabel("")
+        self.widgets.layout().addWidget(lbl)
+        lbl.deleteLater()
+
         self.save()
 
     def delete_wrapper(self, text: str):
@@ -82,8 +92,9 @@ class WrapperSettings(QGroupBox, Ui_WrapperSettings):
             widget.deleteLater()
             self.wrappers.pop(text)
 
-        if self.wrappers:
+        if not self.wrappers:
             self.widget_stack.setCurrentIndex(1)
+
         self.save()
 
     def save(self):
