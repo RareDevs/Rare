@@ -8,7 +8,7 @@ from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
-from rare.components.tabs.settings.rpc import RPCSettings
+from rare.components.tabs.settings.settings_widgets.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils import utils
 from rare.utils.paths import cache_dir
