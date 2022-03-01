@@ -82,12 +82,15 @@ class WrapperSettings(QGroupBox, Ui_WrapperSettings):
             widget.deleteLater()
             self.wrappers.pop(text)
 
-        if len(self.wrappers) == 0:
+        if self.wrappers:
             self.widget_stack.setCurrentIndex(1)
         self.save()
 
     def save(self):
-        config_helper.add_option(self.app_name, "wrapper", self.get_wrapper_string())
+        if len(self.wrappers) == 0 and len(self.extra_wrappers) == 0:
+            config_helper.remove_option(self.app_name, "wrapper")
+        else:
+            config_helper.add_option(self.app_name, "wrapper", self.get_wrapper_string())
 
     def load_settings(self, app_name):
         self.app_name = app_name

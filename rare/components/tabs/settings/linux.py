@@ -4,6 +4,7 @@ from logging import getLogger
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
 from rare.components.tabs.settings.settings_widgets.dxvk import DxvkSettings
+from rare.components.tabs.settings.settings_widgets.mangohud import MangoHudSettings
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 
 from rare.ui.components.tabs.settings.linux import Ui_LinuxSettings
@@ -26,7 +27,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         self.wine_prefix = PathEdit(
             self.load_prefix(),
             file_type=QFileDialog.DirectoryOnly,
-            edit_func=lambda path: (os.path.isdir(path), path, PathEdit.reasons.dir_not_exist),
+            edit_func=lambda path: (os.path.isdir(path) or not path, path, PathEdit.reasons.dir_not_exist),
             save_func=self.save_prefix,
         )
         self.prefix_layout.addWidget(self.wine_prefix)
@@ -45,6 +46,9 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         # dxvk
         self.dxvk = DxvkSettings()
         self.overlay_layout.addWidget(self.dxvk)
+
+        self.mangohud = MangoHudSettings()
+        self.overlay_layout.addWidget(self.mangohud)
 
     def load_prefix(self) -> str:
         return self.load_setting(

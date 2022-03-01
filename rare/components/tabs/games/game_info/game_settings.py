@@ -17,7 +17,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 
 from rare.components.tabs.settings.linux import LinuxSettings
-from rare.components.tabs.settings.wrapper import WrapperSettings
+from rare.components.tabs.settings.settings_widgets.wrapper import WrapperSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
@@ -136,6 +136,10 @@ class GameSettings(QWidget, Ui_GameSettings):
         else:
             self.linux_settings_widget.setVisible(False)
         self.game_settings_contents_layout.setAlignment(Qt.AlignTop)
+
+        self.linux_settings.mangohud.set_wrapper_activated.connect(
+            lambda active: self.wrapper_settings.add_wrapper("mangohud")
+            if active else self.wrapper_settings.delete_wrapper("mangohud"))
 
     def compute_save_path(self):
         if (
@@ -364,5 +368,6 @@ class LinuxAppSettings(LinuxSettings):
         self.wine_prefix.setText(self.load_prefix())
         self.wine_exec.setText(self.load_setting(self.name, "wine_executable"))
 
-        self.dxvk.name = app_name
         self.dxvk.load_settings(self.name)
+
+        self.mangohud.load_settings(self.name)
