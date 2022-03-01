@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Tuple
 
 from PyQt5.QtCore import QSettings, QThreadPool, Qt
+from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import (
     QWidget,
     QFileDialog,
@@ -19,6 +20,7 @@ from legendary.models.game import InstalledGame, Game
 from rare.components.tabs.settings.linux import LinuxSettings
 from rare.components.tabs.settings.widgets.wrapper import WrapperSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
+from rare.components.tabs.games.env_vars import EnvVars
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.utils import WineResolver, get_raw_save_path
@@ -141,6 +143,8 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.linux_settings.mangohud.set_wrapper_activated.connect(
             lambda active: self.wrapper_settings.add_wrapper("mangohud")
             if active else self.wrapper_settings.delete_wrapper("mangohud"))
+        self.env_vars = EnvVars(self)
+        self.game_settings_contents_layout.addWidget(self.env_vars)
 
     def compute_save_path(self):
         if (
@@ -359,7 +363,10 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.core.lgd.config.get(self.game.app_name, "override_exe", fallback="")
         )
         self.change = True
+        self.env_vars.update_game(app_name)
 
+
+    
 
 class LinuxAppSettings(LinuxSettings):
     def __init__(self):
