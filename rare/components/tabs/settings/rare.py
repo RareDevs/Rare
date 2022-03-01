@@ -26,8 +26,10 @@ languages = [("en", "English"),
              ("de", "Deutsch"),
              ("fr", "Français"),
              ("zh-Hans", "Simplified Chinese"),
+             ("zh_TW", "Chinese Taiwan"),
              ("pt_BR", "Portuguese (Brazil)"),
-             ("ca", "Catalan")]
+             ("ca", "Catalan"),
+             ("ru", "Russian")]
 
 
 class RareSettings(QWidget, Ui_RareSettings):
