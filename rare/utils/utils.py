@@ -278,7 +278,7 @@ def create_rare_desktop_link(type_of_link):
             )
             desktop_file.close()
         os.chmod(os.path.expanduser(os.path.join(path, "Rare.desktop")), 0o755)
-
+    #Windows
     elif platform.system() == "Windows":
         # Target of shortcut
         if type_of_link == "desktop":
@@ -300,7 +300,7 @@ def create_rare_desktop_link(type_of_link):
         shell = Dispatch("WScript.Shell")
         shortcut = shell.CreateShortCut(pathLink)
         shortcut.Targetpath = executable
-        if not sys.executable.endswith("Rare.exe"):
+        if not platform.system() == "Windows":
             shortcut.Arguments = os.path.abspath(sys.argv[0])
 
         # Icon
