@@ -13,9 +13,12 @@ from PyQt5.QtWidgets import QMessageBox
 
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate, WriterTask
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared import GlobalSignalsSingleton
+# from rare.shared import LegendaryCoreSingleton
+# Commented out due to it being unused, if you need it, there it is.
 from rare.utils.models import InstallQueueItemModel
 from rare.utils.utils import create_desktop_link
+
 
 logger = getLogger("DownloadThread")
 
@@ -41,7 +44,6 @@ class DownloadThread(QThread):
         start_time = time.time()
         dl_stopped = False
         try:
-
             self.dlm.start()
             time.sleep(1)
             while self.dlm.is_alive():
@@ -50,7 +52,7 @@ class DownloadThread(QThread):
                     logger.info("Download stopping...")
 
                     # The code below is a temporary solution.
-                    # It should be removed once legendary supports stopping downloads more gracefully.
+                    # Remove once legendary can stop downloads more gracefully.
 
                     self.dlm.running = False
 
@@ -63,7 +65,8 @@ class DownloadThread(QThread):
                     for t in self.dlm.threads:
                         t.join(timeout=5.0)
                         if t.is_alive():
-                            logger.warning(f"Thread did not terminate! {repr(t)}")
+                            logger.warning(
+                                f"Thread did not terminate! {repr(t)}")
 
                     # clean up all the queues, otherwise this process won't terminate properly
                     for name, q in zip(
@@ -92,7 +95,8 @@ class DownloadThread(QThread):
 
                     if self.dlm.writer_queue:
                         # cancel installation
-                        self.dlm.writer_queue.put_nowait(WriterTask("", kill=True))
+                        self.dlm.writer_queue.put_nowait(
+                            WriterTask("", kill=True))
 
                     # forcibly kill DL workers that are not actually dead yet
                     for child in self.dlm.children:
