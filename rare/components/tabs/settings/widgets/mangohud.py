@@ -71,7 +71,7 @@ class MangoHudSettings(OverlaySettings):
             checkbox.setChecked(f"{var_name}=0" not in cfg)
         self.settings_updatable = True
 
-    def set_activation_state(self, state: Enum):
+    def set_activation_state(self, state: Enum):  # pylint: disable=E0202
         if state in [ActivationStates.DEFAULT, ActivationStates.HIDDEN]:
             self.set_wrapper_activated.emit(False)
             self.gb_options.setDisabled(True)

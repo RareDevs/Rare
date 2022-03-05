@@ -6,8 +6,8 @@ from PyQt5.QtCore import Qt, QRunnable, QObject, pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
-from rare.components.tabs.settings.settings_widgets.eos import EosWidget
-from rare.components.tabs.settings.settings_widgets.ubisoft_activation import UbiActivationHelper
+from rare.components.tabs.settings.widgets.eos import EosWidget
+from rare.components.tabs.settings.widgets.ubisoft_activation import UbiActivationHelper
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit
 from rare.utils.utils import get_size

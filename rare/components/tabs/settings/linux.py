@@ -3,8 +3,8 @@ from logging import getLogger
 
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
-from rare.components.tabs.settings.settings_widgets.dxvk import DxvkSettings
-from rare.components.tabs.settings.settings_widgets.mangohud import MangoHudSettings
+from rare.components.tabs.settings.widgets.dxvk import DxvkSettings
+from rare.components.tabs.settings.widgets.mangohud import MangoHudSettings
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 
 from rare.ui.components.tabs.settings.linux import Ui_LinuxSettings
