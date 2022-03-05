@@ -13,7 +13,8 @@ def init_config_handler(core: LegendaryCore):
     save_config = core.lgd.save_config
 
 
-def add_option(app_name: str, option: str, value):
+def add_option(app_name: str, option: str, value: str):
+    value = value.replace("%%", "%").replace("%", "%%")
     if not config.has_section(app_name):
         config[app_name] = {}
 
