@@ -17,7 +17,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 
 from rare.components.tabs.settings.linux import LinuxSettings
-from rare.components.tabs.settings.settings_widgets.wrapper import WrapperSettings
+from rare.components.tabs.settings.widgets.wrapper import WrapperSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
