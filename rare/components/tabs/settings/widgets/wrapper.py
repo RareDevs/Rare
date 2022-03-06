@@ -2,7 +2,7 @@ import re
 from logging import getLogger
 from typing import Dict
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QSettings
 from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QInputDialog, QFrame, QMessageBox, QSizePolicy
 
 from rare import shared
@@ -49,9 +49,13 @@ class WrapperSettings(QGroupBox, Ui_WrapperSettings):
         self.core = shared.LegendaryCoreSingleton()
 
         self.add_button.clicked.connect(self.add_button_pressed)
+        self.settings = QSettings()
 
     def get_wrapper_string(self):
-        return " ".join(list(self.extra_wrappers.values()) + list(self.wrappers.keys()))
+        return " ".join(self.get_wrapper_list())
+
+    def get_wrapper_list(self):
+        return list(self.extra_wrappers.values()) + list(self.wrappers.keys())
 
     def add_button_pressed(self):
         wrapper, done = QInputDialog.getText(self, "Input Dialog", self.tr("Insert name of wrapper"))
@@ -98,30 +102,34 @@ class WrapperSettings(QGroupBox, Ui_WrapperSettings):
         self.save()
 
     def save(self):
+        # save wrappers twice, to support wrappers with spaces
         if len(self.wrappers) == 0 and len(self.extra_wrappers) == 0:
             config_helper.remove_option(self.app_name, "wrapper")
+            self.settings.remove(f"{self.app_name}/wrapper")
         else:
             config_helper.add_option(self.app_name, "wrapper", self.get_wrapper_string())
+            self.settings.setValue(f"{self.app_name}/wrapper", self.get_wrapper_list())
 
-    def load_settings(self, app_name):
+    def load_settings(self, app_name: str):
         self.app_name = app_name
         for i in self.wrappers.values():
             i.deleteLater()
         self.wrappers.clear()
         self.extra_wrappers.clear()
 
-        wrapper_config = self.core.lgd.config.get(app_name, "wrapper", fallback="")
-        pattern = re.compile(r'''((?:[^ "']|"[^"]*"|'[^']*')+)''')
-        wrappers = pattern.split(wrapper_config)[1::2]
-        if not wrappers:
+        wrappers = self.settings.value(f"{self.app_name}/wrapper", [], str)
+
+        if not wrappers and (cfg := self.core.lgd.config.get(self.app_name, "wrapper", fallback="")):
+            logger.info("Loading wrappers from legendary config")
+            # no qt wrapper, but legendary wrapper, to have backward compatibility
+            pattern = re.compile(r'''((?:[^ "']|"[^"]*"|'[^']*')+)''')
+            wrappers = pattern.split(cfg)[1::2]
+
+        for wrapper in wrappers:
+            self.add_wrapper(wrapper)
+
+        if not self.wrappers:
             self.widget_stack.setCurrentIndex(1)
             return
         else:
             self.widget_stack.setCurrentIndex(0)
-
-        for wrapper in wrappers:
-            if wrapper.strip('"').endswith("proton"):
-                wrapper = f"{wrapper} run"
-            if wrapper == "run":
-                continue
-            self.add_wrapper(wrapper)

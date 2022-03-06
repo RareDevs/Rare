@@ -67,7 +67,7 @@ class GameSettings(QWidget, Ui_GameSettings):
 
         self.wrapper_settings = WrapperSettings()
 
-        self.launch_settings_groupbox.layout().addRow(
+        self.launch_settings_group.layout().addRow(
             QLabel("Wrapper"), self.wrapper_settings
         )
 
