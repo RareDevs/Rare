@@ -70,7 +70,7 @@ class GameSettings(QWidget, Ui_GameSettings):
             edit_func=lambda text: (os.path.exists(text), text, PathEdit.reasons.dir_not_exist),
             save_func=self.save_save_path,
         )
-        self.cloud_gb.layout().addRow(
+        self.cloud_layout.addRow(
             QLabel(self.tr("Save path")), self.cloud_save_path_edit
         )
 
@@ -81,7 +81,7 @@ class GameSettings(QWidget, Ui_GameSettings):
             QSizePolicy.Maximum, QSizePolicy.Fixed
         )
         self.compute_save_path_button.clicked.connect(self.compute_save_path)
-        self.cloud_gb.layout().addRow(None, self.compute_save_path_button)
+        self.cloud_layout.addRow(None, self.compute_save_path_button)
 
         self.offline.currentIndexChanged.connect(
             lambda x: self.update_combobox(x, "offline")
@@ -127,11 +127,11 @@ class GameSettings(QWidget, Ui_GameSettings):
                     self.linux_settings.layout().removeItem(item)
                     del item
             # FIXME: End of FIXME
-            self.linux_settings_contents_layout.addWidget(self.linux_settings)
-            self.linux_settings_contents_layout.setAlignment(Qt.AlignTop)
+            self.linux_settings_layout.addWidget(self.linux_settings)
+            self.linux_settings_layout.setAlignment(Qt.AlignTop)
         else:
-            self.linux_settings_scroll.setVisible(False)
-        self.game_settings_layout.setAlignment(Qt.AlignTop)
+            self.linux_settings_widget.setVisible(False)
+        self.game_settings_contents_layout.setAlignment(Qt.AlignTop)
 
     def compute_save_path(self):
         if (
@@ -307,9 +307,9 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.linux_settings.update_game(app_name)
 
             if self.igame and self.igame.platform == "Mac":
-                self.linux_settings_scroll.setVisible(False)
+                self.linux_settings_widget.setVisible(False)
             else:
-                self.linux_settings_scroll.setVisible(True)
+                self.linux_settings_widget.setVisible(True)
 
             proton = self.core.lgd.config.get(
                 f"{app_name}", "wrapper", fallback=""
@@ -334,10 +334,10 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.linux_settings.wine_groupbox.setEnabled(True)
 
         if not self.game.supports_cloud_saves:
-            self.cloud_gb.setEnabled(False)
+            self.cloud_group.setEnabled(False)
             self.cloud_save_path_edit.setText("")
         else:
-            self.cloud_gb.setEnabled(True)
+            self.cloud_group.setEnabled(True)
             sync_cloud = self.settings.value(
                 f"{self.game.app_name}/auto_sync_cloud", True, bool
             )
