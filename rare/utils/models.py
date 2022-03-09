@@ -24,6 +24,8 @@ class InstallOptionsModel:
     update: bool = False
     silent: bool = False
     platform: str = ""
+    overlay: bool = False
+    create_shortcut: bool = True
 
     def set_no_install(self, enabled: bool) -> None:
         self.no_install = enabled
@@ -138,3 +140,6 @@ class Signals(QObject):
     game_uninstalled = pyqtSignal(str)
 
     set_discord_rpc = pyqtSignal(str)  # app_name of running game
+    rpc_settings_updated = pyqtSignal()
+
+    wine_prefix_updated = pyqtSignal()
