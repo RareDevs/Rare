@@ -250,6 +250,7 @@ class GameUtils(QObject):
 
             process.start(full_params[0], full_params[1:])
             self.game_launched.emit(app_name)
+            self.signals.set_discord_rpc.emit(app_name)
             logger.info(f"{game.app_title} launched")
 
             self.running_games[game.app_name] = running_game
@@ -316,6 +317,7 @@ class GameUtils(QObject):
 
     def game_finished(self, exit_code, app_name):
         logger.info(f"Game exited with exit code: {exit_code}")
+        self.signals.set_discord_rpc.emit("")
         is_origin = self.core.get_game(app_name).third_party_store == "Origin"
         if exit_code == 53 and is_origin:
             msg_box = QMessageBox()
