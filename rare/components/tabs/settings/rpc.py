@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QGroupBox
 
+from rare.shared import GlobalSignalsSingleton
 from rare.ui.components.tabs.settings.rpc import Ui_RPCSettings
 
 
@@ -8,6 +9,7 @@ class RPCSettings(QGroupBox, Ui_RPCSettings):
     def __init__(self, parent):
         super(RPCSettings, self).__init__(parent=parent)
         self.setupUi(self)
+        self.signals = GlobalSignalsSingleton()
 
         self.settings = QSettings()
 
@@ -31,3 +33,4 @@ class RPCSettings(QGroupBox, Ui_RPCSettings):
 
     def changed(self, i):
         self.settings.setValue("rpc_enable", i)
+        self.signals.rpc_settings_updated.emit()

@@ -26,11 +26,12 @@ class DiscordRPC(QObject):
             self.set_discord_rpc()
 
         self.signals.set_discord_rpc.connect(self.update_presence)
+        self.signals.rpc_settings_updated.connect(self.changed_settings)
 
     def update_presence(self, app_name):
         self.set_discord_rpc(app_name)
 
-    def changed_settings(self, game_running: list):
+    def changed_settings(self, game_running: list = None):
         value = self.settings.value("rpc_enable", 0, int)
         if value == 2:
             self.remove_rpc()
@@ -85,7 +86,7 @@ class DiscordRPC(QObject):
 
     def update_rpc(self, app_name=None):
         if self.settings.value("rpc_enable", 0, int) == 2 or (
-            app_name is None and self.settings.value("rpc_enable", 0, int) == 0
+                not app_name and self.settings.value("rpc_enable", 0, int) == 0
         ):
             self.remove_rpc()
             return

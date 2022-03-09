@@ -142,5 +142,6 @@ class GlobalSignals(QObject):
     game_uninstalled = pyqtSignal(str)
 
     set_discord_rpc = pyqtSignal(str)  # app_name of running game
+    rpc_settings_updated = pyqtSignal()
 
     wine_prefix_updated = pyqtSignal()
