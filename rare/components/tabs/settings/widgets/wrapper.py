@@ -1,14 +1,16 @@
 import re
+import shutil
 from logging import getLogger
 from typing import Dict
 
-from PyQt5.QtCore import pyqtSignal, QSettings
-from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QInputDialog, QFrame, QMessageBox, QSizePolicy
+from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData
+from PyQt5.QtGui import QDrag, QPixmap, QDropEvent, QMouseEvent, QDragEnterEvent, QDragMoveEvent, QFont
+from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QInputDialog, QFrame, QMessageBox, QSizePolicy, \
+    QWidget
 
 from rare import shared
 from rare.ui.components.tabs.settings.wrapper import Ui_WrapperSettings
 from rare.utils import config_helper
-from rare.utils.extra_widgets import FlowLayout
 from rare.utils.utils import icon
 
 logger = getLogger("Wrapper Settings")
@@ -26,36 +28,68 @@ class WrapperWidget(QFrame):
         super(WrapperWidget, self).__init__()
         self.setLayout(QHBoxLayout())
         self.text = text
-        self.layout().addWidget(QLabel(text))
+        self.image_lbl = QLabel()
+        self.text_lbl = QLabel(text)
+        self.text_lbl.setFont(QFont("monospace"))
+        self.image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
+        self.layout().addWidget(self.image_lbl)
+        self.layout().addWidget(self.text_lbl)
         self.setProperty("frameShape", 6)
 
         self.delete_button = QPushButton(icon("ei.remove"), "")
         self.layout().addWidget(self.delete_button)
         self.delete_button.clicked.connect(self.delete)
 
+        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+
     def delete(self):
         self.delete_wrapper.emit(self.text)
 
+    def mouseMoveEvent(self, e):
+        if e.buttons() == Qt.LeftButton:
+            drag = QDrag(self)
+            mime = QMimeData()
+            drag.setMimeData(mime)
+            drag.exec_(Qt.MoveAction)
 
-class WrapperSettings(QGroupBox, Ui_WrapperSettings):
+
+class WrapperSettings(QFrame, Ui_WrapperSettings):
     wrappers: Dict[str, WrapperWidget] = dict()
     extra_wrappers: Dict[str, str] = dict()
     app_name: str
+    drag_widget: QWidget
 
     def __init__(self):
-        super(WrapperSettings, self).__init__("Wrapper")
+        super(WrapperSettings, self).__init__()
         self.setupUi(self)
-        self.widgets.setLayout(FlowLayout())
+        self.setProperty("frameShape", 6)
+        self.widget_stack.insertWidget(0, self.scroll_area)
+        self.placeholder.deleteLater()
+        self.scroll_area.setProperty("noBorder", 1)
+        self.scroll_content.layout().setAlignment(Qt.AlignLeft)
+
         self.core = shared.LegendaryCoreSingleton()
 
         self.add_button.clicked.connect(self.add_button_pressed)
         self.settings = QSettings()
 
+        self.setStyleSheet("""QFrame{padding: 0px}""")
+
+        self.setAcceptDrops(True)
+
     def get_wrapper_string(self):
         return " ".join(self.get_wrapper_list())
 
     def get_wrapper_list(self):
-        return list(self.extra_wrappers.values()) + list(self.wrappers.keys())
+        data = list(self.extra_wrappers.values())
+        for n in range(self.scroll_content.layout().count()):
+            # Get the widget at each index in turn.
+            w = self.scroll_content.layout().itemAt(n).widget()
+            try:
+                data.append(w.text)
+            except AttributeError:
+                pass
+        return data
 
     def add_button_pressed(self):
         wrapper, done = QInputDialog.getText(self, "Input Dialog", self.tr("Insert name of wrapper"))
@@ -63,30 +97,36 @@ class WrapperSettings(QGroupBox, Ui_WrapperSettings):
             return
         self.add_wrapper(wrapper)
 
-    def add_wrapper(self, text: str):
+    def add_wrapper(self, text: str, from_load=False):
         for key, extra_wrapper in extra_wrapper_regex.items():
             if re.match(extra_wrapper, text):
                 self.extra_wrappers[key] = text
-                self.save()
+                if not from_load:
+                    self.save()
                 return
-        if self.wrappers.get(text):
-            QMessageBox.warning(self, "Warning", self.tr("Wrapper is already in the list"))
+
+        # validate
+        if not text.strip():  # is empty
             return
+        if not from_load:
+            if self.wrappers.get(text):
+                QMessageBox.warning(self, "Warning", self.tr("Wrapper is already in the list"))
+                return
+
+            if not shutil.which(text.split()[0]):
+                if QMessageBox.question(self, "Warning", self.tr("Wrapper is not in $PATH. Ignore? "),
+                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.No:
+                    return
 
         self.widget_stack.setCurrentIndex(0)
 
         widget = WrapperWidget(text)
-        self.widgets.layout().addWidget(widget)
+        self.scroll_content.layout().addWidget(widget)
         widget.delete_wrapper.connect(self.delete_wrapper)
-        self.widgets.layout().addWidget(widget)
+        self.scroll_content.layout().addWidget(widget)
         self.wrappers[text] = widget
-
-        # flow layout bug: Workaround
-        lbl = QLabel("")
-        self.widgets.layout().addWidget(lbl)
-        lbl.deleteLater()
-
-        self.save()
+        if not from_load:
+            self.save()
 
     def delete_wrapper(self, text: str):
         widget = self.wrappers.get(text, None)
@@ -126,10 +166,37 @@ class WrapperSettings(QGroupBox, Ui_WrapperSettings):
             wrappers = pattern.split(cfg)[1::2]
 
         for wrapper in wrappers:
-            self.add_wrapper(wrapper)
+            self.add_wrapper(wrapper, True)
 
         if not self.wrappers:
             self.widget_stack.setCurrentIndex(1)
-            return
         else:
             self.widget_stack.setCurrentIndex(0)
+        self.save()
+
+    def dragEnterEvent(self, e: QDragEnterEvent):
+        widget = e.source()
+        self.drag_widget = widget
+        e.accept()
+
+    def _get_drop_index(self, x):
+        for n in range(self.scroll_content.layout().count()):
+            # Get the widget at each index in turn.
+            w = self.scroll_content.layout().itemAt(n).widget()
+            if x < w.x() + w.size().width() // 2:
+                return n
+        return self.scroll_content.layout().count()
+
+    def dragMoveEvent(self, e: QDragMoveEvent) -> None:
+        i = self._get_drop_index(e.pos().x())
+
+        self.scroll_content.layout().insertWidget(i, self.drag_widget)
+
+    def dropEvent(self, e: QDropEvent):
+        pos = e.pos()
+        widget = e.source()
+        index = self._get_drop_index(pos.x())
+        self.scroll_content.layout().insertWidget(index, widget)
+        self.drag_widget = None
+        e.accept()
+        self.save()

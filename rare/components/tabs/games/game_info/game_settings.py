@@ -4,14 +4,14 @@ from logging import getLogger
 from pathlib import Path
 from typing import Tuple
 
-from PyQt5.QtCore import QSettings, QThreadPool, Qt
+from PyQt5.QtCore import QSettings, QThreadPool, Qt, QSize
 from PyQt5.QtWidgets import (
     QWidget,
     QFileDialog,
     QMessageBox,
     QLabel,
     QPushButton,
-    QSizePolicy,
+    QSizePolicy, QHBoxLayout,
 )
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
