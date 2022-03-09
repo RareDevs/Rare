@@ -14,15 +14,32 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_WrapperSettings(object):
     def setupUi(self, WrapperSettings):
         WrapperSettings.setObjectName("WrapperSettings")
-        WrapperSettings.resize(435, 123)
-        WrapperSettings.setWindowTitle("GroupBox")
+        WrapperSettings.resize(413, 106)
         self.horizontalLayout = QtWidgets.QHBoxLayout(WrapperSettings)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.widget_stack = QtWidgets.QStackedWidget(WrapperSettings)
         self.widget_stack.setObjectName("widget_stack")
-        self.widgets = QtWidgets.QWidget()
-        self.widgets.setObjectName("widgets")
-        self.widget_stack.addWidget(self.widgets)
+        self.placeholder = QtWidgets.QWidget()
+        self.placeholder.setObjectName("placeholder")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.placeholder)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.scroll_area = QtWidgets.QScrollArea(self.placeholder)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scroll_area.sizePolicy().hasHeightForWidth())
+        self.scroll_area.setSizePolicy(sizePolicy)
+        self.scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setObjectName("scroll_area")
+        self.scroll_content = QtWidgets.QWidget()
+        self.scroll_content.setGeometry(QtCore.QRect(0, 0, 286, 68))
+        self.scroll_content.setObjectName("scroll_content")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.scroll_content)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.scroll_area.setWidget(self.scroll_content)
+        self.horizontalLayout_2.addWidget(self.scroll_area)
+        self.widget_stack.addWidget(self.placeholder)
         self.label_page = QtWidgets.QWidget()
         self.label_page.setObjectName("label_page")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.label_page)
@@ -47,7 +64,7 @@ class Ui_WrapperSettings(object):
 
     def retranslateUi(self, WrapperSettings):
         _translate = QtCore.QCoreApplication.translate
-        WrapperSettings.setTitle(_translate("WrapperSettings", "Wrapper"))
+        WrapperSettings.setWindowTitle(_translate("WrapperSettings", "Frame"))
         self.no_wrapper_label.setText(_translate("WrapperSettings", "No wrapper added"))
         self.add_button.setText(_translate("WrapperSettings", "Add Wrapper"))
 
@@ -55,7 +72,7 @@ class Ui_WrapperSettings(object):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    WrapperSettings = QtWidgets.QGroupBox()
+    WrapperSettings = QtWidgets.QFrame()
     ui = Ui_WrapperSettings()
     ui.setupUi(WrapperSettings)
     WrapperSettings.show()

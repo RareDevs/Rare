@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>WrapperSettings</class>
- <widget class="QGroupBox" name="WrapperSettings">
+ <widget class="QFrame" name="WrapperSettings">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>435</width>
-    <height>123</height>
+    <width>413</width>
+    <height>106</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">GroupBox</string>
-  </property>
-  <property name="title">
-   <string>Wrapper</string>
+   <string>Frame</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -22,7 +19,37 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="widgets"/>
+     <widget class="QWidget" name="placeholder">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QScrollArea" name="scroll_area">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scroll_content">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>286</width>
+            <height>68</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="label_page">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
