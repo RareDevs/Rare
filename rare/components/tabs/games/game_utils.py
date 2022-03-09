@@ -139,8 +139,7 @@ class GameUtils(QObject):
                         "Launch",
                         self.tr("Do you want to launch {}").format(game.app_title),
                         QMessageBox.Yes | QMessageBox.No,
-                    )
-                        == QMessageBox.Yes
+                    ) == QMessageBox.Yes
             ):
                 logger.info("Cancel Startup")
                 self.finished.emit(app_name, "")
@@ -236,7 +235,7 @@ class GameUtils(QObject):
                         None,
                         "Warning",
                         self.tr(
-                            "Wine executable '{}' does not exist. Please change it in Settings"
+                            "'{}' does not exist. Please change it in Settings"
                         ).format(full_params[0]),
                     )
                     process.deleteLater()
@@ -308,16 +307,16 @@ class GameUtils(QObject):
 
         if QSettings().value("show_console", False, bool):
             self.console.show()
-            process.readyReadStandardOutput.connect(
-                lambda: self.console.log(
-                    str(process.readAllStandardOutput().data(), "utf-8", "ignore")
-                )
+        process.readyReadStandardOutput.connect(
+            lambda: self.console.log(
+                str(process.readAllStandardOutput().data(), "utf-8", "ignore")
             )
-            process.readyReadStandardError.connect(
-                lambda: self.console.error(
-                    str(process.readAllStandardError().data(), "utf-8", "ignore")
-                )
+        )
+        process.readyReadStandardError.connect(
+            lambda: self.console.error(
+                str(process.readAllStandardError().data(), "utf-8", "ignore")
             )
+        )
 
     def game_finished(self, exit_code, app_name):
         logger.info(f"Game exited with exit code: {exit_code}")
@@ -336,14 +335,16 @@ class GameUtils(QObject):
             # click install button
             if resp == 0:
                 webbrowser.open("https://www.dm.origin.com/download")
-        if is_origin and exit_code == 1:
+        if exit_code != 0:
             QMessageBox.warning(
                 None,
                 "Warning",
-                self.tr("Failed to launch {}").format(
+                self.tr("Failed to launch {}. Check logs to find error").format(
                     self.core.get_game(app_name).app_title
                 ),
             )
+            # show console on error, even if disabled
+            self.console.show()
 
         game: RunningGameModel = self.running_games.get(app_name, None)
         if app_name in self.running_games.keys():
