@@ -1,12 +1,13 @@
 import os
+import time
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer, QSize
 from PyQt5.QtGui import QCloseEvent, QCursor
-from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar
+from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar, QScrollArea, QScroller, QComboBox
 
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.components.tabs import TabWidget
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils.paths import data_dir
 
 logger = getLogger("Window")
@@ -65,6 +66,14 @@ class MainWindow(QMainWindow):
             screen_rect.center()
             - self.rect().adjusted(0, 0, decor_width, decor_height).center()
         )
+
+        # enable kinetic scrolling
+        for scroll_area in self.findChildren(QScrollArea):
+            QScroller.grabGesture(scroll_area.viewport(), QScroller.LeftMouseButtonGesture)
+
+            # fix scrolling
+            for combo_box in scroll_area.findChildren(QComboBox):
+                combo_box.wheelEvent = lambda e: e.ignore()
 
     def timer_finished(self):
         file_path = os.path.join(data_dir, "lockfile")
