@@ -4,8 +4,8 @@ from logging import getLogger
 from typing import Dict
 
 from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData
-from PyQt5.QtGui import QDrag, QPixmap, QDropEvent, QMouseEvent, QDragEnterEvent, QDragMoveEvent, QFont
-from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QInputDialog, QFrame, QMessageBox, QSizePolicy, \
+from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QInputDialog, QFrame, QMessageBox, QSizePolicy, \
     QWidget
 
 from rare import shared
@@ -125,6 +125,7 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
         widget.delete_wrapper.connect(self.delete_wrapper)
         self.scroll_content.layout().addWidget(widget)
         self.wrappers[text] = widget
+
         if not from_load:
             self.save()
 
