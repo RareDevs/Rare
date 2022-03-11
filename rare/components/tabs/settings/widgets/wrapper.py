@@ -24,8 +24,8 @@ extra_wrapper_regex = {
 class WrapperWidget(QFrame):
     delete_wrapper = pyqtSignal(str)
 
-    def __init__(self, text: str):
-        super(WrapperWidget, self).__init__()
+    def __init__(self, text: str, parent=None):
+        super(WrapperWidget, self).__init__(parent=parent)
         self.setLayout(QHBoxLayout())
         self.text = text
         self.image_lbl = QLabel()
@@ -57,7 +57,6 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
     wrappers: Dict[str, WrapperWidget] = dict()
     extra_wrappers: Dict[str, str] = dict()
     app_name: str
-    drag_widget: QWidget
 
     def __init__(self):
         super(WrapperSettings, self).__init__()
@@ -65,8 +64,11 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
         self.setProperty("frameShape", 6)
         self.widget_stack.insertWidget(0, self.scroll_area)
         self.placeholder.deleteLater()
+        self.scroll_content.deleteLater()
+        self.scroll_content = WrapperContainer(
+            save_cb=self.save, parent=self.scroll_area)
+        self.scroll_area.setWidget(self.scroll_content)
         self.scroll_area.setProperty("noBorder", 1)
-        self.scroll_content.layout().setAlignment(Qt.AlignLeft)
 
         self.core = shared.LegendaryCoreSingleton()
 
@@ -74,8 +76,6 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
         self.settings = QSettings()
 
         self.setStyleSheet("""QFrame{padding: 0px}""")
-
-        self.setAcceptDrops(True)
 
     def get_wrapper_string(self):
         return " ".join(self.get_wrapper_list())
@@ -120,7 +120,7 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
 
         self.widget_stack.setCurrentIndex(0)
 
-        widget = WrapperWidget(text)
+        widget = WrapperWidget(text, self.scroll_content)
         self.scroll_content.layout().addWidget(widget)
         widget.delete_wrapper.connect(self.delete_wrapper)
         self.scroll_content.layout().addWidget(widget)
@@ -174,29 +174,46 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
             self.widget_stack.setCurrentIndex(0)
         self.save()
 
+
+class WrapperContainer(QWidget):
+    drag_widget: QWidget
+
+    def __init__(self, save_cb, parent=None):
+        super(WrapperContainer, self).__init__(parent=parent)
+        self.setLayout(QHBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.setAcceptDrops(True)
+        self.save = save_cb
+
     def dragEnterEvent(self, e: QDragEnterEvent):
         widget = e.source()
         self.drag_widget = widget
         e.accept()
 
     def _get_drop_index(self, x):
-        for n in range(self.scroll_content.layout().count()):
-            # Get the widget at each index in turn.
-            w = self.scroll_content.layout().itemAt(n).widget()
-            if x < w.x() + w.size().width() // 2:
-                return n
-        return self.scroll_content.layout().count()
+        drag_idx = self.layout().indexOf(self.drag_widget)
+
+        if drag_idx > 0:
+            prev_widget = self.layout().itemAt(drag_idx - 1).widget()
+            if x < self.drag_widget.x() - prev_widget.width() // 2:
+                return drag_idx - 1
+        if drag_idx < self.layout().count() - 1:
+            next_widget = self.layout().itemAt(drag_idx + 1).widget()
+            if x > self.drag_widget.x() + self.drag_widget.width() + next_widget.width() // 2:
+                return drag_idx + 1
+
+        return drag_idx
 
     def dragMoveEvent(self, e: QDragMoveEvent) -> None:
         i = self._get_drop_index(e.pos().x())
-
-        self.scroll_content.layout().insertWidget(i, self.drag_widget)
+        self.layout().insertWidget(i, self.drag_widget)
 
     def dropEvent(self, e: QDropEvent):
         pos = e.pos()
         widget = e.source()
         index = self._get_drop_index(pos.x())
-        self.scroll_content.layout().insertWidget(index, widget)
+        self.layout().insertWidget(index, widget)
         self.drag_widget = None
         e.accept()
         self.save()
