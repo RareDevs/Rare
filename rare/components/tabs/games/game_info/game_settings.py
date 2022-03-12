@@ -1,6 +1,7 @@
 import os
 import platform
 from logging import getLogger
+from pathlib import Path
 from typing import Tuple
 
 from PyQt5.QtCore import QSettings, QThreadPool, Qt
@@ -12,9 +13,9 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QSizePolicy,
 )
-
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
+
 from rare.components.tabs.settings.linux import LinuxSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
 from rare.utils import config_helper
@@ -40,7 +41,7 @@ def find_proton_wrappers():
                 compatibilitytool = os.path.join(c, i, "compatibilitytool.vdf")
                 toolmanifest = os.path.join(c, i, "toolmanifest.vdf")
                 if os.path.exists(proton) and (
-                    os.path.exists(compatibilitytool) or os.path.exists(toolmanifest)
+                        os.path.exists(compatibilitytool) or os.path.exists(toolmanifest)
                 ):
                     wrapper = f'"{proton}" run'
                     possible_proton_wrappers.append(wrapper)
@@ -135,8 +136,8 @@ class GameSettings(QWidget, Ui_GameSettings):
 
     def compute_save_path(self):
         if (
-            self.core.is_installed(self.game.app_name)
-            and self.game.supports_cloud_saves
+                self.core.is_installed(self.game.app_name)
+                and self.game.supports_cloud_saves
         ):
             try:
                 new_path = self.core.get_save_path(self.game.app_name)
@@ -222,6 +223,7 @@ class GameSettings(QWidget, Ui_GameSettings):
                 config_helper.remove_option(self.game.app_name, "wrapper")
                 config_helper.remove_option(self.game.app_name, "no_wine")
                 config_helper.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH")
+                config_helper.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_CLIENT_INSTALL_PATH")
 
                 self.proton_prefix.setEnabled(False)
                 # lk: TODO: This has to be fixed properly.
@@ -246,9 +248,15 @@ class GameSettings(QWidget, Ui_GameSettings):
                     "STEAM_COMPAT_DATA_PATH",
                     os.path.expanduser("~/.proton"),
                 )
+                config_helper.add_option(
+                    f"{self.game.app_name}.env",
+                    "STEAM_COMPAT_CLIENT_INSTALL_PATH",
+                    str(Path.home().joinpath(".steam", "steam"))
+                )
+
                 self.proton_prefix.setText(os.path.expanduser("~/.proton"))
 
-                # Dont use Wine
+                # Don't use Wine
                 self.linux_settings.wine_exec.setText("")
                 self.linux_settings.wine_prefix.setText("")
 
