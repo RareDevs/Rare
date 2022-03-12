@@ -1,4 +1,3 @@
-from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QGroupBox, QTableWidgetItem, QMessageBox
 import qtawesome
 from rare.ui.components.tabs.games.env_vars import Ui_EnvVars
@@ -185,7 +184,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         # should be just cleared. (And not deleted)
 
         first_item = self.env_vars_table.item(index, 0)
-        
+
         # The first item needs to have some text, else we don't delete it.
         if first_item is None:
             return

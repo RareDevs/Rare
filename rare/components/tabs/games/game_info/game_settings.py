@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Tuple
 
 from PyQt5.QtCore import QSettings, QThreadPool, Qt
-from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import (
     QWidget,
     QFileDialog,
@@ -365,8 +364,6 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.change = True
         self.env_vars.update_game(app_name)
 
-
-    
 
 class LinuxAppSettings(LinuxSettings):
     def __init__(self):
