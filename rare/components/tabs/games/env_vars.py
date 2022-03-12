@@ -3,8 +3,7 @@ import qtawesome
 from rare.ui.components.tabs.games.env_vars import Ui_EnvVars
 from rare.utils import config_helper
 from rare.shared import LegendaryCoreSingleton
-from PyQt5 import QtCore
-
+from PyQt5.QtCore import Qt, QFileSystemWatcher
 
 class EnvVars(QGroupBox, Ui_EnvVars):
     def __init__(self, parent):
@@ -14,7 +13,15 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         self.core = LegendaryCoreSingleton()
         self.latest_item = None
         self.list_of_readonly = ["STEAM_COMPAT_DATA_PATH", "DXVK_HUD", "WINEPREFIX"]
-        self.warn_msg = "Readonly, please edit this via the relative setting."
+        self.warn_msg = "Readonly, please edit this via the appropriate setting above."
+        self.setup_file_watcher()
+
+    # We use this function to keep an eye on the config.
+    # When the user uses for example the wineprefix settings, we need to update the table.
+    # With this function, when the config file changes, we update the table.
+    def setup_file_watcher(self):
+        self.config_file_watcher = QFileSystemWatcher([self.core.lgd.config_path], self)
+        self.config_file_watcher.fileChanged.connect(self.import_env_vars)
 
     def compare_config_and_table(self):
         list_of_keys_in_table = []
@@ -72,7 +79,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
             new_item.setText(val)
 
             if new_item.text() in self.list_of_readonly:
-                new_item.setFlags(new_item.flags() ^ QtCore.Qt.ItemIsEnabled)
+                new_item.setFlags(new_item.flags() ^ Qt.ItemIsEnabled)
                 new_item.setToolTip(self.warn_msg)
 
             self.env_vars_table.setItem(index, 0, new_item)
@@ -85,7 +92,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
             # If yes, we also need to disable column 1.
             first_item = self.env_vars_table.item(index, 0)
             if first_item.text() in self.list_of_readonly:
-                new_item.setFlags(new_item.flags() ^ QtCore.Qt.ItemIsEnabled)
+                new_item.setFlags(new_item.flags() ^ Qt.ItemIsEnabled)
                 new_item.setToolTip(self.warn_msg)
             self.env_vars_table.setItem(index, 1, new_item)
 
@@ -207,11 +214,13 @@ class EnvVars(QGroupBox, Ui_EnvVars):
             pass
 
     def keyPressEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Delete or e.key() == QtCore.Qt.Key_Backspace:
+        if e.key() == Qt.Key_Delete or e.key() == Qt.Key_Backspace:
             selected_items = self.env_vars_table.selectedItems()
             for i in selected_items:
                 config_helper.remove_option(f"{self.app_name}.env", i.text())
                 self.env_vars_table.removeRow(i.row())
+        elif e.key() == Qt.Key_Escape:
+            self.parent().layout().setCurrentIndex(0)
 
     def update_game(self, app_name):
         self.app_name = app_name
