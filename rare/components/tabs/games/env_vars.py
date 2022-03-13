@@ -1,9 +1,10 @@
-from PyQt5.QtWidgets import QGroupBox, QTableWidgetItem, QMessageBox
+from PyQt5.QtWidgets import QAbstractButton, QGroupBox, QPushButton, QTableWidgetItem, QMessageBox
 import qtawesome
 from rare.ui.components.tabs.games.env_vars import Ui_EnvVars
 from rare.utils import config_helper
 from rare.shared import LegendaryCoreSingleton
 from PyQt5.QtCore import Qt, QFileSystemWatcher
+
 
 class EnvVars(QGroupBox, Ui_EnvVars):
     def __init__(self, parent):
@@ -13,7 +14,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         self.core = LegendaryCoreSingleton()
         self.latest_item = None
         self.list_of_readonly = ["STEAM_COMPAT_DATA_PATH", "DXVK_HUD", "WINEPREFIX"]
-        self.warn_msg = "Readonly, please edit this via the appropriate setting above."
+        self.warn_msg = self.tr("Readonly, please edit this via the appropriate setting above.")
         self.setup_file_watcher()
 
     # We use this function to keep an eye on the config.
@@ -116,6 +117,12 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         # Like this we always connect at every update_game.
         self.env_vars_table.cellChanged.connect(self.update_env_vars)
         self.env_vars_table.verticalHeader().sectionClicked.connect(self.remove_row)
+    
+    def keep_new_env_var(self):
+        print("Keep the new one.")
+
+    def keep_older_env_var(self):
+        print("Keep the older one.")
 
     def update_env_vars(self, row):
         row_count = self.env_vars_table.rowCount()
@@ -149,12 +156,39 @@ class EnvVars(QGroupBox, Ui_EnvVars):
 
         if first_item.text() in self.list_of_readonly:
             error_dialog = QMessageBox()
-            error_dialog.setText("Please don't manually add this environment variable. Use the appropriate game setting above.")
+            error_dialog.setText(self.tr("Please don't manually add this environment variable. Use the appropriate game setting above."))
             error_dialog.exec()
             first_item.setText("")
             return
 
+
         if first_item.text():
+            
+            # NEW (REMOVE THIS BEFORE PUSHING) TODO
+            if first_item.text() in list_of_keys:
+                ask_user = QMessageBox()
+                ask_user.setText(self.tr("The config already contains this environment variable."))
+                ask_user.setInformativeText(self.tr("Do you want to keep the newer one or the older one?"))
+                
+                ask_user.addButton(QPushButton("Keep the newer one"), QMessageBox.YesRole)
+                ask_user.addButton(QPushButton("Keep the older one"), QMessageBox.NoRole)
+                
+                response = ask_user.exec()
+
+                if response == 0:
+                    # We delete the old one
+                    item_to_be_deleted = self.env_vars_table.findItems(first_item.text(), Qt.MatchExactly)
+                    row_to_be_removed = item_to_be_deleted[0].row()
+                    self.env_vars_table.removeRow(row_to_be_removed)
+                    config_helper.remove_option(f"{self.app_name}.env", first_item.text())
+                elif response == 1:
+                    first_item.text() == ""
+                    if second_item.text() is not None:
+                        second_item.text() == ""
+                    return
+
+            # NEW END (REMOVE THIS BEFORE PUSHING) TODO
+
             # When the second_item is None, we just use an empty string for the value.
             if second_item is None:
                 if self.latest_item in list_of_keys:
@@ -199,7 +233,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         # If the user tries to delete one of the readonly vars, we show a message and return.
         if first_item.text() in self.list_of_readonly:
             error_dialog = QMessageBox()
-            error_dialog.setText("Please use the appropriate setting above to remove this key.")
+            error_dialog.setText(self.tr("Please use the appropriate setting above to remove this key."))
             error_dialog.exec()
             return
 
