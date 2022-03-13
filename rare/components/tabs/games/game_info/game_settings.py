@@ -4,14 +4,14 @@ from logging import getLogger
 from pathlib import Path
 from typing import Tuple
 
-from PyQt5.QtCore import QSettings, QThreadPool, Qt, QSize
+from PyQt5.QtCore import QSettings, QThreadPool, Qt
 from PyQt5.QtWidgets import (
     QWidget,
     QFileDialog,
     QMessageBox,
     QLabel,
     QPushButton,
-    QSizePolicy, QHBoxLayout,
+    QSizePolicy
 )
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
@@ -74,7 +74,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.cloud_save_path_edit = PathEdit(
             "",
             file_type=QFileDialog.DirectoryOnly,
-            ph_text=self.tr("Cloud save path"),
+            placeholder=self.tr("Cloud save path"),
             edit_func=lambda text: (os.path.exists(text), text, PathEdit.reasons.dir_not_exist),
             save_func=self.save_save_path,
         )
@@ -116,6 +116,7 @@ class GameSettings(QWidget, Ui_GameSettings):
                 file_type=QFileDialog.DirectoryOnly,
                 edit_func=self.proton_prefix_edit,
                 save_func=self.proton_prefix_save,
+                placeholder=self.tr("Please select path for proton prefix")
             )
             self.proton_prefix_layout.addWidget(self.proton_prefix)
 
@@ -318,8 +319,9 @@ class GameSettings(QWidget, Ui_GameSettings):
             else:
                 self.linux_settings_widget.setVisible(True)
 
-            proton = self.wrapper_settings.extra_wrappers.get("proton", "").replace('"', "")
-            if proton and "proton" in proton:
+            proton = self.wrapper_settings.wrappers.get("proton", None)
+            if proton:
+                proton = proton.text.replace('"', "")
                 self.proton_prefix.setEnabled(True)
                 self.proton_wrapper.setCurrentText(
                     f'"{proton.replace(" run", "")}" run'
@@ -327,7 +329,7 @@ class GameSettings(QWidget, Ui_GameSettings):
                 proton_prefix = self.core.lgd.config.get(
                     f"{app_name}.env",
                     "STEAM_COMPAT_DATA_PATH",
-                    fallback=self.tr("Please select path for proton prefix"),
+                    fallback=Path.home().joinpath(".proton"),
                 )
                 self.proton_prefix.setText(proton_prefix)
                 self.linux_settings.wine_groupbox.setEnabled(False)

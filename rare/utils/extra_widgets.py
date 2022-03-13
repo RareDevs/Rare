@@ -299,7 +299,7 @@ class PathEdit(IndicatorLineEdit):
             file_type: QFileDialog.FileType = QFileDialog.AnyFile,
             type_filter: str = "",
             name_filter: str = "",
-            ph_text: str = "",
+            placeholder: str = "",
             edit_func: Callable[[str], Tuple[bool, str, str]] = None,
             save_func: Callable[[str], None] = None,
             horiz_policy: QSizePolicy = QSizePolicy.Expanding,
@@ -318,7 +318,7 @@ class PathEdit(IndicatorLineEdit):
         self.completer.setModel(self.compl_model)
         super(PathEdit, self).__init__(
             text=path,
-            ph_text=ph_text,
+            ph_text=placeholder,
             completer=self.completer,
             edit_func=edit_func,
             save_func=save_func,

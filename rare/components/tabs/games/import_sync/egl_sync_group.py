@@ -34,7 +34,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         else:
             self.egl_path_edit = PathEdit(
                 path=self.core.egl.programdata_path,
-                ph_text=self.tr(
+                placeholder=self.tr(
                     "Path to the Wine prefix where EGL is installed, or the Manifests folder"
                 ),
                 file_type=QFileDialog.DirectoryOnly,

@@ -1,7 +1,7 @@
 import re
 import shutil
 from logging import getLogger
-from typing import Dict
+from typing import Dict, List
 
 from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData
 from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont
@@ -24,12 +24,15 @@ extra_wrapper_regex = {
 class WrapperWidget(QFrame):
     delete_wrapper = pyqtSignal(str)
 
-    def __init__(self, text: str, parent=None):
+    def __init__(self, text: str, show_text=None, parent=None):
         super(WrapperWidget, self).__init__(parent=parent)
+        if not show_text:
+            show_text = text
+
         self.setLayout(QHBoxLayout())
         self.text = text
         self.image_lbl = QLabel()
-        self.text_lbl = QLabel(text)
+        self.text_lbl = QLabel(show_text)
         self.text_lbl.setFont(QFont("monospace"))
         self.image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
         self.layout().addWidget(self.image_lbl)
@@ -38,6 +41,9 @@ class WrapperWidget(QFrame):
 
         self.delete_button = QPushButton(icon("ei.remove"), "")
         self.layout().addWidget(self.delete_button)
+        if show_text in extra_wrapper_regex.keys():
+            self.delete_button.setDisabled(True)
+            self.delete_button.setToolTip(self.tr("Disable it in settings"))
         self.delete_button.clicked.connect(self.delete)
 
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
@@ -55,20 +61,20 @@ class WrapperWidget(QFrame):
 
 class WrapperSettings(QFrame, Ui_WrapperSettings):
     wrappers: Dict[str, WrapperWidget] = dict()
-    extra_wrappers: Dict[str, str] = dict()
     app_name: str
 
     def __init__(self):
         super(WrapperSettings, self).__init__()
         self.setupUi(self)
         self.setProperty("frameShape", 6)
-        self.widget_stack.insertWidget(0, self.scroll_area)
+        self.widget_stack.insertWidget(0, self.wrapper_scroll_area)
         self.placeholder.deleteLater()
         self.scroll_content.deleteLater()
         self.scroll_content = WrapperContainer(
-            save_cb=self.save, parent=self.scroll_area)
-        self.scroll_area.setWidget(self.scroll_content)
-        self.scroll_area.setProperty("noBorder", 1)
+            save_cb=self.save, parent=self.wrapper_scroll_area
+        )
+        self.wrapper_scroll_area.setWidget(self.scroll_content)
+        self.wrapper_scroll_area.setProperty("noBorder", 1)
 
         self.core = shared.LegendaryCoreSingleton()
 
@@ -81,10 +87,9 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
         return " ".join(self.get_wrapper_list())
 
     def get_wrapper_list(self):
-        data = list(self.extra_wrappers.values())
-        for n in range(self.scroll_content.layout().count()):
+        data: List[str] = []
+        for w in self.wrappers.values():
             # Get the widget at each index in turn.
-            w = self.scroll_content.layout().itemAt(n).widget()
             try:
                 data.append(w.text)
             except AttributeError:
@@ -98,12 +103,12 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
         self.add_wrapper(wrapper)
 
     def add_wrapper(self, text: str, from_load=False):
+        if text == "mangohud" and self.wrappers.get("mangohud"):
+            return
+        show_text = text
         for key, extra_wrapper in extra_wrapper_regex.items():
             if re.match(extra_wrapper, text):
-                self.extra_wrappers[key] = text
-                if not from_load:
-                    self.save()
-                return
+                show_text = key
 
         # validate
         if not text.strip():  # is empty
@@ -113,29 +118,32 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
                 QMessageBox.warning(self, "Warning", self.tr("Wrapper is already in the list"))
                 return
 
-            if not shutil.which(text.split()[0]):
+            if show_text != "proton" and not shutil.which(text.split()[0]):
                 if QMessageBox.question(self, "Warning", self.tr("Wrapper is not in $PATH. Ignore? "),
                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.No:
                     return
 
+            if text == "proton":
+                QMessageBox.warning(self, "Warning", self.tr("Do not insert proton manually. Add it in proton settings"))
+                return
+
         self.widget_stack.setCurrentIndex(0)
 
-        widget = WrapperWidget(text, self.scroll_content)
+        widget = WrapperWidget(text, show_text, self.scroll_content)
         self.scroll_content.layout().addWidget(widget)
         widget.delete_wrapper.connect(self.delete_wrapper)
         self.scroll_content.layout().addWidget(widget)
-        self.wrappers[text] = widget
+
+        self.wrappers[show_text] = widget
 
         if not from_load:
             self.save()
 
     def delete_wrapper(self, text: str):
         widget = self.wrappers.get(text, None)
-        if not widget and self.extra_wrappers.get(text, None):
-            self.extra_wrappers.pop(text)
-        elif widget:
-            widget.deleteLater()
+        if widget:
             self.wrappers.pop(text)
+            widget.deleteLater()
 
         if not self.wrappers:
             self.widget_stack.setCurrentIndex(1)
@@ -144,7 +152,7 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
 
     def save(self):
         # save wrappers twice, to support wrappers with spaces
-        if len(self.wrappers) == 0 and len(self.extra_wrappers) == 0:
+        if len(self.wrappers) == 0:
             config_helper.remove_option(self.app_name, "wrapper")
             self.settings.remove(f"{self.app_name}/wrapper")
         else:
@@ -156,7 +164,6 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
         for i in self.wrappers.values():
             i.deleteLater()
         self.wrappers.clear()
-        self.extra_wrappers.clear()
 
         wrappers = self.settings.value(f"{self.app_name}/wrapper", [], str)
 
@@ -173,6 +180,7 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
             self.widget_stack.setCurrentIndex(1)
         else:
             self.widget_stack.setCurrentIndex(0)
+
         self.save()
 
 
