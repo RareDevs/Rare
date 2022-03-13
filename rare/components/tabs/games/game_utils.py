@@ -192,6 +192,10 @@ class GameUtils(QObject):
             )
 
             full_params = list()
+
+            if os.environ.get("container") == "flatpak":
+                full_params.extend(["flatpak-spawn", "--host"])
+
             full_params.extend(params.launch_command)
             full_params.append(
                 os.path.join(params.game_directory, params.game_executable)
