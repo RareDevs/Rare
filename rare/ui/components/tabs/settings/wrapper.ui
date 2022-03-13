@@ -22,7 +22,7 @@
      <widget class="QWidget" name="placeholder">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QScrollArea" name="scroll_area">
+        <widget class="QScrollArea" name="wrapper_scroll_area">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>

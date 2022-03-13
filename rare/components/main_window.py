@@ -68,8 +68,10 @@ class MainWindow(QMainWindow):
         )
 
         # enable kinetic scrolling
+        exclude = ["wrapper_scroll_area"]
         for scroll_area in self.findChildren(QScrollArea):
-            QScroller.grabGesture(scroll_area.viewport(), QScroller.LeftMouseButtonGesture)
+            if scroll_area.objectName() not in exclude:
+                QScroller.grabGesture(scroll_area.viewport(), QScroller.LeftMouseButtonGesture)
 
             # fix scrolling
             for combo_box in scroll_area.findChildren(QComboBox):
