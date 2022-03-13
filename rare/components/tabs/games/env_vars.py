@@ -118,12 +118,6 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         self.env_vars_table.cellChanged.connect(self.update_env_vars)
         self.env_vars_table.verticalHeader().sectionClicked.connect(self.remove_row)
     
-    def keep_new_env_var(self):
-        print("Keep the new one.")
-
-    def keep_older_env_var(self):
-        print("Keep the older one.")
-
     def update_env_vars(self, row):
         row_count = self.env_vars_table.rowCount()
         first_item = self.env_vars_table.item(row, 0)
@@ -161,10 +155,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
             first_item.setText("")
             return
 
-
         if first_item.text():
-            
-            # NEW (REMOVE THIS BEFORE PUSHING) TODO
             if first_item.text() in list_of_keys:
                 ask_user = QMessageBox()
                 ask_user.setText(self.tr("The config already contains this environment variable."))
@@ -183,11 +174,9 @@ class EnvVars(QGroupBox, Ui_EnvVars):
                     config_helper.remove_option(f"{self.app_name}.env", first_item.text())
                 elif response == 1:
                     first_item.text() == ""
-                    if second_item.text() is not None:
+                    if second_item is not None:
                         second_item.text() == ""
                     return
-
-            # NEW END (REMOVE THIS BEFORE PUSHING) TODO
 
             # When the second_item is None, we just use an empty string for the value.
             if second_item is None:
