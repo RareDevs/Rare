@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
         # get the margins of the decorated window
         margins = self.windowHandle().frameMargins()
         # get the screen the cursor is on
-        current_screen = QApplication.screenAt(QCursor.pos())
+        current_screen = self.windowHandle().screen()
         # get the available screen geometry (excludes panels/docks)
         screen_rect = current_screen.availableGeometry()
         decor_width = margins.left() + margins.right()
