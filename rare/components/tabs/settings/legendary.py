@@ -1,13 +1,14 @@
+import platform
 import re
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import Qt, QRunnable, QObject, pyqtSignal, QThreadPool
+from PyQt5.QtCore import Qt, QRunnable, QObject, pyqtSignal, QThreadPool, QSettings
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
-from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.settings.widgets.eos import EosWidget
 from rare.components.tabs.settings.widgets.ubisoft_activation import UbiActivationHelper
+from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit
 from rare.utils.utils import get_size
@@ -38,6 +39,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
     def __init__(self, parent=None):
         super(LegendarySettings, self).__init__(parent=parent)
         self.setupUi(self)
+        self.settings = QSettings()
 
         self.core = LegendaryCoreSingleton()
 
@@ -88,6 +90,12 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.ubi_helper = UbiActivationHelper(self.ubisoft_gb)
         self.eos_widget = EosWidget()
         self.left_layout.insertWidget(3, self.eos_widget, alignment=Qt.AlignTop)
+
+        self.win32_cb.setChecked(self.settings.value("win32_meta", False, bool))
+        self.win32_cb.stateChanged.connect(lambda: self.settings.setValue("win32_meta", self.win32_cb.isChecked()))
+
+        self.mac_cb.setChecked(self.settings.value("mac_meta", platform.system() == "Darwin", bool))
+        self.mac_cb.stateChanged.connect(lambda: self.settings.setValue("mac_meta", self.mac_cb.isChecked()))
 
         self.refresh_game_meta_btn.clicked.connect(self.refresh_game_meta)
 
