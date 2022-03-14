@@ -161,7 +161,7 @@ class IndicatorLineEdit(QWidget):
     def __init__(
             self,
             text: str = "",
-            ph_text: str = "",
+            placeholder: str = "",
             completer: QCompleter = None,
             edit_func: Callable[[str], Tuple[bool, str, str]] = None,
             save_func: Callable[[str], None] = None,
@@ -176,7 +176,7 @@ class IndicatorLineEdit(QWidget):
         # Add line_edit
         self.line_edit = QLineEdit(self)
         self.line_edit.setObjectName("line_edit")
-        self.line_edit.setPlaceholderText(ph_text)
+        self.line_edit.setPlaceholderText(placeholder)
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
         # Add hint_label to line_edit
         self.line_edit.setLayout(QHBoxLayout())
@@ -199,7 +199,7 @@ class IndicatorLineEdit(QWidget):
             self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
             self.layout.addWidget(self.indicator_label)
 
-        if not ph_text:
+        if not placeholder:
             _translate = QCoreApplication.translate
             self.line_edit.setPlaceholderText(
                 _translate(self.__class__.__name__, "Default")
@@ -320,7 +320,7 @@ class PathEdit(IndicatorLineEdit):
         self.completer.setModel(self.compl_model)
         super(PathEdit, self).__init__(
             text=path,
-            ph_text=placeholder,
+            placeholder=placeholder,
             completer=self.completer,
             edit_func=edit_func,
             save_func=save_func,

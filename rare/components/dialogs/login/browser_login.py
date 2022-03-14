@@ -27,7 +27,7 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
         self.core = core
 
         self.sid_edit = IndicatorLineEdit(
-            ph_text=self.tr("Insert SID here"), edit_func=self.text_changed, parent=self
+            placeholder=self.tr("Insert SID here"), edit_func=self.text_changed, parent=self
         )
         self.link_text.setText(self.login_url)
         self.copy_button.setIcon(icon("mdi.content-copy", "fa.copy"))

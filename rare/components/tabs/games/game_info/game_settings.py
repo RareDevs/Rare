@@ -15,6 +15,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, Game
 
 from rare.components.tabs.settings.linux import LinuxSettings
+from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
 from rare.components.tabs.settings.widgets.proton import ProtonSettings
 from rare.components.tabs.settings.widgets.wrapper import WrapperSettings
 from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
@@ -45,6 +46,11 @@ class GameSettings(QWidget, Ui_GameSettings):
 
         self.launch_settings_group.layout().addRow(
             QLabel("Wrapper"), self.wrapper_settings
+        )
+
+        self.pre_launch_settings = PreLaunchSettings()
+        self.launch_settings_group.layout().addRow(
+            QLabel("pre launch"), self.pre_launch_settings
         )
 
         self.cloud_save_path_edit = PathEdit(
@@ -264,6 +270,9 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.override_exe_edit.setText(
             self.core.lgd.config.get(self.game.app_name, "override_exe", fallback="")
         )
+
+        self.pre_launch_settings.load_settings(app_name)
+
         self.change = True
         self.env_vars.update_game(app_name)
 
