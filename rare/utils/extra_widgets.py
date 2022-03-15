@@ -302,6 +302,9 @@ class PathEdit(IndicatorLineEdit):
         self.compl_model.setIconProvider(PathEditIconProvider())
         self.compl_model.setRootPath(path)
         self.completer.setModel(self.compl_model)
+
+        edit_func = self._wrap_edit_function(edit_func)
+
         super(PathEdit, self).__init__(
             text=path,
             ph_text=ph_text,
@@ -340,6 +343,13 @@ class PathEdit(IndicatorLineEdit):
             names = dlg.selectedFiles()
             self.line_edit.setText(names[0])
             self.compl_model.setRootPath(names[0])
+
+    def _wrap_edit_function(self, edit_function: Callable[[str], Tuple[bool, str, str]]):
+        if edit_function:
+            return lambda text: edit_function(os.path.expanduser(text)
+                                              if text.startswith("~") else text)
+        else:
+            return edit_function
 
 
 class SideTabBar(QTabBar):
