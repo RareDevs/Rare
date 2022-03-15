@@ -1,4 +1,30 @@
 /*
+[Text]
+normal:    #eeeeee      -- main font color
+disabled:  #43474d      -- disabled font color
+
+[Background]
+normal:    #202225      -- main background color
+editable:  #333344      -- background color for reactive/editable widgets (TextEdits, ProgressBars etc)
+hover:     #222233      -- background color when hovering over reactive widgets (Buttons, Headers)
+selection: #2f4f4f      -- background color for selectable widgets
+alternate: #282a2e      -- background color for alternating rows in List/Tree/TableViews and for ScrollBars
+
+[Border]
+normal:    #483d8b      -- border color for most widgets
+editable:  #2f4f4f      -- border color for editable widgets (TextEdits, ProgressBars etc)
+highlight: #5246a0      -- border color for dropdown widgets, a bit lighter than border for more separation
+disabled:  #43474d      -- border for disabled widgets
+alternate: #3c3f41      -- border color for gradient backgrounds on widgets like Tabs and Popups
+
+[Special]
+info-normal:      #bbb      -- infoLabel
+install-normal:   #090      -- install
+install-hover:    #060      -- install
+install-disabled: #020      -- install
+uninstall-normal:   #900    -- uninstall
+uninstall-hover:    #600    -- uninstall
+uninstall-disabled: #200    -- uninstall
 */
 
 * {
@@ -21,7 +47,7 @@ QLabel:disabled {
     selection-background-color: #2f4f4f;
 }
 QLabel[infoLabel="1"] {
-    color: #bbbbbb;
+    color: #bbb;
     font-style: italic;
     font-weight: normal;
 }
@@ -42,6 +68,7 @@ QTextEdit,
 QTimeEdit,
 QDateEdit,
 QDateTimeEdit,
+QToolBox,
 QComboBox,
 QComboBox:editable,
 QComboBox QAbstractItemView,
@@ -160,13 +187,20 @@ QProgressBar {
     text-align: center;
 }
 QProgressBar::chunk {
-    width: 9.5%;
-    margin: 0.5%;
+    width: 2%;
+    margin: 0%;
     background-color: #2f4f4f;
 }
 QScrollBar {
-    border-radius: 6px;
+    border-radius: 4px;
     padding: 1px;
+    background-color: #282a2e;
+}
+QScrollBar:vertical {
+    width: 11px;
+}
+QScrollBar:horizontal {
+    height: 11px;
 }
 QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical,
@@ -195,11 +229,11 @@ QScrollBar::sub-line:horizontal {
 QScrollBar::handle {
     border-width: 1px;
     border-style: solid;
-    border-color: lightgray;
-    background-color: gray;
-    border-radius: 4px;
-    min-height: 20px;
-    min-width: 20px;
+    border-color: #483d8b;
+    background-color: #333344;
+    border-radius: 2px;
+    min-height: 30px;
+    min-width: 30px;
 }
 
 QHeaderView {
@@ -298,7 +332,7 @@ QPushButton#menu_button {
     height: 18px;
 }
 QPushButton#menu_button:hover {
-    background-color: "#334";
+    background-color: "#333344";
 }
 QPushButton[install="1"],
 QPushButton#install_button {
@@ -427,6 +461,7 @@ QGroupBox#game_widget_icon {
     border-width: 0px;
     padding: 0px;
 }
+QToolBox:tab,
 QGroupBox::title {
     subcontrol-origin: border;
     subcontrol-position: top left; /* position at the top left */
@@ -436,8 +471,10 @@ QGroupBox::title {
     border-bottom-right-radius: 4px;
     border-color: #483d8b;
     padding: 1px;
-    /* background: qlineargradient(x1: -2, y1: 0, x2: 1, y2: 1,
-			    stop: 0 #483d8b, stop: 1 #202225); /* stop: 0 #28224D */
+    /*
+    background: qlineargradient(
+        x1: -2, y1: 0, x2: 1, y2: 1, stop: 0 #483d8b, stop: 1 #202225);
+    */
     background-color: rgba(72, 61, 139, 25%);
 }
 QGroupBox::title:disabled {
@@ -458,7 +495,7 @@ QSizeGrip {
 #search_bar {
     padding: 3px;
     border-radius: 5px;
-    background-color: "#334";
+    background-color: "#333344";
 }
 
 QTabWidget::pane {
