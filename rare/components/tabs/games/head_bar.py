@@ -27,7 +27,7 @@ class GameListHeadBar(QWidget):
         self.filter = QComboBox()
         self.filter.addItems(
             [
-                self.tr("All"),
+                self.tr("All games"),
                 self.tr("Installed only"),
                 self.tr("Offline Games"),
             ])
