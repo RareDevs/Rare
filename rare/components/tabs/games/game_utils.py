@@ -52,6 +52,7 @@ class GameUtils(QObject):
         super(GameUtils, self).__init__(parent=parent)
 
         self.core = shared.core
+        self.signals = shared.signals
         self.console = ConsoleWindow()
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
