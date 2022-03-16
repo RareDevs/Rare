@@ -190,6 +190,9 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         for game in self.no_assets:
             icon_widget, list_widget = self.add_installed_widget(game.app_name)
+            if not icon_widget or not list_widget:
+                logger.warning(f"Ignoring {game.app_name} in game list")
+                continue
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
 
@@ -222,8 +225,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             icon_widget = InstalledIconWidget(app_name, pixmap, self.game_utils)
             list_widget = InstalledListWidget(app_name, pixmap, self.game_utils)
         except Exception as e:
-            logger.error(app_name + " is broken. Don't add it to game list: " + str(e))
-            return
+            logger.error(f"{app_name} is broken. Don't add it to game list: {e}")
+            return None, None
 
         self.widgets[app_name] = (icon_widget, list_widget)
 
@@ -248,8 +251,8 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
             list_widget = ListWidgetUninstalled(self.core, game, pixmap)
         except Exception as e:
-            logger.error(game.app_name + " is broken. Don't add it to game list: " + str(e))
-            return
+            logger.error(f"{game.app_name} is broken. Don't add it to game list: {e}")
+            return None, None
 
         icon_widget.show_uninstalled_info.connect(self.show_uninstalled_info)
         list_widget.show_uninstalled_info.connect(self.show_uninstalled_info)
@@ -357,7 +360,10 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                         self.widgets.pop(app_name)
 
                         game = self.core.get_game(app_name, False)
-                        self.add_uninstalled_widget(game)
+                        try:
+                            self.add_uninstalled_widget(game)
+                        except Exception:
+                            pass
                         update_list = True
 
             # do not update, if only update finished
@@ -402,7 +408,10 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                     self.widgets.pop(name)
 
                     game = self.core.get_game(name, False)
-                    self.add_uninstalled_widget(game)
+                    try:
+                        self.add_uninstalled_widget(game)
+                    except Exception:
+                        pass
 
                 for igame in sorted(
                         self.core.get_installed_list(), key=lambda x: x.title
@@ -467,6 +476,9 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                 logger.warning("Found installed game, without widget. Generating widget... ")
                 try:
                     i_widget, l_widget = self.add_uninstalled_widget(game)
+                    if not i_widget or not l_widget:
+                        logger.warning(f"Ignoring {game.app_name}")
+                        continue
                     icon_layout.addWidget(i_widget)
                     list_layout.addWidget(l_widget)
                 except Exception as e:
