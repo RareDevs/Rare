@@ -68,9 +68,8 @@ class MainWindow(QMainWindow):
         )
 
         # enable kinetic scrolling
-        exclude = ["wrapper_scroll_area"]
         for scroll_area in self.findChildren(QScrollArea):
-            if scroll_area.objectName() not in exclude:
+            if not scroll_area.property("no_kinetic_scroll"):
                 QScroller.grabGesture(scroll_area.viewport(), QScroller.LeftMouseButtonGesture)
 
             # fix scrolling

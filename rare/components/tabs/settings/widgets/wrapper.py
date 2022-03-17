@@ -68,6 +68,7 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
         self.setupUi(self)
         self.setProperty("frameShape", 6)
         self.widget_stack.insertWidget(0, self.wrapper_scroll_area)
+        self.wrapper_scroll_area.setProperty("no_kinetic_scroll", True)
         self.placeholder.deleteLater()
         self.scroll_content.deleteLater()
         self.scroll_content = WrapperContainer(
