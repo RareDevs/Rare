@@ -136,7 +136,7 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.linux_settings_layout.setAlignment(Qt.AlignTop)
         else:
             self.linux_settings_widget.setVisible(False)
-        self.game_settings_contents_layout.setAlignment(Qt.AlignTop)
+        self.game_settings_layout.setAlignment(Qt.AlignTop)
 
         self.linux_settings.mangohud.set_wrapper_activated.connect(
             lambda active: self.wrapper_settings.add_wrapper("mangohud")
@@ -309,7 +309,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         else:
             self.skip_update.setCurrentIndex(0)
 
-        self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
+        self.title.setTitle(self.game.app_title)
         self.wrapper_settings.load_settings(app_name)
         if platform.system() != "Windows":
             self.linux_settings.update_game(app_name)

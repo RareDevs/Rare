@@ -31,6 +31,8 @@ from PyQt5.QtWidgets import (
     QFileSystemModel,
     QStyledItemDelegate,
     QFileIconProvider,
+    QVBoxLayout,
+    QScrollArea,
 )
 
 from rare.utils.paths import tmp_dir
@@ -389,6 +391,34 @@ class SideTabBar(QTabBar):
             painter.restore()
 
 
+class SideTabContainer(QWidget):
+    def __init__(self, widget: QWidget, title: str = str(), parent: QWidget = None):
+        super(SideTabContainer, self).__init__(parent=parent)
+        self.title = QLabel(self)
+        self.setTitle(title)
+
+        self.scroll = QScrollArea(self)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setFrameStyle(QScrollArea.NoFrame)
+        if widget.layout():
+            widget.layout().setAlignment(Qt.AlignTop)
+            widget.layout().setContentsMargins(0, 0, 9, 0)
+        widget.title = self.title
+        widget.title.setTitle = self.setTitle
+        self.scroll.setWidget(widget)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.title)
+        layout.addWidget(self.scroll)
+        self.setLayout(layout)
+
+    def setTitle(self, text: str) -> None:
+        self.title.setText(f"<h2>{text}</h2>")
+        self.title.setVisible(bool(text))
+
+
 class SideTabWidget(QTabWidget):
     back_clicked = pyqtSignal()
 
@@ -398,13 +428,19 @@ class SideTabWidget(QTabWidget):
         self.setDocumentMode(True)
         self.setTabPosition(QTabWidget.West)
         if show_back:
-            self.addTab(QWidget(), qta_icon("mdi.keyboard-backspace", "ei.backward"), self.tr("Back"))
+            super(SideTabWidget, self).addTab(
+                QWidget(), qta_icon("mdi.keyboard-backspace", "ei.backward"), self.tr("Back")
+            )
             self.tabBarClicked.connect(self.back_func)
 
     def back_func(self, tab):
         # shortcut for tab == 0
         if not tab:
             self.back_clicked.emit()
+
+    def addTab(self, widget: QWidget, a1: str, title: str = str()) -> int:
+        container = SideTabContainer(widget, title, parent=self)
+        return super(SideTabWidget, self).addTab(container, a1)
 
 
 class WaitingSpinner(QLabel):

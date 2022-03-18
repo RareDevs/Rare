@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QInputDialog, QFra
     QWidget
 
 from rare import shared
-from rare.ui.components.tabs.settings.wrapper import Ui_WrapperSettings
+from rare.ui.components.tabs.settings.widgets.wrapper import Ui_WrapperSettings
 from rare.utils import config_helper
 from rare.utils.utils import icon
 

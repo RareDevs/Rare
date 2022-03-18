@@ -5,9 +5,8 @@ from typing import List, Dict, Tuple, Any, Callable
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
 from PyQt5.QtWidgets import QGroupBox, QCheckBox, QWidget, QLineEdit, QLabel, QComboBox
 
-from rare import shared
 from rare.shared import LegendaryCoreSingleton
-from rare.ui.components.tabs.settings.overlay import Ui_OverlaySettings
+from rare.ui.components.tabs.settings.widgets.overlay import Ui_OverlaySettings
 from rare.utils import config_helper
 
 logger = getLogger("Overlay")

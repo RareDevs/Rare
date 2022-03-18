@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_LegendarySettings(object):
     def setupUi(self, LegendarySettings):
         LegendarySettings.setObjectName("LegendarySettings")
-        LegendarySettings.resize(654, 498)
+        LegendarySettings.resize(552, 312)
         LegendarySettings.setWindowTitle("LegendarySettings")
         self.gridLayout = QtWidgets.QGridLayout(LegendarySettings)
         self.gridLayout.setObjectName("gridLayout")

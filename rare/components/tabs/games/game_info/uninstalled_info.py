@@ -83,7 +83,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
 
     def update_game(self, game: Game):
         self.game = game
-        self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
+        self.title.setTitle(self.game.app_title)
         available_platforms = ["Windows"]
         if self.game.app_name in self.api_results.bit32_games:
             available_platforms.append("32 Bit")
