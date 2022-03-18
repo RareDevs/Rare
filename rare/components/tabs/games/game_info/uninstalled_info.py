@@ -25,29 +25,41 @@ class UninstalledInfoTabs(SideTabWidget):
         self.info.install_button.setDisabled(self.args.offline)
         self.addTab(self.info, self.tr("Information"))
 
-        self.view = QTreeView()
-        self.view.setColumnWidth(0, 300)
-        self.view.setWordWrap(True)
-        self.model = QJsonModel()
-        self.view.setModel(self.model)
+        self.view = GameMetadataView()
         self.addTab(self.view, self.tr("Metadata"))
 
         # self.setTabEnabled(1, False)
         self.setCurrentIndex(1)
 
-    def update_game(self, app_name: Game):
+    def update_game(self, game: Game):
         self.setCurrentIndex(1)
-        self.info.update_game(app_name)
-        self.model.clear()
-        try:
-            self.model.load(app_name.__dict__)
-        except:
-            # ignore if no metadata
-            pass
+        self.info.update_game(game)
+        self.view.update_game(game)
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
             self.parent().setCurrentIndex(0)
+
+
+class GameMetadataView(QTreeView):
+    game: Game
+
+    def __init__(self, parent=None):
+        super(GameMetadataView, self).__init__(parent=parent)
+        self.setColumnWidth(0, 300)
+        self.setWordWrap(True)
+        self.model = QJsonModel()
+        self.setModel(self.model)
+
+    def update_game(self, game: Game):
+        self.game = game
+        self.title.setTitle(self.game.app_title)
+        self.model.clear()
+        try:
+            self.model.load(game.__dict__)
+        except:
+            pass
+        self.resizeColumnToContents(0)
 
 
 class UninstalledInfo(QWidget, Ui_GameInfo):
