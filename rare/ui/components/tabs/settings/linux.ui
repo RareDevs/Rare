@@ -13,21 +13,8 @@
   <property name="windowTitle">
    <string>LinuxSettings</string>
   </property>
-  <layout class="QGridLayout" name="linux_layout">
-   <item row="3" column="0">
-    <spacer name="linux_vspacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="linux_layout">
+   <item>
     <widget class="QGroupBox" name="wine_groupbox">
      <property name="title">
       <string>Wine Settings</string>
@@ -65,8 +52,21 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item>
     <layout class="QVBoxLayout" name="overlay_layout"/>
+   </item>
+   <item>
+    <spacer name="linux_vspacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

@@ -107,7 +107,7 @@ class Ui_EosWidget(object):
         self.verticalLayout_4.addWidget(self.label)
         self.install_button = QtWidgets.QPushButton(self.install_overlay_gb)
         self.install_button.setObjectName("install_button")
-        self.verticalLayout_4.addWidget(self.install_button)
+        self.verticalLayout_4.addWidget(self.install_button, 0, QtCore.Qt.AlignRight)
         self.install_overlay_page_layout.addWidget(self.install_overlay_gb, 0, QtCore.Qt.AlignTop)
         self.info_stack.addWidget(self.install_overlay_page)
         self.eos_layout.addWidget(self.info_stack)

@@ -407,6 +407,7 @@ class SideTabContainer(QWidget):
             widget.layout().setContentsMargins(0, 0, 9, 0)
         widget.title = self.title
         widget.title.setTitle = self.setTitle
+        self.scroll.setMinimumWidth(widget.width())
         self.scroll.setWidget(widget)
 
         layout = QVBoxLayout()

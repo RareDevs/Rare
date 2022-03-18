@@ -198,7 +198,7 @@
             </property>
            </widget>
           </item>
-          <item>
+          <item alignment="Qt::AlignRight">
            <widget class="QPushButton" name="install_button">
             <property name="text">
              <string>Install</string>
