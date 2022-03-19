@@ -24,17 +24,25 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         self.setup_file_watcher()
         self.env_vars_table.cellChanged.connect(self.update_env_vars)
         self.env_vars_table.verticalHeader().sectionClicked.connect(self.remove_row)
-        self.env_vars_table.setProperty("no_kinetic_scroll", True)
         
     # We use this function to keep an eye on the config.
     # When the user uses for example the wineprefix settings, we need to update the table.
     # With this function, when the config file changes, we update the table.
     def setup_file_watcher(self):
-        self.config_file_watcher = QFileSystemWatcher([self.core.lgd.config_path], self)
+        self.config_file_watcher = QFileSystemWatcher([str(self.core.lgd.config_path)], self)
         self.config_file_watcher.fileChanged.connect(self.import_env_vars)
+    
+    def append_row(self):
+        # If the last row is not None, we insert a new one and set the correct icon.
+        row_count = self.env_vars_table.rowCount()
+        last_item = self.env_vars_table.item(self.env_vars_table.rowCount() - 1, 0)
+        if last_item is not None:
+            self.env_vars_table.insertRow(row_count)
+            trash_icon = QTableWidgetItem()
+            trash_icon.setIcon(qtawesome.icon("mdi.delete"))
+            self.env_vars_table.setVerticalHeaderItem(row_count, trash_icon)
 
     def import_env_vars(self):
-        self.config_file_watcher.blockSignals(True)
         self.env_vars_table.blockSignals(True)
         self.env_vars_table.clearContents()
 
@@ -76,15 +84,13 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         trash_icon.setIcon(qtawesome.icon("mdi.delete"))
         self.env_vars_table.setVerticalHeaderItem(self.env_vars_table.rowCount() - 1, trash_icon)
 
-        self.config_file_watcher.blockSignals(False)
         self.env_vars_table.blockSignals(False)
 
     def update_env_vars(self, row, column):
-        self.config_file_watcher.blockSignals(True)
+        self.config_file_watcher.removePath(str(self.core.lgd.config_path))
         row_count = self.env_vars_table.rowCount()
         key_item = self.env_vars_table.item(row, 0)
         value_item = self.env_vars_table.item(row, 1)
-        last_item = self.env_vars_table.item(self.env_vars_table.rowCount() - 1, 0)
 
         # get all config keys
         try:
@@ -125,10 +131,8 @@ class EnvVars(QGroupBox, Ui_EnvVars):
                 error_dialog.setText(
                     self.tr("Please don't use an equal sign in an env var."))
                 error_dialog.exec()
-                key_item.setText("")
-                if value_item is not None:
-                    value_item.setText("")
-
+                self.env_vars_table.removeRow(row)
+                self.append_row()
                 return
 
             if key_item.text() in list_of_config_keys and column == 0:
@@ -167,20 +171,12 @@ class EnvVars(QGroupBox, Ui_EnvVars):
                     else:
                         self.env_vars_table.removeRow(item_to_safe[1].row())
 
-                    if last_item is not None:
-                        self.env_vars_table.insertRow(row_count-1)
-                        trash_icon = QTableWidgetItem()
-                        trash_icon.setIcon(qtawesome.icon("mdi.delete"))
-                        self.env_vars_table.setVerticalHeaderItem(row_count-1, trash_icon)
+                    self.append_row()
                     return
 
                 elif response == 1:
                     self.env_vars_table.removeRow(row)
-                    if last_item is not None:
-                        self.env_vars_table.insertRow(row)
-                    trash_icon = QTableWidgetItem()
-                    trash_icon.setIcon(qtawesome.icon("mdi.delete"))
-                    self.env_vars_table.setVerticalHeaderItem(row_count-1, trash_icon)
+                    self.append_row()
                     return
 
             # When the value_item is None, we just use an empty string for the value.
@@ -203,24 +199,17 @@ class EnvVars(QGroupBox, Ui_EnvVars):
                 )
                 config_helper.save_config()
 
-        row_count = self.env_vars_table.rowCount()
-        last_item = self.env_vars_table.item(row_count - 1, 0)
-
-        if last_item is not None:
-            if last_item.text():
-                self.env_vars_table.insertRow(row_count)
-                trash_icon = QTableWidgetItem()
-                trash_icon.setIcon(qtawesome.icon("mdi.delete"))
-                self.env_vars_table.setVerticalHeaderItem(row_count, trash_icon)
-
-        self.config_file_watcher.blockSignals(False)
+        self.append_row()
+        self.config_file_watcher.addPath(str(self.core.lgd.config_path))
 
     def remove_row(self, index):
-        self.config_file_watcher.blockSignals(True)
-
+        self.config_file_watcher.removePath(str(self.core.lgd.config_path))
         key_item = self.env_vars_table.item(index, 0)
-        # The first item needs to have some text, else we don't delete it.
+        value_item = self.env_vars_table.item(index, 1)
+
         if key_item is None:
+            if value_item is not None:
+                value_item.setText("")
             return
 
         # If the user tries to delete one of the readonly vars, we return immediately.
@@ -236,7 +225,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
             config_helper.remove_option(f"{self.app_name}.env", list_of_keys[index])
         except (KeyError, IndexError):
             pass
-        self.config_file_watcher.blockSignals(False)
+        self.config_file_watcher.addPath(str(self.core.lgd.config_path))
 
     def check_if_item(self, item: QTableWidgetItem) -> bool:
         item_to_check = self.env_vars_table.findItems(item.text(), Qt.MatchExactly)
@@ -247,14 +236,16 @@ class EnvVars(QGroupBox, Ui_EnvVars):
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Delete or e.key() == Qt.Key_Backspace:
             selected_items = self.env_vars_table.selectedItems()
+
+            if len(selected_items) == 0:
+                return
+
             item_in_table = self.env_vars_table.findItems(selected_items[0].text(), Qt.MatchExactly)
 
             # Our first selection is in column 0.  So, we have to find out if the user 
             # only selected keys, or keys and values. we use the check_if_item func
             if item_in_table[0].column() == 0:
                 which_index_to_use = 1
-                if len(selected_items) == 0:
-                    return
                 if len(selected_items) == 1:
                     which_index_to_use = 0
                 if self.check_if_item(selected_items[which_index_to_use]):
