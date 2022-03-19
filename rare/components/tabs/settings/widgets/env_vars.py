@@ -35,7 +35,16 @@ class EnvVars(QGroupBox, Ui_EnvVars):
     def append_row(self):
         # If the last row is not None, we insert a new one and set the correct icon.
         row_count = self.env_vars_table.rowCount()
+
+        if row_count == 0:
+            self.env_vars_table.insertRow(0)
+            trash_icon = QTableWidgetItem()
+            trash_icon.setIcon(qtawesome.icon("mdi.delete"))
+            self.env_vars_table.setVerticalHeaderItem(row_count, trash_icon)
+            return
+
         last_item = self.env_vars_table.item(self.env_vars_table.rowCount() - 1, 0)
+
         if last_item is not None:
             self.env_vars_table.insertRow(row_count)
             trash_icon = QTableWidgetItem()
@@ -251,13 +260,17 @@ class EnvVars(QGroupBox, Ui_EnvVars):
                 if self.check_if_item(selected_items[which_index_to_use]):
                     # User selected keys and values, so we skip the values
                     for i in selected_items[::2]:
-                        config_helper.remove_option(f"{self.app_name}.env", i.text())
-                        self.env_vars_table.removeRow(i.row())
-                else:
+                        if i:
+                            config_helper.remove_option(f"{self.app_name}.env", i.text())
+                            self.env_vars_table.removeRow(i.row())
+                    self.append_row()
+                else:    
                     # user only selected keys
                     for i in selected_items:
-                        config_helper.remove_option(f"{self.app_name}.env", i.text())
-                        self.env_vars_table.removeRow(i.row())
+                        if i:
+                            config_helper.remove_option(f"{self.app_name}.env", i.text())
+                            self.env_vars_table.removeRow(i.row())
+                    self.append_row()
 
             # User only selected values, so we just set the text to ""
             elif item_in_table[0].column() == 1:
