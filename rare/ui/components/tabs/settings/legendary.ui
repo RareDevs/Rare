@@ -6,82 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>654</width>
-    <height>498</height>
+    <width>552</width>
+    <height>312</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string notr="true">LegendarySettings</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="1">
-    <layout class="QVBoxLayout" name="right_layout">
-     <item alignment="Qt::AlignTop">
-      <widget class="QGroupBox" name="locale_group">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Locale</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-       <layout class="QVBoxLayout" name="locale_layout"/>
-      </widget>
-     </item>
-     <item alignment="Qt::AlignTop">
-      <widget class="QGroupBox" name="cleanup_group">
-       <property name="title">
-        <string>Cleanup</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-       <layout class="QVBoxLayout" name="cleanup_layout">
-        <item>
-         <widget class="QPushButton" name="clean_keep_manifests_button">
-          <property name="text">
-           <string>Clean, but keep manifests</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="clean_button">
-          <property name="text">
-           <string>Remove everything</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="refresh_game_meta_btn">
-          <property name="text">
-           <string>Refresh game meta</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <spacer name="right_vspacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="0">
+  <layout class="QHBoxLayout" name="legendary_layout">
+   <item>
     <layout class="QVBoxLayout" name="left_layout">
      <item alignment="Qt::AlignTop">
       <widget class="QGroupBox" name="install_dir_group">
@@ -246,6 +179,73 @@
      </item>
      <item>
       <spacer name="left_vspacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="right_layout">
+     <item alignment="Qt::AlignTop">
+      <widget class="QGroupBox" name="locale_group">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>Locale</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <layout class="QVBoxLayout" name="locale_layout"/>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignTop">
+      <widget class="QGroupBox" name="cleanup_group">
+       <property name="title">
+        <string>Cleanup</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <layout class="QVBoxLayout" name="cleanup_layout">
+        <item>
+         <widget class="QPushButton" name="clean_keep_manifests_button">
+          <property name="text">
+           <string>Clean, but keep manifests</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="clean_button">
+          <property name="text">
+           <string>Remove everything</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="refresh_game_meta_btn">
+          <property name="text">
+           <string>Refresh game meta</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="right_vspacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>

@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSettings
 from PyQt5.QtWidgets import QGroupBox
 
 from rare.shared import GlobalSignalsSingleton
-from rare.ui.components.tabs.settings.rpc import Ui_RPCSettings
+from rare.ui.components.tabs.settings.widgets.rpc import Ui_RPCSettings
 
 
 class RPCSettings(QGroupBox, Ui_RPCSettings):

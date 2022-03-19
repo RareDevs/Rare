@@ -21,7 +21,7 @@ class SettingsTab(SideTabWidget):
             about_tab = 3
 
         self.about = About()
-        self.addTab(self.about, "About")
+        self.addTab(self.about, "About", "About")
         self.about.update_available_ready.connect(
             lambda: self.tabBar().setTabText(about_tab, "About (!)")
         )

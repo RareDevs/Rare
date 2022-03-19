@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_RareSettings(object):
     def setupUi(self, RareSettings):
         RareSettings.setObjectName("RareSettings")
-        RareSettings.resize(674, 532)
+        RareSettings.resize(517, 434)
         RareSettings.setWindowTitle("RareSettings")
         self.rare_layout = QtWidgets.QHBoxLayout(RareSettings)
         self.rare_layout.setObjectName("rare_layout")

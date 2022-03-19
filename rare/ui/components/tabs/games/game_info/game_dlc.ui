@@ -7,29 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>287</width>
-    <height>366</height>
+    <height>354</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>GameDlc</string>
   </property>
   <layout class="QVBoxLayout" name="game_dlc_layout">
-   <item alignment="Qt::AlignTop">
-    <widget class="QLabel" name="game_title">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string notr="true">error</string>
-     </property>
-     <property name="textInteractionFlags">
-      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-     </property>
-    </widget>
-   </item>
    <item>
     <widget class="QGroupBox" name="installed_dlc_group">
      <property name="sizePolicy">

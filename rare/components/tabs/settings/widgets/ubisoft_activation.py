@@ -81,23 +81,24 @@ class UbiLinkWidget(QWidget):
     def __init__(self, game: Game, ubi_account_id):
         super(UbiLinkWidget, self).__init__()
         self.args = ArgumentsSingleton()
-        self.setLayout(QHBoxLayout())
+        layout = QHBoxLayout()
         self.game = game
         self.ubi_account_id = ubi_account_id
 
         self.title_label = QLabel(game.app_title)
-        self.layout().addWidget(self.title_label)
+        layout.addWidget(self.title_label, stretch=1)
 
         self.ok_indicator = QLabel()
         self.ok_indicator.setPixmap(icon("fa.info-circle", color="grey").pixmap(20, 20))
         self.ok_indicator.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
-        self.layout().addWidget(self.ok_indicator)
+        layout.addWidget(self.ok_indicator)
 
         self.link_button = QPushButton(
             self.tr("Redeem to Ubisoft") + ": Test" if self.args.debug else ""
         )
-        self.layout().addWidget(self.link_button)
+        layout.addWidget(self.link_button)
         self.link_button.clicked.connect(self.activate)
+        self.setLayout(layout)
 
     def activate(self):
         self.link_button.setDisabled(True)

@@ -4,10 +4,10 @@
  <widget class="QWidget" name="About">
   <property name="geometry">
    <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>720</width>
-       <height>317</height>
+    <x>0</x>
+    <y>0</y>
+    <width>340</width>
+    <height>142</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,14 +17,7 @@
    <property name="labelAlignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="title">
-     <property name="text">
-      <string>&lt;h2&gt;About&lt;/h2&gt;</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
+   <item row="0" column="0">
     <widget class="QLabel" name="version_label">
      <property name="font">
       <font>
@@ -37,14 +30,14 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="0" column="1">
     <widget class="QLabel" name="version">
      <property name="text">
       <string notr="true">error</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="0">
     <widget class="QLabel" name="update_label">
      <property name="font">
       <font>
@@ -57,14 +50,14 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-       <widget class="QLabel" name="update_lbl">
-           <property name="text">
-               <string notr="true">error</string>
-           </property>
-       </widget>
+   <item row="1" column="1">
+    <widget class="QLabel" name="update_lbl">
+     <property name="text">
+      <string notr="true">error</string>
+     </property>
+    </widget>
    </item>
-   <item row="3" column="1">
+   <item row="2" column="1">
     <widget class="QPushButton" name="open_browser">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -77,7 +70,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="3" column="0">
     <widget class="QLabel" name="dev_label">
      <property name="font">
       <font>
@@ -90,7 +83,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="3" column="1">
     <widget class="QLabel" name="dev">
      <property name="toolTip">
       <string>Github</string>
@@ -103,7 +96,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="lgd_dev_label">
      <property name="font">
       <font>
@@ -116,7 +109,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="4" column="1">
     <widget class="QLabel" name="lgd_dev">
      <property name="toolTip">
       <string>Github</string>
@@ -129,7 +122,7 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="license_label">
      <property name="font">
       <font>
@@ -142,7 +135,7 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
+   <item row="5" column="1">
     <widget class="QLabel" name="license">
      <property name="text">
       <string>GNU General Public License v3.0</string>

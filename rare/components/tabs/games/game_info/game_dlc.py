@@ -33,7 +33,7 @@ class GameDlc(QWidget, Ui_GameDlc):
     def update_dlcs(self, app_name):
         self.game = self.core.get_game(app_name)
         dlcs = self.dlcs[self.game.catalog_item_id]
-        self.game_title.setText(f"<h2>{self.game.app_title}</h2>")
+        self.title.setTitle(self.game.app_title)
 
         if self.installed_dlc_widgets:
             for dlc_widget in self.installed_dlc_widgets:
