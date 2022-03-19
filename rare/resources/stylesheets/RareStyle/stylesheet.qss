@@ -336,11 +336,11 @@ QPushButton#menu_button:hover {
 }
 QPushButton[install="1"],
 QPushButton#install_button {
-    background-color: "#090";
+    background-color: "#070";
 }
 QPushButton[install="1"]:hover,
 QPushButton#install_button:hover {
-    background-color: "#060";
+    background-color: "#050";
 }
 QPushButton[install="1"]:disabled,
 QPushButton#install_button:disabled {
@@ -359,7 +359,7 @@ QPushButton#uninstall_button:disabled {
     background-color: "#200";
 }
 QPushButton#success{
-    background-color: "lime";
+    background-color: lime;
 }
 QPushButton#installed_menu_button:hover {
     background-color: green;
@@ -461,7 +461,7 @@ QGroupBox#game_widget_icon {
     border-width: 0px;
     padding: 0px;
 }
-QToolBox:tab,
+QToolBox::tab,
 QGroupBox::title {
     subcontrol-origin: border;
     subcontrol-position: top left; /* position at the top left */
@@ -726,4 +726,28 @@ QBalloonTip {
     border-color: #483d8b;
     border-radius: 4px;
     padding: 1px;
+}
+
+/* Wrapper settings styling */
+QPushButton#WrapperWidgetButton {
+    border-color: rgba(67, 71, 77, 55%);
+}
+QPushButton#WrapperWidgetButton:disabled {
+    border-color: rgba(67, 71, 77, 25%);
+}
+QScrollArea#WrapperSettingsScroll {
+    border-color: #2f4f4f;
+    background-color: #282a2e;
+}
+QScrollBar#WrapperSettingsScrollBar {
+    background-color: #282a2e;
+}
+QLabel#WrapperSettingsLabel {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+    padding: 2px;
+    color: #999;
+    border-color: #2f4f4f;
+    background-color: #282a2e;
 }

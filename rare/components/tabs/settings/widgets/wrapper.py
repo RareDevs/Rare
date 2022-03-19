@@ -3,10 +3,10 @@ import shutil
 from logging import getLogger
 from typing import Dict, List
 
-from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData
+from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData, pyqtSlot
 from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QInputDialog, QFrame, QMessageBox, QSizePolicy, \
-    QWidget
+    QWidget, QScrollArea
 
 from rare import shared
 from rare.ui.components.tabs.settings.widgets.wrapper import Ui_WrapperSettings
@@ -29,24 +29,31 @@ class WrapperWidget(QFrame):
         if not show_text:
             show_text = text
 
-        self.setLayout(QHBoxLayout())
-        self.text = text
-        self.image_lbl = QLabel()
-        self.text_lbl = QLabel(show_text)
-        self.text_lbl.setFont(QFont("monospace"))
-        self.image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
-        self.layout().addWidget(self.image_lbl)
-        self.layout().addWidget(self.text_lbl)
-        self.setProperty("frameShape", 6)
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
 
-        self.delete_button = QPushButton(icon("ei.remove"), "")
-        self.layout().addWidget(self.delete_button)
+        self.text = text
+        self.text_lbl = QLabel(show_text, parent=self)
+        self.text_lbl.setFont(QFont("monospace"))
+        self.image_lbl = QLabel(parent=self)
+        self.image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
+
+        self.delete_button = QPushButton(icon("ei.remove"), "", parent=self)
         if show_text in extra_wrapper_regex.keys():
             self.delete_button.setDisabled(True)
             self.delete_button.setToolTip(self.tr("Disable it in settings"))
         self.delete_button.clicked.connect(self.delete)
 
-        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.image_lbl)
+        layout.addWidget(self.text_lbl)
+        layout.addWidget(self.delete_button)
+        self.setLayout(layout)
+
+        # lk: set object names for the stylesheet
+        self.setObjectName(type(self).__name__)
+        self.delete_button.setObjectName(f"{self.objectName()}Button")
 
     def delete(self):
         self.delete_wrapper.emit(self.text)
@@ -59,30 +66,59 @@ class WrapperWidget(QFrame):
             drag.exec_(Qt.MoveAction)
 
 
-class WrapperSettings(QFrame, Ui_WrapperSettings):
+class WrapperSettings(QWidget, Ui_WrapperSettings):
     wrappers: Dict[str, WrapperWidget] = dict()
     app_name: str
 
     def __init__(self):
         super(WrapperSettings, self).__init__()
         self.setupUi(self)
-        self.setProperty("frameShape", 6)
-        self.widget_stack.insertWidget(0, self.wrapper_scroll_area)
-        self.wrapper_scroll_area.setProperty("no_kinetic_scroll", True)
-        self.placeholder.deleteLater()
-        self.scroll_content.deleteLater()
+
+        self.wrapper_scroll = QScrollArea(self.widget_stack)
+        self.wrapper_scroll.setWidgetResizable(True)
+        self.wrapper_scroll.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
+        self.wrapper_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.wrapper_scroll.setProperty("no_kinetic_scroll", True)
         self.scroll_content = WrapperContainer(
-            save_cb=self.save, parent=self.wrapper_scroll_area
+            save_cb=self.save, parent=self.wrapper_scroll
         )
-        self.wrapper_scroll_area.setWidget(self.scroll_content)
-        self.wrapper_scroll_area.setProperty("noBorder", 1)
+        self.wrapper_scroll.setWidget(self.scroll_content)
+        self.widget_stack.insertWidget(0, self.wrapper_scroll)
 
         self.core = shared.LegendaryCoreSingleton()
 
         self.add_button.clicked.connect(self.add_button_pressed)
         self.settings = QSettings()
 
-        self.setStyleSheet("""QFrame{padding: 0px}""")
+        self.wrapper_scroll.horizontalScrollBar().rangeChanged.connect(self.adjust_scrollarea)
+
+        # lk: set object names for the stylesheet
+        self.setObjectName(type(self).__name__)
+        self.no_wrapper_label.setObjectName(f"{self.objectName()}Label")
+        self.wrapper_scroll.setObjectName(f"{self.objectName()}Scroll")
+        self.wrapper_scroll.horizontalScrollBar().setObjectName(
+            f"{self.wrapper_scroll.objectName()}Bar")
+        self.wrapper_scroll.verticalScrollBar().setObjectName(
+            f"{self.wrapper_scroll.objectName()}Bar")
+
+    @pyqtSlot(int, int)
+    def adjust_scrollarea(self, min: int, max: int):
+        wrapper_widget = self.scroll_content.findChildren(WrapperWidget)[0]
+        # lk: when the scrollbar is not visible, min and max are 0
+        if max > min:
+            self.wrapper_scroll.setMaximumHeight(
+                wrapper_widget.sizeHint().height()
+                + self.wrapper_scroll.rect().height() // 2
+                - self.wrapper_scroll.contentsRect().height() // 2
+                + self.scroll_content.layout().spacing()
+                + self.wrapper_scroll.horizontalScrollBar().sizeHint().height()
+            )
+        else:
+            self.wrapper_scroll.setMaximumHeight(
+                wrapper_widget.sizeHint().height()
+                + self.wrapper_scroll.rect().height()
+                - self.wrapper_scroll.contentsRect().height()
+            )
 
     def get_wrapper_string(self):
         return " ".join(self.get_wrapper_list())
@@ -132,8 +168,11 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
 
         widget = WrapperWidget(text, show_text, self.scroll_content)
         self.scroll_content.layout().addWidget(widget)
+        self.adjust_scrollarea(
+            self.wrapper_scroll.horizontalScrollBar().minimum(),
+            self.wrapper_scroll.horizontalScrollBar().maximum()
+        )
         widget.delete_wrapper.connect(self.delete_wrapper)
-        self.scroll_content.layout().addWidget(widget)
 
         self.wrappers[show_text] = widget
 
@@ -147,6 +186,7 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
             widget.deleteLater()
 
         if not self.wrappers:
+            self.wrapper_scroll.setMaximumHeight(self.label_page.sizeHint().height())
             self.widget_stack.setCurrentIndex(1)
 
         self.save()
@@ -178,6 +218,7 @@ class WrapperSettings(QFrame, Ui_WrapperSettings):
             self.add_wrapper(wrapper, True)
 
         if not self.wrappers:
+            self.wrapper_scroll.setMaximumHeight(self.label_page.sizeHint().height())
             self.widget_stack.setCurrentIndex(1)
         else:
             self.widget_stack.setCurrentIndex(0)
@@ -190,11 +231,15 @@ class WrapperContainer(QWidget):
 
     def __init__(self, save_cb, parent=None):
         super(WrapperContainer, self).__init__(parent=parent)
-        self.setLayout(QHBoxLayout())
-        self.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         self.setAcceptDrops(True)
         self.save = save_cb
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.setLayout(layout)
+
+        # lk: set object names for the stylesheet
+        self.setObjectName(type(self).__name__)
 
     def dragEnterEvent(self, e: QDragEnterEvent):
         widget = e.source()
