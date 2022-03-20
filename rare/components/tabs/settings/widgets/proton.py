@@ -41,7 +41,7 @@ def find_proton_combos():
 class ProtonSettings(QGroupBox, Ui_ProtonSettings):
 
     app_name: str
-    not_loading = True
+    changeable = True
 
     def __init__(self, linux_settings: LinuxSettings, wrapper_settings: WrapperSettings):
         super(ProtonSettings, self).__init__()
@@ -64,7 +64,7 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
         self.placeholder_prefix_edit.deleteLater()
 
     def load_settings(self, app_name: str, proton: str):
-        self.not_loading = False
+        self.changeable = False
         self.app_name = app_name
         proton = proton.replace('"', "")
 
@@ -83,45 +83,46 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
             fallback=str(Path.home().joinpath(".proton")),
         )
         self.proton_prefix.setText(proton_prefix)
-        self.not_loading = True
+        self.changeable = True
 
     def change_proton(self, i):
-        if self.not_loading:
-            # First combo box entry: Don't use Proton
-            if i == 0:
-                self._wrapper_settings.delete_wrapper("proton")
-                config_helper.remove_option(self.app_name, "no_wine")
-                config_helper.remove_option(f"{self.app_name}.env", "STEAM_COMPAT_DATA_PATH")
-                config_helper.remove_option(f"{self.app_name}.env", "STEAM_COMPAT_CLIENT_INSTALL_PATH")
+        if not self.changeable:
+            return
+        # First combo box entry: Don't use Proton
+        if i == 0:
+            self._wrapper_settings.delete_wrapper("proton")
+            config_helper.remove_option(self.app_name, "no_wine")
+            config_helper.remove_option(f"{self.app_name}.env", "STEAM_COMPAT_DATA_PATH")
+            config_helper.remove_option(f"{self.app_name}.env", "STEAM_COMPAT_CLIENT_INSTALL_PATH")
 
-                self.proton_prefix.setEnabled(False)
-                # lk: TODO: This has to be fixed properly.
-                # lk: It happens because of the widget update. Mask it for now behind disabling the save button
+            self.proton_prefix.setEnabled(False)
+            # lk: TODO: This has to be fixed properly.
+            # lk: It happens because of the widget update. Mask it for now behind disabling the save button
 
-                self._linux_settings.wine_groupbox.setEnabled(True)
-            else:
-                self.proton_prefix.setEnabled(True)
-                self._linux_settings.wine_groupbox.setEnabled(False)
-                wrapper = self.possible_proton_combos[i - 1]
+            self._linux_settings.wine_groupbox.setEnabled(True)
+        else:
+            self.proton_prefix.setEnabled(True)
+            self._linux_settings.wine_groupbox.setEnabled(False)
+            wrapper = self.possible_proton_combos[i - 1]
 
-                self._wrapper_settings.add_wrapper(wrapper)
-                config_helper.add_option(self.app_name, "no_wine", "true")
-                config_helper.add_option(
-                    f"{self.app_name}.env",
-                    "STEAM_COMPAT_DATA_PATH",
-                    os.path.expanduser("~/.proton"),
-                )
-                config_helper.add_option(
-                    f"{self.app_name}.env",
-                    "STEAM_COMPAT_CLIENT_INSTALL_PATH",
-                    str(Path.home().joinpath(".steam", "steam"))
-                )
+            self._wrapper_settings.add_wrapper(wrapper)
+            config_helper.add_option(self.app_name, "no_wine", "true")
+            config_helper.add_option(
+                f"{self.app_name}.env",
+                "STEAM_COMPAT_DATA_PATH",
+                os.path.expanduser("~/.proton"),
+            )
+            config_helper.add_option(
+                f"{self.app_name}.env",
+                "STEAM_COMPAT_CLIENT_INSTALL_PATH",
+                str(Path.home().joinpath(".steam", "steam"))
+            )
 
-                self.proton_prefix.setText(os.path.expanduser("~/.proton"))
+            self.proton_prefix.setText(os.path.expanduser("~/.proton"))
 
-                # Don't use Wine
-                self._linux_settings.wine_exec.setText("")
-                self._linux_settings.wine_prefix.setText("")
+            # Don't use Wine
+            self._linux_settings.wine_exec.setText("")
+            self._linux_settings.wine_prefix.setText("")
 
         config_helper.save_config()
 
@@ -133,6 +134,8 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
         return os.path.exists(parent_dir), text, PathEdit.reasons.dir_not_exist
 
     def proton_prefix_save(self, text: str):
+        if not self.changeable:
+            return
         config_helper.add_option(
             f"{self.app_name}.env", "STEAM_COMPAT_DATA_PATH", text
         )

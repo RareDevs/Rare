@@ -5,7 +5,7 @@ from .about import About
 from .legendary import LegendarySettings
 from rare.components.tabs.settings.widgets.linux import LinuxSettings
 from .rare import RareSettings
-from .game_settings import DefaultGameSettings
+from .default_game_settings import DefaultGameSettings
 
 
 class SettingsTab(SideTabWidget):
