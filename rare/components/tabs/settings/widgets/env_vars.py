@@ -109,6 +109,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
                 # Item hasnt been saved to the config yet.
                 pass
             self.env_vars_table.removeRow(key_item.row())
+            self.append_row()
             return
 
         # get all config keys
