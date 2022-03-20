@@ -2,52 +2,26 @@ import os
 import platform
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, QThreadPool, Qt
-from PyQt5.QtWidgets import (
-    QWidget,
-    QFileDialog,
-    QMessageBox,
-    QLabel,
-    QPushButton,
-    QSizePolicy
-)
-from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame, Game
+from PyQt5.QtCore import Qt, QThreadPool
+from PyQt5.QtWidgets import QSizePolicy, QPushButton, QLabel, QFileDialog, QMessageBox
+from legendary.models.game import Game, InstalledGame
 
-from rare.components.tabs.settings.linux import LinuxSettings
-from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
-from rare.components.tabs.settings.widgets.proton import ProtonSettings
-from rare.components.tabs.settings.widgets.wrapper import WrapperSettings
-from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
+from rare.components.tabs.settings import DefaultGameSettings
 from rare.components.tabs.settings.widgets.env_vars import EnvVars
+from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
-from rare.utils.utils import WineResolver, get_raw_save_path
-from rare.utils.utils import icon
+from rare.utils.utils import icon, WineResolver, get_raw_save_path
 
 logger = getLogger("GameSettings")
 
 
-class GameSettings(QWidget, Ui_GameSettings):
+class GameSettings(DefaultGameSettings):
     game: Game
     igame: InstalledGame
 
-    # variable to no update when changing game
-    change = False
-
-    def __init__(self, core: LegendaryCore, parent):
-        super(GameSettings, self).__init__(parent=parent)
-        self.setupUi(self)
-
-        self.core = core
-        self.settings = QSettings()
-
-        self.wrapper_settings = WrapperSettings()
-
-        self.launch_settings_group.layout().addRow(
-            QLabel("Wrapper"), self.wrapper_settings
-        )
-
+    def __init__(self, parent=None):
+        super(GameSettings, self).__init__(False, parent)
         self.pre_launch_settings = PreLaunchSettings()
         self.launch_settings_group.layout().addRow(
             QLabel("pre launch"), self.pre_launch_settings
@@ -88,26 +62,6 @@ class GameSettings(QWidget, Ui_GameSettings):
             lambda x: self.save_line_edit("start_params", x)
         )
 
-        if platform.system() != "Windows":
-            self.linux_settings = LinuxAppSettings()
-            self.proton_settings = ProtonSettings(self.linux_settings, self.wrapper_settings)
-            self.game_settings_contents_layout.insertWidget(self.game_settings_contents_layout.count() - 1, self.proton_settings)
-
-            # FIXME: Remove the spacerItem and margins from the linux settings
-            # FIXME: This should be handled differently at soem point in the future
-            self.linux_settings.layout().setContentsMargins(0, 0, 0, 0)
-            for item in [
-                self.linux_settings.layout().itemAt(idx)
-                for idx in range(self.linux_settings.layout().count())
-            ]:
-                if item.spacerItem():
-                    self.linux_settings.layout().removeItem(item)
-                    del item
-            # FIXME: End of FIXME
-            self.linux_settings_layout.addWidget(self.linux_settings)
-            self.linux_settings_layout.setAlignment(Qt.AlignTop)
-        else:
-            self.linux_settings_widget.setVisible(False)
         self.game_settings_layout.setAlignment(Qt.AlignTop)
 
         self.linux_settings.mangohud.set_wrapper_activated.connect(
@@ -115,7 +69,7 @@ class GameSettings(QWidget, Ui_GameSettings):
             if active else self.wrapper_settings.delete_wrapper("mangohud"))
 
         self.env_vars = EnvVars(self)
-        self.game_settings_contents_layout.addWidget(self.env_vars)
+        self.game_settings_layout.addWidget(self.env_vars)
 
     def compute_save_path(self):
         if (
@@ -199,8 +153,9 @@ class GameSettings(QWidget, Ui_GameSettings):
                 config_helper.remove_option(self.game.app_name, option)
             config_helper.save_config()
 
-    def update_game(self, app_name: str):
+    def load_settings(self, app_name):
         self.change = False
+        super(GameSettings, self).load_settings(app_name)
         self.game = self.core.get_game(app_name)
         self.igame = self.core.get_installed_game(self.game.app_name)
         if self.igame:
@@ -232,23 +187,11 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.skip_update.setCurrentIndex(0)
 
         self.title.setTitle(self.game.app_title)
-        self.wrapper_settings.load_settings(app_name)
         if platform.system() != "Windows":
-            self.linux_settings.update_game(app_name)
-
             if self.igame and self.igame.platform == "Mac":
                 self.linux_settings_widget.setVisible(False)
             else:
                 self.linux_settings_widget.setVisible(True)
-
-            proton = self.wrapper_settings.wrappers.get("proton", "")
-            if proton:
-                proton = proton.text
-            self.proton_settings.load_settings(app_name, proton)
-            if proton:
-                self.linux_settings.wine_groupbox.setEnabled(False)
-            else:
-                self.linux_settings.wine_groupbox.setEnabled(True)
 
         if not self.game.supports_cloud_saves:
             self.cloud_group.setEnabled(False)
@@ -274,20 +217,3 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.pre_launch_settings.load_settings(app_name)
 
         self.change = True
-        self.env_vars.update_game(app_name)
-
-
-    
-
-class LinuxAppSettings(LinuxSettings):
-    def __init__(self):
-        super(LinuxAppSettings, self).__init__()
-
-    def update_game(self, app_name):
-        self.name = app_name
-        self.wine_prefix.setText(self.load_prefix())
-        self.wine_exec.setText(self.load_setting(self.name, "wine_executable"))
-
-        self.dxvk.load_settings(self.name)
-
-        self.mangohud.load_settings(self.name)

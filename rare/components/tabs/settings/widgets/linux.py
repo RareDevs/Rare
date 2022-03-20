@@ -46,9 +46,11 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         # dxvk
         self.dxvk = DxvkSettings()
         self.overlay_layout.addWidget(self.dxvk)
+        self.dxvk.load_settings(self.name)
 
         self.mangohud = MangoHudSettings()
         self.overlay_layout.addWidget(self.mangohud)
+        self.mangohud.load_settings(self.name)
 
     def load_prefix(self) -> str:
         return self.load_setting(
