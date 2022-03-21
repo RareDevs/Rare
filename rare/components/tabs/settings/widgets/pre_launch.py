@@ -17,7 +17,7 @@ class PreLaunchSettings(QHBoxLayout):
         self.core = LegendaryCoreSingleton()
         self.edit = IndicatorLineEdit(
             text="",
-            placeholder=self.tr("Pre launch command"),
+            placeholder=self.tr("Path to script"),
             edit_func=self.edit_command,
             save_func=self.save_pre_launch_command,
         )

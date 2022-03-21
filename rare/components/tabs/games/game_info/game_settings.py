@@ -24,7 +24,7 @@ class GameSettings(DefaultGameSettings):
         super(GameSettings, self).__init__(False, parent)
         self.pre_launch_settings = PreLaunchSettings()
         self.launch_settings_group.layout().addRow(
-            QLabel("pre launch"), self.pre_launch_settings
+            QLabel(self.tr("Pre launch command")), self.pre_launch_settings
         )
 
         self.cloud_save_path_edit = PathEdit(
