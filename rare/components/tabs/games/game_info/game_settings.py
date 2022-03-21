@@ -80,12 +80,17 @@ class GameSettings(DefaultGameSettings):
                 new_path = self.core.get_save_path(self.game.app_name)
             except Exception as e:
                 logger.warning(str(e))
+                resolver = WineResolver(
+                    get_raw_save_path(self.game), self.game.app_name
+                )
+                if not resolver.wine_env.get("WINEPREFIX"):
+                    self.cloud_save_path_edit.setText("")
+                    QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")
+                    return
                 self.cloud_save_path_edit.setText(self.tr("Loading"))
                 self.cloud_save_path_edit.setDisabled(True)
                 self.compute_save_path_button.setDisabled(True)
-                resolver = WineResolver(
-                    get_raw_save_path(self.game), self.game.app_name, self.core
-                )
+
                 app_name = self.game.app_name[:]
                 resolver.signals.result_ready.connect(
                     lambda x: self.wine_resolver_finished(x, app_name)
