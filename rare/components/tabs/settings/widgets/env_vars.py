@@ -102,7 +102,10 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         value_item = self.env_vars_table.item(row, 1)
 
         if key_item is not None and not key_item.text():
-            list_of_config_keys = list(self.core.lgd.config[f"{self.app_name}.env"].keys())
+            try:
+                list_of_config_keys = list(self.core.lgd.config[f"{self.app_name}.env"].keys())
+            except KeyError:
+                list_of_config_keys = []
             try:
                 config_helper.remove_option(f"{self.app_name}.env", list_of_config_keys[row])
             except IndexError:
