@@ -150,6 +150,7 @@ class IndicatorReasons:
     wrong_format = QCoreApplication.translate("IndicatorReasons", "Given text has wrong format")
     game_not_installed = QCoreApplication.translate("IndicatorReasons", "Game is not installed or does not exist")
     dir_not_exist = QCoreApplication.translate("IndicatorReasons", "Directory does not exist")
+    file_not_exist = QCoreApplication.translate("IndicatorReasons", "File does not exist")
     wrong_path = QCoreApplication.translate("IndicatorReasons", "Wrong Directory")
 
 

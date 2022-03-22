@@ -28,11 +28,11 @@ class PreLaunchSettings(QHBoxLayout):
         self.wait_check.stateChanged.connect(self.save_wait_finish)
 
     def edit_command(self, text: str) -> Tuple[bool, str, str]:
-        if not text:
+        if not text.strip():
             return True, text, ""
 
         if not os.path.isfile(text.split()[0]) and not shutil.which(text.split()[0]):
-            return False, text, IndicatorLineEdit.reasons.dir_not_exist
+            return False, text, IndicatorLineEdit.reasons.file_not_exist
         else:
             return True, text, ""
 

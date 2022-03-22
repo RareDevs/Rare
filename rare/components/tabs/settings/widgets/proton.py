@@ -63,28 +63,6 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
         self.layout().replaceWidget(self.placeholder_prefix_edit, self.proton_prefix)
         self.placeholder_prefix_edit.deleteLater()
 
-    def load_settings(self, app_name: str, proton: str):
-        self.changeable = False
-        self.app_name = app_name
-        proton = proton.replace('"', "")
-
-        self.proton_prefix.setEnabled(bool(proton))
-        if proton:
-            self.proton_combo.setCurrentText(
-                f'"{proton.replace(" run", "")}" run'
-            )
-
-        else:
-            self.proton_combo.setCurrentIndex(0)
-
-        proton_prefix = self.core.lgd.config.get(
-            f"{app_name}.env",
-            "STEAM_COMPAT_DATA_PATH",
-            fallback=str(Path.home().joinpath(".proton")),
-        )
-        self.proton_prefix.setText(proton_prefix)
-        self.changeable = True
-
     def change_proton(self, i):
         if not self.changeable:
             return
@@ -104,7 +82,6 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
             self.proton_prefix.setEnabled(True)
             self._linux_settings.wine_groupbox.setEnabled(False)
             wrapper = self.possible_proton_combos[i - 1]
-
             self._wrapper_settings.add_wrapper(wrapper)
             config_helper.add_option(self.app_name, "no_wine", "true")
             config_helper.add_option(
@@ -141,3 +118,24 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
         )
         config_helper.save_config()
 
+    def load_settings(self, app_name: str, proton: str):
+        self.changeable = False
+        self.app_name = app_name
+        proton = proton.replace('"', "")
+        self.proton_prefix.setEnabled(bool(proton))
+        if proton:
+            print(proton)
+            self.proton_combo.setCurrentText(
+                f'"{proton.replace(" run", "")}" run'
+            )
+
+        else:
+            self.proton_combo.setCurrentIndex(0)
+
+        proton_prefix = self.core.lgd.config.get(
+            f"{app_name}.env",
+            "STEAM_COMPAT_DATA_PATH",
+            fallback=str(Path.home().joinpath(".proton")),
+        )
+        self.proton_prefix.setText(proton_prefix)
+        self.changeable = True

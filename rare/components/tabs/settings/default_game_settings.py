@@ -99,17 +99,17 @@ class DefaultGameSettings(QWidget, Ui_GameSettings):
 
     def load_settings(self, app_name):
         self.app_name = app_name
+        self.wrapper_settings.load_settings(app_name)
         if platform.system() != "Windows":
             self.linux_settings.update_game(app_name)
             proton = self.wrapper_settings.wrappers.get("proton", "")
             if proton:
                 proton = proton.text
-            self.proton_settings.load_settings("default", proton)
+            self.proton_settings.load_settings(app_name, proton)
             if proton:
                 self.linux_settings.wine_groupbox.setEnabled(False)
             else:
                 self.linux_settings.wine_groupbox.setEnabled(True)
-        self.wrapper_settings.load_settings(app_name)
         self.env_vars.update_game(app_name)
 
 
