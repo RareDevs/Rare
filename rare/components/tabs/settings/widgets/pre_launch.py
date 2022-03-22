@@ -2,11 +2,11 @@ import os
 import shutil
 from typing import Tuple
 
-from PyQt5.QtWidgets import QHBoxLayout, QCheckBox
+from PyQt5.QtWidgets import QHBoxLayout, QCheckBox, QFileDialog
 
 from rare.shared import LegendaryCoreSingleton
 from rare.utils import config_helper
-from rare.utils.extra_widgets import IndicatorLineEdit
+from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
 
 
 class PreLaunchSettings(QHBoxLayout):
@@ -15,9 +15,10 @@ class PreLaunchSettings(QHBoxLayout):
     def __init__(self):
         super(PreLaunchSettings, self).__init__()
         self.core = LegendaryCoreSingleton()
-        self.edit = IndicatorLineEdit(
-            text="",
+        self.edit = PathEdit(
+            path="",
             placeholder=self.tr("Path to script"),
+            file_type=QFileDialog.ExistingFile,
             edit_func=self.edit_command,
             save_func=self.save_pre_launch_command,
         )
