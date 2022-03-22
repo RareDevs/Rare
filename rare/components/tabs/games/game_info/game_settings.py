@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QSizePolicy, QPushButton, QLabel, QFileDialog, QMess
 from legendary.models.game import Game, InstalledGame
 
 from rare.components.tabs.settings import DefaultGameSettings
-from rare.components.tabs.settings.widgets.env_vars import EnvVars
 from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
@@ -67,9 +66,6 @@ class GameSettings(DefaultGameSettings):
         self.linux_settings.mangohud.set_wrapper_activated.connect(
             lambda active: self.wrapper_settings.add_wrapper("mangohud")
             if active else self.wrapper_settings.delete_wrapper("mangohud"))
-
-        self.env_vars = EnvVars(self)
-        self.game_settings_layout.addWidget(self.env_vars)
 
     def compute_save_path(self):
         if (

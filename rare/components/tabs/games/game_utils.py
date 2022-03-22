@@ -97,6 +97,7 @@ class GameUtils(QObject):
             except ValueError:
                 logger.info("Cancel startup")
                 self.sync_finished(app_name)
+                return
             except AssertionError:
                 dont_sync_after_finish = True
             else:

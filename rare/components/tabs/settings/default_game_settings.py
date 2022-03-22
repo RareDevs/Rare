@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (
     QLabel
 )
 
+from rare.components.tabs.settings.widgets.env_vars import EnvVars
 from rare.components.tabs.settings.widgets.linux import LinuxSettings
 from rare.components.tabs.settings.widgets.proton import ProtonSettings
 from rare.components.tabs.settings.widgets.wrapper import WrapperSettings
@@ -63,6 +64,9 @@ class DefaultGameSettings(QWidget, Ui_GameSettings):
         else:
             self.linux_settings_widget.setVisible(False)
 
+        self.env_vars = EnvVars(self)
+        self.game_settings_layout.addWidget(self.env_vars)
+
         if is_default:
             for i in range(4):  # remove some entries which are not supported by default
                 self.launch_settings_layout.removeRow(0)
@@ -106,6 +110,7 @@ class DefaultGameSettings(QWidget, Ui_GameSettings):
             else:
                 self.linux_settings.wine_groupbox.setEnabled(True)
         self.wrapper_settings.load_settings(app_name)
+        self.env_vars.update_game(app_name)
 
 
 class LinuxAppSettings(LinuxSettings):
