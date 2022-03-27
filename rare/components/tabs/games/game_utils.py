@@ -175,7 +175,7 @@ class GameUtils(QObject):
             if game.third_party_store != "Origin":
                 self._launch_game(igame, process, offline, skip_update_check, ask_always_sync)
             else:
-                self._launch_origin(igame.app_name, process)
+                self._launch_origin(app_name, process)
 
         env = self.core.get_app_environment(app_name, wine_pfx=wine_pfx)
         pre_cmd, wait = self.core.get_pre_launch_command(app_name)
@@ -192,7 +192,7 @@ class GameUtils(QObject):
         logger.info(f"Game exited with exit code: {exit_code}")
         self.signals.set_discord_rpc.emit("")
         is_origin = self.core.get_game(app_name).third_party_store == "Origin"
-        if exit_code == 53 and is_origin:
+        if exit_code == 1 and is_origin:
             msg_box = QMessageBox()
             msg_box.setText(
                 self.tr(
@@ -204,7 +204,8 @@ class GameUtils(QObject):
             resp = msg_box.exec()
             # click install button
             if resp == 0:
-                webbrowser.open("https://www.dm.origin.com/download")
+                QDesktopServices.openUrl(QUrl("https://www.dm.origin.com/download"))
+            return
         if exit_code != 0:
             QMessageBox.warning(
                 None,
@@ -241,7 +242,6 @@ class GameUtils(QObject):
 
     def _launch_pre_command(self, env: dict):
         proc = QProcess()
-        proc.setProcessChannelMode(QProcess.MergedChannels)
         environment = QProcessEnvironment()
         for e in env:
             environment.insert(e, env[e])
@@ -261,7 +261,6 @@ class GameUtils(QObject):
 
     def _get_process(self, app_name, env):
         process = GameProcess(app_name)
-        process.setProcessChannelMode(GameProcess.MergedChannels)
 
         environment = QProcessEnvironment()
         for e in env:
@@ -307,7 +306,7 @@ class GameUtils(QObject):
             )
             process.deleteLater()
             return
-
+        command.append(origin_uri)
         process.start(command[0], command[1:])
 
     def _launch_game(self, igame: InstalledGame, process: QProcess, offline: bool,
