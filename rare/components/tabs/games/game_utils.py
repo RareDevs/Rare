@@ -6,14 +6,15 @@ import webbrowser
 from dataclasses import dataclass
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqtSignal
+from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqtSignal, QUrl
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMessageBox, QPushButton
+from legendary.models.game import LaunchParameters, InstalledGame
 
-from legendary.models.game import LaunchParameters
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.extra.console import ConsoleWindow
 from rare.components.tabs.games import CloudSaveUtils
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import legendary_utils
 from rare.utils.meta import RareGameMeta
 
@@ -168,156 +169,24 @@ class GameUtils(QObject):
                 )
                 return
 
-        process = GameProcess(app_name)
-        process.setProcessChannelMode(GameProcess.MergedChannels)
+        def _launch_real():
+            process = self._get_process(app_name, env)
 
-        if game.third_party_store != "Origin":
-            if not offline:
-                if not skip_update_check and not self.core.is_noupdate_game(app_name):
-                    # check updates
-                    try:
-                        latest = self.core.get_asset(
-                            app_name, igame.platform, update=False
-                        )
-                    except ValueError:
-                        self.finished.emit(app_name, self.tr("Metadata doesn't exist"))
-                        return
-                    else:
-                        if latest.build_version != igame.version:
-                            self.finished.emit(app_name, self.tr("Please update game"))
-                            return
+            if game.third_party_store != "Origin":
+                self._launch_game(igame, process, offline, skip_update_check, ask_always_sync)
+            else:
+                self._launch_origin(igame.app_name, process)
 
-            params: LaunchParameters = self.core.get_launch_parameters(
-                app_name=app_name, offline=offline, wine_bin=wine_bin, wine_pfx=wine_pfx
-            )
-
-            full_params = list()
-
-            if os.environ.get("container") == "flatpak":
-                full_params.extend(["flatpak-spawn", "--host"])
-
-            full_params.extend(params.launch_command)
-            full_params.append(
-                os.path.join(params.game_directory, params.game_executable)
-            )
-            full_params.extend(params.game_parameters)
-            full_params.extend(params.egl_parameters)
-            full_params.extend(params.user_parameters)
-
-            process.setWorkingDirectory(params.working_directory)
-            environment = QProcessEnvironment()
-            full_env = os.environ.copy()
-            full_env.update(params.environment)
-            for env, value in full_env.items():
-                environment.insert(env, value)
-
-            if platform.system() != "Windows":
-                # wine prefixes
-                for env in ["STEAM_COMPAT_DATA_PATH", "WINEPREFIX"]:
-                    if val := full_env.get(env):
-                        if not os.path.exists(val):
-                            try:
-                                os.makedirs(val)
-                            except PermissionError as e:
-                                logger.error(str(e))
-                                QMessageBox.warning(
-                                    None,
-                                    "Error",
-                                    self.tr(
-                                        "Error while launching {}. No permission to create {} for {}"
-                                    ).format(game.app_title, val, env),
-                                )
-                                process.deleteLater()
-                                return
-                # check wine executable
-                if shutil.which(full_params[0]) is None:
-                    # wine binary does not exist
-                    QMessageBox.warning(
-                        None,
-                        "Warning",
-                        self.tr(
-                            "'{}' does not exist. Please change it in Settings"
-                        ).format(full_params[0]),
-                    )
-                    process.deleteLater()
-                    return
-
-            if shutil.which(full_params[0]) is None:
-                QMessageBox.warning(None, "Warning", self.tr("'{}' does not exist").format(full_params[0]))
+        env = self.core.get_app_environment(app_name, wine_pfx=wine_pfx)
+        pre_cmd, wait = self.core.get_pre_launch_command(app_name)
+        if pre_cmd:
+            pre_cmd = pre_cmd.split()
+            pre_proc = self._launch_pre_command(env)
+            pre_proc.start(pre_cmd[0], pre_cmd[1:])
+            if wait:
+                pre_proc.finished.connect(_launch_real)
                 return
-
-            process.setProcessEnvironment(environment)
-            process.game_finished.connect(self.game_finished)
-            running_game = RunningGameModel(
-                process=process, app_name=app_name, always_ask_sync=ask_always_sync
-            )
-
-            process.start(full_params[0], full_params[1:])
-            self.game_launched.emit(app_name)
-            self.signals.set_discord_rpc.emit(app_name)
-            logger.info(f"{game.app_title} launched")
-
-            self.running_games[game.app_name] = running_game
-
-        else:
-            origin_uri = self.core.get_origin_uri(game.app_name, self.args.offline)
-            logger.info("Launch Origin Game: ")
-            if platform.system() == "Windows":
-                webbrowser.open(origin_uri)
-                self.finished.emit(app_name, "")
-                return
-            wine_pfx = self.core.lgd.config.get(
-                game.app_name, "wine_prefix", fallback=os.path.expanduser("~/.wine")
-            )
-            if not wine_bin:
-                wine_bin = self.core.lgd.config.get(
-                    game.app_name, "wine_executable", fallback="/usr/bin/wine"
-                )
-
-            if shutil.which(wine_bin) is None:
-                # wine binary does not exist
-                QMessageBox.warning(
-                    None,
-                    "Warning",
-                    self.tr(
-                        "Wine executable '{}' does not exist. Please change it in Settings"
-                    ).format(wine_bin),
-                )
-                process.deleteLater()
-                return
-
-            env = self.core.get_app_environment(game.app_name, wine_pfx=wine_pfx)
-
-            if not env.get("WINEPREFIX") and not os.path.exists("/usr/bin/wine"):
-                logger.error(
-                    f"In order to launch Origin correctly you must specify the wine binary and prefix "
-                    f"to use in the configuration file or command line. See the README for details."
-                )
-                self.finished.emit(
-                    app_name,
-                    self.tr("No wine executable selected. Please set it in settings"),
-                )
-                return
-
-            environment = QProcessEnvironment()
-            for e in env:
-                environment.insert(e, env[e])
-            process.setProcessEnvironment(environment)
-            process.finished.connect(lambda x: self.game_finished(x, game.app_name))
-            process.start(wine_bin, [origin_uri])
-
-        if QSettings().value("show_console", False, bool):
-            self.console.show()
-        process.readyReadStandardOutput.connect(
-            lambda: self.console.log(
-                str(process.readAllStandardOutput().data(), "utf-8", "ignore")
-            )
-        )
-        process.readyReadStandardError.connect(
-            lambda: self.console.error(
-                str(process.readAllStandardError().data(), "utf-8", "ignore")
-            )
-        )
+        _launch_real()
 
     def game_finished(self, exit_code, app_name):
         logger.info(f"Game exited with exit code: {exit_code}")
@@ -369,6 +238,147 @@ class GameUtils(QObject):
                 if r != QMessageBox.Yes:
                     return
             self.cloud_save_utils.game_finished(app_name, game.always_ask_sync)
+
+    def _launch_pre_command(self, env: dict):
+        proc = QProcess()
+        proc.setProcessChannelMode(QProcess.MergedChannels)
+        environment = QProcessEnvironment()
+        for e in env:
+            environment.insert(e, env[e])
+        proc.setProcessEnvironment(environment)
+
+        proc.readyReadStandardOutput.connect(
+            lambda: self.console.log(
+                str(proc.readAllStandardOutput().data(), "utf-8", "ignore")
+            )
+        )
+        proc.readyReadStandardError.connect(
+            lambda: self.console.error(
+                str(proc.readAllStandardError().data(), "utf-8", "ignore")
+            )
+        )
+        return proc
+
+    def _get_process(self, app_name, env):
+        process = GameProcess(app_name)
+        process.setProcessChannelMode(GameProcess.MergedChannels)
+
+        environment = QProcessEnvironment()
+        for e in env:
+            environment.insert(e, env[e])
+        process.setProcessEnvironment(environment)
+
+        process.readyReadStandardOutput.connect(
+            lambda: self.console.log(
+                str(process.readAllStandardOutput().data(), "utf-8", "ignore")
+            )
+        )
+        process.readyReadStandardError.connect(
+            lambda: self.console.error(
+                str(process.readAllStandardError().data(), "utf-8", "ignore")
+            )
+        )
+        process.finished.connect(lambda x: self.game_finished(x, app_name))
+        process.stateChanged.connect(
+            lambda state: self.console.show()
+            if (state == QProcess.Running
+                and QSettings().value("show_console", False, bool))
+            else None
+        )
+        return process
+
+    def _launch_origin(self, app_name, process: QProcess):
+        origin_uri = self.core.get_origin_uri(app_name, self.args.offline)
+        logger.info("Launch Origin Game: ")
+        if platform.system() == "Windows":
+            QDesktopServices.openUrl(QUrl(origin_uri))
+            self.finished.emit(app_name, "")
+            return
+
+        command = self.core.get_app_launch_command(app_name)
+
+        if not os.path.exists(command[0]) and shutil.which(command[0]) is None:
+            # wine binary does not exist
+            QMessageBox.warning(
+                None, "Warning",
+                self.tr(
+                    "'{}' does not exist. Please change it in Settings"
+                ).format(command[0]),
+            )
+            process.deleteLater()
+            return
+
+        process.start(command[0], command[1:])
+
+    def _launch_game(self, igame: InstalledGame, process: QProcess, offline: bool,
+                     skip_update_check: bool, ask_always_sync: bool):
+        if not offline:  # skip for update
+            if not skip_update_check and not self.core.is_noupdate_game(igame.app_name):
+                # check updates
+                try:
+                    latest = self.core.get_asset(
+                        igame.app_name, igame.platform, update=False
+                    )
+                except ValueError:
+                    self.finished.emit(igame.app_name, self.tr("Metadata doesn't exist"))
+                    return
+                else:
+                    if latest.build_version != igame.version:
+                        self.finished.emit(igame.app_name, self.tr("Please update game"))
+                        return
+
+        params: LaunchParameters = self.core.get_launch_parameters(
+            app_name=igame.app_name, offline=offline
+        )
+
+        full_params = list()
+
+        if os.environ.get("container") == "flatpak":
+            full_params.extend(["flatpak-spawn", "--host"])
+
+        full_params.extend(params.launch_command)
+        full_params.append(
+            os.path.join(params.game_directory, params.game_executable)
+        )
+        full_params.extend(params.game_parameters)
+        full_params.extend(params.egl_parameters)
+        full_params.extend(params.user_parameters)
+
+        process.setWorkingDirectory(params.working_directory)
+
+        if platform.system() != "Windows":
+            # wine prefixes
+            for env in ["STEAM_COMPAT_DATA_PATH", "WINEPREFIX"]:
+                if val := process.processEnvironment().value(env, ""):
+                    if not os.path.exists(val):
+                        try:
+                            os.makedirs(val)
+                        except PermissionError as e:
+                            logger.error(str(e))
+                            QMessageBox.warning(
+                                None,
+                                "Error",
+                                self.tr(
+                                    "Error while launching {}. No permission to create {} for {}"
+                                ).format(igame.title, val, env),
+                            )
+                            process.deleteLater()
+                            return
+            # check wine executable
+
+        if shutil.which(full_params[0]) is None:
+            QMessageBox.warning(None, "Warning", self.tr("'{}' does not exist").format(full_params[0]))
+            return
+        running_game = RunningGameModel(
+            process=process, app_name=igame.app_name, always_ask_sync=ask_always_sync
+        )
+        process.start(full_params[0], full_params[1:])
+
+        self.game_launched.emit(igame.app_name)
+        self.signals.set_discord_rpc.emit(igame.app_name)
+        logger.info(f"{igame.title} launched")
+
+        self.running_games[igame.app_name] = running_game
 
     def sync_finished(self, app_name):
         if app_name in self.launch_queue.keys():

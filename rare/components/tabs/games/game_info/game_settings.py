@@ -57,15 +57,14 @@ class GameSettings(DefaultGameSettings):
                 f"{self.game.app_name}/auto_sync_cloud", self.cloud_sync.isChecked()
             )
         )
+        self.override_exe_edit.textChanged.connect(
+            lambda text: self.save_line_edit("override_exe", text)
+        )
         self.launch_params.textChanged.connect(
             lambda x: self.save_line_edit("start_params", x)
         )
 
         self.game_settings_layout.setAlignment(Qt.AlignTop)
-
-        self.linux_settings.mangohud.set_wrapper_activated.connect(
-            lambda active: self.wrapper_settings.add_wrapper("mangohud")
-            if active else self.wrapper_settings.delete_wrapper("mangohud"))
 
     def compute_save_path(self):
         if (
