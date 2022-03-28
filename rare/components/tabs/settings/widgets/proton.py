@@ -14,6 +14,7 @@ from rare.shared import LegendaryCoreSingleton
 
 logger = getLogger("Proton")
 
+
 def find_proton_combos():
     possible_proton_combos = []
     compatibilitytools_dirs = [
@@ -60,8 +61,7 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
             save_func=self.proton_prefix_save,
             placeholder=self.tr("Please select path for proton prefix")
         )
-        self.layout().replaceWidget(self.placeholder_prefix_edit, self.proton_prefix)
-        self.placeholder_prefix_edit.deleteLater()
+        self.prefix_layout.addWidget(self.proton_prefix)
 
     def change_proton(self, i):
         if not self.changeable:

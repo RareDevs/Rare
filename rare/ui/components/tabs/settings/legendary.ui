@@ -1,323 +1,289 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>LegendarySettings</class>
-    <widget class="QWidget" name="LegendarySettings">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>552</width>
-                <height>312</height>
-            </rect>
+ <class>LegendarySettings</class>
+ <widget class="QWidget" name="LegendarySettings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>552</width>
+    <height>334</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">LegendarySettings</string>
+  </property>
+  <layout class="QHBoxLayout" name="legendary_layout">
+   <item>
+    <layout class="QVBoxLayout" name="left_layout">
+     <item alignment="Qt::AlignTop">
+      <widget class="QGroupBox" name="install_dir_group">
+       <property name="title">
+        <string>Default Installation Directory</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <layout class="QVBoxLayout" name="install_dir_layout"/>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignTop">
+      <widget class="QGroupBox" name="download_group">
+       <property name="title">
+        <string>Download Settings</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <layout class="QFormLayout" name="download_layout">
+        <property name="labelAlignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
-        <property name="windowTitle">
-            <string notr="true">LegendarySettings</string>
-        </property>
-        <layout class="QHBoxLayout" name="legendary_layout">
-            <item>
-                <widget class="QPushButton" name="clean_keep_manifests_button">
-                    <property name="text">
-                        <string>Clean, but keep manifests</string>
-                    </property>
-                </widget>
-            </item>
-            <item>
-                <widget class="QPushButton" name="clean_button">
-                    <property name="text">
-                        <string>Remove everything</string>
-                    </property>
-                </widget>
-            </item>
-        </layout>
-    </widget>
-    <item>
-        <widget class="QGroupBox" name="meta_group">
-            <property name="title">
-                <string>Game metadata</string>
+        <item row="0" column="0">
+         <widget class="QLabel" name="max_workers_label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Max Workers</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <layout class="QHBoxLayout" name="max_workers_layout">
+          <item>
+           <widget class="QSpinBox" name="max_worker_spin">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-                <item>
-                    <widget class="QCheckBox" name="win32_cb">
-                        <property name="text">
-                            <string>Load 32 bit data</string>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QCheckBox" name="mac_cb">
-                        <property name="text">
-                            <string>Load MacOS data</string>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QPushButton" name="refresh_game_meta_btn">
-                        <property name="text">
-                            <string>Refresh game meta</string>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-    </item>
-    <item>
-        <spacer name="right_vspacer">
-            <property name="orientation">
-                <enum>Qt::Vertical</enum>
+            <property name="minimum">
+             <number>0</number>
             </property>
-            <property name="sizeHint" stdset="0">
-                <size>
-                    <width>20</width>
-                    <height>40</height>
-                </size>
+            <property name="maximum">
+             <number>16</number>
             </property>
-        </spacer>
-    </item>
-    <item row="0" column="0">
-        <layout class="QVBoxLayout" name="left_layout">
-            <item alignment="Qt::AlignTop">
-                <widget class="QGroupBox" name="install_dir_group">
-                    <property name="title">
-                        <string>Default Installation Directory</string>
-                    </property>
-                    <property name="alignment">
-                        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                    </property>
-                    <layout class="QVBoxLayout" name="install_dir_layout"/>
-                </widget>
-            </item>
-            <item alignment="Qt::AlignTop">
-                <widget class="QGroupBox" name="download_group">
-                    <property name="title">
-                        <string>Download Settings</string>
-                    </property>
-                    <property name="alignment">
-                        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                    </property>
-                    <layout class="QFormLayout" name="download_layout">
-                        <property name="labelAlignment">
-                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                        </property>
-                        <item row="0" column="0">
-                            <widget class="QLabel" name="max_workers_label">
-                                <property name="sizePolicy">
-                                    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="text">
-                                    <string>Max Workers</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="0" column="1">
-                            <layout class="QHBoxLayout" name="max_workers_layout">
-                                <item>
-                                    <widget class="QSpinBox" name="max_worker_spin">
-                                        <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="minimum">
-                                            <number>0</number>
-                                        </property>
-                                        <property name="maximum">
-                                            <number>16</number>
-                                        </property>
-                                        <property name="value">
-                                            <number>0</number>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item>
-                                    <widget class="QLabel" name="max_workers_info_label">
-                                        <property name="font">
-                                            <font>
-                                                <italic>true</italic>
-                                            </font>
-                                        </property>
-                                        <property name="text">
-                                            <string>Less is slower (0: Default)</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                            </layout>
-                        </item>
-                        <item row="1" column="0">
-                            <widget class="QLabel" name="max_memory_label">
-                                <property name="text">
-                                    <string>Max Memory</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="1" column="1">
-                            <layout class="QHBoxLayout" name="max_memory_layout">
-                                <item>
-                                    <widget class="QSpinBox" name="max_memory_spin">
-                                        <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="suffix">
-                                            <string>MiB</string>
-                                        </property>
-                                        <property name="minimum">
-                                            <number>0</number>
-                                        </property>
-                                        <property name="maximum">
-                                            <number>10240</number>
-                                        </property>
-                                        <property name="singleStep">
-                                            <number>128</number>
-                                        </property>
-                                        <property name="value">
-                                            <number>1024</number>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item>
-                                    <widget class="QLabel" name="max_memory_info_label">
-                                        <property name="font">
-                                            <font>
-                                                <italic>true</italic>
-                                            </font>
-                                        </property>
-                                        <property name="text">
-                                            <string>Less is slower (0: Default)</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                            </layout>
-                        </item>
-                        <item row="2" column="0">
-                            <widget class="QLabel" name="preferred_cdn_label">
-                                <property name="text">
-                                    <string>Preferred CDN</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="2" column="1">
-                            <widget class="QLineEdit" name="preferred_cdn_line">
-                                <property name="placeholderText">
-                                    <string>Default</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="3" column="0">
-                            <widget class="QLabel" name="disable_https_label">
-                                <property name="text">
-                                    <string>Disable HTTPS</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="3" column="1">
-                            <widget class="QCheckBox" name="disable_https_check">
-                                <property name="text">
-                                    <string/>
-                                </property>
-                            </widget>
-                        </item>
-                    </layout>
-                </widget>
-            </item>
-            <item alignment="Qt::AlignTop">
-                <widget class="QGroupBox" name="ubisoft_gb">
-                    <property name="title">
-                        <string>Link Ubisoft Games</string>
-                    </property>
-                    <property name="alignment">
-                        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout"/>
-                </widget>
-            </item>
-            <item>
-                <spacer name="left_vspacer">
-                    <property name="orientation">
-                        <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                        <size>
-                            <width>20</width>
-                            <height>40</height>
-                        </size>
-                    </property>
-                </spacer>
-            </item>
-        </layout>
-    </item>
-    <item>
-        <layout class="QVBoxLayout" name="right_layout">
-            <item alignment="Qt::AlignTop">
-                <widget class="QGroupBox" name="locale_group">
-                    <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="title">
-                        <string>Locale</string>
-                    </property>
-                    <property name="alignment">
-                        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                    </property>
-                    <layout class="QVBoxLayout" name="locale_layout"/>
-                </widget>
-            </item>
-            <item alignment="Qt::AlignTop">
-                <widget class="QGroupBox" name="cleanup_group">
-                    <property name="title">
-                        <string>Cleanup</string>
-                    </property>
-                    <property name="alignment">
-                        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                    </property>
-                    <layout class="QVBoxLayout" name="cleanup_layout">
-                        <item>
-                            <widget class="QPushButton" name="clean_keep_manifests_button">
-                                <property name="text">
-                                    <string>Clean, but keep manifests</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item>
-                            <widget class="QPushButton" name="clean_button">
-                                <property name="text">
-                                    <string>Remove everything</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item>
-                            <widget class="QPushButton" name="refresh_game_meta_btn">
-                                <property name="text">
-                                    <string>Refresh game meta</string>
-                                </property>
-                            </widget>
-                        </item>
-                    </layout>
-                </widget>
-            </item>
-            <item>
-                <spacer name="right_vspacer">
-                    <property name="orientation">
-                        <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                        <size>
-                            <width>20</width>
-                            <height>40</height>
-                        </size>
-                    </property>
-                </spacer>
-            </item>
-        </layout>
-    </item>
-    <resources/>
-    <connections/>
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="max_workers_info_label">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>Less is slower (0: Default)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="max_memory_label">
+          <property name="text">
+           <string>Max Memory</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <layout class="QHBoxLayout" name="max_memory_layout">
+          <item>
+           <widget class="QSpinBox" name="max_memory_spin">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="suffix">
+             <string>MiB</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>10240</number>
+            </property>
+            <property name="singleStep">
+             <number>128</number>
+            </property>
+            <property name="value">
+             <number>1024</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="max_memory_info_label">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>Less is slower (0: Default)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="preferred_cdn_label">
+          <property name="text">
+           <string>Preferred CDN</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="preferred_cdn_line">
+          <property name="placeholderText">
+           <string>Default</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="disable_https_label">
+          <property name="text">
+           <string>Disable HTTPS</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QCheckBox" name="disable_https_check">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignTop">
+      <widget class="QGroupBox" name="ubisoft_gb">
+       <property name="title">
+        <string>Link Ubisoft Games</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout"/>
+      </widget>
+     </item>
+     <item>
+      <spacer name="left_vspacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="right_layout">
+     <item alignment="Qt::AlignTop">
+      <widget class="QGroupBox" name="locale_group">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>Locale</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <layout class="QVBoxLayout" name="locale_layout"/>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignTop">
+      <widget class="QGroupBox" name="cleanup_group">
+       <property name="title">
+        <string>Cleanup</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <layout class="QVBoxLayout" name="cleanup_layout">
+        <item>
+         <widget class="QPushButton" name="clean_keep_manifests_button">
+          <property name="text">
+           <string>Clean, but keep manifests</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="clean_button">
+          <property name="text">
+           <string>Remove everything</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="meta_group">
+       <property name="title">
+        <string>Game metadata</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QCheckBox" name="win32_cb">
+          <property name="text">
+           <string>Load 32bit data</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="mac_cb">
+          <property name="text">
+           <string>Load MacOS data</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="refresh_game_meta_btn">
+          <property name="text">
+           <string>Refresh game meta</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="right_vspacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

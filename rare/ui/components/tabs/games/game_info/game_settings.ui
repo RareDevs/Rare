@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>558</width>
-    <height>357</height>
+    <width>448</width>
+    <height>310</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -102,12 +102,6 @@
       </item>
       <item row="2" column="1">
        <widget class="QLineEdit" name="launch_params">
-        <property name="minimumSize">
-         <size>
-          <width>400</width>
-          <height>0</height>
-         </size>
-        </property>
         <property name="placeholderText">
          <string>parameters</string>
         </property>
@@ -157,13 +151,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="proton_placeholder" native="true">
-     <layout class="QFormLayout" name="proton_layout">
-      <property name="labelAlignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </layout>
-    </widget>
+    <layout class="QVBoxLayout" name="proton_layout"/>
    </item>
    <item>
     <widget class="QWidget" name="linux_settings_widget" native="true">

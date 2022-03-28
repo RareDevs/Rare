@@ -38,8 +38,7 @@ class DefaultGameSettings(QWidget, Ui_GameSettings):
         if platform.system() != "Windows":
             self.linux_settings = LinuxAppSettings()
             self.proton_settings = ProtonSettings(self.linux_settings, self.wrapper_settings)
-            self.game_settings_layout.replaceWidget(self.proton_placeholder, self.proton_settings)
-            self.proton_placeholder.deleteLater()
+            self.proton_layout.addWidget(self.proton_settings)
 
             # FIXME: Remove the spacerItem and margins from the linux settings
             # FIXME: This should be handled differently at soem point in the future
