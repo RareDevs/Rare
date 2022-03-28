@@ -451,14 +451,16 @@ class WineResolverSignals(QObject):
 
 
 class WineResolver(QRunnable):
-    def __init__(self, path: str, app_name: str, core: LegendaryCore):
+    def __init__(self, path: str, app_name: str):
         super(WineResolver, self).__init__()
         self.signals = WineResolverSignals()
         self.setAutoDelete(True)
         self.wine_env = os.environ.copy()
+        core = LegendaryCoreSingleton()
         self.wine_env.update(core.get_app_environment(app_name))
         self.wine_env["WINEDLLOVERRIDES"] = "winemenubuilder=d;mscoree=d;mshtml=d;"
         self.wine_env["DISPLAY"] = ""
+
         self.wine_binary = core.lgd.config.get(
             app_name,
             "wine_executable",

@@ -1,5 +1,4 @@
 import os
-import time
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer, QSize

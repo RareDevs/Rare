@@ -87,7 +87,7 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         self.path_edit_layout.addWidget(self.path_edit)
 
         self.app_name = IndicatorLineEdit(
-            ph_text=self.tr("Use in case the app name was not found automatically"),
+            placeholder=self.tr("Use in case the app name was not found automatically"),
             completer=AppNameCompleter(
                 app_names=[
                     (i.app_name, i.app_title) for i in self.api_results.game_list

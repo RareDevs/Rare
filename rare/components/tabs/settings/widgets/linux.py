@@ -1,4 +1,5 @@
 import os
+import shutil
 from logging import getLogger
 
 from PyQt5.QtWidgets import QFileDialog, QWidget
@@ -37,6 +38,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
             self.load_setting(self.name, "wine_executable"),
             file_type=QFileDialog.ExistingFile,
             name_filter="Wine executable (wine wine64)",
+            edit_func=lambda text: (os.path.exists(text) or not text, text, PathEdit.reasons.dir_not_exist),
             save_func=lambda text: self.save_setting(
                 text, section=self.name, setting="wine_executable"
             ),
@@ -46,9 +48,15 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         # dxvk
         self.dxvk = DxvkSettings()
         self.overlay_layout.addWidget(self.dxvk)
+        self.dxvk.load_settings(self.name)
 
         self.mangohud = MangoHudSettings()
         self.overlay_layout.addWidget(self.mangohud)
+        self.mangohud.load_settings(self.name)
+
+        if not shutil.which("mangohud"):
+            self.mangohud.setDisabled(True)
+            self.mangohud.setToolTip(self.tr("Mangohud is not installed or not in path"))
 
     def load_prefix(self) -> str:
         return self.load_setting(

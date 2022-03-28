@@ -43,8 +43,8 @@ class ConsoleWindow(QWidget):
     def log(self, text: str, end: str = "\n"):
         self.console.log(text + end)
 
-    def error(self, text):
-        self.console.error(text)
+    def error(self, text, end: str = "\n"):
+        self.console.error(text + end)
 
 
 class Console(QPlainTextEdit):
@@ -55,11 +55,13 @@ class Console(QPlainTextEdit):
         self._cursor_output = self.textCursor()
 
     def log(self, text):
-        self._cursor_output.insertText(text)
+        html = f"<p style=\"color:#999;white-space:pre\">{text}</p>"
+        self._cursor_output.insertHtml(html)
         self.scroll_to_last_line()
 
     def error(self, text):
-        self._cursor_output.insertHtml(f'<font color="Red">{text}</font>')
+        html = f"<p style=\"color:#eee;white-space:pre\">{text}</p>"
+        self._cursor_output.insertHtml(html)
         self.scroll_to_last_line()
 
     def scroll_to_last_line(self):

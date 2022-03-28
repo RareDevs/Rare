@@ -166,6 +166,9 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
 
         self.widget_stack.setCurrentIndex(0)
 
+        if widget := self.wrappers.get(show_text, None):
+            widget.deleteLater()
+
         widget = WrapperWidget(text, show_text, self.scroll_content)
         self.scroll_content.layout().addWidget(widget)
         self.adjust_scrollarea(
@@ -173,7 +176,6 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
             self.wrapper_scroll.horizontalScrollBar().maximum()
         )
         widget.delete_wrapper.connect(self.delete_wrapper)
-
         self.wrappers[show_text] = widget
 
         if not from_load:

@@ -1,75 +1,29 @@
 import os
 import platform
 from logging import getLogger
-from pathlib import Path
-from typing import Tuple
 
-from PyQt5.QtCore import QSettings, QThreadPool, Qt
-from PyQt5.QtWidgets import (
-    QWidget,
-    QFileDialog,
-    QMessageBox,
-    QLabel,
-    QPushButton,
-    QSizePolicy
-)
-from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame, Game
+from PyQt5.QtCore import Qt, QThreadPool
+from PyQt5.QtWidgets import QSizePolicy, QPushButton, QLabel, QFileDialog, QMessageBox
+from legendary.models.game import Game, InstalledGame
 
-from rare.components.tabs.settings.linux import LinuxSettings
-from rare.components.tabs.settings.widgets.wrapper import WrapperSettings
-from rare.ui.components.tabs.games.game_info.game_settings import Ui_GameSettings
-from rare.components.tabs.settings.widgets.env_vars import EnvVars
+from rare.components.tabs.settings import DefaultGameSettings
+from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
-from rare.utils.utils import WineResolver, get_raw_save_path
-from rare.utils.utils import icon
+from rare.utils.utils import icon, WineResolver, get_raw_save_path
 
 logger = getLogger("GameSettings")
 
 
-def find_proton_wrappers():
-    possible_proton_wrappers = []
-    compatibilitytools_dirs = [
-        os.path.expanduser("~/.steam/steam/steamapps/common"),
-        "/usr/share/steam/compatibilitytools.d",
-        os.path.expanduser("~/.steam/compatibilitytools.d"),
-        os.path.expanduser("~/.steam/root/compatibilitytools.d"),
-    ]
-    for c in compatibilitytools_dirs:
-        if os.path.exists(c):
-            for i in os.listdir(c):
-                proton = os.path.join(c, i, "proton")
-                compatibilitytool = os.path.join(c, i, "compatibilitytool.vdf")
-                toolmanifest = os.path.join(c, i, "toolmanifest.vdf")
-                if os.path.exists(proton) and (
-                        os.path.exists(compatibilitytool) or os.path.exists(toolmanifest)
-                ):
-                    wrapper = f'"{proton}" run'
-                    possible_proton_wrappers.append(wrapper)
-    if not possible_proton_wrappers:
-        logger.warning("Unable to find any Proton version")
-    return possible_proton_wrappers
-
-
-class GameSettings(QWidget, Ui_GameSettings):
+class GameSettings(DefaultGameSettings):
     game: Game
     igame: InstalledGame
 
-    # variable to no update when changing game
-    change = False
-
-    def __init__(self, core: LegendaryCore, parent):
-        super(GameSettings, self).__init__(parent=parent)
-        self.setupUi(self)
-
-        self.core = core
-        self.settings = QSettings()
-
-        self.wrapper_settings = WrapperSettings()
-
+    def __init__(self, parent=None):
+        super(GameSettings, self).__init__(False, parent)
+        self.pre_launch_settings = PreLaunchSettings()
         self.launch_settings_group.layout().addRow(
-            QLabel("Wrapper"), self.wrapper_settings
+            QLabel(self.tr("Pre launch command")), self.pre_launch_settings
         )
 
         self.cloud_save_path_edit = PathEdit(
@@ -103,48 +57,14 @@ class GameSettings(QWidget, Ui_GameSettings):
                 f"{self.game.app_name}/auto_sync_cloud", self.cloud_sync.isChecked()
             )
         )
+        self.override_exe_edit.textChanged.connect(
+            lambda text: self.save_line_edit("override_exe", text)
+        )
         self.launch_params.textChanged.connect(
             lambda x: self.save_line_edit("start_params", x)
         )
 
-        if platform.system() != "Windows":
-            self.possible_proton_wrappers = find_proton_wrappers()
-
-            self.proton_wrapper.addItems(self.possible_proton_wrappers)
-            self.proton_wrapper.currentIndexChanged.connect(self.change_proton)
-
-            self.proton_prefix = PathEdit(
-                file_type=QFileDialog.DirectoryOnly,
-                edit_func=self.proton_prefix_edit,
-                save_func=self.proton_prefix_save,
-                placeholder=self.tr("Please select path for proton prefix")
-            )
-            self.proton_prefix_layout.addWidget(self.proton_prefix)
-
-            self.linux_settings = LinuxAppSettings()
-            # FIXME: Remove the spacerItem and margins from the linux settings
-            # FIXME: This should be handled differently at soem point in the future
-            self.linux_settings.layout().setContentsMargins(0, 0, 0, 0)
-            for item in [
-                self.linux_settings.layout().itemAt(idx)
-                for idx in range(self.linux_settings.layout().count())
-            ]:
-                if item.spacerItem():
-                    self.linux_settings.layout().removeItem(item)
-                    del item
-            # FIXME: End of FIXME
-            self.linux_settings_layout.addWidget(self.linux_settings)
-            self.linux_settings_layout.setAlignment(Qt.AlignTop)
-        else:
-            self.linux_settings_widget.setVisible(False)
         self.game_settings_layout.setAlignment(Qt.AlignTop)
-
-        self.linux_settings.mangohud.set_wrapper_activated.connect(
-            lambda active: self.wrapper_settings.add_wrapper("mangohud")
-            if active else self.wrapper_settings.delete_wrapper("mangohud"))
-
-        self.env_vars = EnvVars(self)
-        self.game_settings_contents_layout.addWidget(self.env_vars)
 
     def compute_save_path(self):
         if (
@@ -155,12 +75,17 @@ class GameSettings(QWidget, Ui_GameSettings):
                 new_path = self.core.get_save_path(self.game.app_name)
             except Exception as e:
                 logger.warning(str(e))
+                resolver = WineResolver(
+                    get_raw_save_path(self.game), self.game.app_name
+                )
+                if not resolver.wine_env.get("WINEPREFIX"):
+                    self.cloud_save_path_edit.setText("")
+                    QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")
+                    return
                 self.cloud_save_path_edit.setText(self.tr("Loading"))
                 self.cloud_save_path_edit.setDisabled(True)
                 self.compute_save_path_button.setDisabled(True)
-                resolver = WineResolver(
-                    get_raw_save_path(self.game), self.game.app_name, self.core
-                )
+
                 app_name = self.game.app_name[:]
                 resolver.signals.result_ready.connect(
                     lambda x: self.wine_resolver_finished(x, app_name)
@@ -228,61 +153,9 @@ class GameSettings(QWidget, Ui_GameSettings):
                 config_helper.remove_option(self.game.app_name, option)
             config_helper.save_config()
 
-    def change_proton(self, i):
-        if self.change:
-            # First combo box entry: Don't use Proton
-            if i == 0:
-                self.wrapper_settings.delete_wrapper("proton")
-                config_helper.remove_option(self.game.app_name, "no_wine")
-                config_helper.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH")
-                config_helper.remove_option(f"{self.game.app_name}.env", "STEAM_COMPAT_CLIENT_INSTALL_PATH")
-
-                self.proton_prefix.setEnabled(False)
-                # lk: TODO: This has to be fixed properly.
-                # lk: It happens because of the widget update. Mask it for now behind disabling the save button
-
-                self.linux_settings.wine_groupbox.setEnabled(True)
-            else:
-                self.proton_prefix.setEnabled(True)
-                self.linux_settings.wine_groupbox.setEnabled(False)
-                wrapper = self.possible_proton_wrappers[i - 1]
-
-                self.wrapper_settings.add_wrapper(wrapper)
-                config_helper.add_option(self.game.app_name, "no_wine", "true")
-                config_helper.add_option(
-                    f"{self.game.app_name}.env",
-                    "STEAM_COMPAT_DATA_PATH",
-                    os.path.expanduser("~/.proton"),
-                )
-                config_helper.add_option(
-                    f"{self.game.app_name}.env",
-                    "STEAM_COMPAT_CLIENT_INSTALL_PATH",
-                    str(Path.home().joinpath(".steam", "steam"))
-                )
-
-                self.proton_prefix.setText(os.path.expanduser("~/.proton"))
-
-                # Don't use Wine
-                self.linux_settings.wine_exec.setText("")
-                self.linux_settings.wine_prefix.setText("")
-
-        config_helper.save_config()
-
-    def proton_prefix_edit(self, text: str) -> Tuple[bool, str, str]:
-        if not text:
-            text = os.path.expanduser("~/.proton")
-            return True, text, ""
-        parent = os.path.dirname(text)
-        return os.path.exists(parent), text, PathEdit.reasons.dir_not_exist
-
-    def proton_prefix_save(self, text: str):
-        config_helper.add_option(
-            f"{self.game.app_name}.env", "STEAM_COMPAT_DATA_PATH", text
-        )
-        config_helper.save_config()
-
-    def update_game(self, app_name: str):
+    def load_settings(self, app_name):
         self.change = False
+        super(GameSettings, self).load_settings(app_name)
         self.game = self.core.get_game(app_name)
         self.igame = self.core.get_installed_game(self.game.app_name)
         if self.igame:
@@ -314,33 +187,11 @@ class GameSettings(QWidget, Ui_GameSettings):
             self.skip_update.setCurrentIndex(0)
 
         self.title.setTitle(self.game.app_title)
-        self.wrapper_settings.load_settings(app_name)
         if platform.system() != "Windows":
-            self.linux_settings.update_game(app_name)
-
             if self.igame and self.igame.platform == "Mac":
                 self.linux_settings_widget.setVisible(False)
             else:
                 self.linux_settings_widget.setVisible(True)
-
-            proton = self.wrapper_settings.wrappers.get("proton", None)
-            if proton:
-                proton = proton.text.replace('"', "")
-                self.proton_prefix.setEnabled(True)
-                self.proton_wrapper.setCurrentText(
-                    f'"{proton.replace(" run", "")}" run'
-                )
-                proton_prefix = self.core.lgd.config.get(
-                    f"{app_name}.env",
-                    "STEAM_COMPAT_DATA_PATH",
-                    fallback=Path.home().joinpath(".proton"),
-                )
-                self.proton_prefix.setText(proton_prefix)
-                self.linux_settings.wine_groupbox.setEnabled(False)
-            else:
-                self.proton_wrapper.setCurrentIndex(0)
-                self.proton_prefix.setEnabled(False)
-                self.linux_settings.wine_groupbox.setEnabled(True)
 
         if not self.game.supports_cloud_saves:
             self.cloud_group.setEnabled(False)
@@ -362,21 +213,7 @@ class GameSettings(QWidget, Ui_GameSettings):
         self.override_exe_edit.setText(
             self.core.lgd.config.get(self.game.app_name, "override_exe", fallback="")
         )
+
+        self.pre_launch_settings.load_settings(app_name)
+
         self.change = True
-        self.env_vars.update_game(app_name)
-
-
-    
-
-class LinuxAppSettings(LinuxSettings):
-    def __init__(self):
-        super(LinuxAppSettings, self).__init__()
-
-    def update_game(self, app_name):
-        self.name = app_name
-        self.wine_prefix.setText(self.load_prefix())
-        self.wine_exec.setText(self.load_setting(self.name, "wine_executable"))
-
-        self.dxvk.load_settings(self.name)
-
-        self.mangohud.load_settings(self.name)

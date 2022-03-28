@@ -48,7 +48,7 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
             if not self.core.egl.programdata_path:
                 self.egl_path_info.setText(self.tr("Updating..."))
                 wine_resolver = WineResolver(
-                    PathSpec.egl_programdata, "default", self.core
+                    PathSpec.egl_programdata, "default"
                 )
                 wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
                 self.thread_pool.start(wine_resolver)

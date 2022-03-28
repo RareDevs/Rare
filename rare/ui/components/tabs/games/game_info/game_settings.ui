@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>545</width>
-    <height>348</height>
+    <width>558</width>
+    <height>357</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -157,46 +157,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="proton_group">
-     <property name="title">
-      <string>Proton Settings</string>
-     </property>
+    <widget class="QWidget" name="proton_placeholder" native="true">
      <layout class="QFormLayout" name="proton_layout">
       <property name="labelAlignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
-      <item row="1" column="0">
-       <widget class="QLabel" name="proton_wrapper_label">
-        <property name="text">
-         <string>Proton</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="proton_wrapper">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <item>
-         <property name="text">
-          <string>Don't use Proton</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="proton_prefix_label">
-        <property name="text">
-         <string>Prefix</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <layout class="QVBoxLayout" name="proton_prefix_layout"/>
-      </item>
      </layout>
     </widget>
    </item>

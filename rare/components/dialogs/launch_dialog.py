@@ -2,7 +2,7 @@ import os
 import platform
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool
+from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, QSettings
 from PyQt5.QtWidgets import QDialog, QApplication
 from legendary.core import LegendaryCore
 from requests.exceptions import ConnectionError, HTTPError
@@ -40,9 +40,10 @@ class ApiRequestWorker(QRunnable):
         self.signals = LaunchDialogSignals()
         self.setAutoDelete(True)
         self.core = LegendaryCoreSingleton()
+        self.settings = QSettings()
 
     def run(self) -> None:
-        if platform.system() == "Darwin" or "Mac" in self.core.get_installed_platforms():
+        if self.settings.value("mac_meta", platform.system() == "Darwin", bool):
             try:
                 result = self.core.get_game_and_dlc_list(True, "Mac")
             except HTTPError:
@@ -50,9 +51,13 @@ class ApiRequestWorker(QRunnable):
             self.signals.result.emit(result, "mac")
         else:
             self.signals.result.emit(([], {}), "mac")
-        try:
-            result = self.core.get_game_and_dlc_list(True, "Win32")
-        except HTTPError:
+
+        if self.settings.value("win32_meta", False, bool):
+            try:
+                result = self.core.get_game_and_dlc_list(True, "Win32")
+            except HTTPError:
+                result = [], {}
+        else:
             result = [], {}
         self.signals.result.emit(result, "32bit")
 

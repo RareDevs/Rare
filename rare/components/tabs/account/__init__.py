@@ -3,6 +3,7 @@ import webbrowser
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel, QPushButton
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.utils.utils import icon
 
 
 class MiniWidget(QWidget):
@@ -18,7 +19,7 @@ class MiniWidget(QWidget):
 
         self.layout.addWidget(QLabel(self.tr("Logged in as {}").format(username)))
 
-        self.open_browser = QPushButton(self.tr("Account settings"))
+        self.open_browser = QPushButton(icon("fa.external-link"), self.tr("Account settings"))
         self.open_browser.clicked.connect(
             lambda: webbrowser.open(
                 "https://www.epicgames.com/account/personal?productName=epicgames"
