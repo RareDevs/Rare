@@ -2,7 +2,6 @@ import datetime
 import os
 import platform
 import shutil
-import webbrowser
 from dataclasses import dataclass
 from logging import getLogger
 
@@ -171,7 +170,7 @@ class GameUtils(QObject):
 
         def _launch_real():
             process = self._get_process(app_name, env)
-
+            self.console.log("\n"*2)
             if game.third_party_store != "Origin":
                 self._launch_game(igame, process, offline, skip_update_check, ask_always_sync)
             else:
@@ -182,6 +181,7 @@ class GameUtils(QObject):
         if pre_cmd:
             pre_cmd = pre_cmd.split()
             pre_proc = self._launch_pre_command(env)
+            self.console.log("\n"*2)
             pre_proc.start(pre_cmd[0], pre_cmd[1:])
             if wait:
                 pre_proc.finished.connect(_launch_real)
@@ -190,6 +190,7 @@ class GameUtils(QObject):
 
     def game_finished(self, exit_code, app_name):
         logger.info(f"Game exited with exit code: {exit_code}")
+        self.console.log(f"Game exited with code: {exit_code}")
         self.signals.set_discord_rpc.emit("")
         is_origin = self.core.get_game(app_name).third_party_store == "Origin"
         if exit_code == 1 and is_origin:
@@ -222,16 +223,14 @@ class GameUtils(QObject):
             self.running_games.pop(app_name)
         self.finished.emit(app_name, "")
 
-        if QSettings().value("show_console", False, bool):
-            self.console.log(f"Game exited with code: {exit_code}")
-
         if self.core.get_game(app_name).supports_cloud_saves:
             if exit_code != 0:
                 r = QMessageBox.question(
                     None,
                     "Question",
                     self.tr(
-                        "Game exited with code {}, which is not a normal code. It could be caused by a crash. Do you want to sync cloud saves"
+                        "Game exited with code {}, which is not a normal code. "
+                        "It could be caused by a crash. Do you want to sync cloud saves"
                     ).format(exit_code),
                     buttons=QMessageBox.Yes | QMessageBox.No,
                     defaultButton=QMessageBox.Yes,
