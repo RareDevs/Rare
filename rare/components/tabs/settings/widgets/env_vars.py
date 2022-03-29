@@ -1,12 +1,11 @@
 from logging import getLogger
 
 import qtawesome
-
 from PyQt5.QtCore import Qt, QFileSystemWatcher
 from PyQt5.QtWidgets import QGroupBox, QTableWidgetItem, QMessageBox, QPushButton
 
 from rare.shared import LegendaryCoreSingleton
-from rare.ui.components.tabs.games.env_vars import Ui_EnvVars
+from rare.ui.components.tabs.settings.widgets.env_vars import Ui_EnvVars
 from rare.utils import config_helper
 
 logger = getLogger("EnvVars")
