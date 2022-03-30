@@ -17,7 +17,7 @@ class SettingsTab(SideTabWidget):
 
         self.addTab(LegendarySettings(), "Legendary")
 
-        self.addTab(DefaultGameSettings(True, self), self.tr("Games"), self.tr("Default game settings"))
+        self.addTab(DefaultGameSettings(True, self), self.tr("Default Settings"))
 
         self.about = About()
         self.addTab(self.about, "About", "About")
