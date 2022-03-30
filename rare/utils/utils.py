@@ -16,6 +16,7 @@ from PyQt5.QtCore import (
     QObject,
     QRunnable,
     QSettings,
+    QStandardPaths,
     Qt,
     QFile,
     QDir,
@@ -280,7 +281,7 @@ def create_rare_desktop_link(type_of_link):
     elif platform.system() == "Windows":
         # Target of shortcut
         if type_of_link == "desktop":
-            target_folder = os.path.expanduser("~/Desktop/")
+            target_folder = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
         elif type_of_link == "start_menu":
             target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
