@@ -2,7 +2,7 @@ import os
 import platform
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, Qt, QByteArray
+from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, QStandardPaths, Qt, QByteArray
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
 
@@ -81,9 +81,10 @@ class BaseInstalledWidget(QGroupBox):
             sync.triggered.connect(self.sync_game)
             self.addAction(sync)
 
+        desktop = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
         if os.path.exists(
-                os.path.expanduser(f"~/Desktop/{self.game.app_title}.desktop")
-        ) or os.path.exists(os.path.expanduser(f"~/Desktop/{self.game.app_title}.lnk")):
+                os.path.join(desktop, f"{self.game.app_title}.desktop")
+        ) or os.path.exists(os.path.join(desktop, f"{self.game.app_title}.lnk")):
             self.create_desktop = QAction(self.tr("Remove Desktop link"))
         else:
             self.create_desktop = QAction(self.tr("Create Desktop link"))
@@ -93,14 +94,11 @@ class BaseInstalledWidget(QGroupBox):
             )
             self.addAction(self.create_desktop)
 
+        applications = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
         if platform.system() == "Linux":
-            start_menu_file = os.path.expanduser(
-                f"~/.local/share/applications/{self.game.app_title}.desktop"
-            )
+            start_menu_file = os.path.join(applications, f"{self.game.app_title}.desktop")
         elif platform.system() == "Windows":
-            start_menu_file = os.path.expandvars(
-                "%appdata%/Microsoft/Windows/Start Menu"
-            )
+            start_menu_file = os.path.join(applications, "..", f"{self.game.app_title}.lnk")
         else:
             start_menu_file = ""
         if platform.system() in ["Windows", "Linux"]:
@@ -134,23 +132,27 @@ class BaseInstalledWidget(QGroupBox):
         )
 
     def create_desktop_link(self, type_of_link):
-        if platform.system() not in ["Windows", "Linux"]:
+        if type_of_link == "desktop":
+            shortcut_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
+        elif type_of_link == "start_menu":
+            shortcut_path = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
+        else:
+            return
+
+        if platform.system() == "Windows":
+            shortcut_path = os.path.join(shortcut_path, f"{self.game.app_title}.lnk")
+        elif platform.system() == "Linux":
+            shortcut_path = os.path.join(shortcut_path, f"{self.game.app_title}.desktop")
+        else:
             QMessageBox.warning(
                 self,
                 "Warning",
                 f"Create a Desktop link is currently not supported on {platform.system()}",
             )
             return
-        if type_of_link == "desktop":
-            path = os.path.expanduser(f"~/Desktop/")
-        elif type_of_link == "start_menu":
-            path = os.path.expanduser("~/.local/share/applications/")
-        else:
-            return
-        if not (
-                os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
-                or os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk"))
-        ):
+            
+
+        if not os.path.exists(shortcut_path):
             try:
                 if not create_desktop_link(self.game.app_name, self.core, type_of_link):
                     return
@@ -163,12 +165,8 @@ class BaseInstalledWidget(QGroupBox):
             elif type_of_link == "start_menu":
                 self.create_start_menu.setText(self.tr("Remove Start menu link"))
         else:
-            if os.path.exists(
-                    os.path.expanduser(f"{path}{self.game.app_title}.desktop")
-            ):
-                os.remove(os.path.expanduser(f"{path}{self.game.app_title}.desktop"))
-            elif os.path.exists(os.path.expanduser(f"{path}{self.game.app_title}.lnk")):
-                os.remove(os.path.expanduser(f"{path}{self.game.app_title}.lnk"))
+            if os.path.exists(shortcut_path):
+                os.remove(shortcut_path)
 
             if type_of_link == "desktop":
                 self.create_desktop.setText(self.tr("Create Desktop link"))
