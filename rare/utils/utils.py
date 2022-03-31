@@ -2,6 +2,7 @@ import json
 import math
 import os
 import platform
+import shlex
 import shutil
 import subprocess
 import sys
@@ -23,9 +24,9 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QStyleFactory
+from legendary.models.game import Game
 from requests.exceptions import HTTPError
 
-from legendary.models.game import Game
 from .models import PathSpec
 
 # Windows
@@ -249,34 +250,62 @@ def get_size(b: int) -> str:
         b /= 1024
 
 
-def create_rare_desktop_link(type_of_link):
-    # Linux
+def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link="desktop",
+                        for_rare: bool = False) -> bool:
+    if not for_rare:
+        igame = core.get_installed_game(app_name)
+
+        if os.path.exists(p := os.path.join(image_dir, igame.app_name, "Thumbnail.png")):
+            icon = p
+        elif os.path.exists(
+                p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")
+        ):
+            icon = p
+        else:
+            icon = os.path.join(
+                os.path.join(image_dir, igame.app_name, "DieselGameBoxTall.png")
+            )
+        icon = icon.replace(".png", "")
+
     if platform.system() == "Linux":
         if type_of_link == "desktop":
             path = os.path.expanduser("~/Desktop/")
         elif type_of_link == "start_menu":
             path = os.path.expanduser("~/.local/share/applications/")
         else:
-            return
+            return False
         if not os.path.exists(path):
-            return
-
+            return False
         if p := os.environ.get("APPIMAGE"):
             executable = p
         else:
             executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
-        with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
-            desktop_file.write(
-                "[Desktop Entry]\n"
-                f"Name=Rare\n"
-                f"Type=Application\n"
-                f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
-                f"Exec={executable}\n"
-                "Terminal=false\n"
-                "StartupWMClass=rare\n"
-            )
-            desktop_file.close()
-        os.chmod(os.path.expanduser(os.path.join(path, "Rare.desktop")), 0o755)
+
+        if for_rare:
+            with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
+                desktop_file.write(
+                    "[Desktop Entry]\n"
+                    f"Name=Rare\n"
+                    f"Type=Application\n"
+                    f"Categories=Game;\n"
+                    f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
+                    f"Exec={executable}\n"
+                    "Terminal=false\n"
+                    "StartupWMClass=rare\n"
+                )
+        else:
+            with open(f"{path}{igame.title}.desktop", "w") as desktop_file:
+                desktop_file.write(
+                    "[Desktop Entry]\n"
+                    f"Name={igame.title}\n"
+                    f"Type=Application\n"
+                    f"Categories=Game;\n"
+                    f"Icon={icon}.png\n"
+                    f"Exec={executable} launch {app_name}\n"
+                    "Terminal=false\n"
+                    "StartupWMClass=rare-game\n"
+                )
+            os.chmod(os.path.expanduser(f"{path}{igame.title}.desktop"), 0o755)
 
     elif platform.system() == "Windows":
         # Target of shortcut
@@ -286,89 +315,18 @@ def create_rare_desktop_link(type_of_link):
             target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
         else:
             logger.warning("No valid type of link")
-            return
-        linkName = "Rare.lnk"
-
-        # Path to location of link file
-        pathLink = os.path.join(target_folder, linkName)
-
-        executable = sys.executable
-        executable = executable.replace("python.exe", "pythonw.exe")
-        logger.debug(executable)
-        # Add shortcut
-        shell = Dispatch("WScript.Shell")
-        shortcut = shell.CreateShortCut(pathLink)
-        shortcut.Targetpath = executable
-        if not sys.executable.endswith("Rare.exe"):
-            shortcut.Arguments = os.path.abspath(sys.argv[0])
-
-        # Icon
-        shortcut.IconLocation = os.path.join(resources_path, "images", "Rare.ico")
-
-        shortcut.save()
-
-
-def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -> bool:
-    igame = core.get_installed_game(app_name)
-
-    if os.path.exists(p := os.path.join(image_dir, igame.app_name, "Thumbnail.png")):
-        icon = p
-    elif os.path.exists(
-            p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")
-    ):
-        icon = p
-    else:
-        icon = os.path.join(
-            os.path.join(image_dir, igame.app_name, "DieselGameBoxTall.png")
-        )
-    icon = icon.replace(".png", "")
-
-    # Linux
-    if platform.system() == "Linux":
-        if type_of_link == "desktop":
-            path = os.path.expanduser(f"~/Desktop/")
-        elif type_of_link == "start_menu":
-            path = os.path.expanduser("~/.local/share/applications/")
-        else:
-            return False
-        if not os.path.exists(path):
-            return False
-        if p := os.environ.get("APPIMAGE"):
-            executable = p
-        else:
-            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
-        with open(f"{path}{igame.title}.desktop", "w") as desktop_file:
-            desktop_file.write(
-                "[Desktop Entry]\n"
-                f"Name={igame.title}\n"
-                f"Type=Application\n"
-                f"Icon={icon}.png\n"
-                f"Exec={executable} launch {app_name}\n"
-                "Terminal=false\n"
-                "StartupWMClass=rare-game\n"
-            )
-            desktop_file.close()
-        os.chmod(os.path.expanduser(f"{path}{igame.title}.desktop"), 0o755)
-
-    # Windows
-    elif platform.system() == "Windows":
-        # Target of shortcut
-        if type_of_link == "desktop":
-            target_folder = os.path.expanduser("~/Desktop/")
-        elif type_of_link == "start_menu":
-            target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
-        else:
-            logger.warning("No valid type of link")
             return False
         if not os.path.exists(target_folder):
             return False
 
-        # Name of link file
-        linkName = igame.title
-        for c in r'<>?":|\/*':
-            linkName.replace(c, "")
+        if for_rare:
+            linkName = "Rare.lnk"
+        else:
+            linkName = igame.title
+            for c in r'<>?":|\/*':
+                linkName.replace(c, "")
 
-        linkName = linkName.strip() + ".lnk"
+            linkName = f"{linkName.strip()}.lnk"
 
         # Path to location of link file
         pathLink = os.path.join(target_folder, linkName)
@@ -376,25 +334,40 @@ def create_desktop_link(app_name, core: LegendaryCore, type_of_link="desktop") -
         # Add shortcut
         shell = Dispatch("WScript.Shell")
         shortcut = shell.CreateShortCut(pathLink)
-        if sys.executable.endswith("Rare.exe"):
-            executable = sys.executable
-        else:
-            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
+
+        executable = sys.executable
+        arguments = []
+
+        if not sys.executable.endswith("Rare.exe"):
+            # be sure to start consoleless then
+            executable = sys.executable.replace("python.exe", "pythonw.exe")
+            arguments.append(os.path.abspath(sys.argv[0]))
+
+        if not for_rare:
+            arguments.extend(["launch", app_name])
+
         shortcut.Targetpath = executable
-        shortcut.Arguments = f"launch {app_name}"
-        shortcut.WorkingDirectory = os.getcwd()
+        shortcut.Arguments = shlex.join(arguments)
+
+        if for_rare:
+            shortcut.WorkingDirectory = os.getcwd()
 
         # Icon
-        if not os.path.exists(icon + ".ico"):
-            img = QImage()
-            img.load(icon + ".png")
-            img.save(icon + ".ico")
-            logger.info("Create Icon")
-        shortcut.IconLocation = os.path.join(icon + ".ico")
+        if for_rare:
+            icon_location = os.path.join(resources_path, "images", "Rare.ico")
+        else:
+            if not os.path.exists(f"{icon}.ico"):
+                img = QImage()
+                img.load(f"{icon}.png")
+                img.save(f"{icon}.ico")
+                logger.info("Create Icon")
+            icon_location = f"{icon}.ico"
+        shortcut.IconLocation = os.path.abspath(icon_location)
 
         shortcut.save()
         return True
 
+    # mac OS is based on Darwin
     elif platform.system() == "Darwin":
         return False
 
