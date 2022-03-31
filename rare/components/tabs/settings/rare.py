@@ -4,7 +4,7 @@ import subprocess
 import sys
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, Qt
+from PyQt5.QtCore import QSettings, QStandardPaths, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
@@ -113,16 +113,14 @@ class RareSettings(QWidget, Ui_RareSettings):
             lambda: self.settings.setValue("show_console", self.log_games.isChecked())
         )
 
+        desktop = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
+        applications = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
         if platform.system() == "Linux":
-            self.desktop_file = os.path.expanduser("~/Desktop/Rare.desktop")
-            self.start_menu_link = os.path.expanduser(
-                "~/.local/share/applications/Rare.desktop"
-            )
+            self.desktop_file = os.path.join(desktop, "Rare.desktop")
+            self.start_menu_link = os.path.join(applications, "Rare.desktop")
         elif platform.system() == "Windows":
-            self.desktop_file = os.path.expanduser("~/Desktop/Rare.lnk")
-            self.start_menu_link = os.path.expandvars(
-                "%appdata%\\Microsoft\\Windows\\Start Menu\\Rare.lnk"
-            )
+            self.desktop_file = os.path.join(desktop, "Rare.lnk")
+            self.start_menu_link = os.path.join(applications, "..", "Rare.lnk")
         else:
             self.desktop_link_btn.setText(self.tr("Not supported"))
             self.desktop_link_btn.setDisabled(True)

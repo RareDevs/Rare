@@ -269,9 +269,9 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
 
     if platform.system() == "Linux":
         if type_of_link == "desktop":
-            path = os.path.expanduser("~/Desktop/")
+            path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
         elif type_of_link == "start_menu":
-            path = os.path.expanduser("~/.local/share/applications/")
+            path = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
         else:
             return False
         if not os.path.exists(path):
@@ -294,7 +294,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
                     "StartupWMClass=rare\n"
                 )
         else:
-            with open(f"{path}{igame.title}.desktop", "w") as desktop_file:
+            with open(os.path.join(path, f"{igame.title}.desktop"), "w") as desktop_file:
                 desktop_file.write(
                     "[Desktop Entry]\n"
                     f"Name={igame.title}\n"
@@ -305,14 +305,19 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
                     "Terminal=false\n"
                     "StartupWMClass=rare-game\n"
                 )
-            os.chmod(os.path.expanduser(f"{path}{igame.title}.desktop"), 0o755)
+            os.chmod(os.path.join(path, f"{igame.title}.desktop"), 0o755)
+
+        return True
 
     elif platform.system() == "Windows":
         # Target of shortcut
         if type_of_link == "desktop":
             target_folder = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
         elif type_of_link == "start_menu":
-            target_folder = os.path.expandvars("%appdata%/Microsoft/Windows/Start Menu")
+            target_folder = os.path.join(
+                QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation),
+                ".."
+            )
         else:
             logger.warning("No valid type of link")
             return False
@@ -323,6 +328,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
             linkName = "Rare.lnk"
         else:
             linkName = igame.title
+            # TODO: this conversion is not applied everywhere (see base_installed_widget), should it?
             for c in r'<>?":|\/*':
                 linkName.replace(c, "")
 
