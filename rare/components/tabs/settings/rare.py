@@ -162,7 +162,7 @@ class RareSettings(QWidget, Ui_RareSettings):
     def create_start_menu_link(self):
         try:
             if not os.path.exists(self.start_menu_link):
-                utils.create_rare_desktop_link("start_menu")
+                utils.create_desktop_link(type_of_link="start_menu", for_rare=True)
                 self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
             else:
                 os.remove(self.start_menu_link)
@@ -178,7 +178,7 @@ class RareSettings(QWidget, Ui_RareSettings):
     def create_desktop_link(self):
         try:
             if not os.path.exists(self.desktop_file):
-                utils.create_rare_desktop_link("desktop")
+                utils.create_desktop_link(type_of_link="desktop", for_rare=True)
                 self.desktop_link_btn.setText(self.tr("Remove Desktop link"))
             else:
                 os.remove(self.desktop_file)
