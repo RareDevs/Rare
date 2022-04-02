@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, pyqtSignal, QThreadPool, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, QThreadPool, pyqtSlot
 from PyQt5.QtWidgets import (
     QCheckBox,
     QFileDialog,
@@ -172,32 +172,23 @@ class GameInfo(QWidget, Ui_GameInfo):
 
     @pyqtSlot(str)
     def move_game(self, destination_path):
-        if Path(destination_path).is_dir():
-            install_path = Path(self.igame.install_path)
-            destination_path_with_suffix = Path(destination_path).joinpath(install_path.stem)
-            if (
-                self.move_game_pop_up.create_subfolder_checkbox.checkState()
-                == Qt.Checked
-            ):
-                # user wants us to create a subfolder.
-                if not destination_path_with_suffix.is_dir():
-                    destination_path_with_suffix.mkdir(parents=True)
-                destination_path = str(destination_path_with_suffix)
+        install_path = Path(self.igame.install_path)
+        destination_path_with_suffix = Path(destination_path).joinpath(
+            install_path.stem
+        )
 
-            progress_of_moving = QProgressBar(self)
-            progress_of_moving.setValue(0)
+        progress_of_moving = QProgressBar(self)
+        progress_of_moving.setValue(0)
 
-            for file_name in Path(self.igame.install_path).iterdir():
-                shutil.move(
-                    Path(self.igame.install_path).joinpath(file_name), destination_path
-                )
-            Path(self.igame.install_path).rmdir()
-            self.install_path.setText(destination_path)
-            self.igame.install_path = destination_path
-            self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
-            self.move_game_pop_up.refresh_indicator()
+        shutil.move(self.igame.install_path, destination_path)
 
-            progress_of_moving.setValue(100)
+        self.install_path.setText(str(destination_path_with_suffix))
+        self.igame.install_path = str(destination_path_with_suffix)
+        self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
+        self.move_game_pop_up.install_path = self.igame.install_path
+
+        self.move_game_pop_up.refresh_indicator()
+        progress_of_moving.setValue(100)
 
     def update_game(self, app_name: str):
         self.game = self.core.get_game(app_name)
@@ -284,20 +275,11 @@ class MoveGamePopUp(QWidget):
             str(), QFileDialog.Directory, edit_func=self.edit_func_move_game
         )
         self.move_game = QPushButton(self.tr("Move"))
-        self.move_game.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         self.move_game.clicked.connect(self.emit_signal)
 
-        self.create_subfolder_checkbox = QCheckBox()
-        self.create_subfolder_checkbox.setChecked(True)
-        self.create_subfolder_checkbox.stateChanged.connect(self.refresh_indicator)
-
         layout.addWidget(self.move_path_edit)
+        layout.addWidget(self.move_game)
 
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.create_subfolder_checkbox, stretch=1)
-        button_layout.addWidget(self.move_game)
-
-        layout.addLayout(button_layout)
         self.setLayout(layout)
 
     def emit_signal(self):
@@ -319,68 +301,54 @@ class MoveGamePopUp(QWidget):
                 path = path.parent
         return mount_point
 
-    def edit_func_move_game(self, text):
-        if not self.install_path or not text:
+    def edit_func_move_game(self, dir_selected):
+        if not self.install_path or not dir_selected:
             self.move_game.setEnabled(False)
             return False, str(), self.tr("You need to provide a directory.")
 
         current_path = Path(self.install_path)
-        destination_path = Path(text)
+        destination_path = Path(dir_selected)
         destination_path_with_suffix = destination_path.joinpath(current_path.stem)
 
-        if (
-            destination_path_with_suffix.is_dir()
-            and len(list(destination_path_with_suffix.iterdir())) > 0
-        ):
-            if self.create_subfolder_checkbox.checkState() == Qt.Unchecked:
-                self.move_game.setEnabled(False)
-                return False, text, self.tr("Directory already exists")
-            else:
-                self.move_game.setEnabled(False)
-                return False, text, self.tr("Destination path contains files.")
-
-        if destination_path == current_path:
+        if current_path == destination_path or current_path == destination_path_with_suffix:
             self.move_game.setEnabled(False)
-            return (
-                False,
-                text,
-                self.tr(
-                    "You need to select a different directory than the current one."
-                ),
-            )
+            return False, dir_selected, self.tr("Same directory or parent directory selected.")
 
         if not destination_path.is_dir():
             self.move_game.setEnabled(False)
-            return False, text, self.tr("Directory doesn't exist or file selected.")
+            return False, dir_selected, self.tr("Directory doesn't exist or file selected.")
 
-        if not os.access(text, os.W_OK):
+        if not os.access(dir_selected, os.W_OK):
             self.move_game.setEnabled(False)
-            return False, text, self.tr("No write permission on destination path.")
-
-        if self.create_subfolder_checkbox.checkState() == Qt.Unchecked:
-            if len(list(destination_path.iterdir())):
-                self.move_game.setEnabled(False)
-                return False, text, self.tr("Destination path contains files.")
+            return (
+                False,
+                dir_selected,
+                self.tr("No write permission on destination path."),
+            )
 
         if not platform.system() == "Windows":
             if self.find_mount(destination_path) != self.find_mount(current_path):
                 self.move_game.setEnabled(False)
                 return (
                     False,
-                    text,
+                    dir_selected,
                     self.tr("Moving to a different drive is currently not supported."),
                 )
             else:
                 self.move_game.setEnabled(True)
-                return True, text, str()
+                return True, dir_selected, str()
         else:
             if current_path.drive != destination_path.drive:
                 self.move_game.setEnabled(False)
                 return (
                     False,
-                    text,
+                    dir_selected,
                     self.tr("Moving to a different drive is currently not supported."),
                 )
+
+        # Fallback
+        self.move_game.setEnabled(True)
+        return True, dir_selected, str()
 
     def update_game(self, app_name):
         igame = self.core.get_installed_game(app_name, False)
@@ -388,6 +356,3 @@ class MoveGamePopUp(QWidget):
             return
         self.install_path = igame.install_path
         self.move_path_edit.setText(igame.install_path)
-        self.create_subfolder_checkbox.setText(
-            self.tr("Create '{}' subfolder").format(Path(self.install_path).stem)
-        )
