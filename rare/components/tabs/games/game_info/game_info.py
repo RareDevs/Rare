@@ -3,8 +3,9 @@ import platform
 import shutil
 from pathlib import Path
 from logging import getLogger
+from typing import Tuple
 
-from PyQt5.QtCore import pyqtSignal, QThreadPool, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal, QThreadPool, pyqtSlot
 from PyQt5.QtWidgets import (
     QCheckBox,
     QFileDialog,
@@ -16,7 +17,6 @@ from PyQt5.QtWidgets import (
     QWidget,
     QMessageBox,
     QWidgetAction,
-    QSizePolicy,
 )
 
 from legendary.models.game import Game, InstalledGame
@@ -180,6 +180,20 @@ class GameInfo(QWidget, Ui_GameInfo):
         progress_of_moving = QProgressBar(self)
         progress_of_moving.setValue(0)
 
+        if self.move_game_pop_up.overwrite_checkbox.checkState() == Qt.Checked:
+            warn_msg = QMessageBox()
+            warn_msg.setText(self.tr("The directory already exists."))
+            warn_msg.setInformativeText(self.tr("Do you really want to overwrite it? This may cause loosing files."))
+            warn_msg.addButton(QPushButton(self.tr("Yes")), QMessageBox.YesRole)
+            warn_msg.addButton(QPushButton(self.tr("No")), QMessageBox.NoRole)
+
+            response = warn_msg.exec()
+
+            if response == 0:
+                destination_path_with_suffix.rmdir()
+            else:
+                return
+
         shutil.move(self.igame.install_path, destination_path)
 
         self.install_path.setText(str(destination_path_with_suffix))
@@ -277,8 +291,15 @@ class MoveGamePopUp(QWidget):
         self.move_game = QPushButton(self.tr("Move"))
         self.move_game.clicked.connect(self.emit_signal)
 
+        self.overwrite_checkbox = QCheckBox(self.tr("Overwrite folder"))
+        self.overwrite_checkbox.stateChanged.connect(self.refresh_indicator)
+
+        bottom_layout = QHBoxLayout()
+        bottom_layout.addWidget(self.move_game)
+        bottom_layout.addWidget(self.overwrite_checkbox, stretch=1)
+
         layout.addWidget(self.move_path_edit)
-        layout.addWidget(self.move_game)
+        layout.addLayout(bottom_layout)
 
         self.setLayout(layout)
 
@@ -302,49 +323,40 @@ class MoveGamePopUp(QWidget):
         return mount_point
 
     def edit_func_move_game(self, dir_selected):
-        if not self.install_path or not dir_selected:
+        def helper_func(reason: str) -> Tuple[bool, str, str]:
             self.move_game.setEnabled(False)
-            return False, str(), self.tr("You need to provide a directory.")
+            return False, dir_selected, self.tr(reason)
+
+        if not self.install_path or not dir_selected:
+            return helper_func("You need to provide a directory.")
 
         current_path = Path(self.install_path)
         destination_path = Path(dir_selected)
         destination_path_with_suffix = destination_path.joinpath(current_path.stem)
 
         if current_path == destination_path or current_path == destination_path_with_suffix:
-            self.move_game.setEnabled(False)
-            return False, dir_selected, self.tr("Same directory or parent directory selected.")
+            return helper_func("Same directory or parent directory selected.")
+
+        if self.overwrite_checkbox.checkState() == Qt.Unchecked:
+            for i in list(destination_path.iterdir()):
+                if current_path.stem in str(i):
+                    return helper_func("Directory already exists.")
 
         if not destination_path.is_dir():
-            self.move_game.setEnabled(False)
-            return False, dir_selected, self.tr("Directory doesn't exist or file selected.")
+            return helper_func("Directory doesn't exist or file selected.")
 
         if not os.access(dir_selected, os.W_OK):
-            self.move_game.setEnabled(False)
-            return (
-                False,
-                dir_selected,
-                self.tr("No write permission on destination path."),
-            )
+            return helper_func("No write permission on destination path.")
 
         if not platform.system() == "Windows":
             if self.find_mount(destination_path) != self.find_mount(current_path):
-                self.move_game.setEnabled(False)
-                return (
-                    False,
-                    dir_selected,
-                    self.tr("Moving to a different drive is currently not supported."),
-                )
+                return helper_func("Moving to a different drive is currently not supported.")
             else:
                 self.move_game.setEnabled(True)
                 return True, dir_selected, str()
         else:
             if current_path.drive != destination_path.drive:
-                self.move_game.setEnabled(False)
-                return (
-                    False,
-                    dir_selected,
-                    self.tr("Moving to a different drive is currently not supported."),
-                )
+                return helper_func("Moving to a different drive is currently not supported.")
 
         # Fallback
         self.move_game.setEnabled(True)
