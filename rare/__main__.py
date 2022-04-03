@@ -58,13 +58,13 @@ def main():
     if args.desktop_shortcut:
         from rare.utils import utils
 
-        utils.create_rare_desktop_link("desktop")
+        utils.create_desktop_link(type_of_link="desktop", for_rare=True)
         print("Link created")
 
     if args.startmenu_shortcut:
         from rare.utils import utils
 
-        utils.create_rare_desktop_link("start_menu")
+        utils.create_desktop_link(type_of_link="start_menu", for_rare=True)
         print("link created")
 
     if args.version:

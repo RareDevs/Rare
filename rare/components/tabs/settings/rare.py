@@ -4,7 +4,7 @@ import subprocess
 import sys
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, Qt
+from PyQt5.QtCore import QSettings, QStandardPaths, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
@@ -113,16 +113,14 @@ class RareSettings(QWidget, Ui_RareSettings):
             lambda: self.settings.setValue("show_console", self.log_games.isChecked())
         )
 
+        desktop = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
+        applications = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
         if platform.system() == "Linux":
-            self.desktop_file = os.path.expanduser("~/Desktop/Rare.desktop")
-            self.start_menu_link = os.path.expanduser(
-                "~/.local/share/applications/Rare.desktop"
-            )
+            self.desktop_file = os.path.join(desktop, "Rare.desktop")
+            self.start_menu_link = os.path.join(applications, "Rare.desktop")
         elif platform.system() == "Windows":
-            self.desktop_file = os.path.expanduser("~/Desktop/Rare.lnk")
-            self.start_menu_link = os.path.expandvars(
-                "%appdata%\\Microsoft\\Windows\\Start Menu\\Rare.lnk"
-            )
+            self.desktop_file = os.path.join(desktop, "Rare.lnk")
+            self.start_menu_link = os.path.join(applications, "..", "Rare.lnk")
         else:
             self.desktop_link_btn.setText(self.tr("Not supported"))
             self.desktop_link_btn.setDisabled(True)
@@ -162,7 +160,7 @@ class RareSettings(QWidget, Ui_RareSettings):
     def create_start_menu_link(self):
         try:
             if not os.path.exists(self.start_menu_link):
-                utils.create_rare_desktop_link("start_menu")
+                utils.create_desktop_link(type_of_link="start_menu", for_rare=True)
                 self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
             else:
                 os.remove(self.start_menu_link)
@@ -178,7 +176,7 @@ class RareSettings(QWidget, Ui_RareSettings):
     def create_desktop_link(self):
         try:
             if not os.path.exists(self.desktop_file):
-                utils.create_rare_desktop_link("desktop")
+                utils.create_desktop_link(type_of_link="desktop", for_rare=True)
                 self.desktop_link_btn.setText(self.tr("Remove Desktop link"))
             else:
                 os.remove(self.desktop_file)

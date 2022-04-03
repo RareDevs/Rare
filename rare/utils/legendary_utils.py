@@ -3,7 +3,7 @@ import platform
 import shutil
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QCoreApplication, QObject, QRunnable
+from PyQt5.QtCore import pyqtSignal, QCoreApplication, QObject, QRunnable, QStandardPaths
 
 from legendary.core import LegendaryCore
 from legendary.models.game import VerifyResult
@@ -20,31 +20,26 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
     igame = core.get_installed_game(app_name)
 
     # remove shortcuts link
+    desktop = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
+    applications = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
     if platform.system() == "Linux":
-        if os.path.exists(os.path.expanduser(f"~/Desktop/{igame.title}.desktop")):
-            os.remove(os.path.expanduser(f"~/Desktop/{igame.title}.desktop"))
-        if os.path.exists(
-            os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop")
-        ):
-            os.remove(
-                os.path.expanduser(f"~/.local/share/applications/{igame.title}.desktop")
-            )
+        desktop_shortcut = os.path.join(desktop, f"{igame.title}.desktop")
+        if os.path.exists(desktop_shortcut):
+            os.remove(desktop_shortcut)
+
+        applications_shortcut = os.path.join(applications, f"{igame.title}.desktop")
+        if os.path.exists(applications_shortcut):
+            os.remove(applications_shortcut)
 
     elif platform.system() == "Windows":
-        if os.path.exists(
-            os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk")
-        ):
-            os.remove(os.path.expanduser(f"~/Desktop/{igame.title.split(':')[0]}.lnk"))
-        elif os.path.exists(
-            os.path.expandvars(
-                f"%appdata%/Microsoft/Windows/Start Menu/{igame.title.split(':')[0]}.lnk"
-            )
-        ):
-            os.remove(
-                os.path.expandvars(
-                    f"%appdata%/Microsoft/Windows/Start Menu/{igame.title.split(':')[0]}.lnk"
-                )
-            )
+        game_title = igame.title.split(":")[0]
+        desktop_shortcut = os.path.join(desktop, f"{game_title}.lnk")
+        if os.path.exists(desktop_shortcut):
+            os.remove(desktop_shortcut)
+
+        start_menu_shortcut = os.path.join(applications, "..", f"{game_title}.lnk")
+        if os.path.exists(start_menu_shortcut):
+            os.remove(start_menu_shortcut)
 
     try:
         # Remove DLC first so directory is empty when game uninstall runs
