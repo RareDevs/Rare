@@ -350,7 +350,7 @@ class MoveGamePopUp(QWidget):
         if self.overwrite_checkbox.checkState() == Qt.Unchecked:
             for i in list(destination_path.iterdir()):
                 if current_path.stem in str(i):
-                    return helper_func("Directory already exists.")
+                    return helper_func("Directory or a file with the same name already exists.")
 
         if not os.access(dir_selected, os.W_OK):
             return helper_func("No write permission on destination path.")
@@ -360,13 +360,16 @@ class MoveGamePopUp(QWidget):
                 return helper_func(
                     "Moving to a different drive is currently not supported."
                 )
-            else:
-                self.move_game.setEnabled(True)
-                return True, dir_selected, str()
         else:
             if current_path.drive != destination_path.drive:
                 return helper_func(
                     "Moving to a different drive is currently not supported."
+                )
+
+        for game in self.core.get_installed_list():
+            if game.install_path in dir_selected:
+                return helper_func(
+                    "Game installations cannot be nested due to unintended sideeffects."
                 )
 
         # Fallback
