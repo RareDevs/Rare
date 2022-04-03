@@ -183,7 +183,11 @@ class GameInfo(QWidget, Ui_GameInfo):
         if self.move_game_pop_up.overwrite_checkbox.checkState() == Qt.Checked:
             warn_msg = QMessageBox()
             warn_msg.setText(self.tr("The directory already exists."))
-            warn_msg.setInformativeText(self.tr("Do you really want to overwrite it? This may cause loosing files."))
+            warn_msg.setInformativeText(
+                self.tr(
+                    "Do you really want to overwrite it? This may cause loosing files."
+                )
+            )
             warn_msg.addButton(QPushButton(self.tr("Yes")), QMessageBox.YesRole)
             warn_msg.addButton(QPushButton(self.tr("No")), QMessageBox.NoRole)
 
@@ -334,7 +338,13 @@ class MoveGamePopUp(QWidget):
         destination_path = Path(dir_selected)
         destination_path_with_suffix = destination_path.joinpath(current_path.stem)
 
-        if current_path == destination_path or current_path == destination_path_with_suffix:
+        if not destination_path.is_dir():
+            return helper_func("Directory doesn't exist or file selected.")
+
+        if (
+            current_path == destination_path
+            or current_path == destination_path_with_suffix
+        ):
             return helper_func("Same directory or parent directory selected.")
 
         if self.overwrite_checkbox.checkState() == Qt.Unchecked:
@@ -342,21 +352,22 @@ class MoveGamePopUp(QWidget):
                 if current_path.stem in str(i):
                     return helper_func("Directory already exists.")
 
-        if not destination_path.is_dir():
-            return helper_func("Directory doesn't exist or file selected.")
-
         if not os.access(dir_selected, os.W_OK):
             return helper_func("No write permission on destination path.")
 
         if not platform.system() == "Windows":
             if self.find_mount(destination_path) != self.find_mount(current_path):
-                return helper_func("Moving to a different drive is currently not supported.")
+                return helper_func(
+                    "Moving to a different drive is currently not supported."
+                )
             else:
                 self.move_game.setEnabled(True)
                 return True, dir_selected, str()
         else:
             if current_path.drive != destination_path.drive:
-                return helper_func("Moving to a different drive is currently not supported.")
+                return helper_func(
+                    "Moving to a different drive is currently not supported."
+                )
 
         # Fallback
         self.move_game.setEnabled(True)
