@@ -89,6 +89,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         index = self.move_stack.addWidget(self.widget_container)
         self.move_stack.setCurrentIndex(index)
         self.move_game_pop_up.move_clicked.connect(self.move_game)
+        self.move_game_pop_up.browse_done.connect(self.show_menu_after_browse)
 
     def uninstall(self):
         if self.game_utils.uninstall_game(self.game.app_name):
@@ -185,7 +186,7 @@ class GameInfo(QWidget, Ui_GameInfo):
             warn_msg.setText(self.tr("The directory already exists."))
             warn_msg.setInformativeText(
                 self.tr(
-                    "Do you really want to overwrite it? This may cause loosing files."
+                    "Do you really want to overwrite it? This will delete the folder!"
                 )
             )
             warn_msg.addButton(QPushButton(self.tr("Yes")), QMessageBox.YesRole)
@@ -207,6 +208,9 @@ class GameInfo(QWidget, Ui_GameInfo):
 
         self.move_game_pop_up.refresh_indicator()
         progress_of_moving.setValue(100)
+
+    def show_menu_after_browse(self):
+        self.move_button.showMenu()
 
     def update_game(self, app_name: str):
         self.game = self.core.get_game(app_name)
@@ -283,6 +287,7 @@ class GameInfo(QWidget, Ui_GameInfo):
 
 class MoveGamePopUp(QWidget):
     move_clicked = pyqtSignal(str)
+    browse_done = pyqtSignal()
 
     def __init__(self):
         super(MoveGamePopUp, self).__init__()
@@ -292,23 +297,33 @@ class MoveGamePopUp(QWidget):
         self.move_path_edit = PathEdit(
             str(), QFileDialog.Directory, edit_func=self.edit_func_move_game
         )
-        self.move_game = QPushButton(self.tr("Move"))
-        self.move_game.clicked.connect(self.emit_signal)
+        self.move_path_edit.path_select.clicked.connect(self.emit_browse_done_signal)
 
-        self.overwrite_checkbox = QCheckBox(self.tr("Overwrite folder"))
+        self.move_game = QPushButton(self.tr("Move"))
+        self.move_game.setMaximumWidth(50)
+        self.move_game.clicked.connect(self.emit_move_game_signal)
+
+        self.overwrite_checkbox = QCheckBox(
+            self.tr("Directory already exists, overwrite it?")
+        )
+        self.overwrite_checkbox.setHidden(True)
         self.overwrite_checkbox.stateChanged.connect(self.refresh_indicator)
 
         bottom_layout = QHBoxLayout()
-        bottom_layout.addWidget(self.move_game)
+        bottom_layout.setAlignment(Qt.AlignRight)
         bottom_layout.addWidget(self.overwrite_checkbox, stretch=1)
+        bottom_layout.addWidget(self.move_game)
 
         layout.addWidget(self.move_path_edit)
         layout.addLayout(bottom_layout)
 
         self.setLayout(layout)
 
-    def emit_signal(self):
+    def emit_move_game_signal(self):
         self.move_clicked.emit(self.move_path_edit.text())
+
+    def emit_browse_done_signal(self):
+        self.browse_done.emit()
 
     def refresh_indicator(self):
         # needed so the edit_func gets run again
@@ -327,6 +342,8 @@ class MoveGamePopUp(QWidget):
         return mount_point
 
     def edit_func_move_game(self, dir_selected):
+        self.overwrite_checkbox.setHidden(True)
+
         def helper_func(reason: str) -> Tuple[bool, str, str]:
             self.move_game.setEnabled(False)
             return False, dir_selected, self.tr(reason)
@@ -350,7 +367,10 @@ class MoveGamePopUp(QWidget):
         if self.overwrite_checkbox.checkState() == Qt.Unchecked:
             for i in list(destination_path.iterdir()):
                 if current_path.stem in str(i):
-                    return helper_func("Directory or a file with the same name already exists.")
+                    self.overwrite_checkbox.setHidden(False)
+                    return helper_func(
+                        "Directory or a file with the same name already exists."
+                    )
 
         if not os.access(dir_selected, os.W_OK):
             return helper_func("No write permission on destination path.")
