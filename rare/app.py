@@ -6,8 +6,9 @@ import shutil
 import sys
 import time
 import traceback
+from datetime import datetime
 
-from PyQt5.QtCore import QThreadPool, QSettings, QTranslator
+from PyQt5.QtCore import QThreadPool, QSettings, QTranslator, QTimer
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
@@ -151,6 +152,21 @@ class App(QApplication):
         self.launch_dialog.start_app.connect(self.launch_dialog.close)
 
         self.launch_dialog.login()
+
+        dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1])
+        dt_now = datetime.utcnow()
+        td = abs(dt_exp - dt_now)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.re_login)
+        self.timer.start(int(td.total_seconds() * 1000 - 60))
+
+    def re_login(self):
+        logger.info("Session expires shortly. Renew session")
+        self.core.login()
+        dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1])
+        dt_now = datetime.utcnow()
+        td = abs(dt_exp - dt_now)
+        self.timer.start(int(td.total_seconds() * 1000 - 60))
 
     def show_mainwindow(self):
         if self.window_launched:

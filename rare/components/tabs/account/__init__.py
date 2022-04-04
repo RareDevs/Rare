@@ -9,8 +9,8 @@ class MiniWidget(QWidget):
     def __init__(self):
         super(MiniWidget, self).__init__()
         self.layout = QVBoxLayout()
-        self.core = shared.core()
-        self.signals = shared.core()
+        self.core = shared.core
+        self.signals = shared.signals
         self.layout.addWidget(QLabel("Account"))
         username = self.core.lgd.userdata.get("display_name")
         if not username:
