@@ -120,7 +120,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.thread_pool.start(cloud_worker)
 
         else:
-            self.finished = 2
+            self.finished = 1
             if self.core.lgd.assets:
                 (
                     self.api_results.game_list,

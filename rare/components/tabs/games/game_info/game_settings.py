@@ -138,8 +138,15 @@ class GameSettings(QWidget, Ui_GameSettings):
                 self.core.is_installed(self.game.app_name)
                 and self.game.supports_cloud_saves
         ):
+            if platform.system() != "Windows"\
+                    and not os.path.exists(self.core.get_app_environment(self.game.app_name).get("WINEPREFIX", "")):
+                QMessageBox.warning(None, "Warning", self.tr("Could not compute save path, if no wine prefix is set, or if it does not exist"))
+                return
             try:
                 new_path = self.core.get_save_path(self.game.app_name)
+                if not os.path.exists(new_path):
+                    raise Exception()
+                logger.info(f"Found savepath from legendary: {new_path}")
             except Exception as e:
                 logger.warning(str(e))
                 self.cloud_save_path_edit.setText(self.tr("Loading"))

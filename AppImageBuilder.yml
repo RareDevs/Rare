@@ -50,7 +50,7 @@ AppDir:
       - python3-pyqt5.qtsvg
       - python3-psutil
       - python3-requests
-
+      - qtwayland5
 
   runtime:
     env:
