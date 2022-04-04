@@ -1,9 +1,5 @@
 import os
 
-__version__ = "1.8.7"
-
-code_name = "Stellula Kakopo"
-
 from PyQt5.QtCore import QStandardPaths
 
 resources_path = os.path.join(os.path.dirname(__file__), "../resources/")
