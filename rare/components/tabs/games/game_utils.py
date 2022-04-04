@@ -27,10 +27,14 @@ class GameProcess(QProcess):
     def __init__(self, app_name):
         super(GameProcess, self).__init__()
         self.app_name = app_name
+        self.finished.connect(self._game_finished)
+
+    def _game_finished(self, exit_code):
         try:
-            self.finished.connect(lambda x: self.game_finished.emit(x, self.app_name))
+            self.game_finished.emit(exit_code, self.app_name)
         except RuntimeError:  # Do not raise an exception, if rare finished, but game not
             pass
+
 
 
 @dataclass
