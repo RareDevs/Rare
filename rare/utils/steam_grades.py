@@ -5,8 +5,8 @@ from datetime import date
 
 import requests
 from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, QCoreApplication
-
 from legendary.core import LegendaryCore
+
 from rare import data_dir, cache_dir, shared
 
 replace_chars = ",;.:-_ "
@@ -15,16 +15,15 @@ file = os.path.join(cache_dir, "game_list.json")
 url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 
 
-class SteamSignals(QObject):
-    rating_signal = pyqtSignal(str)
-
-
 class SteamWorker(QRunnable):
-    app_name = ""
+    class Signals(QObject):
+        rating_signal = pyqtSignal(str)
+
+    app_name: str = ""
 
     def __init__(self, core: LegendaryCore):
         super(SteamWorker, self).__init__()
-        self.signals = SteamSignals()
+        self.signals = SteamWorker.Signals()
         self.core = core
         _tr = QCoreApplication.translate
         self.ratings = {
@@ -46,11 +45,21 @@ class SteamWorker(QRunnable):
         )
 
 
+__steam_ids_json = None
+__grades_json = None
+
+
 def get_rating(app_name: str):
-    if os.path.exists(p := os.path.join(data_dir, "steam_ids.json")):
-        grades = json.load(open(p))
+    global __grades_json
+    if __grades_json is None:
+        if os.path.exists(p := os.path.join(data_dir, "steam_ids.json")):
+            grades = json.loads(open(p).read())
+            __grades_json = grades
+        else:
+            grades = {}
+            __grades_json = grades
     else:
-        grades = {}
+        grades = __grades_json
 
     if not grades.get(app_name):
         if shared.args.offline:
@@ -103,18 +112,25 @@ def load_json() -> dict:
 def get_steam_id(title: str):
     # workarounds for satisfactory
     title = title.replace("Early Access", "").replace("Experimental", "").strip()
-    if not os.path.exists(file):
-        response = requests.get(url)
-        ids = {}
-        steam_ids = json.loads(response.text)["applist"]["apps"]
-        for game in steam_ids:
-            ids[game["name"]] = game["appid"]
+    global __steam_ids_json
+    if __steam_ids_json is None:
+        if not os.path.exists(file):
+            response = requests.get(url)
+            ids = {}
+            steam_ids = json.loads(response.text)["applist"]["apps"]
+            for game in steam_ids:
+                ids[game["name"]] = game["appid"]
+            __steam_ids_json = ids
 
-        with open(file, "w") as f:
-            f.write(json.dumps(ids))
-            f.close()
+            with open(file, "w") as f:
+                f.write(json.dumps(ids))
+                f.close()
+        else:
+            ids = json.loads(open(file, "r").read())
+            __steam_ids_json = ids
     else:
-        ids = json.loads(open(file, "r").read())
+        ids = __steam_ids_json
+
     if title in ids.keys():
         steam_name = [title]
 
@@ -128,9 +144,7 @@ def get_steam_id(title: str):
 
 def check_time():  # this function check if it's time to update
     global file
-    text = open(file, "r")
-    json_table = json.load(text)
-    text.close()
+    json_table = json.loads(open(file, "r").read())
 
     today = date.today()
     day = 0  # it controls how many days it's necessary for an update
