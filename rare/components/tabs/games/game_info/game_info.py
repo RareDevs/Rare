@@ -349,8 +349,6 @@ class MoveGamePopUp(QWidget):
         return mount_point
 
     def edit_func_move_game(self, dir_selected):
-        self.overwrite_checkbox.setHidden(True)
-
         def helper_func(reason: str) -> Tuple[bool, str, str]:
             self.move_game.setEnabled(False)
             return False, dir_selected, self.tr(reason)
@@ -381,10 +379,10 @@ class MoveGamePopUp(QWidget):
                 "You can't select a directory that is inside the current install path."
             )
 
-        if current_path.parent != destination_path.parent:
-            for i in list(destination_path.iterdir()):
-                if current_path.stem in i.stem:
-                    self.overwrite_checkbox.setHidden(False)
+        if str(destination_path_with_suffix) in str(current_path):
+            return helper_func(
+                "You can't select a directory which contains the game installation."
+            )
 
         if self.overwrite_checkbox.checkState() == Qt.Unchecked:
             for i in list(destination_path.iterdir()):
