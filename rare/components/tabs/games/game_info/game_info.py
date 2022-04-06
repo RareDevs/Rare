@@ -364,6 +364,9 @@ class MoveGamePopUp(QWidget):
             current_path.stem
         ).resolve()
 
+        if not os.access(dir_selected, os.W_OK) or not os.access(self.install_path, os.W_OK):
+            return helper_func("No write permission on destination path/current install path.")
+
         if not destination_path.is_dir():
             return helper_func("Directory doesn't exist or file selected.")
 
@@ -378,21 +381,18 @@ class MoveGamePopUp(QWidget):
                 "You can't select a directory that is inside the current install path."
             )
 
-        if current_path.parents[0] != destination_path.parents[0]:
+        if current_path.parent != destination_path.parent:
             for i in list(destination_path.iterdir()):
-                if current_path.stem in str(i):
+                if current_path.stem in i.stem:
                     self.overwrite_checkbox.setHidden(False)
 
         if self.overwrite_checkbox.checkState() == Qt.Unchecked:
             for i in list(destination_path.iterdir()):
-                if current_path.stem in str(i):
+                if current_path.stem in i.stem:
                     self.overwrite_checkbox.setHidden(False)
                     return helper_func(
                         "Directory or a file with the same name already exists."
                     )
-
-        if not os.access(dir_selected, os.W_OK):
-            return helper_func("No write permission on destination path.")
 
         if not platform.system() == "Windows":
             if self.find_mount(destination_path) != self.find_mount(current_path):
