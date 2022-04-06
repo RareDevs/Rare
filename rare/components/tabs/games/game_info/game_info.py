@@ -199,7 +199,10 @@ class GameInfo(QWidget, Ui_GameInfo):
                 if destination_path_with_suffix.is_dir():
                     shutil.rmtree(destination_path_with_suffix)
                 else:
-                    destination_path_with_suffix.unlink()
+                    if destination_path_with_suffix.is_file():
+                        destination_path_with_suffix.unlink()
+                    else:
+                        destination_path.unlink()
             else:
                 return
 
