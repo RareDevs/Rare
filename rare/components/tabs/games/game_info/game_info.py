@@ -183,7 +183,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         progress_of_moving = QProgressBar(self)
         progress_of_moving.setValue(0)
 
-        for i in list(destination_path.iterdir()):
+        for i in destination_path.iterdir():
             if install_path.stem in i.stem:
                 warn_msg = QMessageBox()
                 warn_msg.setText(self.tr("Destination file/directory exists."))
@@ -381,7 +381,7 @@ class MoveGamePopUp(QWidget):
                 "You can't select a directory which contains the game installation."
             )
 
-        for i in list(destination_path.iterdir()):
+        for i in destination_path.iterdir():
             if current_path.stem in i.stem:
                 pass
 
@@ -402,7 +402,7 @@ class MoveGamePopUp(QWidget):
                     "Game installations cannot be nested due to unintended sideeffects."
                 )
 
-        for i in list(destination_path.iterdir()):
+        for i in destination_path.iterdir():
             if current_path.stem in i.stem:
                 self.warn_overwriting.setHidden(False)
 
