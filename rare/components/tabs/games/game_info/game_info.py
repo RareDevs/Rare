@@ -359,11 +359,11 @@ class MoveGamePopUp(QWidget):
             current_path.stem
         ).resolve()
 
-        if not os.access(dir_selected, os.W_OK) or not os.access(self.install_path, os.W_OK):
-            return helper_func("No write permission on destination path/current install path.")
-
         if not destination_path.is_dir():
             return helper_func("Directory doesn't exist or file selected.")
+
+        if not os.access(dir_selected, os.W_OK) or not os.access(self.install_path, os.W_OK):
+            return helper_func("No write permission on destination path/current install path.")
 
         if (
             current_path == destination_path
