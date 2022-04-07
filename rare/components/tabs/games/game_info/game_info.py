@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QFileDialog,
     QHBoxLayout,
+    QLabel,
     QMenu,
     QProgressBar,
     QPushButton,
@@ -173,38 +174,37 @@ class GameInfo(QWidget, Ui_GameInfo):
 
     @pyqtSlot(str)
     def move_game(self, destination_path):
+        destination_path = Path(destination_path)
         install_path = Path(self.igame.install_path)
-        destination_path_with_suffix = Path(destination_path).joinpath(
+        destination_path_with_suffix = destination_path.joinpath(
             install_path.stem
         )
 
         progress_of_moving = QProgressBar(self)
         progress_of_moving.setValue(0)
 
-        if self.move_game_pop_up.overwrite_checkbox.checkState() == Qt.Checked:
-            warn_msg = QMessageBox()
-            warn_msg.setText(self.tr("Destination file/directory exists."))
-            warn_msg.setInformativeText(
-                self.tr(
-                    "Do you really want to overwrite it? This will delete the file/directory!"
+        for i in list(destination_path.iterdir()):
+            if install_path.stem in i.stem:
+                warn_msg = QMessageBox()
+                warn_msg.setText(self.tr("Destination file/directory exists."))
+                warn_msg.setInformativeText(
+                    self.tr(
+                        "Do you really want to overwrite it? This will delete {}"
+                    ).format(destination_path_with_suffix)
                 )
-            )
-            warn_msg.addButton(QPushButton(self.tr("Yes")), QMessageBox.YesRole)
-            warn_msg.addButton(QPushButton(self.tr("No")), QMessageBox.NoRole)
+                warn_msg.addButton(QPushButton(self.tr("Yes")), QMessageBox.YesRole)
+                warn_msg.addButton(QPushButton(self.tr("No")), QMessageBox.NoRole)
 
-            response = warn_msg.exec()
+                response = warn_msg.exec()
 
-            if response == 0:
-                # Here we use shutil, since we can remove not empty directories.
-                if destination_path_with_suffix.is_dir():
-                    shutil.rmtree(destination_path_with_suffix)
-                else:
-                    if destination_path_with_suffix.is_file():
-                        destination_path_with_suffix.unlink()
+                if response == 0:
+                    # Not using pathlib, since we can't delete not-empty folders. With shutil we can.
+                    if destination_path_with_suffix.is_dir():
+                        shutil.rmtree(destination_path_with_suffix)
                     else:
-                        destination_path.unlink()
-            else:
-                return
+                        destination_path_with_suffix.unlink()
+                else:
+                    return
 
         shutil.move(self.igame.install_path, destination_path)
 
@@ -214,8 +214,6 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.move_game_pop_up.install_path = self.igame.install_path
 
         self.move_game_pop_up.refresh_indicator()
-        self.move_game_pop_up.overwrite_checkbox.setHidden(True)
-        self.move_game_pop_up.overwrite_checkbox.setChecked(False)
         progress_of_moving.setValue(100)
 
     def show_menu_after_browse(self):
@@ -312,16 +310,11 @@ class MoveGamePopUp(QWidget):
         self.move_game.setMaximumWidth(50)
         self.move_game.clicked.connect(self.emit_move_game_signal)
 
-        self.overwrite_checkbox = QCheckBox()
-        self.overwrite_checkbox.setText(
-            self.tr("File/directory already exists, overwrite it?")
-        )
-        self.overwrite_checkbox.setHidden(True)
-        self.overwrite_checkbox.stateChanged.connect(self.refresh_indicator)
+        self.warn_overwriting = QLabel(self.tr("This operation will overwrite the existing directory/file."))
 
         bottom_layout = QHBoxLayout()
         bottom_layout.setAlignment(Qt.AlignRight)
-        bottom_layout.addWidget(self.overwrite_checkbox, stretch=1)
+        bottom_layout.addWidget(self.warn_overwriting, stretch=1)
         bottom_layout.addWidget(self.move_game)
 
         layout.addWidget(self.move_path_edit)
@@ -352,6 +345,7 @@ class MoveGamePopUp(QWidget):
         return mount_point
 
     def edit_func_move_game(self, dir_selected):
+        self.warn_overwriting.setHidden(True)
         def helper_func(reason: str) -> Tuple[bool, str, str]:
             self.move_game.setEnabled(False)
             return False, dir_selected, self.tr(reason)
@@ -387,13 +381,9 @@ class MoveGamePopUp(QWidget):
                 "You can't select a directory which contains the game installation."
             )
 
-        if self.overwrite_checkbox.checkState() == Qt.Unchecked:
-            for i in list(destination_path.iterdir()):
-                if current_path.stem in i.stem:
-                    self.overwrite_checkbox.setHidden(False)
-                    return helper_func(
-                        "Directory or a file with the same name already exists."
-                    )
+        for i in list(destination_path.iterdir()):
+            if current_path.stem in i.stem:
+                pass
 
         if not platform.system() == "Windows":
             if self.find_mount(destination_path) != self.find_mount(current_path):
@@ -411,6 +401,10 @@ class MoveGamePopUp(QWidget):
                 return helper_func(
                     "Game installations cannot be nested due to unintended sideeffects."
                 )
+
+        for i in list(destination_path.iterdir()):
+            if current_path.stem in i.stem:
+                self.warn_overwriting.setHidden(False)
 
         # Fallback
         self.move_game.setEnabled(True)
