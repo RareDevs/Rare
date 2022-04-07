@@ -381,10 +381,6 @@ class MoveGamePopUp(QWidget):
                 "You can't select a directory which contains the game installation."
             )
 
-        for i in destination_path.iterdir():
-            if current_path.stem in i.stem:
-                pass
-
         if not platform.system() == "Windows":
             if self.find_mount(destination_path) != self.find_mount(current_path):
                 return helper_func(
