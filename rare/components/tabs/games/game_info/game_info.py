@@ -310,7 +310,7 @@ class MoveGamePopUp(QWidget):
         self.move_game.setMaximumWidth(50)
         self.move_game.clicked.connect(self.emit_move_game_signal)
 
-        self.warn_overwriting = QLabel(self.tr("This operation will overwrite the existing directory/file."))
+        self.warn_overwriting = QLabel()
 
         bottom_layout = QHBoxLayout()
         bottom_layout.setAlignment(Qt.AlignRight)
@@ -412,3 +412,4 @@ class MoveGamePopUp(QWidget):
             return
         self.install_path = igame.install_path
         self.move_path_edit.setText(igame.install_path)
+        self.warn_overwriting.setText(self.tr("Moving here will overwrite the dir/file {}/").format(Path(self.install_path).stem))
