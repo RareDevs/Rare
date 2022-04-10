@@ -1,8 +1,8 @@
 import os
-
+import pathlib
 from PyQt5.QtCore import QStandardPaths
 
-resources_path = os.path.join(os.path.dirname(__file__), "../resources/")
+resources_path = pathlib.Path(__file__).absolute().parent.parent.joinpath("resources")
 data_dir = os.path.join(QStandardPaths.writableLocation(QStandardPaths.DataLocation), "rare")
 cache_dir = os.path.join(QStandardPaths.writableLocation(QStandardPaths.CacheLocation), "rare")
 image_dir = os.path.join(data_dir, "images")
