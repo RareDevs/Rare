@@ -1,13 +1,33 @@
 import os
 import platform
+import shutil
+from pathlib import Path
 from logging import getLogger
+from typing import Tuple
 
-from PyQt5.QtCore import pyqtSignal, QThreadPool
-from PyQt5.QtWidgets import QWidget, QMessageBox
+from PyQt5.QtCore import Qt, pyqtSignal, QThreadPool, pyqtSlot
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QMenu,
+    QProgressBar,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+    QMessageBox,
+    QWidgetAction,
+)
 
 from legendary.models.game import Game, InstalledGame
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
+from rare.shared import (
+    LegendaryCoreSingleton,
+    GlobalSignalsSingleton,
+    ArgumentsSingleton,
+)
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
+from rare.utils.extra_widgets import PathEdit
 from rare.utils.legendary_utils import VerifyWorker
 from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
@@ -53,7 +73,24 @@ class GameInfo(QWidget, Ui_GameInfo):
         else:
             self.repair_button.clicked.connect(self.repair)
 
-        self.install_button.clicked.connect(lambda: self.game_utils.launch_game(self.game.app_name))
+        self.install_button.clicked.connect(
+            lambda: self.game_utils.launch_game(self.game.app_name)
+        )
+
+        self.move_game_pop_up = MoveGamePopUp()
+        self.move_action = QWidgetAction(self)
+        self.move_action.setDefaultWidget(self.move_game_pop_up)
+        self.move_button.setMenu(QMenu())
+        self.move_button.menu().addAction(self.move_action)
+        self.widget_container = QWidget()
+        box_layout = QHBoxLayout()
+        box_layout.setContentsMargins(0, 0, 0, 0)
+        box_layout.addWidget(self.move_button)
+        self.widget_container.setLayout(box_layout)
+        index = self.move_stack.addWidget(self.widget_container)
+        self.move_stack.setCurrentIndex(index)
+        self.move_game_pop_up.move_clicked.connect(self.move_game)
+        self.move_game_pop_up.browse_done.connect(self.show_menu_after_browse)
 
     def uninstall(self):
         if self.game_utils.uninstall_game(self.game.app_name):
@@ -135,6 +172,53 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
 
+    @pyqtSlot(str)
+    def move_game(self, destination_path):
+        destination_path = Path(destination_path)
+        install_path = Path(self.igame.install_path)
+        destination_path_with_suffix = destination_path.joinpath(
+            install_path.stem
+        )
+
+        progress_of_moving = QProgressBar(self)
+        progress_of_moving.setValue(0)
+
+        for i in destination_path.iterdir():
+            if install_path.stem in i.stem:
+                warn_msg = QMessageBox()
+                warn_msg.setText(self.tr("Destination file/directory exists."))
+                warn_msg.setInformativeText(
+                    self.tr(
+                        "Do you really want to overwrite it? This will delete {}"
+                    ).format(destination_path_with_suffix)
+                )
+                warn_msg.addButton(QPushButton(self.tr("Yes")), QMessageBox.YesRole)
+                warn_msg.addButton(QPushButton(self.tr("No")), QMessageBox.NoRole)
+
+                response = warn_msg.exec()
+
+                if response == 0:
+                    # Not using pathlib, since we can't delete not-empty folders. With shutil we can.
+                    if destination_path_with_suffix.is_dir():
+                        shutil.rmtree(destination_path_with_suffix)
+                    else:
+                        destination_path_with_suffix.unlink()
+                else:
+                    return
+
+        shutil.move(self.igame.install_path, destination_path)
+
+        self.install_path.setText(str(destination_path_with_suffix))
+        self.igame.install_path = str(destination_path_with_suffix)
+        self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
+        self.move_game_pop_up.install_path = self.igame.install_path
+
+        self.move_game_pop_up.refresh_indicator()
+        progress_of_moving.setValue(100)
+
+    def show_menu_after_browse(self):
+        self.move_button.showMenu()
+
     def update_game(self, app_name: str):
         self.game = self.core.get_game(app_name)
         self.igame = self.core.get_installed_game(self.game.app_name)
@@ -193,13 +277,139 @@ class GameInfo(QWidget, Ui_GameInfo):
             QThreadPool.globalInstance().start(self.steam_worker)
 
         if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(
-                self.game.app_name
+            self.game.app_name
         ):
             self.verify_widget.setCurrentIndex(0)
         elif self.verify_threads.get(self.game.app_name):
             self.verify_widget.setCurrentIndex(1)
             self.verify_progress.setValue(
-                int(self.verify_threads[self.game.app_name].num
+                int(
+                    self.verify_threads[self.game.app_name].num
                     / self.verify_threads[self.game.app_name].total
-                    * 100)
+                    * 100
+                )
             )
+        self.move_game_pop_up.update_game(app_name)
+
+
+class MoveGamePopUp(QWidget):
+    move_clicked = pyqtSignal(str)
+    browse_done = pyqtSignal()
+
+    def __init__(self):
+        super(MoveGamePopUp, self).__init__()
+        layout: QVBoxLayout = QVBoxLayout()
+        self.install_path = str()
+        self.core = LegendaryCoreSingleton()
+        self.move_path_edit = PathEdit(
+            str(), QFileDialog.Directory, edit_func=self.edit_func_move_game
+        )
+        self.move_path_edit.path_select.clicked.connect(self.emit_browse_done_signal)
+
+        self.move_game = QPushButton(self.tr("Move"))
+        self.move_game.setMaximumWidth(50)
+        self.move_game.clicked.connect(self.emit_move_game_signal)
+
+        self.warn_overwriting = QLabel()
+
+        bottom_layout = QHBoxLayout()
+        bottom_layout.setAlignment(Qt.AlignRight)
+        bottom_layout.addWidget(self.warn_overwriting, stretch=1)
+        bottom_layout.addWidget(self.move_game)
+
+        layout.addWidget(self.move_path_edit)
+        layout.addLayout(bottom_layout)
+
+        self.setLayout(layout)
+
+    def emit_move_game_signal(self):
+        self.move_clicked.emit(self.move_path_edit.text())
+
+    def emit_browse_done_signal(self):
+        self.browse_done.emit()
+
+    def refresh_indicator(self):
+        # needed so the edit_func gets run again
+        text = self.move_path_edit.text()
+        self.move_path_edit.setText(str())
+        self.move_path_edit.setText(text)
+
+    # Thanks to lk.
+    def find_mount(self, path):
+        mount_point = path
+        while path != path.anchor:
+            if path.is_mount():
+                return path
+            else:
+                path = path.parent
+        return mount_point
+
+    def edit_func_move_game(self, dir_selected):
+        self.warn_overwriting.setHidden(True)
+        def helper_func(reason: str) -> Tuple[bool, str, str]:
+            self.move_game.setEnabled(False)
+            return False, dir_selected, self.tr(reason)
+
+        if not self.install_path or not dir_selected:
+            return helper_func("You need to provide a directory.")
+
+        current_path = Path(self.install_path).resolve()
+        destination_path = Path(dir_selected).resolve()
+        destination_path_with_suffix = destination_path.joinpath(
+            current_path.stem
+        ).resolve()
+
+        if not destination_path.is_dir():
+            return helper_func("Directory doesn't exist or file selected.")
+
+        if not os.access(dir_selected, os.W_OK) or not os.access(self.install_path, os.W_OK):
+            return helper_func("No write permission on destination path/current install path.")
+
+        if (
+            current_path == destination_path
+            or current_path == destination_path_with_suffix
+        ):
+            return helper_func("Same directory or parent directory selected.")
+
+        if str(current_path) in str(destination_path):
+            return helper_func(
+                "You can't select a directory that is inside the current install path."
+            )
+
+        if str(destination_path_with_suffix) in str(current_path):
+            return helper_func(
+                "You can't select a directory which contains the game installation."
+            )
+
+        if not platform.system() == "Windows":
+            if self.find_mount(destination_path) != self.find_mount(current_path):
+                return helper_func(
+                    "Moving to a different drive is currently not supported."
+                )
+        else:
+            if current_path.drive != destination_path.drive:
+                return helper_func(
+                    "Moving to a different drive is currently not supported."
+                )
+
+        for game in self.core.get_installed_list():
+            if game.install_path in dir_selected:
+                return helper_func(
+                    "Game installations cannot be nested due to unintended sideeffects."
+                )
+
+        for i in destination_path.iterdir():
+            if current_path.stem in i.stem:
+                self.warn_overwriting.setHidden(False)
+
+        # Fallback
+        self.move_game.setEnabled(True)
+        return True, dir_selected, str()
+
+    def update_game(self, app_name):
+        igame = self.core.get_installed_game(app_name, False)
+        if igame is None:
+            return
+        self.install_path = igame.install_path
+        self.move_path_edit.setText(igame.install_path)
+        self.warn_overwriting.setText(self.tr("Moving here will overwrite the dir/file {}/").format(Path(self.install_path).stem))
