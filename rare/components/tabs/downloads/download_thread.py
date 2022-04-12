@@ -1,19 +1,17 @@
 import os
 import platform
 import queue
-import subprocess
 import sys
 import time
 from logging import getLogger
 from queue import Empty
 
 import psutil
-from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QMessageBox
-
+from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from legendary.core import LegendaryCore
 from legendary.models.downloading import UIUpdate, WriterTask
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+
+from rare.shared import GlobalSignalsSingleton
 from rare.utils.models import InstallQueueItemModel
 from rare.utils.utils import create_desktop_link
 
@@ -35,6 +33,7 @@ class DownloadThread(QThread):
         self.repair = queue_item.download.repair
         self.repair_file = queue_item.download.repair_file
         self.queue_item = queue_item
+
         self._kill = False
 
     def run(self):
@@ -67,18 +66,18 @@ class DownloadThread(QThread):
 
                     # clean up all the queues, otherwise this process won't terminate properly
                     for name, q in zip(
-                        (
-                            "Download jobs",
-                            "Writer jobs",
-                            "Download results",
-                            "Writer results",
-                        ),
-                        (
-                            self.dlm.dl_worker_queue,
-                            self.dlm.writer_queue,
-                            self.dlm.dl_result_q,
-                            self.dlm.writer_result_q,
-                        ),
+                            (
+                                    "Download jobs",
+                                    "Writer jobs",
+                                    "Download results",
+                                    "Writer results",
+                            ),
+                            (
+                                    self.dlm.dl_worker_queue,
+                                    self.dlm.writer_queue,
+                                    self.dlm.dl_result_q,
+                                    self.dlm.writer_result_q,
+                            ),
                     ):
                         logger.debug(f'Cleaning up queue "{name}"')
                         try:
@@ -111,14 +110,14 @@ class DownloadThread(QThread):
                     for proc in psutil.process_iter():
                         # check whether the process name matches
                         if (
-                            sys.platform in ["linux", "darwin"]
-                            and proc.name() == "DownloadThread"
+                                sys.platform in ["linux", "darwin"]
+                                and proc.name() == "DownloadThread"
                         ):
                             proc.kill()
                         elif (
-                            sys.platform == "win32"
-                            and proc.name() == "python.exe"
-                            and proc.create_time() >= start_time
+                                sys.platform == "win32"
+                                and proc.name() == "python.exe"
+                                and proc.create_time() >= start_time
                         ):
                             proc.kill()
 
@@ -202,28 +201,23 @@ class DownloadThread(QThread):
         self.status.emit("finish")
 
     def _handle_postinstall(self, postinstall, igame):
-        print("This game lists the following prequisites to be installed:")
-        print(
-            f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}'
-        )
+        logger.info(f"Postinstall info: {postinstall.__dict__}")
         if platform.system() == "Windows":
-            if (
-                QMessageBox.question(
-                    self,
-                    "",
-                    "Do you want to install the prequisites",
-                    QMessageBox.Yes | QMessageBox.No,
-                )
-                == QMessageBox.Yes
-            ):
+            if self.queue_item.options.install_preqs:
                 self.core.prereq_installed(igame.app_name)
                 req_path, req_exec = os.path.split(postinstall["path"])
                 work_dir = os.path.join(igame.install_path, req_path)
                 fullpath = os.path.join(work_dir, req_exec)
-                subprocess.call([fullpath, postinstall["args"]], cwd=work_dir)
+                proc = QProcess()
+                proc.setProcessChannelMode(QProcess.MergedChannels)
+                proc.readyReadStandardOutput.connect(
+                    lambda: logger.debug(
+                        str(proc.readAllStandardOutput().data(), "utf-8", "ignore")
+                    ))
+                proc.start(fullpath, postinstall.get("args", []))
+                proc.waitForFinished()  # wait, because it is inside the thread
             else:
                 self.core.prereq_installed(self.igame.app_name)
-
         else:
             logger.info("Automatic installation not available on Linux.")
 

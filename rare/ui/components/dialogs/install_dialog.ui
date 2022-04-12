@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>324</width>
-    <height>344</height>
+    <height>347</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -190,14 +190,14 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
+   <item row="9" column="0">
     <widget class="QLabel" name="sdl_list_label">
      <property name="text">
       <string>Optional packs</string>
      </property>
     </widget>
    </item>
-   <item row="8" column="1">
+   <item row="9" column="1">
     <widget class="QFrame" name="sdl_list_frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -212,14 +212,14 @@
      </layout>
     </widget>
    </item>
-   <item row="9" column="0">
+   <item row="11" column="0">
     <widget class="QLabel" name="download_size_label">
      <property name="text">
       <string>Download size</string>
      </property>
     </widget>
    </item>
-   <item row="9" column="1">
+   <item row="11" column="1">
     <widget class="QLabel" name="download_size_info_label">
      <property name="font">
       <font>
@@ -231,14 +231,14 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="0">
+   <item row="12" column="0">
     <widget class="QLabel" name="install_size_label">
      <property name="text">
       <string>Total install size</string>
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
+   <item row="12" column="1">
     <widget class="QLabel" name="install_size_info_label">
      <property name="font">
       <font>
@@ -253,7 +253,7 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="1">
+   <item row="13" column="1">
     <widget class="QLabel" name="warn_message">
      <property name="font">
       <font>
@@ -268,14 +268,14 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="0">
+   <item row="13" column="0">
     <widget class="QLabel" name="warn_label">
      <property name="text">
       <string>Warnings</string>
      </property>
     </widget>
    </item>
-   <item row="12" column="0" colspan="2">
+   <item row="14" column="0" colspan="2">
     <layout class="QHBoxLayout" name="button_layout">
      <item>
       <spacer name="button_hspacer">
@@ -312,6 +312,20 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="install_preqs_lbl">
+     <property name="text">
+      <string>Install prerequisites</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QCheckBox" name="install_preqs_check">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

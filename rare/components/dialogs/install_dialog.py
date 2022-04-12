@@ -6,12 +6,12 @@ from typing import Tuple
 from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QMessageBox
-
 from legendary.core import LegendaryCore
 from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
 from legendary.utils.selective_dl import games
-from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton
+
+from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton, ArgumentsSingleton
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.models import InstallDownloadModel, InstallQueueItemModel
@@ -132,10 +132,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.sdl_list_frame.resize(self.sdl_list_frame.minimumSize())
             for cb in self.sdl_list_checks:
                 cb.stateChanged.connect(self.option_changed)
-        except KeyError:
-            self.sdl_list_frame.setVisible(False)
-            self.sdl_list_label.setVisible(False)
-        except AttributeError:
+        except (KeyError, AttributeError):
             self.sdl_list_frame.setVisible(False)
             self.sdl_list_label.setVisible(False)
 
@@ -157,6 +154,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.shortcut_cb.setDisabled(True)
             self.shortcut_cb.setChecked(False)
             self.shortcut_cb.setToolTip(self.tr("Creating a shortcut is not supported on MacOS"))
+
+        self.install_preqs_lbl.setVisible(False)
+        self.install_preqs_check.setVisible(False)
+        self.install_preqs_check.stateChanged.connect(lambda: self.non_reload_option_changed("install_preqs"))
 
         self.non_reload_option_changed("shortcut")
 
@@ -184,7 +185,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.dl_item.options.force = self.force_download_check.isChecked()
         self.dl_item.options.ignore_space_req = self.ignore_space_check.isChecked()
         self.dl_item.options.no_install = self.download_only_check.isChecked()
-        self.dl_item.options.platform = self.platform_combo_box.currentText()
+        self.dl_item.options.install_platform = self.platform_combo_box.currentText()
         self.dl_item.options.sdl_list = [""]
         for cb in self.sdl_list_checks:
             if data := cb.isChecked():
@@ -229,6 +230,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.dl_item.options.no_install = self.download_only_check.isChecked()
         elif option == "shortcut":
             self.dl_item.options.create_shortcut = self.shortcut_cb.isChecked()
+        elif option == "install_preqs":
+            self.dl_item.options.install_preqs = self.install_preqs_check.isChecked()
 
     def cancel_clicked(self):
         self.dl_item.download = None
@@ -262,6 +265,12 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.cancel_button.setEnabled(True)
         if self.silent:
             self.close()
+        if platform.system() == "Windows" or ArgumentsSingleton().debug:
+            if dl_item.igame.prereq_info and not dl_item.igame.prereq_info.get("installed", False):
+                self.install_preqs_check.setVisible(True)
+                self.install_preqs_lbl.setVisible(True)
+                self.install_preqs_check.setText(
+                    self.tr("This will install {}").format(dl_item.igame.prereq_info.get("name", "")))
 
     def on_worker_failed(self, message: str):
         error_text = self.tr("Error")
@@ -330,7 +339,7 @@ class InstallInfoWorker(QRunnable):
                         # override_manifest=,
                         # override_old_manifest=,
                         # override_base_url=,
-                        platform=self.dl_item.options.platform,
+                        platform=self.dl_item.options.install_platform,
                         # file_prefix_filter=,
                         # file_exclude_filter=,
                         # file_install_tag=,

@@ -1,4 +1,5 @@
 import os
+import platform
 from dataclasses import field, dataclass
 from multiprocessing import Queue
 from typing import Union, List
@@ -23,9 +24,10 @@ class InstallOptionsModel:
     sdl_list: list = field(default_factory=lambda: [""])
     update: bool = False
     silent: bool = False
-    platform: str = ""
+    install_platform: str = ""
     overlay: bool = False
     create_shortcut: bool = True
+    install_preqs: bool = platform.system() == "Windows"
 
     def set_no_install(self, enabled: bool) -> None:
         self.no_install = enabled
