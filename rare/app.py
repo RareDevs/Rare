@@ -296,6 +296,8 @@ def start(args):
             level=logging.INFO,
             filename=file_name,
         )
+        logger.info(f"Launching Rare version {rare.__version__}")
+        logger.info(f"Operating System: {platform.system()}")
 
     while True:
         app = App(args)
