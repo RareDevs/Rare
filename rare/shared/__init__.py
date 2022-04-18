@@ -8,7 +8,7 @@ and only ONCE!
 from argparse import Namespace
 from typing import Optional
 
-from legendary.core import LegendaryCore
+from rare.lgndr.core import LegendaryCore
 
 from rare.models.apiresults import ApiResults
 from rare.models.signals import GlobalSignals

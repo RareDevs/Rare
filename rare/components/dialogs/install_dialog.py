@@ -7,7 +7,7 @@ from typing import Tuple
 from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox
-from legendary.core import LegendaryCore
+from rare.lgndr.core import LegendaryCore
 from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
 from legendary.utils.selective_dl import games

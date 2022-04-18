@@ -13,8 +13,8 @@ def main():
     multiprocessing.freeze_support()
 
     # insert legendary for installed via pip/setup.py submodule to path
-    if not __name__ == "__main__":
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "legendary"))
+    # if not __name__ == "__main__":
+    #     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "legendary"))
 
     # CLI Options
     parser = ArgumentParser()

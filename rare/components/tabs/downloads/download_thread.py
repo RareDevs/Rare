@@ -9,11 +9,12 @@ from queue import Empty
 import psutil
 from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from legendary.core import LegendaryCore
-from legendary.models.downloading import UIUpdate, WriterTask
+from legendary.models.downloading import WriterTask
 
 from rare.shared import GlobalSignalsSingleton
 from rare.utils.models import InstallQueueItemModel
 from rare.utils.utils import create_desktop_link
+from rare.lgndr.downloading import UIUpdate
 
 logger = getLogger("DownloadThread")
 
