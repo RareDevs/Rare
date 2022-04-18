@@ -60,12 +60,14 @@ def main():
 
         utils.create_desktop_link(type_of_link="desktop", for_rare=True)
         print("Link created")
+        return
 
     if args.startmenu_shortcut:
         from rare.utils import utils
 
         utils.create_desktop_link(type_of_link="start_menu", for_rare=True)
         print("link created")
+        return
 
     if args.version:
         from rare import __version__, code_name
