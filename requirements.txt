@@ -4,3 +4,4 @@ QtAwesome
 psutil
 pypresence
 pywin32; platform_system == "Windows"
+legendary-gl
