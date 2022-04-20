@@ -1,5 +1,6 @@
 import json
 import os
+from argparse import Namespace
 from dataclasses import dataclass
 from enum import IntEnum
 from logging import getLogger
@@ -10,6 +11,7 @@ from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThrea
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, qApp, QMessageBox
 
+from rare.lgndr.cli import LegendaryCLI
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
 from rare.utils import legendary_utils
@@ -295,3 +297,18 @@ class ImportGroup(QGroupBox):
 
     def import_progress(self, progress: int):
         pass
+
+    def __import_game(self, app_name, path):
+        args = Namespace(
+            app_path=path,
+            app_name=app_name,
+            platform='Windows',
+            disable_check=False,
+            skip_dlcs=False,
+            with_dlcs=False,
+            yes=False,
+            log_dest=self.ui.info_label,
+        )
+        cli = LegendaryCLI()
+        cli.core = LegendaryCoreSingleton()
+        cli.import_game(args)
