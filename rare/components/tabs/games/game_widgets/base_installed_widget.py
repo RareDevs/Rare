@@ -118,13 +118,14 @@ class BaseInstalledWidget(QGroupBox):
         reload_image.triggered.connect(self.reload_image)
         self.addAction(reload_image)
 
-        uninstall = QAction(self.tr("Uninstall"), self)
-        uninstall.triggered.connect(
+        if self.igame is not None:
+            uninstall = QAction(self.tr("Uninstall"), self)
+            self.addAction(uninstall)
+            uninstall.triggered.connect(
             lambda: self.signals.update_gamelist.emit([self.game.app_name])
             if self.game_utils.uninstall_game(self.game.app_name)
             else None
         )
-        self.addAction(uninstall)
 
     def reload_image(self):
         utils.download_image(self.game, True)
