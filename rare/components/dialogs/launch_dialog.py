@@ -93,7 +93,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
                     raise ValueError("You are not logged in. Open Login Window")
         except ValueError as e:
             logger.info(str(e))
-            do_launch = LoginDialog(core=self.core, parent=self).login()
+            # Do not set parent, because it won't show a task bar icon
+            do_launch = LoginDialog(core=self.core).login()
         except ConnectionError as e:
             logger.warning(e)
             self.args.offline = True

@@ -354,9 +354,10 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
 
         shortcut.Targetpath = executable
         shortcut.Arguments = shlex.join(arguments)
-
+        # Maybe there is a better solution, but windows does not accept single quotes (Windows is weird)
+        shortcut.Arguments = shortcut.Arguments.replace("'", '"')
         if for_rare:
-            shortcut.WorkingDirectory = os.getcwd()
+            shortcut.WorkingDirectory = QStandardPaths.writableLocation(QStandardPaths.HomeLocation)
 
         # Icon
         if for_rare:
@@ -366,7 +367,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
                 img = QImage()
                 img.load(f"{icon}.png")
                 img.save(f"{icon}.ico")
-                logger.info("Create Icon")
+                logger.info("Created ico file")
             icon_location = f"{icon}.ico"
         shortcut.IconLocation = os.path.abspath(icon_location)
 

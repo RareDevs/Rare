@@ -3,11 +3,11 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QSizePolicy, QLayout, QDialog, QMessageBox
-
 from legendary.core import LegendaryCore
-from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
+
 from rare.components.dialogs.login.browser_login import BrowserLogin
 from rare.components.dialogs.login.import_login import ImportLogin
+from rare.shared import ArgumentsSingleton
 from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
 
 logger = getLogger("Login")
@@ -28,7 +28,7 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         super(LoginDialog, self).__init__(parent=parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        self.setWindowFlags(Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.WindowModal)
 
         self.core = core
@@ -63,7 +63,7 @@ class LoginDialog(QDialog, Ui_LoginDialog):
         self.login_stack.setCurrentIndex(self.pages.landing)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.dialog_layout.setSizeConstraint(QLayout.SetFixedSize)
+        self.layout().setSizeConstraint(QLayout.SetFixedSize)
         # self.resize(self.minimumSizeHint())
 
     def back_clicked(self):

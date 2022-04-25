@@ -7,19 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>498</width>
-    <height>311</height>
+    <height>269</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
-   <string>Welcome to Rare</string>
+   <string>Rare Login</string>
   </property>
-  <layout class="QVBoxLayout" name="dialog_layout">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <spacer name="login_vspacer_top">
      <property name="orientation">
@@ -30,8 +24,8 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>20</width>
-       <height>20</height>
+       <width>477</width>
+       <height>17</height>
       </size>
      </property>
     </spacer>
@@ -53,8 +47,8 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>20</width>
-          <height>20</height>
+       <width>477</width>
+       <height>17</height>
       </size>
      </property>
     </spacer>
@@ -136,30 +130,30 @@
        </item>
        <item row="1" column="2" rowspan="2">
         <spacer name="login_hspacer">
-            <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-                <size>
-                    <width>40</width>
-                    <height>20</height>
-                </size>
-            </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
         </spacer>
        </item>
-          <item row="1" column="0">
-              <widget class="QRadioButton" name="login_browser_radio">
-                  <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                      </sizepolicy>
-                  </property>
-                  <property name="text">
-                      <string>Browser</string>
-                  </property>
-              </widget>
-          </item>
+       <item row="1" column="0">
+        <widget class="QRadioButton" name="login_browser_radio">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Browser</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>
