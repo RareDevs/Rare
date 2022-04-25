@@ -78,6 +78,8 @@ class InstalledIconWidget(BaseInstalledWidget):
             self.info_label.setText(self.texts["hover"]["running"])
         elif self.igame and self.igame.needs_verification:
             self.info_label.setText(self.texts["needs_verification"])
+        elif self.is_only_offline:
+            self.info_label.setText(self.texts["hover"]["launch_offline"])
         elif self.update_available:
             self.info_label.setText(self.texts["hover"]["update_available"])
         else:
@@ -90,6 +92,8 @@ class InstalledIconWidget(BaseInstalledWidget):
             self.info_label.setText(self.texts["default"]["running"])
         elif self.syncing_cloud_saves:
             self.info_label.setText(self.texts["default"]["syncing"])
+        elif self.is_only_offline:
+            self.info_label.setText(self.texts["default"]["no_meta"])
         elif self.update_available:
             self.info_label.setText(self.texts["default"]["update_available"])
         elif self.igame and self.igame.needs_verification:

@@ -95,7 +95,7 @@ class GameUtils(QObject):
         game = self.core.get_game(app_name)
         dont_sync_after_finish = False
 
-        if game.supports_cloud_saves:
+        if game.supports_cloud_saves and not offline:
             try:
                 sync = self.cloud_save_utils.sync_before_launch_game(app_name)
             except ValueError:

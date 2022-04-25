@@ -36,11 +36,13 @@ class BaseInstalledWidget(QGroupBox):
                 "launch": self.tr("Launch Game"),
                 "launch_origin": self.tr("Launch/Link"),
                 "running": self.tr("Game running"),
+                "launch_offline": self.tr("Launch offline")
             },
             "default": {
                 "running": self.tr("Game running"),
                 "syncing": self.tr("Syncing cloud saves"),
                 "update_available": self.tr("Update available"),
+                "no_meta": self.tr("Game is only offline available")
             },
         }
 
@@ -49,6 +51,14 @@ class BaseInstalledWidget(QGroupBox):
 
         if self.game.app_title == "Unreal Engine":
             self.game.app_title = f"{self.game.app_title} {self.game.app_name.split('_')[-1]}"
+
+        self.is_only_offline = False
+
+        try:
+            self.core.get_asset(app_name, platform=self.igame.platform).build_version
+        except ValueError:
+            logger.warning(f"Game {self.game.app_title} has no metadata. Set offline true")
+            self.is_only_offline = True
 
         self.image = QLabel()
         self.image.setPixmap(
@@ -153,7 +163,6 @@ class BaseInstalledWidget(QGroupBox):
                 f"Create a Desktop link is currently not supported on {platform.system()}",
             )
             return
-            
 
         if not os.path.exists(shortcut_path):
             try:
@@ -177,12 +186,19 @@ class BaseInstalledWidget(QGroupBox):
                 self.create_start_menu.setText(self.tr("Create Start menu link"))
 
     def launch(self, offline=False, skip_version_check=False):
-        if not self.game_running:
-            if self.game.supports_cloud_saves:
-                self.syncing_cloud_saves = True
-            self.game_utils.prepare_launch(
-                self.game.app_name, offline, skip_version_check
-            )
+        if self.game_running:
+            return
+        offline = offline or self.is_only_offline
+        if self.is_only_offline and not self.igame.can_run_offline:
+            QMessageBox.warning(self, "Warning",
+                                self.tr("This game is probably not in your library and it cannot be launched offline"))
+            return
+
+        if self.game.supports_cloud_saves and not offline:
+            self.syncing_cloud_saves = True
+        self.game_utils.prepare_launch(
+            self.game.app_name, offline, skip_version_check
+        )
 
     def sync_finished(self, app_name):
         self.syncing_cloud_saves = False

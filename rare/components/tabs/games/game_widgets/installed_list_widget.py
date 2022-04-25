@@ -82,6 +82,8 @@ class InstalledListWidget(BaseInstalledWidget):
     def update_text(self, e=None):
         if self.update_available:
             self.info_label.setText(self.texts["default"]["update_available"])
+        elif self.is_only_offline:
+            self.info_label.setText(self.texts["default"]["no_meta"])
         elif self.igame and self.igame.needs_verification:
             self.info_label.setText(self.texts["needs_verification"])
         elif self.syncing_cloud_saves:
