@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction
 
 from rare.shared import LegendaryCoreSingleton
 from rare.utils.meta import GameMeta
+from rare.shared import GlobalSignalsSingleton
 
 
 class TrayIcon(QSystemTrayIcon):
@@ -35,7 +36,7 @@ class TrayIcon(QSystemTrayIcon):
         else:
             last_played = [GameMeta(i.app_name) for i in sorted(installed, key=lambda x: x.title)][0:5]
 
-        self.game_actions = []
+        self.game_actions: List[QAction] = []
 
         for game in last_played:
             a = QAction(self.core.get_game(game.app_name).app_title)
@@ -52,3 +53,10 @@ class TrayIcon(QSystemTrayIcon):
         self.exit_action = QAction(self.tr("Exit"))
         self.menu.addAction(self.exit_action)
         self.setContextMenu(self.menu)
+
+        self.signals = GlobalSignalsSingleton()
+        self.signals.game_uninstalled.connect(self.remove_button)
+
+    def remove_button(self, app_name: str):
+        if action := next((i for i in self.game_actions if i.property("app_name") == app_name), None):
+            action.deleteLater()
