@@ -59,6 +59,8 @@ class BaseInstalledWidget(QGroupBox):
         except ValueError:
             logger.warning(f"Game {self.game.app_title} has no metadata. Set offline true")
             self.is_only_offline = True
+        except AttributeError:
+            pass
 
         self.image = QLabel()
         self.image.setPixmap(
