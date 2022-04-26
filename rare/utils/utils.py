@@ -330,7 +330,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
             linkName = igame.title
             # TODO: this conversion is not applied everywhere (see base_installed_widget), should it?
             for c in r'<>?":|\/*':
-                linkName.replace(c, "")
+                linkName = linkName.replace(c, "")
 
             linkName = f"{linkName.strip()}.lnk"
 

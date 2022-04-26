@@ -141,7 +141,7 @@ class GlobalSignals(QObject):
     overlay_installation_finished = pyqtSignal()
 
     update_gamelist = pyqtSignal(list)
-    game_uninstalled = pyqtSignal(str)
+    game_uninstalled = pyqtSignal(str)  # appname
 
     set_discord_rpc = pyqtSignal(str)  # app_name of running game
     rpc_settings_updated = pyqtSignal()
