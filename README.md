@@ -12,6 +12,18 @@ Rare is a graphical interface for Legendary, a command line alternative to Epic 
         licensed under CC BY-SA 4.0</i></p>
 </div>
 
+## Why Rare?
+
+- Runs natively, and supports most of the major platforms
+- Gets out of your way when you don't need it, allowing you to enjoy your games
+- Tries to be as lightweight as we can make it while still offering a feature-full experience
+- Integrates seamlessly with legendary as both projects are developed in Python
+- Packages, packages everywhere
+
+## Issues
+
+If you run into any issues, please report it by creating an issue on GitHub or on Discord: https://discord.gg/YvmABK9YSk
+
 ## Installation
 
 ### Installation via pip (recommend)
@@ -90,20 +102,10 @@ In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find pack
 
 1. Clone the repo with Submodule: `git clone https://github.com/Dummerle/Rare --recurse-submodules`.
 2. Change your working directory to the project folder: `cd Rare`
-3. Run `pip install -r requirements.txt` to install all required dependencies. 
+3. Run `pip install -r requirements.txt` to install all required dependencies.
    If you want to be able to use the automatic login, run `pip install -r optional_requirements.txt`
    If you are on Arch you can run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-psutil`
 3. Run `python3 -m rare`
-
-## Why Rare?
-
-- Rare only uses ~50MB of RAM which is much less than the electron
-  based [HeroicGamesLauncher](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher) uses.
-- Rare supports most major platforms (Windows, Linux, Mac) unlike the alternatives.
-
-## Issues
-
-If you run into any issues, please report it by creating an issue on GitHub or on Discord: https://discord.gg/YvmABK9YSk
 
 ## Contributing
 
