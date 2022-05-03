@@ -52,6 +52,8 @@ class MainWindow(QMainWindow):
         margins = self.windowHandle().frameMargins()
         # get the screen the cursor is on
         current_screen = QApplication.screenAt(QCursor.pos())
+        if not current_screen:
+            current_screen = QApplication.primaryScreen()
         # get the available screen geometry (excludes panels/docks)
         screen_rect = current_screen.availableGeometry()
         decor_width = margins.left() + margins.right()
