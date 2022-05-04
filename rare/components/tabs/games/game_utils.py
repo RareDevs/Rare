@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QMessageBox, QPushButton
 from legendary.models.game import LaunchParameters, InstalledGame
 
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.extra.console import ConsoleWindow
+from rare.components.extra.console import Console
 from rare.components.tabs.games import CloudSaveUtils
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import legendary_utils
@@ -58,7 +58,7 @@ class GameUtils(QObject):
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
 
-        self.console = ConsoleWindow()
+        self.console = Console()
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
         self.game_meta = RareGameMeta()

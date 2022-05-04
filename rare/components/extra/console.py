@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QCoreApplication, QMetaObject, QProcessEnvironment
+from PyQt5.QtCore import QProcessEnvironment
 from PyQt5.QtGui import QTextCursor, QFont
 from PyQt5.QtWidgets import (
     QPlainTextEdit,
@@ -8,20 +8,22 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QSpacerItem,
-    QSizePolicy, QTableWidget, QTableWidgetItem, QAbstractItemView, QDialogButtonBox, QHeaderView,
+    QSizePolicy, QTableWidgetItem, QHeaderView,
 )
 
+from rare.ui.components.extra.console_env import Ui_ConsoleEnv
 
-class ConsoleWindow(QDialog):
+
+class Console(QDialog):
     env: QProcessEnvironment
 
     def __init__(self, parent=None):
-        super(ConsoleWindow, self).__init__(parent=parent)
-        self.setWindowTitle("Rare Console")
+        super(Console, self).__init__(parent=parent)
+        self.setWindowTitle("Rare - Console")
         self.setGeometry(0, 0, 600, 400)
         layout = QVBoxLayout()
 
-        self.console = Console(self)
+        self.console = ConsoleEdit(self)
         layout.addWidget(self.console)
 
         button_layout = QHBoxLayout()
@@ -43,7 +45,7 @@ class ConsoleWindow(QDialog):
 
         self.setLayout(layout)
 
-        self.env_variables = EnvVariables(self)
+        self.env_variables = ConsoleEnv(self)
         self.env_variables.hide()
 
     def save(self):
@@ -72,46 +74,12 @@ class ConsoleWindow(QDialog):
         self.console.error(text + end)
 
 
-class EnvVariables(QDialog):
-
-    class Ui(object):
-        def __init__(self, container):
-            layout = QVBoxLayout()
-            self.table = QTableWidget(container)
-            self.table.setColumnCount(2)
-
-            self.table.setHorizontalHeaderItem(0, QTableWidgetItem())
-            self.table.setHorizontalHeaderItem(1, QTableWidgetItem())
-            font = QFont()
-            font.setFamily(u"Monospace")
-            self.table.setFont(font)
-            self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-            self.table.setAlternatingRowColors(True)
-            self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
-            self.table.setSortingEnabled(True)
-            self.table.setCornerButtonEnabled(True)
-            self.table.horizontalHeader().setVisible(True)
-            self.table.horizontalHeader().setStretchLastSection(True)
-            self.table.verticalHeader().setVisible(False)
-            self.table.horizontalHeaderItem(0).setText(container.tr("Variable"))
-            self.table.horizontalHeaderItem(1).setText(container.tr("Value"))
-            layout.addWidget(self.table)
-
-            self.buttons = QDialogButtonBox(container)
-            self.buttons.setOrientation(Qt.Horizontal)
-            self.buttons.setStandardButtons(QDialogButtonBox.Close)
-            self.buttons.accepted.connect(container.accept)
-            self.buttons.rejected.connect(container.reject)
-            layout.addWidget(self.buttons)
-
-            container.setLayout(layout)
-            container.setObjectName(type(self).__name__)
-            container.setWindowTitle("Rare Console Environment")
-            container.setGeometry(0, 0, 600, 400)
+class ConsoleEnv(QDialog):
 
     def __init__(self, parent=None):
-        super(EnvVariables, self).__init__(parent=parent)
-        self.ui = EnvVariables.Ui(self)
+        super(ConsoleEnv, self).__init__(parent=parent)
+        self.ui = Ui_ConsoleEnv()
+        self.ui.setupUi(self)
 
     def setTable(self, env: QProcessEnvironment):
         self.ui.table.clearContents()
@@ -124,9 +92,9 @@ class EnvVariables(QDialog):
         self.ui.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
 
-class Console(QPlainTextEdit):
+class ConsoleEdit(QPlainTextEdit):
     def __init__(self, parent=None):
-        super(Console, self).__init__(parent=parent)
+        super(ConsoleEdit, self).__init__(parent=parent)
         self.setReadOnly(True)
         self.setFont(QFont("monospace"))
         self._cursor_output = self.textCursor()
