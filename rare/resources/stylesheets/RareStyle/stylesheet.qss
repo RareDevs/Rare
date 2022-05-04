@@ -1,42 +1,44 @@
 /*
 [Text]
-normal:    #eeeeee      -- main font color
-disabled:  #43474d      -- disabled font color
-
+normal:    #eeeeee rgb(238, 238, 238)     -- main font color
+disabled:  #43474d rgb( 67,  71,  77)     -- disabled font color
+                  rgba( 67,  71,  77, 55%) == rgb( 51, 54, 59)
+                  rgba( 67,  71,  77, 25%) == rgb( 41, 43, 47)
 [Background]
-normal:    #202225      -- main background color
-editable:  #333344      -- background color for reactive/editable widgets (TextEdits, ProgressBars etc)
-hover:     #222233      -- background color when hovering over reactive widgets (Buttons, Headers)
-selection: #2f4f4f      -- background color for selectable widgets
-alternate: #282a2e      -- background color for alternating rows in List/Tree/TableViews and for ScrollBars
+normal:    #202225 rgb( 32,  34,  37)     -- main background color
+editable:  #333344 rgb( 51,  51,  68)     -- background color for reactive/editable widgets (TextEdits, ProgressBars etc)
+hover:     #222233 rgb( 34,  34,  51)     -- background color when hovering over reactive widgets (Buttons, Headers)
+selection: #2f4f4f rgb( 47,  79,  79)     -- background color for selectable widgets
+alternate: #282a2e rgb( 40,  42,  46)     -- background color for alternating rows in List/Tree/TableViews and for ScrollBars
 
 [Border]
-normal:    #483d8b      -- border color for most widgets
-editable:  #2f4f4f      -- border color for editable widgets (TextEdits, ProgressBars etc)
-highlight: #5246a0      -- border color for dropdown widgets, a bit lighter than border for more separation
-disabled:  #43474d      -- border for disabled widgets
-alternate: #3c3f41      -- border color for gradient backgrounds on widgets like Tabs and Popups
+normal:    #483d8b rgb( 72,  61, 139)     -- border color for most widgets
+                  rgba( 72,  61, 139, 25%) == rgb( 42, 40, 63)
+editable:  #2f4f4f rgb( 47,  79,  79)     -- border color for editable widgets (TextEdits, ProgressBars etc)
+highlight: #5246a0 rgb( 82,  70, 160)     -- border color for dropdown widgets, a bit lighter than border for more separation
+disabled:  #43474d rgb( 67,  71,  77)     -- border for disabled widgets
+alternate: #3c3f41 rgb( 60,  63,  65)     -- border color for gradient backgrounds on widgets like Tabs and Popups
 
 [Special]
-info-normal:      #bbb      -- infoLabel
-install-normal:   #090      -- install
-install-hover:    #060      -- install
-install-disabled: #020      -- install
-uninstall-normal:   #900    -- uninstall
-uninstall-hover:    #600    -- uninstall
-uninstall-disabled: #200    -- uninstall
+info-normal:        #bbb rgb(187, 187, 187)   -- infoLabel
+install-normal:     #070 rgb(  0, 119,   0)   -- install
+install-hover:      #050 rgb(  0,  85,   0)   -- install
+install-disabled:   #020 rgb(  0,  34,   0)   -- install
+uninstall-normal:   #700 rgb(119,   0,   0)   -- uninstall
+uninstall-hover:    #500 rgb( 85,   0,   0)   -- uninstall
+uninstall-disabled: #200 rgb( 34,   0,   0)   -- uninstall
 */
 
 * {
-    color: #eeeeee;
-    border-color: #483d8b;
-    background-color: #202225;
+    color: rgb(238, 238, 238);
+    border-color: rgb( 72,  61, 139);
+    background-color: rgb( 32,  34,  37);
 }
 *:disabled,
 *:editable:disabled {
-    color: #43474d;
-    border-color: #43474d;
-    background-color: #202225;
+    color: rgb( 67,  71,  77);
+    border-color: rgb( 67,  71,  77);
+    background-color: rgb( 32,  34,  37);
 }
 
 QLabel,
@@ -44,10 +46,10 @@ QLabel:disabled {
     border-width: 0px;
     background-color: transparent;
     padding: 0px;
-    selection-background-color: #2f4f4f;
+    selection-background-color: rgb( 47,  79,  79);
 }
 QLabel[infoLabel="1"] {
-    color: #bbb;
+    color: rgb(187, 187, 187);
     font-style: italic;
     font-weight: normal;
 }
@@ -94,9 +96,9 @@ QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
 QScrollBar {
-    border-color: #2f4f4f;
-    background-color: #333344;
-    selection-background-color: #2f4f4f;
+    border-color: rgb( 47,  79,  79);
+    background-color: rgb( 51,  51,  68);
+    selection-background-color: rgb( 47,  79,  79);
 }
 QLineEdit,
 QTextEdit,
@@ -123,17 +125,17 @@ QStackedWidget[noBorder="1"] {
     border-color: transparent;
 }
 QComboBox {
-    background-color: rgba(67, 71, 77, 55%);
+    background-color: rgb( 51, 54, 59);
 }
 QComboBox:disabled {
-    background-color: rgba(67, 71, 77, 25%);
+    background-color: rgb( 41, 43, 47);
 }
 QComboBox:!editable:hover {
-    background-color: #222233;
+    background-color: rgb( 34,  34,  51);
 }
 *::item:selected,
 QComboBox QAbstractItemView {
-    selection-background-color: #2f4f4f;
+    selection-background-color: rgb( 47,  79,  79);
 }
 *::drop-down,
 *::drop-down:editable,
@@ -150,19 +152,19 @@ QComboBox QAbstractItemView {
 *::drop-down:editable:disabled,
 *::up-button:disabled,
 *::down-button:disabled {
-    border-color: #43474d;
+    border-color: rgb( 67,  71,  77);
     background-color: transparent;
 }
 *::drop-down {
     subcontrol-position: top right;
-    border-color: #483d8b;
-    border-left-color: #5246a0; /* #483d8b lighter */
+    border-color: rgb( 72,  61, 139);
+    border-left-color: rgb( 82,  70, 160); /* rgb( 72,  61, 139) lighter */
 }
 *::drop-down:editable,
 *::up-button,
 *::down-button {
-    border-color: #2f4f4f;
-    background-color: #3c3f41;
+    border-color: rgb( 47,  79,  79);
+    background-color: rgb( 60,  63,  65);
 }
 *::drop-down,
 *::drop-down:editable {
@@ -189,12 +191,12 @@ QProgressBar {
 QProgressBar::chunk {
     width: 2%;
     margin: 0%;
-    background-color: #2f4f4f;
+    background-color: rgb( 47,  79,  79);
 }
 QScrollBar {
     border-radius: 4px;
     padding: 1px;
-    background-color: #282a2e;
+    background-color: rgb( 40,  42,  46);
 }
 QScrollBar:vertical {
     width: 11px;
@@ -229,8 +231,8 @@ QScrollBar::sub-line:horizontal {
 QScrollBar::handle {
     border-width: 1px;
     border-style: solid;
-    border-color: #483d8b;
-    background-color: #333344;
+    border-color: rgb( 72,  61, 139);
+    background-color: rgb( 51,  51,  68);
     border-radius: 2px;
     min-height: 30px;
     min-width: 30px;
@@ -259,11 +261,11 @@ QListView,
 QTreeView,
 QTableView {
     outline: 0;
-    gridline-color: #282a2e;
+    gridline-color: rgb( 40,  42,  46);
     show-decoration-selected: 0;
     selection-background-color: transparent;
-    background-color: #202225;
-    alternate-background-color: #282a2e;
+    background-color: rgb( 32,  34,  37);
+    alternate-background-color: rgb( 40,  42,  46);
 }
 
 QListView::item,
@@ -282,28 +284,28 @@ QTableView[currentRow="0"]::item {
 QListView::item:hover,
 QTreeView::item:hover,
 QTableView::item:hover {
-    border-color: #483d8b;
-    background-color: #222233;
+    border-color: rgb( 72,  61, 139);
+    background-color: rgb( 34,  34,  51);
 }
 QListView::item:selected,
 QTreeView::item:selected,
 QTableView::item:selected {
-    border-color: #483d8b;
-    background-color: #2f4f4f;
+    border-color: rgb( 72,  61, 139);
+    background-color: rgb( 47,  79,  79);
 }
 
 QPushButton,
 QToolButton {
-    background-color: rgba(67, 71, 77, 55%);
+    background-color: rgb( 51, 54, 59);
 }
 QPushButton:disabled,
 QToolButton:disabled {
-    background-color: rgba(67, 71, 77, 25%);
+    background-color: rgb( 41, 43, 47);
 }
 QPushButton:hover,
 QToolButton:hover,
 QHeaderView::section:hover {
-    background-color: #222233;
+    background-color: rgb( 34,  34,  51);
 }
 QPushButton,
 QToolButton {
@@ -327,36 +329,36 @@ QPushButton#menu {
 }
 QPushButton#menu_button {
     border-width: 0px;
-    background-color: #3c3f41;
+    background-color: rgb( 60,  63,  65);
     width: 18px;
     height: 18px;
 }
 QPushButton#menu_button:hover {
-    background-color: "#333344";
+    background-color: rgb( 51,  51,  68);
 }
 QPushButton[install="1"],
 QPushButton#install_button {
-    background-color: "#070";
+    background-color: rgb(  0, 119,   0);
 }
 QPushButton[install="1"]:hover,
 QPushButton#install_button:hover {
-    background-color: "#050";
+    background-color: rgb(  0,  85,   0);
 }
 QPushButton[install="1"]:disabled,
 QPushButton#install_button:disabled {
-    background-color: "#020";
+    background-color: rgb(  0,  34,   0);
 }
 QPushButton[uninstall="1"],
 QPushButton#uninstall_button {
-    background-color: "#900";
+    background-color: rgb(119,   0,   0);
 }
 QPushButton[uninstall="1"]:hover,
 QPushButton#uninstall_button:hover {
-    background-color: "#600";
+    background-color: rgb( 85,   0,   0);
 }
 QPushButton[uninstall="1"]:disabled,
 QPushButton#uninstall_button:disabled {
-    background-color: "#200";
+    background-color: rgb( 34,   0,   0);
 }
 QPushButton#success{
     background-color: lime;
@@ -376,10 +378,10 @@ QRadioButton::indicator,
 QListView::indicator,
 QTreeView::indicator,
 QTableView::indicator {
-    border-color: #2f4f4f;
+    border-color: rgb( 47,  79,  79);
     border-width: 1px;
     border-style: solid;
-    background-color: #202225;
+    background-color: rgb( 32,  34,  37);
 }
 QCheckBox::indicator,
 QRadioButton::indicator,
@@ -395,7 +397,7 @@ QRadioButton::indicator:disabled,
 QListView::indicator:disabled,
 QTreeView::indicator:disabled,
 QTableView::indicator:disabled {
-    border-color: #43474d;
+    border-color: rgb( 67,  71,  77);
 }
 QRadioButton::indicator {
     border-radius: 5%;
@@ -469,17 +471,20 @@ QGroupBox::title {
     border-style: solid;
     border-top-left-radius: 4px;
     border-bottom-right-radius: 4px;
-    border-color: #483d8b;
+    border-color: rgb( 72,  61, 139);
     padding: 1px;
     /*
     background: qlineargradient(
-        x1: -2, y1: 0, x2: 1, y2: 1, stop: 0 #483d8b, stop: 1 #202225);
+        x1: -2, y1: 0,
+        x2:  1, y2: 1,
+        stop: 0 rgb( 72,  61, 139),
+        stop: 1 rgb( 32,  34,  37));
     */
-    background-color: rgba(72, 61, 139, 25%);
+    background-color: rgb( 42, 40, 63);
 }
 QGroupBox::title:disabled {
-    border-color: #43474d;
-    background-color: rgba(67, 71, 77, 25%);
+    border-color: rgb( 67,  71,  77);
+    background-color: rgb( 41, 43, 47);
 }
 
 QSizeGrip {
@@ -495,7 +500,7 @@ QSizeGrip {
 #search_bar {
     padding: 3px;
     border-radius: 5px;
-    background-color: "#333344";
+    background-color: rgb( 51,  51,  68);
 }
 
 QTabWidget::pane {
@@ -519,54 +524,66 @@ QTabBar::tab:bottom {
 }
 QTabBar::tab:top:hover,
 QTabBar::tab:bottom:hover {
-    border-color: #483d8b;
+    border-color: rgb( 72,  61, 139);
     border-left-color: transparent;
     border-right-color: transparent;
 }
 QTabBar::tab:top {
     border-top-width: 3px;
-    border-top-color: #3c3f41;
-    border-bottom-color: #483d8b;
+    border-top-color: rgb( 60,  63,  65);
+    border-bottom-color: rgb( 72,  61, 139);
     background: qlineargradient(
-        x1: 0, y1: -1, x2: 0, y2: 1, stop: 0 #3c3f41, stop: 1 #202225);
+        x1: 0, y1: -1,
+        x2: 0, y2:  1,
+        stop: 0 rgb( 60,  63,  65),
+        stop: 1 rgb( 32,  34,  37));
 }
 QTabBar::tab:bottom {
     border-bottom-width: 3px;
-    border-top-color: #483d8b;
-    border-bottom-color: #3c3f41;
+    border-top-color: rgb( 72,  61, 139);
+    border-bottom-color: rgb( 60,  63,  65);
     background: qlineargradient(
-        x1: 0, y1: 2, x2: 0, y2: 0, stop: 0 #3c3f41, stop: 1 #202225);
+        x1: 0, y1: 2,
+        x2: 0, y2: 0,
+        stop: 0 rgb( 60,  63,  65),
+        stop: 1 rgb( 32,  34,  37));
 }
 QTabBar::tab:top:hover {
     background: qlineargradient(
-        x1: 0, y1: -1, x2: 0, y2: 1, stop: 0 #483d8b, stop: 1 #202225);
+        x1: 0, y1: -1,
+        x2: 0, y2:  1,
+        stop: 0 rgb( 72,  61, 139),
+        stop: 1 rgb( 32,  34,  37));
 }
 QTabBar::tab:bottom:hover {
     background: qlineargradient(
-        x1: 0, y1: 2, x2: 0, y2: 0, stop: 0 #483d8b, stop: 1 #202225);
+        x1: 0, y1: 2,
+        x2: 0, y2: 0,
+        stop: 0 rgb( 72,  61, 139),
+        stop: 1 rgb( 32,  34,  37));
 }
 QTabBar::tab:top:selected {
-    border-color: #483d8b;
+    border-color: rgb( 72,  61, 139);
     border-bottom-color: transparent;
-    background: #202225;
+    background: rgb( 32,  34,  37);
 }
 QTabBar::tab:bottom:selected {
-    border-color: #483d8b;
+    border-color: rgb( 72,  61, 139);
     border-top-color: transparent;
-    background: #202225;
+    background: rgb( 32,  34,  37);
 }
 QTabBar::tab:top:disabled {
-    border-bottom-color: #3c3f41;
+    border-bottom-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:bottom:disabled {
-    border-top-color: #3c3f41;
+    border-top-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:top:selected:disabled {
-    border-color: #3c3f41;
+    border-color: rgb( 60,  63,  65);
     border-bottom-color: transparent;
 }
 QTabBar::tab:bottom:selected:disabled {
-    border-color: #3c3f41;
+    border-color: rgb( 60,  63,  65);
     border-top-color: transparent;
 }
 QTabBar::tab:left,
@@ -576,54 +593,66 @@ QTabBar::tab:right {
 }
 QTabBar::tab:left:hover,
 QTabBar::tab:right:hover {
-    border-color: #483d8b;
+    border-color: rgb( 72,  61, 139);
     border-top-color: transparent;
     border-bottom-color: transparent;
 }
 QTabBar::tab:left {
     border-left-width: 3px;
-    border-left-color: #3c3f41;
-    border-right-color: #483d8b;
+    border-left-color: rgb( 60,  63,  65);
+    border-right-color: rgb( 72,  61, 139);
     background: qlineargradient(
-        x1: -1, y1: 0, x2: 1, y2: 0, stop: 0 #3c3f41, stop: 1 #202225);
+        x1: -1, y1: 0,
+        x2:  1, y2: 0,
+        stop: 0 rgb( 60,  63,  65),
+        stop: 1 rgb( 32,  34,  37));
 }
 QTabBar::tab:right {
     border-right-width: 3px;
-    border-right-color: #3c3f41;
-    border-left-color: #483d8b;
+    border-right-color: rgb( 60,  63,  65);
+    border-left-color: rgb( 72,  61, 139);
     background: qlineargradient(
-        x1: 2, y1: 0, x2: 0, y2: 0, stop: 0 #3c3f41, stop: 1 #202225);
+        x1: 2, y1: 0,
+        x2: 0, y2: 0,
+        stop: 0 rgb( 60,  63,  65),
+        stop: 1 rgb( 32,  34,  37));
 }
 QTabBar::tab:left:hover {
     background: qlineargradient(
-        x1: -1, y1: 0, x2: 1, y2: 0, stop: 0 #483d8b, stop: 1 #202225);
+        x1: -1, y1: 0,
+        x2:  1, y2: 0,
+        stop: 0 rgb( 72,  61, 139),
+        stop: 1 rgb( 32,  34,  37));
 }
 QTabBar::tab:right:hover {
     background: qlineargradient(
-        x1: 2, y1: 0, x2: 0, y2: 0, stop: 0 #483d8b, stop: 1 #202225);
+        x1: 2, y1: 0,
+        x2: 0, y2: 0,
+        stop: 0 rgb( 72,  61, 139),
+        stop: 1 rgb( 32,  34,  37));
 }
 QTabBar::tab:left:selected {
-    border-color: #483d8b;
+    border-color: rgb( 72,  61, 139);
     border-right-color: transparent;
-    background: #202225;
+    background: rgb( 32,  34,  37);
 }
 QTabBar::tab:right:selected {
-    border-color: #483d8b;
+    border-color: rgb( 72,  61, 139);
     border-left-color: transparent;
-    background: #202225;
+    background: rgb( 32,  34,  37);
 }
 QTabBar::tab:left:disabled {
-    border-right-color: #3c3f41;
+    border-right-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:right:disabled {
-    border-left-color: #3c3f41;
+    border-left-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:left:selected:disabled {
-    border-color: #3c3f41;
+    border-color: rgb( 60,  63,  65);
     border-right-color: transparent;
 }
 QTabBar::tab:right:selected:disabled {
-    border-color: #3c3f41;
+    border-color: rgb( 60,  63,  65);
     border-left-color: transparent;
 }
 
@@ -631,21 +660,24 @@ QTabBar#MainTabBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    border-bottom-color: #483d8b;
+    border-bottom-color: rgb( 72,  61, 139);
     /*
     background: qlineargradient(
-        x1: 0, y1: -3, x2: 0, y2: 1, stop: 0 #3c3f41, stop: 1 #202225);
+        x1: 0, y1: -3,
+        x2: 0, y2:  1,
+        stop: 0 rgb( 60,  63,  65),
+        stop: 1 rgb( 32,  34,  37));
     */
 }
 QTabBar#MainTabBar:disabled {
     border-color: transparent;
-    border-bottom-color: #3c3f41;
+    border-bottom-color: rgb( 60,  63,  65);
 }
 QTabBar#MainTabBar::tab {
     margin-left: 3px;
     margin-right: 3px;
     border-top-color: transparent;
-    border-bottom-color: #483d8b;
+    border-bottom-color: rgb( 72,  61, 139);
     padding: 5px;
 }/*
 QTabBar#MainTabBar::tab:top:first,
@@ -659,25 +691,28 @@ QTabBar#MainTabBar::tab:bottom:last {
     border-right: transparent;
 }*/
 QTabBar#MainTabBar::tab:top:hover {
-    border-top-color: #483d8b;
+    border-top-color: rgb( 72,  61, 139);
 }
 QTabBar#MainTabBar::tab:top:selected {
-    border-color: #483d8b;
-    border-bottom-color: #202225;
+    border-color: rgb( 72,  61, 139);
+    border-bottom-color: rgb( 32,  34,  37);
 }
 QTabBar#SideTabBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    border-right-color: #483d8b;
+    border-right-color: rgb( 72,  61, 139);
     /*
     background: qlineargradient(
-        x1: -3, y1: 0, x2: 1, y2: 0, stop: 0 #3c3f41, stop: 1 #202225);
+        x1: -3, y1: 0,
+        x2:  1, y2: 0,
+        stop: 0 rgb( 60,  63,  65),
+        stop: 1 rgb( 32,  34,  37));
     */
 }
 QTabBar#SideTabBar:disabled {
     border-color: transparent;
-    border-right-color: #3c3f41;
+    border-right-color: rgb( 60,  63,  65);
 }
 QTabBar#SideTabBar::tab {
     margin-top: 3px;
@@ -703,44 +738,47 @@ QStatusBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    border-top-color: #483d8b;
-    border-bottom-color: #3c3f41;
+    border-top-color: rgb( 72,  61, 139);
+    border-bottom-color: rgb( 60,  63,  65);
     background: qlineargradient(
-        x1: 0, y1: 3, x2: 0, y2: 0, stop: 0 #3c3f41, stop: 1 #202225);
+        x1: 0, y1: 3,
+        x2: 0, y2: 0,
+        stop: 0 rgb( 60,  63,  65),
+        stop: 1 rgb( 32,  34,  37));
 }
 
 QToolTip {
     border-width: 1px;
     border-style: solid;
-    border-color: #483d8b;
+    border-color: rgb( 72,  61, 139);
     border-radius: 4px;
     padding: 1px;
     opacity: 200;
 }
 
 QBalloonTip {
-    color: #eeeeee;
-    background-color: #202225;
+    color: rgb(238, 238, 238);
+    background-color: rgb( 32,  34,  37);
     border-width: 1px;
     border-style: solid;
-    border-color: #483d8b;
+    border-color: rgb( 72,  61, 139);
     border-radius: 4px;
     padding: 1px;
 }
 
 /* Wrapper settings styling */
 QPushButton#WrapperWidgetButton {
-    border-color: rgba(67, 71, 77, 55%);
+    border-color: rgb( 51, 54, 59);
 }
 QPushButton#WrapperWidgetButton:disabled {
-    border-color: rgba(67, 71, 77, 25%);
+    border-color: rgb( 41, 43, 47);
 }
 QScrollArea#WrapperSettingsScroll {
-    border-color: #2f4f4f;
-    background-color: #282a2e;
+    border-color: rgb( 47,  79,  79);
+    background-color: rgb( 40,  42,  46);
 }
 QScrollBar#WrapperSettingsScrollBar {
-    background-color: #282a2e;
+    background-color: rgb( 40,  42,  46);
 }
 QLabel#WrapperSettingsLabel {
     border-width: 1px;
@@ -748,6 +786,6 @@ QLabel#WrapperSettingsLabel {
     border-radius: 2px;
     padding: 2px;
     color: #999;
-    border-color: #2f4f4f;
-    background-color: #282a2e;
+    border-color: rgb( 47,  79,  79);
+    background-color: rgb( 40,  42,  46);
 }

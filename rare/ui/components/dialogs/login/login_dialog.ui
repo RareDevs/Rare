@@ -6,25 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>498</width>
-    <height>269</height>
+    <width>492</width>
+    <height>267</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Rare Login</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="login_layout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item>
     <spacer name="login_vspacer_top">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
-     </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>477</width>
+       <width>0</width>
        <height>17</height>
       </size>
      </property>
@@ -39,15 +36,9 @@
    </item>
    <item>
     <spacer name="login_vspacer_bottom">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
-     </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>477</width>
+       <width>0</width>
        <height>17</height>
       </size>
      </property>

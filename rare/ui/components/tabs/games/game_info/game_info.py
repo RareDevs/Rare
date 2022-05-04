@@ -16,7 +16,6 @@ class Ui_GameInfo(object):
         GameInfo.setObjectName("GameInfo")
         GameInfo.resize(791, 583)
         self.layout_game_info = QtWidgets.QHBoxLayout(GameInfo)
-        self.layout_game_info.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.layout_game_info.setObjectName("layout_game_info")
         self.image = QtWidgets.QLabel(GameInfo)
         self.image.setFrameShape(QtWidgets.QFrame.StyledPanel)

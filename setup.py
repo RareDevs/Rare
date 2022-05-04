@@ -13,13 +13,13 @@ requirements = [
     "QtAwesome",
     "psutil",
     "pypresence",
-    'pywin32; platform_system == "Windows"'
+    'pywin32; platform_system == "Windows"',
 ]
 
 optional_reqs = dict(
     webview=[
         'pywebview[gtk]; platform_system == "Linux"',
-        'pywebview[cef]; platform_system == "Windows"'
+        'pywebview[cef]; platform_system == "Windows"',
     ]
 )
 

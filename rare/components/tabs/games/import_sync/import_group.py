@@ -1,7 +1,8 @@
 import json
 import os
 from logging import getLogger
-from typing import List, Tuple
+from pathlib import Path
+from typing import List, Tuple, Optional
 
 from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal
 from PyQt5.QtGui import QStandardItemModel
@@ -21,9 +22,7 @@ class AppNameCompleter(QCompleter):
     def __init__(self, app_names: List, parent=None):
         super(AppNameCompleter, self).__init__(parent)
         # pylint: disable=E1136
-        super(AppNameCompleter, self).activated[QModelIndex].connect(
-            self.__activated_idx
-        )
+        super(AppNameCompleter, self).activated[QModelIndex].connect(self.__activated_idx)
 
         model = QStandardItemModel(len(app_names), 2)
         for idx, game in enumerate(app_names):
@@ -52,18 +51,17 @@ class AppNameCompleter(QCompleter):
         # lk: Note to self, the completer and popup models are different.
         # lk: Getting the index from the popup and trying to use it in the completer will return invalid results
         if isinstance(idx, QModelIndex):
-            self.activated.emit(
-                self.popup().model().data(self.popup().model().index(idx.row(), 1))
-            )
+            self.activated.emit(self.popup().model().data(self.popup().model().index(idx.row(), 1)))
         # TODO: implement conversion from app_name to app_title (signal loop here)
         # if isinstance(idx_str, str):
         #     self.activated.emit(idx_str)
 
 
-class ImportGroup(QGroupBox, Ui_ImportGroup):
+class ImportGroup(QGroupBox):
     def __init__(self, parent=None):
         super(ImportGroup, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.ui = Ui_ImportGroup()
+        self.ui.setupUi(self)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.api_results = ApiResultsSingleton()
@@ -84,23 +82,32 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
             parent=self,
         )
         self.path_edit.textChanged.connect(self.path_changed)
-        self.path_edit_layout.addWidget(self.path_edit)
+        self.ui.path_edit_layout.addWidget(self.path_edit)
 
-        self.app_name = IndicatorLineEdit(
+        self.app_name_edit = IndicatorLineEdit(
             placeholder=self.tr("Use in case the app name was not found automatically"),
             completer=AppNameCompleter(
-                app_names=[
-                    (i.app_name, i.app_title) for i in self.api_results.game_list
-                ]
+                app_names=[(i.app_name, i.app_title) for i in self.api_results.game_list]
             ),
             edit_func=self.app_name_edit_cb,
             parent=self,
         )
-        self.app_name.textChanged.connect(self.app_name_changed)
-        self.app_name_layout.addWidget(self.app_name)
+        self.app_name_edit.textChanged.connect(self.app_name_changed)
+        self.ui.app_name_layout.addWidget(self.app_name_edit)
 
-        self.import_button.setEnabled(False)
-        self.import_button.clicked.connect(self.import_game)
+        self.ui.import_button.setEnabled(False)
+        self.ui.import_button.clicked.connect(
+            lambda: self.import_games(self.path_edit.text())
+            if self.ui.import_folder_check.isChecked()
+            else self.import_game(self.path_edit.text())
+        )
+
+        self.ui.import_folder_check.stateChanged.connect(
+            lambda s: self.ui.import_button.setEnabled(s or (not s and self.app_name_edit.is_valid))
+        )
+        self.ui.import_folder_check.stateChanged.connect(
+            lambda s: self.app_name_edit.setEnabled(not s)
+        )
 
     def path_edit_cb(self, path) -> Tuple[bool, str, str]:
         if os.path.exists(path):
@@ -113,11 +120,12 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
         return False, path, ""
 
     def path_changed(self, path):
-        self.info_label.setText(str())
+        self.ui.info_label.setText(str())
+        self.ui.import_folder_check.setChecked(False)
         if self.path_edit.is_valid:
-            self.app_name.setText(self.find_app_name(path))
+            self.app_name_edit.setText(self.find_app_name(path))
         else:
-            self.app_name.setText(str())
+            self.app_name_edit.setText(str())
 
     def app_name_edit_cb(self, text) -> Tuple[bool, str, str]:
         if not text:
@@ -128,56 +136,59 @@ class ImportGroup(QGroupBox, Ui_ImportGroup):
             return False, text, IndicatorLineEdit.reasons.game_not_installed
 
     def app_name_changed(self, text):
-        self.info_label.setText(str())
-        if self.app_name.is_valid:
-            self.import_button.setEnabled(True)
+        self.ui.info_label.setText(str())
+        if self.app_name_edit.is_valid:
+            self.ui.import_button.setEnabled(True)
         else:
-            self.import_button.setEnabled(False)
+            self.ui.import_button.setEnabled(False)
 
-    def find_app_name(self, path):
-        if not os.path.exists(os.path.join(path, ".egstore")):
-            return None
-        for i in os.listdir(os.path.join(path, ".egstore")):
-            if i.endswith(".mancpn"):
-                file = os.path.join(path, ".egstore", i)
-                return json.load(open(file, "r")).get("AppName")
+    def find_app_name(self, path: str) -> Optional[str]:
+        if os.path.exists(os.path.join(path, ".egstore")):
+            for i in os.listdir(os.path.join(path, ".egstore")):
+                if i.endswith(".mancpn"):
+                    file = os.path.join(path, ".egstore", i)
+                    return json.load(open(file, "r")).get("AppName")
+        elif app_name := legendary_utils.resolve_aliases(
+                self.core, os.path.basename(os.path.normpath(path))):
+            return app_name
         else:
-            logger.warning("File was not found")
-            return None
+            logger.warning(f"Could not find AppName for {path}")
+        return None
 
     def import_game(self, path=None):
-        app_name = self.app_name.text()
         if not path:
             path = self.path_edit.text()
-        if not app_name:
+        if not (app_name := self.app_name_edit.text()):
             # try to find app name
             if a_n := self.find_app_name(path):
                 app_name = a_n
             else:
-                self.info_label.setText(self.tr("Could not find app name"))
+                self.ui.info_label.setText(self.tr("Could not find AppName"))
                 return
+        self.__import_game(app_name, path)
 
-        if not (
-            err := legendary_utils.import_game(self.core, app_name=app_name, path=path)
-        ):
+    def import_games(self, path=None):
+        if not path:
+            path = self.path_edit.text()
+        path = Path(path)
+        for child in path.iterdir():
+            if child.is_dir():
+                if (app_name := self.find_app_name(str(child))) is not None:
+                    self.__import_game(app_name, str(child))
+
+    def __import_game(self, app_name, path):
+        if not (err := legendary_utils.import_game(self.core, app_name=app_name, path=path)):
             igame = self.core.get_installed_game(app_name)
-            self.info_label.setText(
-                self.tr("Successfully imported {}").format(igame.title)
-            )
-            self.app_name.setText(str())
+            logger.info(f"Successfully imported {igame.title}")
+            self.ui.info_label.setText(self.tr("Successfully imported {}").format(igame.title))
             self.signals.update_gamelist.emit([app_name])
 
-            if (
-                igame.version
-                != self.core.get_asset(app_name, igame.platform, False).build_version
-            ):
+            if igame.version != self.core.get_asset(app_name, igame.platform, False).build_version:
                 # update available
                 self.signals.add_download.emit(igame.app_name)
                 self.signals.update_download_tab_text.emit()
 
         else:
             logger.warning(f'Failed to import "{app_name}"')
-            self.info_label.setText(
-                self.tr("Could not import {}: {}").format(app_name, err)
-            )
+            self.ui.info_label.setText(self.tr("Could not import {}: {}").format(app_name, err))
             return

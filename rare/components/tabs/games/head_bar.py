@@ -19,7 +19,6 @@ class GameListHeadBar(QWidget):
     def __init__(self, parent=None):
         super(GameListHeadBar, self).__init__(parent=parent)
         self.api_results = ApiResultsSingleton()
-        self.setLayout(QHBoxLayout())
         # self.installed_only = QCheckBox(self.tr("Installed only"))
         self.settings = QSettings()
         # self.installed_only.setChecked(self.settings.value("installed_only", False, bool))
@@ -32,7 +31,6 @@ class GameListHeadBar(QWidget):
                 self.tr("Installed only"),
                 self.tr("Offline Games"),
             ])
-        self.layout().addWidget(self.filter)
 
         self.available_filters = [
             "all",
@@ -61,40 +59,43 @@ class GameListHeadBar(QWidget):
             self.filter.setCurrentIndex(0)
 
         self.filter.currentIndexChanged.connect(self.filter_changed)
-        self.layout().addStretch(1)
 
         self.import_game = QPushButton(icon("mdi.import", "fa.arrow-down"), self.tr("Import Game"))
         self.import_clicked = self.import_game.clicked
-        self.layout().addWidget(self.import_game)
 
         self.egl_sync = QPushButton(icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"))
         self.egl_sync_clicked = self.egl_sync.clicked
-        self.layout().addWidget(self.egl_sync)
         # FIXME: Until it is ready
         # self.egl_sync.setEnabled(False)
 
-        self.layout().addStretch(1)
-
         icon_label = QLabel()
         icon_label.setPixmap(icon("fa.search").pixmap(QSize(20, 20)))
-        self.layout().addWidget(icon_label)
         self.search_bar = QLineEdit()
         self.search_bar.setObjectName("search_bar")
         self.search_bar.setFrame(False)
         self.search_bar.setMinimumWidth(200)
         self.search_bar.setPlaceholderText(self.tr("Search Game"))
-        self.layout().addWidget(self.search_bar)
 
-        self.layout().addStretch(2)
         checked = QSettings().value("icon_view", True, bool)
 
         self.view = SelectViewWidget(checked)
-        self.layout().addWidget(self.view)
-        self.layout().addStretch(1)
 
         self.refresh_list = QPushButton()
         self.refresh_list.setIcon(icon("fa.refresh"))  # Reload icon
-        self.layout().addWidget(self.refresh_list)
+
+        layout = QHBoxLayout()
+        layout.addWidget(self.filter)
+        layout.addStretch(1)
+        layout.addWidget(self.import_game)
+        layout.addWidget(self.egl_sync)
+        layout.addStretch(1)
+        layout.addWidget(icon_label)
+        layout.addWidget(self.search_bar)
+        layout.addStretch(3)
+        layout.addWidget(self.view)
+        layout.addStretch(1)
+        layout.addWidget(self.refresh_list)
+        self.setLayout(layout)
 
     def filter_changed(self, i):
         self.filterChanged.emit(self.available_filters[i])

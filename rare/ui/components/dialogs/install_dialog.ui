@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>324</width>
-    <height>347</height>
+    <width>337</width>
+    <height>372</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,6 +85,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="text">
+      <string notr="true"/>
+     </property>
     </widget>
    </item>
    <item row="2" column="0">
@@ -111,67 +114,12 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
-    <layout class="QHBoxLayout" name="ignore_space_layout">
-     <item>
-      <widget class="QCheckBox" name="ignore_space_check">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="ignore_space_info_label">
-       <property name="font">
-        <font>
-         <italic>true</italic>
-        </font>
-       </property>
-       <property name="text">
-        <string>Use with caution!</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
    <item row="6" column="0">
     <widget class="QLabel" name="download_only_label">
      <property name="text">
       <string>Download only</string>
      </property>
     </widget>
-   </item>
-   <item row="6" column="1">
-    <layout class="QHBoxLayout" name="download_only_layout">
-     <item>
-      <widget class="QCheckBox" name="download_only_check">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string notr="true"/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="download_only_info_label">
-       <property name="font">
-        <font>
-         <italic>true</italic>
-        </font>
-       </property>
-       <property name="text">
-        <string>Do not try to install.</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </item>
    <item row="7" column="0">
     <widget class="QLabel" name="shortcut_lbl">
@@ -184,9 +132,6 @@
     <widget class="QCheckBox" name="shortcut_cb">
      <property name="text">
       <string notr="true"/>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -323,7 +268,43 @@
    <item row="8" column="1">
     <widget class="QCheckBox" name="install_preqs_check">
      <property name="text">
-      <string/>
+      <string notr="true"/>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QCheckBox" name="ignore_space_check">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Use with caution!</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QCheckBox" name="download_only_check">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Do not try to install.</string>
      </property>
     </widget>
    </item>

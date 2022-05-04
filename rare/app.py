@@ -68,7 +68,7 @@ class App(QApplication):
 
         # init Legendary
         try:
-            self.core = LegendaryCoreSingleton()
+            self.core = LegendaryCoreSingleton(init=True)
         except configparser.MissingSectionHeaderError as e:
             logger.warning(f"Config is corrupt: {e}")
             if config_path := os.environ.get("XDG_CONFIG_HOME"):
@@ -77,7 +77,7 @@ class App(QApplication):
                 path = os.path.expanduser("~/.config/legendary")
             with open(os.path.join(path, "config.ini"), "w") as config_file:
                 config_file.write("[Legendary]")
-            self.core = LegendaryCoreSingleton()
+            self.core = LegendaryCoreSingleton(init=True)
         if "Legendary" not in self.core.lgd.config.sections():
             self.core.lgd.config.add_section("Legendary")
             self.core.lgd.save_config()
@@ -101,7 +101,7 @@ class App(QApplication):
         self.setOrganizationName("Rare")
         self.settings = QSettings()
 
-        self.signals = GlobalSignalsSingleton()
+        self.signals = GlobalSignalsSingleton(init=True)
 
         self.signals.exit_app.connect(self.exit_app)
         self.signals.send_notification.connect(

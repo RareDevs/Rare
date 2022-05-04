@@ -157,6 +157,19 @@ class VerifyWorker(QRunnable):
         self.signals.summary.emit(len(failed), len(missing), self.app_name)
 
 
+# FIXME: lk: ah ef me sideways, we can't even import this thing properly
+# FIXME: lk: so copy it here
+def resolve_aliases(core: LegendaryCore, name):
+    # make sure aliases exist if not yet created
+    core.update_aliases(force=False)
+    name = name.strip()
+    # resolve alias (if any) to real app name
+    return core.lgd.config.get(
+        section='Legendary.aliases', option=name,
+        fallback=core.lgd.aliases.get(name.lower(), name)
+    )
+
+
 def import_game(core: LegendaryCore, app_name: str, path: str) -> str:
     _tr = QCoreApplication.translate
     logger.info(f"Import {app_name}")

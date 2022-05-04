@@ -141,11 +141,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         if self.dl_item.options.overlay:
             self.platform_label.setVisible(False)
             self.platform_combo_box.setVisible(False)
-            self.ignore_space_info_label.setVisible(False)
             self.ignore_space_check.setVisible(False)
             self.ignore_space_label.setVisible(False)
             self.download_only_check.setVisible(False)
-            self.download_only_info_label.setVisible(False)
             self.download_only_label.setVisible(False)
             self.shortcut_cb.setVisible(False)
             self.shortcut_lbl.setVisible(False)

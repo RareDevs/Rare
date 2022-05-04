@@ -245,7 +245,7 @@ class GameUtils(QObject):
 
     def _launch_pre_command(self, env: dict):
         proc = QProcess()
-        environment = QProcessEnvironment()
+        environment = QProcessEnvironment().systemEnvironment()
         for e in env:
             environment.insert(e, env[e])
         proc.setProcessEnvironment(environment)
@@ -260,12 +260,13 @@ class GameUtils(QObject):
                 str(proc.readAllStandardError().data(), "utf-8", "ignore")
             )
         )
+        self.console.set_env(environment)
         return proc
 
     def _get_process(self, app_name, env):
         process = GameProcess(app_name)
 
-        environment = QProcessEnvironment()
+        environment = QProcessEnvironment().systemEnvironment()
         for e in env:
             environment.insert(e, env[e])
         process.setProcessEnvironment(environment)
@@ -287,6 +288,7 @@ class GameUtils(QObject):
                 and QSettings().value("show_console", False, bool))
             else None
         )
+        self.console.set_env(environment)
         return process
 
     def _launch_origin(self, app_name, process: QProcess):
