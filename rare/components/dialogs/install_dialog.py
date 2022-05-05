@@ -304,16 +304,16 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.cancel_clicked()
 
 
-class InstallInfoSignals(QObject):
-    result = pyqtSignal(InstallDownloadModel)
-    failed = pyqtSignal(str)
-    finished = pyqtSignal()
-
-
 class InstallInfoWorker(QRunnable):
+
+    class Signals(QObject):
+        result = pyqtSignal(InstallDownloadModel)
+        failed = pyqtSignal(str)
+        finished = pyqtSignal()
+
     def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel, game: Game = None):
         super(InstallInfoWorker, self).__init__()
-        self.signals = InstallInfoSignals()
+        self.signals = InstallInfoWorker.Signals()
         self.core = core
         self.dl_item = dl_item
         self.is_overlay_install = self.dl_item.options.overlay
