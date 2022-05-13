@@ -127,13 +127,13 @@ class GameInfo(QWidget, Ui_GameInfo):
             return
         self.verify_widget.setCurrentIndex(1)
         verify_worker = VerifyWorker(self.game.app_name)
-        verify_worker.signals.status.connect(self.verify_staistics)
+        verify_worker.signals.status.connect(self.verify_statistics)
         verify_worker.signals.summary.connect(self.finish_verify)
         self.verify_progress.setValue(0)
         self.verify_threads[self.game.app_name] = verify_worker
         self.verify_pool.start(verify_worker)
 
-    def verify_staistics(self, num, total, app_name):
+    def verify_statistics(self, num, total, app_name):
         # checked, max, app_name
         if app_name == self.game.app_name:
             self.verify_progress.setValue(num * 100 // total)
