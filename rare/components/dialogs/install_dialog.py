@@ -141,11 +141,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         if self.dl_item.options.overlay:
             self.platform_label.setVisible(False)
             self.platform_combo_box.setVisible(False)
-            self.ignore_space_info_label.setVisible(False)
             self.ignore_space_check.setVisible(False)
             self.ignore_space_label.setVisible(False)
             self.download_only_check.setVisible(False)
-            self.download_only_info_label.setVisible(False)
             self.download_only_label.setVisible(False)
             self.shortcut_cb.setVisible(False)
             self.shortcut_lbl.setVisible(False)
@@ -306,16 +304,16 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.cancel_clicked()
 
 
-class InstallInfoSignals(QObject):
-    result = pyqtSignal(InstallDownloadModel)
-    failed = pyqtSignal(str)
-    finished = pyqtSignal()
-
-
 class InstallInfoWorker(QRunnable):
+
+    class Signals(QObject):
+        result = pyqtSignal(InstallDownloadModel)
+        failed = pyqtSignal(str)
+        finished = pyqtSignal()
+
     def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel, game: Game = None):
         super(InstallInfoWorker, self).__init__()
-        self.signals = InstallInfoSignals()
+        self.signals = InstallInfoWorker.Signals()
         self.core = core
         self.dl_item = dl_item
         self.is_overlay_install = self.dl_item.options.overlay

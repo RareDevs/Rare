@@ -1,0 +1,11 @@
+[tool.black]
+line-length = 110
+target-version = ['py39', 'py310']
+include = '\.py$'
+force-exclude = '''
+/(
+    | rare/ui
+    | rare/legendary
+    | rare/resources
+)/
+'''

@@ -23,11 +23,11 @@ class LaunchDialogSignals(QObject):
 
 
 class ImageWorker(QRunnable):
-    def __init__(self, core: LegendaryCore):
+    def __init__(self):
         super(ImageWorker, self).__init__()
         self.signals = LaunchDialogSignals()
         self.setAutoDelete(True)
-        self.core = core
+        self.core = LegendaryCoreSingleton()
 
     def run(self):
         download_images(self.signals.image_progress, self.signals.result, self.core)
@@ -45,16 +45,16 @@ class ApiRequestWorker(QRunnable):
     def run(self) -> None:
         if self.settings.value("mac_meta", platform.system() == "Darwin", bool):
             try:
-                result = self.core.get_game_and_dlc_list(True, "Mac")
+                result = self.core.get_game_and_dlc_list(update_assets=True, platform="Mac")
             except HTTPError:
                 result = [], {}
-            self.signals.result.emit(result, "mac")
         else:
-            self.signals.result.emit(([], {}), "mac")
+            result = [], {}
+        self.signals.result.emit(result, "mac")
 
         if self.settings.value("win32_meta", False, bool):
             try:
-                result = self.core.get_game_and_dlc_list(True, "Win32")
+                result = self.core.get_game_and_dlc_list(update_assets=True, platform="Win32")
             except HTTPError:
                 result = [], {}
         else:
@@ -65,7 +65,7 @@ class ApiRequestWorker(QRunnable):
 class LaunchDialog(QDialog, Ui_LaunchDialog):
     quit_app = pyqtSignal(int)
     start_app = pyqtSignal()
-    finished = 0
+    completed = 0
 
     def __init__(self, parent=None):
         super(LaunchDialog, self).__init__(parent=parent)
@@ -76,8 +76,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
         self.core = LegendaryCoreSingleton()
         self.args = ArgumentsSingleton()
-        self.thread_pool = QThreadPool()
-        self.thread_pool.setMaxThreadCount(2)
+        self.thread_pool = QThreadPool().globalInstance()
         self.api_results = ApiResults()
 
     def login(self):
@@ -113,15 +112,15 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
         if not self.args.offline:
             self.image_info.setText(self.tr("Downloading Images"))
-            image_worker = ImageWorker(self.core)
+            image_worker = ImageWorker()
             image_worker.signals.image_progress.connect(self.update_image_progbar)
             image_worker.signals.result.connect(self.handle_api_worker_result)
             self.thread_pool.start(image_worker)
 
             # gamelist and no_asset games are from Image worker
-            worker = ApiRequestWorker()
-            worker.signals.result.connect(self.handle_api_worker_result)
-            self.thread_pool.start(worker)
+            api_worker = ApiRequestWorker()
+            api_worker.signals.result.connect(self.handle_api_worker_result)
+            self.thread_pool.start(api_worker)
 
             # cloud save from another worker, because it is used in cloud_save_utils too
             cloud_worker = CloudWorker()
@@ -131,7 +130,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.thread_pool.start(cloud_worker)
 
         else:
-            self.finished = 2
+            self.completed = 2
             if self.core.lgd.assets:
                 (
                     self.api_results.game_list,
@@ -183,10 +182,10 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.finish()
 
     def finish(self):
-        if self.finished == 1:
+        if self.completed == 1:
             logger.info("App starting")
             self.image_info.setText(self.tr("Starting..."))
             ApiResultsSingleton(self.api_results)
             self.start_app.emit()
         else:
-            self.finished += 1
+            self.completed += 1

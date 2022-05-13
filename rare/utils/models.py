@@ -2,7 +2,7 @@ import os
 import platform
 from dataclasses import field, dataclass
 from multiprocessing import Queue
-from typing import Union, List
+from typing import Union, List, Optional
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -46,9 +46,9 @@ class InstallDownloadModel:
 
 @dataclass
 class InstallQueueItemModel:
-    status_q: Queue = None
-    download: InstallDownloadModel = None
-    options: InstallOptionsModel = None
+    status_q: Optional[Queue] = None
+    download: Optional[InstallDownloadModel] = None
+    options: Optional[InstallOptionsModel] = None
 
     def __bool__(self):
         return (
@@ -105,12 +105,12 @@ class PathSpec:
 
 @dataclass
 class ApiResults:
-    game_list: list = None
-    dlcs: dict = None
-    bit32_games: list = None
-    mac_games: list = None
-    no_asset_games: list = None
-    saves: list = None
+    game_list: Optional[list] = None
+    dlcs: Optional[dict] = None
+    bit32_games: Optional[list] = None
+    mac_games: Optional[list] = None
+    no_asset_games: Optional[list] = None
+    saves: Optional[list] = None
 
     def __bool__(self):
         return (

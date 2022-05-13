@@ -14,9 +14,6 @@
    <string>Game Info</string>
   </property>
   <layout class="QHBoxLayout" name="layout_game_info">
-   <property name="sizeConstraint">
-    <enum>QLayout::SetFixedSize</enum>
-   </property>
    <item alignment="Qt::AlignTop">
     <widget class="QLabel" name="image">
      <property name="frameShape">

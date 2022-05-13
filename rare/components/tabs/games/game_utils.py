@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QMessageBox, QPushButton
 from legendary.models.game import LaunchParameters, InstalledGame
 
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.extra.console import ConsoleWindow
+from rare.components.extra.console import Console
 from rare.components.tabs.games import CloudSaveUtils
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import legendary_utils
@@ -58,7 +58,7 @@ class GameUtils(QObject):
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
 
-        self.console = ConsoleWindow()
+        self.console = Console()
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
         self.game_meta = RareGameMeta()
@@ -245,7 +245,7 @@ class GameUtils(QObject):
 
     def _launch_pre_command(self, env: dict):
         proc = QProcess()
-        environment = QProcessEnvironment()
+        environment = QProcessEnvironment().systemEnvironment()
         for e in env:
             environment.insert(e, env[e])
         proc.setProcessEnvironment(environment)
@@ -260,12 +260,13 @@ class GameUtils(QObject):
                 str(proc.readAllStandardError().data(), "utf-8", "ignore")
             )
         )
+        self.console.set_env(environment)
         return proc
 
     def _get_process(self, app_name, env):
         process = GameProcess(app_name)
 
-        environment = QProcessEnvironment()
+        environment = QProcessEnvironment().systemEnvironment()
         for e in env:
             environment.insert(e, env[e])
         process.setProcessEnvironment(environment)
@@ -287,6 +288,7 @@ class GameUtils(QObject):
                 and QSettings().value("show_console", False, bool))
             else None
         )
+        self.console.set_env(environment)
         return process
 
     def _launch_origin(self, app_name, process: QProcess):

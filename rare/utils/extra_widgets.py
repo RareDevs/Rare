@@ -4,6 +4,7 @@ from typing import Callable, Tuple
 
 from PyQt5.QtCore import (
     Qt,
+    QEvent,
     QCoreApplication,
     QRect,
     QSize,
@@ -49,6 +50,7 @@ class FlowLayout(QLayout):
         self._vspacing = vspacing
         self._items = []
         self.setContentsMargins(margin, margin, margin, margin)
+        self.setObjectName(type(self).__name__)
 
     def __del__(self):
         del self._items[:]
@@ -148,7 +150,9 @@ class FlowLayout(QLayout):
 class IndicatorReasons:
     dir_not_empty = QCoreApplication.translate("IndicatorReasons", "Directory is not empty")
     wrong_format = QCoreApplication.translate("IndicatorReasons", "Given text has wrong format")
-    game_not_installed = QCoreApplication.translate("IndicatorReasons", "Game is not installed or does not exist")
+    game_not_installed = QCoreApplication.translate(
+        "IndicatorReasons", "Game is not installed or does not exist"
+    )
     dir_not_exist = QCoreApplication.translate("IndicatorReasons", "Directory does not exist")
     file_not_exist = QCoreApplication.translate("IndicatorReasons", "File does not exist")
     wrong_path = QCoreApplication.translate("IndicatorReasons", "Wrong Directory")
@@ -160,29 +164,29 @@ class IndicatorLineEdit(QWidget):
     reasons = IndicatorReasons()
 
     def __init__(
-            self,
-            text: str = "",
-            placeholder: str = "",
-            completer: QCompleter = None,
-            edit_func: Callable[[str], Tuple[bool, str, str]] = None,
-            save_func: Callable[[str], None] = None,
-            horiz_policy: QSizePolicy = QSizePolicy.Expanding,
-            parent=None,
+        self,
+        text: str = "",
+        placeholder: str = "",
+        completer: QCompleter = None,
+        edit_func: Callable[[str], Tuple[bool, str, str]] = None,
+        save_func: Callable[[str], None] = None,
+        horiz_policy: QSizePolicy = QSizePolicy.Expanding,
+        parent=None,
     ):
         super(IndicatorLineEdit, self).__init__(parent=parent)
-        self.setObjectName("IndicatorLineEdit")
-        self.layout = QHBoxLayout(self)
-        self.layout.setObjectName("layout")
-        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.setObjectName(type(self).__name__)
+        layout = QHBoxLayout(self)
+        layout.setObjectName(f"{self.objectName()}Layout")
+        layout.setContentsMargins(0, 0, 0, 0)
         # Add line_edit
         self.line_edit = QLineEdit(self)
-        self.line_edit.setObjectName("line_edit")
+        self.line_edit.setObjectName(f"{type(self).__name__}Edit")
         self.line_edit.setPlaceholderText(placeholder)
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
         # Add hint_label to line_edit
         self.line_edit.setLayout(QHBoxLayout())
         self.hint_label = QLabel()
-        self.hint_label.setObjectName("HintLabel")
+        self.hint_label.setObjectName(f"{type(self).__name__}Label")
         self.hint_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.line_edit.layout().setContentsMargins(0, 0, 10, 0)
         self.line_edit.layout().addWidget(self.hint_label)
@@ -191,20 +195,16 @@ class IndicatorLineEdit(QWidget):
             completer.popup().setItemDelegate(QStyledItemDelegate(self))
             completer.popup().setAlternatingRowColors(True)
             self.line_edit.setCompleter(completer)
-        self.layout.addWidget(self.line_edit)
+        layout.addWidget(self.line_edit)
         if edit_func is not None:
             self.indicator_label = QLabel()
-            self.indicator_label.setPixmap(
-                qta_icon("ei.info-circle", color="gray").pixmap(16, 16)
-            )
+            self.indicator_label.setPixmap(qta_icon("ei.info-circle", color="gray").pixmap(16, 16))
             self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            self.layout.addWidget(self.indicator_label)
+            layout.addWidget(self.indicator_label)
 
         if not placeholder:
             _translate = QCoreApplication.translate
-            self.line_edit.setPlaceholderText(
-                _translate(self.__class__.__name__, "Default")
-            )
+            self.line_edit.setPlaceholderText(_translate(self.__class__.__name__, "Default"))
 
         self.edit_func = edit_func
         self.save_func = save_func
@@ -233,9 +233,7 @@ class IndicatorLineEdit(QWidget):
 
     def __indicator(self, res, reason=None):
         color = "green" if res else "red"
-        self.indicator_label.setPixmap(
-            qta_icon("ei.info-circle", color=color).pixmap(16, 16)
-        )
+        self.indicator_label.setPixmap(qta_icon("ei.info-circle", color=color).pixmap(16, 16))
         if reason:
             self.indicator_label.setToolTip(reason)
         else:
@@ -297,16 +295,16 @@ class PathEdit(IndicatorLineEdit):
     compl_model = QFileSystemModel()
 
     def __init__(
-            self,
-            path: str = "",
-            file_type: QFileDialog.FileType = QFileDialog.AnyFile,
-            type_filter: str = "",
-            name_filter: str = "",
-            placeholder: str = "",
-            edit_func: Callable[[str], Tuple[bool, str, str]] = None,
-            save_func: Callable[[str], None] = None,
-            horiz_policy: QSizePolicy = QSizePolicy.Expanding,
-            parent=None,
+        self,
+        path: str = "",
+        file_type: QFileDialog.FileType = QFileDialog.AnyFile,
+        type_filter: str = "",
+        name_filter: str = "",
+        placeholder: str = "",
+        edit_func: Callable[[str], Tuple[bool, str, str]] = None,
+        save_func: Callable[[str], None] = None,
+        horiz_policy: QSizePolicy = QSizePolicy.Expanding,
+        parent=None,
     ):
         try:
             self.compl_model.setOptions(
@@ -320,7 +318,7 @@ class PathEdit(IndicatorLineEdit):
         self.compl_model.setRootPath(path)
         self.completer.setModel(self.compl_model)
 
-        edit_func = self._wrap_edit_function(edit_func)
+        edit_func = self.__wrap_edit_function(edit_func)
 
         super(PathEdit, self).__init__(
             text=path,
@@ -331,11 +329,12 @@ class PathEdit(IndicatorLineEdit):
             horiz_policy=horiz_policy,
             parent=parent,
         )
-        self.setObjectName("PathEdit")
-        self.line_edit.setMinimumSize(QSize(300, 0))
+        self.setObjectName(type(self).__name__)
+        self.line_edit.setMinimumSize(QSize(250, 0))
         self.path_select = QToolButton(self)
-        self.path_select.setObjectName("path_select")
-        self.layout.addWidget(self.path_select)
+        self.path_select.setObjectName(f"{type(self).__name__}Button")
+        layout = self.layout()
+        layout.addWidget(self.path_select)
 
         _translate = QCoreApplication.translate
         self.path_select.setText(_translate("PathEdit", "Browse..."))
@@ -361,7 +360,7 @@ class PathEdit(IndicatorLineEdit):
             self.line_edit.setText(names[0])
             self.compl_model.setRootPath(names[0])
 
-    def _wrap_edit_function(self, edit_function: Callable[[str], Tuple[bool, str, str]]):
+    def __wrap_edit_function(self, edit_function: Callable[[str], Tuple[bool, str, str]]):
         if edit_function:
             return lambda text: edit_function(os.path.expanduser(text)
                                               if text.startswith("~") else text)
@@ -478,9 +477,7 @@ class SelectViewWidget(QWidget):
     def __init__(self, icon_view: bool):
         super(SelectViewWidget, self).__init__()
         self.icon_view = icon_view
-        self.setStyleSheet(
-            """QPushButton{border: none; background-color: transparent}"""
-        )
+        self.setStyleSheet("""QPushButton{border: none; background-color: transparent}""")
         self.icon_view_button = QPushButton()
         self.list_view = QPushButton()
         if icon_view:
@@ -505,7 +502,9 @@ class SelectViewWidget(QWidget):
         return self.icon_view
 
     def icon(self):
-        self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
+        self.icon_view_button.setIcon(
+            qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange")
+        )
         self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list"))
         self.icon_view = False
         self.toggled.emit()
@@ -589,9 +588,7 @@ class ButtonLineEdit(QLineEdit):
             "QLineEdit {padding-right: %dpx; }" % (buttonSize.width() + frameWidth + 1)
         )
         self.setMinimumSize(
-            max(
-                self.minimumSizeHint().width(), buttonSize.width() + frameWidth * 2 + 2
-            ),
+            max(self.minimumSizeHint().width(), buttonSize.width() + frameWidth * 2 + 2),
             max(
                 self.minimumSizeHint().height(),
                 buttonSize.height() + frameWidth * 2 + 2,

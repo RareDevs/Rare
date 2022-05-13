@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>235</width>
-    <height>127</height>
+    <width>501</width>
+    <height>154</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,6 +30,9 @@
      </property>
     </widget>
    </item>
+   <item row="0" column="1">
+    <layout class="QHBoxLayout" name="path_edit_layout"/>
+   </item>
    <item row="1" column="0">
     <widget class="QLabel" name="app_name_label">
      <property name="text">
@@ -37,13 +40,24 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <layout class="QHBoxLayout" name="path_edit_layout"/>
-   </item>
    <item row="1" column="1">
     <layout class="QHBoxLayout" name="app_name_layout"/>
    </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="import_folder_label">
+     <property name="text">
+      <string>Import all folders</string>
+     </property>
+    </widget>
+   </item>
    <item row="3" column="1">
+    <widget class="QLabel" name="info_label">
+     <property name="text">
+      <string notr="true"/>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
     <widget class="QPushButton" name="import_button">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -57,9 +71,14 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QLabel" name="info_label">
+    <widget class="QCheckBox" name="import_folder_check">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
-      <string/>
+      <string>Scan the installation path for game folders and import them</string>
      </property>
     </widget>
    </item>
