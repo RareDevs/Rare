@@ -1,14 +1,15 @@
-import datetime
 import json
-import os
 import sys
 import time
 from logging import getLogger
 from typing import List, Union
 
-from PyQt5.QtCore import QObject, QCoreApplication, QProcess, pyqtSignal
+from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
+from PyQt5.QtWidgets import QApplication, QPushButton
 
+from lgd_helper import get_launch_args, LaunchArgs, get_configured_process
 from rare.legendary.legendary.core import LegendaryCore
 
 
@@ -27,32 +28,34 @@ class GameProcessHelper(QObject):
         self.core = LegendaryCore()
 
         self.server = QLocalServer()
-        ret = self.server.listen(f"rare_{self.app_name}")
+        ret = self.server.listen(f"rare3_{self.app_name}")
         if not ret:
             self.logger.info(self.server.errorString())
-            print("Error")
+            print("Server is running")
             self.server.close()
             self.success = False
             return
         self.server.newConnection.connect(self.new_server_connection)
 
-        self.game_process.readyReadStandardOutput.connect(
-            lambda: print(
-                str(self.game_process.readAllStandardOutput().data(), "utf-8", "ignore")
-            )
-        )
-        self.game_process.readyReadStandardError.connect(
-            lambda: print(
-                str(self.game_process.readAllStandardError().data(), "utf-8", "ignore")
-            )
-        )
         self.game_process.finished.connect(self.game_finished)
         self.start_time = time.time()
 
-    def get_args(self) -> List[str]:
-        # self.core.whatever
+    def prepare_launch(self, app_name) -> List[str]:
+        args = get_launch_args(self.core, LaunchArgs(app_name))
+        if not args:
+            return []
+
+        self.game_process.setProcessEnvironment(args.env)
+
+        if args.pre_launch_command:
+            proc = get_configured_process()
+            proc.setProcessEnvironment(args.env)
+            proc.start(args.pre_launch_command[0], args.pre_launch_command[1:])
+            if args.pre_launch_wait:
+                proc.waitForFinished(-1)
+
         return [
-            "python", os.path.expanduser("~/testx.py")
+            args.executable, args.args, args.is_origin_game
         ]
 
     def new_server_connection(self):
@@ -84,22 +87,46 @@ class GameProcessHelper(QObject):
         )
         self.exit_app.emit()
 
-    def start(self):
-        args = self.get_args()
-        self.game_process.start(args[0], args[1:])
+    def start(self, app_name):
+        # if offline
+        try:
+            if not self.core.login():
+                raise ValueError("You are not logged in")
+        except ValueError:
+            # automatically launch offline if available
+            self.logger.error("Not logged in. Try to launch game offline")
+            # offline = True
+
+        args = self.prepare_launch(app_name)
+        if not args:
+            print(args)
+            self.server.close()
+            self.server.deleteLater()
+            return
+        if args[2]:
+            # origin game on Windows
+            QDesktopServices.openUrl(QUrl(args[2]))
+            return
+        self.game_process.start(*args[:2])
         self.start_time = time.time()
 
 
-def run_game(app_name: str):
-    app = QCoreApplication(sys.argv)
+def main(app_name: str):
+    app = QApplication(sys.argv)
     helper = GameProcessHelper(app_name)
     if not helper.success:
         return
-    helper.start()
+    helper.start(app_name)
     helper.exit_app.connect(lambda: app.exit(0))
+
+    # this button is for debug. Closing with keyboard interrupt does not kill the server
+    quit_button = QPushButton("Quit")
+    quit_button.show()
+    quit_button.clicked.connect(lambda: app.exit(0))
     app.exec_()
     helper.server.close()
 
 
 if __name__ == '__main__':
-    run_game("CrabEA")
+    # TODO add argparse for offline app name, wine prefix/binary ...
+    main("963137e4c29d4c79a81323b8fab03a40")
