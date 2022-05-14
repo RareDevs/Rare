@@ -251,7 +251,29 @@ def get_size(b: int) -> str:
         b /= 1024
 
 
-def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link="desktop", for_rare: bool = False) -> bool:
+def get_rare_executable() -> List[str]:
+    if platform.system() == "Linux":
+        # TODO flatpak
+        if p := os.environ.get("APPIMAGE"):
+            executable = [p]
+        else:
+            executable = [sys.executable, os.path.abspath(sys.argv[0])]
+    elif platform.system() == "Windows":
+        executable = [sys.executable]
+        arguments = []
+
+        if not sys.executable.endswith("Rare.exe"):
+            # be sure to start consoleless then
+            executable[0] = executable[0].replace("python.exe", "pythonw.exe")
+            arguments.append(os.path.abspath(sys.argv[0]))
+    else:  # macos not tested
+        executable = [sys.executable]
+
+    return executable
+
+
+def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link="desktop",
+                        for_rare: bool = False) -> bool:
     if not for_rare:
         igame = core.get_installed_game(app_name)
 
@@ -276,10 +298,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
             return False
         if not os.path.exists(path):
             return False
-        if p := os.environ.get("APPIMAGE"):
-            executable = p
-        else:
-            executable = f"{sys.executable} {os.path.abspath(sys.argv[0])}"
+        executable = get_rare_executable()
 
         if for_rare:
             with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
@@ -341,8 +360,12 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
         shell = Dispatch("WScript.Shell")
         shortcut = shell.CreateShortCut(pathLink)
 
-        executable = sys.executable
+        executable = get_rare_executable()
         arguments = []
+
+        if len(executable) > 1:
+            arguments.extend(executable[1:])
+            executable = executable[0]
 
         if not sys.executable.endswith("Rare.exe"):
             # be sure to start consoleless then

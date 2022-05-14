@@ -1,12 +1,13 @@
-import datetime
+import json
 import os
 import platform
 import shutil
 from dataclasses import dataclass
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqtSignal, QUrl
+from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqtSignal, QUrl, QTimer, pyqtSlot
 from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtNetwork import QLocalSocket
 from PyQt5.QtWidgets import QMessageBox, QPushButton
 from legendary.models.game import LaunchParameters, InstalledGame
 
@@ -15,26 +16,70 @@ from rare.components.extra.console import Console
 from rare.components.tabs.games import CloudSaveUtils
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import legendary_utils
+from rare.utils import utils
 from rare.utils.meta import RareGameMeta
 
 logger = getLogger("GameUtils")
 
 
-class GameProcess(QProcess):
+class GameProcess(QObject):
+    @dataclass
+    class FinishedModel:
+        action: str
+        app_name: str
+        exit_code: int
+        playtime: int  # seconds
+
+        @classmethod
+        def from_json(cls, data):
+            return cls(
+                action=data["action"],
+                app_name=data["app_name"],
+                exit_code=data["exit_code"],
+                playtime=data["playtime"],
+            )
+
     game_finished = pyqtSignal(int, str)
 
-    # noinspection PyUnresolvedReferences
-    def __init__(self, app_name):
+    def __init__(self, app_name: str):
         super(GameProcess, self).__init__()
         self.app_name = app_name
-        self.finished.connect(self._game_finished)
+        self.socket = QLocalSocket()
+        self.socket.connected.connect(self._socket_connected)
+        self.socket.errorOccurred.connect(self._error_occured)
+        self.socket.readyRead.connect(self._message_available)
+        self.socket.disconnected.connect(lambda: self.socket.close())
+
+        # wait a short time for process started
+        QTimer.singleShot(1000, self.connect_to_server)
+
+    def connect_to_server(self):
+        self.socket.connectToServer(f"rare1_{self.app_name}")
+
+    def _message_available(self):
+        message = self.socket.readAll().data()
+        if not message.startswith(b"{"):
+            logger.error(f"Received unsupported message{message.decode()}")
+            return
+        try:
+            data = json.loads(message)
+        except json.JSONDecodeError:
+            logger.error("Could not load json data")
+            return
+
+        if data.get("action", "") == "finished":
+            logger.info(f"{self.app_name} finished")
+            resp = self.FinishedModel.from_json(data)
+            self._game_finished(resp.exit_code)
+
+    def _socket_connected(self):
+        logger.info(f"Connection established for {self.app_name}")
+
+    def _error_occured(self, _):
+        logger.error(self.socket.errorString())
 
     def _game_finished(self, exit_code):
-        try:
-            self.game_finished.emit(exit_code, self.app_name)
-        except RuntimeError:  # Do not raise an exception, if rare finished, but game not
-            pass
-
+        self.game_finished.emit(exit_code, self.app_name)
 
 
 @dataclass
@@ -123,74 +168,17 @@ class GameUtils(QObject):
             wine_pfx: str = None,
             ask_always_sync: bool = False,
     ):
-        if self.args.offline:
-            offline = True
-        game = self.core.get_game(app_name)
-        igame = self.core.get_installed_game(app_name)
-
-        meta_data = self.game_meta.get_game(app_name)
-        meta_data.last_played = datetime.datetime.now()
-        self.game_meta.set_game(app_name, meta_data)
-
-        if not game:
-            logger.error(f"{app_name} not found")
-            self.finished.emit(app_name, self.tr("Game not found in available games"))
-            return
-
-        if QSettings().value("confirm_start", False, bool):
-            if (
-                    not QMessageBox.question(
-                        None,
-                        "Launch",
-                        self.tr("Do you want to launch {}").format(game.app_title),
-                        QMessageBox.Yes | QMessageBox.No,
-                    ) == QMessageBox.Yes
-            ):
-                logger.info("Cancel Startup")
-                self.finished.emit(app_name, "")
-                return
-        logger.info(f"Launching {game.app_title}")
-
-        if game.third_party_store == "Origin":
-            offline = False
-        else:
-            if not igame:
-                logger.error(f"{app_name} is not installed")
-            if game.is_dlc:
-                logger.error("Game is dlc")
-                self.finished.emit(
-                    app_name, self.tr("Game is a DLC. Please launch base game instead")
-                )
-                return
-            if not os.path.exists(igame.install_path):
-                logger.error("Game doesn't exist")
-                self.finished.emit(
-                    app_name,
-                    self.tr(
-                        "Game files of {} do not exist. Please install game"
-                    ).format(game.app_title),
-                )
-                return
-
-        def _launch_real():
-            process = self._get_process(app_name, env)
-            self.console.log("\n"*2)
-            if game.third_party_store != "Origin":
-                self._launch_game(igame, process, offline, skip_update_check, ask_always_sync)
-            else:
-                self._launch_origin(app_name, process)
-
-        env = self.core.get_app_environment(app_name, wine_pfx=wine_pfx)
-        pre_cmd, wait = self.core.get_pre_launch_command(app_name)
-        if pre_cmd:
-            pre_cmd = pre_cmd.split()
-            pre_proc = self._launch_pre_command(env)
-            self.console.log("\n"*2)
-            pre_proc.start(pre_cmd[0], pre_cmd[1:])
-            if wait:
-                pre_proc.finished.connect(_launch_real)
-                return
-        _launch_real()
+        executable = utils.get_rare_executable()
+        args = executable[1:]
+        args.extend([
+            "start", app_name
+        ])
+        # TODO support for offline etc
+        QProcess.startDetached(executable[0], args)
+        logger.info(f"Start new Process: ({executable[0]} {' '.join(args)})")
+        game_process = GameProcess(app_name)
+        game_process.game_finished.connect(self.game_finished)
+        self.running_games[app_name] = game_process
 
     def game_finished(self, exit_code, app_name):
         logger.info(f"Game exited with exit code: {exit_code}")

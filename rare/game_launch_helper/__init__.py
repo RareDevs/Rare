@@ -9,8 +9,8 @@ from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 from PyQt5.QtWidgets import QApplication, QPushButton
 
-from lgd_helper import get_launch_args, LaunchArgs, get_configured_process
-from rare.legendary.legendary.core import LegendaryCore
+from .lgd_helper import get_launch_args, LaunchArgs, get_configured_process
+from legendary.core import LegendaryCore
 
 
 class GameProcessHelper(QObject):
@@ -28,7 +28,7 @@ class GameProcessHelper(QObject):
         self.core = LegendaryCore()
 
         self.server = QLocalServer()
-        ret = self.server.listen(f"rare3_{self.app_name}")
+        ret = self.server.listen(f"rare1_{self.app_name}")
         if not ret:
             self.logger.info(self.server.errorString())
             print("Server is running")
@@ -64,7 +64,6 @@ class GameProcessHelper(QObject):
         self.logger.info("New connection")
         self.socket = self.server.nextPendingConnection()
         self.socket.disconnected.connect(self.socket.deleteLater)
-        self.socket.write(b'Test')
         self.socket.flush()
 
     def send_message(self, message: Union[bytes, str]):
@@ -74,13 +73,14 @@ class GameProcessHelper(QObject):
             self.socket.write(message)
             self.socket.flush()
         else:
-            print("error: ", self.socket.errorString())
+            print("Can't send message")
 
     def game_finished(self, exit_code):
         print("game finished")
         self.send_message(
             json.dumps({
                 "action": "finished",
+                "app_name": self.app_name,
                 "exit_code": exit_code,
                 "playtime": int(time.time() - self.start_time)
             })
@@ -111,7 +111,7 @@ class GameProcessHelper(QObject):
         self.start_time = time.time()
 
 
-def main(app_name: str):
+def start_game(app_name: str):
     app = QApplication(sys.argv)
     helper = GameProcessHelper(app_name)
     if not helper.success:
@@ -129,4 +129,4 @@ def main(app_name: str):
 
 if __name__ == '__main__':
     # TODO add argparse for offline app name, wine prefix/binary ...
-    main("963137e4c29d4c79a81323b8fab03a40")
+    start_game("963137e4c29d4c79a81323b8fab03a40")
