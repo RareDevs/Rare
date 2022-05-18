@@ -49,12 +49,13 @@ class GameProcess(QObject):
         self.socket.errorOccurred.connect(self._error_occured)
         self.socket.readyRead.connect(self._message_available)
         self.socket.disconnected.connect(lambda: self.socket.close())
-
+        self.timer = QTimer()
         # wait a short time for process started
-        QTimer.singleShot(1000, self.connect_to_server)
+        self.timer.timeout.connect(self.connect_to_server)
+        self.timer.start(200)
 
     def connect_to_server(self):
-        self.socket.connectToServer(f"rare1_{self.app_name}")
+        self.socket.connectToServer(f"rare_{self.app_name}")
 
     def _message_available(self):
         message = self.socket.readAll().data()
@@ -73,6 +74,8 @@ class GameProcess(QObject):
             self._game_finished(resp.exit_code)
 
     def _socket_connected(self):
+        self.timer.stop()
+        self.timer.deleteLater()
         logger.info(f"Connection established for {self.app_name}")
 
     def _error_occured(self, _):
@@ -169,13 +172,23 @@ class GameUtils(QObject):
             ask_always_sync: bool = False,
     ):
         executable = utils.get_rare_executable()
-        args = executable[1:]
+        executable, args = executable[0], executable[1:]
         args.extend([
             "start", app_name
         ])
-        # TODO support for offline etc
-        QProcess.startDetached(executable[0], args)
-        logger.info(f"Start new Process: ({executable[0]} {' '.join(args)})")
+        if offline:
+            args.append("--offline")
+        if skip_update_check:
+            args.append("--skip-update-check")
+        if wine_bin:
+            args.extend(["--wine-bin", wine_bin])
+        if wine_pfx:
+            args.extend(["--wine-prefix", wine_pfx])
+        if ask_always_sync:
+            args.extend("--ask-always-sync")
+
+        QProcess.startDetached(executable, args)
+        logger.info(f"Start new Process: ({executable} {' '.join(args)})")
         game_process = GameProcess(app_name)
         game_process.game_finished.connect(self.game_finished)
         self.running_games[app_name] = game_process

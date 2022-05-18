@@ -7,7 +7,6 @@ from argparse import ArgumentParser
 
 
 def main():
-
     # fix cx_freeze
     import multiprocessing
 
@@ -56,7 +55,17 @@ def main():
     launch_minimal_parser = subparsers.add_parser("start")
     launch_minimal_parser.add_argument("app_name", help="AppName of the game to launch",
                                        metavar="<App Name>", action="store")
-    launch_minimal_parser.add_argument("offline", help="Launch game offline",
+    launch_minimal_parser.add_argument("--offline", help="Launch game offline",
+                                       action="store_true")
+    launch_minimal_parser.add_argument("--skip_update_check", help="Do not check for updates",
+                                       action="store_true")
+    launch_minimal_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
+                               default=os.environ.get('LGDRY_WINE_BINARY', None),
+                               help='Set WINE binary to use to launch the app')
+    launch_minimal_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
+                               default=os.environ.get('LGDRY_WINE_PREFIX', None),
+                               help='Set WINE prefix to use')
+    launch_minimal_parser.add_argument("--ask-alyways-sync", help="Ask for cloud saves",
                                        action="store_true")
 
     args = parser.parse_args()
@@ -80,10 +89,9 @@ def main():
 
         print(f"Rare {__version__} Codename: {code_name}")
         return
-
     if args.subparser == "start":
         from rare import game_launch_helper as helper
-        helper.start_game(args.app_name)
+        helper.start_game(args)
         return
 
     from rare.utils import singleton

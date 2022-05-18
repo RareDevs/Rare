@@ -1,6 +1,7 @@
 import os
 import platform
 import shutil
+from argparse import Namespace
 from dataclasses import dataclass
 from logging import getLogger
 from typing import List, Tuple
@@ -13,16 +14,25 @@ logger = getLogger("Helper")
 
 
 @dataclass
-class LaunchArgs:
+class InitArgs:
     app_name: str
     offline: bool = False
     skip_version_check: bool = False
     wine_prefix: str = ""
     wine_bin: str = ""
 
+    @classmethod
+    def from_argparse(cls, args):
+        return cls(
+            app_name=args.app_name,
+            offline=args.offline,
+            skip_version_check=args.skip_update_check,
+            wine_bin=args.wine_bin,
+            wine_prefix=args.wine_pfx
+        )
 
 @dataclass
-class LaunchReturnValue:
+class LaunchArgs:
     executable: str = ""
     args: List[str] = None
     env: QProcessEnvironment = None
@@ -35,7 +45,7 @@ class LaunchReturnValue:
 
 
 def get_origin_params(core: LegendaryCore, app_name, offline: bool,
-                      launch_args: LaunchReturnValue) -> LaunchReturnValue:
+                      launch_args: LaunchArgs) -> LaunchArgs:
     origin_uri = core.get_origin_uri(app_name, offline)
     if platform.system() == "Windows":
         launch_args.executable = origin_uri
@@ -49,15 +59,20 @@ def get_origin_params(core: LegendaryCore, app_name, offline: bool,
         return launch_args
     command.append(origin_uri)
 
+    env = core.get_app_environment(app_name)
+    launch_args.env = QProcessEnvironment()
+    for name, value in env:
+        launch_args.env.insert(name, value)
+
     launch_args.executable = command[0]
     launch_args.args = command[1:]
     return launch_args
 
 
-def get_game_params(core: LegendaryCore, igame: InstalledGame, offline: bool,
-                    skip_update_check: bool, launch_args: LaunchReturnValue) -> LaunchReturnValue:
-    if not offline:  # skip for update
-        if not skip_update_check and not core.is_noupdate_game(igame.app_name):
+def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
+                    launch_args: LaunchArgs) -> LaunchArgs:
+    if not args.offline:  # skip for update
+        if not args.skip_version_check and not core.is_noupdate_game(igame.app_name):
             # check updates
             try:
                 latest = core.get_asset(
@@ -70,7 +85,7 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, offline: bool,
                 if latest.build_version != igame.version:
                     return launch_args
     params: LaunchParameters = core.get_launch_parameters(
-        app_name=igame.app_name, offline=offline
+        app_name=igame.app_name, offline=args.offline
     )
 
     full_params = list()
@@ -89,14 +104,18 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, offline: bool,
     launch_args.executable = full_params[0]
     launch_args.args = full_params[1:]
 
+    launch_args.env = QProcessEnvironment()
+    for name, value in params.environment.items():
+        launch_args.env.insert(name, value)
+
     return launch_args
 
 
-def get_launch_args(core: LegendaryCore, args: LaunchArgs = None) -> LaunchReturnValue:
+def get_launch_args(core: LegendaryCore, args: InitArgs = None) -> LaunchArgs:
     game = core.get_game(args.app_name)
     igame = core.get_installed_game(args.app_name)
 
-    resp = LaunchReturnValue()
+    resp = LaunchArgs()
 
     if not game:
         return resp
@@ -118,13 +137,8 @@ def get_launch_args(core: LegendaryCore, args: LaunchArgs = None) -> LaunchRetur
     if game.third_party_store == "Origin":
         resp = get_origin_params(core, args.app_name, args.offline, resp)
     else:
-        resp = get_game_params(core, igame, args.offline, args.skip_version_check, resp)
+        resp = get_game_params(core, igame, args, resp)
 
-    env = core.get_app_environment(args.app_name, wine_pfx=args.wine_prefix)
-    environment = QProcessEnvironment()
-    for e in env:
-        environment.insert(e, env[e])
-    resp.env = environment
     pre_cmd, wait = core.get_pre_launch_command(args.app_name)
     resp.pre_launch_command, resp.pre_launch_wait = pre_cmd, wait
     return resp

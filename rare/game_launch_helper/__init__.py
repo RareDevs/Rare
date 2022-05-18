@@ -1,16 +1,17 @@
 import json
 import sys
 import time
+from argparse import Namespace
 from logging import getLogger
-from typing import List, Union
+from typing import Union
 
 from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
-from PyQt5.QtWidgets import QApplication, QPushButton
-
-from .lgd_helper import get_launch_args, LaunchArgs, get_configured_process
+from PyQt5.QtWidgets import QApplication
 from legendary.core import LegendaryCore
+
+from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs
 
 
 class GameProcessHelper(QObject):
@@ -28,7 +29,7 @@ class GameProcessHelper(QObject):
         self.core = LegendaryCore()
 
         self.server = QLocalServer()
-        ret = self.server.listen(f"rare1_{self.app_name}")
+        ret = self.server.listen(f"rare_{self.app_name}")
         if not ret:
             self.logger.info(self.server.errorString())
             print("Server is running")
@@ -40,10 +41,10 @@ class GameProcessHelper(QObject):
         self.game_process.finished.connect(self.game_finished)
         self.start_time = time.time()
 
-    def prepare_launch(self, app_name) -> List[str]:
-        args = get_launch_args(self.core, LaunchArgs(app_name))
+    def prepare_launch(self, app_name) -> Union[LaunchArgs, None]:
+        args = get_launch_args(self.core, InitArgs(app_name))
         if not args:
-            return []
+            return None
 
         self.game_process.setProcessEnvironment(args.env)
 
@@ -54,9 +55,7 @@ class GameProcessHelper(QObject):
             if args.pre_launch_wait:
                 proc.waitForFinished(-1)
 
-        return [
-            args.executable, args.args, args.is_origin_game
-        ]
+        return args
 
     def new_server_connection(self):
         if self.socket is not None:
@@ -87,46 +86,41 @@ class GameProcessHelper(QObject):
         )
         self.exit_app.emit()
 
-    def start(self, app_name):
-        # if offline
-        try:
-            if not self.core.login():
-                raise ValueError("You are not logged in")
-        except ValueError:
-            # automatically launch offline if available
-            self.logger.error("Not logged in. Try to launch game offline")
-            # offline = True
+    def start(self, args: Namespace):
+        if not args.offline:
+            try:
+                if not self.core.login():
+                    raise ValueError("You are not logged in")
+            except ValueError:
+                # automatically launch offline if available
+                self.logger.error("Not logged in. Try to launch game offline")
+                # offline = True
 
-        args = self.prepare_launch(app_name)
-        if not args:
-            print(args)
+        launch_args = self.prepare_launch(args.app_name)
+        if not launch_args:
             self.server.close()
             self.server.deleteLater()
             return
-        if args[2]:
+        if launch_args.is_origin_game:
             # origin game on Windows
             QDesktopServices.openUrl(QUrl(args[2]))
             return
-        self.game_process.start(*args[:2])
+        self.game_process.start(launch_args.executable, launch_args.args)
         self.start_time = time.time()
 
 
-def start_game(app_name: str):
+def start_game(args: Namespace):
+    args = InitArgs.from_argparse(args)
     app = QApplication(sys.argv)
-    helper = GameProcessHelper(app_name)
+    helper = GameProcessHelper(args.app_name)
     if not helper.success:
         return
-    helper.start(app_name)
+    helper.start(args)
     helper.exit_app.connect(lambda: app.exit(0))
 
     # this button is for debug. Closing with keyboard interrupt does not kill the server
-    quit_button = QPushButton("Quit")
-    quit_button.show()
-    quit_button.clicked.connect(lambda: app.exit(0))
+    # quit_button = QPushButton("Quit")
+    # quit_button.show()
+    # quit_button.clicked.connect(lambda: app.exit(0))
     app.exec_()
     helper.server.close()
-
-
-if __name__ == '__main__':
-    # TODO add argparse for offline app name, wine prefix/binary ...
-    start_game("963137e4c29d4c79a81323b8fab03a40")
