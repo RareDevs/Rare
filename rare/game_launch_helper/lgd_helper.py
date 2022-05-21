@@ -1,7 +1,6 @@
 import os
 import platform
 import shutil
-from argparse import Namespace
 from dataclasses import dataclass
 from logging import getLogger
 from typing import List, Tuple
@@ -30,6 +29,7 @@ class InitArgs:
             wine_bin=args.wine_bin,
             wine_prefix=args.wine_pfx
         )
+
 
 @dataclass
 class LaunchArgs:
@@ -60,7 +60,7 @@ def get_origin_params(core: LegendaryCore, app_name, offline: bool,
     command.append(origin_uri)
 
     env = core.get_app_environment(app_name)
-    launch_args.env = QProcessEnvironment()
+    launch_args.env = QProcessEnvironment.systemEnvironment()
     for name, value in env:
         launch_args.env.insert(name, value)
 
@@ -104,7 +104,7 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
     launch_args.executable = full_params[0]
     launch_args.args = full_params[1:]
 
-    launch_args.env = QProcessEnvironment()
+    launch_args.env = QProcessEnvironment.systemEnvironment()
     for name, value in params.environment.items():
         launch_args.env.insert(name, value)
 
@@ -156,11 +156,10 @@ def get_configured_process(env: dict = None):
             str(proc.readAllStandardError().data(), "utf-8", "ignore")
         )
     )
-
+    environment = QProcessEnvironment.systemEnvironment()
     if env:
-        environment = QProcessEnvironment()
         for e in env:
             environment.insert(e, env[e])
-        proc.setProcessEnvironment(environment)
+    proc.setProcessEnvironment(environment)
 
     return proc
