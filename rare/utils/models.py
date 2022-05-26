@@ -1,5 +1,5 @@
 import os
-import platform
+import platform as pf
 from dataclasses import field, dataclass
 from multiprocessing import Queue
 from typing import Union, List, Optional
@@ -16,6 +16,7 @@ from legendary.models.game import Game, InstalledGame
 class InstallOptionsModel:
     app_name: str
     base_path: str = ""
+    max_shm: int = 1024
     max_workers: int = os.cpu_count() * 2
     repair: bool = False
     no_install: bool = False
@@ -24,10 +25,11 @@ class InstallOptionsModel:
     sdl_list: list = field(default_factory=lambda: [""])
     update: bool = False
     silent: bool = False
-    install_platform: str = ""
+    platform: str = ""
+    dl_optimizations: bool = False
     overlay: bool = False
     create_shortcut: bool = True
-    install_preqs: bool = platform.system() == "Windows"
+    install_preqs: bool = pf.system() == "Windows"
 
     def set_no_install(self, enabled: bool) -> None:
         self.no_install = enabled

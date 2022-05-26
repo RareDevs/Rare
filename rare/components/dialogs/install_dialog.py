@@ -104,13 +104,17 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         if platform.system() == "Darwin" and "Mac" in platforms:
             self.platform_combo_box.setCurrentIndex(platforms.index("Mac"))
 
-        if self.core.lgd.config.has_option("Legendary", "max_workers"):
-            max_workers = self.core.lgd.config.get("Legendary", "max_workers")
-        else:
-            max_workers = 0
-        self.max_workers_spin.setValue(int(max_workers))
+        self.max_workers_spin.setValue(
+            self.core.lgd.config.getint("Legendary", "max_workers", fallback=0)
+        )
         self.max_workers_spin.valueChanged.connect(self.option_changed)
 
+        self.max_memory_spin.setValue(
+            self.core.lgd.config.getint("Legendary", "max_memory", fallback=0)
+        )
+        self.max_memory_spin.valueChanged.connect(self.option_changed)
+
+        self.dl_optimizations_check.stateChanged.connect(self.option_changed)
         self.force_download_check.stateChanged.connect(self.option_changed)
         self.ignore_space_check.stateChanged.connect(self.option_changed)
         self.download_only_check.stateChanged.connect(
@@ -164,7 +168,6 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_button.clicked.connect(self.install_clicked)
 
         self.resize(self.minimumSize())
-        # self.setFixedSize(self.size())
 
     def execute(self):
         if self.silent:
@@ -180,10 +183,12 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         )
 
         self.dl_item.options.max_workers = self.max_workers_spin.value()
+        self.dl_item.options.max_shm = self.max_memory_spin.value()
+        self.dl_item.options.dl_optimizations = self.dl_optimizations_check.isChecked()
         self.dl_item.options.force = self.force_download_check.isChecked()
         self.dl_item.options.ignore_space_req = self.ignore_space_check.isChecked()
         self.dl_item.options.no_install = self.download_only_check.isChecked()
-        self.dl_item.options.install_platform = self.platform_combo_box.currentText()
+        self.dl_item.options.platform = self.platform_combo_box.currentText()
         self.dl_item.options.sdl_list = [""]
         for cb in self.sdl_list_checks:
             if data := cb.isChecked():
@@ -201,6 +206,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.threadpool.start(info_worker)
 
     def verify_clicked(self):
+        self.warn_label.setVisible(False)
+        self.warn_message.setVisible(False)
         message = self.tr("Updating...")
         self.download_size_info_label.setText(message)
         self.download_size_info_label.setStyleSheet(
@@ -268,7 +275,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                 self.install_preqs_check.setVisible(True)
                 self.install_preqs_lbl.setVisible(True)
                 self.install_preqs_check.setText(
-                    self.tr("This will install {}").format(dl_item.igame.prereq_info.get("name", "")))
+                    self.tr("Also install: {}").format(dl_item.igame.prereq_info.get("name", "")))
 
     def on_worker_failed(self, message: str):
         error_text = self.tr("Error")
@@ -330,18 +337,18 @@ class InstallInfoWorker(QRunnable):
                         force=self.dl_item.options.force,
                         no_install=self.dl_item.options.no_install,
                         status_q=self.dl_item.status_q,
-                        # max_shm=,
+                        max_shm=self.dl_item.options.max_shm,
                         max_workers=self.dl_item.options.max_workers,
                         # game_folder=,
                         # disable_patching=,
                         # override_manifest=,
                         # override_old_manifest=,
                         # override_base_url=,
-                        platform=self.dl_item.options.install_platform,
+                        platform=self.dl_item.options.platform,
                         # file_prefix_filter=,
                         # file_exclude_filter=,
                         # file_install_tag=,
-                        # dl_optimizations=,
+                        dl_optimizations=self.dl_item.options.dl_optimizations,
                         # dl_timeout=,
                         repair=self.dl_item.options.repair,
                         # repair_use_latest=,
