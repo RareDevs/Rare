@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_InstallDialog(object):
     def setupUi(self, InstallDialog):
         InstallDialog.setObjectName("InstallDialog")
-        InstallDialog.resize(379, 434)
+        InstallDialog.resize(406, 447)
         InstallDialog.setWindowTitle("Rare")
         self.install_dialog_layout = QtWidgets.QFormLayout(InstallDialog)
         self.install_dialog_layout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
@@ -119,6 +119,8 @@ class Ui_InstallDialog(object):
         font = QtGui.QFont()
         font.setItalic(True)
         self.warn_message.setFont(font)
+        self.warn_message.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.warn_message.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.warn_message.setWordWrap(True)
         self.warn_message.setObjectName("warn_message")
         self.install_dialog_layout.setWidget(15, QtWidgets.QFormLayout.FieldRole, self.warn_message)
@@ -224,7 +226,7 @@ class Ui_InstallDialog(object):
         self.install_size_label.setText(_translate("InstallDialog", "Total install size"))
         self.install_size_info_label.setText(_translate("InstallDialog", "Click verify..."))
         self.warn_message.setText(_translate("InstallDialog", "None"))
-        self.warn_label.setText(_translate("InstallDialog", "Warnings"))
+        self.warn_label.setText(_translate("InstallDialog", "Warning"))
         self.cancel_button.setText(_translate("InstallDialog", "Cancel"))
         self.verify_button.setText(_translate("InstallDialog", "Verify"))
         self.install_button.setText(_translate("InstallDialog", "Install"))

@@ -1,11 +1,12 @@
 import os
 import platform
+import sys
 from multiprocessing import Queue as MPQueue
 from typing import Tuple
 
 from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
-from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QMessageBox
+from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox
 from legendary.core import LegendaryCore
 from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
@@ -21,9 +22,7 @@ from rare.utils.utils import get_size
 class InstallDialog(QDialog, Ui_InstallDialog):
     result_ready = pyqtSignal(InstallQueueItemModel)
 
-    def __init__(
-            self, dl_item: InstallQueueItemModel, update=False, silent=False, parent=None
-    ):
+    def __init__(self, dl_item: InstallQueueItemModel, update=False, silent=False, parent=None):
         super(InstallDialog, self).__init__(parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
@@ -34,12 +33,13 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.dl_item = dl_item
         self.dl_item.status_q = MPQueue()
         self.app_name = self.dl_item.options.app_name
-        self.game = self.core.get_game(self.app_name) \
-            if not self.dl_item.options.overlay \
+        self.game = (
+            self.core.get_game(self.app_name)
+            if not self.dl_item.options.overlay
             else Game(app_name=self.app_name, app_title="Epic Overlay")
+        )
 
-        self.game_path = self.game.metadata.get('customAttributes', {}). \
-            get('FolderName', {}).get('value', "")
+        self.game_path = self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value", "")
 
         self.update = update
         self.silent = silent
@@ -56,8 +56,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.setWindowTitle(f'{self.windowTitle()} - {header} "{self.game.app_title}"')
 
         if not self.dl_item.options.base_path:
-            self.dl_item.options.base_path = self.core.lgd.config.get("Legendary", "install_dir",
-                                                                      fallback=os.path.expanduser("~/legendary"))
+            self.dl_item.options.base_path = self.core.lgd.config.get(
+                "Legendary", "install_dir", fallback=os.path.expanduser("~/legendary")
+            )
 
         self.install_dir_edit = PathEdit(
             path=self.dl_item.options.base_path,
@@ -74,8 +75,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.shortcut_cb.setVisible(False)
             self.shortcut_cb.setChecked(False)
 
-        self.warn_label.setVisible(False)
-        self.warn_message.setVisible(False)
+        self.error_box()
 
         platforms = ["Windows"]
         if dl_item.options.app_name in self.api_results.bit32_games:
@@ -83,46 +83,32 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         if dl_item.options.app_name in self.api_results.mac_games:
             platforms.append("Mac")
         self.platform_combo_box.addItems(platforms)
+        self.platform_combo_box.currentIndexChanged.connect(lambda: self.option_changed(None))
         self.platform_combo_box.currentIndexChanged.connect(
-            lambda: self.option_changed(None)
-        )
-        self.platform_combo_box.currentIndexChanged.connect(
-            lambda i: QMessageBox.warning(
-                self,
-                "Warning",
+            lambda i: self.error_box(
+                self.tr("Warning"),
                 self.tr("You will not be able to run the Game if you choose {}").format(
                     self.platform_combo_box.itemText(i)
                 ),
             )
-            if (
-                    self.platform_combo_box.currentText() == "Mac"
-                    and platform.system() != "Darwin"
-            )
+            if (self.platform_combo_box.currentText() == "Mac" and platform.system() != "Darwin")
             else None
         )
 
         if platform.system() == "Darwin" and "Mac" in platforms:
             self.platform_combo_box.setCurrentIndex(platforms.index("Mac"))
 
-        self.max_workers_spin.setValue(
-            self.core.lgd.config.getint("Legendary", "max_workers", fallback=0)
-        )
+        self.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
         self.max_workers_spin.valueChanged.connect(self.option_changed)
 
-        self.max_memory_spin.setValue(
-            self.core.lgd.config.getint("Legendary", "max_memory", fallback=0)
-        )
+        self.max_memory_spin.setValue(self.core.lgd.config.getint("Legendary", "max_memory", fallback=0))
         self.max_memory_spin.valueChanged.connect(self.option_changed)
 
         self.dl_optimizations_check.stateChanged.connect(self.option_changed)
         self.force_download_check.stateChanged.connect(self.option_changed)
         self.ignore_space_check.stateChanged.connect(self.option_changed)
-        self.download_only_check.stateChanged.connect(
-            lambda: self.non_reload_option_changed("download_only")
-        )
-        self.shortcut_cb.stateChanged.connect(
-            lambda: self.non_reload_option_changed("shortcut")
-        )
+        self.download_only_check.stateChanged.connect(lambda: self.non_reload_option_changed("download_only"))
+        self.shortcut_cb.stateChanged.connect(lambda: self.non_reload_option_changed("shortcut"))
         self.sdl_list_checks = list()
         try:
             for key, info in games[self.app_name].items():
@@ -178,9 +164,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.show()
 
     def get_options(self):
-        self.dl_item.options.base_path = (
-            self.install_dir_edit.text() if not self.update else None
-        )
+        self.dl_item.options.base_path = self.install_dir_edit.text() if not self.update else None
 
         self.dl_item.options.max_workers = self.max_workers_spin.value()
         self.dl_item.options.max_shm = self.max_memory_spin.value()
@@ -206,17 +190,12 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.threadpool.start(info_worker)
 
     def verify_clicked(self):
-        self.warn_label.setVisible(False)
-        self.warn_message.setVisible(False)
+        self.error_box()
         message = self.tr("Updating...")
         self.download_size_info_label.setText(message)
-        self.download_size_info_label.setStyleSheet(
-            "font-style: italic; font-weight: normal"
-        )
+        self.download_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
         self.install_size_info_label.setText(message)
-        self.install_size_info_label.setStyleSheet(
-            "font-style: italic; font-weight: normal"
-        )
+        self.install_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
         self.cancel_button.setEnabled(False)
         self.verify_button.setEnabled(False)
         self.install_button.setEnabled(False)
@@ -253,19 +232,13 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         install_size = self.dl_item.download.analysis.install_size
         if download_size:
             self.download_size_info_label.setText("{}".format(get_size(download_size)))
-            self.download_size_info_label.setStyleSheet(
-                "font-style: normal; font-weight: bold"
-            )
+            self.download_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
             self.install_button.setEnabled(not self.options_changed)
         else:
             self.install_size_info_label.setText(self.tr("Game already installed"))
-            self.install_size_info_label.setStyleSheet(
-                "font-style: italics; font-weight: normal"
-            )
+            self.install_size_info_label.setStyleSheet("font-style: italics; font-weight: normal")
         self.install_size_info_label.setText("{}".format(get_size(install_size)))
-        self.install_size_info_label.setStyleSheet(
-            "font-style: normal; font-weight: bold"
-        )
+        self.install_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)
         if self.silent:
@@ -275,21 +248,24 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                 self.install_preqs_check.setVisible(True)
                 self.install_preqs_lbl.setVisible(True)
                 self.install_preqs_check.setText(
-                    self.tr("Also install: {}").format(dl_item.igame.prereq_info.get("name", "")))
+                    self.tr("Also install: {}").format(dl_item.igame.prereq_info.get("name", ""))
+                )
 
     def on_worker_failed(self, message: str):
         error_text = self.tr("Error")
         self.download_size_info_label.setText(error_text)
         self.install_size_info_label.setText(error_text)
-        self.warn_label.setText(error_text)
-        self.warn_message.setText(message)
-        self.warn_message.setVisible(True)
-        self.warn_label.setVisible(True)
-        QMessageBox.critical(self, self.windowTitle(), message)
+        self.error_box(error_text, message)
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)
         if self.silent:
             self.close()
+
+    def error_box(self, label: str = "", message: str = ""):
+        self.warn_label.setVisible(bool(label))
+        self.warn_label.setText(label)
+        self.warn_message.setVisible(bool(message))
+        self.warn_message.setText(message)
 
     def on_worker_finished(self):
         self.worker_running = False
@@ -312,13 +288,13 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
 
 class InstallInfoWorker(QRunnable):
-
     class Signals(QObject):
         result = pyqtSignal(InstallDownloadModel)
         failed = pyqtSignal(str)
         finished = pyqtSignal()
 
     def __init__(self, core: LegendaryCore, dl_item: InstallQueueItemModel, game: Game = None):
+        sys.excepthook = sys.__excepthook__
         super(InstallInfoWorker, self).__init__()
         self.signals = InstallInfoWorker.Signals()
         self.core = core
@@ -368,7 +344,7 @@ class InstallInfoWorker(QRunnable):
                     path=self.dl_item.options.base_path,
                     status_queue=self.dl_item.status_q,
                     max_workers=self.dl_item.options.max_workers,
-                    force=self.dl_item.options.force
+                    force=self.dl_item.options.force,
                 )
 
                 download = InstallDownloadModel(
@@ -378,15 +354,13 @@ class InstallInfoWorker(QRunnable):
                     igame=igame,
                     repair=False,
                     repair_file="",
-                    res=ConditionCheckResult()  # empty
+                    res=ConditionCheckResult(),  # empty
                 )
 
             if not download.res or not download.res.failures:
                 self.signals.result.emit(download)
             else:
-                self.signals.failed.emit(
-                    "\n".join(str(i) for i in download.res.failures)
-                )
+                self.signals.failed.emit("\n".join(str(i) for i in download.res.failures))
         except Exception as e:
             self.signals.failed.emit(str(e))
         self.signals.finished.emit()
