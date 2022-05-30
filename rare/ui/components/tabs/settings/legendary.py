@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_LegendarySettings(object):
     def setupUi(self, LegendarySettings):
         LegendarySettings.setObjectName("LegendarySettings")
-        LegendarySettings.resize(552, 334)
+        LegendarySettings.resize(595, 334)
         LegendarySettings.setWindowTitle("LegendarySettings")
         self.legendary_layout = QtWidgets.QHBoxLayout(LegendarySettings)
         self.legendary_layout.setObjectName("legendary_layout")
@@ -159,7 +159,7 @@ class Ui_LegendarySettings(object):
         self.download_group.setTitle(_translate("LegendarySettings", "Download Settings"))
         self.max_workers_label.setText(_translate("LegendarySettings", "Max Workers"))
         self.max_workers_info_label.setText(_translate("LegendarySettings", "Less is slower (0: Default)"))
-        self.max_memory_label.setText(_translate("LegendarySettings", "Max Memory"))
+        self.max_memory_label.setText(_translate("LegendarySettings", "Max Shared Memory"))
         self.max_memory_spin.setSuffix(_translate("LegendarySettings", "MiB"))
         self.max_memory_info_label.setText(_translate("LegendarySettings", "Less is slower (0: Default)"))
         self.preferred_cdn_label.setText(_translate("LegendarySettings", "Preferred CDN"))

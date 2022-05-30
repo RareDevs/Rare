@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>337</width>
-    <height>372</height>
+    <width>406</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,14 +70,14 @@
      </item>
     </layout>
    </item>
-   <item row="4" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="force_download_label">
      <property name="text">
       <string>Force redownload</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="6" column="1">
     <widget class="QCheckBox" name="force_download_check">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -107,42 +107,42 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="7" column="0">
     <widget class="QLabel" name="ignore_space_label">
      <property name="text">
       <string>Ignore free space</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
+   <item row="8" column="0">
     <widget class="QLabel" name="download_only_label">
      <property name="text">
       <string>Download only</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
+   <item row="9" column="0">
     <widget class="QLabel" name="shortcut_lbl">
      <property name="text">
       <string>Create shortcut</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
+   <item row="9" column="1">
     <widget class="QCheckBox" name="shortcut_cb">
      <property name="text">
       <string notr="true"/>
      </property>
     </widget>
    </item>
-   <item row="9" column="0">
+   <item row="11" column="0">
     <widget class="QLabel" name="sdl_list_label">
      <property name="text">
       <string>Optional packs</string>
      </property>
     </widget>
    </item>
-   <item row="9" column="1">
+   <item row="11" column="1">
     <widget class="QFrame" name="sdl_list_frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -157,14 +157,14 @@
      </layout>
     </widget>
    </item>
-   <item row="11" column="0">
+   <item row="13" column="0">
     <widget class="QLabel" name="download_size_label">
      <property name="text">
       <string>Download size</string>
      </property>
     </widget>
    </item>
-   <item row="11" column="1">
+   <item row="13" column="1">
     <widget class="QLabel" name="download_size_info_label">
      <property name="font">
       <font>
@@ -176,14 +176,14 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="0">
+   <item row="14" column="0">
     <widget class="QLabel" name="install_size_label">
      <property name="text">
       <string>Total install size</string>
      </property>
     </widget>
    </item>
-   <item row="12" column="1">
+   <item row="14" column="1">
     <widget class="QLabel" name="install_size_info_label">
      <property name="font">
       <font>
@@ -198,12 +198,18 @@
      </property>
     </widget>
    </item>
-   <item row="13" column="1">
+   <item row="15" column="1">
     <widget class="QLabel" name="warn_message">
      <property name="font">
       <font>
        <italic>true</italic>
       </font>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
      </property>
      <property name="text">
       <string>None</string>
@@ -213,14 +219,14 @@
      </property>
     </widget>
    </item>
-   <item row="13" column="0">
+   <item row="15" column="0">
     <widget class="QLabel" name="warn_label">
      <property name="text">
-      <string>Warnings</string>
+      <string>Warning</string>
      </property>
     </widget>
    </item>
-   <item row="14" column="0" colspan="2">
+   <item row="16" column="0" colspan="2">
     <layout class="QHBoxLayout" name="button_layout">
      <item>
       <spacer name="button_hspacer">
@@ -258,21 +264,26 @@
      </item>
     </layout>
    </item>
-   <item row="8" column="0">
+   <item row="10" column="0">
     <widget class="QLabel" name="install_preqs_lbl">
      <property name="text">
       <string>Install prerequisites</string>
      </property>
     </widget>
    </item>
-   <item row="8" column="1">
+   <item row="10" column="1">
     <widget class="QCheckBox" name="install_preqs_check">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
       <string notr="true"/>
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="7" column="1">
     <widget class="QCheckBox" name="ignore_space_check">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -290,7 +301,7 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
+   <item row="8" column="1">
     <widget class="QCheckBox" name="download_only_check">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -305,6 +316,71 @@
      </property>
      <property name="text">
       <string>Do not try to install.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="max_memory_label">
+     <property name="text">
+      <string>Max shared memory</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <layout class="QHBoxLayout" name="max_memory_layout">
+     <item>
+      <widget class="QSpinBox" name="max_memory_spin">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="suffix">
+        <string>MiB</string>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>10240</number>
+       </property>
+       <property name="singleStep">
+        <number>128</number>
+       </property>
+       <property name="value">
+        <number>1024</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="max_memory_info_label">
+       <property name="font">
+        <font>
+         <italic>true</italic>
+        </font>
+       </property>
+       <property name="text">
+        <string>Less is slower (0: Default)</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="dl_optimizations_label">
+     <property name="text">
+      <string>Enable reordering</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QCheckBox" name="dl_optimizations_check">
+     <property name="text">
+      <string notr="true"/>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
