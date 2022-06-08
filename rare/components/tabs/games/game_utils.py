@@ -27,9 +27,10 @@ class GameProcess(QObject):
     game_finished = pyqtSignal(int, str)  # exit_code, appname
     tried_connections = 0
 
-    def __init__(self, app_name: str):
+    def __init__(self, app_name: str, on_startup=False):
         super(GameProcess, self).__init__()
         self.app_name = app_name
+        self.on_startup = on_startup
         self.game = LegendaryCoreSingleton().get_game(app_name)
         self.socket = QLocalSocket()
         self.socket.connected.connect(self._socket_connected)
@@ -44,9 +45,13 @@ class GameProcess(QObject):
 
         self.socket.disconnected.connect(close_socket)
         self.timer = QTimer()
-        # wait a short time for process started
-        self.timer.timeout.connect(self.connect_to_server)
-        self.timer.start(200)
+        if not on_startup:
+            # wait a short time for process started
+            self.timer.timeout.connect(self.connect_to_server)
+            self.timer.start(200)
+        else:
+            # nothing happens, if no server available
+            self.connect_to_server()
 
     def connect_to_server(self):
         self.socket.connectToServer(f"rare_{self.app_name}")
@@ -94,7 +99,11 @@ class GameProcess(QObject):
         logger.info(f"Connection established for {self.app_name}")
 
     def _error_occurred(self, _):
-        logger.error(self.socket.errorString())
+        if self.on_startup:
+            self.socket.close()
+            self.deleteLater()
+            self._game_finished(-1234)
+        logger.error(f"{self.app_name}: {self.socket.errorString()}")
 
     def _game_finished(self, exit_code):
         self.game_finished.emit(exit_code, self.app_name)
@@ -125,6 +134,11 @@ class GameUtils(QObject):
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
         self.game_meta = RareGameMeta()
+
+        for igame in self.core.get_installed_list():
+            game_process = GameProcess(igame.app_name, True)
+            game_process.game_finished.connect(self.game_finished)
+            self.running_games[igame.app_name] = game_process
 
     def uninstall_game(self, app_name) -> bool:
         # returns if uninstalled
@@ -209,6 +223,8 @@ class GameUtils(QObject):
         self.running_games[app_name] = game_process
 
     def game_finished(self, exit_code, app_name):
+        if exit_code == -1234:
+            self.running_games.pop(app_name)
         logger.info(f"Game exited with exit code: {exit_code}")
         self.console.log(f"Game exited with code: {exit_code}")
         self.signals.set_discord_rpc.emit("")
