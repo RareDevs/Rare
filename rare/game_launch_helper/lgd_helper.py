@@ -12,6 +12,10 @@ from legendary.models.game import InstalledGame, LaunchParameters
 logger = getLogger("Helper")
 
 
+class GameArgsError(Exception):
+    pass
+
+
 @dataclass
 class InitArgs:
     app_name: str
@@ -79,11 +83,11 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
                     igame.app_name, igame.platform, update=False
                 )
             except ValueError:
-                logger.error("Metadata doesn't exist")
-                return launch_args
+                raise GameArgsError("Metadata doesn't exist")
             else:
                 if latest.build_version != igame.version:
-                    return launch_args
+                    raise GameArgsError("Game is not up to date. Please update first")
+
     params: LaunchParameters = core.get_launch_parameters(
         app_name=igame.app_name, offline=args.offline
     )
@@ -118,21 +122,18 @@ def get_launch_args(core: LegendaryCore, args: InitArgs = None) -> LaunchArgs:
     resp = LaunchArgs()
 
     if not game:
-        return resp
+        raise GameArgsError(f"Could not find metadata for ")
 
     if game.third_party_store == "Origin":
         args.offline = False
     else:
         if not igame:
-            logger.error("Game is not installed or has unsupported format")
-            return resp
+            raise GameArgsError("Game is not installed or has unsupported format")
 
         if game.is_dlc:
-            logger.error("Game is dlc")
-            return resp
+            raise GameArgsError("Game is a DLC")
         if not os.path.exists(igame.install_path):
-            logger.error("Game path does not exist")
-            return resp
+            raise GameArgsError("Game path does not exist")
 
     if game.third_party_store == "Origin":
         resp = get_origin_params(core, args.app_name, args.offline, resp)
@@ -147,12 +148,12 @@ def get_launch_args(core: LegendaryCore, args: InitArgs = None) -> LaunchArgs:
 def get_configured_process(env: dict = None):
     proc = QProcess()
     proc.readyReadStandardOutput.connect(
-        lambda: print(
+        lambda: logger.info(
             str(proc.readAllStandardOutput().data(), "utf-8", "ignore")
         )
     )
     proc.readyReadStandardError.connect(
-        lambda: print(
+        lambda: logger.info(
             str(proc.readAllStandardError().data(), "utf-8", "ignore")
         )
     )

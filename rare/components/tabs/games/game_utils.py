@@ -5,7 +5,7 @@ import shutil
 from dataclasses import dataclass
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqtSignal, QUrl, QTimer, pyqtSlot
+from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqtSignal, QUrl, QTimer
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalSocket
 from PyQt5.QtWidgets import QMessageBox, QPushButton
@@ -18,37 +18,31 @@ from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, Argument
 from rare.utils import legendary_utils
 from rare.utils import utils
 from rare.utils.meta import RareGameMeta
+from rare.game_launch_helper import message_models
 
 logger = getLogger("GameUtils")
 
 
 class GameProcess(QObject):
-    @dataclass
-    class FinishedModel:
-        action: str
-        app_name: str
-        exit_code: int
-        playtime: int  # seconds
-
-        @classmethod
-        def from_json(cls, data):
-            return cls(
-                action=data["action"],
-                app_name=data["app_name"],
-                exit_code=data["exit_code"],
-                playtime=data["playtime"],
-            )
-
-    game_finished = pyqtSignal(int, str)
+    game_finished = pyqtSignal(int, str)  # exit_code, appname
+    tried_connections = 0
 
     def __init__(self, app_name: str):
         super(GameProcess, self).__init__()
         self.app_name = app_name
+        self.game = LegendaryCoreSingleton().get_game(app_name)
         self.socket = QLocalSocket()
         self.socket.connected.connect(self._socket_connected)
-        self.socket.errorOccurred.connect(self._error_occured)
+        self.socket.errorOccurred.connect(self._error_occurred)
         self.socket.readyRead.connect(self._message_available)
-        self.socket.disconnected.connect(lambda: self.socket.close())
+
+        def close_socket():
+            try:
+                self.socket.close()
+            except RuntimeError:
+                pass
+
+        self.socket.disconnected.connect(close_socket)
         self.timer = QTimer()
         # wait a short time for process started
         self.timer.timeout.connect(self.connect_to_server)
@@ -56,29 +50,50 @@ class GameProcess(QObject):
 
     def connect_to_server(self):
         self.socket.connectToServer(f"rare_{self.app_name}")
+        self.tried_connections += 1
+
+        if self.tried_connections > 50:  # 10 seconds
+            QMessageBox.warning(None, "Error", self.tr("Connection to game process failed (Timeout)"))
+            self.timer.stop()
+            self.game_finished.emit(1, self.app_name)
 
     def _message_available(self):
         message = self.socket.readAll().data()
         if not message.startswith(b"{"):
-            logger.error(f"Received unsupported message{message.decode()}")
+            logger.error(f"Received unsupported message: {message.decode('utf-8')}")
             return
         try:
             data = json.loads(message)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            logger.error(e)
             logger.error("Could not load json data")
             return
 
-        if data.get("action", "") == "finished":
+        action = data.get("action", -1)
+
+        if action == -1:
+            logger.error("Got unexpected action")
+        elif action == message_models.Actions.finished:
             logger.info(f"{self.app_name} finished")
-            resp = self.FinishedModel.from_json(data)
-            self._game_finished(resp.exit_code)
+            model = message_models.FinishedModel.base_from_json(data)
+            self._game_finished(model)
+        elif action == message_models.Actions.error:
+            model = message_models.ErrorModel.from_json(data)
+            logger.error(f"Error in game {self.game.app_title}: {model.error_string}")
+            QMessageBox.warning(None, "Error", self.tr(
+                "Error in game {}: \n{}").format(self.game.app_title, model.error_string))
+
+        elif action == message_models.Actions.state_update:
+            model = message_models.StateChangedModel.from_json(data)
+            if model.new_state == message_models.StateChangedModel.States.started:
+                logger.info("Launched Game")
 
     def _socket_connected(self):
         self.timer.stop()
         self.timer.deleteLater()
         logger.info(f"Connection established for {self.app_name}")
 
-    def _error_occured(self, _):
+    def _error_occurred(self, _):
         logger.error(self.socket.errorString())
 
     def _game_finished(self, exit_code):
