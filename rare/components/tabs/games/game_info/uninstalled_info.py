@@ -15,13 +15,13 @@ from rare.utils.utils import get_pixmap
 
 
 class UninstalledInfoTabs(SideTabWidget):
-    def __init__(self, parent=None):
+    def __init__(self, ue_default_name, parent=None):
         super(UninstalledInfoTabs, self).__init__(show_back=True, parent=parent)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
 
-        self.info = UninstalledInfo()
+        self.info = UninstalledInfo(ue_default_name)
         self.info.install_button.setDisabled(self.args.offline)
         self.addTab(self.info, self.tr("Information"))
 
@@ -65,7 +65,7 @@ class GameMetadataView(QTreeView):
 class UninstalledInfo(QWidget, Ui_GameInfo):
     game: Game
 
-    def __init__(self, parent=None):
+    def __init__(self, ue_default_name, parent=None):
         super(UninstalledInfo, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()
@@ -89,6 +89,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.game_actions_stack.setCurrentIndex(1)
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
         self.lbl_platform.setText(self.tr("Platforms"))
+        self.ue_default_name = ue_default_name
 
     def install_game(self):
         self.signals.install_game.emit(InstallOptionsModel(app_name=self.game.app_name))
@@ -105,7 +106,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
 
         pixmap = get_pixmap(game.app_name)
         if pixmap.isNull():
-            pixmap = get_pixmap(self.parent().parent().parent().ue_name)
+            pixmap = get_pixmap(self.ue_default_name)
         w = 200
         pixmap = pixmap.scaled(w, int(w * 4 / 3))
         self.image.setPixmap(pixmap)

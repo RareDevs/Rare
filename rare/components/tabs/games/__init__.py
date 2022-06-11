@@ -69,7 +69,19 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.import_sync_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
         self.addWidget(self.import_sync_tabs)
 
-        self.uninstalled_info_tabs = UninstalledInfoTabs(self)
+        for i in self.game_list:
+            if i.app_name.startswith("UE_4"):
+                pixmap = get_pixmap(i.app_name)
+                if pixmap.isNull():
+                    continue
+                self.ue_name = i.app_name
+                logger.debug(f"Found Unreal AppName {self.ue_name}")
+                break
+        else:
+            logger.warning("No Unreal engine in library found")
+            self.ue_name = ""
+
+        self.uninstalled_info_tabs = UninstalledInfoTabs(self.ue_name, self)
         self.uninstalled_info_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
         self.addWidget(self.uninstalled_info_tabs)
 
@@ -82,18 +94,6 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
                 self.no_asset_names.append(game.app_name)
         else:
             self.no_assets = []
-
-        for i in self.game_list:
-            if i.app_name.startswith("UE_4"):
-                pixmap = get_pixmap(i.app_name)
-                if pixmap.isNull():
-                    continue
-                self.ue_name = i.app_name
-                logger.debug(f"Found Unreal AppName {self.ue_name}")
-                break
-        else:
-            logger.warning("No Unreal engine in library found")
-            self.ue_name = ""
 
         self.installed = self.core.get_installed_list()
         self.setup_game_list()
