@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'rare/ui/components/tabs/games/env_vars.ui'
+# Form implementation generated from reading ui file 'rare/ui/components/tabs/settings/widgets/env_vars.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -16,6 +16,7 @@ class Ui_EnvVars(object):
         EnvVars.setObjectName("EnvVars")
         EnvVars.resize(720, 561)
         EnvVars.setMinimumSize(QtCore.QSize(0, 200))
+        EnvVars.setWindowTitle("GroupBox")
         self.verticalLayout = QtWidgets.QVBoxLayout(EnvVars)
         self.verticalLayout.setObjectName("verticalLayout")
         self.env_vars_table = QtWidgets.QTableWidget(EnvVars)
@@ -30,6 +31,7 @@ class Ui_EnvVars(object):
         self.env_vars_table.setColumnCount(2)
         self.env_vars_table.setRowCount(1)
         item = QtWidgets.QTableWidgetItem()
+        item.setText("-")
         self.env_vars_table.setVerticalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
         self.env_vars_table.setHorizontalHeaderItem(0, item)
@@ -44,10 +46,7 @@ class Ui_EnvVars(object):
 
     def retranslateUi(self, EnvVars):
         _translate = QtCore.QCoreApplication.translate
-        EnvVars.setWindowTitle(_translate("EnvVars", "GroupBox"))
         EnvVars.setTitle(_translate("EnvVars", "Environment variables"))
-        item = self.env_vars_table.verticalHeaderItem(0)
-        item.setText(_translate("EnvVars", "-"))
         item = self.env_vars_table.horizontalHeaderItem(0)
         item.setText(_translate("EnvVars", "Key"))
         item = self.env_vars_table.horizontalHeaderItem(1)

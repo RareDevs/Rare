@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>GroupBox</string>
+   <string notr="true">GroupBox</string>
   </property>
   <property name="title">
    <string>Environment variables</string>
@@ -45,7 +45,7 @@
      </attribute>
      <row>
       <property name="text">
-       <string>-</string>
+       <string notr="true">-</string>
       </property>
      </row>
      <column>
