@@ -211,10 +211,10 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
         self.free_stack.setCurrentIndex(0)
 
     def show_search_results(self):
-        self.show_info.emit(self.search_bar.text())
+        if self.search_bar.text():
+            self.show_info.emit(self.search_bar.text())
 
     def init_filter(self):
-
         self.none_price.toggled.connect(
             lambda: self.prepare_request("") if self.none_price.isChecked() else None
         )
