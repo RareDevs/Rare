@@ -260,12 +260,11 @@ def get_rare_executable() -> List[str]:
             executable = [sys.executable, os.path.abspath(sys.argv[0])]
     elif platform.system() == "Windows":
         executable = [sys.executable]
-        arguments = []
 
         if not sys.executable.endswith("Rare.exe"):
             # be sure to start consoleless then
             executable[0] = executable[0].replace("python.exe", "pythonw.exe")
-            arguments.append(os.path.abspath(sys.argv[0]))
+            executable.extend(["-m", "rare"])
     else:  # macos not tested
         executable = [sys.executable]
 

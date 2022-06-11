@@ -1,4 +1,3 @@
-import enum
 from dataclasses import dataclass
 
 
@@ -14,9 +13,9 @@ class BaseModel:
     action: int
     app_name: str
 
-    @staticmethod
-    def base_from_json(data: dict) -> dict:
-        return dict(
+    @classmethod
+    def from_json(cls, data: dict):
+        return cls(
             action=data["action"],
             app_name=data["app_name"]
         )
@@ -30,7 +29,7 @@ class FinishedModel(BaseModel):
     @classmethod
     def from_json(cls, data):
         return cls(
-            **super().base_from_json(data),
+            **BaseModel.from_json(data).__dict__,
             exit_code=data["exit_code"],
             playtime=data["playtime"],
         )
@@ -63,6 +62,6 @@ class ErrorModel(BaseModel):
     @classmethod
     def from_json(cls, data):
         return cls(
-            **super().base_from_json(data),
+            **BaseModel.from_json(data).__dict__,
             error_string=data["error_string"]
         )

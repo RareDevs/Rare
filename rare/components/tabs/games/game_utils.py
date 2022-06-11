@@ -9,7 +9,6 @@ from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqt
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalSocket
 from PyQt5.QtWidgets import QMessageBox, QPushButton
-from legendary.models.game import LaunchParameters, InstalledGame
 
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.components.extra.console import Console
@@ -25,9 +24,10 @@ logger = getLogger("GameUtils")
 
 class GameProcess(QObject):
     game_finished = pyqtSignal(int, str)  # exit_code, appname
+    game_launched = pyqtSignal(str)
     tried_connections = 0
 
-    def __init__(self, app_name: str, on_startup=False):
+    def __init__(self, app_name: str, on_startup=False, always_ask_sync: bool= False):
         super(GameProcess, self).__init__()
         self.app_name = app_name
         self.on_startup = on_startup
@@ -36,6 +36,7 @@ class GameProcess(QObject):
         self.socket.connected.connect(self._socket_connected)
         self.socket.errorOccurred.connect(self._error_occurred)
         self.socket.readyRead.connect(self._message_available)
+        self.always_ask_sync = always_ask_sync
 
         def close_socket():
             try:
@@ -80,32 +81,38 @@ class GameProcess(QObject):
             logger.error("Got unexpected action")
         elif action == message_models.Actions.finished:
             logger.info(f"{self.app_name} finished")
-            model = message_models.FinishedModel.base_from_json(data)
-            self._game_finished(model)
+            model = message_models.FinishedModel.from_json(data)
+            self.socket.close()
+            self._game_finished(model.exit_code)
         elif action == message_models.Actions.error:
             model = message_models.ErrorModel.from_json(data)
             logger.error(f"Error in game {self.game.app_title}: {model.error_string}")
             QMessageBox.warning(None, "Error", self.tr(
                 "Error in game {}: \n{}").format(self.game.app_title, model.error_string))
-
         elif action == message_models.Actions.state_update:
             model = message_models.StateChangedModel.from_json(data)
             if model.new_state == message_models.StateChangedModel.States.started:
                 logger.info("Launched Game")
+                self.game_launched.emit(self.app_name)
 
     def _socket_connected(self):
         self.timer.stop()
         self.timer.deleteLater()
         logger.info(f"Connection established for {self.app_name}")
+        if self.on_startup:
+            logger.info(f"Found {self.app_name} running at startup")
+
+            # FIXME run this after startup, widgets do not exist at this time
+            QTimer.singleShot(1000, lambda: self.game_launched.emit(self.app_name))
 
     def _error_occurred(self, _):
         if self.on_startup:
             self.socket.close()
             self.deleteLater()
-            self._game_finished(-1234)
+            self._game_finished(-1234)  # 1234 is exit code for startup
         logger.error(f"{self.app_name}: {self.socket.errorString()}")
 
-    def _game_finished(self, exit_code):
+    def _game_finished(self, exit_code: int):
         self.game_finished.emit(exit_code, self.app_name)
 
 
@@ -138,6 +145,7 @@ class GameUtils(QObject):
         for igame in self.core.get_installed_list():
             game_process = GameProcess(igame.app_name, True)
             game_process.game_finished.connect(self.game_finished)
+            game_process.game_launched.connect(self.game_launched.emit)
             self.running_games[igame.app_name] = game_process
 
     def uninstall_game(self, app_name) -> bool:
@@ -172,6 +180,7 @@ class GameUtils(QObject):
         game = self.core.get_game(app_name)
         dont_sync_after_finish = False
 
+        # TODO move this to helper
         if game.supports_cloud_saves and not offline:
             try:
                 sync = self.cloud_save_utils.sync_before_launch_game(app_name)
@@ -216,10 +225,12 @@ class GameUtils(QObject):
         if ask_always_sync:
             args.extend("--ask-always-sync")
 
+        # kill me, if I don't change it before commit
         QProcess.startDetached(executable, args)
         logger.info(f"Start new Process: ({executable} {' '.join(args)})")
-        game_process = GameProcess(app_name)
+        game_process = GameProcess(app_name, ask_always_sync)
         game_process.game_finished.connect(self.game_finished)
+        game_process.game_launched.connect(self.game_launched.emit)
         self.running_games[app_name] = game_process
 
     def game_finished(self, exit_code, app_name):
@@ -345,76 +356,6 @@ class GameUtils(QObject):
             return
         command.append(origin_uri)
         process.start(command[0], command[1:])
-
-    def _launch_game(self, igame: InstalledGame, process: QProcess, offline: bool,
-                     skip_update_check: bool, ask_always_sync: bool):
-        if not offline:  # skip for update
-            if not skip_update_check and not self.core.is_noupdate_game(igame.app_name):
-                # check updates
-                try:
-                    latest = self.core.get_asset(
-                        igame.app_name, igame.platform, update=False
-                    )
-                except ValueError:
-                    self.finished.emit(igame.app_name, self.tr("Metadata doesn't exist"))
-                    return
-                else:
-                    if latest.build_version != igame.version:
-                        self.finished.emit(igame.app_name, self.tr("Please update game"))
-                        return
-
-        params: LaunchParameters = self.core.get_launch_parameters(
-            app_name=igame.app_name, offline=offline
-        )
-
-        full_params = list()
-
-        if os.environ.get("container") == "flatpak":
-            full_params.extend(["flatpak-spawn", "--host"])
-
-        full_params.extend(params.launch_command)
-        full_params.append(
-            os.path.join(params.game_directory, params.game_executable)
-        )
-        full_params.extend(params.game_parameters)
-        full_params.extend(params.egl_parameters)
-        full_params.extend(params.user_parameters)
-
-        process.setWorkingDirectory(params.working_directory)
-
-        if platform.system() != "Windows":
-            # wine prefixes
-            for env in ["STEAM_COMPAT_DATA_PATH", "WINEPREFIX"]:
-                if val := process.processEnvironment().value(env, ""):
-                    if not os.path.exists(val):
-                        try:
-                            os.makedirs(val)
-                        except PermissionError as e:
-                            logger.error(str(e))
-                            QMessageBox.warning(
-                                None,
-                                "Error",
-                                self.tr(
-                                    "Error while launching {}. No permission to create {} for {}"
-                                ).format(igame.title, val, env),
-                            )
-                            process.deleteLater()
-                            return
-            # check wine executable
-
-        if shutil.which(full_params[0]) is None:
-            QMessageBox.warning(None, "Warning", self.tr("'{}' does not exist").format(full_params[0]))
-            return
-        running_game = RunningGameModel(
-            process=process, app_name=igame.app_name, always_ask_sync=ask_always_sync
-        )
-        process.start(full_params[0], full_params[1:])
-
-        self.game_launched.emit(igame.app_name)
-        self.signals.set_discord_rpc.emit(igame.app_name)
-        logger.info(f"{igame.title} launched")
-
-        self.running_games[igame.app_name] = running_game
 
     def sync_finished(self, app_name):
         if app_name in self.launch_queue.keys():

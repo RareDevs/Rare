@@ -80,14 +80,22 @@ class GameProcessHelper(QObject):
         self.server.newConnection.connect(self.new_server_connection)
 
         self.game_process.finished.connect(self.game_finished)
+        self.game_process.errorOccurred.connect(
+            lambda err: self.error_occurred(self.game_process.errorString()))
+
         self.start_time = time.time()
 
     def new_server_connection(self):
         if self.socket is not None:
-            self.socket.disconnectFromServer()
+            try:
+                self.socket.disconnectFromServer()
+            except RuntimeError:
+                pass
         self.logger.info("New connection")
         self.socket = self.server.nextPendingConnection()
         self.socket.disconnected.connect(self.socket.deleteLater)
+        self.socket.disconnected.connect(lambda: self.logger.info("Server disconnected"))
+
         self.socket.flush()
 
     def send_message(self, message: BaseModel):
@@ -108,7 +116,7 @@ class GameProcessHelper(QObject):
             )
 
         )
-        self.exit_app.emit()
+        self.stop()
 
     def launch_game(self, args: LaunchArgs):
         # should never happen
@@ -122,9 +130,9 @@ class GameProcessHelper(QObject):
             QDesktopServices.openUrl(QUrl(args.executable))
             return
 
-        self.game_process.finished.connect(self.game_finished)
-        self.game_process.errorOccurred.connect(
-            lambda err: self.error_occurred(self.game_process.errorString()))
+        if args.cwd:
+            self.game_process.setWorkingDirectory(args.cwd)
+
         self.game_process.start(args.executable, args.args)
         self.send_message(
             StateChangedModel(
@@ -159,6 +167,7 @@ class GameProcessHelper(QObject):
         QThreadPool.globalInstance().start(worker)
 
     def stop(self):
+        self.logger.info("Stopping server")
         self.server.close()
         self.server.deleteLater()
         self.exit_app.emit()
@@ -178,11 +187,14 @@ def start_game(args: Namespace):
     def excepthook(exc_type, exc_value, exc_tb):
         tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
         helper.logger.fatal(tb)
-        helper.send_message(ErrorModel(
-            app_name=args.app_name,
-            action=Actions.error,
-            error_string=tb
-        ))
+        try:
+            helper.send_message(ErrorModel(
+                app_name=args.app_name,
+                action=Actions.error,
+                error_string=tb
+            ))
+        except RuntimeError:
+            pass
         helper.stop()
 
     sys.excepthook = excepthook
@@ -196,4 +208,3 @@ def start_game(args: Namespace):
     # quit_button.show()
     # quit_button.clicked.connect(lambda: app.exit(0))
     app.exec_()
-    helper.server.close()

@@ -39,6 +39,7 @@ class InitArgs:
 class LaunchArgs:
     executable: str = ""
     args: List[str] = None
+    cwd: str = None
     env: QProcessEnvironment = None
     pre_launch_command: str = ""
     pre_launch_wait: bool = False
@@ -111,7 +112,7 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
     launch_args.env = QProcessEnvironment.systemEnvironment()
     for name, value in params.environment.items():
         launch_args.env.insert(name, value)
-
+    launch_args.cwd = params.working_directory
     return launch_args
 
 
