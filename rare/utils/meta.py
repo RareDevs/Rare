@@ -18,7 +18,7 @@ class GameMeta:
     @classmethod
     def from_json(cls, data):
         return cls(
-            app_name=data["app_name"],
+            app_name=data.get("app_name", ""),
             last_played=datetime.strptime(data.get("last_played", "None"), '%Y-%m-%dT%H:%M:%S.%f')
         )
 

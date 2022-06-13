@@ -76,6 +76,7 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         if self.overlay:  # installed
             self.installed_version_lbl.setText(self.overlay.version)
             self.installed_path_lbl.setText(self.overlay.install_path)
+            self.info_stack.setCurrentIndex(0)
         else:
             self.info_stack.setCurrentIndex(1)
             self.enable_gb.setDisabled(True)
