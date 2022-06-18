@@ -1,32 +1,17 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-    <qresource prefix="schemes">
-        <file alias="Adapta-Nokto">colors/Adapta-Nokto.scheme</file>
-        <file alias="Airy">colors/Airy.scheme</file>
-        <file alias="Arc-Dark">colors/Arc-Dark.scheme</file>
-        <file alias="Arc-Darker">colors/Arc-Darker.scheme</file>
-        <file alias="Darker">colors/Darker.scheme</file>
-        <file alias="Dusk">colors/Dusk.scheme</file>
-        <file alias="Numix-Dark">colors/Numix-Dark.scheme</file>
-        <file alias="Rare">colors/Rare.scheme</file>
-        <file alias="Zukitre">colors/Zukitre.scheme</file>
-    </qresource>
-    <qresource prefix="stylesheets">
-        <file alias="RareStyle">stylesheets/RareStyle/stylesheet.qss</file>
-    </qresource>
-    <qresource prefix="icons">
-        <file alias="circle.svg">stylesheets/RareStyle/circle.svg</file>
-        <file alias="circle-disabled.svg">stylesheets/RareStyle/circle-disabled.svg</file>
-        <file alias="drop-down.svg">stylesheets/RareStyle/drop-down.svg</file>
-        <file alias="half-square.svg">stylesheets/RareStyle/half-square.svg</file>
-        <file alias="half-square-disabled.svg">stylesheets/RareStyle/half-square-disabled.svg</file>
-        <file alias="sort-down.svg">stylesheets/RareStyle/sort-down.svg</file>
-        <file alias="sort-up.svg">stylesheets/RareStyle/sort-up.svg</file>
-        <file alias="square.svg">stylesheets/RareStyle/square.svg</file>
-        <file alias="square-disabled.svg">stylesheets/RareStyle/square-disabled.svg</file>
-    </qresource>
-    <qresource prefix="images">
-        <file alias="Rare.png">images/Rare.png</file>
-        <file alias="loader.gif">images/loader.gif</file>
-    </qresource>
+<RCC>
+  <qresource prefix="schemes">
+    <file alias="Adapta-Nokto">colors/Adapta-Nokto.scheme</file>
+    <file alias="Airy">colors/Airy.scheme</file>
+    <file alias="Arc-Dark">colors/Arc-Dark.scheme</file>
+    <file alias="Arc-Darker">colors/Arc-Darker.scheme</file>
+    <file alias="Darker">colors/Darker.scheme</file>
+    <file alias="Dusk">colors/Dusk.scheme</file>
+    <file alias="Numix-Dark">colors/Numix-Dark.scheme</file>
+    <file alias="Rare">colors/Rare.scheme</file>
+    <file alias="Zukitre">colors/Zukitre.scheme</file>
+  </qresource>
+  <qresource prefix="images">
+    <file alias="Rare.png">images/Rare.png</file>
+    <file alias="loader.gif">images/loader.gif</file>
+  </qresource>
 </RCC>
