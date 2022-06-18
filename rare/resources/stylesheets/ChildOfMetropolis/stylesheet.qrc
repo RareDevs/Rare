@@ -1,0 +1,14 @@
+<RCC>
+  <qresource prefix="stylesheets/ChildOfMetropolis">
+    <file>circle-disabled.svg</file>
+    <file>circle.svg</file>
+    <file>drop-down.svg</file>
+    <file>half-square-disabled.svg</file>
+    <file>half-square.svg</file>
+    <file>sort-down.svg</file>
+    <file>sort-up.svg</file>
+    <file>square-disabled.svg</file>
+    <file>square.svg</file>
+    <file>stylesheet.qss</file>
+  </qresource>
+</RCC>

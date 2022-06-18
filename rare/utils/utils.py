@@ -23,7 +23,7 @@ from PyQt5.QtCore import (
     QDir,
 )
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
-from PyQt5.QtWidgets import QApplication, QStyleFactory
+from PyQt5.QtWidgets import qApp, QStyleFactory
 from legendary.models.game import Game
 from requests.exceptions import HTTPError
 
@@ -180,19 +180,16 @@ def load_color_scheme(path: str) -> QPalette:
 
 def set_color_pallete(color_scheme: str):
     if not color_scheme:
-        QApplication.instance().setStyle(
-            QStyleFactory.create(QApplication.instance().property("rareDefaultQtStyle"))
-        )
-        QApplication.instance().setStyleSheet("")
-        QApplication.instance().setPalette(
-            QApplication.instance().style().standardPalette()
-        )
+        qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
+        qApp.setStyleSheet("")
+        qApp.setPalette(qApp.style().standardPalette())
         return
-    QApplication.instance().setStyle(QStyleFactory.create("Fusion"))
+    qApp.setStyle(QStyleFactory.create("Fusion"))
     custom_palette = load_color_scheme(f":/schemes/{color_scheme}")
     if custom_palette is not None:
-        QApplication.instance().setPalette(custom_palette)
-        qtawesome.set_defaults(color=custom_palette.color(QPalette.Text))
+        qApp.setPalette(custom_palette)
+        icon_color = qApp.palette().color(QPalette.Foreground).name()
+        qtawesome.set_defaults(color=icon_color)
 
 
 def get_color_schemes() -> List[str]:
@@ -204,18 +201,17 @@ def get_color_schemes() -> List[str]:
 
 def set_style_sheet(style_sheet: str):
     if not style_sheet:
-        QApplication.instance().setStyle(
-            QStyleFactory.create(QApplication.instance().property("rareDefaultQtStyle"))
-        )
-        QApplication.instance().setStyleSheet("")
+        qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
+        qApp.setStyleSheet("")
         return
-    QApplication.instance().setStyle(QStyleFactory.create("Fusion"))
-    file = QFile(f":/stylesheets/{style_sheet}")
+    qApp.setStyle(QStyleFactory.create("Fusion"))
+    file = QFile(f":/stylesheets/{style_sheet}/stylesheet.qss")
     file.open(QFile.ReadOnly)
     stylesheet = file.readAll().data().decode("utf-8")
 
-    QApplication.instance().setStyleSheet(stylesheet)
-    qtawesome.set_defaults(color="white")
+    qApp.setStyleSheet(stylesheet)
+    icon_color = qApp.palette().color(QPalette.Text).name()
+    qtawesome.set_defaults(color="#eeeeee")
 
 
 def get_style_sheets() -> List[str]:
