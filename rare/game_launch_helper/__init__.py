@@ -128,6 +128,7 @@ class GameProcessHelper(QObject):
 
         if args.is_origin_game:
             QDesktopServices.openUrl(QUrl(args.executable))
+            self.stop()  # stop because it is no subprocess
             return
 
         if args.cwd:
