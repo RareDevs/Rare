@@ -1,14 +1,16 @@
 from logging import getLogger
 
-from PyQt5.QtCore import QEvent, pyqtSignal, QSize, Qt
+from PyQt5.QtCore import QEvent, pyqtSignal, Qt
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLabel
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QWidget
 
-from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.games.game_widgets.base_installed_widget import (
     BaseInstalledWidget,
 )
+from rare.shared import LegendaryCoreSingleton
+from rare.shared.image_manager import ImageSize
 from rare.utils.utils import icon
+from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("GameWidgetInstalled")
 
@@ -21,55 +23,54 @@ class InstalledIconWidget(BaseInstalledWidget):
         self.setObjectName("game_widget_icon")
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
-        self.layout = QVBoxLayout()
+        layout = QVBoxLayout()
         self.core = LegendaryCoreSingleton()
 
         if self.update_available:
             logger.info(f"Update available for game: {self.game.app_name}")
 
-        self.layout.addWidget(self.image)
+        layout.addWidget(self.image)
 
         self.game_utils.finished.connect(self.game_finished)
         self.game_utils.cloud_save_finished.connect(self.sync_finished)
 
-        self.title_label = QLabel(f"<h4>{self.game.app_title}</h4>")
-        self.title_label.setAutoFillBackground(False)
-        self.title_label.setWordWrap(True)
-        self.title_label.setFixedWidth(175)
+        miniwidget = QWidget(self)
+        miniwidget.setFixedWidth(ImageSize.Display.size.width())
         minilayout = QHBoxLayout()
+        minilayout.setContentsMargins(0, 0, 0, 0)
+        minilayout.setSpacing(0)
+        miniwidget.setLayout(minilayout)
+
+        self.title_label = ElideLabel(f"<h4>{self.game.app_title}</h4>", parent=miniwidget)
         self.title_label.setObjectName("game_widget")
-        minilayout.addWidget(self.title_label)
+        minilayout.addWidget(self.title_label, stretch=2)
 
         # Info Button
-        self.menu_btn = QPushButton()
+        self.menu_btn = QPushButton(parent=miniwidget)
         self.menu_btn.setIcon(icon("ei.info-circle"))
         # self.menu_btn.setObjectName("installed_menu_button")
-        self.menu_btn.setIconSize(QSize(18, 18))
-        self.menu_btn.enterEvent = lambda x: self.info_label.setText(
-            self.tr("Information")
-        )
+        self.menu_btn.enterEvent = lambda x: self.info_label.setText(self.tr("Information"))
         self.menu_btn.leaveEvent = lambda x: self.enterEvent(None)
         # remove Border
 
         self.menu_btn.setObjectName("menu_button")
 
         self.menu_btn.clicked.connect(lambda: self.show_info.emit(self.game.app_name))
-        self.menu_btn.setFixedWidth(17)
-        minilayout.addWidget(self.menu_btn)
-        minilayout.addStretch(1)
-        self.layout.addLayout(minilayout)
+        self.menu_btn.setFixedSize(22, 22)
+        minilayout.addWidget(self.menu_btn, stretch=0)
+        minilayout.setAlignment(Qt.AlignTop)
+        layout.addWidget(miniwidget)
 
-        self.info_label = QLabel("")
+        self.info_label = ElideLabel(" ", parent=self)
+        self.info_label.setFixedWidth(ImageSize.Display.size.width())
         self.leaveEvent(None)
-        self.info_label.setAutoFillBackground(False)
         self.info_label.setObjectName("info_label")
-        self.layout.addWidget(self.info_label)
+        layout.addWidget(self.info_label)
 
         if self.igame and self.igame.needs_verification:
             self.info_label.setText(self.texts["needs_verification"])
 
-        self.setLayout(self.layout)
-        self.setFixedWidth(self.sizeHint().width())
+        self.setLayout(layout)
 
         self.game_utils.game_launched.connect(self.game_started)
 
@@ -99,7 +100,7 @@ class InstalledIconWidget(BaseInstalledWidget):
         elif self.igame and self.igame.needs_verification:
             self.info_label.setText(self.texts["needs_verification"])
         else:
-            self.info_label.setText("")
+            self.info_label.setText(" ")  # invisible text, cheap way to always vertical have size in label
 
     def mousePressEvent(self, e: QMouseEvent):
         # left button

@@ -1,45 +1,77 @@
-import os
 import platform
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, QSettings
 from PyQt5.QtWidgets import QDialog, QApplication
-from legendary.core import LegendaryCore
 from requests.exceptions import ConnectionError, HTTPError
 
-from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton
 from rare.components.dialogs.login import LoginDialog
+from rare.models.apiresults import ApiResults
+from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton
+from rare.shared.image_manager import ImageManagerSingleton
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
-from rare.utils.models import ApiResults
-from rare.utils.paths import image_dir
-from rare.utils.utils import download_images, CloudWorker
+from rare.utils.utils import CloudWorker
 
 logger = getLogger("Login")
 
 
-class LaunchDialogSignals(QObject):
-    image_progress = pyqtSignal(int)
-    result = pyqtSignal(object, str)
+class LaunchWorker(QRunnable):
+    class Signals(QObject):
+        progress = pyqtSignal(int)
+        result = pyqtSignal(object, str)
 
-
-class ImageWorker(QRunnable):
     def __init__(self):
-        super(ImageWorker, self).__init__()
-        self.signals = LaunchDialogSignals()
+        super(LaunchWorker, self).__init__()
         self.setAutoDelete(True)
+        self.signals = LaunchWorker.Signals()
         self.core = LegendaryCoreSingleton()
 
     def run(self):
-        download_images(self.signals.image_progress, self.signals.result, self.core)
-        self.signals.image_progress.emit(100)
+        pass
 
 
-class ApiRequestWorker(QRunnable):
+class ImageWorker(LaunchWorker):
+    def __init__(self):
+        super(ImageWorker, self).__init__()
+        self.image_manager = ImageManagerSingleton()
+
+    def run(self):
+        # Download Images
+        games, dlcs = self.core.get_game_and_dlc_list(update_assets=True, skip_ue=False)
+        self.signals.result.emit((games, dlcs), "gamelist")
+        dlc_list = [dlc[0] for dlc in dlcs.values()]
+
+        na_games, na_dlcs = self.core.get_non_asset_library_items(force_refresh=False, skip_ue=False)
+        self.signals.result.emit(na_games, "no_assets")
+        na_dlc_list = [dlc[0] for dlc in na_dlcs.values()]
+
+        game_list = games + dlc_list + na_games + na_dlc_list
+        fetched = [False] * len(game_list)
+
+        def set_fetched(idx):
+            fetched[idx] = True
+            self.signals.progress.emit(sum(fetched))
+
+        for i, game in enumerate(game_list):
+            if game.app_title == "Unreal Engine":
+                game.app_title += f" {game.app_name.split('_')[-1]}"
+                self.core.lgd.set_game_meta(game.app_name, game)
+            self.image_manager.download_image_blocking(game)
+            self.signals.progress.emit(int(i / len(game_list) * 100))
+            # self.image_manager.download_image(
+            #     game,
+            #     load_callback=lambda: set_fetched(i),
+            #     priority=i
+            # )
+        # while not all(fetched):
+        #     continue
+
+        self.signals.progress.emit(100)
+
+
+class ApiRequestWorker(LaunchWorker):
     def __init__(self):
         super(ApiRequestWorker, self).__init__()
-        self.signals = LaunchDialogSignals()
-        self.setAutoDelete(True)
-        self.core = LegendaryCoreSingleton()
         self.settings = QSettings()
 
     def run(self) -> None:
@@ -106,14 +138,11 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
                 self.quit_app.emit(0)
 
     def launch(self):
-        # self.core = core
-        if not os.path.exists(image_dir):
-            os.makedirs(image_dir)
 
         if not self.args.offline:
             self.image_info.setText(self.tr("Downloading Images"))
             image_worker = ImageWorker()
-            image_worker.signals.image_progress.connect(self.update_image_progbar)
+            image_worker.signals.progress.connect(self.update_image_progbar)
             image_worker.signals.result.connect(self.handle_api_worker_result)
             self.thread_pool.start(image_worker)
 
@@ -124,9 +153,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
             # cloud save from another worker, because it is used in cloud_save_utils too
             cloud_worker = CloudWorker()
-            cloud_worker.signals.result_ready.connect(
-                lambda x: self.handle_api_worker_result(x, "saves")
-            )
+            cloud_worker.signals.result_ready.connect(lambda x: self.handle_api_worker_result(x, "saves"))
             self.thread_pool.start(cloud_worker)
 
         else:
@@ -159,13 +186,9 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
                     self.api_results.dlcs,
                 ) = self.core.get_game_and_dlc_list(False)
         elif text == "32bit":
-            self.api_results.bit32_games = (
-                [i.app_name for i in result[0]] if result else []
-            )
+            self.api_results.bit32_games = [i.app_name for i in result[0]] if result else []
         elif text == "mac":
-            self.api_results.mac_games = (
-                [i.app_name for i in result[0]] if result else []
-            )
+            self.api_results.mac_games = [i.app_name for i in result[0]] if result else []
 
         elif text == "no_assets":
             self.api_results.no_asset_games = result if result else []

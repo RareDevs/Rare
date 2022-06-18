@@ -1,8 +1,8 @@
 import os
 import platform
 import shutil
-from pathlib import Path
 from logging import getLogger
+from pathlib import Path
 from typing import Tuple
 
 from PyQt5.QtCore import (
@@ -25,20 +25,21 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QWidgetAction,
 )
-
 from legendary.models.game import Game, InstalledGame, VerifyResult
-from rare.legendary.legendary.utils.lfs import validate_files
+from legendary.utils.lfs import validate_files
+
 from rare.shared import (
     LegendaryCoreSingleton,
     GlobalSignalsSingleton,
     ArgumentsSingleton,
 )
+from rare.shared.image_manager import ImageManagerSingleton, ImageSize
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.legendary_utils import VerifyWorker
 from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
-from rare.utils.utils import get_size, get_pixmap
+from rare.utils.utils import get_size
 
 logger = getLogger("GameInfo")
 
@@ -56,6 +57,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
+        self.image_manager = ImageManagerSingleton()
         self.game_utils = game_utils
 
         if platform.system() == "Windows":
@@ -281,11 +283,10 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.igame = self.core.get_installed_game(self.game.app_name)
         self.title.setTitle(self.game.app_title)
 
-        pixmap = get_pixmap(self.game.app_name)
+        pixmap = self.image_manager.get_pixmap(self.game.app_name)
         if pixmap.isNull():
-            pixmap = get_pixmap(self.parent().parent().parent().ue_name)
-        w = 200
-        pixmap = pixmap.scaled(w, int(w * 4 / 3))
+            pixmap = self.image_manager.get_pixmap(self.parent().parent().parent().ue_name)
+        pixmap = pixmap.scaled(ImageSize.Display.size)
         self.image.setPixmap(pixmap)
 
         self.app_name.setText(self.game.app_name)

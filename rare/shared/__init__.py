@@ -1,9 +1,17 @@
+"""
+Shared controller resources module
+
+Each of the objects in this module should be instantiated ONCE
+and only ONCE!
+"""
+
 from argparse import Namespace
 from typing import Optional
 
 from legendary.core import LegendaryCore
 
-from rare.utils.models import ApiResults, GlobalSignals
+from rare.models.apiresults import ApiResults
+from rare.models.signals import GlobalSignals
 
 _legendary_core_singleton: Optional[LegendaryCore] = None
 _global_signals_singleton: Optional[GlobalSignals] = None

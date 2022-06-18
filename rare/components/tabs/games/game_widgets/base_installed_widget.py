@@ -6,9 +6,9 @@ from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, QStandardPaths, Qt, QB
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
 
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.components.tabs.games.game_utils import GameUtils
-from rare.utils import utils
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
+from rare.shared.image_manager import ImageManagerSingleton, ImageSize
 from rare.utils.utils import create_desktop_link
 
 logger = getLogger("Game")
@@ -25,6 +25,7 @@ class BaseInstalledWidget(QGroupBox):
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
+        self.image_manager = ImageManagerSingleton()
         self.game_utils = game_utils
 
         self.syncing_cloud_saves = False
@@ -63,8 +64,9 @@ class BaseInstalledWidget(QGroupBox):
             pass
 
         self.image = QLabel()
+        self.image.setFixedSize(ImageSize.Display.size)
         self.image.setPixmap(
-            pixmap.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation)
+            pixmap.scaled(ImageSize.Display.size, transformMode=Qt.SmoothTransformation)
         )
         self.game_running = False
         self.offline = self.args.offline
@@ -140,11 +142,9 @@ class BaseInstalledWidget(QGroupBox):
             )
 
     def reload_image(self):
-        utils.download_image(self.game, True)
-        pm = utils.get_pixmap(self.game.app_name)
-        self.image.setPixmap(
-            pm.scaled(200, int(200 * 4 / 3), transformMode=Qt.SmoothTransformation)
-        )
+        self.image_manager.download_image_blocking(self.game, force=True)
+        pm = self.image_manager.get_pixmap(self.game.app_name, color=True)
+        self.image.setPixmap(pm.scaled(ImageSize.Display.size, transformMode=Qt.SmoothTransformation))
 
     def create_desktop_link(self, type_of_link):
         if type_of_link == "desktop":

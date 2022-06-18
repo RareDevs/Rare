@@ -8,22 +8,24 @@ import time
 import traceback
 from argparse import Namespace
 from datetime import datetime
+from typing import Optional
 
+import legendary
 import requests.exceptions
 from PyQt5.QtCore import Qt, QThreadPool, QSettings, QTranslator, QTimer
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
 
-import legendary
 # noinspection PyUnresolvedReferences
 import rare.resources.resources
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.utils.paths import cache_dir, resources_path, tmp_dir
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
+from rare.shared.image_manager import ImageManagerSingleton
 from rare.utils import legendary_utils, config_helper
+from rare.utils.paths import cache_dir, resources_path, tmp_dir
 from rare.utils.utils import set_color_pallete, set_style_sheet
 
 start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
@@ -54,8 +56,8 @@ def excepthook(exc_type, exc_value, exc_tb):
 
 
 class App(QApplication):
-    mainwindow: MainWindow = None
-    tray_icon: QSystemTrayIcon = None
+    mainwindow: Optional[MainWindow] = None
+    tray_icon: Optional[QSystemTrayIcon] = None
 
     def __init__(self, args: Namespace):
         super(App, self).__init__(sys.argv)
@@ -63,7 +65,7 @@ class App(QApplication):
         self.window_launched = False
         self.setQuitOnLastWindowClosed(False)
 
-        if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
+        if hasattr(Qt, "AA_UseHighDpiPixmaps"):
             self.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
         # init Legendary
@@ -102,6 +104,7 @@ class App(QApplication):
         self.settings = QSettings()
 
         self.signals = GlobalSignalsSingleton(init=True)
+        self.image_manager = ImageManagerSingleton(init=True)
 
         self.signals.exit_app.connect(self.exit_app)
         self.signals.send_notification.connect(

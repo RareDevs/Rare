@@ -1,12 +1,15 @@
 from logging import getLogger
 
-from PyQt5.QtWidgets import QVBoxLayout, QLabel
-
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
+
 from rare.components.tabs.games.game_widgets.base_uninstalled_widget import (
     BaseUninstalledWidget,
 )
+from rare.shared.image_manager import ImageSize
+from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("Uninstalled")
 
@@ -14,19 +17,31 @@ logger = getLogger("Uninstalled")
 class IconWidgetUninstalled(BaseUninstalledWidget):
     def __init__(self, game: Game, core: LegendaryCore, pixmap):
         super(IconWidgetUninstalled, self).__init__(game, core, pixmap)
-        self.layout = QVBoxLayout()
+        layout = QVBoxLayout()
         self.setObjectName("game_widget_icon")
-        self.layout.addWidget(self.image)
+        layout.addWidget(self.image)
 
-        self.title_label = QLabel(f"<h3>{game.app_title}</h3>")
-        self.title_label.setWordWrap(True)
-        self.layout.addWidget(self.title_label)
+        miniwidget = QWidget(self)
+        miniwidget.setFixedWidth(ImageSize.Display.size.width())
+        minilayout = QHBoxLayout()
+        minilayout.setContentsMargins(0, 0, 0, 0)
+        minilayout.setSpacing(0)
+        miniwidget.setLayout(minilayout)
 
-        self.info_label = QLabel("")
-        self.layout.addWidget(self.info_label)
+        self.title_label = ElideLabel(f"<h4>{game.app_title}</h4>", parent=miniwidget)
+        self.title_label.setObjectName("game_widget")
+        minilayout.addWidget(self.title_label, stretch=2)
 
-        self.setLayout(self.layout)
-        self.setFixedWidth(self.sizeHint().width())
+        minilayout.setAlignment(Qt.AlignTop)
+        layout.addWidget(miniwidget)
+
+        self.info_label = ElideLabel(" ", parent=self)
+        self.info_label.setFixedWidth(ImageSize.Display.size.width())
+        self.leaveEvent(None)
+        self.info_label.setObjectName("info_label")
+        layout.addWidget(self.info_label)
+
+        self.setLayout(layout)
 
     def mousePressEvent(self, e) -> None:
         # left button
@@ -47,4 +62,4 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
         if self.installing:
             self.info_label.setText("Installation...")
         else:
-            self.info_label.setText("")
+            self.info_label.setText(" ")  # invisible text, cheap way to always have vertical size in label

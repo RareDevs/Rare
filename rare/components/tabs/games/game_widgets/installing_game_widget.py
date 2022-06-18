@@ -1,14 +1,13 @@
 from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QPaintEvent, QPainter, QPixmap, QPen, QFont, QColor
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QHBoxLayout, QWidget
-
 from legendary.models.game import Game
+
 from rare.shared import LegendaryCoreSingleton
+from rare.shared.image_manager import ImageManagerSingleton, ImageSize
 from rare.utils.utils import (
-    get_pixmap,
     optimal_text_background,
     text_color_for_background,
-    get_uninstalled_pixmap,
 )
 
 
@@ -24,11 +23,9 @@ class InstallingGameWidget(QWidget):
         self.core = LegendaryCoreSingleton()
 
         self.pixmap = QPixmap()
-        w = 200
-        # self.pixmap = self.pixmap.scaled(w, int(w * 4 / 3), transformMode=Qt.SmoothTransformation)
         self.image_widget = PaintWidget()
-        self.setContentsMargins(4, 4, 4, 4)
-        self.image_widget.setFixedSize(w, int(w * 4 / 3))
+        self.setContentsMargins(0, 0, 0, 0)
+        self.image_widget.setFixedSize(ImageSize.Display.size)
         self.layout().addWidget(self.image_widget)
 
         self.title_label = QLabel(f"<h4>Error</h4>")
@@ -62,18 +59,18 @@ class PaintWidget(QWidget):
     def __init__(self):
         super(PaintWidget, self).__init__()
         self.core = LegendaryCoreSingleton()
+        self.image_manager = ImageManagerSingleton()
 
     def set_game(self, app_name: str):
         game = self.core.get_game(app_name, False)
-        self.color_image = get_pixmap(game.app_name)
-        w = 200
+        self.color_image = self.image_manager.get_pixmap(game.app_name, color=False)
         self.color_image = self.color_image.scaled(
-            w, int(w * 4 // 3), transformMode=Qt.SmoothTransformation
+            ImageSize.Display.size, transformMode=Qt.SmoothTransformation
         )
-        self.setFixedSize(self.color_image.size())
-        self.bw_image = get_uninstalled_pixmap(app_name)
+        self.setFixedSize(ImageSize.Display.size)
+        self.bw_image = self.image_manager.get_pixmap(app_name, color=False)
         self.bw_image = self.bw_image.scaled(
-            w, int(w * 4 // 3), transformMode=Qt.SmoothTransformation
+            ImageSize.Display.size, transformMode=Qt.SmoothTransformation
         )
         self.progress = 0
 
