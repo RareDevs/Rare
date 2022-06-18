@@ -2,7 +2,7 @@ import datetime
 import sys
 from dataclasses import dataclass
 from logging import getLogger
-from typing import Union, List
+from typing import Union, List, Dict
 
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, Qt, QSettings
 from PyQt5.QtWidgets import QDialog, QMessageBox, QSizePolicy, QLayout, QApplication
@@ -139,7 +139,7 @@ class CloudSaveUtils(QObject):
 
         self.thread_pool = QThreadPool.globalInstance()
 
-    def get_latest_saves(self, saves: List[SaveGameFile]) -> dict:
+    def get_latest_saves(self, saves: List[SaveGameFile]) -> Dict[str, SaveGameFile]:
         save_games = set()
         for igame in self.core.get_installed_list():
             game = self.core.get_game(igame.app_name)
