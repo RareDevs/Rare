@@ -12,7 +12,6 @@ requirements = [
     "PyQt5",
     "QtAwesome",
     "psutil",
-    "pypresence",
     'pywin32; platform_system == "Windows"',
 ]
 
@@ -20,7 +19,8 @@ optional_reqs = dict(
     webview=[
         'pywebview[gtk]; platform_system == "Linux"',
         'pywebview[cef]; platform_system == "Windows"',
-    ]
+    ],
+    pypresence=["pypresence"]
 )
 
 setuptools.setup(
@@ -40,6 +40,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         "Operating System :: OS Independent"
     ],
