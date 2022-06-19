@@ -133,7 +133,7 @@ class GameProcessHelper(QObject):
 
         if args.cwd:
             self.game_process.setWorkingDirectory(args.cwd)
-
+        self.game_process.setProcessEnvironment(args.env)
         self.game_process.start(args.executable, args.args)
         self.send_message(
             StateChangedModel(

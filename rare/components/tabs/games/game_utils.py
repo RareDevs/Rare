@@ -3,6 +3,7 @@ import os
 import platform
 import shutil
 from dataclasses import dataclass
+import datetime
 from logging import getLogger
 
 from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqtSignal, QUrl, QTimer
@@ -94,6 +95,9 @@ class GameProcess(QObject):
             if model.new_state == message_models.StateChangedModel.States.started:
                 logger.info("Launched Game")
                 self.game_launched.emit(self.app_name)
+                meta_data = self.game_meta.get_game(self.app_name)
+                meta_data.last_played = datetime.datetime.now()
+                self.game_meta.set_game(self.app_name, meta_data)
 
     def _socket_connected(self):
         self.timer.stop()
