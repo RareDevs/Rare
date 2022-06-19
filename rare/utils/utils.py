@@ -1,13 +1,11 @@
-import json
 import math
 import os
 import platform
 import shlex
-import shutil
 import subprocess
 import sys
 from logging import getLogger
-from typing import Tuple, List
+from typing import List, Tuple
 
 import qtawesome
 import requests
@@ -18,11 +16,10 @@ from PyQt5.QtCore import (
     QRunnable,
     QSettings,
     QStandardPaths,
-    Qt,
     QFile,
     QDir,
 )
-from PyQt5.QtGui import QPalette, QColor, QPixmap, QImage
+from PyQt5.QtGui import QPalette, QColor, QImage
 from PyQt5.QtWidgets import qApp, QStyleFactory
 from legendary.models.game import Game
 from requests.exceptions import HTTPError
@@ -44,85 +41,6 @@ from legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 settings = QSettings("Rare", "Rare")
-
-
-def download_images(progress: pyqtSignal, results: pyqtSignal, core: LegendaryCore):
-    if not os.path.isdir(image_dir):
-        os.makedirs(image_dir)
-        logger.info("Create Image dir")
-
-    # Download Images
-    games, dlcs = core.get_game_and_dlc_list(True, skip_ue=False)
-    results.emit((games, dlcs), "gamelist")
-    dlc_list = []
-    for i in dlcs.values():
-        dlc_list.append(i[0])
-
-    no_assets = core.get_non_asset_library_items()[0]
-    results.emit(no_assets, "no_assets")
-
-    game_list = games + dlc_list + no_assets
-    for i, game in enumerate(game_list):
-        if game.app_title == "Unreal Engine":
-            game.app_title += f" {game.app_name.split('_')[-1]}"
-            core.lgd.set_game_meta(game.app_name, game)
-        try:
-            download_image(game)
-        except json.decoder.JSONDecodeError:
-            shutil.rmtree(f"{image_dir}/{game.app_name}")
-            download_image(game)
-        progress.emit(i * 100 // len(game_list))
-
-
-def download_image(game, force=False):
-    if force and os.path.exists(f"{image_dir}/{game.app_name}"):
-        shutil.rmtree(f"{image_dir}/{game.app_name}")
-    if not os.path.isdir(f"{image_dir}/{game.app_name}"):
-        os.mkdir(f"{image_dir}/{game.app_name}")
-
-    # to get picture updates
-    if not os.path.isfile(f"{image_dir}/{game.app_name}/image.json"):
-        json_data = {
-            "DieselGameBoxTall": None,
-            "DieselGameBoxLogo": None,
-            "Thumbnail": None,
-        }
-    else:
-        json_data = json.load(open(f"{image_dir}/{game.app_name}/image.json", "r"))
-    # Download
-    for image in game.metadata["keyImages"]:
-        if (
-                image["type"] == "DieselGameBoxTall"
-                or image["type"] == "DieselGameBoxLogo"
-                or image["type"] == "Thumbnail"
-        ):
-            if image["type"] not in json_data.keys():
-                json_data[image["type"]] = None
-            if json_data[image["type"]] != image["md5"] or not os.path.isfile(
-                    f"{image_dir}/{game.app_name}/{image['type']}.png"
-            ):
-                # Download
-                json_data[image["type"]] = image["md5"]
-                # os.remove(f"{image_dir}/{game.app_name}/{image['type']}.png")
-                json.dump(
-                    json_data, open(f"{image_dir}/{game.app_name}/image.json", "w")
-                )
-                logger.info(f"Download Image for Game: {game.app_title}")
-                url = image["url"]
-                resp = requests.get(url)
-                img = QImage()
-                img.loadFromData(resp.content)
-                img = img.scaled(
-                    200,
-                    200 * 4 // 3,
-                    Qt.KeepAspectRatio,
-                    transformMode=Qt.SmoothTransformation,
-                )
-                img.save(
-                    os.path.join(image_dir, game.app_name, image["type"] + ".png"),
-                    format="PNG",
-                )
-
 
 color_role_map = {
     0: "WindowText",
@@ -272,16 +190,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
     if not for_rare:
         igame = core.get_installed_game(app_name)
 
-        if os.path.exists(p := os.path.join(image_dir, igame.app_name, "Thumbnail.png")):
-            icon = p
-        elif os.path.exists(
-                p := os.path.join(image_dir, igame.app_name, "DieselGameBoxLogo.png")
-        ):
-            icon = p
-        else:
-            icon = os.path.join(
-                os.path.join(image_dir, igame.app_name, "DieselGameBoxTall.png")
-            )
+        icon = os.path.join(os.path.join(image_dir, igame.app_name, "installed.png"))
         icon = icon.replace(".png", "")
 
     if platform.system() == "Linux":
@@ -395,22 +304,6 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
     # mac OS is based on Darwin
     elif platform.system() == "Darwin":
         return False
-
-
-def get_pixmap(app_name: str) -> QPixmap:
-    for img in ["FinalArt.png", "DieselGameBoxTall.png", "DieselGameBoxLogo.png"]:
-        if os.path.exists(image := os.path.join(image_dir, app_name, img)):
-            pixmap = QPixmap(image)
-            break
-    else:
-        pixmap = QPixmap()
-    return pixmap
-
-
-def get_uninstalled_pixmap(app_name: str) -> QPixmap:
-    pm = get_pixmap(app_name)
-    grey_image = pm.toImage().convertToFormat(QImage.Format_Grayscale8)
-    return QPixmap.fromImage(grey_image)
 
 
 def optimal_text_background(image: list) -> Tuple[int, int, int]:

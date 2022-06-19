@@ -1,14 +1,14 @@
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QResizeEvent
 from PyQt5.QtWidgets import QFrame, QWidget, QMessageBox
-
 from legendary.models.game import Game
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+
 from rare.components.tabs.games.game_utils import GameUtils
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared.image_manager import ImageManagerSingleton, ImageSize
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
 from rare.utils.models import InstallOptionsModel
-from rare.utils.utils import get_pixmap
 
 
 class GameDlc(QWidget, Ui_GameDlc):
@@ -90,14 +90,17 @@ class GameDlcWidget(QFrame, Ui_GameDlcWidget):
 
     def __init__(self, dlc: Game, installed: bool, parent=None):
         super(GameDlcWidget, self).__init__(parent=parent)
+        self.image_manager = ImageManagerSingleton()
         self.setupUi(self)
         self.dlc = dlc
+
+        self.image.setFixedSize(ImageSize.Smaller.size)
 
         self.dlc_name.setText(dlc.app_title)
         self.version.setText(dlc.app_version())
         self.app_name.setText(dlc.app_name)
 
-        self.pixmap = get_pixmap(dlc.app_name)
+        self.pixmap = self.image_manager.get_pixmap(dlc.app_name)
 
         if installed:
             self.action_button.setProperty("uninstall", 1)

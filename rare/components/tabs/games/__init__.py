@@ -3,12 +3,17 @@ from typing import Tuple, Dict, Union, List
 
 from PyQt5.QtCore import QSettings, QObjectCleanupHandler
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget
-
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton, ApiResultsSingleton
 from legendary.models.game import InstalledGame, Game
+
+from rare.shared import (
+    LegendaryCoreSingleton,
+    GlobalSignalsSingleton,
+    ArgumentsSingleton,
+    ApiResultsSingleton,
+)
+from rare.shared.image_manager import ImageManagerSingleton
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.utils.extra_widgets import FlowLayout
-from rare.utils.utils import get_pixmap, download_image, get_uninstalled_pixmap
 from .cloud_save_utils import CloudSaveUtils
 from .cloud_save_utils import CloudSaveUtils
 from .game_info import GameInfoTabs
@@ -41,6 +46,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
         self.api_results = ApiResultsSingleton()
+        self.image_manager = ImageManagerSingleton()
         self.settings = QSettings()
 
         self.game_list: List[Game] = self.api_results.game_list
@@ -71,7 +77,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
         for i in self.game_list:
             if i.app_name.startswith("UE_4"):
-                pixmap = get_pixmap(i.app_name)
+                pixmap = self.image_manager.get_pixmap(i.app_name)
                 if pixmap.isNull():
                     continue
                 self.ue_name = i.app_name
@@ -216,15 +222,15 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         )
 
     def add_installed_widget(self, app_name):
-        pixmap = get_pixmap(app_name)
+        pixmap = self.image_manager.get_pixmap(app_name)
         try:
             if pixmap.isNull():
                 logger.info(f"{app_name} has a corrupt image.")
                 if app_name in self.no_asset_names and self.core.get_asset(app_name).namespace != "ue":
-                    download_image(self.core.get_game(app_name), force=True)
-                    pixmap = get_pixmap(app_name)
+                    self.image_manager.download_image_blocking(self.core.get_game(app_name), force=True)
+                    pixmap = self.image_manager.get_pixmap(app_name)
                 elif self.ue_name:
-                    pixmap = get_pixmap(self.ue_name)
+                    pixmap = self.image_manager.get_pixmap(self.ue_name)
 
             icon_widget = InstalledIconWidget(app_name, pixmap, self.game_utils)
             list_widget = InstalledListWidget(app_name, pixmap, self.game_utils)
@@ -242,15 +248,15 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
         return icon_widget, list_widget
 
     def add_uninstalled_widget(self, game):
-        pixmap = get_uninstalled_pixmap(game.app_name)
+        pixmap = self.image_manager.get_pixmap(game.app_name, color=False)
         try:
             if pixmap.isNull():
                 if self.core.get_asset(game.app_name).namespace != "ue":
                     logger.warning(f"{game.app_title} has a corrupt image. Reloading...")
-                    download_image(game, force=True)
-                    pixmap = get_uninstalled_pixmap(game.app_name)
+                    self.image_manager.download_image_blocking(game, force=True)
+                    pixmap = self.image_manager.get_pixmap(game.app_name, color=False)
                 elif self.ue_name:
-                    pixmap = get_uninstalled_pixmap(self.ue_name)
+                    pixmap = self.image_manager.get_pixmap(self.ue_name, color=False)
 
             icon_widget = IconWidgetUninstalled(game, self.core, pixmap)
             list_widget = ListWidgetUninstalled(self.core, game, pixmap)

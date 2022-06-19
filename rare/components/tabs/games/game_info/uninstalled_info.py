@@ -3,15 +3,20 @@ import platform
 from PyQt5.QtCore import Qt, QThreadPool
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QTreeView
-
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton, ApiResultsSingleton
 from legendary.models.game import Game
+
+from rare.shared import (
+    LegendaryCoreSingleton,
+    GlobalSignalsSingleton,
+    ArgumentsSingleton,
+    ApiResultsSingleton,
+)
+from rare.shared.image_manager import ImageManagerSingleton, ImageSize
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabWidget
 from rare.utils.json_formatter import QJsonModel
 from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
-from rare.utils.utils import get_pixmap
 
 
 class UninstalledInfoTabs(SideTabWidget):
@@ -71,6 +76,8 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.api_results = ApiResultsSingleton()
+        self.image_manager = ImageManagerSingleton()
+
         self.install_button.clicked.connect(self.install_game)
         if platform.system() != "Windows":
             self.steam_worker = SteamWorker(self.core)
@@ -104,11 +111,10 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
             available_platforms.append("macOS")
         self.platform.setText(", ".join(available_platforms))
 
-        pixmap = get_pixmap(game.app_name)
+        pixmap = self.image_manager.get_pixmap(game.app_name, color=False)
         if pixmap.isNull():
-            pixmap = get_pixmap(self.ue_default_name)
-        w = 200
-        pixmap = pixmap.scaled(w, int(w * 4 / 3))
+            pixmap = self.image_manager.get_pixmap(self.ue_default_name, color=False)
+        pixmap = pixmap.scaled(ImageSize.Display.size)
         self.image.setPixmap(pixmap)
 
         self.app_name.setText(self.game.app_name)
