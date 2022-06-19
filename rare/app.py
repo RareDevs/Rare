@@ -25,7 +25,7 @@ from rare.components.tray_icon import TrayIcon
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.shared.image_manager import ImageManagerSingleton
 from rare.utils import legendary_utils, config_helper
-from rare.utils.paths import cache_dir, resources_path, tmp_dir
+from rare.utils.paths import cache_dir, resources_path, tmp_dir, data_dir
 from rare.utils.utils import set_color_pallete, set_style_sheet
 
 start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
@@ -38,7 +38,9 @@ logger = logging.getLogger("Rare")
 
 def excepthook(exc_type, exc_value, exc_tb):
     tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+    os.remove(os.path.join(data_dir, "singleton.lock"))
     print("Error")
+
     if exc_tb == HTTPError:
         try:
             if LegendaryCoreSingleton().login():
@@ -141,8 +143,8 @@ class App(QApplication):
         self.setProperty("rareDefaultQtStyle", self.style().objectName())
 
         if (
-            self.settings.value("color_scheme", None) is None
-            and self.settings.value("style_sheet", None) is None
+                self.settings.value("color_scheme", None) is None
+                and self.settings.value("style_sheet", None) is None
         ):
             self.settings.setValue("color_scheme", "")
             self.settings.setValue("style_sheet", "RareStyle")
@@ -275,6 +277,8 @@ class App(QApplication):
             self.tray_icon.deleteLater()
         self.processEvents()
         shutil.rmtree(tmp_dir)
+        if os.path.exists(os.path.join(data_dir, "singleton.lock")):
+            os.remove(os.path.join(data_dir, "singleton.lock"))
         os.makedirs(tmp_dir)
 
         self.exit(exit_code)

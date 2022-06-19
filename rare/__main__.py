@@ -1,5 +1,4 @@
 #!/usr/bin/python
-import argparse
 import os
 import pathlib
 import sys
@@ -60,11 +59,11 @@ def main():
     launch_minimal_parser.add_argument("--skip_update_check", help="Do not check for updates",
                                        action="store_true")
     launch_minimal_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
-                               default=os.environ.get('LGDRY_WINE_BINARY', None),
-                               help='Set WINE binary to use to launch the app')
+                                       default=os.environ.get('LGDRY_WINE_BINARY', None),
+                                       help='Set WINE binary to use to launch the app')
     launch_minimal_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
-                               default=os.environ.get('LGDRY_WINE_PREFIX', None),
-                               help='Set WINE prefix to use')
+                                       default=os.environ.get('LGDRY_WINE_PREFIX', None),
+                                       help='Set WINE prefix to use')
     launch_minimal_parser.add_argument("--ask-alyways-sync", help="Ask for cloud saves",
                                        action="store_true")
 
@@ -94,16 +93,9 @@ def main():
         helper.start_game(args)
         return
 
-    from rare.utils import singleton
-
-    try:
-        # this object only allows one instance per machine
-
-        me = singleton.SingleInstance()
-    except singleton.SingleInstanceException:
+    from rare.utils.paths import data_dir
+    if os.path.exists(os.path.join(data_dir, "singleton.lock")):
         print("Rare is already running")
-        from rare.utils.paths import data_dir
-
         with open(os.path.join(data_dir, "lockfile"), "w") as file:
             if args.subparser == "launch":
                 file.write(f"launch {args.app_name}")
@@ -111,6 +103,9 @@ def main():
                 file.write("start")
             file.close()
         return
+
+    from pathlib import Path
+    Path(os.path.join(data_dir, "singleton.lock")).touch()
 
     if args.subparser == "launch":
         args.silent = True
