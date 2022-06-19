@@ -25,20 +25,7 @@
   <property name="frameShadow">
    <enum>QFrame::Plain</enum>
   </property>
-  <layout class="QHBoxLayout" name="dlc_layout" stretch="0,0,1,0">
-   <item>
-    <widget class="QLabel" name="image">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
-     <property name="text">
-      <string notr="true">image</string>
-     </property>
-    </widget>
-   </item>
+  <layout class="QHBoxLayout" name="dlc_layout" stretch="0,1,0">
    <item>
     <widget class="QWidget" name="dlc_info" native="true">
      <layout class="QFormLayout" name="dlc_info_layout">

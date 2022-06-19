@@ -14,19 +14,6 @@
    <string>Game Info</string>
   </property>
   <layout class="QHBoxLayout" name="layout_game_info">
-   <item alignment="Qt::AlignTop">
-    <widget class="QLabel" name="image">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
-     </property>
-     <property name="text">
-      <string notr="true"/>
-     </property>
-    </widget>
-   </item>
    <item>
     <layout class="QGridLayout" name="layout_game_info_form">
      <property name="leftMargin">

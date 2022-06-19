@@ -87,7 +87,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
             logger.warning("No Unreal engine in library found")
             self.ue_name = ""
 
-        self.uninstalled_info_tabs = UninstalledInfoTabs(self.ue_name, self)
+        self.uninstalled_info_tabs = UninstalledInfoTabs(self)
         self.uninstalled_info_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
         self.addWidget(self.uninstalled_info_tabs)
 

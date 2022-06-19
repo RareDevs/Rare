@@ -40,6 +40,7 @@ from rare.utils.legendary_utils import VerifyWorker
 from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_size
+from rare.widgets.image_widget import ImageWidget
 
 logger = getLogger("GameInfo")
 
@@ -59,6 +60,10 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.args = ArgumentsSingleton()
         self.image_manager = ImageManagerSingleton()
         self.game_utils = game_utils
+
+        self.image = ImageWidget(self)
+        self.image.setFixedSize(ImageSize.Display)
+        self.layout_game_info.insertWidget(0, self.image, alignment=Qt.AlignTop)
 
         if platform.system() == "Windows":
             self.lbl_grade.setVisible(False)
@@ -283,11 +288,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.igame = self.core.get_installed_game(self.game.app_name)
         self.title.setTitle(self.game.app_title)
 
-        pixmap = self.image_manager.get_pixmap(self.game.app_name)
-        if pixmap.isNull():
-            pixmap = self.image_manager.get_pixmap(self.parent().parent().parent().ue_name)
-        pixmap = pixmap.scaled(ImageSize.Display.size)
-        self.image.setPixmap(pixmap)
+        self.image.setPixmap(self.image_manager.get_pixmap(self.game.app_name, color=True))
 
         self.app_name.setText(self.game.app_name)
         if self.igame:

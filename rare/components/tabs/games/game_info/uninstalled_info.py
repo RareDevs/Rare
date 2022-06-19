@@ -17,16 +17,17 @@ from rare.utils.extra_widgets import SideTabWidget
 from rare.utils.json_formatter import QJsonModel
 from rare.utils.models import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
+from rare.widgets.image_widget import ImageWidget
 
 
 class UninstalledInfoTabs(SideTabWidget):
-    def __init__(self, ue_default_name, parent=None):
+    def __init__(self, parent=None):
         super(UninstalledInfoTabs, self).__init__(show_back=True, parent=parent)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
 
-        self.info = UninstalledInfo(ue_default_name)
+        self.info = UninstalledInfo()
         self.info.install_button.setDisabled(self.args.offline)
         self.addTab(self.info, self.tr("Information"))
 
@@ -70,13 +71,17 @@ class GameMetadataView(QTreeView):
 class UninstalledInfo(QWidget, Ui_GameInfo):
     game: Game
 
-    def __init__(self, ue_default_name, parent=None):
+    def __init__(self, parent=None):
         super(UninstalledInfo, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.api_results = ApiResultsSingleton()
         self.image_manager = ImageManagerSingleton()
+
+        self.image = ImageWidget(self)
+        self.image.setFixedSize(ImageSize.Display)
+        self.layout_game_info.insertWidget(0, self.image, alignment=Qt.AlignTop)
 
         self.install_button.clicked.connect(self.install_game)
         if platform.system() != "Windows":
@@ -96,7 +101,6 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.game_actions_stack.setCurrentIndex(1)
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
         self.lbl_platform.setText(self.tr("Platforms"))
-        self.ue_default_name = ue_default_name
 
     def install_game(self):
         self.signals.install_game.emit(InstallOptionsModel(app_name=self.game.app_name))
@@ -111,11 +115,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
             available_platforms.append("macOS")
         self.platform.setText(", ".join(available_platforms))
 
-        pixmap = self.image_manager.get_pixmap(game.app_name, color=False)
-        if pixmap.isNull():
-            pixmap = self.image_manager.get_pixmap(self.ue_default_name, color=False)
-        pixmap = pixmap.scaled(ImageSize.Display.size)
-        self.image.setPixmap(pixmap)
+        self.image.setPixmap(self.image_manager.get_pixmap(self.game.app_name, color=True))
 
         self.app_name.setText(self.game.app_name)
         self.version.setText(self.game.app_version("Windows"))
