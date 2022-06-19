@@ -1,10 +1,11 @@
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QGroupBox, QLabel, QAction
+from PyQt5.QtWidgets import QGroupBox, QAction
 from legendary.models.game import Game
 
 from rare.shared.image_manager import ImageManagerSingleton, ImageSize
+from rare.widgets.image_widget import ImageWidget
 
 logger = getLogger("Uninstalled")
 
@@ -21,9 +22,9 @@ class BaseUninstalledWidget(QGroupBox):
             self.game.app_title = f"{self.game.app_title} {self.game.app_name.split('_')[-1]}"
 
         self.core = core
-        self.image = QLabel()
-        self.image.setFixedSize(ImageSize.Display.size)
-        self.image.setPixmap(pixmap.scaled(ImageSize.Display.size, transformMode=Qt.SmoothTransformation))
+        self.image = ImageWidget(self)
+        self.image.setFixedSize(ImageSize.Display)
+        self.image.setPixmap(pixmap)
         self.installing = False
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.setContentsMargins(0, 0, 0, 0)
@@ -35,7 +36,7 @@ class BaseUninstalledWidget(QGroupBox):
     def reload_image(self):
         self.image_manager.download_image_blocking(self.game, force=True)
         pm = self.image_manager.get_pixmap(self.game.app_name, color=False)
-        self.image.setPixmap(pm.scaled(ImageSize.Display.size, transformMode=Qt.SmoothTransformation))
+        self.image.setPixmap(pm)
 
     def install(self):
         self.show_uninstalled_info.emit(self.game)

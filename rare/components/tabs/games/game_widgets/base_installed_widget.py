@@ -4,12 +4,13 @@ from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, QStandardPaths, Qt, QByteArray
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction, QLabel
+from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction
 
 from rare.components.tabs.games.game_utils import GameUtils
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.shared.image_manager import ImageManagerSingleton, ImageSize
 from rare.utils.utils import create_desktop_link
+from rare.widgets.image_widget import ImageWidget
 
 logger = getLogger("Game")
 
@@ -63,11 +64,9 @@ class BaseInstalledWidget(QGroupBox):
         except AttributeError:
             pass
 
-        self.image = QLabel()
-        self.image.setFixedSize(ImageSize.Display.size)
-        self.image.setPixmap(
-            pixmap.scaled(ImageSize.Display.size, transformMode=Qt.SmoothTransformation)
-        )
+        self.image = ImageWidget(self)
+        self.image.setFixedSize(ImageSize.Display)
+        self.image.setPixmap(pixmap)
         self.game_running = False
         self.offline = self.args.offline
         self.update_available = False
@@ -144,7 +143,7 @@ class BaseInstalledWidget(QGroupBox):
     def reload_image(self):
         self.image_manager.download_image_blocking(self.game, force=True)
         pm = self.image_manager.get_pixmap(self.game.app_name, color=True)
-        self.image.setPixmap(pm.scaled(ImageSize.Display.size, transformMode=Qt.SmoothTransformation))
+        self.image.setPixmap(pm)
 
     def create_desktop_link(self, type_of_link):
         if type_of_link == "desktop":
