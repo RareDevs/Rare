@@ -1,7 +1,7 @@
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QGroupBox, QAction
+from PyQt5.QtWidgets import QFrame, QAction
 from legendary.models.game import Game
 
 from rare.shared.image_manager import ImageManagerSingleton, ImageSize
@@ -10,7 +10,7 @@ from rare.widgets.image_widget import ImageWidget
 logger = getLogger("Uninstalled")
 
 
-class BaseUninstalledWidget(QGroupBox):
+class BaseUninstalledWidget(QFrame):
     show_uninstalled_info = pyqtSignal(Game)
 
     def __init__(self, game, core, pixmap):
@@ -27,7 +27,6 @@ class BaseUninstalledWidget(QGroupBox):
         self.image.setPixmap(pixmap)
         self.installing = False
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
-        self.setContentsMargins(0, 0, 0, 0)
 
         reload_image = QAction(self.tr("Reload Image"), self)
         reload_image.triggered.connect(self.reload_image)

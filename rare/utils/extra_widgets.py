@@ -4,7 +4,6 @@ from typing import Callable, Tuple
 
 from PyQt5.QtCore import (
     Qt,
-    QEvent,
     QCoreApplication,
     QRect,
     QSize,

@@ -19,6 +19,7 @@ class InstalledListWidget(BaseInstalledWidget):
 
     def __init__(self, app_name, pixmap, game_utils):
         super(InstalledListWidget, self).__init__(app_name, pixmap, game_utils)
+        self.setFrameStyle(self.StyledPanel)
         self.dev = self.game.metadata["developer"]
         if self.igame:
             self.size = self.igame.install_size

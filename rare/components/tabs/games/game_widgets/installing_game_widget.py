@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QGroupBox, QWidget
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QFrame
 from legendary.models.game import Game
 
 from rare.shared import LegendaryCoreSingleton
@@ -9,14 +9,15 @@ from rare.widgets.elide_label import ElideLabel
 from .library_widget import LibraryWidget
 
 
-class InstallingGameWidget(QGroupBox):
+class InstallingGameWidget(QFrame):
     game: Game = None
 
     def __init__(self):
         super(InstallingGameWidget, self).__init__()
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setFixedWidth(ImageSize.Display.size.width())
         self.setObjectName("game_widget_icon")
-        self.setContentsMargins(0, 0, 0, 0)
 
         self.core = LegendaryCoreSingleton()
         self.image_manager = ImageManagerSingleton()
@@ -34,6 +35,7 @@ class InstallingGameWidget(QGroupBox):
         miniwidget.setLayout(minilayout)
 
         self.title_label = ElideLabel(f"<h4>Error</h4>", parent=miniwidget)
+        self.title_label.setAlignment(Qt.AlignTop)
         self.title_label.setObjectName("game_widget")
         minilayout.addWidget(self.title_label, stretch=2)
 

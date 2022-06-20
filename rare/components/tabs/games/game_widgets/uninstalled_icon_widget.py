@@ -18,6 +18,7 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
     def __init__(self, game: Game, core: LegendaryCore, pixmap):
         super(IconWidgetUninstalled, self).__init__(game, core, pixmap)
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setObjectName("game_widget_icon")
         layout.addWidget(self.image)
 
@@ -29,6 +30,7 @@ class IconWidgetUninstalled(BaseUninstalledWidget):
         miniwidget.setLayout(minilayout)
 
         self.title_label = ElideLabel(f"<h4>{game.app_title}</h4>", parent=miniwidget)
+        self.title_label.setAlignment(Qt.AlignTop)
         self.title_label.setObjectName("game_widget")
         minilayout.addWidget(self.title_label, stretch=2)
 
