@@ -449,7 +449,7 @@ class MoveGamePopUp(QWidget):
         # Calculate from bytes to gigabytes
         free_space_dest_drive = round(free_space / 1000**3, 2)
         source_size = round(source_size / 1000**3, 2)
-        self.aval_space_label.setText(self.tr("Available space on disk: {}GB".format(free_space_dest_drive)))
+        self.aval_space_label.setText(self.tr("Available space: {}GB".format(free_space_dest_drive)))
         self.req_space_label.setText(self.tr("Required space: {}GB").format(source_size))
 
         if not os.access(dir_selected, os.W_OK) or not os.access(self.install_path, os.W_OK):
