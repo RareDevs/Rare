@@ -443,12 +443,11 @@ class MoveGamePopUp(QWidget):
             return helper_func("Directory doesn't exist or file selected.")
 
         # Get free space on drive and size of game folder
-        stat = os.statvfs(dest_path)
-        free_space_dest_drive = stat.f_bavail * stat.f_frsize
+        _, _, free_space = shutil.disk_usage(dest_path)
         source_size = sum(f.stat().st_size for f in install_path.glob("**/*") if f.is_file())
 
         # Calculate from bytes to gigabytes
-        free_space_dest_drive = round(free_space_dest_drive / 1000**3, 2)
+        free_space_dest_drive = round(free_space / 1000**3, 2)
         source_size = round(source_size / 1000**3, 2)
         self.aval_space_label.setText(self.tr("Available space on disk: {}GB".format(free_space_dest_drive)))
         self.req_space_label.setText(self.tr("Required space: {}GB").format(source_size))
