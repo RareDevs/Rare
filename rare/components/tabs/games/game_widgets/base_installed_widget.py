@@ -4,7 +4,7 @@ from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QProcess, QSettings, QStandardPaths, Qt, QByteArray
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGroupBox, QMessageBox, QAction
+from PyQt5.QtWidgets import QFrame, QMessageBox, QAction
 
 from rare.components.tabs.games.game_utils import GameUtils
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
@@ -15,7 +15,7 @@ from rare.widgets.image_widget import ImageWidget
 logger = getLogger("Game")
 
 
-class BaseInstalledWidget(QGroupBox):
+class BaseInstalledWidget(QFrame):
     launch_signal = pyqtSignal(str, QProcess, list)
     show_info = pyqtSignal(str)
     finish_signal = pyqtSignal(str, int)
@@ -83,7 +83,6 @@ class BaseInstalledWidget(QGroupBox):
                     self.update_available = True
 
         self.data = QByteArray()
-        self.setContentsMargins(0, 0, 0, 0)
         self.settings = QSettings()
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)

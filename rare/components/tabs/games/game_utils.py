@@ -33,6 +33,7 @@ class GameProcess(QObject):
         self.app_name = app_name
         self.on_startup = on_startup
         self.game = LegendaryCoreSingleton().get_game(app_name)
+        self.game_meta = RareGameMeta()
         self.socket = QLocalSocket()
         self.socket.connected.connect(self._socket_connected)
         self.socket.errorOccurred.connect(self._error_occurred)

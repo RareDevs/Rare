@@ -14,12 +14,13 @@ logger = getLogger("Game")
 class ListWidgetUninstalled(BaseUninstalledWidget):
     def __init__(self, core: LegendaryCore, game, pixmap):
         super(ListWidgetUninstalled, self).__init__(game, core, pixmap)
-        self.layout = QHBoxLayout()
-        self.setLayout(self.layout)
-        self.layout.addWidget(self.image)
+        self.setFrameStyle(self.StyledPanel)
+        layout = QHBoxLayout()
+        self.setLayout(layout)
+        layout.addWidget(self.image)
 
         self.child_layout = QVBoxLayout()
-        self.layout.addLayout(self.child_layout)
+        layout.addLayout(self.child_layout)
 
         self.title_label = QLabel(f"<h2>{self.game.app_title}</h2>")
         self.app_name_label = QLabel(f"App Name: {self.game.app_name}")
@@ -31,5 +32,5 @@ class ListWidgetUninstalled(BaseUninstalledWidget):
         self.child_layout.addWidget(self.app_name_label)
         self.child_layout.addWidget(self.install_button)
 
-        self.layout.setAlignment(Qt.AlignLeft)
+        layout.setAlignment(Qt.AlignLeft)
         self.child_layout.setAlignment(Qt.AlignTop)

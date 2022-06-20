@@ -13,8 +13,7 @@ from rare.shared import (
 )
 from rare.shared.image_manager import ImageManagerSingleton
 from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
-from rare.utils.extra_widgets import FlowLayout
-from .cloud_save_utils import CloudSaveUtils
+from rare.widgets.library_layout import LibraryLayout
 from .cloud_save_utils import CloudSaveUtils
 from .game_info import GameInfoTabs
 from .game_info.uninstalled_info import UninstalledInfoTabs
@@ -181,7 +180,7 @@ class GamesTab(QStackedWidget, Ui_GamesTab):
 
     def setup_game_list(self):
         self.icon_view = QWidget()
-        self.icon_view.setLayout(FlowLayout())
+        self.icon_view.setLayout(LibraryLayout())
         self.list_view = QWidget()
         self.list_view.setLayout(QVBoxLayout())
 

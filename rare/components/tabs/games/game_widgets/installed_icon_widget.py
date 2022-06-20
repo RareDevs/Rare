@@ -24,6 +24,8 @@ class InstalledIconWidget(BaseInstalledWidget):
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setFixedWidth(ImageSize.Display.size.width())
         self.core = LegendaryCoreSingleton()
 
         if self.update_available:
@@ -42,6 +44,7 @@ class InstalledIconWidget(BaseInstalledWidget):
         miniwidget.setLayout(minilayout)
 
         self.title_label = ElideLabel(f"<h4>{self.game.app_title}</h4>", parent=miniwidget)
+        self.title_label.setAlignment(Qt.AlignTop)
         self.title_label.setObjectName("game_widget")
         minilayout.addWidget(self.title_label, stretch=2)
 
