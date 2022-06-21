@@ -26,7 +26,7 @@ If you run into any issues, please report it by creating an issue on GitHub or o
 
 ## Installation
 
-### Installation via pip (recommend)
+### Installation via pip (recommended)
 
 Execute `pip install Rare` for all users, or `pip install Rare --user` for the current user only.
 
@@ -71,6 +71,18 @@ There are some AUR packages available:
   from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip.
 - Do not wonder if some icons look strange, because the official python3-qtawesome package is too old. Many icons were
   replaced.
+
+#### Flatpak
+
+Rare is available as a flatpak. See [rare](https://flathub.org/apps/details/io.github.dummerle.rare).
+
+Install it via:
+
+`flatpak install flathub io.github.dummerle.rare`
+
+Run it via:
+
+`flatpak run io.github.dummerle.rare`
 
 #### Other
 
