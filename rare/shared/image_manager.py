@@ -285,9 +285,13 @@ class ImageManager(QObject):
 
     def __decompress(self, game: Game) -> Dict:
         archive = open(self.__img_cache(game.app_name), "rb")
-        data = zlib.decompress(archive.read())
-        archive.close()
-        data = pickle.loads(data)
+        try:
+            data = zlib.decompress(archive.read())
+            data = pickle.loads(data)
+        except zlib.error:
+            data = dict(zip(self.__img_types, [None] * len(self.__img_types)))
+        finally:
+            archive.close()
         return data
 
     def download_image(
