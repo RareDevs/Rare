@@ -14,12 +14,12 @@ from rare.widgets.elide_label import ElideLabel
 logger = getLogger("Uninstalled")
 
 
-class IconWidgetUninstalled(BaseUninstalledWidget):
+class UninstalledIconWidget(BaseUninstalledWidget):
     def __init__(self, game: Game, core: LegendaryCore, pixmap):
-        super(IconWidgetUninstalled, self).__init__(game, core, pixmap)
+        super(UninstalledIconWidget, self).__init__(game, core, pixmap)
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
-        self.setObjectName("game_widget_icon")
+        self.setObjectName(type(self).__name__)
         layout.addWidget(self.image)
 
         miniwidget = QWidget(self)

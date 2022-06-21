@@ -46,11 +46,6 @@ class ImageWorker(LaunchWorker):
         na_dlc_list = [dlc[0] for dlc in na_dlcs.values()]
 
         game_list = games + dlc_list + na_games + na_dlc_list
-        fetched = [False] * len(game_list)
-
-        def set_fetched(idx):
-            fetched[idx] = True
-            self.signals.progress.emit(sum(fetched))
 
         for i, game in enumerate(game_list):
             if game.app_title == "Unreal Engine":
@@ -58,13 +53,6 @@ class ImageWorker(LaunchWorker):
                 self.core.lgd.set_game_meta(game.app_name, game)
             self.image_manager.download_image_blocking(game)
             self.signals.progress.emit(int(i / len(game_list) * 100))
-            # self.image_manager.download_image(
-            #     game,
-            #     load_callback=lambda: set_fetched(i),
-            #     priority=i
-            # )
-        # while not all(fetched):
-        #     continue
 
         self.signals.progress.emit(100)
 

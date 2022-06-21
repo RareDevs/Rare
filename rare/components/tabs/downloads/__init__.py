@@ -283,7 +283,7 @@ class UpdateWidget(QWidget):
                 + self.game.version
                 + " -> "
                 + self.core.get_asset(
-                    self.game.app_name, self.game.platform, True
+                    self.game.app_name, self.game.platform, False
                 ).build_version
             )
         )

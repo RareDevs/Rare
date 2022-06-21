@@ -12,7 +12,8 @@ from PyQt5.QtWidgets import (
     QStackedWidget,
 )
 
-from rare.utils.extra_widgets import ImageLabel, FlowLayout, WaitingSpinner
+from rare.utils.extra_widgets import ImageLabel, WaitingSpinner
+from rare.widgets.flow_layout import FlowLayout
 
 
 class SearchResults(QStackedWidget):

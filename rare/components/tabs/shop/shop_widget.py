@@ -13,7 +13,8 @@ from PyQt5.QtWidgets import (
 
 from legendary.core import LegendaryCore
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
-from rare.utils.extra_widgets import WaitingSpinner, FlowLayout, ButtonLineEdit
+from rare.utils.extra_widgets import WaitingSpinner, ButtonLineEdit
+from rare.widgets.flow_layout import FlowLayout
 from .constants import Constants
 from .game_widgets import GameWidget
 from .shop_api_core import ShopApiCore

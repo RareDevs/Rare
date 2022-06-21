@@ -17,7 +17,7 @@ class InstallingGameWidget(QFrame):
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         self.setFixedWidth(ImageSize.Display.size.width())
-        self.setObjectName("game_widget_icon")
+        self.setObjectName(type(self).__name__)
 
         self.core = LegendaryCoreSingleton()
         self.image_manager = ImageManagerSingleton()
