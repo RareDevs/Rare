@@ -217,3 +217,33 @@ class BaseInstalledWidget(QFrame):
         if error:
             QMessageBox.warning(self, "Error", error)
         self.game_running = False
+
+    # From RareGame, added from sorting to work
+    @property
+    def is_non_asset(self) -> bool:
+        """!
+        @brief Property to report if a Game doesn't have assets
+
+        Typically, games have assets, however some games that require
+        other launchers do not have them. Rare treats these games as installed
+        offering to execute their launcher.
+
+        @return bool If the game doesn't have assets
+        """
+        return not self.game.asset_infos
+
+    @property
+    def is_installed(self) -> bool:
+        """!
+        @brief Property to report if a game is installed
+
+        This returns True if InstalledGame data have been loaded for the game
+        or if the game is a game without assets, for example an Origin game.
+
+        @return bool If the game should be considered installed
+        """
+        return (self.igame is not None) or self.is_non_asset
+
+    @property
+    def app_title(self) -> str:
+        return self.igame.title if self.igame is not None else self.game.app_title

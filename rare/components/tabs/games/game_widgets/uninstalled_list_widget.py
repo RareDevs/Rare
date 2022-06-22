@@ -11,9 +11,9 @@ from rare.components.tabs.games.game_widgets.base_uninstalled_widget import (
 logger = getLogger("Game")
 
 
-class ListWidgetUninstalled(BaseUninstalledWidget):
+class UninstalledListWidget(BaseUninstalledWidget):
     def __init__(self, core: LegendaryCore, game, pixmap):
-        super(ListWidgetUninstalled, self).__init__(game, core, pixmap)
+        super(UninstalledListWidget, self).__init__(game, core, pixmap)
         self.setFrameStyle(self.StyledPanel)
         layout = QHBoxLayout()
         self.setLayout(layout)

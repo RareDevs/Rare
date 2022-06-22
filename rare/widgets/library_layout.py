@@ -7,9 +7,10 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtWidgets import (
     QSizePolicy,
+    QWidget,
 )
 
-from rare.utils.extra_widgets import FlowLayout
+from .flow_layout import FlowLayout
 
 
 class LibraryLayout(FlowLayout):
@@ -132,4 +133,15 @@ class LibraryLayout(FlowLayout):
 
     def sort(self, key: Callable):
         self._items.sort(key=key)
+        self.setGeometry(self.parent().rect())
+
+    # These are used to pop and insert the installing widget, remove them when no longer needed
+    def remove(self, name: str) -> QWidget:
+        widget = next(filter(lambda x: x.widget().objectName() == name, self._items), None)
+        self._items.remove(widget)
+        self.setGeometry(self.parent().rect())
+        return widget
+
+    def insert(self, index: int, widget: QWidget):
+        self._items.insert(index, widget)
         self.setGeometry(self.parent().rect())

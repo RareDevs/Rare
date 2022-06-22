@@ -20,7 +20,7 @@ class InstalledIconWidget(BaseInstalledWidget):
 
     def __init__(self, app_name, pixmap, game_utils):
         super(InstalledIconWidget, self).__init__(app_name, pixmap, game_utils)
-        self.setObjectName("game_widget_icon")
+        self.setObjectName(type(self).__name__)
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         layout = QVBoxLayout()
