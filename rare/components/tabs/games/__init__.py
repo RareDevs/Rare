@@ -38,6 +38,7 @@ class GamesTab(QStackedWidget):
     running_games = list()
     updates = set()
     active_filter = 0
+    uninstalled_games = None
 
     def __init__(self, parent=None):
         super(GamesTab, self).__init__(parent=parent)
@@ -332,8 +333,8 @@ class GamesTab(QStackedWidget):
                 visible = True
 
             if (
-                    search_text not in widget.game.app_name.lower()
-                    and search_text not in widget.game.app_title.lower()
+                search_text not in widget.game.app_name.lower()
+                and search_text not in widget.game.app_title.lower()
             ):
                 opacity = 0.25
             else:
@@ -377,6 +378,29 @@ class GamesTab(QStackedWidget):
         for idx, wl in enumerate(list_widgets):
             self.list_view.layout().insertWidget(idx, wl)
 
+    def __remove_from_layout(self, app_name):
+        self.icon_view.layout().removeWidget(self.widgets[app_name][0])
+        self.list_view.layout().removeWidget(self.widgets[app_name][1])
+        self.widgets[app_name][0].deleteLater()
+        self.widgets[app_name][1].deleteLater()
+        self.widgets.pop(app_name)
+
+    def __update_installed(self, app_name):
+        self.__remove_from_layout(app_name)
+        icon_widget, list_widget = self.add_installed_widget(app_name)
+        self.icon_view.layout().addWidget(icon_widget)
+        self.list_view.layout().addWidget(list_widget)
+
+    def __update_uninstalled(self, app_name):
+        self.__remove_from_layout(app_name)
+        game = self.core.get_game(app_name, False)
+        try:
+            icon_widget, list_widget = self.add_uninstalled_widget(game)
+            self.icon_view.layout().addWidget(icon_widget)
+            self.list_view.layout().addWidget(list_widget)
+        except Exception:
+            pass
+
     def update_list(self, app_names: list = None):
         logger.debug(f"Updating list for {app_names}")
         if app_names:
@@ -404,15 +428,7 @@ class GamesTab(QStackedWidget):
                             widgets[0], BaseUninstalledWidget
                     ):
                         logger.debug(f"Update Gamelist: New installed {app_name}")
-                        self.icon_view.layout().removeWidget(self.widgets[app_name][0])
-                        self.list_view.layout().removeWidget(self.widgets[app_name][1])
-                        self.widgets[app_name][0].deleteLater()
-                        self.widgets[app_name][1].deleteLater()
-                        self.widgets.pop(app_name)
-
-                        icon_widget, list_widget = self.add_installed_widget(app_name)
-                        self.icon_view.layout().addWidget(icon_widget)
-                        self.list_view.layout().addWidget(list_widget)
+                        self.__update_installed(app_name)
                         update_list = True
 
                     # uninstalled
@@ -420,20 +436,7 @@ class GamesTab(QStackedWidget):
                             widgets[0].game.app_name
                     ) and isinstance(widgets[0], BaseInstalledWidget):
                         logger.debug(f"Update list: Uninstalled: {app_name}")
-                        self.icon_view.layout().removeWidget(self.widgets[app_name][0])
-                        self.list_view.layout().removeWidget(self.widgets[app_name][1])
-                        self.widgets[app_name][0].deleteLater()
-                        self.widgets[app_name][1].deleteLater()
-
-                        self.widgets.pop(app_name)
-
-                        game = self.core.get_game(app_name, False)
-                        try:
-                            icon_widget, list_widget = self.add_uninstalled_widget(game)
-                            self.icon_view.layout().addWidget(icon_widget)
-                            self.list_view.layout().addWidget(list_widget)
-                        except Exception:
-                            pass
+                        self.__update_uninstalled(app_name)
                         update_list = True
 
             # do not update, if only update finished
@@ -462,32 +465,10 @@ class GamesTab(QStackedWidget):
 
             if new_installed_games:
                 for name in new_installed_games:
-                    self.icon_view.layout().removeWidget(self.widgets[name][0])
-                    self.list_view.layout().removeWidget(self.widgets[name][1])
-                    self.widgets[name][0].deleteLater()
-                    self.widgets[name][1].deleteLater()
-                    self.widgets.pop(name)
-
-                    icon_widget, list_widget = self.add_installed_widget(name)
-                    self.icon_view.layout().addWidget(icon_widget)
-                    self.list_view.layout().addWidget(list_widget)
+                    self.__update_installed(name)
 
                 for name in new_uninstalled_games:
-                    self.icon_view.layout().removeWidget(self.widgets[name][0])
-                    self.list_view.layout().removeWidget(self.widgets[name][1])
-
-                    self.widgets[name][0].deleteLater()
-                    self.widgets[name][1].deleteLater()
-
-                    self.widgets.pop(name)
-
-                    game = self.core.get_game(name, False)
-                    try:
-                        icon_widget, list_widget = self.add_uninstalled_widget(game)
-                        self.icon_view.layout().addWidget(icon_widget)
-                        self.list_view.layout().addWidget(list_widget)
-                    except Exception:
-                        pass
+                    self.__update_uninstalled(name)
 
                 self.sort_list()
         self.update_count_games_label()

@@ -372,40 +372,41 @@ class SelectViewWidget(QWidget):
         super(SelectViewWidget, self).__init__()
         self.icon_view = icon_view
         self.setStyleSheet("""QPushButton{border: none; background-color: transparent}""")
-        self.icon_view_button = QPushButton()
-        self.list_view = QPushButton()
+        self.icon_button = QPushButton()
+        self.list_button = QPushButton()
         if icon_view:
-            self.icon_view_button.setIcon(
+            self.icon_button.setIcon(
                 qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange")
             )
-            self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list"))
+            self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list"))
         else:
-            self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
-            self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
+            self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
+            self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
 
-        self.icon_view_button.clicked.connect(self.icon)
-        self.list_view.clicked.connect(self.list)
+        self.icon_button.clicked.connect(self.icon)
+        self.list_button.clicked.connect(self.list)
 
-        self.layout = QHBoxLayout()
-        self.layout.addWidget(self.icon_view_button)
-        self.layout.addWidget(self.list_view)
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.icon_button)
+        layout.addWidget(self.list_button)
 
-        self.setLayout(self.layout)
+        self.setLayout(layout)
 
     def isChecked(self):
         return self.icon_view
 
     def icon(self):
-        self.icon_view_button.setIcon(
+        self.icon_button.setIcon(
             qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange")
         )
-        self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list"))
+        self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list"))
         self.icon_view = False
         self.toggled.emit()
 
     def list(self):
-        self.icon_view_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
-        self.list_view.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
+        self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
+        self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
         self.icon_view = True
         self.toggled.emit()
 

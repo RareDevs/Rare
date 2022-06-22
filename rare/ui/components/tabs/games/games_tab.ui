@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>GamesTab</class>
  <widget class="QStackedWidget" name="GamesTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>104</width>
+    <height>42</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string notr="true">StackedWidget</string>
   </property>
@@ -9,14 +17,11 @@
    <number>0</number>
   </property>
   <widget class="QWidget" name="games">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="games_layout" stretch="1">
     <item>
      <widget class="QFrame" name="library_frame">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
       </property>
       <layout class="QVBoxLayout" name="library_frame_layout">
        <property name="leftMargin">
@@ -32,7 +37,7 @@
         <number>0</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="games_count_layout">
+        <layout class="QHBoxLayout" name="count_games_layout">
          <property name="sizeConstraint">
           <enum>QLayout::SetFixedSize</enum>
          </property>

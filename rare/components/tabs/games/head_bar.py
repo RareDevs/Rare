@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
 )
 
 from rare.shared import ApiResultsSingleton
-from rare.utils.extra_widgets import SelectViewWidget
+from rare.utils.extra_widgets import SelectViewWidget, ButtonLineEdit
 from rare.utils.utils import icon
 
 
@@ -68,13 +68,10 @@ class GameListHeadBar(QWidget):
         # FIXME: Until it is ready
         # self.egl_sync.setEnabled(False)
 
-        icon_label = QLabel()
-        icon_label.setPixmap(icon("fa.search").pixmap(QSize(20, 20)))
-        self.search_bar = QLineEdit()
+        self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Game"))
         self.search_bar.setObjectName("search_bar")
         self.search_bar.setFrame(False)
         self.search_bar.setMinimumWidth(200)
-        self.search_bar.setPlaceholderText(self.tr("Search Game"))
 
         checked = QSettings().value("icon_view", True, bool)
 
@@ -84,12 +81,12 @@ class GameListHeadBar(QWidget):
         self.refresh_list.setIcon(icon("fa.refresh"))  # Reload icon
 
         layout = QHBoxLayout()
+        layout.setContentsMargins(0, 5, 0, 5)
         layout.addWidget(self.filter)
         layout.addStretch(1)
         layout.addWidget(self.import_game)
         layout.addWidget(self.egl_sync)
         layout.addStretch(1)
-        layout.addWidget(icon_label)
         layout.addWidget(self.search_bar)
         layout.addStretch(3)
         layout.addWidget(self.view)
