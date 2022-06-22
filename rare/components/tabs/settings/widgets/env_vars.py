@@ -1,12 +1,12 @@
 from logging import getLogger
 
-import qtawesome
 from PyQt5.QtCore import Qt, QFileSystemWatcher
 from PyQt5.QtWidgets import QGroupBox, QTableWidgetItem, QMessageBox, QPushButton
 
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.widgets.env_vars import Ui_EnvVars
 from rare.utils import config_helper
+from rare.utils.utils import icon
 
 logger = getLogger("EnvVars")
 
@@ -23,14 +23,14 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         self.setup_file_watcher()
         self.env_vars_table.cellChanged.connect(self.update_env_vars)
         self.env_vars_table.verticalHeader().sectionClicked.connect(self.remove_row)
-        
+
     # We use this function to keep an eye on the config.
     # When the user uses for example the wineprefix settings, we need to update the table.
     # With this function, when the config file changes, we update the table.
     def setup_file_watcher(self):
         self.config_file_watcher = QFileSystemWatcher([str(self.core.lgd.config_path)], self)
         self.config_file_watcher.fileChanged.connect(self.import_env_vars)
-    
+
     def append_row(self):
         # If the last row is not None, we insert a new one and set the correct icon.
         row_count = self.env_vars_table.rowCount()
@@ -38,7 +38,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         if row_count == 0:
             self.env_vars_table.insertRow(0)
             trash_icon = QTableWidgetItem()
-            trash_icon.setIcon(qtawesome.icon("mdi.delete"))
+            trash_icon.setIcon(icon("mdi.delete", "ei.minus"))
             self.env_vars_table.setVerticalHeaderItem(row_count, trash_icon)
             return
 
@@ -47,7 +47,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         if last_item is not None:
             self.env_vars_table.insertRow(row_count)
             trash_icon = QTableWidgetItem()
-            trash_icon.setIcon(qtawesome.icon("mdi.delete"))
+            trash_icon.setIcon(icon("mdi.delete", "ei.minus"))
             self.env_vars_table.setVerticalHeaderItem(row_count, trash_icon)
 
     def import_env_vars(self):
@@ -58,7 +58,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         if not self.core.lgd.config.has_section(f"{self.app_name}.env"):
             self.env_vars_table.setRowCount(1)
             trash_icon = QTableWidgetItem()
-            trash_icon.setIcon(qtawesome.icon("mdi.delete"))
+            trash_icon.setIcon(icon("mdi.delete", "ei.minus"))
             self.env_vars_table.setVerticalHeaderItem(0, trash_icon)
             self.env_vars_table.blockSignals(False)
             return
@@ -71,7 +71,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         # else we segfault. (For using the same object in multiple references.)
         for i, (key, value) in enumerate(self.core.lgd.config[f"{self.app_name}.env"].items()):
             trash_icon = QTableWidgetItem()
-            trash_icon.setIcon(qtawesome.icon("mdi.delete"))
+            trash_icon.setIcon(icon("mdi.delete", "ei.minus"))
             self.env_vars_table.setVerticalHeaderItem(i, trash_icon)
 
             key_item = QTableWidgetItem()
@@ -89,7 +89,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
                 value_item.setToolTip(self.warn_msg)
 
         trash_icon = QTableWidgetItem()
-        trash_icon.setIcon(qtawesome.icon("mdi.delete"))
+        trash_icon.setIcon(icon("mdi.delete", "ei.minus"))
         self.env_vars_table.setVerticalHeaderItem(self.env_vars_table.rowCount() - 1, trash_icon)
 
         self.env_vars_table.blockSignals(False)
@@ -277,7 +277,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
                             config_helper.remove_option(f"{self.app_name}.env", i.text())
                             self.env_vars_table.removeRow(i.row())
                     self.append_row()
-                else:    
+                else:
                     # user only selected keys
                     for i in selected_items:
                         if i:
