@@ -165,7 +165,7 @@ def get_size(b: int) -> str:
 
 
 def get_rare_executable() -> List[str]:
-    if platform.system() == "Linux":
+    if platform.system() == "Linux" or platform.system() == "Darwin":
         # TODO flatpak
         if p := os.environ.get("APPIMAGE"):
             executable = [p]
@@ -178,7 +178,7 @@ def get_rare_executable() -> List[str]:
             # be sure to start consoleless then
             executable[0] = executable[0].replace("python.exe", "pythonw.exe")
             executable.extend(["-m", "rare"])
-    else:  # macos not tested
+    else:
         executable = [sys.executable]
 
     return executable
