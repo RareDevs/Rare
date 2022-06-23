@@ -7,14 +7,15 @@ from argparse import Namespace
 from logging import getLogger
 from typing import Union
 
-from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool
+from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
-from PyQt5.QtWidgets import QApplication
 
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 from .message_models import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
+from ..components.extra.console import Console
 from ..shared import LegendaryCoreSingleton
+from ..widgets.rare_app import RareApp
 
 
 class PreLaunchThread(QRunnable):
@@ -55,19 +56,27 @@ class PreLaunchThread(QRunnable):
         return args
 
 
-class GameProcessHelper(QObject):
+class GameProcessApp(RareApp):
     game_process: QProcess
     server: QLocalServer
     socket: QLocalSocket = None
     exit_app = pyqtSignal()
+    console: Console
     success: bool = True
 
     def __init__(self, app_name: str):
-        super(GameProcessHelper, self).__init__()
+        super(GameProcessApp, self).__init__()
         self.game_process = QProcess()
         self.app_name = app_name
         self.logger = getLogger(self.app_name)
         self.core = LegendaryCoreSingleton(True)
+
+        lang = self.settings.value("language", self.core.language_code, type=str)
+        self.load_translator(lang)
+
+        if QSettings().value("show_console", False, bool):
+            self.console = Console()
+            self.console.show()
 
         self.server = QLocalServer()
         ret = self.server.listen(f"rare_{self.app_name}")
@@ -82,6 +91,12 @@ class GameProcessHelper(QObject):
         self.game_process.finished.connect(self.game_finished)
         self.game_process.errorOccurred.connect(
             lambda err: self.error_occurred(self.game_process.errorString()))
+
+        self.game_process.readyReadStandardOutput.connect(
+            lambda: self.console.log(
+                str(self.game_process.readAllStandardOutput().data(), "utf-8", "ignore")
+            )
+        )
 
         self.start_time = time.time()
 
@@ -123,7 +138,8 @@ class GameProcessHelper(QObject):
         if not args:
             self.stop()
             return
-
+        if self.console:
+            self.console.set_env(args.env)
         self.start_time = time.time()
 
         if args.is_origin_game:
@@ -181,28 +197,26 @@ def start_game(args: Namespace):
         level=logging.INFO,
     )
 
-    app = QApplication(sys.argv)
-
-    helper = GameProcessHelper(args.app_name)
+    app = GameProcessApp(args.app_name)
 
     def excepthook(exc_type, exc_value, exc_tb):
         tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-        helper.logger.fatal(tb)
+        app.logger.fatal(tb)
         try:
-            helper.send_message(ErrorModel(
+            app.send_message(ErrorModel(
                 app_name=args.app_name,
                 action=Actions.error,
                 error_string=tb
             ))
         except RuntimeError:
             pass
-        helper.stop()
+        app.stop()
 
     sys.excepthook = excepthook
-    if not helper.success:
+    if not app.success:
         return
-    helper.start(args)
-    helper.exit_app.connect(lambda: app.exit(0))
+    app.start(args)
+    app.exit_app.connect(lambda: app.exit(0))
 
     # this button is for debug. Closing with keyboard interrupt does not kill the server
     # quit_button = QPushButton("Quit")

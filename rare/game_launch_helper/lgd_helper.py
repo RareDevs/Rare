@@ -148,14 +148,10 @@ def get_launch_args(core: LegendaryCore, args: InitArgs = None) -> LaunchArgs:
 
 def get_configured_process(env: dict = None):
     proc = QProcess()
+    proc.setProcessChannelMode(QProcess.MergedChannels)
     proc.readyReadStandardOutput.connect(
         lambda: logger.info(
             str(proc.readAllStandardOutput().data(), "utf-8", "ignore")
-        )
-    )
-    proc.readyReadStandardError.connect(
-        lambda: logger.info(
-            str(proc.readAllStandardError().data(), "utf-8", "ignore")
         )
     )
     environment = QProcessEnvironment.systemEnvironment()

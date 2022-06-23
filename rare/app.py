@@ -12,21 +12,19 @@ from typing import Optional
 
 import legendary
 import requests.exceptions
-from PyQt5.QtCore import Qt, QThreadPool, QSettings, QTranslator, QTimer
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QThreadPool, QTimer
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
 from requests import HTTPError
 
-# noinspection PyUnresolvedReferences
-import rare.resources.resources
+import rare
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.shared.image_manager import ImageManagerSingleton
 from rare.utils import legendary_utils, config_helper
-from rare.utils.paths import cache_dir, resources_path, tmp_dir
-from rare.utils.utils import set_color_pallete, set_style_sheet
+from rare.utils.paths import cache_dir, tmp_dir
+from rare.widgets.rare_app import RareApp
 
 start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
 file_name = os.path.join(cache_dir, "logs", f"Rare_{start_time}.log")
@@ -55,18 +53,14 @@ def excepthook(exc_type, exc_value, exc_tb):
     QApplication.exit(1)
 
 
-class App(QApplication):
+class App(RareApp):
     mainwindow: Optional[MainWindow] = None
     tray_icon: Optional[QSystemTrayIcon] = None
 
     def __init__(self, args: Namespace):
-        super(App, self).__init__(sys.argv)
+        super(App, self).__init__()
         self.args = ArgumentsSingleton(args)  # add some options
         self.window_launched = False
-        self.setQuitOnLastWindowClosed(False)
-
-        if hasattr(Qt, "AA_UseHighDpiPixmaps"):
-            self.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
         # init Legendary
         try:
@@ -84,6 +78,9 @@ class App(QApplication):
             self.core.lgd.config.add_section("Legendary")
             self.core.lgd.save_config()
 
+        lang = self.settings.value("language", self.core.language_code, type=str)
+        self.load_translator(lang)
+
         config_helper.init_config_handler(self.core)
 
         # workaround if egl sync enabled, but no programdata_path
@@ -99,9 +96,6 @@ class App(QApplication):
 
         # set Application name for settings
         self.launch_dialog = None
-        self.setApplicationName("Rare")
-        self.setOrganizationName("Rare")
-        self.settings = QSettings()
 
         self.signals = GlobalSignalsSingleton(init=True)
         self.image_manager = ImageManagerSingleton(init=True)
@@ -117,43 +111,6 @@ class App(QApplication):
             if self.settings.value("notification", True, bool)
             else None
         )
-
-        # Translator
-        self.translator = QTranslator()
-        lang = self.settings.value("language", self.core.language_code, type=str)
-
-        if os.path.isfile(f := os.path.join(resources_path, "languages", f"{lang}.qm")):
-            self.translator.load(f)
-            logger.info(f"Your language is supported: {lang}")
-        elif not lang == "en":
-            logger.info("Your language is not supported")
-        self.installTranslator(self.translator)
-
-        # translator for qt stuff
-        if os.path.isfile(f := os.path.join(resources_path, f"qt_{lang}.qm")):
-            self.qt_translator = QTranslator()
-            self.qt_translator.load(f)
-            self.installTranslator(self.qt_translator)
-
-        # Style
-        # lk: this is a bit silly but serves well until we have a class
-        # lk: store the default qt style name from the system on startup as a property for later reference
-        self.setProperty("rareDefaultQtStyle", self.style().objectName())
-
-        if (
-            self.settings.value("color_scheme", None) is None
-            and self.settings.value("style_sheet", None) is None
-        ):
-            self.settings.setValue("color_scheme", "")
-            self.settings.setValue("style_sheet", "RareStyle")
-
-        if color_scheme := self.settings.value("color_scheme", False):
-            self.settings.setValue("style_sheet", "")
-            set_color_pallete(color_scheme)
-        elif style_sheet := self.settings.value("style_sheet", False):
-            self.settings.setValue("color_scheme", "")
-            set_style_sheet(style_sheet)
-        self.setWindowIcon(QIcon(":/images/Rare.png"))
 
         # launch app
         self.launch_dialog = LaunchDialog()
