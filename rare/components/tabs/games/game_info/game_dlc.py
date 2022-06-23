@@ -23,8 +23,8 @@ class GameDlc(QWidget, Ui_GameDlc):
 
         self.game_utils = game_utils
 
-        self.available_dlc_scroll.setProperty("noBorder", 1)
-        self.installed_dlc_scroll.setProperty("noBorder", 1)
+        self.available_dlc_scroll.setFrameStyle(QFrame.NoFrame)
+        self.installed_dlc_scroll.setFrameStyle(QFrame.NoFrame)
 
         self.dlcs = dlcs
         self.installed_dlc_widgets = list()
@@ -37,6 +37,7 @@ class GameDlc(QWidget, Ui_GameDlc):
 
         if self.installed_dlc_widgets:
             for dlc_widget in self.installed_dlc_widgets:
+                dlc_widget.uninstall.disconnect()
                 dlc_widget.deleteLater()
         self.installed_dlc_widgets.clear()
         if self.available_dlc_widgets:
@@ -66,7 +67,7 @@ class GameDlc(QWidget, Ui_GameDlc):
 
     def uninstall(self, app_name):
         if self.game_utils.uninstall_game(app_name):
-            self.update_dlcs(app_name)
+            self.update_dlcs(self.game.app_name)
 
     def install(self, app_name):
         if not self.core.is_installed(self.game.app_name):
@@ -116,7 +117,7 @@ class GameDlcWidget(QFrame, Ui_GameDlcWidget):
     def uninstall_dlc(self):
         self.action_button.setDisabled(True)
         self.action_button.setText(self.tr("Uninstalling"))
-        self.uninstall.emit(self.dlc)
+        self.uninstall.emit(self.dlc.app_name)
 
     def install_game(self):
         self.action_button.setDisabled(True)

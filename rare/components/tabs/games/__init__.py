@@ -170,13 +170,7 @@ class GamesTab(QStackedWidget):
         self.filter_games("")
 
     def installation_started(self, app_name: str):
-        game = self.core.get_game(app_name, False)
-        if not game:
-            return
-        if game.is_dlc:
-            return
         self.installing_widget.set_game(app_name)
-        self.installing_widget.setVisible(True)
 
         i_widget, l_widget = self.widgets.get(app_name, (None, None))
         if not i_widget or not l_widget:
