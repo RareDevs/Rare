@@ -239,8 +239,13 @@ class GameUtils(QObject):
         self.running_games[app_name] = game_process
 
     def game_finished(self, exit_code, app_name):
-        if exit_code == -1234:
+        if self.running_games.get(app_name):
             self.running_games.pop(app_name)
+        if exit_code == -1234:
+            return
+
+        self.finished.emit(app_name, "")
+
         logger.info(f"Game exited with exit code: {exit_code}")
         self.console.log(f"Game exited with code: {exit_code}")
         self.signals.set_discord_rpc.emit("")
@@ -259,6 +264,7 @@ class GameUtils(QObject):
             if resp == 0:
                 QDesktopServices.openUrl(QUrl("https://www.dm.origin.com/download"))
             return
+
         if exit_code != 0:
             QMessageBox.warning(
                 None,
@@ -273,7 +279,6 @@ class GameUtils(QObject):
         game: RunningGameModel = self.running_games.get(app_name, None)
         if app_name in self.running_games.keys():
             self.running_games.pop(app_name)
-        self.finished.emit(app_name, "")
 
         if self.core.get_game(app_name).supports_cloud_saves:
             if exit_code != 0:
@@ -289,7 +294,9 @@ class GameUtils(QObject):
                 )
                 if r != QMessageBox.Yes:
                     return
-            self.cloud_save_utils.game_finished(app_name, game.always_ask_sync)
+
+            # TODO move this to helper
+            self.cloud_save_utils.game_finished(app_name, always_ask=False)
 
     def _launch_pre_command(self, env: dict):
         proc = QProcess()
