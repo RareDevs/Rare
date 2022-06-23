@@ -91,7 +91,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         super(LaunchDialog, self).__init__(parent=parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        self.setWindowFlags(Qt.Window | Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
         self.setWindowModality(Qt.WindowModal)
 
         self.core = LegendaryCoreSingleton()
@@ -113,7 +113,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         except ValueError as e:
             logger.info(str(e))
             # Do not set parent, because it won't show a task bar icon
-            do_launch = LoginDialog(core=self.core).login()
+            # Update: Inherit the same parent as LaunchDialog
+            do_launch = LoginDialog(core=self.core, parent=self.parent()).login()
         except ConnectionError as e:
             logger.warning(e)
             self.args.offline = True

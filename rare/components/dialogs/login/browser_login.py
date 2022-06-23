@@ -4,7 +4,7 @@ from typing import Tuple
 
 from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QWidget, QApplication
+from PyQt5.QtWidgets import QFrame, qApp
 
 from legendary.utils import webview_login
 from legendary.core import LegendaryCore
@@ -15,33 +15,35 @@ from rare.utils.utils import icon
 logger = getLogger("BrowserLogin")
 
 
-class BrowserLogin(QWidget, Ui_BrowserLogin):
+class BrowserLogin(QFrame):
     success = pyqtSignal()
     changed = pyqtSignal()
     login_url = "https://www.epicgames.com/id/login?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Fapi%2Fredirect"
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(BrowserLogin, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.setFrameStyle(self.StyledPanel)
+        self.ui = Ui_BrowserLogin()
+        self.ui.setupUi(self)
 
         self.core = core
 
         self.sid_edit = IndicatorLineEdit(
             placeholder=self.tr("Insert SID here"), edit_func=self.text_changed, parent=self
         )
-        self.link_text.setText(self.login_url)
-        self.copy_button.setIcon(icon("mdi.content-copy", "fa.copy"))
-        self.copy_button.clicked.connect(self.copy_link)
+        self.ui.link_text.setText(self.login_url)
+        self.ui.copy_button.setIcon(icon("mdi.content-copy", "fa.copy"))
+        self.ui.copy_button.clicked.connect(self.copy_link)
 
-        self.sid_layout.addWidget(self.sid_edit)
+        self.ui.sid_layout.addWidget(self.sid_edit)
 
-        self.open_button.clicked.connect(self.open_browser)
+        self.ui.open_button.clicked.connect(self.open_browser)
         self.sid_edit.textChanged.connect(self.changed.emit)
 
     def copy_link(self):
-        clipboard = QApplication.instance().clipboard()
+        clipboard = qApp.clipboard()
         clipboard.setText(self.login_url)
-        self.status_label.setText(self.tr("Copied to clipboard"))
+        self.ui.status_label.setText(self.tr("Copied to clipboard"))
 
     def is_valid(self):
         return self.sid_edit.is_valid
@@ -62,7 +64,7 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
             return False, text, ""
 
     def do_login(self):
-        self.status_label.setText(self.tr("Logging in..."))
+        self.ui.status_label.setText(self.tr("Logging in..."))
         sid = self.sid_edit.text()
         try:
             token = self.core.auth_sid(sid)
@@ -72,7 +74,7 @@ class BrowserLogin(QWidget, Ui_BrowserLogin):
                 )
                 self.success.emit()
             else:
-                self.status_label.setText(self.tr("Login failed."))
+                self.ui.status_label.setText(self.tr("Login failed."))
                 logger.warning("Failed to login through browser")
         except Exception as e:
             logger.warning(e)
