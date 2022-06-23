@@ -2,7 +2,7 @@ import platform
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, QSettings
-from PyQt5.QtWidgets import QDialog, QApplication
+from PyQt5.QtWidgets import QDialog, qApp
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.components.dialogs.login import LoginDialog
@@ -19,6 +19,7 @@ class LaunchWorker(QRunnable):
     class Signals(QObject):
         progress = pyqtSignal(int)
         result = pyqtSignal(object, str)
+        finished = pyqtSignal()
 
     def __init__(self):
         super(LaunchWorker, self).__init__()
@@ -53,8 +54,7 @@ class ImageWorker(LaunchWorker):
                 self.core.lgd.set_game_meta(game.app_name, game)
             self.image_manager.download_image_blocking(game)
             self.signals.progress.emit(int(i / len(game_list) * 100))
-
-        self.signals.progress.emit(100)
+        self.signals.finished.emit()
 
 
 class ApiRequestWorker(LaunchWorker):
@@ -65,7 +65,7 @@ class ApiRequestWorker(LaunchWorker):
     def run(self) -> None:
         if self.settings.value("mac_meta", platform.system() == "Darwin", bool):
             try:
-                result = self.core.get_game_and_dlc_list(update_assets=True, platform="Mac")
+                result = self.core.get_game_and_dlc_list(update_assets=False, platform="Mac")
             except HTTPError:
                 result = [], {}
         else:
@@ -74,7 +74,7 @@ class ApiRequestWorker(LaunchWorker):
 
         if self.settings.value("win32_meta", False, bool):
             try:
-                result = self.core.get_game_and_dlc_list(update_assets=True, platform="Win32")
+                result = self.core.get_game_and_dlc_list(update_assets=False, platform="Win32")
             except HTTPError:
                 result = [], {}
         else:
@@ -95,8 +95,10 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             Qt.Window
             | Qt.Dialog
             | Qt.CustomizeWindowHint
+            | Qt.WindowSystemMenuHint
             | Qt.WindowTitleHint
             | Qt.WindowMinimizeButtonHint
+            | Qt.MSWindowsFixedSizeDialogHint
         )
         self.setWindowModality(Qt.WindowModal)
 
@@ -111,7 +113,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             if self.args.offline:
                 pass
             else:
-                QApplication.processEvents()
+                qApp.processEvents()
                 if self.core.login():
                     logger.info("You are logged in")
                 else:
@@ -132,19 +134,24 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             else:
                 self.quit_app.emit(0)
 
+    def start_api_requests(self):
+        # gamelist and no_asset games are from Image worker
+        api_worker = ApiRequestWorker()
+        api_worker.signals.result.connect(self.handle_api_worker_result)
+        self.thread_pool.start(api_worker)
+
     def launch(self):
 
         if not self.args.offline:
             self.image_info.setText(self.tr("Downloading Images"))
             image_worker = ImageWorker()
-            image_worker.signals.progress.connect(self.update_image_progbar)
             image_worker.signals.result.connect(self.handle_api_worker_result)
+            image_worker.signals.progress.connect(self.update_image_progbar)
+            # lk: start the api requests worker after the manifests have been downloaded
+            # lk: to avoid force updating the assets twice and causing inconsistencies
+            image_worker.signals.finished.connect(self.start_api_requests)
+            image_worker.signals.finished.connect(self.finish)
             self.thread_pool.start(image_worker)
-
-            # gamelist and no_asset games are from Image worker
-            api_worker = ApiRequestWorker()
-            api_worker.signals.result.connect(self.handle_api_worker_result)
-            self.thread_pool.start(api_worker)
 
             # cloud save from another worker, because it is used in cloud_save_utils too
             cloud_worker = CloudWorker()
@@ -180,13 +187,13 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
                     self.api_results.game_list,
                     self.api_results.dlcs,
                 ) = self.core.get_game_and_dlc_list(False)
+        elif text == "no_assets":
+            self.api_results.no_asset_games = result if result else []
+
         elif text == "32bit":
             self.api_results.bit32_games = [i.app_name for i in result[0]] if result else []
         elif text == "mac":
             self.api_results.mac_games = [i.app_name for i in result[0]] if result else []
-
-        elif text == "no_assets":
-            self.api_results.no_asset_games = result if result else []
 
         elif text == "saves":
             self.api_results.saves = result
@@ -196,14 +203,18 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
 
     def update_image_progbar(self, i: int):
         self.image_prog_bar.setValue(i)
-        if i == 100:
-            self.finish()
 
     def finish(self):
-        if self.completed == 1:
+        self.completed += 1
+        if self.completed == 2:
             logger.info("App starting")
             self.image_info.setText(self.tr("Starting..."))
             ApiResultsSingleton(self.api_results)
-            self.start_app.emit()
-        else:
             self.completed += 1
+            self.start_app.emit()
+
+    def reject(self) -> None:
+        if self.completed >= 3:
+            super(LaunchDialog, self).reject()
+        else:
+            pass
