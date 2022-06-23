@@ -45,10 +45,13 @@ class InstallingGameWidget(QFrame):
         self.setLayout(layout)
 
     def set_game(self, app_name):
-        if not app_name:
+        self.game = self.core.get_game(app_name, False)
+        if (not self.game) or self.game.is_dlc:
+            # Don't show for EOS Overlay or DLCs
             self.game = None
+            self.setVisible(False)
             return
-        self.game = self.core.get_game(app_name)
+        self.setVisible(True)
         self.title_label.setText(f"<h4>{self.game.app_title}</h4>")
         self.image.hideProgress(True)
         self.image.showProgress(
@@ -57,4 +60,7 @@ class InstallingGameWidget(QFrame):
         )
 
     def set_status(self, s: int):
+        if not self.game:
+            # Don't show for EOS Overlay or DLCs
+            return
         self.image.updateProgress(s)
