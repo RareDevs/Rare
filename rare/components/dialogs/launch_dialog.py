@@ -91,7 +91,13 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
         super(LaunchDialog, self).__init__(parent=parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowFlags(Qt.Window | Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        self.setWindowFlags(
+            Qt.Window
+            | Qt.Dialog
+            | Qt.CustomizeWindowHint
+            | Qt.WindowTitleHint
+            | Qt.WindowMinimizeButtonHint
+        )
         self.setWindowModality(Qt.WindowModal)
 
         self.core = LegendaryCoreSingleton()
