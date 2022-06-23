@@ -6,8 +6,8 @@ from PyQt5.QtWidgets import QLayout, QDialog, QMessageBox, QFrame
 from legendary.core import LegendaryCore
 
 from rare.shared import ArgumentsSingleton
-from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
 from rare.ui.components.dialogs.login.landing_page import Ui_LandingPage
+from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .browser_login import BrowserLogin
 from .import_login import ImportLogin
@@ -61,19 +61,13 @@ class LoginDialog(QDialog):
         self.import_page = ImportLogin(self.core, self.login_stack)
         self.login_stack.insertWidget(self.pages.import_egl, self.import_page)
         self.import_page.success.connect(self.login_successful)
-        self.import_page.changed.connect(
-            lambda: self.ui.next_button.setEnabled(self.import_page.is_valid())
-        )
+        self.import_page.changed.connect(lambda: self.ui.next_button.setEnabled(self.import_page.is_valid()))
 
         self.ui.next_button.setEnabled(False)
         self.ui.back_button.setEnabled(False)
 
-        self.landing_page.ui.login_browser_radio.clicked.connect(
-            lambda: self.ui.next_button.setEnabled(True)
-        )
-        self.landing_page.ui.login_import_radio.clicked.connect(
-            lambda: self.ui.next_button.setEnabled(True)
-        )
+        self.landing_page.ui.login_browser_radio.clicked.connect(lambda: self.ui.next_button.setEnabled(True))
+        self.landing_page.ui.login_import_radio.clicked.connect(lambda: self.ui.next_button.setEnabled(True))
         self.ui.exit_button.clicked.connect(self.close)
         self.ui.back_button.clicked.connect(self.back_clicked)
         self.ui.next_button.clicked.connect(self.next_clicked)

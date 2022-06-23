@@ -5,9 +5,9 @@ from typing import Tuple
 from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QFrame, qApp
-
-from legendary.utils import webview_login
 from legendary.core import LegendaryCore
+from legendary.utils import webview_login
+
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
 from rare.utils.extra_widgets import IndicatorLineEdit
 from rare.utils.utils import icon
@@ -18,7 +18,9 @@ logger = getLogger("BrowserLogin")
 class BrowserLogin(QFrame):
     success = pyqtSignal()
     changed = pyqtSignal()
-    login_url = "https://www.epicgames.com/id/login?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Fapi%2Fredirect"
+    login_url = (
+        "https://www.epicgames.com/id/login?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Fapi%2Fredirect"
+    )
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(BrowserLogin, self).__init__(parent=parent)
@@ -69,9 +71,7 @@ class BrowserLogin(QFrame):
         try:
             token = self.core.auth_sid(sid)
             if self.core.auth_code(token):
-                logger.info(
-                    f"Successfully logged in as {self.core.lgd.userdata['displayName']}"
-                )
+                logger.info(f"Successfully logged in as {self.core.lgd.userdata['displayName']}")
                 self.success.emit()
             else:
                 self.ui.status_label.setText(self.tr("Login failed."))
@@ -81,17 +81,13 @@ class BrowserLogin(QFrame):
 
     def open_browser(self):
         if webview_login.webview_available is False:
-            logger.warning("You don't have webengine installed, "
-                           "you will need to manually copy the SID.")
+            logger.warning("You don't have webengine installed, " "you will need to manually copy the SID.")
             QDesktopServices.openUrl(QUrl(self.login_url))
         else:
             if webview_login.do_webview_login(
-                    callback_sid=self.core.auth_sid,
-                    callback_code=self.core.auth_code):
-                logger.info(
-                    "Successfully logged in as "
-                    f"{self.core.lgd.userdata['displayName']}"
-                )
+                callback_sid=self.core.auth_sid, callback_code=self.core.auth_code
+            ):
+                logger.info("Successfully logged in as " f"{self.core.lgd.userdata['displayName']}")
                 self.success.emit()
             else:
                 logger.warning("Failed to login through browser.")
