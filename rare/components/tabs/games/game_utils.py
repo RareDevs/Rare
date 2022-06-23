@@ -115,7 +115,6 @@ class GameProcess(QObject):
             self.socket.close()
             self.deleteLater()
             self._game_finished(-1234)  # 1234 is exit code for startup
-            return
         logger.error(f"{self.app_name}: {self.socket.errorString()}")
 
     def _game_finished(self, exit_code: int):
