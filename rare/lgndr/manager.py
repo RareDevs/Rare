@@ -1,5 +1,6 @@
 import os
 import time
+import logging
 
 from multiprocessing import Queue as MPQueue
 from multiprocessing.shared_memory import SharedMemory
@@ -15,6 +16,7 @@ from .downloading import UIUpdate
 
 class DLManager(DLManagerReal):
 
+    @staticmethod
     def run_real(self):
         self.shared_memory = SharedMemory(create=True, size=self.max_shared_memory)
         self.log.debug(f'Created shared memory of size: {self.shared_memory.size / 1024 / 1024:.02f} MiB')
@@ -129,7 +131,7 @@ class DLManager(DLManagerReal):
                           f'/ {dl_unc_speed / 1024 / 1024:.02f} MiB/s (decompressed)')
             self.log.info(f' + Disk\t- {w_speed / 1024 / 1024:.02f} MiB/s (write) / '
                           f'{r_speed / 1024 / 1024:.02f} MiB/s (read)')
-            logging.enable(logging.INFO)  # lk: Enable INFO logging channel again
+            logging.disable(logging.NOTSET)  # lk: Enable INFO logging channel again
 
             # send status update to back to instantiator (if queue exists)
             if self.status_queue:
