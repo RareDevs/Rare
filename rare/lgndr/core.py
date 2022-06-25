@@ -10,9 +10,13 @@ from legendary.utils.selective_dl import get_sdl_appname
 
 from legendary.core import LegendaryCore as LegendaryCoreReal
 from .manager import DLManager
+from .exception import LgndrException
 
 
 class LegendaryCore(LegendaryCoreReal):
+
+    def __log_exception(self, error):
+        raise LgndrException(error)
 
     def prepare_download(self, app_name: str, base_path: str = '',
                          status_q: Queue = None, max_shm: int = 0, max_workers: int = 0,
@@ -225,3 +229,19 @@ class LegendaryCore(LegendaryCoreReal):
             self.log.info('Deleting now untagged files.')
             self.uninstall_tag(old_igame)
             self.install_game(old_igame)
+
+    def egl_import(self, app_name):
+        __log_error = self.log.error
+        __log_fatal = self.log.fatal
+        self.log.error = self.__log_exception
+        self.log.fatal = self.__log_exception
+        super(LegendaryCore, self).egl_import(app_name)
+        self.log.error = __log_error
+        self.log.fatal = __log_fatal
+
+    def egl_export(self, app_name):
+        __log_error = self.log.error
+        self.log.error = self.__log_exception
+        super(LegendaryCore, self).egl_export(app_name)
+        self.log.error = __log_error
+
