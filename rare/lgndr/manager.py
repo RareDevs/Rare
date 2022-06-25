@@ -106,17 +106,36 @@ class DLManager(DLManagerReal):
             total_avail = len(self.sms)
             total_used = (num_shared_memory_segments - total_avail) * (self.analysis.biggest_chunk / 1024 / 1024)
 
-            try:
+            if runtime and processed_chunks:
                 average_speed = processed_chunks / runtime
                 estimate = (num_chunk_tasks - processed_chunks) / average_speed
-            except ZeroDivisionError:
-                average_speed = estimate = 0
+                hours, estimate = int(estimate // 3600), estimate % 3600
+                minutes, seconds = int(estimate // 60), int(estimate % 60)
+
+                rt_hours, runtime = int(runtime // 3600), runtime % 3600
+                rt_minutes, rt_seconds = int(runtime // 60), int(runtime % 60)
+            else:
+                hours = minutes = seconds = 0
+                rt_hours = rt_minutes = rt_seconds = 0
+
+            logging.disable(logging.INFO)  # lk: Disable INFO logging channel for the segment below
+            self.log.info(f'= Progress: {perc:.02f}% ({processed_chunks}/{num_chunk_tasks}), '
+                          f'Running for {rt_hours:02d}:{rt_minutes:02d}:{rt_seconds:02d}, '
+                          f'ETA: {hours:02d}:{minutes:02d}:{seconds:02d}')
+            self.log.info(f' - Downloaded: {total_dl / 1024 / 1024:.02f} MiB, '
+                          f'Written: {total_write / 1024 / 1024:.02f} MiB')
+            self.log.info(f' - Cache usage: {total_used:.02f} MiB, active tasks: {self.active_tasks}')
+            self.log.info(f' + Download\t- {dl_speed / 1024 / 1024:.02f} MiB/s (raw) '
+                          f'/ {dl_unc_speed / 1024 / 1024:.02f} MiB/s (decompressed)')
+            self.log.info(f' + Disk\t- {w_speed / 1024 / 1024:.02f} MiB/s (write) / '
+                          f'{r_speed / 1024 / 1024:.02f} MiB/s (read)')
+            logging.enable(logging.INFO)  # lk: Enable INFO logging channel again
 
             # send status update to back to instantiator (if queue exists)
             if self.status_queue:
                 try:
                     self.status_queue.put(UIUpdate(
-                        progress=perc,
+                        progress=perc, download_speed=dl_unc_speed, write_speed=w_speed, read_speed=r_speed,
                         runtime=round(runtime),
                         estimated_time_left=round(estimate),
                         processed_chunks=processed_chunks,
@@ -125,11 +144,8 @@ class DLManager(DLManagerReal):
                         total_written=total_write,
                         cache_usage=total_used,
                         active_tasks=self.active_tasks,
-                        download_speed=dl_speed,
-                        download_decompressed_speed=dl_unc_speed,
-                        write_speed=w_speed,
-                        memory_usage=total_used * 1024 * 1024,
-                        read_speed=r_speed,
+                        download_compressed_speed=dl_speed,
+                        memory_usage=total_used * 1024 * 1024
                     ), timeout=1.0)
                 except Exception as e:
                     self.log.warning(f'Failed to send status update to queue: {e!r}')
