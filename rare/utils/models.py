@@ -37,8 +37,8 @@ class InstallOptionsModel:
 class InstallDownloadModel:
     dlmanager: DLManager
     analysis: AnalysisResult
-    game: Game
     igame: InstalledGame
+    game: Game
     repair: bool
     repair_file: str
     res: ConditionCheckResult
