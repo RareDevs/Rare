@@ -6,6 +6,7 @@ from typing import Tuple, Iterable, List
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox
 
+from rare.lgndr.exception import LgndrException
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.games.import_sync.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.import_sync.egl_sync_list_group import (
@@ -183,11 +184,18 @@ class EGLSyncListItem(QListWidgetItem):
     def is_checked(self) -> bool:
         return self.checkState() == Qt.Checked
 
-    def action(self) -> None:
+    def action(self) -> str:
+        error = ""
         if self.export:
-            error = self.core.egl_export(self.game.app_name)
+            try:
+                self.core.egl_export(self.game.app_name)
+            except LgndrException as ret:
+                error = ret.message
         else:
-            error = self.core.egl_import(self.game.app_name)
+            try:
+                self.core.egl_import(self.game.app_name)
+            except LgndrException as ret:
+                error = ret.message
         return error
 
     @property
