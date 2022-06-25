@@ -13,8 +13,8 @@ from PyQt5.QtWidgets import (
 )
 
 from legendary.core import LegendaryCore
-from legendary.models.downloading import UIUpdate
 from legendary.models.game import Game, InstalledGame
+from rare.lgndr.downloading import UIUpdate
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget

@@ -1,4 +1,5 @@
 import os
+import sys
 
 from multiprocessing import Queue
 from typing import Callable
@@ -9,6 +10,7 @@ from legendary.models.game import *
 from legendary.utils.selective_dl import get_sdl_appname
 
 from legendary.core import LegendaryCore as LegendaryCoreReal
+
 from .manager import DLManager
 from .exception import LgndrException
 
@@ -144,8 +146,10 @@ class LegendaryCore(LegendaryCoreReal):
                                                           disable_delta=disable_delta,
                                                           override_delta_manifest=override_delta_manifest,
                                                           preferred_cdn=preferred_cdn,
+                                                          status_q=status_q,
                                                           disable_https=disable_https)
 
+        dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
         # game is either up to date or hasn't changed, so we have nothing to do
         if not analysis.dl_size:
             self.log.info('Download size is 0, the game is either already up to date or has not changed. Exiting...')
