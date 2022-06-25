@@ -3,4 +3,6 @@ PyQt5
 QtAwesome
 psutil
 pypresence
+setuptools
+legendary-gl
 pywin32; platform_system == "Windows"
