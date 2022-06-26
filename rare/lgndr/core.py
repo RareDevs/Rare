@@ -253,3 +253,10 @@ class LegendaryCore(LegendaryCoreReal):
         finally:
             self.log.removeHandler(handler)
 
+    def prepare_overlay_install(self, path=None, status_q: Queue = None):
+        dlm, analysis_result, igame = super(LegendaryCore, self).prepare_overlay_install(path)
+        # lk: monkeypatch status_q (the queue for download statistic)
+        # lk: and run_real (the download function that emits the statistics) into DLManager
+        dlm.status_queue = status_q
+        dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
+        return dlm, analysis_result, igame
