@@ -15,7 +15,7 @@ from .downloading import UIUpdate
 
 
 class DLManager(DLManagerReal):
-
+    # fmt: off
     @staticmethod
     def run_real(self):
         self.shared_memory = SharedMemory(create=True, size=self.max_shared_memory)
@@ -194,3 +194,4 @@ class DLManager(DLManagerReal):
         self.log.info('All done! Download manager quitting...')
         # finally, exit the process.
         exit(0)
+    # fmt: on

@@ -6,7 +6,7 @@ from multiprocessing import Queue
 from typing import Callable
 
 from legendary.utils.lfs import validate_files
-from legendary.models.downloading import AnalysisResult
+from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import *
 from legendary.utils.selective_dl import get_sdl_appname
 
@@ -17,7 +17,7 @@ from .exception import LgndrException, LgndrLogHandler
 
 
 class LegendaryCore(LegendaryCoreReal):
-
+    # fmt: off
     def prepare_download(self, app_name: str, base_path: str = '',
                          status_q: Queue = None, max_shm: int = 0, max_workers: int = 0,
                          force: bool = False, disable_patching: bool = False,
@@ -32,7 +32,7 @@ class LegendaryCore(LegendaryCoreReal):
                          no_install: bool = False, ignore_space_req: bool = False,
                          disable_sdl: bool = False, reset_sdl: bool = False, skip_sdl: bool = False,
                          sdl_prompt: Callable[[str, str], List[str]] = list,
-                         disable_https: bool = False) -> (DLManager, AnalysisResult, InstalledGame, Game):
+                         disable_https: bool = False) -> (DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult):
         if self.is_installed(app_name):
             igame = self.get_installed_game(app_name)
             platform = igame.platform
@@ -231,6 +231,7 @@ class LegendaryCore(LegendaryCoreReal):
             self.log.info('Deleting now untagged files.')
             self.uninstall_tag(old_igame)
             self.install_game(old_igame)
+    # fmt: on
 
     def egl_import(self, app_name):
         handler = LgndrLogHandler()
