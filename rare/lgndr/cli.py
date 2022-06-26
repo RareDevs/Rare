@@ -2,11 +2,10 @@ import logging
 
 import legendary.cli
 from PyQt5.QtWidgets import QLabel, QMessageBox
-from legendary.cli import LegendaryCLI as LegendaryCLIReal
+from legendary.cli import LegendaryCLI as LegendaryCLIReal, logger
 
 from .core import LegendaryCore
-
-logger = logging.getLogger('cli')
+from .exception import LgndrException, LgndrLogHandler
 
 
 def get_boolean_choice(message):
@@ -31,10 +30,14 @@ class LegendaryCLI(LegendaryCLIReal):
         self.logging_queue = None
 
     def import_game(self, args):
-        handler = UILogHandler(args.log_dest)
+        handler = LgndrLogHandler()
         logger.addHandler(handler)
         old_choice = legendary.cli.get_boolean_choice
         legendary.cli.get_boolean_choice = get_boolean_choice
-        super(LegendaryCLI, self).import_game(args)
-        legendary.cli.get_boolean_choice = old_choice
-        logger.removeHandler(handler)
+        try:
+            super(LegendaryCLI, self).import_game(args)
+        except LgndrException as e:
+            raise e
+        finally:
+            legendary.cli.get_boolean_choice = old_choice
+            logger.removeHandler(handler)

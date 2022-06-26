@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 
@@ -12,13 +13,10 @@ from legendary.utils.selective_dl import get_sdl_appname
 from legendary.core import LegendaryCore as LegendaryCoreReal
 
 from .manager import DLManager
-from .exception import LgndrException
+from .exception import LgndrException, LgndrLogHandler
 
 
 class LegendaryCore(LegendaryCoreReal):
-
-    def __log_exception(self, error):
-        raise LgndrException(error)
 
     def prepare_download(self, app_name: str, base_path: str = '',
                          status_q: Queue = None, max_shm: int = 0, max_workers: int = 0,
@@ -148,8 +146,8 @@ class LegendaryCore(LegendaryCoreReal):
                                                           preferred_cdn=preferred_cdn,
                                                           status_q=status_q,
                                                           disable_https=disable_https)
-
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
+
         # game is either up to date or hasn't changed, so we have nothing to do
         if not analysis.dl_size:
             self.log.info('Download size is 0, the game is either already up to date or has not changed. Exiting...')
@@ -235,17 +233,22 @@ class LegendaryCore(LegendaryCoreReal):
             self.install_game(old_igame)
 
     def egl_import(self, app_name):
-        __log_error = self.log.error
-        __log_fatal = self.log.fatal
-        self.log.error = self.__log_exception
-        self.log.fatal = self.__log_exception
-        super(LegendaryCore, self).egl_import(app_name)
-        self.log.error = __log_error
-        self.log.fatal = __log_fatal
+        handler = LgndrLogHandler()
+        self.log.addHandler(handler)
+        try:
+            super(LegendaryCore, self).egl_import(app_name)
+        except LgndrException as ret:
+            raise ret
+        finally:
+            self.log.removeHandler(handler)
 
     def egl_export(self, app_name):
-        __log_error = self.log.error
-        self.log.error = self.__log_exception
-        super(LegendaryCore, self).egl_export(app_name)
-        self.log.error = __log_error
+        handler = LgndrLogHandler()
+        self.log.addHandler(handler)
+        try:
+            super(LegendaryCore, self).egl_export(app_name)
+        except LgndrException as ret:
+            raise ret
+        finally:
+            self.log.removeHandler(handler)
 
