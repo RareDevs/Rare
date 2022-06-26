@@ -112,9 +112,9 @@ class LibraryWidget(ImageWidget):
         self.updateProgress(0)
 
     def updateProgress(self, progress: int):
+        self.progress_label.setText(f"{progress:02}%")
         if progress > self._progress:
             self._progress = progress
-            self.progress_label.setText(f"{progress:02}%")
             self.setPixmap(self.progressPixmap(self._color_pixmap, self._gray_pixmap, progress))
 
     def hideProgress(self, stopped: bool):

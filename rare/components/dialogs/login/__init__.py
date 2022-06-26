@@ -43,9 +43,11 @@ class LoginDialog(QDialog):
             Qt.Window
             | Qt.Dialog
             | Qt.CustomizeWindowHint
+            | Qt.WindowSystemMenuHint
             | Qt.WindowTitleHint
             | Qt.WindowMinimizeButtonHint
             | Qt.WindowCloseButtonHint
+            | Qt.MSWindowsFixedSizeDialogHint
         )
         self.setWindowModality(Qt.WindowModal)
 

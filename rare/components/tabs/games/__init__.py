@@ -12,7 +12,6 @@ from rare.shared import (
     ApiResultsSingleton,
 )
 from rare.shared.image_manager import ImageManagerSingleton
-from rare.ui.components.tabs.games.games_tab import Ui_GamesTab
 from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .cloud_save_utils import CloudSaveUtils
@@ -42,9 +41,6 @@ class GamesTab(QStackedWidget):
 
     def __init__(self, parent=None):
         super(GamesTab, self).__init__(parent=parent)
-        self.ui = Ui_GamesTab()
-        self.ui.setupUi(self)
-
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
@@ -60,22 +56,26 @@ class GamesTab(QStackedWidget):
 
         self.game_utils = GameUtils(parent=self)
 
-        self.head_bar = GameListHeadBar(self)
+        self.games = QWidget(parent=self)
+        self.games.setLayout(QVBoxLayout())
+        self.addWidget(self.games)
+
+        self.head_bar = GameListHeadBar(parent=self.games)
         self.head_bar.import_clicked.connect(self.show_import)
         self.head_bar.egl_sync_clicked.connect(self.show_egl_sync)
-        self.ui.games.layout().insertWidget(0, self.head_bar)
+        self.games.layout().addWidget(self.head_bar)
 
         self.game_info_tabs = GameInfoTabs(self.dlcs, self.game_utils, self)
-        self.game_info_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
+        self.game_info_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
         self.addWidget(self.game_info_tabs)
 
         self.game_info_tabs.info.verification_finished.connect(
             self.verification_finished
         )
-        self.game_info_tabs.info.uninstalled.connect(lambda x: self.setCurrentIndex(0))
+        self.game_info_tabs.info.uninstalled.connect(lambda x: self.setCurrentWidget(self.games))
 
         self.import_sync_tabs = ImportSyncTabs(self)
-        self.import_sync_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
+        self.import_sync_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
         self.addWidget(self.import_sync_tabs)
 
         for i in self.game_list:
@@ -91,11 +91,8 @@ class GamesTab(QStackedWidget):
             self.ue_name = ""
 
         self.uninstalled_info_tabs = UninstalledInfoTabs(self)
-        self.uninstalled_info_tabs.back_clicked.connect(lambda: self.setCurrentIndex(0))
+        self.uninstalled_info_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
         self.addWidget(self.uninstalled_info_tabs)
-
-        # navigation
-        self.head_bar.import_game.clicked.connect(lambda: self.setCurrentIndex(2))
 
         self.no_asset_names = []
         if not self.args.offline:
@@ -106,19 +103,19 @@ class GamesTab(QStackedWidget):
 
         self.installed = self.core.get_installed_list()
 
-        self.view_stack = SlidingStackedWidget(self.ui.library_frame)
+        self.view_stack = SlidingStackedWidget(self.games)
         self.view_stack.setFrameStyle(QFrame.NoFrame)
         self.icon_view_scroll = QScrollArea(self.view_stack)
         self.icon_view_scroll.setWidgetResizable(True)
-        self.icon_view_scroll.setFrameShape(QFrame.NoFrame)
+        self.icon_view_scroll.setFrameShape(QFrame.StyledPanel)
         self.icon_view_scroll.horizontalScrollBar().setDisabled(True)
         self.list_view_scroll = QScrollArea(self.view_stack)
         self.list_view_scroll.setWidgetResizable(True)
-        self.list_view_scroll.setFrameShape(QFrame.NoFrame)
+        self.list_view_scroll.setFrameShape(QFrame.StyledPanel)
         self.list_view_scroll.horizontalScrollBar().setDisabled(True)
         self.icon_view = QWidget(self.icon_view_scroll)
         self.icon_view.setLayout(LibraryLayout(self.icon_view))
-        self.icon_view.layout().setContentsMargins(0, 0, 0, 0)
+        self.icon_view.layout().setContentsMargins(0, 13, 0, 0)
         self.icon_view.layout().setAlignment(Qt.AlignTop)
         self.list_view = QWidget(self.list_view_scroll)
         self.list_view.setLayout(QVBoxLayout(self.list_view))
@@ -128,7 +125,7 @@ class GamesTab(QStackedWidget):
         self.list_view_scroll.setWidget(self.list_view)
         self.view_stack.addWidget(self.icon_view_scroll)
         self.view_stack.addWidget(self.list_view_scroll)
-        self.ui.library_frame_layout.addWidget(self.view_stack)
+        self.games.layout().addWidget(self.view_stack)
 
         # add installing game widget for icon view: List view not supported
         self.installing_widget = InstallingGameWidget()
@@ -188,28 +185,24 @@ class GamesTab(QStackedWidget):
         l_widget.update_text()
 
     def show_import(self):
-        self.setCurrentIndex(2)
+        self.setCurrentWidget(self.import_sync_tabs)
         self.import_sync_tabs.show_import()
 
     def show_egl_sync(self, idx):
-        self.setCurrentIndex(2)
+        self.setCurrentWidget(self.import_sync_tabs)
         self.import_sync_tabs.show_egl_sync()
 
     def show_game_info(self, app_name):
         self.game_info_tabs.update_game(app_name)
-        self.setCurrentIndex(1)
+        self.setCurrentWidget(self.game_info_tabs)
 
     def show_uninstalled_info(self, game):
         self.uninstalled_info_tabs.update_game(game)
-        self.setCurrentIndex(3)
+        self.setCurrentWidget(self.uninstalled_info_tabs)
 
     @pyqtSlot()
     def update_count_games_label(self):
-        self.ui.count_games_label.setText(
-            self.tr("Installed Games: {}\tAvailable Games: {}").format(
-                len(self.core.get_installed_list()), len(self.game_list)
-            )
-        )
+        self.head_bar.set_games_count(len(self.core.get_installed_list()), len(self.game_list))
 
     def setup_game_list(self):
         self.update_count_games_label()

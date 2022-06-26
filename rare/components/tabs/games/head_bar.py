@@ -1,12 +1,12 @@
-from PyQt5.QtCore import QSize, QSettings, pyqtSignal
+from PyQt5.QtCore import QSettings, pyqtSignal
 from PyQt5.QtWidgets import (
-    QLineEdit,
     QLabel,
     QPushButton,
     QWidget,
     QHBoxLayout,
     QComboBox,
 )
+from qtawesome import IconWidget
 
 from rare.shared import ApiResultsSingleton
 from rare.utils.extra_widgets import SelectViewWidget, ButtonLineEdit
@@ -19,10 +19,7 @@ class GameListHeadBar(QWidget):
     def __init__(self, parent=None):
         super(GameListHeadBar, self).__init__(parent=parent)
         self.api_results = ApiResultsSingleton()
-        # self.installed_only = QCheckBox(self.tr("Installed only"))
         self.settings = QSettings()
-        # self.installed_only.setChecked(self.settings.value("installed_only", False, bool))
-        # self.layout.addWidget(self.installed_only)
 
         self.filter = QComboBox()
         self.filter.addItems(
@@ -30,7 +27,8 @@ class GameListHeadBar(QWidget):
                 self.tr("All games"),
                 self.tr("Installed only"),
                 self.tr("Offline Games"),
-            ])
+            ]
+        )
 
         self.available_filters = [
             "all",
@@ -75,6 +73,22 @@ class GameListHeadBar(QWidget):
 
         checked = QSettings().value("icon_view", True, bool)
 
+        installed_tooltip = self.tr("Installed games")
+        self.installed_icon = IconWidget(parent=self)
+        self.installed_icon.setIcon(icon("ph.floppy-disk-back-fill"))
+        self.installed_icon.setToolTip(installed_tooltip)
+        self.installed_label = QLabel(parent=self)
+        font = self.installed_label.font()
+        font.setBold(True)
+        self.installed_label.setFont(font)
+        self.installed_label.setToolTip(installed_tooltip)
+        available_tooltip = self.tr("Available games")
+        self.available_icon = IconWidget(parent=self)
+        self.available_icon.setIcon(icon("ph.floppy-disk-back-light"))
+        self.available_icon.setToolTip(available_tooltip)
+        self.available_label = QLabel(parent=self)
+        self.available_label.setToolTip(available_tooltip)
+
         self.view = SelectViewWidget(checked)
 
         self.refresh_list = QPushButton()
@@ -86,13 +100,22 @@ class GameListHeadBar(QWidget):
         layout.addStretch(1)
         layout.addWidget(self.import_game)
         layout.addWidget(self.egl_sync)
-        layout.addStretch(1)
+        layout.addStretch(2)
         layout.addWidget(self.search_bar)
-        layout.addStretch(3)
+        layout.addStretch(2)
+        layout.addWidget(self.installed_icon)
+        layout.addWidget(self.installed_label)
+        layout.addWidget(self.available_icon)
+        layout.addWidget(self.available_label)
+        layout.addStretch(2)
         layout.addWidget(self.view)
-        layout.addStretch(1)
+        layout.addStretch(2)
         layout.addWidget(self.refresh_list)
         self.setLayout(layout)
+
+    def set_games_count(self, inst: int, avail: int) -> None:
+        self.installed_label.setText(str(inst))
+        self.available_label.setText(str(avail))
 
     def filter_changed(self, i):
         self.filterChanged.emit(self.available_filters[i])
