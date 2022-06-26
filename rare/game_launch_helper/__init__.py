@@ -5,7 +5,7 @@ import time
 import traceback
 from argparse import Namespace
 from logging import getLogger
-from typing import Union
+from typing import Union, Optional
 
 from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings
 from PyQt5.QtGui import QDesktopServices
@@ -59,7 +59,7 @@ class PreLaunchThread(QRunnable):
 class GameProcessApp(RareApp):
     game_process: QProcess
     server: QLocalServer
-    socket: QLocalSocket = None
+    socket: Optional[QLocalSocket] = None
     exit_app = pyqtSignal()
     console: Console = None
     success: bool = True
@@ -91,12 +91,12 @@ class GameProcessApp(RareApp):
         self.game_process.finished.connect(self.game_finished)
         self.game_process.errorOccurred.connect(
             lambda err: self.error_occurred(self.game_process.errorString()))
-
-        self.game_process.readyReadStandardOutput.connect(
-            lambda: self.console.log(
-                str(self.game_process.readAllStandardOutput().data(), "utf-8", "ignore")
+        if self.console:
+            self.game_process.readyReadStandardOutput.connect(
+                lambda: self.console.log(
+                    str(self.game_process.readAllStandardOutput().data(), "utf-8", "ignore")
+                )
             )
-        )
 
         self.start_time = time.time()
 
@@ -108,10 +108,13 @@ class GameProcessApp(RareApp):
                 pass
         self.logger.info("New connection")
         self.socket = self.server.nextPendingConnection()
-        self.socket.disconnected.connect(self.socket.deleteLater)
-        self.socket.disconnected.connect(lambda: self.logger.info("Server disconnected"))
-
+        self.socket.disconnected.connect(self.socket_disconnected)
         self.socket.flush()
+
+    def socket_disconnected(self):
+        self.logger.info("Server disconnected")
+        self.socket.deleteLater()
+        self.socket = None
 
     def send_message(self, message: BaseModel):
         if self.socket:
