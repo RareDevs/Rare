@@ -54,8 +54,6 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
             igame, delete_files=not options["keep_files"], delete_root_directory=True
         )
         logger.info("Game has been uninstalled.")
-        if not options["keep_files"]:
-            shutil.rmtree(igame.install_path)
 
     except Exception as e:
         logger.warning(
