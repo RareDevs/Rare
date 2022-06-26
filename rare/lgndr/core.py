@@ -46,9 +46,6 @@ class LegendaryCore(LegendaryCoreReal):
             no_install = repair_use_latest is False
             repair_file = os.path.join(self.lgd.get_tmp_path(), f'{app_name}.repair')
 
-        if not self.login():
-            raise RuntimeError('Login failed! Cannot continue with download process.')
-
         if file_prefix_filter or file_exclude_filter or file_install_tag:
             no_install = True
 
@@ -146,6 +143,7 @@ class LegendaryCore(LegendaryCoreReal):
                                                           preferred_cdn=preferred_cdn,
                                                           status_q=status_q,
                                                           disable_https=disable_https)
+        # lk: monkeypatch run_real (the method that emits the stats) into DLManager
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
 
         # game is either up to date or hasn't changed, so we have nothing to do
@@ -255,8 +253,8 @@ class LegendaryCore(LegendaryCoreReal):
 
     def prepare_overlay_install(self, path=None, status_q: Queue = None):
         dlm, analysis_result, igame = super(LegendaryCore, self).prepare_overlay_install(path)
-        # lk: monkeypatch status_q (the queue for download statistic)
-        # lk: and run_real (the download function that emits the statistics) into DLManager
+        # lk: monkeypatch status_q (the queue for download stats)
+        # lk: and run_real (the method that emits the stats) into DLManager
         dlm.status_queue = status_q
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
         return dlm, analysis_result, igame
