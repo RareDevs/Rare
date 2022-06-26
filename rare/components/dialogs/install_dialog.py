@@ -342,16 +342,13 @@ class InstallInfoWorker(QRunnable):
 
                 dlm, analysis, igame = self.core.prepare_overlay_install(
                     path=self.dl_item.options.base_path,
-                    status_queue=self.dl_item.status_q,
-                    max_workers=self.dl_item.options.max_workers,
-                    force=self.dl_item.options.force,
                 )
 
                 download = InstallDownloadModel(
                     dlmanager=dlm,
                     analysis=analysis,
-                    game=self.game,
                     igame=igame,
+                    game=self.game,
                     repair=False,
                     repair_file="",
                     res=ConditionCheckResult(),  # empty
