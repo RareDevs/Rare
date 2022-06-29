@@ -36,7 +36,11 @@ class GameProcess(QObject):
         self.game_meta = RareGameMeta()
         self.socket = QLocalSocket()
         self.socket.connected.connect(self._socket_connected)
-        self.socket.errorOccurred.connect(self._error_occurred)
+        try:
+            self.socket.errorOccurred.connect(self._error_occurred)
+        except AttributeError:
+            QTimer.singleShot(100, lambda: self._error_occurred(None) if self.socket.error() else None)
+            logger.warning("Do not handle errors on QLocalSocket, because of an old qt version")
         self.socket.readyRead.connect(self._message_available)
         self.always_ask_sync = always_ask_sync
 
