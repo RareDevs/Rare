@@ -1,13 +1,12 @@
 import os
 import platform
-import shutil
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QCoreApplication, QObject, QRunnable, QStandardPaths
-
 from legendary.core import LegendaryCore
 from legendary.models.game import VerifyResult
 from legendary.utils.lfs import validate_files
+
 from rare.shared import LegendaryCoreSingleton
 from rare.utils import config_helper
 
@@ -59,12 +58,12 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
         logger.warning(
             f"Removing game failed: {e!r}, please remove {igame.install_path} manually."
         )
+    if not options["keep_files"]:
+        logger.info("Removing sections in config file")
+        config_helper.remove_section(app_name)
+        config_helper.remove_section(f"{app_name}.env")
 
-    logger.info("Removing sections in config file")
-    config_helper.remove_section(app_name)
-    config_helper.remove_section(f"{app_name}.env")
-
-    config_helper.save_config()
+        config_helper.save_config()
 
 
 def update_manifest(app_name: str, core: LegendaryCore):
