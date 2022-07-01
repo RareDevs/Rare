@@ -9,3 +9,28 @@ force-exclude = '''
     | rare/resources
 )/
 '''
+
+[tool.poetry]
+name = "rare"
+version = "1.8.9"
+description = "A GUI for Legendary"
+authors = ["Dummerle"]
+license = "GPL3"
+readme = "README.md"
+repository = "https://github.com/Dummerle/Rare"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+PyQt5 = "^5.15.7"
+requests = "^2.28.1"
+QtAwesome = "^1.1.1"
+psutil = "^5.9.1"
+pypresence = {version="^4.2.1", optional = true}
+pywin32 = {version = "^304", markers = "platform_system == 'Windows'"}
+
+[tool.poetry.scripts]
+start = "rare.__main__:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
