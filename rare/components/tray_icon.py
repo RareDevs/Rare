@@ -1,11 +1,14 @@
+from logging import getLogger
 from typing import List
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction
 
+from rare.shared import GlobalSignalsSingleton
 from rare.shared import LegendaryCoreSingleton
 from rare.utils.meta import GameMeta
-from rare.shared import GlobalSignalsSingleton
+
+logger = getLogger("TrayIcon")
 
 
 class TrayIcon(QSystemTrayIcon):
@@ -59,4 +62,5 @@ class TrayIcon(QSystemTrayIcon):
 
     def remove_button(self, app_name: str):
         if action := next((i for i in self.game_actions if i.property("app_name") == app_name), None):
+            self.game_actions.remove(action)
             action.deleteLater()
