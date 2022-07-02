@@ -1,13 +1,14 @@
 import json
 import os
 from dataclasses import dataclass
+from enum import IntEnum
 from logging import getLogger
 from pathlib import Path
 from typing import List, Tuple, Optional
 
-from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThreadPool
+from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, QApplication, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, qApp, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
@@ -34,22 +35,22 @@ def find_app_name(path: str, core) -> Optional[str]:
     return None
 
 
-@dataclass
-class ResultGame:
-    app_name: str
-    error: Optional[str] = None
+class ImportResult(IntEnum):
+    ERROR = 0
+    FAILED = 1
+    SUCCESS = 2
 
 
 @dataclass
-class Result:
-    successful_games: List[ResultGame] = None
-    failed_games: List[ResultGame] = None
-    error_messages: List[str] = None
+class ImportedGame:
+    result: ImportResult
+    app_name: Optional[str] = None
+    message: Optional[str] = None
 
 
 class ImportWorker(QRunnable):
     class Signals(QObject):
-        finished = pyqtSignal(Result)
+        finished = pyqtSignal(list)
         progress = pyqtSignal(int)
 
     def __init__(self, path: str, import_folder: bool = False, app_name: str = None):
@@ -59,39 +60,37 @@ class ImportWorker(QRunnable):
         self.path = Path(path)
         self.import_folder = import_folder
         self.app_name = app_name
-        self.tr = lambda message: QApplication.translate("ImportThread", message)
+        self.tr = lambda message: qApp.translate("ImportThread", message)
 
     def run(self) -> None:
-        result = Result([], [], [])
+        result_list: List = []
         if self.import_folder:
-            number_of_folders = len(list(self.path.iterdir()))
-            for i, child in enumerate(self.path.iterdir()):
+            folders = [i for i in self.path.iterdir() if i.is_dir()]
+            number_of_folders = len(folders)
+            for i, child in enumerate(folders):
                 if not child.is_dir():
                     continue
-                if (app_name := find_app_name(str(child), self.core)) is not None:
-                    logger.debug(f"Found app_name {app_name} for {child}")
-                    err = self.__import_game(app_name, child)
-                    if err:
-                        result.failed_games.append(ResultGame(app_name, err))
-                    else:
-                        result.successful_games.append(ResultGame(app_name))
-                else:
-                    result.error_messages.append(self.tr("Could not find AppName for {}").format(child))
+                result = self.__try_import(child, None)
+                result_list.append(result)
                 self.signals.progress.emit(int(100 * i // number_of_folders))
         else:
-            if not self.app_name:
-                # try to find app name
-                if a_n := find_app_name(str(self.path), self.core):
-                    self.app_name = a_n
-                else:
-                    result.error_messages.append(self.tr("Could not find AppName for {}").format(str(self.path)))
-                    return
-            err = self.__import_game(self.app_name, self.path)
+            result = self.__try_import(self.path, self.app_name)
+            result_list.append(result)
+        self.signals.finished.emit(result_list)
+
+    def __try_import(self, path: Path, app_name: str = None) -> ImportedGame:
+        result = ImportedGame(ImportResult.ERROR, None, None)
+        if app_name or (app_name := find_app_name(str(path), self.core)):
+            result.app_name = app_name
+            err = self.__import_game(app_name, path)
             if err:
-                result.failed_games.append(ResultGame(self.app_name, err))
+                result.result = ImportResult.FAILED
+                result.message = err
             else:
-                result.successful_games.append(ResultGame(self.app_name))
-        self.signals.finished.emit(result)
+                result.result = ImportResult.SUCCESS
+        else:
+            result.message = self.tr("Could not find AppName for {}").format(str(path))
+        return result
 
     def __import_game(self, app_name: str, path: Path) -> str:
         if not (err := legendary_utils.import_game(self.core, app_name=app_name, path=str(path))):
@@ -205,12 +204,12 @@ class ImportGroup(QGroupBox):
         return False, path, ""
 
     def path_changed(self, path):
-        self.ui.info_label.setText(str())
+        self.ui.info_label.setText("")
         self.ui.import_folder_check.setChecked(False)
         if self.path_edit.is_valid:
             self.app_name_edit.setText(find_app_name(path, self.core))
         else:
-            self.app_name_edit.setText(str())
+            self.app_name_edit.setText("")
 
     def app_name_edit_cb(self, text) -> Tuple[bool, str, str]:
         if not text:
@@ -221,7 +220,7 @@ class ImportGroup(QGroupBox):
             return False, text, IndicatorLineEdit.reasons.game_not_installed
 
     def app_name_changed(self, text):
-        self.ui.info_label.setText(str())
+        self.ui.info_label.setText("")
         if self.app_name_edit.is_valid:
             self.ui.import_button.setEnabled(True)
         else:
@@ -235,33 +234,63 @@ class ImportGroup(QGroupBox):
         worker.signals.progress.connect(self.import_progress)
         self.threadpool.start(worker)
 
-    def import_finished(self, result: Result):
-        logger.info(f"Import finished: {result.__dict__}")
-        if result.successful_games:
-            self.signals.update_gamelist.emit([i.app_name for i in result.successful_games])
-            if len(result.successful_games) == 1:
+    @pyqtSlot(list)
+    def import_finished(self, result: List):
+        logger.info(f"Import finished: {result}")
+
+        self.signals.update_gamelist.emit([r.app_name for r in result if r.result == ImportResult.SUCCESS])
+
+        for failed in (f for f in result if f.result == ImportResult.FAILED):
+            igame = self.core.get_installed_game(failed.app_name)
+            if igame and igame.version != self.core.get_asset(igame.app_name, igame.platform, False).build_version:
+                # update available
+                self.signals.add_download.emit(igame.app_name)
+                self.signals.update_download_tab_text.emit()
+
+        if len(result) == 1:
+            res = result[0]
+            if res.result == ImportResult.SUCCESS:
                 self.ui.info_label.setText(
-                    self.tr(f"{self.core.get_game(result.successful_games[0].app_name).app_title} imported successfully: ")
+                    self.tr("{} was imported successfully").format(self.core.get_game(res.app_name).app_title)
+                )
+            elif res.result == ImportResult.FAILED:
+                self.ui.info_label.setText(
+                    self.tr("Failed: {}").format(res.message)
                 )
             else:
                 self.ui.info_label.setText(
-                    self.tr("Imported {} games successfully".format(len(result.successful_games)))
+                    self.tr("Error: {}").format(res.message)
                 )
-            for res_game in result.failed_games:
-                igame = self.core.get_installed_game(res_game.app_name)
-                if igame.version != self.core.get_asset(igame.app_name, igame.platform, False).build_version:
-                    # update available
-                    self.signals.add_download.emit(igame.app_name)
-                    self.signals.update_download_tab_text.emit()
-
-        if result.failed_games:
-            self.ui.info_label.setText(
-                self.tr(f"Failed to import: "
-                        f"{', '.join([self.core.get_game(i.app_name).app_title for i in result.failed_games])}")
+        else:
+            success = [r for r in result if r.result == ImportResult.SUCCESS]
+            failure = [r for r in result if r.result == ImportResult.FAILED]
+            errored = [r for r in result if r.result == ImportResult.ERROR]
+            messagebox = QMessageBox(
+                QMessageBox.Information,
+                self.tr("Import summary"),
+                self.tr(
+                    "Tried to import {} folders.\n\n"
+                    "Successfully imported {} games, failed to import {} games and {} errors occurred"
+                ).format(len(success) + len(failure) + len(errored), len(success), len(failure), len(errored)),
+                buttons=QMessageBox.StandardButton.Close,
+                parent=self,
             )
-        if result.error_messages:
-            QMessageBox.warning(self, self.tr("Error"), self.tr("\n".join(result.error_messages)))
-
+            messagebox.setWindowModality(Qt.NonModal)
+            details: List = []
+            for res in success:
+                details.append(
+                    self.tr("{} was imported successfully").format(self.core.get_game(res.app_name).app_title)
+                )
+            for res in failure:
+                details.append(
+                    self.tr("Failed: {}").format(res.message)
+                )
+            for res in errored:
+                details.append(
+                    self.tr("Error: {}").format(res.message)
+                )
+            messagebox.setDetailedText("\n".join(details))
+            messagebox.show()
 
     def import_progress(self, progress: int):
         pass
