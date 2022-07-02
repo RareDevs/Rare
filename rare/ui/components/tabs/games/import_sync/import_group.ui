@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>501</width>
-    <height>154</height>
+    <height>136</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,10 +19,7 @@
   <property name="title">
    <string>Import EGL game from a directory</string>
   </property>
-  <layout class="QFormLayout" name="import_layout">
-   <property name="labelAlignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
+  <layout class="QFormLayout" name="formLayout">
    <item row="0" column="0">
     <widget class="QLabel" name="path_edit_label">
      <property name="text">
@@ -50,26 +47,6 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="info_label">
-     <property name="text">
-      <string notr="true"/>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QPushButton" name="import_button">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Import Game</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="1">
     <widget class="QCheckBox" name="import_folder_check">
      <property name="font">
@@ -81,6 +58,30 @@
       <string>Scan the installation path for game folders and import them</string>
      </property>
     </widget>
+   </item>
+   <item row="3" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="import_button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Import Game</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="info_label">
+       <property name="text">
+        <string notr="true"/>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
