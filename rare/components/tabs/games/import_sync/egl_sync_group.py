@@ -1,9 +1,9 @@
 import os
 import platform
 from logging import getLogger
-from typing import Tuple, Iterable
+from typing import Tuple, Iterable, List
 
-from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot
+from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
@@ -200,12 +200,16 @@ class EGLSyncListItem(QListWidgetItem):
 
 
 class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
+    action_errors = pyqtSignal(list)
+
     def __init__(self, export: bool, parent=None):
         super(EGLSyncListGroup, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.list.setProperty("noBorder", 1)
+        # TODO: Convert the CSS and the code to adhere to NoFrame
+        # self.list.setFrameShape(self.list.NoFrame)
 
         self.export = export
 
@@ -231,6 +235,8 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         self.select_none_button.clicked.connect(lambda: self.mark(Qt.Unchecked))
 
         self.action_button.clicked.connect(self.action)
+
+        self.action_errors.connect(self.show_errors)
 
     def has_selected(self):
         for item in self.items:
@@ -258,8 +264,8 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
         self.buttons_widget.setVisible(enabled and bool(self.list.count()))
 
     def action(self):
-        imported = list()
-        errors = list()
+        imported: List = []
+        errors: List = []
         for item in self.items:
             if item.is_checked():
                 if e := item.action():
@@ -271,13 +277,17 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
             self.signals.update_gamelist.emit(imported)
         self.populate(True)
         if errors:
-            QMessageBox.warning(
-                self.parent(),
-                self.tr("The following errors occurred while {}.").format(
-                    self.tr("exporting") if self.export else self.tr("importing")
-                ),
-                "\n".join(errors),
-            )
+            self.action_errors.emit(errors)
+
+    @pyqtSlot(list)
+    def show_errors(self, errors: List):
+        QMessageBox.warning(
+            self.parent(),
+            self.tr("The following errors occurred while {}.").format(
+                self.tr("exporting") if self.export else self.tr("importing")
+            ),
+            "\n".join(errors),
+        )
 
     @property
     def items(self) -> Iterable[EGLSyncListItem]:
