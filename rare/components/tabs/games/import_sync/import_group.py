@@ -87,22 +87,48 @@ class ImportWorker(QRunnable):
         if app_name or (app_name := find_app_name(str(path), self.core)):
             result.app_name = app_name
             err = self.__import_game(app_name, path)
+            app_title = self.core.get_game(app_name).app_title
             if err:
                 result.result = ImportResult.FAILED
-                result.message = err
+                result.message = f"{app_title} - {err}"
             else:
                 result.result = ImportResult.SUCCESS
+                result.message = self.tr("{} - Imported successfully").format(app_title)
         else:
             result.message = self.tr("Could not find AppName for {}").format(str(path))
         return result
 
-    def __import_game(self, app_name: str, path: Path) -> str:
-        if not (err := legendary_utils.import_game(self.core, app_name=app_name, path=str(path))):
-            igame = self.core.get_installed_game(app_name)
-            logger.info(f"Successfully imported {igame.title}")
+    # def __import_game(self, app_name: str, path: Path) -> str:
+    #     if not (err := legendary_utils.import_game(self.core, app_name=app_name, path=str(path))):
+    #         igame = self.core.get_installed_game(app_name)
+    #         logger.info(f"Successfully imported {igame.title}")
+    #         return ""
+    #     else:
+    #         return err
+
+    # TODO: This should be moved into RareCore and wrap import_game
+    def import_game_args(self, app_path: str, app_name: str, platfrom: str = "Windows",
+                         disable_check: bool = False, skip_dlcs: bool = False, with_dlcs: bool = False, yes: bool = False):
+        args = Namespace(
+            app_path=app_path,
+            app_name=app_name,
+            platform=platfrom,
+            disable_check=disable_check,
+            skip_dlcs=skip_dlcs,
+            with_dlcs=with_dlcs,
+            yes=yes,
+        )
+        return args
+
+    def __import_game(self, app_name: str, path: Path):
+        cli = LegendaryCLI()
+        cli.core = LegendaryCoreSingleton()
+        args = self.import_game_args(str(path), app_name)
+        try:
+            cli.import_game(args)
             return ""
-        else:
-            return err
+        except LgndrException as ret:
+            return ret.message
 
 
 class AppNameCompleter(QCompleter):
@@ -255,7 +281,7 @@ class ImportGroup(QGroupBox):
             res = result[0]
             if res.result == ImportResult.SUCCESS:
                 self.ui.info_label.setText(
-                    self.tr("{} was imported successfully").format(self.core.get_game(res.app_name).app_title)
+                    self.tr("Success: {}").format(res.message)
                 )
             elif res.result == ImportResult.FAILED:
                 self.ui.info_label.setText(
@@ -283,7 +309,7 @@ class ImportGroup(QGroupBox):
             details: List = []
             for res in success:
                 details.append(
-                    self.tr("{} was imported successfully").format(self.core.get_game(res.app_name).app_title)
+                    self.tr("Success: {}").format(res.message)
                 )
             for res in failure:
                 details.append(
@@ -298,21 +324,3 @@ class ImportGroup(QGroupBox):
 
     def import_progress(self, progress: int):
         pass
-
-    def __import_game(self, app_name, path):
-        args = Namespace(
-            app_path=path,
-            app_name=app_name,
-            platform='Windows',
-            disable_check=False,
-            skip_dlcs=False,
-            with_dlcs=False,
-            yes=False,
-        )
-        cli = LegendaryCLI()
-        cli.core = LegendaryCoreSingleton()
-        try:
-            cli.import_game(args)
-        except LgndrException as ret:
-            self.ui.info_label.setText(ret.message)
-
