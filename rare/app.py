@@ -20,7 +20,7 @@ import rare
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.components.tray_icon import TrayIcon
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
+from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.shared.image_manager import ImageManagerSingleton
 from rare.utils import legendary_utils, config_helper
 from rare.utils.paths import cache_dir, tmp_dir
@@ -64,7 +64,8 @@ class App(RareApp):
 
         # init Legendary
         try:
-            self.core = LegendaryCoreSingleton(init=True)
+            LegendaryCLISingleton(init=True)
+            self.core = LegendaryCoreSingleton()
         except configparser.MissingSectionHeaderError as e:
             logger.warning(f"Config is corrupt: {e}")
             if config_path := os.environ.get("XDG_CONFIG_HOME"):
@@ -73,7 +74,8 @@ class App(RareApp):
                 path = os.path.expanduser("~/.config/legendary")
             with open(os.path.join(path, "config.ini"), "w") as config_file:
                 config_file.write("[Legendary]")
-            self.core = LegendaryCoreSingleton(init=True)
+            LegendaryCLISingleton(init=True)
+            self.core = LegendaryCoreSingleton()
         if "Legendary" not in self.core.lgd.config.sections():
             self.core.lgd.config.add_section("Legendary")
             self.core.lgd.save_config()

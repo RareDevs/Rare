@@ -7,12 +7,14 @@ from typing import Tuple
 from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox
+
+from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
 from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
 from legendary.utils.selective_dl import games
 
-from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton, ArgumentsSingleton
+from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, ApiResultsSingleton, ArgumentsSingleton
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.models import InstallDownloadModel, InstallQueueItemModel
@@ -306,14 +308,16 @@ class InstallInfoWorker(QRunnable):
     def run(self):
         try:
             if not self.is_overlay_install:
+                cli = LegendaryCLISingleton()
                 download = InstallDownloadModel(
-                    *self.core.prepare_download(
+                    # *self.core.prepare_download(
+                    *cli.prepare_install(
                         app_name=self.dl_item.options.app_name,
                         base_path=self.dl_item.options.base_path,
                         force=self.dl_item.options.force,
                         no_install=self.dl_item.options.no_install,
                         status_q=self.dl_item.status_q,
-                        max_shm=self.dl_item.options.max_shm,
+                        shared_memory=self.dl_item.options.max_shm,
                         max_workers=self.dl_item.options.max_workers,
                         # game_folder=,
                         # disable_patching=,
@@ -324,11 +328,11 @@ class InstallInfoWorker(QRunnable):
                         # file_prefix_filter=,
                         # file_exclude_filter=,
                         # file_install_tag=,
-                        dl_optimizations=self.dl_item.options.dl_optimizations,
+                        order_opt=self.dl_item.options.dl_optimizations,
                         # dl_timeout=,
-                        repair=self.dl_item.options.repair,
-                        # repair_use_latest=,
-                        ignore_space_req=self.dl_item.options.ignore_space_req,
+                        repair_mode=self.dl_item.options.repair,
+                        # repair_and_update=True,
+                        ignore_space=self.dl_item.options.ignore_space_req,
                         # disable_delta=,
                         # override_delta_manifest=,
                         # reset_sdl=,

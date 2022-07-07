@@ -11,9 +11,8 @@ from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThrea
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, qApp, QMessageBox
 
-from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.exception import LgndrException
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
+from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
 from rare.utils import legendary_utils
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
@@ -121,8 +120,7 @@ class ImportWorker(QRunnable):
         return args
 
     def __import_game(self, app_name: str, path: Path):
-        cli = LegendaryCLI()
-        cli.core = LegendaryCoreSingleton()
+        cli = LegendaryCLISingleton()
         args = self.import_game_args(str(path), app_name)
         try:
             cli.import_game(args)

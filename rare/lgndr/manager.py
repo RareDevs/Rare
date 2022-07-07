@@ -10,13 +10,12 @@ from threading import Condition, Thread
 from legendary.downloader.mp.workers import DLWorker, FileWorker
 from legendary.models.downloading import ChunkTask, SharedMemorySegment, TerminateWorkerTask
 
-from legendary.downloader.mp.manager import DLManager as DLManagerReal
+import legendary.downloader.mp.manager
 from .downloading import UIUpdate
 
 
-class DLManager(DLManagerReal):
+class DLManager(legendary.downloader.mp.manager.DLManager):
     # fmt: off
-    @staticmethod
     def run_real(self):
         self.shared_memory = SharedMemory(create=True, size=self.max_shared_memory)
         self.log.debug(f'Created shared memory of size: {self.shared_memory.size / 1024 / 1024:.02f} MiB')

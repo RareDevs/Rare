@@ -1,14 +1,17 @@
 import os
 import platform
+from argparse import Namespace
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QCoreApplication, QObject, QRunnable, QStandardPaths
 from legendary.core import LegendaryCore
 from legendary.models.game import VerifyResult
 from legendary.utils.lfs import validate_files
+from parse import parse
 
-from rare.shared import LegendaryCoreSingleton
+from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton
 from rare.utils import config_helper
+from rare.lgndr.exception import LgndrException
 
 logger = getLogger("Legendary Utils")
 
@@ -83,75 +86,42 @@ def update_manifest(app_name: str, core: LegendaryCore):
     )
 
 
-class VerifySignals(QObject):
-    status = pyqtSignal(int, int, str)
-    summary = pyqtSignal(int, int, str)
-
-
 class VerifyWorker(QRunnable):
+    class Signals(QObject):
+        status = pyqtSignal(int, int, str)
+        summary = pyqtSignal(int, int, str)
+
     num: int = 0
     total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized
 
     def __init__(self, app_name):
         super(VerifyWorker, self).__init__()
-        self.signals = VerifySignals()
+        self.signals = VerifyWorker.Signals()
         self.setAutoDelete(True)
+        self.cli = LegendaryCLISingleton()
         self.core = LegendaryCoreSingleton()
         self.app_name = app_name
 
+    def status_callback(self, num: int, total: int, percentage: float, speed: float):
+        self.signals.status.emit(num, total, self.app_name)
+
     def run(self):
-        if not self.core.is_installed(self.app_name):
-            logger.error(f'Game "{self.app_name}" is not installed')
-            return
-
-        logger.info(f'Loading installed manifest for "{self.app_name}"')
-        igame = self.core.get_installed_game(self.app_name)
-        manifest_data, _ = self.core.get_installed_manifest(self.app_name)
-        manifest = self.core.load_manifest(manifest_data)
-
-        files = sorted(manifest.file_manifest_list.elements,
-                       key=lambda a: a.filename.lower())
-
-        # build list of hashes
-        file_list = [(f.filename, f.sha_hash.hex()) for f in files]
-        total = len(file_list)
-        num = 0
-        failed = []
-        missing = []
-
-        logger.info(f'Verifying "{igame.title}" version "{manifest.meta.build_version}"')
-        repair_file = []
-        for result, path, result_hash, _ in validate_files(igame.install_path, file_list):
-            num += 1
-            self.signals.status.emit(num, total, self.app_name)
-
-            if result == VerifyResult.HASH_MATCH:
-                repair_file.append(f"{result_hash}:{path}")
-                continue
-            elif result == VerifyResult.HASH_MISMATCH:
-                logger.error(f'File does not match hash: "{path}"')
-                repair_file.append(f"{result_hash}:{path}")
-                failed.append(path)
-            elif result == VerifyResult.FILE_MISSING:
-                logger.error(f'File is missing: "{path}"')
-                missing.append(path)
+        args = Namespace(app_name=self.app_name,
+                         callback=self.status_callback)
+        try:
+            # TODO: offer this as an alternative when manifest doesn't exist
+            # TODO: requires the client to be online. To do it this way, we need to
+            # TODO: somehow detect the error and offer a dialog in which case `verify_games` is
+            # TODO: re-run with `repair_mode` and `repair_online`
+            self.cli.verify_game(args, print_command=False, repair_mode=True, repair_online=True)
+            # self.cli.verify_game(args, print_command=False)
+            self.signals.summary.emit(0, 0, self.app_name)
+        except LgndrException as ret:
+            r = parse('Verification failed, {:d} file(s) corrupted, {:d} file(s) are missing.', ret.message)
+            if r is None:
+                raise ret
             else:
-                logger.error(f'Other failure (see log), treating file as missing: "{path}"')
-                missing.append(path)
-
-        # always write repair file, even if all match
-        if repair_file:
-            repair_filename = os.path.join(self.core.lgd.get_tmp_path(), f'{self.app_name}.repair')
-            with open(repair_filename, 'w') as f:
-                f.write('\n'.join(repair_file))
-            logger.debug(f'Written repair file to "{repair_filename}"')
-
-        if not missing and not failed:
-            logger.info('Verification finished successfully.')
-        else:
-            logger.warning(
-                f'Verification failed, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
-        self.signals.summary.emit(len(failed), len(missing), self.app_name)
+                self.signals.summary.emit(r[0], r[1], self.app_name)
 
 
 # FIXME: lk: ah ef me sideways, we can't even import this thing properly
