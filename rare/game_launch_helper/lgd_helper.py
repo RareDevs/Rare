@@ -3,7 +3,7 @@ import platform
 import shutil
 from dataclasses import dataclass
 from logging import getLogger
-from typing import List, Tuple
+from typing import List
 
 from PyQt5.QtCore import QProcess, QProcessEnvironment
 from legendary.core import LegendaryCore
@@ -66,7 +66,7 @@ def get_origin_params(core: LegendaryCore, app_name, offline: bool,
 
     env = core.get_app_environment(app_name)
     launch_args.env = QProcessEnvironment.systemEnvironment()
-    for name, value in env:
+    for name, value in env.items():
         launch_args.env.insert(name, value)
 
     launch_args.executable = command[0]
