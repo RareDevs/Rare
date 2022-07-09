@@ -201,7 +201,7 @@ class DownloadThread(QThread):
         self.status.emit("finish")
 
     def _handle_postinstall(self, postinstall, igame):
-        logger.info(f"Postinstall info: {postinstall.__dict__}")
+        logger.info(f"Postinstall info: {postinstall}")
         if platform.system() == "Windows":
             if self.queue_item.options.install_preqs:
                 self.core.prereq_installed(igame.app_name)

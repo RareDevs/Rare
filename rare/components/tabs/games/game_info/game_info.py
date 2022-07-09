@@ -165,7 +165,7 @@ class GameInfo(QWidget, Ui_GameInfo):
             igame = self.core.get_installed_game(app_name)
             if igame.needs_verification:
                 igame.needs_verification = False
-                self.core.lgd.set_installed_game(self.igame.app_name, igame)
+                self.core.lgd.set_installed_game(igame.app_name, igame)
                 self.verification_finished.emit(igame)
         elif failed == missing == -1:
             QMessageBox.warning(self, "Warning", self.tr("Something went wrong"))
@@ -182,7 +182,7 @@ class GameInfo(QWidget, Ui_GameInfo):
             )
             if ans == QMessageBox.Yes:
                 self.signals.install_game.emit(
-                    InstallOptionsModel(app_name=self.game.app_name, repair=True, update=True)
+                    InstallOptionsModel(app_name=app_name, repair=True, update=True)
                 )
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
@@ -504,14 +504,14 @@ class CopyGameInstallation(QRunnable):
 
     def __init__(
         self,
-        install_path: Path,
+        install_path: str,
         dest_path: Path,
         is_existing_dir: bool,
         igame: InstalledGame,
     ):
         super(CopyGameInstallation, self).__init__()
-        self.signals = CopyGameInstallation.Signals()
-        self.install_path = str(install_path)
+        self.signals = self.Signals()
+        self.install_path = install_path
         self.dest_path = dest_path
         self.source_size = 0
         self.dest_size = 0
