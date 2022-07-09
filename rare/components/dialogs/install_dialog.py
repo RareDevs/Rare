@@ -169,10 +169,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.dl_item.options.base_path = self.install_dir_edit.text() if not self.update else None
 
         self.dl_item.options.max_workers = self.max_workers_spin.value()
-        self.dl_item.options.max_shm = self.max_memory_spin.value()
-        self.dl_item.options.dl_optimizations = self.dl_optimizations_check.isChecked()
+        self.dl_item.options.shared_memory = self.max_memory_spin.value()
+        self.dl_item.options.order_opt = self.dl_optimizations_check.isChecked()
         self.dl_item.options.force = self.force_download_check.isChecked()
-        self.dl_item.options.ignore_space_req = self.ignore_space_check.isChecked()
+        self.dl_item.options.ignore_space = self.ignore_space_check.isChecked()
         self.dl_item.options.no_install = self.download_only_check.isChecked()
         self.dl_item.options.platform = self.platform_combo_box.currentText()
         self.dl_item.options.sdl_list = [""]
@@ -317,7 +317,7 @@ class InstallInfoWorker(QRunnable):
                         force=self.dl_item.options.force,
                         no_install=self.dl_item.options.no_install,
                         status_q=self.dl_item.status_q,
-                        shared_memory=self.dl_item.options.max_shm,
+                        shared_memory=self.dl_item.options.shared_memory,
                         max_workers=self.dl_item.options.max_workers,
                         # game_folder=,
                         # disable_patching=,
@@ -328,11 +328,11 @@ class InstallInfoWorker(QRunnable):
                         # file_prefix_filter=,
                         # file_exclude_filter=,
                         # file_install_tag=,
-                        order_opt=self.dl_item.options.dl_optimizations,
+                        order_opt=self.dl_item.options.order_opt,
                         # dl_timeout=,
-                        repair_mode=self.dl_item.options.repair,
+                        repair_mode=self.dl_item.options.repair_mode,
                         # repair_and_update=True,
-                        ignore_space=self.dl_item.options.ignore_space_req,
+                        ignore_space=self.dl_item.options.ignore_space,
                         # disable_delta=,
                         # override_delta_manifest=,
                         # reset_sdl=,

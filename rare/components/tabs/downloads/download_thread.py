@@ -188,7 +188,7 @@ class DownloadThread(QThread):
             os.remove(self.repair_file)
         if old_igame and old_igame.install_tags != self.igame.install_tags:
             old_igame.install_tags = self.igame.install_tags
-            self.logger.info("Deleting now untagged files.")
+            logger.info("Deleting now untagged files.")
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 

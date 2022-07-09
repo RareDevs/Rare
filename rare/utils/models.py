@@ -14,17 +14,17 @@ from legendary.models.game import Game, InstalledGame
 class InstallOptionsModel:
     app_name: str
     base_path: str = ""
-    max_shm: int = 1024
+    shared_memory: int = 1024
     max_workers: int = os.cpu_count() * 2
-    repair: bool = False
+    repair_mode: bool = False
     no_install: bool = False
-    ignore_space_req: bool = False
+    ignore_space: bool = False
     force: bool = False
     sdl_list: list = field(default_factory=lambda: [""])
     update: bool = False
     silent: bool = False
     platform: str = ""
-    dl_optimizations: bool = False
+    order_opt: bool = False
     overlay: bool = False
     create_shortcut: bool = True
     install_preqs: bool = pf.system() == "Windows"

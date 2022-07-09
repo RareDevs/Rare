@@ -19,5 +19,5 @@ class LgndrLogHandler(logging.Handler):
         # lk: FATAL is the same as CRITICAL
         if record.levelno == logging.ERROR or record.levelno == logging.CRITICAL:
             raise LgndrException(record.getMessage())
-        if record.levelno == logging.INFO or record.levelno == logging.WARNING:
-            warnings.warn(record.getMessage())
+        # if record.levelno == logging.INFO or record.levelno == logging.WARNING:
+        #     warnings.warn(record.getMessage())

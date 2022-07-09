@@ -261,6 +261,12 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 
+    def _handle_postinstall(self, postinstall, igame, yes=False):
+        super(LegendaryCLI, self)._handle_postinstall(postinstall, igame, yes)
+
+    def uninstall_game(self, args):
+        super(LegendaryCLI, self).uninstall_game(args)
+
     def verify_game(self, args, print_command=True, repair_mode=False, repair_online=False):
         if not hasattr(args, 'callback') or args.callback is None:
             args.callback = print

@@ -129,7 +129,7 @@ class GameInfo(QWidget, Ui_GameInfo):
             )
             return
         self.signals.install_game.emit(
-            InstallOptionsModel(app_name=self.game.app_name, repair=True, update=True)
+            InstallOptionsModel(app_name=self.game.app_name, repair_mode=True, update=True)
         )
 
     def verify(self):
@@ -182,7 +182,7 @@ class GameInfo(QWidget, Ui_GameInfo):
             )
             if ans == QMessageBox.Yes:
                 self.signals.install_game.emit(
-                    InstallOptionsModel(app_name=app_name, repair=True, update=True)
+                    InstallOptionsModel(app_name=app_name, repair_mode=True, update=True)
                 )
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
