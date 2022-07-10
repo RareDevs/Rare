@@ -31,14 +31,13 @@ def get_wine_prefixes() -> List[str]:
     return prefixes
 
 
-class CheckForUpdateSignals(QObject):
-    update_available = pyqtSignal(bool)
-
-
 class CheckForUpdateWorker(QRunnable):
+    class CheckForUpdateSignals(QObject):
+        update_available = pyqtSignal(bool)
+
     def __init__(self):
         super(CheckForUpdateWorker, self).__init__()
-        self.signals = CheckForUpdateSignals()
+        self.signals = self.CheckForUpdateSignals()
         self.setAutoDelete(True)
         self.core = LegendaryCoreSingleton()
 
@@ -53,9 +52,6 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
-
-        if platform.system() != "Windows":
-            self.setTitle(f"{self.title()} -  {self.tr(' - This won´t work with Wine. It might work in the Future')}")
 
         self.prefix_enabled = False
 
@@ -202,14 +198,6 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.enabled_cb.setChecked(enabled)
 
     def install_overlay(self, update=False):
-        if platform.system() != "Windows":
-            if QMessageBox.No == QMessageBox.question(
-                    self,
-                    self.tr("Warning"),
-                    self.tr("Epic overlay is currently not supported by wine, so it won't work. Install anyway? "),
-                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No):
-                return
-
         base_path = os.path.expanduser("~/legendary/.overlay")
         if update:
             if not self.overlay:
