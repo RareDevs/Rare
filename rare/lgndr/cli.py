@@ -40,7 +40,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
         self.logger.addHandler(self.handler)
 
     def resolve_aliases(self, name):
-        super(LegendaryCLI, self)._resolve_aliases(name)
+        return super(LegendaryCLI, self)._resolve_aliases(name)
 
     def prepare_install(self, args: LgndrInstallGameArgs) -> (DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult):
         old_choice = legendary.cli.get_boolean_choice
