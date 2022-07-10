@@ -251,6 +251,10 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                 logger.warning('No manifest could be loaded, the file may be missing. Downloading the latest manifest.')
                 game = self.core.get_game(args.app_name, platform=igame.platform)
                 manifest_data, _ = self.core.get_cdn_manifest(game, igame.platform)
+                # Rare: Save the manifest if we downloaded it because it was missing
+                self.core.lgd.save_manifest(game.app_name, manifest_data,
+                                            version=self.core.load_manifest(manifest_data).meta.build_version,
+                                            platform=igame.platform)
             else:
                 logger.critical(f'Manifest appears to be missing! To repair, run "legendary repair '
                                 f'{args.app_name} --repair-and-update", this will however redownload all files '
