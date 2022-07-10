@@ -116,6 +116,7 @@ class DLManager(legendary.downloader.mp.manager.DLManager):
                 rt_hours, runtime = int(runtime // 3600), runtime % 3600
                 rt_minutes, rt_seconds = int(runtime // 60), int(runtime % 60)
             else:
+                estimate = 0
                 hours = minutes = seconds = 0
                 rt_hours = rt_minutes = rt_seconds = 0
 
