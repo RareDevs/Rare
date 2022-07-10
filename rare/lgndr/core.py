@@ -5,7 +5,7 @@ from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game
 from legendary.models.manifest import ManifestMeta
 
-from .exception import LgndrException, LgndrLogHandler
+from .api_exception import LgndrException, LgndrLogHandler
 from .manager import DLManager
 
 

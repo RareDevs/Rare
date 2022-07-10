@@ -6,7 +6,7 @@ from typing import Tuple, Iterable, List
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox
 
-from rare.lgndr.exception import LgndrException
+from rare.lgndr.api_exception import LgndrException
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.games.import_sync.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.import_sync.egl_sync_list_group import (

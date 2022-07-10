@@ -143,20 +143,27 @@ class GameInfo(QWidget, Ui_GameInfo):
             return
         self.verify_widget.setCurrentIndex(1)
         verify_worker = VerifyWorker(self.game.app_name)
-        verify_worker.signals.status.connect(self.verify_statistics)
-        verify_worker.signals.summary.connect(self.finish_verify)
+        verify_worker.signals.status.connect(self.verify_status)
+        verify_worker.signals.result.connect(self.verify_result)
+        verify_worker.signals.error.connect(self.verify_error)
         self.verify_progress.setValue(0)
         self.verify_threads[self.game.app_name] = verify_worker
         self.verify_pool.start(verify_worker)
         self.move_button.setEnabled(False)
 
-    def verify_statistics(self, num, total, app_name):
+    @pyqtSlot(str, str)
+    def verify_error(self, app_name, message):
+        pass
+
+    @pyqtSlot(str, int, int, float, float)
+    def verify_status(self, app_name, num, total, percentage, speed):
         # checked, max, app_name
         if app_name == self.game.app_name:
             self.verify_progress.setValue(num * 100 // total)
 
-    def finish_verify(self, failed, missing, app_name):
-        if failed == missing == 0:
+    @pyqtSlot(str, bool, int, int)
+    def verify_result(self, app_name, success, failed, missing):
+        if success:
             QMessageBox.information(
                 self,
                 "Summary",

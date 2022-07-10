@@ -1,9 +1,7 @@
 import os
 import logging
 import time
-from argparse import Namespace
-from multiprocessing import Queue
-from typing import Optional, Callable, List
+from typing import Optional, Union
 
 import legendary.cli
 from PyQt5.QtWidgets import QLabel, QMessageBox
@@ -14,8 +12,9 @@ from legendary.utils.lfs import validate_files
 from legendary.utils.selective_dl import get_sdl_appname
 
 from .core import LegendaryCore
-from .exception import LgndrException, LgndrLogHandler
 from .manager import DLManager
+from .api_arguments import LgndrInstallGameArgs, LgndrImportGameArgs, LgndrVerifyGameArgs
+from .api_exception import LgndrException, LgndrLogHandler
 
 
 def get_boolean_choice(message):
@@ -40,49 +39,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
         self.handler = LgndrLogHandler()
         self.logger.addHandler(self.handler)
 
-    # def __init__(self, core: LegendaryCore):
-    #     self.core = core
-    #     self.logger = logging.getLogger('cli')
-    #     self.logging_queue = None
-    #     self.handler = LgndrLogHandler()
-    #     self.logger.addHandler(self.handler)
-
-    # app_name, repair, repair_mode, no_install, repair_and_update, file_prefix, file_exclude_prefix, platform
-    # sdl_prompt, status_q
-    def prepare_install(self, app_name: str, base_path: str = '',
-                        status_q: Queue = None, shared_memory: int = 0, max_workers: int = 0,
-                        force: bool = False, disable_patching: bool = False,
-                        game_folder: str = '', override_manifest: str = '',
-                        override_old_manifest: str = '', override_base_url: str = '',
-                        platform: str = 'Windows', file_prefix: list = None,
-                        file_exclude_prefix: list = None, install_tag: list = None,
-                        order_opt: bool = False, dl_timeout: int = 10,
-                        repair_mode: bool = False, repair_and_update: bool = False,
-                        disable_delta: bool = False, override_delta_manifest: str = '',
-                        egl_guid: str = '', preferred_cdn: str = None,
-                        no_install: bool = False, ignore_space: bool = False,
-                        disable_sdl: bool = False, reset_sdl: bool = False, skip_sdl: bool = False,
-                        sdl_prompt: Callable[[str, str], List[str]] = list,
-                        yes: bool = True, verify_callback: Callable[[int, int, float, float], None] = None,
-                        disable_https: bool = False) -> (DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult):
-        args = Namespace(
-            app_name=app_name, base_path=base_path,
-            status_q=status_q, shared_memory=shared_memory, max_workers=max_workers,
-            force=force, disable_patching=disable_patching,
-            game_folder=game_folder, override_manifest=override_manifest,
-            override_old_manifest=override_old_manifest, override_base_url=override_base_url,
-            platform=platform, file_prefix=file_prefix,
-            file_exclude_prefix=file_exclude_prefix, install_tag=install_tag,
-            order_opt=order_opt, dl_timeout=dl_timeout,
-            repair_mode=repair_mode, repair_and_update=repair_and_update,
-            disable_delta=disable_delta, override_delta_manifest=override_delta_manifest,
-            preferred_cdn=preferred_cdn,
-            no_install=no_install, ignore_space=ignore_space,
-            disable_sdl=disable_sdl, reset_sdl=reset_sdl, skip_sdl=skip_sdl,
-            sdl_prompt=sdl_prompt,
-            yes=yes, callback=verify_callback,
-            disable_https=disable_https
-        )
+    def prepare_install(self, args: LgndrInstallGameArgs) -> (DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult):
         old_choice = legendary.cli.get_boolean_choice
         legendary.cli.get_boolean_choice = get_boolean_choice
         try:
@@ -92,7 +49,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
         finally:
             legendary.cli.get_boolean_choice = old_choice
 
-    def install_game(self, args):
+    def install_game(self, args: LgndrInstallGameArgs) -> (DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult):
         args.app_name = self._resolve_aliases(args.app_name)
         if self.core.is_installed(args.app_name):
             igame = self.core.get_installed_game(args.app_name)
@@ -267,10 +224,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
     def uninstall_game(self, args):
         super(LegendaryCLI, self).uninstall_game(args)
 
-    def verify_game(self, args, print_command=True, repair_mode=False, repair_online=False):
-        if not hasattr(args, 'callback') or args.callback is None:
-            args.callback = print
-
+    def verify_game(self, args: Union[LgndrVerifyGameArgs, LgndrInstallGameArgs], print_command=True, repair_mode=False, repair_online=False):
         args.app_name = self._resolve_aliases(args.app_name)
         if not self.core.is_installed(args.app_name):
             logger.error(f'Game "{args.app_name}" is not installed')
@@ -339,8 +293,8 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                 speed = (processed - last_processed) / 1024 / 1024 / delta
                 last_processed = processed
 
-            if args.callback:
-                args.callback(num, total, percentage, speed)
+            if args.verify_stdout:
+                args.verify_stdout(num, total, percentage, speed)
 
             if result == VerifyResult.HASH_MATCH:
                 repair_file.append(f'{result_hash}:{path}')
@@ -356,8 +310,8 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                 logger.info(f'Other failure (see log), treating file as missing: "{path}"')
                 missing.append(path)
 
-        if args.callback:
-            args.callback(num, total, percentage, speed)
+        if args.verify_stdout:
+            args.verify_stdout(num, total, percentage, speed)
 
         # always write repair file, even if all match
         if repair_file:
@@ -368,12 +322,14 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
 
         if not missing and not failed:
             logger.info('Verification finished successfully.')
+            return True, 0, 0
         else:
-            logger.error(f'Verification failed, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
+            logger.warning(f'Verification failed, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
             if print_command:
                 logger.info(f'Run "legendary repair {args.app_name}" to repair your game installation.')
+            return False, len(failed), len(missing)
 
-    def import_game(self, args):
+    def import_game(self, args: LgndrImportGameArgs):
         old_choice = legendary.cli.get_boolean_choice
         legendary.cli.get_boolean_choice = get_boolean_choice
         try:

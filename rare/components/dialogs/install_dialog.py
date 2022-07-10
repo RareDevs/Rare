@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSl
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox
 
+from rare.lgndr.api_arguments import LgndrInstallGameArgs
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
 from legendary.models.downloading import ConditionCheckResult
@@ -311,7 +312,7 @@ class InstallInfoWorker(QRunnable):
                 cli = LegendaryCLISingleton()
                 download = InstallDownloadModel(
                     # *self.core.prepare_download(
-                    *cli.prepare_install(
+                    *cli.prepare_install(LgndrInstallGameArgs(
                         app_name=self.dl_item.options.app_name,
                         base_path=self.dl_item.options.base_path,
                         force=self.dl_item.options.force,
@@ -336,7 +337,7 @@ class InstallInfoWorker(QRunnable):
                         # disable_delta=,
                         # override_delta_manifest=,
                         # reset_sdl=,
-                        sdl_prompt=lambda app_name, title: self.dl_item.options.sdl_list,
+                        sdl_prompt=lambda app_name, title: self.dl_item.options.sdl_list,)
                     )
                 )
 

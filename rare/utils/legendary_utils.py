@@ -1,17 +1,14 @@
 import os
 import platform
-from argparse import Namespace
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QCoreApplication, QObject, QRunnable, QStandardPaths
 from legendary.core import LegendaryCore
-from legendary.models.game import VerifyResult
-from legendary.utils.lfs import validate_files
-from parse import parse
 
+from rare.lgndr.api_arguments import LgndrVerifyGameArgs
+from rare.lgndr.api_exception import LgndrException
 from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton
 from rare.utils import config_helper
-from rare.lgndr.exception import LgndrException
 
 logger = getLogger("Legendary Utils")
 
@@ -88,8 +85,9 @@ def update_manifest(app_name: str, core: LegendaryCore):
 
 class VerifyWorker(QRunnable):
     class Signals(QObject):
-        status = pyqtSignal(int, int, str)
-        summary = pyqtSignal(int, int, str)
+        status = pyqtSignal(str, int, int, float, float)
+        result = pyqtSignal(str, bool, int, int)
+        error = pyqtSignal(str, str)
 
     num: int = 0
     total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized
@@ -103,25 +101,22 @@ class VerifyWorker(QRunnable):
         self.app_name = app_name
 
     def status_callback(self, num: int, total: int, percentage: float, speed: float):
-        self.signals.status.emit(num, total, self.app_name)
+        self.signals.status.emit(self.app_name, num, total, percentage, speed)
 
     def run(self):
-        args = Namespace(app_name=self.app_name,
-                         callback=self.status_callback)
+        args = LgndrVerifyGameArgs(app_name=self.app_name,
+                                   verify_stdout=self.status_callback)
         try:
             # TODO: offer this as an alternative when manifest doesn't exist
             # TODO: requires the client to be online. To do it this way, we need to
             # TODO: somehow detect the error and offer a dialog in which case `verify_games` is
             # TODO: re-run with `repair_mode` and `repair_online`
-            self.cli.verify_game(args, print_command=False, repair_mode=True, repair_online=True)
-            # self.cli.verify_game(args, print_command=False)
-            self.signals.summary.emit(0, 0, self.app_name)
+            success, failed, missing = self.cli.verify_game(
+                args, print_command=False, repair_mode=True, repair_online=True)
+            # success, failed, missing = self.cli.verify_game(args, print_command=False)
+            self.signals.result.emit(self.app_name, success, failed, missing)
         except LgndrException as ret:
-            r = parse('Verification failed, {:d} file(s) corrupted, {:d} file(s) are missing.', ret.message)
-            if r is None:
-                raise ret
-            else:
-                self.signals.summary.emit(r[0], r[1], self.app_name)
+            self.signals.error.emit(self.app_name, ret.message)
 
 
 # FIXME: lk: ah ef me sideways, we can't even import this thing properly

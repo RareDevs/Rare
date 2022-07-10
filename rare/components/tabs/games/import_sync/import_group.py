@@ -11,7 +11,8 @@ from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThrea
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, qApp, QMessageBox
 
-from rare.lgndr.exception import LgndrException
+from lgndr.api_arguments import LgndrImportGameArgs
+from rare.lgndr.api_exception import LgndrException
 from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
 from rare.utils import legendary_utils
@@ -105,23 +106,12 @@ class ImportWorker(QRunnable):
     #     else:
     #         return err
 
-    # TODO: This should be moved into RareCore and wrap import_game
-    def import_game_args(self, app_path: str, app_name: str, platfrom: str = "Windows",
-                         disable_check: bool = False, skip_dlcs: bool = False, with_dlcs: bool = False, yes: bool = False):
-        args = Namespace(
-            app_path=app_path,
-            app_name=app_name,
-            platform=platfrom,
-            disable_check=disable_check,
-            skip_dlcs=skip_dlcs,
-            with_dlcs=with_dlcs,
-            yes=yes,
-        )
-        return args
-
     def __import_game(self, app_name: str, path: Path):
         cli = LegendaryCLISingleton()
-        args = self.import_game_args(str(path), app_name)
+        args = LgndrImportGameArgs(
+            app_path=str(path),
+            app_name=app_name,
+        )
         try:
             cli.import_game(args)
             return ""
