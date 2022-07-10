@@ -26,7 +26,7 @@ class LgndrImportGameArgs:
 @dataclass
 class LgndrVerifyGameArgs:
     app_name: str
-    # Rare's extra arguments
+    # Rare: Extra arguments
     verify_stdout: Callable[[int, int, float, float], None] = lambda a0, a1, a2, a3: print(
         f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r"
     )
@@ -64,7 +64,7 @@ class LgndrInstallGameArgs:
     skip_sdl: bool = False
     disable_https: bool = False
     yes: bool = True
-    # Rare's extra arguments
+    # Rare: Extra arguments
     sdl_prompt: Callable[[str, str], List[str]] = lambda a0, a1: []
     verify_stdout: Callable[[int, int, float, float], None] = lambda a0, a1, a2, a3: print(
         f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r"
