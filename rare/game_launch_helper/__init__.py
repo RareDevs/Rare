@@ -102,6 +102,8 @@ class GameProcessApp(RareApp):
                     self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
                 )
             )
+            self.console.term.connect(lambda: self.game_process.terminate())
+            self.console.kill.connect(lambda: self.game_process.kill())
 
         self.start_time = time.time()
 

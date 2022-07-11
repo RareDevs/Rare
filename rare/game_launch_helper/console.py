@@ -1,4 +1,6 @@
-from PyQt5.QtCore import QProcessEnvironment
+import platform
+
+from PyQt5.QtCore import QProcessEnvironment, pyqtSignal
 from PyQt5.QtGui import QTextCursor, QFont
 from PyQt5.QtWidgets import (
     QPlainTextEdit,
@@ -15,6 +17,8 @@ from rare.ui.components.extra.console_env import Ui_ConsoleEnv
 
 
 class Console(QDialog):
+    term = pyqtSignal()
+    kill = pyqtSignal()
     env: QProcessEnvironment
 
     def __init__(self, parent=None):
@@ -27,7 +31,6 @@ class Console(QDialog):
         layout.addWidget(self.console)
 
         button_layout = QHBoxLayout()
-        button_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
 
         self.env_button = QPushButton(self.tr("Show environment"))
         button_layout.addWidget(self.env_button)
@@ -40,6 +43,18 @@ class Console(QDialog):
         self.clear_button = QPushButton(self.tr("Clear console"))
         button_layout.addWidget(self.clear_button)
         self.clear_button.clicked.connect(self.console.clear)
+
+        button_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
+
+        self.terminate_button = QPushButton(self.tr("Terminate"))
+        self.terminate_button.setVisible(platform.system() == "Windows")
+        button_layout.addWidget(self.terminate_button)
+        self.terminate_button.clicked.connect(lambda: self.term.emit())
+
+        self.kill_button = QPushButton(self.tr("Kill"))
+        self.kill_button.setVisible(platform.system() == "Windows")
+        button_layout.addWidget(self.kill_button)
+        self.kill_button.clicked.connect(lambda: self.kill.emit())
 
         layout.addLayout(button_layout)
 
