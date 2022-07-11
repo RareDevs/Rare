@@ -8,6 +8,9 @@ from legendary.models.manifest import ManifestMeta
 from .api_exception import LgndrException, LgndrLogHandler
 from .manager import DLManager
 
+# lk: Monkeypatch the modified DLManager into LegendaryCore
+legendary.core.DLManager = DLManager
+
 
 class LegendaryCore(legendary.core.LegendaryCore):
 
@@ -28,30 +31,21 @@ class LegendaryCore(legendary.core.LegendaryCore):
                          disable_delta: bool = False, override_delta_manifest: str = '',
                          egl_guid: str = '', preferred_cdn: str = None,
                          disable_https: bool = False) -> (DLManager, AnalysisResult, ManifestMeta):
-        _dlmanager = legendary.core.DLManager
-        legendary.core.DLManager = DLManager
-        try:
-            dlm, analysis, igame = super(LegendaryCore, self).prepare_download(
-                game=game, base_game=base_game, base_path=base_path,
-                status_q=status_q, max_shm=max_shm, max_workers=max_workers,
-                force=force, disable_patching=disable_patching,
-                game_folder=game_folder, override_manifest=override_manifest,
-                override_old_manifest=override_old_manifest, override_base_url=override_base_url,
-                platform=platform, file_prefix_filter=file_prefix_filter,
-                file_exclude_filter=file_exclude_filter, file_install_tag=file_install_tag,
-                dl_optimizations=dl_optimizations, dl_timeout=dl_timeout,
-                repair=repair, repair_use_latest=repair_use_latest,
-                disable_delta=disable_delta, override_delta_manifest=override_delta_manifest,
-                egl_guid=egl_guid, preferred_cdn=preferred_cdn,
-                disable_https=disable_https
-            )
-            # lk: monkeypatch run_real (the method that emits the stats) into DLManager
-            # dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
-            return dlm, analysis, igame
-        except LgndrException as ret:
-            raise ret
-        finally:
-            legendary.core.DLManager = _dlmanager
+        dlm, analysis, igame = super(LegendaryCore, self).prepare_download(
+            game=game, base_game=base_game, base_path=base_path,
+            status_q=status_q, max_shm=max_shm, max_workers=max_workers,
+            force=force, disable_patching=disable_patching,
+            game_folder=game_folder, override_manifest=override_manifest,
+            override_old_manifest=override_old_manifest, override_base_url=override_base_url,
+            platform=platform, file_prefix_filter=file_prefix_filter,
+            file_exclude_filter=file_exclude_filter, file_install_tag=file_install_tag,
+            dl_optimizations=dl_optimizations, dl_timeout=dl_timeout,
+            repair=repair, repair_use_latest=repair_use_latest,
+            disable_delta=disable_delta, override_delta_manifest=override_delta_manifest,
+            egl_guid=egl_guid, preferred_cdn=preferred_cdn,
+            disable_https=disable_https
+        )
+        return dlm, analysis, igame
 
     def egl_import(self, app_name):
         try:
@@ -70,16 +64,7 @@ class LegendaryCore(legendary.core.LegendaryCore):
             pass
 
     def prepare_overlay_install(self, path=None, status_q: Queue = None):
-        _dlmanager = legendary.core.DLManager
-        legendary.core.DLManager = DLManager
-        try:
-            dlm, analysis_result, igame = super(LegendaryCore, self).prepare_overlay_install(path)
-            # lk: monkeypatch status_q (the queue for download stats)
-            # lk: and run_real (the method that emits the stats) into DLManager
-            dlm.status_queue = status_q
-            # dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
-            return dlm, analysis_result, igame
-        except LgndrException as ret:
-            raise ret
-        finally:
-            legendary.core.DLManager = _dlmanager
+        dlm, analysis_result, igame = super(LegendaryCore, self).prepare_overlay_install(path)
+        # lk: monkeypatch status_q (the queue for download stats)
+        dlm.status_queue = status_q
+        return dlm, analysis_result, igame
