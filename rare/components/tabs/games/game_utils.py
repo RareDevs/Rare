@@ -1,9 +1,9 @@
+import datetime
 import json
 import os
 import platform
 import shutil
 from dataclasses import dataclass
-import datetime
 from logging import getLogger
 
 from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqtSignal, QUrl, QTimer
@@ -12,13 +12,13 @@ from PyQt5.QtNetwork import QLocalSocket
 from PyQt5.QtWidgets import QMessageBox, QPushButton
 
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.extra.console import Console
 from rare.components.tabs.games import CloudSaveUtils
+from rare.game_launch_helper import message_models
+from rare.game_launch_helper.console import Console
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import legendary_utils
 from rare.utils import utils
 from rare.utils.meta import RareGameMeta
-from rare.game_launch_helper import message_models
 
 logger = getLogger("GameUtils")
 
