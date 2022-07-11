@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from multiprocessing import Queue
 from typing import Callable, List
 
+from .api_monkeys import get_boolean_choice
+
 
 @dataclass(kw_only=True)
 class LgndrCommonArgs:
@@ -21,6 +23,8 @@ class LgndrImportGameArgs:
     skip_dlcs: bool = False
     with_dlcs: bool = False
     yes: bool = False
+    # Rare: Extra arguments
+    get_boolean_choice: Callable[[str], bool] = get_boolean_choice
 
 
 @dataclass
@@ -65,6 +69,7 @@ class LgndrInstallGameArgs:
     disable_https: bool = False
     yes: bool = True
     # Rare: Extra arguments
+    get_boolean_choice: Callable[[str], bool] = get_boolean_choice
     sdl_prompt: Callable[[str, str], List[str]] = lambda a0, a1: []
     verify_stdout: Callable[[int, int, float, float], None] = lambda a0, a1, a2, a3: print(
         f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r"

@@ -9,7 +9,7 @@ from PyQt5.QtGui import QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox
 
 from rare.lgndr.api_arguments import LgndrInstallGameArgs
-from rare.lgndr.cli import LegendaryCLI
+from rare.lgndr.api_exception import LgndrException
 from rare.lgndr.core import LegendaryCore
 from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
@@ -312,7 +312,7 @@ class InstallInfoWorker(QRunnable):
                 cli = LegendaryCLISingleton()
                 download = InstallDownloadModel(
                     # *self.core.prepare_download(
-                    *cli.prepare_install(LgndrInstallGameArgs(
+                    *cli.install_game(LgndrInstallGameArgs(
                         app_name=self.dl_item.options.app_name,
                         base_path=self.dl_item.options.base_path,
                         force=self.dl_item.options.force,
@@ -347,6 +347,7 @@ class InstallInfoWorker(QRunnable):
 
                 dlm, analysis, igame = self.core.prepare_overlay_install(
                     path=self.dl_item.options.base_path,
+                    status_q=self.dl_item.status_q,
                 )
 
                 download = InstallDownloadModel(
@@ -363,6 +364,8 @@ class InstallInfoWorker(QRunnable):
                 self.signals.result.emit(download)
             else:
                 self.signals.failed.emit("\n".join(str(i) for i in download.res.failures))
+        except LgndrException as ret:
+            self.signals.failed.emit(ret.message)
         except Exception as e:
             self.signals.failed.emit(str(e))
         self.signals.finished.emit()

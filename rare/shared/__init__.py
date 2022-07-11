@@ -26,7 +26,7 @@ def LegendaryCLISingleton(init: bool = False) -> LegendaryCLI:
     if _legendary_cli_signleton is None and not init:
         raise RuntimeError("Uninitialized use of LegendaryCLISingleton")
     if _legendary_cli_signleton is None:
-        _legendary_cli_signleton = LegendaryCLI()
+        _legendary_cli_signleton = LegendaryCLI(override_config=None, api_timeout=10)
     return _legendary_cli_signleton
 
 

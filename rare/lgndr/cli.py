@@ -1,7 +1,8 @@
+import functools
 import os
 import logging
 import time
-from typing import Optional, Union
+from typing import Optional, Union, overload
 
 import legendary.cli
 from PyQt5.QtWidgets import QLabel, QMessageBox
@@ -15,25 +16,12 @@ from .core import LegendaryCore
 from .manager import DLManager
 from .api_arguments import LgndrInstallGameArgs, LgndrImportGameArgs, LgndrVerifyGameArgs
 from .api_exception import LgndrException, LgndrLogHandler
-
-
-def get_boolean_choice(message):
-    choice = QMessageBox.question(None, "Import DLCs?", message)
-    return True if choice == QMessageBox.StandardButton.Yes else False
-
-
-class UILogHandler(logging.Handler):
-    def __init__(self, dest: QLabel):
-        super(UILogHandler, self).__init__()
-        self.widget = dest
-
-    def emit(self, record: logging.LogRecord) -> None:
-        self.widget.setText(record.getMessage())
+from .api_monkeys import return_exit, get_boolean_choice
 
 
 class LegendaryCLI(legendary.cli.LegendaryCLI):
     def __init__(self, override_config=None, api_timeout=None):
-        self.core = LegendaryCore(override_config)
+        self.core = LegendaryCore(override_config, timeout=api_timeout)
         self.logger = logging.getLogger('cli')
         self.logging_queue = None
         self.handler = LgndrLogHandler()
@@ -42,16 +30,30 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
     def resolve_aliases(self, name):
         return super(LegendaryCLI, self)._resolve_aliases(name)
 
-    def prepare_install(self, args: LgndrInstallGameArgs) -> (DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult):
-        old_choice = legendary.cli.get_boolean_choice
-        legendary.cli.get_boolean_choice = get_boolean_choice
-        try:
-            return self.install_game(args)
-        except LgndrException as ret:
-            raise ret
-        finally:
-            legendary.cli.get_boolean_choice = old_choice
+    @staticmethod
+    def wrapped(func):
 
+        @functools.wraps(func)
+        def inner(self, args, *oargs, **kwargs):
+            old_exit = legendary.cli.exit
+            legendary.cli.exit = return_exit
+
+            old_choice = legendary.cli.get_boolean_choice
+            if hasattr(args, 'get_boolean_choice') and args.get_boolean_choice is not None:
+                legendary.cli.get_boolean_choice = args.get_boolean_choice
+
+            try:
+                return func(self, args, *oargs, **kwargs)
+            except LgndrException as ret:
+                print(f'Caught exception in wrapped function {ret.message}')
+                raise ret
+            finally:
+                legendary.cli.get_boolean_choice = old_choice
+                legendary.cli.exit = old_exit
+
+        return inner
+
+    @wrapped
     def install_game(self, args: LgndrInstallGameArgs) -> (DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult):
         args.app_name = self._resolve_aliases(args.app_name)
         if self.core.is_installed(args.app_name):
@@ -224,6 +226,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
     def _handle_postinstall(self, postinstall, igame, yes=False):
         super(LegendaryCLI, self)._handle_postinstall(postinstall, igame, yes)
 
+    @wrapped
     def uninstall_game(self, args):
         super(LegendaryCLI, self).uninstall_game(args)
 
@@ -336,12 +339,6 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                 logger.info(f'Run "legendary repair {args.app_name}" to repair your game installation.')
             return False, len(failed), len(missing)
 
+    @wrapped
     def import_game(self, args: LgndrImportGameArgs):
-        old_choice = legendary.cli.get_boolean_choice
-        legendary.cli.get_boolean_choice = get_boolean_choice
-        try:
-            super(LegendaryCLI, self).import_game(args)
-        except LgndrException as ret:
-            raise ret
-        finally:
-            legendary.cli.get_boolean_choice = old_choice
+        super(LegendaryCLI, self).import_game(args)
