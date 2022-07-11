@@ -1,24 +1,21 @@
+import datetime
 import json
 import os
-import platform
-import shutil
 from dataclasses import dataclass
-import datetime
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, QSettings, QProcess, QProcessEnvironment, pyqtSignal, QUrl, QTimer
+from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QTimer
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalSocket
 from PyQt5.QtWidgets import QMessageBox, QPushButton
 
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.extra.console import Console
 from rare.components.tabs.games import CloudSaveUtils
+from rare.game_launch_helper import message_models
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import legendary_utils
 from rare.utils import utils
 from rare.utils.meta import RareGameMeta
-from rare.game_launch_helper import message_models
 
 logger = getLogger("GameUtils")
 
@@ -146,7 +143,6 @@ class GameUtils(QObject):
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
 
-        self.console = Console()
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
         self.game_meta = RareGameMeta()
@@ -251,7 +247,6 @@ class GameUtils(QObject):
         self.finished.emit(app_name, "")
 
         logger.info(f"Game exited with exit code: {exit_code}")
-        self.console.log(f"Game exited with code: {exit_code}")
         self.signals.set_discord_rpc.emit("")
         is_origin = self.core.get_game(app_name).third_party_store == "Origin"
         if exit_code == 1 and is_origin:
@@ -277,8 +272,6 @@ class GameUtils(QObject):
                     self.core.get_game(app_name).app_title
                 ),
             )
-            # show console on error, even if disabled
-            self.console.show()
 
         game: RunningGameModel = self.running_games.get(app_name, None)
         if app_name in self.running_games.keys():
@@ -301,77 +294,6 @@ class GameUtils(QObject):
 
             # TODO move this to helper
             self.cloud_save_utils.game_finished(app_name, always_ask=False)
-
-    def _launch_pre_command(self, env: dict):
-        proc = QProcess()
-        environment = QProcessEnvironment().systemEnvironment()
-        for e in env:
-            environment.insert(e, env[e])
-        proc.setProcessEnvironment(environment)
-
-        proc.readyReadStandardOutput.connect(
-            lambda: self.console.log(
-                str(proc.readAllStandardOutput().data(), "utf-8", "ignore")
-            )
-        )
-        proc.readyReadStandardError.connect(
-            lambda: self.console.error(
-                str(proc.readAllStandardError().data(), "utf-8", "ignore")
-            )
-        )
-        self.console.set_env(environment)
-        return proc
-
-    def _get_process(self, app_name, env):
-        process = GameProcess(app_name)
-
-        environment = QProcessEnvironment().systemEnvironment()
-        for e in env:
-            environment.insert(e, env[e])
-        process.setProcessEnvironment(environment)
-
-        process.readyReadStandardOutput.connect(
-            lambda: self.console.log(
-                str(process.readAllStandardOutput().data(), "utf-8", "ignore")
-            )
-        )
-        process.readyReadStandardError.connect(
-            lambda: self.console.error(
-                str(process.readAllStandardError().data(), "utf-8", "ignore")
-            )
-        )
-        process.finished.connect(lambda x: self.game_finished(x, app_name))
-        process.stateChanged.connect(
-            lambda state: self.console.show()
-            if (state == QProcess.Running
-                and QSettings().value("show_console", False, bool))
-            else None
-        )
-        self.console.set_env(environment)
-        return process
-
-    def _launch_origin(self, app_name, process: QProcess):
-        origin_uri = self.core.get_origin_uri(app_name, self.args.offline)
-        logger.info("Launch Origin Game: ")
-        if platform.system() == "Windows":
-            QDesktopServices.openUrl(QUrl(origin_uri))
-            self.finished.emit(app_name, "")
-            return
-
-        command = self.core.get_app_launch_command(app_name)
-
-        if not os.path.exists(command[0]) and shutil.which(command[0]) is None:
-            # wine binary does not exist
-            QMessageBox.warning(
-                None, "Warning",
-                self.tr(
-                    "'{}' does not exist. Please change it in Settings"
-                ).format(command[0]),
-            )
-            process.deleteLater()
-            return
-        command.append(origin_uri)
-        process.start(command[0], command[1:])
 
     def sync_finished(self, app_name):
         if app_name in self.launch_queue.keys():

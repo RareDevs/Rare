@@ -11,9 +11,9 @@ from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThread
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 
+from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 from .message_models import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
-from ..components.extra.console import Console
 from ..shared import LegendaryCoreSingleton
 from ..widgets.rare_app import RareApp
 
@@ -94,9 +94,16 @@ class GameProcessApp(RareApp):
         if self.console:
             self.game_process.readyReadStandardOutput.connect(
                 lambda: self.console.log(
-                    str(self.game_process.readAllStandardOutput().data(), "utf-8", "ignore")
+                   self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
                 )
             )
+            self.game_process.readyReadStandardError.connect(
+                lambda: self.console.log(
+                    self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
+                )
+            )
+            self.console.term.connect(lambda: self.game_process.terminate())
+            self.console.kill.connect(lambda: self.game_process.kill())
 
         self.start_time = time.time()
 
