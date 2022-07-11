@@ -4,7 +4,7 @@ from typing import Callable, List
 
 from .api_monkeys import get_boolean_choice
 
-
+"""
 @dataclass(kw_only=True)
 class LgndrCommonArgs:
     # keep this here for future reference
@@ -12,6 +12,7 @@ class LgndrCommonArgs:
     app_name: str
     platform: str = "Windows"
     yes: bool = False
+"""
 
 
 @dataclass

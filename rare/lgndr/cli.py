@@ -2,10 +2,9 @@ import functools
 import os
 import logging
 import time
-from typing import Optional, Union, overload
+from typing import Optional, Union
 
 import legendary.cli
-from PyQt5.QtWidgets import QLabel, QMessageBox
 from legendary.cli import logger
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame, VerifyResult
@@ -16,7 +15,7 @@ from .core import LegendaryCore
 from .manager import DLManager
 from .api_arguments import LgndrInstallGameArgs, LgndrImportGameArgs, LgndrVerifyGameArgs
 from .api_exception import LgndrException, LgndrLogHandler
-from .api_monkeys import return_exit, get_boolean_choice
+from .api_monkeys import return_exit as exit, get_boolean_choice
 
 
 class LegendaryCLI(legendary.cli.LegendaryCLI):
@@ -36,7 +35,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
         @functools.wraps(func)
         def inner(self, args, *oargs, **kwargs):
             old_exit = legendary.cli.exit
-            legendary.cli.exit = return_exit
+            legendary.cli.exit = exit
 
             old_choice = legendary.cli.get_boolean_choice
             if hasattr(args, 'get_boolean_choice') and args.get_boolean_choice is not None:
@@ -64,6 +63,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                 args.repair_mode = True
 
         repair_file = None
+        # Rare: The 'args.no_install' flags is set externally from the InstallDialog
         if args.repair_mode:
             args.repair_mode = True
             args.no_install = args.repair_and_update is False
@@ -230,6 +230,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
     def uninstall_game(self, args):
         super(LegendaryCLI, self).uninstall_game(args)
 
+    @wrapped
     def verify_game(self, args: Union[LgndrVerifyGameArgs, LgndrInstallGameArgs], print_command=True, repair_mode=False, repair_online=False):
         args.app_name = self._resolve_aliases(args.app_name)
         if not self.core.is_installed(args.app_name):

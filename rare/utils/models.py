@@ -17,6 +17,7 @@ class InstallOptionsModel:
     shared_memory: int = 1024
     max_workers: int = os.cpu_count() * 2
     repair_mode: bool = False
+    repair_and_update: bool = False
     no_install: bool = False
     ignore_space: bool = False
     force: bool = False

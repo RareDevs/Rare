@@ -332,7 +332,7 @@ class InstallInfoWorker(QRunnable):
                         order_opt=self.dl_item.options.order_opt,
                         # dl_timeout=,
                         repair_mode=self.dl_item.options.repair_mode,
-                        # repair_and_update=True,
+                        repair_and_update=self.dl_item.options.repair_and_update,
                         ignore_space=self.dl_item.options.ignore_space,
                         # disable_delta=,
                         # override_delta_manifest=,
