@@ -44,7 +44,6 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             try:
                 return func(self, args, *oargs, **kwargs)
             except LgndrException as ret:
-                print(f'Caught exception in wrapped function {ret.message}')
                 raise ret
             finally:
                 legendary.cli.get_boolean_choice = old_choice
@@ -111,7 +110,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             if not os.path.exists(repair_file):
                 logger.info('Game has not been verified yet.')
                 if not args.yes:
-                    if not get_boolean_choice(f'Verify "{game.app_name}" now ("no" will abort repair)?'):
+                    if not args.get_boolean_choice(f'Verify "{game.app_name}" now ("no" will abort repair)?'):
                         return
                 try:
                     self.verify_game(args, print_command=False, repair_mode=True, repair_online=args.repair_and_update)
@@ -223,7 +222,8 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 
-    def _handle_postinstall(self, postinstall, igame, yes=False):
+    @wrapped
+    def handle_postinstall(self, postinstall, igame, yes=False):
         super(LegendaryCLI, self)._handle_postinstall(postinstall, igame, yes)
 
     @wrapped

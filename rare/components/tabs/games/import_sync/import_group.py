@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThrea
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, qApp, QMessageBox
 
-from lgndr.api_arguments import LgndrImportGameArgs
+from rare.lgndr.api_arguments import LgndrImportGameArgs
 from rare.lgndr.api_exception import LgndrException
 from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
@@ -105,11 +105,16 @@ class ImportWorker(QRunnable):
     #     else:
     #         return err
 
+    def get_boolean_choice(self, a0):
+        choice = QMessageBox.question(None, "Import DLCs?", a0)
+        return True if choice == QMessageBox.StandardButton.Yes else False
+
     def __import_game(self, app_name: str, path: Path):
         cli = LegendaryCLISingleton()
         args = LgndrImportGameArgs(
             app_path=str(path),
             app_name=app_name,
+            get_boolean_choice=self.get_boolean_choice
         )
         try:
             cli.import_game(args)
