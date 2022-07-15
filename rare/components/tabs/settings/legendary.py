@@ -174,10 +174,10 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         if not keep_manifests:
             logger.debug("Removing manifests...")
             installed = [
-                (ig.app_name, ig.version) for ig in self.core.get_installed_list()
+                (ig.app_name, ig.version, ig.platform) for ig in self.core.get_installed_list()
             ]
             installed.extend(
-                (ig.app_name, ig.version) for ig in self.core.get_installed_dlc_list()
+                (ig.app_name, ig.version, ig.platform) for ig in self.core.get_installed_dlc_list()
             )
             self.core.lgd.clean_manifests(installed)
 
