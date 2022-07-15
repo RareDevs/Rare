@@ -164,10 +164,10 @@ class GameUtils(QObject):
             else:
                 return False
 
-        infos = UninstallDialog(game).get_information()
-        if infos == 0:
+        proceed, keep_files = UninstallDialog(game).get_options()
+        if not proceed:
             return False
-        legendary_utils.uninstall(game.app_name, self.core, infos)
+        legendary_utils.uninstall_game(self.core, game.app_name, keep_files)
         self.signals.game_uninstalled.emit(app_name)
         return True
 

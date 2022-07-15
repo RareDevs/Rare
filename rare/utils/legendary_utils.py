@@ -5,7 +5,7 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QCoreApplication, QObject, QRunnable, QStandardPaths
 from legendary.core import LegendaryCore
 
-from rare.lgndr.api_arguments import LgndrVerifyGameArgs
+from rare.lgndr.api_arguments import LgndrVerifyGameArgs, LgndrUninstallGameArgs
 from rare.lgndr.api_exception import LgndrException
 from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton
 from rare.utils import config_helper
@@ -13,9 +13,7 @@ from rare.utils import config_helper
 logger = getLogger("Legendary Utils")
 
 
-def uninstall(app_name: str, core: LegendaryCore, options=None):
-    if not options:
-        options = {"keep_files": False}
+def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False):
     igame = core.get_installed_game(app_name)
 
     # remove shortcuts link
@@ -40,30 +38,21 @@ def uninstall(app_name: str, core: LegendaryCore, options=None):
         if os.path.exists(start_menu_shortcut):
             os.remove(start_menu_shortcut)
 
-    try:
-        # Remove DLC first so directory is empty when game uninstall runs
-        dlcs = core.get_dlc_for_game(app_name)
-        for dlc in dlcs:
-            if (idlc := core.get_installed_game(dlc.app_name)) is not None:
-                logger.info(f'Uninstalling DLC "{dlc.app_name}"...')
-                core.uninstall_game(idlc, delete_files=not options["keep_files"])
-
-        logger.info(f'Removing "{igame.title}" from "{igame.install_path}"...')
-        core.uninstall_game(
-            igame, delete_files=not options["keep_files"], delete_root_directory=True
+    result = LegendaryCLISingleton().uninstall_game(
+        LgndrUninstallGameArgs(
+            app_name=app_name,
+            keep_files=keep_files,
+            yes=True,
         )
-        logger.info("Game has been uninstalled.")
-
-    except Exception as e:
-        logger.warning(
-            f"Removing game failed: {e!r}, please remove {igame.install_path} manually."
-        )
-    if not options["keep_files"]:
+    )
+    if not keep_files:
         logger.info("Removing sections in config file")
         config_helper.remove_section(app_name)
         config_helper.remove_section(f"{app_name}.env")
 
         config_helper.save_config()
+
+    return result
 
 
 def update_manifest(app_name: str, core: LegendaryCore):

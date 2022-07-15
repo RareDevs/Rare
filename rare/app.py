@@ -151,7 +151,9 @@ class App(RareApp):
     def start_app(self):
         for igame in self.core.get_installed_list():
             if not os.path.exists(igame.install_path):
-                legendary_utils.uninstall(igame.app_name, self.core)
+                # lk; since install_path is lost anyway, set keep_files to True
+                # lk: to avoid spamming the log with "file not found" errors
+                legendary_utils.uninstall_game(self.core, igame.app_name, keep_files=True)
                 logger.info(f"Uninstalled {igame.title}, because no game files exist")
                 continue
             if not os.path.exists(os.path.join(igame.install_path, igame.executable.replace("\\", "/").lstrip("/"))):
@@ -228,6 +230,7 @@ class App(RareApp):
         self.mainwindow.hide()
         threadpool = QThreadPool.globalInstance()
         threadpool.waitForDone()
+        self.core.exit()
         if self.mainwindow is not None:
             self.mainwindow.close()
         if self.tray_icon is not None:

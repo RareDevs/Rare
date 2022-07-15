@@ -13,24 +13,17 @@ from legendary.utils.selective_dl import get_sdl_appname
 
 from .core import LegendaryCore
 from .manager import DLManager
-from .api_arguments import LgndrInstallGameArgs, LgndrImportGameArgs, LgndrVerifyGameArgs
-from .api_exception import LgndrException, LgndrLogHandler
+from .api_arguments import LgndrInstallGameArgs, LgndrImportGameArgs, LgndrVerifyGameArgs, LgndrUninstallGameArgs
+from .api_exception import LgndrException, LgndrCLILogHandler
 from .api_monkeys import return_exit as exit, get_boolean_choice
+
+legendary.cli.exit = exit
 
 
 class LegendaryCLI(legendary.cli.LegendaryCLI):
-    def __init__(self, override_config=None, api_timeout=None):
-        self.core = LegendaryCore(override_config, timeout=api_timeout)
-        self.logger = logging.getLogger('cli')
-        self.logging_queue = None
-        self.handler = LgndrLogHandler()
-        self.logger.addHandler(self.handler)
-
-    def resolve_aliases(self, name):
-        return super(LegendaryCLI, self)._resolve_aliases(name)
 
     @staticmethod
-    def wrapped(func):
+    def apply_wrap(func):
 
         @functools.wraps(func)
         def inner(self, args, *oargs, **kwargs):
@@ -39,6 +32,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
 
             old_choice = legendary.cli.get_boolean_choice
             if hasattr(args, 'get_boolean_choice') and args.get_boolean_choice is not None:
+                # g['get_boolean_choice'] = args.get_boolean_choice
                 legendary.cli.get_boolean_choice = args.get_boolean_choice
 
             try:
@@ -46,12 +40,22 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             except LgndrException as ret:
                 raise ret
             finally:
+                # g['get_boolean_choice'] = old_choice
                 legendary.cli.get_boolean_choice = old_choice
                 legendary.cli.exit = old_exit
 
         return inner
 
-    @wrapped
+    def __init__(self, override_config=None, api_timeout=None):
+        self.core = LegendaryCore(override_config, timeout=api_timeout)
+        self.logger = logging.getLogger('cli')
+        self.logging_queue = None
+        self.handler = LgndrCLILogHandler()
+        self.logger.addHandler(self.handler)
+
+    def resolve_aliases(self, name):
+        return super(LegendaryCLI, self)._resolve_aliases(name)
+
     def install_game(self, args: LgndrInstallGameArgs) -> (DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult):
         args.app_name = self._resolve_aliases(args.app_name)
         if self.core.is_installed(args.app_name):
@@ -222,15 +226,39 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 
-    @wrapped
+    @apply_wrap
     def handle_postinstall(self, postinstall, igame, yes=False):
         super(LegendaryCLI, self)._handle_postinstall(postinstall, igame, yes)
 
-    @wrapped
-    def uninstall_game(self, args):
-        super(LegendaryCLI, self).uninstall_game(args)
+    def uninstall_game(self, args: LgndrUninstallGameArgs):
+        args.app_name = self._resolve_aliases(args.app_name)
+        igame = self.core.get_installed_game(args.app_name)
+        if not igame:
+            logger.error(f'Game {args.app_name} not installed, cannot uninstall!')
+            exit(0)
 
-    @wrapped
+        if not args.yes:
+            if not get_boolean_choice(f'Do you wish to uninstall "{igame.title}"?', default=False):
+                return False
+
+        try:
+            if not igame.is_dlc:
+                # Remove DLC first so directory is empty when game uninstall runs
+                dlcs = self.core.get_dlc_for_game(igame.app_name)
+                for dlc in dlcs:
+                    if (idlc := self.core.get_installed_game(dlc.app_name)) is not None:
+                        logger.info(f'Uninstalling DLC "{dlc.app_name}"...')
+                        self.core.uninstall_game(idlc, delete_files=not args.keep_files)
+
+            logger.info(f'Removing "{igame.title}" from "{igame.install_path}"...')
+            self.core.uninstall_game(igame, delete_files=not args.keep_files,
+                                     delete_root_directory=not igame.is_dlc)
+            logger.info('Game has been uninstalled.')
+            return True
+        except Exception as e:
+            logger.warning(f'Removing game failed: {e!r}, please remove {igame.install_path} manually.')
+            return False
+
     def verify_game(self, args: Union[LgndrVerifyGameArgs, LgndrInstallGameArgs], print_command=True, repair_mode=False, repair_online=False):
         args.app_name = self._resolve_aliases(args.app_name)
         if not self.core.is_installed(args.app_name):
@@ -340,6 +368,6 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                 logger.info(f'Run "legendary repair {args.app_name}" to repair your game installation.')
             return False, len(failed), len(missing)
 
-    @wrapped
+    @apply_wrap
     def import_game(self, args: LgndrImportGameArgs):
         super(LegendaryCLI, self).import_game(args)

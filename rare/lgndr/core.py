@@ -2,10 +2,10 @@ from multiprocessing import Queue
 
 import legendary.core
 from legendary.models.downloading import AnalysisResult
-from legendary.models.game import Game
+from legendary.models.game import Game, InstalledGame
 from legendary.models.manifest import ManifestMeta
 
-from .api_exception import LgndrException, LgndrLogHandler
+from .api_exception import LgndrException, LgndrCoreLogHandler
 from .manager import DLManager
 
 # lk: Monkeypatch the modified DLManager into LegendaryCore
@@ -16,7 +16,7 @@ class LegendaryCore(legendary.core.LegendaryCore):
 
     def __init__(self, override_config=None, timeout=10.0):
         super(LegendaryCore, self).__init__(override_config=override_config, timeout=timeout)
-        self.handler = LgndrLogHandler()
+        self.handler = LgndrCoreLogHandler()
         self.log.addHandler(self.handler)
 
     def prepare_download(self, game: Game, base_game: Game = None, base_path: str = '',
@@ -31,7 +31,7 @@ class LegendaryCore(legendary.core.LegendaryCore):
                          disable_delta: bool = False, override_delta_manifest: str = '',
                          egl_guid: str = '', preferred_cdn: str = None,
                          disable_https: bool = False) -> (DLManager, AnalysisResult, ManifestMeta):
-        dlm, analysis, igame = super(LegendaryCore, self).prepare_download(
+        return super(LegendaryCore, self).prepare_download(
             game=game, base_game=base_game, base_path=base_path,
             status_q=status_q, max_shm=max_shm, max_workers=max_workers,
             force=force, disable_patching=disable_patching,
@@ -45,7 +45,14 @@ class LegendaryCore(legendary.core.LegendaryCore):
             egl_guid=egl_guid, preferred_cdn=preferred_cdn,
             disable_https=disable_https
         )
-        return dlm, analysis, igame
+
+    def uninstall_game(self, installed_game: InstalledGame, delete_files=True, delete_root_directory=False):
+        try:
+            super(LegendaryCore, self).uninstall_game(installed_game, delete_files, delete_root_directory)
+        except Exception as e:
+            raise e
+        finally:
+            pass
 
     def egl_import(self, app_name):
         try:
@@ -68,3 +75,4 @@ class LegendaryCore(legendary.core.LegendaryCore):
         # lk: monkeypatch status_q (the queue for download stats)
         dlm.status_queue = status_q
         return dlm, analysis_result, igame
+
