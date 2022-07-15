@@ -25,7 +25,16 @@ class LgndrImportGameArgs:
     with_dlcs: bool = False
     yes: bool = False
     # Rare: Extra arguments
-    get_boolean_choice: Callable[[str], bool] = lambda a0: False
+    get_boolean_choice: Callable[[str, bool], bool] = lambda prompt, default=True: default
+
+
+@dataclass
+class LgndrUninstallGameArgs:
+    app_name: str
+    keep_files: bool = False
+    yes: bool = False
+    # Rare: Extra arguments
+    get_boolean_choice: Callable[[str, bool], bool] = lambda prompt, default=True: default
 
 
 @dataclass
@@ -70,8 +79,8 @@ class LgndrInstallGameArgs:
     disable_https: bool = False
     yes: bool = True
     # Rare: Extra arguments
-    get_boolean_choice: Callable[[str], bool] = lambda a0: False
-    sdl_prompt: Callable[[str, str], List[str]] = lambda a0, a1: []
+    get_boolean_choice: Callable[[str, bool], bool] = lambda prompt, default=True: default
+    sdl_prompt: Callable[[str, str], List[str]] = lambda sdl_data, title: [""]
     verify_stdout: Callable[[int, int, float, float], None] = lambda a0, a1, a2, a3: print(
         f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r"
     )

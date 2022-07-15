@@ -103,7 +103,7 @@ class ImportWorker(QRunnable):
         args = LgndrImportGameArgs(
             app_path=str(path),
             app_name=app_name,
-            get_boolean_choice=lambda a0: self.import_dlcs
+            get_boolean_choice=lambda prompt, default=True: self.import_dlcs
         )
         try:
             cli.import_game(args)
