@@ -3,8 +3,11 @@ import logging
 from PyQt5.QtWidgets import QMessageBox, QLabel
 
 
-def get_boolean_choice(a0):
-    choice = QMessageBox.question(None, "Import DLCs?", a0)
+def get_boolean_choice(prompt, default=True):
+    choice = QMessageBox.question(
+        None, "Import DLCs?", prompt,
+        defaultButton=QMessageBox.Yes if default else QMessageBox.No
+    )
     return True if choice == QMessageBox.StandardButton.Yes else False
 
 
