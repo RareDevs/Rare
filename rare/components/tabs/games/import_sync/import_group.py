@@ -87,10 +87,10 @@ class ImportWorker(QRunnable):
         if app_name or (app_name := find_app_name(str(path), self.core)):
             result.app_name = app_name
             app_title = self.core.get_game(app_name).app_title
-            err = self.__import_game(path, app_name, app_title)
-            if err:
+            success, message = self.__import_game(path, app_name, app_title)
+            if not success:
                 result.result = ImportResult.FAILED
-                result.message = f"{app_title} - {err}"
+                result.message = f"{app_title} - {message}"
             else:
                 result.result = ImportResult.SUCCESS
                 result.message = self.tr("{} - Imported successfully").format(app_title)
@@ -105,11 +105,7 @@ class ImportWorker(QRunnable):
             app_name=app_name,
             get_boolean_choice=lambda prompt, default=True: self.import_dlcs
         )
-        try:
-            cli.import_game(args)
-            return ""
-        except LgndrException as ret:
-            return ret.message
+        return cli.import_game(args)
 
 
 class AppNameCompleter(QCompleter):

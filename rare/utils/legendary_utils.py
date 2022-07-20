@@ -95,28 +95,14 @@ class VerifyWorker(QRunnable):
     def run(self):
         args = LgndrVerifyGameArgs(app_name=self.app_name,
                                    verify_stdout=self.status_callback)
-        try:
-            # TODO: offer this as an alternative when manifest doesn't exist
-            # TODO: requires the client to be online. To do it this way, we need to
-            # TODO: somehow detect the error and offer a dialog in which case `verify_games` is
-            # TODO: re-run with `repair_mode` and `repair_online`
-            success, failed, missing = self.cli.verify_game(
-                args, print_command=False, repair_mode=True, repair_online=True)
-            # success, failed, missing = self.cli.verify_game(args, print_command=False)
-            self.signals.result.emit(self.app_name, success, failed, missing)
-        except LgndrException as ret:
-            self.signals.error.emit(self.app_name, ret.message)
-
-
-# FIXME: lk: ah ef me sideways, we can't even import this thing properly
-# FIXME: lk: so copy it here
-def resolve_aliases(core: LegendaryCore, name):
-    # make sure aliases exist if not yet created
-    core.update_aliases(force=False)
-    name = name.strip()
-    # resolve alias (if any) to real app name
-    return core.lgd.config.get(
-        section='Legendary.aliases', option=name,
-        fallback=core.lgd.aliases.get(name.lower(), name)
-    )
-
+        # TODO: offer this as an alternative when manifest doesn't exist
+        # TODO: requires the client to be online. To do it this way, we need to
+        # TODO: somehow detect the error and offer a dialog in which case `verify_games` is
+        # TODO: re-run with `repair_mode` and `repair_online`
+        result, failed, missing = self.cli.verify_game(
+            args, print_command=False, repair_mode=True, repair_online=True)
+        # success, failed, missing = self.cli.verify_game(args, print_command=False)
+        if result:
+            self.signals.result.emit(self.app_name, not failed and not missing, failed, missing)
+        else:
+            self.signals.error.emit(self.app_name, result.message)

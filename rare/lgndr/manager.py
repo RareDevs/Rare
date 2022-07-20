@@ -6,14 +6,14 @@ from multiprocessing.shared_memory import SharedMemory
 from sys import exit
 from threading import Condition, Thread
 
-import legendary.downloader.mp.manager
+from legendary.downloader.mp.manager import DLManager as DLManagerReal
 from legendary.downloader.mp.workers import DLWorker, FileWorker
 from legendary.models.downloading import ChunkTask, SharedMemorySegment, TerminateWorkerTask
 
 from .downloading import UIUpdate
 
 
-class DLManager(legendary.downloader.mp.manager.DLManager):
+class DLManager(DLManagerReal):
     # fmt: off
     # @staticmethod
     def run_real(self):

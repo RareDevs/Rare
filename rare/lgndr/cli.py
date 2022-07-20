@@ -4,8 +4,7 @@ import logging
 import time
 from typing import Optional, Union
 
-import legendary.cli
-from legendary.cli import logger
+from legendary.cli import LegendaryCLI as LegendaryCLIReal
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame, VerifyResult
 from legendary.utils.lfs import validate_files
@@ -14,14 +13,12 @@ from legendary.utils.selective_dl import get_sdl_appname
 from .core import LegendaryCore
 from .manager import DLManager
 from .api_arguments import LgndrInstallGameArgs, LgndrImportGameArgs, LgndrVerifyGameArgs, LgndrUninstallGameArgs
-from .api_exception import LgndrException, LgndrCLILogHandler
-from .api_monkeys import return_exit as exit, get_boolean_choice
-
-legendary.cli.exit = exit
+from .api_monkeys import return_exit, get_boolean_choice, LgndrReturnLogger
 
 
-class LegendaryCLI(legendary.cli.LegendaryCLI):
+class LegendaryCLI(LegendaryCLIReal):
 
+    """
     @staticmethod
     def apply_wrap(func):
 
@@ -30,33 +27,35 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             old_exit = legendary.cli.exit
             legendary.cli.exit = exit
 
-            old_choice = legendary.cli.get_boolean_choice
-            if hasattr(args, 'get_boolean_choice') and args.get_boolean_choice is not None:
-                # g['get_boolean_choice'] = args.get_boolean_choice
-                legendary.cli.get_boolean_choice = args.get_boolean_choice
+            # old_choice = legendary.cli.get_boolean_choice
+            # if hasattr(args, 'get_boolean_choice') and args.get_boolean_choice is not None:
+            #     legendary.cli.get_boolean_choice = args.get_boolean_choice
 
             try:
                 return func(self, args, *oargs, **kwargs)
             except LgndrException as ret:
                 raise ret
             finally:
-                # g['get_boolean_choice'] = old_choice
-                legendary.cli.get_boolean_choice = old_choice
+                # legendary.cli.get_boolean_choice = old_choice
                 legendary.cli.exit = old_exit
 
         return inner
+    """
 
     def __init__(self, override_config=None, api_timeout=None):
         self.core = LegendaryCore(override_config, timeout=api_timeout)
         self.logger = logging.getLogger('cli')
         self.logging_queue = None
-        self.handler = LgndrCLILogHandler()
-        self.logger.addHandler(self.handler)
+        # self.handler = LgndrCLILogHandler()
+        # self.logger.addHandler(self.handler)
 
     def resolve_aliases(self, name):
         return super(LegendaryCLI, self)._resolve_aliases(name)
 
     def install_game(self, args: LgndrInstallGameArgs) -> (DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult):
+        # Override logger for the local context to use message as part of the return value
+        logger = LgndrReturnLogger(self.logger)
+
         args.app_name = self._resolve_aliases(args.app_name)
         if self.core.is_installed(args.app_name):
             igame = self.core.get_installed_game(args.app_name)
@@ -80,6 +79,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
         if not game:
             logger.error(f'Could not find "{args.app_name}" in list of available games, '
                          f'did you type the name correctly?')
+            return logger
 
         if args.platform not in game.asset_infos:
             if not args.no_install:
@@ -90,7 +90,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                     logger.error(f'No app asset found for platform "{args.platform}", run '
                                  f'"legendary info --platform {args.platform}" and make '
                                  f'sure the app is available for the specified platform.')
-                    return
+                    return logger
             else:
                 logger.warning(f'No asset found for platform "{args.platform}", '
                                f'trying anyway since --no-install is set.')
@@ -115,14 +115,14 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                 logger.info('Game has not been verified yet.')
                 if not args.yes:
                     if not args.get_boolean_choice(f'Verify "{game.app_name}" now ("no" will abort repair)?'):
-                        return
+                        return logger
                 try:
                     self.verify_game(args, print_command=False, repair_mode=True, repair_online=args.repair_and_update)
                 except ValueError:
                     logger.error('To repair a game with a missing manifest you must run the command with '
                                  '"--repair-and-update". However this will redownload any file that does '
                                  'not match the current hash in its entirety.')
-                    return
+                    return logger
             else:
                 logger.info(f'Using existing repair file: {repair_file}')
 
@@ -210,6 +210,9 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
         return dlm, analysis, igame, game, args.repair_mode, repair_file, res
 
     def clean_post_install(self, game: Game, igame: InstalledGame, repair: bool = False, repair_file: str = ''):
+        # Override logger for the local context to use message as part of the return value
+        logger = LgndrReturnLogger(self.logger)
+
         old_igame = self.core.get_installed_game(game.app_name)
         if old_igame and repair and os.path.exists(repair_file):
             if old_igame.needs_verification:
@@ -226,20 +229,24 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 
-    @apply_wrap
+        return logger
+
     def handle_postinstall(self, postinstall, igame, yes=False):
         super(LegendaryCLI, self)._handle_postinstall(postinstall, igame, yes)
 
     def uninstall_game(self, args: LgndrUninstallGameArgs):
+        # Override logger for the local context to use message as part of the return value
+        logger = LgndrReturnLogger(self.logger, level=logging.WARNING)
+
         args.app_name = self._resolve_aliases(args.app_name)
         igame = self.core.get_installed_game(args.app_name)
         if not igame:
             logger.error(f'Game {args.app_name} not installed, cannot uninstall!')
-            exit(0)
+            return logger
 
         if not args.yes:
-            if not get_boolean_choice(f'Do you wish to uninstall "{igame.title}"?', default=False):
-                return False
+            if not args.get_boolean_choice(f'Do you wish to uninstall "{igame.title}"?', default=False):
+                return logger
 
         try:
             if not igame.is_dlc:
@@ -254,16 +261,19 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             self.core.uninstall_game(igame, delete_files=not args.keep_files,
                                      delete_root_directory=not igame.is_dlc)
             logger.info('Game has been uninstalled.')
-            return True
+            return logger
         except Exception as e:
             logger.warning(f'Removing game failed: {e!r}, please remove {igame.install_path} manually.')
-            return False
+            return logger
 
     def verify_game(self, args: Union[LgndrVerifyGameArgs, LgndrInstallGameArgs], print_command=True, repair_mode=False, repair_online=False):
+        # Override logger for the local context to use message as part of the return value
+        logger = LgndrReturnLogger(self.logger)
+
         args.app_name = self._resolve_aliases(args.app_name)
         if not self.core.is_installed(args.app_name):
             logger.error(f'Game "{args.app_name}" is not installed')
-            return
+            return logger
 
         logger.info(f'Loading installed manifest for "{args.app_name}"')
         igame = self.core.get_installed_game(args.app_name)
@@ -271,7 +281,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
             logger.error(f'Install path "{igame.install_path}" does not exist, make sure all necessary mounts '
                          f'are available. If you previously deleted the game folder without uninstalling, run '
                          f'"legendary uninstall -y {igame.app_name}" and reinstall from scratch.')
-            return
+            return logger
 
         manifest_data, _ = self.core.get_installed_manifest(args.app_name)
         if manifest_data is None:
@@ -291,7 +301,7 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                 logger.critical(f'Manifest appears to be missing! To repair, run "legendary repair '
                                 f'{args.app_name} --repair-and-update", this will however redownload all files '
                                 f'that do not match the latest manifest in their entirety.')
-                return
+                return logger
 
         manifest = self.core.load_manifest(manifest_data)
 
@@ -339,14 +349,14 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
                 repair_file.append(f'{result_hash}:{path}')
                 continue
             elif result == VerifyResult.HASH_MISMATCH:
-                logger.info(f'File does not match hash: "{path}"')
+                logger.error(f'File does not match hash: "{path}"')
                 repair_file.append(f'{result_hash}:{path}')
                 failed.append(path)
             elif result == VerifyResult.FILE_MISSING:
-                logger.info(f'File is missing: "{path}"')
+                logger.error(f'File is missing: "{path}"')
                 missing.append(path)
             else:
-                logger.info(f'Other failure (see log), treating file as missing: "{path}"')
+                logger.error(f'Other failure (see log), treating file as missing: "{path}"')
                 missing.append(path)
 
         if args.verify_stdout:
@@ -361,13 +371,106 @@ class LegendaryCLI(legendary.cli.LegendaryCLI):
 
         if not missing and not failed:
             logger.info('Verification finished successfully.')
-            return True, 0, 0
+            return logger, 0, 0
         else:
             logger.warning(f'Verification failed, {len(failed)} file(s) corrupted, {len(missing)} file(s) are missing.')
             if print_command:
                 logger.info(f'Run "legendary repair {args.app_name}" to repair your game installation.')
-            return False, len(failed), len(missing)
+            return logger, len(failed), len(missing)
 
-    @apply_wrap
     def import_game(self, args: LgndrImportGameArgs):
-        super(LegendaryCLI, self).import_game(args)
+        # Override logger for the local context to use message as part of the return value
+        logger = LgndrReturnLogger(self.logger)
+
+        # make sure path is absolute
+        args.app_path = os.path.abspath(args.app_path)
+        args.app_name = self._resolve_aliases(args.app_name)
+
+        if not os.path.exists(args.app_path):
+            logger.error(f'Specified path "{args.app_path}" does not exist!')
+            return logger
+
+        if self.core.is_installed(args.app_name):
+            logger.error('Game is already installed!')
+            return logger
+
+        if not self.core.login():
+            logger.error('Log in failed!')
+            return logger
+
+        # do some basic checks
+        game = self.core.get_game(args.app_name, update_meta=True, platform=args.platform)
+        if not game:
+            logger.fatal(f'Did not find game "{args.app_name}" on account.')
+            return logger
+
+        if game.is_dlc:
+            release_info = game.metadata.get('mainGameItem', {}).get('releaseInfo')
+            if release_info:
+                main_game_appname = release_info[0]['appId']
+                main_game_title = game.metadata['mainGameItem']['title']
+                if not self.core.is_installed(main_game_appname):
+                    logger.error(f'Import candidate is DLC but base game "{main_game_title}" '
+                                 f'(App name: "{main_game_appname}") is not installed!')
+                    return logger
+            else:
+                logger.fatal(f'Unable to get base game information for DLC, cannot continue.')
+                return logger
+
+        # get everything needed for import from core, then run additional checks.
+        manifest, igame = self.core.import_game(game, args.app_path, platform=args.platform)
+        exe_path = os.path.join(args.app_path, manifest.meta.launch_exe.lstrip('/'))
+        # check if most files at least exist or if user might have specified the wrong directory
+        total = len(manifest.file_manifest_list.elements)
+        found = sum(os.path.exists(os.path.join(args.app_path, f.filename))
+                    for f in manifest.file_manifest_list.elements)
+        ratio = found / total
+
+        if not found:
+            logger.error(f'No files belonging to {"DLC" if game.is_dlc else "Game"} "{game.app_title}" '
+                         f'({game.app_name}) found in the specified location, please verify that the path is correct.')
+            if not game.is_dlc:
+                # check if game folder is in path, suggest alternative
+                folder = game.metadata.get('customAttributes', {}).get('FolderName', {}).get('value', game.app_name)
+                if folder and folder not in args.app_path:
+                    new_path = os.path.join(args.app_path, folder)
+                    logger.info(f'Did you mean "{new_path}"?')
+            return logger
+
+        if not game.is_dlc and not os.path.exists(exe_path) and not args.disable_check:
+            logger.error(f'Game executable could not be found at "{exe_path}", '
+                         f'please verify that the specified path is correct.')
+            return logger
+
+        if ratio < 0.95:
+            logger.warning('Some files are missing from the game installation, install may not '
+                           'match latest Epic Games Store version or might be corrupted.')
+        else:
+            logger.info(f'{"DLC" if game.is_dlc else "Game"} install appears to be complete.')
+
+        self.core.install_game(igame)
+        if igame.needs_verification:
+            logger.info(f'NOTE: The {"DLC" if game.is_dlc else "Game"} installation will have to be '
+                        f'verified before it can be updated with legendary.')
+            logger.info(f'Run "legendary repair {args.app_name}" to do so.')
+        else:
+            logger.info(f'Installation had Epic Games Launcher metadata for version "{igame.version}", '
+                        f'verification will not be required.')
+
+        # check for importable DLC
+        if not args.skip_dlcs:
+            dlcs = self.core.get_dlc_for_game(game.app_name)
+            if dlcs:
+                logger.info(f'Found {len(dlcs)} items of DLC that could be imported.')
+                import_dlc = True
+                if not args.yes and not args.with_dlcs:
+                    if not args.get_boolean_choice(f'Do you wish to automatically attempt to import all DLCs?'):
+                        import_dlc = False
+
+                if import_dlc:
+                    for dlc in dlcs:
+                        args.app_name = dlc.app_name
+                        self.import_game(args)
+
+        logger.info(f'{"DLC" if game.is_dlc else "Game"} "{game.app_title}" has been imported.')
+        return logger

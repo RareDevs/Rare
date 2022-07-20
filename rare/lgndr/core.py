@@ -1,6 +1,6 @@
 from multiprocessing import Queue
 
-import legendary.core
+from legendary.core import LegendaryCore as LegendaryCoreReal
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
 from legendary.models.manifest import ManifestMeta
@@ -8,11 +8,8 @@ from legendary.models.manifest import ManifestMeta
 from .api_exception import LgndrException, LgndrCoreLogHandler
 from .manager import DLManager
 
-# lk: Monkeypatch the modified DLManager into LegendaryCore
-legendary.core.DLManager = DLManager
 
-
-class LegendaryCore(legendary.core.LegendaryCore):
+class LegendaryCore(LegendaryCoreReal):
 
     def __init__(self, override_config=None, timeout=10.0):
         super(LegendaryCore, self).__init__(override_config=override_config, timeout=timeout)
@@ -31,7 +28,7 @@ class LegendaryCore(legendary.core.LegendaryCore):
                          disable_delta: bool = False, override_delta_manifest: str = '',
                          egl_guid: str = '', preferred_cdn: str = None,
                          disable_https: bool = False) -> (DLManager, AnalysisResult, ManifestMeta):
-        return super(LegendaryCore, self).prepare_download(
+        dlm, analysis, igame = super(LegendaryCore, self).prepare_download(
             game=game, base_game=base_game, base_path=base_path,
             status_q=status_q, max_shm=max_shm, max_workers=max_workers,
             force=force, disable_patching=disable_patching,
@@ -45,6 +42,9 @@ class LegendaryCore(legendary.core.LegendaryCore):
             egl_guid=egl_guid, preferred_cdn=preferred_cdn,
             disable_https=disable_https
         )
+        # lk: monkeypatch run_real (the method that emits the stats) into DLManager
+        dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
+        return dlm, analysis, igame
 
     def uninstall_game(self, installed_game: InstalledGame, delete_files=True, delete_root_directory=False):
         try:
@@ -73,6 +73,7 @@ class LegendaryCore(legendary.core.LegendaryCore):
     def prepare_overlay_install(self, path=None, status_q: Queue = None):
         dlm, analysis_result, igame = super(LegendaryCore, self).prepare_overlay_install(path)
         # lk: monkeypatch status_q (the queue for download stats)
+        dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
         dlm.status_queue = status_q
         return dlm, analysis_result, igame
 
