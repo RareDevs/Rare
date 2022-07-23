@@ -152,7 +152,7 @@ class GameUtils(QObject):
         if not os.path.exists(igame.install_path):
             if QMessageBox.Yes == QMessageBox.question(
                     None,
-                    "Uninstall",
+                    self.tr("Uninstall - {}").format(igame.title),
                     self.tr(
                         "Game files of {} do not exist. Remove it from installed games?"
                     ).format(igame.title),
@@ -164,10 +164,12 @@ class GameUtils(QObject):
             else:
                 return False
 
-        proceed, keep_files = UninstallDialog(game).get_options()
+        proceed, keep_files, keep_config = UninstallDialog(game).get_options()
         if not proceed:
             return False
-        legendary_utils.uninstall_game(self.core, game.app_name, keep_files)
+        success, message = legendary_utils.uninstall_game(self.core, game.app_name, keep_files, keep_config)
+        if not success:
+            QMessageBox.warning(None, self.tr("Uninstall - {}").format(igame.title), message, QMessageBox.Close)
         self.signals.game_uninstalled.emit(app_name)
         return True
 

@@ -2,9 +2,10 @@ import os
 import platform
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QCoreApplication, QObject, QRunnable, QStandardPaths
+from PyQt5.QtCore import pyqtSignal, QObject, QRunnable, QStandardPaths
 from legendary.core import LegendaryCore
 
+from rare.lgndr.api_monkeys import LgndrIndirectStatus
 from rare.lgndr.api_arguments import LgndrVerifyGameArgs, LgndrUninstallGameArgs
 from rare.lgndr.api_exception import LgndrException
 from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton
@@ -13,7 +14,7 @@ from rare.utils import config_helper
 logger = getLogger("Legendary Utils")
 
 
-def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False):
+def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_config=False):
     igame = core.get_installed_game(app_name)
 
     # remove shortcuts link
@@ -38,21 +39,23 @@ def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False):
         if os.path.exists(start_menu_shortcut):
             os.remove(start_menu_shortcut)
 
-    result = LegendaryCLISingleton().uninstall_game(
+    status = LgndrIndirectStatus()
+    LegendaryCLISingleton().uninstall_game(
         LgndrUninstallGameArgs(
             app_name=app_name,
             keep_files=keep_files,
+            indirect_status=status,
             yes=True,
         )
     )
-    if not keep_files:
+    if not keep_config:
         logger.info("Removing sections in config file")
         config_helper.remove_section(app_name)
         config_helper.remove_section(f"{app_name}.env")
 
         config_helper.save_config()
 
-    return result
+    return status.success, status.message
 
 
 def update_manifest(app_name: str, core: LegendaryCore):
@@ -93,16 +96,18 @@ class VerifyWorker(QRunnable):
         self.signals.status.emit(self.app_name, num, total, percentage, speed)
 
     def run(self):
+        status = LgndrIndirectStatus()
         args = LgndrVerifyGameArgs(app_name=self.app_name,
+                                   indirect_status=status,
                                    verify_stdout=self.status_callback)
         # TODO: offer this as an alternative when manifest doesn't exist
         # TODO: requires the client to be online. To do it this way, we need to
         # TODO: somehow detect the error and offer a dialog in which case `verify_games` is
         # TODO: re-run with `repair_mode` and `repair_online`
-        result, failed, missing = self.cli.verify_game(
+        result = self.cli.verify_game(
             args, print_command=False, repair_mode=True, repair_online=True)
         # success, failed, missing = self.cli.verify_game(args, print_command=False)
         if result:
-            self.signals.result.emit(self.app_name, not failed and not missing, failed, missing)
+            self.signals.result.emit(self.app_name, not any(result), *result)
         else:
-            self.signals.error.emit(self.app_name, result.message)
+            self.signals.error.emit(self.app_name, status.message)

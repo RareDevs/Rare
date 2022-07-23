@@ -44,6 +44,7 @@ class LegendaryCore(LegendaryCoreReal):
         )
         # lk: monkeypatch run_real (the method that emits the stats) into DLManager
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
+        dlm.status_queue = Queue()
         return dlm, analysis, igame
 
     def uninstall_game(self, installed_game: InstalledGame, delete_files=True, delete_root_directory=False):
@@ -70,10 +71,10 @@ class LegendaryCore(LegendaryCoreReal):
         finally:
             pass
 
-    def prepare_overlay_install(self, path=None, status_q: Queue = None):
+    def prepare_overlay_install(self, path=None):
         dlm, analysis_result, igame = super(LegendaryCore, self).prepare_overlay_install(path)
         # lk: monkeypatch status_q (the queue for download stats)
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
-        dlm.status_queue = status_q
+        dlm.status_queue = Queue()
         return dlm, analysis_result, igame
 

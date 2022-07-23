@@ -1,4 +1,3 @@
-from enum import Enum, IntEnum
 from typing import Tuple
 
 from PyQt5.QtCore import Qt
@@ -7,7 +6,6 @@ from PyQt5.QtWidgets import (
     QLabel,
     QVBoxLayout,
     QCheckBox,
-    QFormLayout,
     QHBoxLayout,
     QPushButton,
 )
@@ -23,13 +21,15 @@ class UninstallDialog(QDialog):
         self.setWindowTitle("Uninstall Game")
         layout = QVBoxLayout()
         self.info_text = QLabel(
-            self.tr("Do you really want to uninstall {}").format(game.app_title)
+            self.tr("Do you really want to uninstall <b>{}</b> ?").format(game.app_title)
         )
         layout.addWidget(self.info_text)
-        self.keep_files = QCheckBox(self.tr("Keep Files"))
-        form_layout = QFormLayout()
-        form_layout.setContentsMargins(0, 10, 0, 10)
-        form_layout.addRow(QLabel(self.tr("Do you want to keep files?")), self.keep_files)
+        self.keep_files = QCheckBox(self.tr("Keep game files?"))
+        self.keep_config = QCheckBox(self.tr("Keep game configuation?"))
+        form_layout = QVBoxLayout()
+        form_layout.setContentsMargins(6, 6, 0, 6)
+        form_layout.addWidget(self.keep_files)
+        form_layout.addWidget(self.keep_config)
         layout.addLayout(form_layout)
 
         button_layout = QHBoxLayout()
@@ -41,22 +41,22 @@ class UninstallDialog(QDialog):
         self.cancel_button = QPushButton(self.tr("Cancel"))
         self.cancel_button.clicked.connect(self.cancel)
 
-        button_layout.addStretch(1)
         button_layout.addWidget(self.ok_button)
+        button_layout.addStretch(1)
         button_layout.addWidget(self.cancel_button)
         layout.addLayout(button_layout)
         self.setLayout(layout)
 
-        self.options: Tuple[bool, bool] = (False, False)
+        self.options: Tuple[bool, bool, bool] = (False, False, False)
 
-    def get_options(self) -> Tuple[bool, bool]:
+    def get_options(self) -> Tuple[bool, bool, bool]:
         self.exec_()
         return self.options
 
     def ok(self):
-        self.options = (True, self.keep_files.isChecked())
+        self.options = (True, self.keep_files.isChecked(), self.keep_config.isChecked())
         self.close()
 
     def cancel(self):
-        self.options = (False, False)
+        self.options = (False, False, False)
         self.close()

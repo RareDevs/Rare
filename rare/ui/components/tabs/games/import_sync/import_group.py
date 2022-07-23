@@ -60,11 +60,6 @@ class Ui_ImportGroup(object):
         self.import_button.setSizePolicy(sizePolicy)
         self.import_button.setObjectName("import_button")
         self.button_info_layout.addWidget(self.import_button)
-        self.info_label = QtWidgets.QLabel(ImportGroup)
-        self.info_label.setText("")
-        self.info_label.setWordWrap(True)
-        self.info_label.setObjectName("info_label")
-        self.button_info_layout.addWidget(self.info_label)
         self.formLayout.setLayout(4, QtWidgets.QFormLayout.FieldRole, self.button_info_layout)
 
         self.retranslateUi(ImportGroup)

@@ -23,17 +23,11 @@ class DownloadThread(QThread):
     status = pyqtSignal(str)
     statistics = pyqtSignal(UIUpdate)
 
-    def __init__(self, core: LegendaryCore, queue_item: InstallQueueItemModel):
+    def __init__(self, core: LegendaryCore, item: InstallQueueItemModel):
         super(DownloadThread, self).__init__()
-        self.core = core
         self.signals = GlobalSignalsSingleton()
-        self.dlm = queue_item.download.dlmanager
-        self.no_install = queue_item.options.no_install
-        self.status_q = queue_item.status_q
-        self.igame = queue_item.download.igame
-        self.repair = queue_item.download.repair
-        self.repair_file = queue_item.download.repair_file
-        self.queue_item = queue_item
+        self.core: LegendaryCore = core
+        self.item: InstallQueueItemModel = item
 
         self._kill = False
 
@@ -42,9 +36,9 @@ class DownloadThread(QThread):
         dl_stopped = False
         try:
 
-            self.dlm.start()
+            self.item.download.dlmanager.start()
             time.sleep(1)
-            while self.dlm.is_alive():
+            while self.item.download.dlmanager.is_alive():
                 if self._kill:
                     self.status.emit("stop")
                     logger.info("Download stopping...")
@@ -52,15 +46,15 @@ class DownloadThread(QThread):
                     # The code below is a temporary solution.
                     # It should be removed once legendary supports stopping downloads more gracefully.
 
-                    self.dlm.running = False
+                    self.item.download.dlmanager.running = False
 
                     # send conditions to unlock threads if they aren't already
-                    for cond in self.dlm.conditions:
+                    for cond in self.item.download.dlmanager.conditions:
                         with cond:
                             cond.notify()
 
                     # make sure threads are dead.
-                    for t in self.dlm.threads:
+                    for t in self.item.download.dlmanager.threads:
                         t.join(timeout=5.0)
                         if t.is_alive():
                             logger.warning(f"Thread did not terminate! {repr(t)}")
@@ -74,10 +68,10 @@ class DownloadThread(QThread):
                                     "Writer results",
                             ),
                             (
-                                    self.dlm.dl_worker_queue,
-                                    self.dlm.writer_queue,
-                                    self.dlm.dl_result_q,
-                                    self.dlm.writer_result_q,
+                                    self.item.download.dlmanager.dl_worker_queue,
+                                    self.item.download.dlmanager.writer_queue,
+                                    self.item.download.dlmanager.dl_result_q,
+                                    self.item.download.dlmanager.writer_result_q,
                             ),
                     ):
                         logger.debug(f'Cleaning up queue "{name}"')
@@ -90,22 +84,22 @@ class DownloadThread(QThread):
                         except AttributeError:
                             logger.warning(f"Queue {name} did not close")
 
-                    if self.dlm.writer_queue:
+                    if self.item.download.dlmanager.writer_queue:
                         # cancel installation
-                        self.dlm.writer_queue.put_nowait(WriterTask("", kill=True))
+                        self.item.download.dlmanager.writer_queue.put_nowait(WriterTask("", kill=True))
 
                     # forcibly kill DL workers that are not actually dead yet
-                    for child in self.dlm.children:
+                    for child in self.item.download.dlmanager.children:
                         if child.exitcode is None:
                             child.terminate()
 
-                    if self.dlm.shared_memory:
+                    if self.item.download.dlmanager.shared_memory:
                         # close up shared memory
-                        self.dlm.shared_memory.close()
-                        self.dlm.shared_memory.unlink()
-                        self.dlm.shared_memory = None
+                        self.item.download.dlmanager.shared_memory.close()
+                        self.item.download.dlmanager.shared_memory.unlink()
+                        self.item.download.dlmanager.shared_memory = None
 
-                    self.dlm.kill()
+                    self.item.download.dlmanager.kill()
 
                     # force kill any threads that are somehow still alive
                     for proc in psutil.process_iter():
@@ -126,11 +120,11 @@ class DownloadThread(QThread):
                     dl_stopped = True
                 try:
                     if not dl_stopped:
-                        self.statistics.emit(self.status_q.get(timeout=1))
+                        self.statistics.emit(self.item.download.dlmanager.status_queue.get(timeout=1))
                 except queue.Empty:
                     pass
 
-            self.dlm.join()
+            self.item.download.dlmanager.join()
 
         except Exception as e:
             logger.error(
@@ -145,20 +139,20 @@ class DownloadThread(QThread):
             self.status.emit("dl_finished")
             end_t = time.time()
             logger.info(f"Download finished in {end_t - start_time}s")
-            game = self.core.get_game(self.igame.app_name)
+            game = self.core.get_game(self.item.download.igame.app_name)
 
-            if self.queue_item.options.overlay:
+            if self.item.options.overlay:
                 self.signals.overlay_installation_finished.emit()
-                self.core.finish_overlay_install(self.igame)
+                self.core.finish_overlay_install(self.item.download.igame)
                 self.status.emit("finish")
                 return
 
-            if not self.no_install:
-                postinstall = self.core.install_game(self.igame)
+            if not self.item.options.no_install:
+                postinstall = self.core.install_game(self.item.download.igame)
                 if postinstall:
-                    self._handle_postinstall(postinstall, self.igame)
+                    self._handle_postinstall(postinstall, self.item.download.igame)
 
-                dlcs = self.core.get_dlc_for_game(self.igame.app_name)
+                dlcs = self.core.get_dlc_for_game(self.item.download.igame.app_name)
                 if dlcs:
                     print("The following DLCs are available for this game:")
                     for dlc in dlcs:
@@ -179,21 +173,21 @@ class DownloadThread(QThread):
                         f'To download saves for this game run "legendary sync-saves {game.app_name}"'
                     )
         old_igame = self.core.get_installed_game(game.app_name)
-        if old_igame and self.repair and os.path.exists(self.repair_file):
+        if old_igame and self.item.download.repair and os.path.exists(self.item.download.repair_file):
             if old_igame.needs_verification:
                 old_igame.needs_verification = False
                 self.core.install_game(old_igame)
 
             logger.debug("Removing repair file.")
-            os.remove(self.repair_file)
-        if old_igame and old_igame.install_tags != self.igame.install_tags:
-            old_igame.install_tags = self.igame.install_tags
+            os.remove(self.item.download.repair_file)
+        if old_igame and old_igame.install_tags != self.item.download.igame.install_tags:
+            old_igame.install_tags = self.item.download.igame.install_tags
             logger.info("Deleting now untagged files.")
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 
-        if not self.queue_item.options.update and self.queue_item.options.create_shortcut:
-            if not create_desktop_link(self.queue_item.options.app_name, self.core, "desktop"):
+        if not self.item.options.update and self.item.options.create_shortcut:
+            if not create_desktop_link(self.item.options.app_name, self.core, "desktop"):
                 # maybe add it to download summary, to show in finished downloads
                 pass
             else:
@@ -204,7 +198,7 @@ class DownloadThread(QThread):
     def _handle_postinstall(self, postinstall, igame):
         logger.info(f"Postinstall info: {postinstall}")
         if platform.system() == "Windows":
-            if self.queue_item.options.install_preqs:
+            if self.item.options.install_preqs:
                 self.core.prereq_installed(igame.app_name)
                 req_path, req_exec = os.path.split(postinstall["path"])
                 work_dir = os.path.join(igame.install_path, req_path)
@@ -218,7 +212,7 @@ class DownloadThread(QThread):
                 proc.start(fullpath, postinstall.get("args", []))
                 proc.waitForFinished()  # wait, because it is inside the thread
             else:
-                self.core.prereq_installed(self.igame.app_name)
+                self.core.prereq_installed(self.item.download.igame.app_name)
         else:
             logger.info("Automatic installation not available on Linux.")
 

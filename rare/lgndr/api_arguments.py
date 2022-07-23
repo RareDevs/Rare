@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from multiprocessing import Queue
-from typing import Callable, List
+from typing import Callable, List, Optional
 
-from .api_monkeys import get_boolean_choice
+from .api_monkeys import get_boolean_choice, LgndrIndirectStatus
 
 """
 @dataclass(kw_only=True)
@@ -25,6 +25,7 @@ class LgndrImportGameArgs:
     with_dlcs: bool = False
     yes: bool = False
     # Rare: Extra arguments
+    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
     get_boolean_choice: Callable[[str, bool], bool] = lambda prompt, default=True: default
 
 
@@ -34,6 +35,7 @@ class LgndrUninstallGameArgs:
     keep_files: bool = False
     yes: bool = False
     # Rare: Extra arguments
+    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
     get_boolean_choice: Callable[[str, bool], bool] = lambda prompt, default=True: default
 
 
@@ -41,6 +43,7 @@ class LgndrUninstallGameArgs:
 class LgndrVerifyGameArgs:
     app_name: str
     # Rare: Extra arguments
+    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
     verify_stdout: Callable[[int, int, float, float], None] = lambda a0, a1, a2, a3: print(
         f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r"
     )
@@ -50,7 +53,6 @@ class LgndrVerifyGameArgs:
 class LgndrInstallGameArgs:
     app_name: str
     base_path: str = ""
-    status_q: Queue = None
     shared_memory: int = 0
     max_workers: int = 0
     force: bool = False
@@ -62,7 +64,7 @@ class LgndrInstallGameArgs:
     platform: str = "Windows"
     file_prefix: List = None
     file_exclude_prefix: List = None
-    install_tag: List = None
+    install_tag: Optional[List[str]] = None
     order_opt: bool = False
     dl_timeout: int = 10
     repair_mode: bool = False
@@ -79,6 +81,7 @@ class LgndrInstallGameArgs:
     disable_https: bool = False
     yes: bool = True
     # Rare: Extra arguments
+    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
     get_boolean_choice: Callable[[str, bool], bool] = lambda prompt, default=True: default
     sdl_prompt: Callable[[str, str], List[str]] = lambda sdl_data, title: [""]
     verify_stdout: Callable[[int, int, float, float], None] = lambda a0, a1, a2, a3: print(

@@ -139,6 +139,16 @@ class GamesTab(QStackedWidget):
             self.view_stack.setCurrentWidget(self.icon_view_scroll)
 
         self.head_bar.search_bar.textChanged.connect(lambda x: self.filter_games("", x))
+        self.head_bar.search_bar.textChanged.connect(
+            lambda x: self.icon_view_scroll.verticalScrollBar().setSliderPosition(
+                self.icon_view_scroll.verticalScrollBar().minimum()
+            )
+        )
+        self.head_bar.search_bar.textChanged.connect(
+            lambda x: self.list_view_scroll.verticalScrollBar().setSliderPosition(
+                self.list_view_scroll.verticalScrollBar().minimum()
+            )
+        )
         self.head_bar.filterChanged.connect(self.filter_games)
         self.head_bar.refresh_list.clicked.connect(self.update_list)
         self.head_bar.view.toggled.connect(self.toggle_view)
@@ -320,8 +330,8 @@ class GamesTab(QStackedWidget):
                 visible = True
 
             if (
-                search_text not in widget.game.app_name.lower()
-                and search_text not in widget.game.app_title.lower()
+                search_text.lower() not in widget.game.app_name.lower()
+                and search_text.lower() not in widget.game.app_title.lower()
             ):
                 opacity = 0.25
             else:
@@ -345,7 +355,7 @@ class GamesTab(QStackedWidget):
         # lk: it sorts by installed then by title
         installing_widget = self.icon_view.layout().remove(type(self.installing_widget).__name__)
         if sort_by:
-            self.icon_view.layout().sort(lambda x: (sort_by not in x.widget().game.app_title.lower(),))
+            self.icon_view.layout().sort(lambda x: (sort_by.lower() not in x.widget().game.app_title.lower(),))
         else:
             self.icon_view.layout().sort(
                 lambda x: (

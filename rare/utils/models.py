@@ -2,7 +2,7 @@ import os
 import platform as pf
 from dataclasses import field, dataclass
 from multiprocessing import Queue
-from typing import Union, List, Optional
+from typing import Union, List, Optional, Callable, Dict
 
 from legendary.core import LegendaryCore
 from legendary.downloader.mp.manager import DLManager
@@ -16,22 +16,31 @@ class InstallOptionsModel:
     base_path: str = ""
     shared_memory: int = 1024
     max_workers: int = os.cpu_count() * 2
+    force: bool = False
+    platform: str = "Windows"
+    install_tag: Optional[List[str]] = None
+    order_opt: bool = False
     repair_mode: bool = False
     repair_and_update: bool = False
     no_install: bool = False
     ignore_space: bool = False
-    force: bool = False
-    sdl_list: list = field(default_factory=lambda: [""])
+    # Rare's internal arguments
+    # FIXME: Do we really need all of these?
+    create_shortcut: bool = True
+    overlay: bool = False
     update: bool = False
     silent: bool = False
-    platform: str = ""
-    order_opt: bool = False
-    overlay: bool = False
-    create_shortcut: bool = True
     install_preqs: bool = pf.system() == "Windows"
 
-    def set_no_install(self, enabled: bool) -> None:
-        self.no_install = enabled
+    def __post_init__(self):
+        self.sdl_prompt: Callable[[str, str], list] = lambda app_name, title: self.install_tag
+
+    def as_install_kwargs(self) -> Dict:
+        return {
+            k: getattr(self, k)
+            for k in self.__dict__
+            if k not in ["update", "silent", "create_shortcut", "overlay", "install_preqs"]
+        }
 
 
 @dataclass
@@ -47,16 +56,11 @@ class InstallDownloadModel:
 
 @dataclass
 class InstallQueueItemModel:
-    status_q: Optional[Queue] = None
     download: Optional[InstallDownloadModel] = None
     options: Optional[InstallOptionsModel] = None
 
     def __bool__(self):
-        return (
-            (self.status_q is not None)
-            and (self.download is not None)
-            and (self.options is not None)
-        )
+        return (self.download is not None) and (self.options is not None)
 
 
 class PathSpec:
@@ -81,9 +85,7 @@ class PathSpec:
 
     @property
     def wine_egl_programdata(self):
-        return self.egl_programdata.replace("\\", "/").replace(
-            "%PROGRAMDATA%", self.wine_programdata
-        )
+        return self.egl_programdata.replace("\\", "/").replace("%PROGRAMDATA%", self.wine_programdata)
 
     def wine_egl_prefixes(self, results: int = 0) -> Union[List[str], str]:
         possible_prefixes = [

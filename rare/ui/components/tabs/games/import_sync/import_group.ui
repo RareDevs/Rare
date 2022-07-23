@@ -96,16 +96,6 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="info_label">
-       <property name="text">
-        <string notr="true"/>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>

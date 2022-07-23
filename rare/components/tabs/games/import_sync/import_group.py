@@ -1,6 +1,5 @@
 import json
 import os
-from argparse import Namespace
 from dataclasses import dataclass
 from enum import IntEnum
 from logging import getLogger
@@ -13,9 +12,11 @@ from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHead
 
 from rare.lgndr.api_arguments import LgndrImportGameArgs
 from rare.lgndr.api_exception import LgndrException
+from rare.lgndr.api_monkeys import LgndrIndirectStatus
 from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
+from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("Import")
 
@@ -46,7 +47,9 @@ class ImportResult(IntEnum):
 @dataclass
 class ImportedGame:
     result: ImportResult
+    path: Optional[str] = None
     app_name: Optional[str] = None
+    app_title: Optional[str] = None
     message: Optional[str] = None
 
 
@@ -59,7 +62,6 @@ class ImportWorker(QRunnable):
         super(ImportWorker, self).__init__()
         self.signals = self.Signals()
         self.core = LegendaryCoreSingleton()
-        self.tr = lambda message: qApp.translate("ImportThread", message)
 
         self.path = Path(path)
         self.app_name = app_name
@@ -83,29 +85,30 @@ class ImportWorker(QRunnable):
         self.signals.finished.emit(result_list)
 
     def __try_import(self, path: Path, app_name: str = None) -> ImportedGame:
-        result = ImportedGame(ImportResult.ERROR, None, None)
+        result = ImportedGame(ImportResult.ERROR)
+        result.path = str(path)
         if app_name or (app_name := find_app_name(str(path), self.core)):
             result.app_name = app_name
-            app_title = self.core.get_game(app_name).app_title
+            result.app_title = app_title = self.core.get_game(app_name).app_title
             success, message = self.__import_game(path, app_name, app_title)
             if not success:
                 result.result = ImportResult.FAILED
-                result.message = f"{app_title} - {message}"
+                result.message = message
             else:
                 result.result = ImportResult.SUCCESS
-                result.message = self.tr("{} - Imported successfully").format(app_title)
-        else:
-            result.message = self.tr("Could not find AppName for {}").format(str(path))
         return result
 
     def __import_game(self, path: Path, app_name: str, app_title: str):
         cli = LegendaryCLISingleton()
+        status = LgndrIndirectStatus()
         args = LgndrImportGameArgs(
             app_path=str(path),
             app_name=app_name,
+            indirect_status=status,
             get_boolean_choice=lambda prompt, default=True: self.import_dlcs
         )
-        return cli.import_game(args)
+        cli.import_game(args)
+        return status.success, status.message
 
 
 class AppNameCompleter(QCompleter):
@@ -194,6 +197,10 @@ class ImportGroup(QGroupBox):
         self.ui.import_button.clicked.connect(
             lambda: self.import_pressed(self.path_edit.text())
         )
+
+        self.info_label = ElideLabel(text="", parent=self)
+        self.ui.button_info_layout.addWidget(self.info_label)
+
         self.threadpool = QThreadPool.globalInstance()
 
     def path_edit_cb(self, path) -> Tuple[bool, str, str]:
@@ -207,7 +214,7 @@ class ImportGroup(QGroupBox):
         return False, path, ""
 
     def path_changed(self, path):
-        self.ui.info_label.setText("")
+        self.info_label.setText("")
         self.ui.import_folder_check.setCheckState(Qt.Unchecked)
         if self.path_edit.is_valid:
             self.app_name_edit.setText(find_app_name(path, self.core))
@@ -223,7 +230,7 @@ class ImportGroup(QGroupBox):
             return False, text, IndicatorLineEdit.reasons.game_not_installed
 
     def app_name_changed(self, app_name: str):
-        self.ui.info_label.setText("")
+        self.info_label.setText("")
         self.ui.import_dlcs_check.setCheckState(Qt.Unchecked)
         if self.app_name_edit.is_valid:
             self.ui.import_dlcs_check.setEnabled(
@@ -272,16 +279,16 @@ class ImportGroup(QGroupBox):
         if len(result) == 1:
             res = result[0]
             if res.result == ImportResult.SUCCESS:
-                self.ui.info_label.setText(
-                    self.tr("Success: {}").format(res.message)
+                self.info_label.setText(
+                    self.tr("Success: <b>{}</b> imported").format(res.app_title)
                 )
             elif res.result == ImportResult.FAILED:
-                self.ui.info_label.setText(
-                    self.tr("Failed: {}").format(res.message)
+                self.info_label.setText(
+                    self.tr("Failed: <b>{}</b> - {}").format(res.app_title, res.message)
                 )
             else:
-                self.ui.info_label.setText(
-                    self.tr("Error: {}").format(res.message)
+                self.info_label.setText(
+                    self.tr("Error: Could not find AppName for <b>{}</b>").format(res.path)
                 )
         else:
             success = [r for r in result if r.result == ImportResult.SUCCESS]
@@ -301,15 +308,15 @@ class ImportGroup(QGroupBox):
             details: List = []
             for res in success:
                 details.append(
-                    self.tr("Success: {}").format(res.message)
+                    self.tr("Success: {} imported").format(res.app_title)
                 )
             for res in failure:
                 details.append(
-                    self.tr("Failed: {}").format(res.message)
+                    self.tr("Failed: {} - {}").format(res.app_title, res.message)
                 )
             for res in errored:
                 details.append(
-                    self.tr("Error: {}").format(res.message)
+                    self.tr("Error: Could not find AppName for {}").format(res.path)
                 )
             messagebox.setDetailedText("\n".join(details))
             messagebox.show()

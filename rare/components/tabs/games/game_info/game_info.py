@@ -129,7 +129,7 @@ class GameInfo(QWidget, Ui_GameInfo):
             )
             return
         self.signals.install_game.emit(
-            InstallOptionsModel(app_name=self.game.app_name, repair_mode=True, update=True)
+            InstallOptionsModel(app_name=self.game.app_name, repair_mode=True, repair_and_update=True, update=True)
         )
 
     def verify(self):
@@ -163,24 +163,24 @@ class GameInfo(QWidget, Ui_GameInfo):
 
     @pyqtSlot(str, bool, int, int)
     def verify_result(self, app_name, success, failed, missing):
+        igame = self.core.get_installed_game(app_name)
         if success:
             QMessageBox.information(
                 self,
-                "Summary",
-                "Game was verified successfully. No missing or corrupt files found",
+                self.tr("Summary - {}").format(igame.title),
+                self.tr("Game has been verified successfully. No missing or corrupt files found").format(igame.title),
             )
-            igame = self.core.get_installed_game(app_name)
             if igame.needs_verification:
                 igame.needs_verification = False
                 self.core.lgd.set_installed_game(igame.app_name, igame)
                 self.verification_finished.emit(igame)
         elif failed == missing == -1:
-            QMessageBox.warning(self, "Warning", self.tr("Something went wrong"))
+            QMessageBox.warning(self, self.tr("Warning - {}").format(igame.title), self.tr("Something went wrong"))
 
         else:
             ans = QMessageBox.question(
                 self,
-                "Summary",
+                self.tr("Summary - {}").format(igame.title),
                 self.tr(
                     "Verification failed, {} file(s) corrupted, {} file(s) are missing. Do you want to repair them?"
                 ).format(failed, missing),
@@ -188,9 +188,7 @@ class GameInfo(QWidget, Ui_GameInfo):
                 QMessageBox.Yes,
             )
             if ans == QMessageBox.Yes:
-                self.signals.install_game.emit(
-                    InstallOptionsModel(app_name=app_name, repair_mode=True, update=True)
-                )
+                self.repair()
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
         self.move_button.setEnabled(True)
