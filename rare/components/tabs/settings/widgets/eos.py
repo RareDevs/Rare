@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QGroupBox, QMessageBox
 from legendary.utils import eos
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.settings.widgets.eos_widget import Ui_EosWidget
-from rare.utils.models import InstallOptionsModel
+from rare.models.install import InstallOptionsModel
 
 logger = getLogger("EOS")
 

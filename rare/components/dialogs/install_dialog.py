@@ -17,7 +17,7 @@ from rare.lgndr.core import LegendaryCore
 from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, ApiResultsSingleton, ArgumentsSingleton
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
-from rare.utils.models import InstallDownloadModel, InstallQueueItemModel
+from rare.models.install import InstallDownloadModel, InstallQueueItemModel
 from rare.utils.utils import get_size
 
 

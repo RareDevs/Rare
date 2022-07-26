@@ -12,7 +12,7 @@ from legendary.core import LegendaryCore
 from legendary.models.downloading import WriterTask
 
 from rare.shared import GlobalSignalsSingleton
-from rare.utils.models import InstallQueueItemModel
+from rare.models.install import InstallQueueItemModel
 from rare.utils.utils import create_desktop_link
 from rare.lgndr.downloading import UIUpdate
 

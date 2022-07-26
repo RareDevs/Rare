@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from rare.utils.models import InstallQueueItemModel
+from rare.models.install import InstallQueueItemModel
 from rare.utils.utils import icon
 
 logger = getLogger("QueueWidget")

@@ -37,7 +37,7 @@ from rare.shared.image_manager import ImageManagerSingleton, ImageSize
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.legendary_utils import VerifyWorker
-from rare.utils.models import InstallOptionsModel
+from rare.models.install import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.utils.utils import get_size
 from rare.widgets.image_widget import ImageWidget
