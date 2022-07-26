@@ -19,6 +19,7 @@ from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel
 from rare.utils.misc import get_size
+from rare.utils import config_helper
 
 
 class InstallDialog(QDialog, Ui_InstallDialog):
@@ -242,10 +243,10 @@ class InstallDialog(QDialog, Ui_InstallDialog):
 
     def cancel_clicked(self):
         if self.config_tags:
-            self.core.lgd.config.set(self.game.app_name, 'install_tags', ','.join(self.config_tags))
+            config_helper.add_option(self.game.app_name, 'install_tags', ','.join(self.config_tags))
         else:
             # lk: this is purely for cleaning any install tags we might have added erroneously to the config
-            self.core.lgd.config.remove_option(self.game.app_name, 'install_tags')
+            config_helper.remove_option(self.game.app_name, 'install_tags')
 
         self.dl_item.download = None
         self.reject_close = False

@@ -31,7 +31,8 @@ class InstallOptionsModel:
     install_preqs: bool = pf.system() == "Windows"
 
     def __post_init__(self):
-        self.sdl_prompt: Callable[[str, str], list] = lambda app_name, title: self.install_tag
+        self.sdl_prompt: Callable[[str, str], list] = \
+            lambda app_name, title: self.install_tag if self.install_tag is not None else [""]
 
     def as_install_kwargs(self) -> Dict:
         return {

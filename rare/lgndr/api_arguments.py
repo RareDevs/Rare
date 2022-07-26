@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from multiprocessing import Queue
 from typing import Callable, List, Optional
+from typing_extensions import Protocol
 
-from .api_monkeys import get_boolean_choice, LgndrIndirectStatus
+from .api_monkeys import LgndrIndirectStatus
 
 """
 @dataclass(kw_only=True)
@@ -13,6 +13,19 @@ class LgndrCommonArgs:
     platform: str = "Windows"
     yes: bool = False
 """
+
+
+class _GetBooleanChoiceP(Protocol):
+    def __call__(self, prompt: str, default: bool = ...) -> bool:
+        ...
+
+
+def _get_boolean_choice(prompt: str, default: bool = True) -> bool:
+    return default
+
+
+def _verify_stdout(a0: int, a1: int, a2: float, a3: float) -> None:
+    print(f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r")
 
 
 @dataclass
@@ -26,7 +39,7 @@ class LgndrImportGameArgs:
     yes: bool = False
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
-    get_boolean_choice: Callable[[str, bool], bool] = lambda prompt, default=True: default
+    get_boolean_choice: _GetBooleanChoiceP = _get_boolean_choice
 
 
 @dataclass
@@ -36,7 +49,7 @@ class LgndrUninstallGameArgs:
     yes: bool = False
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
-    get_boolean_choice: Callable[[str, bool], bool] = lambda prompt, default=True: default
+    get_boolean_choice: _GetBooleanChoiceP = _get_boolean_choice
 
 
 @dataclass
@@ -44,9 +57,7 @@ class LgndrVerifyGameArgs:
     app_name: str
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
-    verify_stdout: Callable[[int, int, float, float], None] = lambda a0, a1, a2, a3: print(
-        f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r"
-    )
+    verify_stdout: Callable[[int, int, float, float], None] = _verify_stdout
 
 
 @dataclass
@@ -82,8 +93,11 @@ class LgndrInstallGameArgs:
     yes: bool = True
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
-    get_boolean_choice: Callable[[str, bool], bool] = lambda prompt, default=True: default
-    sdl_prompt: Callable[[str, str], List[str]] = lambda sdl_data, title: [""]
-    verify_stdout: Callable[[int, int, float, float], None] = lambda a0, a1, a2, a3: print(
-        f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r"
-    )
+    get_boolean_choice: _GetBooleanChoiceP = _get_boolean_choice
+    sdl_prompt: Callable[[str, str], List[str]] = lambda app_name, title: [""]
+    verify_stdout: Callable[[int, int, float, float], None] = _verify_stdout
+
+    # def __post_init__(self):
+    #     if self.sdl_prompt is None:
+    #         self.sdl_prompt: Callable[[str, str], list] = \
+    #             lambda app_name, title: self.install_tag if self.install_tag is not None else [""]
