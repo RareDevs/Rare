@@ -13,7 +13,7 @@ from rare.components.tabs.games import CloudSaveUtils
 from rare.game_launch_helper import message_models
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import legendary_utils
-from rare.utils import utils
+from rare.utils import misc
 from rare.utils.meta import RareGameMeta
 
 logger = getLogger("GameUtils")

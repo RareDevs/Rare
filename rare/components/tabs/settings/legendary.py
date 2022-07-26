@@ -11,7 +11,7 @@ from rare.components.tabs.settings.widgets.ubisoft_activation import UbiActivati
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit
-from rare.utils.utils import get_size
+from rare.utils.misc import get_size
 
 logger = getLogger("LegendarySettings")
 

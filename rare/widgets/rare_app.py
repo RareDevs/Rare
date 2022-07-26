@@ -11,7 +11,7 @@ from legendary.core import LegendaryCore
 
 import rare.resources.resources
 from rare.utils.paths import resources_path
-from rare.utils.utils import set_color_pallete, set_style_sheet
+from rare.utils.misc import set_color_pallete, set_style_sheet
 
 
 class RareApp(QApplication):

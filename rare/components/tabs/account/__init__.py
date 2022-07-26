@@ -3,7 +3,7 @@ import webbrowser
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel, QPushButton
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 
 
 class MiniWidget(QWidget):

@@ -14,7 +14,7 @@ from rare.ui.components.tabs.games.import_sync.egl_sync_list_group import (
 )
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.models import PathSpec
-from rare.utils.utils import WineResolver
+from rare.utils.misc import WineResolver
 
 logger = getLogger("EGLSync")
 

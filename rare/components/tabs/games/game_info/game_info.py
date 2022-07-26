@@ -39,7 +39,7 @@ from rare.utils.extra_widgets import PathEdit
 from rare.utils.legendary_utils import VerifyWorker
 from rare.models.install import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
-from rare.utils.utils import get_size
+from rare.utils.misc import get_size
 from rare.widgets.image_widget import ImageWidget
 
 logger = getLogger("GameInfo")

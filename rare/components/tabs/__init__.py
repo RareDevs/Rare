@@ -9,7 +9,7 @@ from rare.components.tabs.settings import SettingsTab
 from rare.components.tabs.settings.debug import DebugSettings
 from rare.components.tabs.shop import Shop
 from rare.components.tabs.tab_utils import MainTabBar, TabButtonWidget
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 
 
 class TabWidget(QTabWidget):

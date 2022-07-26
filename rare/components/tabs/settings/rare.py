@@ -10,14 +10,14 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.settings.widgets.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
-from rare.utils import utils
 from rare.utils.paths import cache_dir
-from rare.utils.utils import (
+from rare.utils.misc import (
     get_translations,
     get_color_schemes,
     set_color_pallete,
     get_style_sheets,
     set_style_sheet,
+    get_size,
 )
 
 logger = getLogger("RareSettings")
@@ -148,7 +148,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         for i in os.listdir(logdir):
             size += os.path.getsize(os.path.join(logdir, i))
 
-        self.log_dir_size_label.setText(utils.get_size(size))
+        self.log_dir_size_label.setText(get_size(size))
         # self.log_dir_clean_button.setVisible(False)
         # self.log_dir_size_label.setVisible(False)
 

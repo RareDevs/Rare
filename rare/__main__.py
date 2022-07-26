@@ -70,18 +70,16 @@ def main():
 
     args = parser.parse_args()
 
-    if args.desktop_shortcut:
-        from rare.utils import utils
+    if args.desktop_shortcut or args.startmenu_shortcut:
+        from rare.utils.misc import create_desktop_link
 
-        utils.create_desktop_link(type_of_link="desktop", for_rare=True)
+        if args.desktop_shortcut:
+            create_desktop_link(type_of_link="desktop", for_rare=True)
+
+        if args.startmenu_shortcut:
+            create_desktop_link(type_of_link="start_menu", for_rare=True)
+
         print("Link created")
-        return
-
-    if args.startmenu_shortcut:
-        from rare.utils import utils
-
-        utils.create_desktop_link(type_of_link="start_menu", for_rare=True)
-        print("link created")
         return
 
     if args.version:

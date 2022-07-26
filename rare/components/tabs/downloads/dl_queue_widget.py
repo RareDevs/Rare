@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 )
 
 from rare.models.install import InstallQueueItemModel
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 
 logger = getLogger("QueueWidget")
 

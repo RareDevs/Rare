@@ -21,7 +21,7 @@ from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidg
 from rare.components.tabs.downloads.download_thread import DownloadThread
 from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
-from rare.utils.utils import get_size
+from rare.utils.misc import get_size
 
 logger = getLogger("Download")
 

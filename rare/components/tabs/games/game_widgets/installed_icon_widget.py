@@ -9,7 +9,7 @@ from rare.components.tabs.games.game_widgets.base_installed_widget import (
 )
 from rare.shared import LegendaryCoreSingleton
 from rare.shared.image_manager import ImageSize
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("GameWidgetInstalled")

@@ -18,7 +18,7 @@ from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, ApiResult
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel
-from rare.utils.utils import get_size
+from rare.utils.misc import get_size
 
 
 class InstallDialog(QDialog, Ui_InstallDialog):
