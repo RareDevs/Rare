@@ -155,7 +155,7 @@ class ImageManager(QObject):
             json_data = json.load(open(self.__img_json(game.app_name), "r"))
 
         # lk: fast path for games without images, convert Rare's logo
-        if not game.metadata["keyImages"]:
+        if not game.metadata.get("keyImages", False):
             if not self.__img_color(game.app_name).is_file() or not self.__img_gray(game.app_name).is_file():
                 cache_data: Dict = dict(zip(self.__img_types, [None] * len(self.__img_types)))
                 cache_data["DieselGameBoxTall"] = open(
