@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, List, Optional
-from typing_extensions import Protocol
 
-from .api_monkeys import LgndrIndirectStatus
+from .api_monkeys import LgndrIndirectStatus, GetBooleanChoiceProtocol, get_boolean_choice, verify_stdout
 
 """
 @dataclass(kw_only=True)
@@ -13,19 +12,6 @@ class LgndrCommonArgs:
     platform: str = "Windows"
     yes: bool = False
 """
-
-
-class _GetBooleanChoiceP(Protocol):
-    def __call__(self, prompt: str, default: bool = ...) -> bool:
-        pass
-
-
-def _get_boolean_choice(prompt: str, default: bool = True) -> bool:
-    return default
-
-
-def _verify_stdout(a0: int, a1: int, a2: float, a3: float) -> None:
-    print(f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r")
 
 
 @dataclass
@@ -39,7 +25,7 @@ class LgndrImportGameArgs:
     yes: bool = False
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
-    get_boolean_choice: _GetBooleanChoiceP = _get_boolean_choice
+    get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
 
 
 @dataclass
@@ -49,7 +35,7 @@ class LgndrUninstallGameArgs:
     yes: bool = False
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
-    get_boolean_choice: _GetBooleanChoiceP = _get_boolean_choice
+    get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
 
 
 @dataclass
@@ -57,7 +43,7 @@ class LgndrVerifyGameArgs:
     app_name: str
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
-    verify_stdout: Callable[[int, int, float, float], None] = _verify_stdout
+    verify_stdout: Callable[[int, int, float, float], None] = verify_stdout
 
 
 @dataclass
@@ -93,9 +79,9 @@ class LgndrInstallGameArgs:
     yes: bool = True
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
-    get_boolean_choice: _GetBooleanChoiceP = _get_boolean_choice
+    get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
     sdl_prompt: Callable[[str, str], List[str]] = lambda app_name, title: [""]
-    verify_stdout: Callable[[int, int, float, float], None] = _verify_stdout
+    verify_stdout: Callable[[int, int, float, float], None] = verify_stdout
 
     # def __post_init__(self):
     #     if self.sdl_prompt is None:

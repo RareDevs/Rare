@@ -1,19 +1,21 @@
 import logging
 from dataclasses import dataclass
 
-from PyQt5.QtWidgets import QMessageBox, QLabel
+from PyQt5.QtWidgets import QLabel
+from typing_extensions import Protocol
 
 
-def get_boolean_choice(prompt, default=True):
-    choice = QMessageBox.question(
-        None, "Import DLCs?", prompt,
-        defaultButton=QMessageBox.Yes if default else QMessageBox.No
-    )
-    return True if choice == QMessageBox.StandardButton.Yes else False
+class GetBooleanChoiceProtocol(Protocol):
+    def __call__(self, prompt: str, default: bool = ...) -> bool:
+        pass
 
 
-def return_exit(__status):
-    return __status
+def get_boolean_choice(prompt: str, default: bool = True) -> bool:
+    return default
+
+
+def verify_stdout(a0: int, a1: int, a2: float, a3: float) -> None:
+    print(f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r")
 
 
 class UILogHandler(logging.Handler):
@@ -55,7 +57,9 @@ class LgndrIndirectStatus:
 
 
 class LgndrIndirectLogger:
-    def __init__(self, status: LgndrIndirectStatus, logger: logging.Logger = None, level: int = logging.ERROR):
+    def __init__(
+        self, status: LgndrIndirectStatus, logger: logging.Logger = None, level: int = logging.ERROR
+    ):
         self.logger = logger
         self.level = level
         self.status = status
