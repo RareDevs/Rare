@@ -11,16 +11,16 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QGroupBox,
 )
-
 from legendary.core import LegendaryCore
 from legendary.models.game import Game, InstalledGame
-from rare.lgndr.downloading import UIUpdate
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
-from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab
+from rare.lgndr.downloading import UIUpdate
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab
 from rare.utils.misc import get_size
 
 logger = getLogger("Download")
@@ -56,8 +56,8 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.update_layout.addWidget(self.update_text)
         self.update_text.setVisible(len(updates) == 0)
 
-        for name in updates:
-            self.add_update(self.core.get_installed_game(name))
+        for app_name in updates:
+            self.add_update(app_name)
 
         self.queue_widget.item_removed.connect(self.queue_item_removed)
 
@@ -66,7 +66,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.signals.game_uninstalled.connect(self.remove_update)
 
         self.signals.add_download.connect(
-            lambda app_name: self.add_update(self.core.get_installed_game(app_name))
+            lambda app_name: self.add_update(app_name)
         )
         self.signals.game_uninstalled.connect(self.game_uninstalled)
 
@@ -77,7 +77,11 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             w.update_button.setDisabled(False)
             w.update_with_settings.setDisabled(False)
 
-    def add_update(self, igame: InstalledGame):
+    def add_update(self, app_name: str):
+        if old_widget := self.update_widgets.get(app_name, False):
+            old_widget.deleteLater()
+            self.update_widgets.pop(app_name)
+        igame: InstalledGame = self.core.get_installed_game(app_name)
         widget = UpdateWidget(self.core, igame, self)
         self.update_layout.addWidget(widget)
         self.update_widgets[igame.app_name] = widget
