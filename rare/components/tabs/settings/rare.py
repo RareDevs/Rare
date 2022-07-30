@@ -18,6 +18,7 @@ from rare.utils.misc import (
     get_style_sheets,
     set_style_sheet,
     get_size,
+    create_desktop_link,
 )
 
 logger = getLogger("RareSettings")
@@ -160,7 +161,7 @@ class RareSettings(QWidget, Ui_RareSettings):
     def create_start_menu_link(self):
         try:
             if not os.path.exists(self.start_menu_link):
-                utils.create_desktop_link(type_of_link="start_menu", for_rare=True)
+                create_desktop_link(type_of_link="start_menu", for_rare=True)
                 self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
             else:
                 os.remove(self.start_menu_link)
@@ -169,23 +170,24 @@ class RareSettings(QWidget, Ui_RareSettings):
             logger.error(str(e))
             QMessageBox.warning(
                 self,
-                "Error",
-                f"Permission error, cannot remove {self.start_menu_link}",
+                self.tr("Error"),
+                self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
             )
 
     def create_desktop_link(self):
         try:
             if not os.path.exists(self.desktop_file):
-                utils.create_desktop_link(type_of_link="desktop", for_rare=True)
+                create_desktop_link(type_of_link="desktop", for_rare=True)
                 self.desktop_link_btn.setText(self.tr("Remove Desktop link"))
             else:
                 os.remove(self.desktop_file)
                 self.desktop_link_btn.setText(self.tr("Create desktop link"))
         except PermissionError as e:
+            logger.error(str(e))
             logger.warning(
                 self,
-                "Error",
-                f"Permission error, cannot remove {self.desktop_file}",
+                self.tr("Error"),
+                self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
             )
 
     def on_color_select_changed(self, color):

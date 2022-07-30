@@ -24,7 +24,7 @@ class GameProcess(QObject):
     game_launched = pyqtSignal(str)
     tried_connections = 0
 
-    def __init__(self, app_name: str, on_startup=False, always_ask_sync: bool= False):
+    def __init__(self, app_name: str, on_startup=False, always_ask_sync: bool = False):
         super(GameProcess, self).__init__()
         self.app_name = app_name
         self.on_startup = on_startup
@@ -208,7 +208,7 @@ class GameUtils(QObject):
             wine_pfx: str = None,
             ask_always_sync: bool = False,
     ):
-        executable = utils.get_rare_executable()
+        executable = misc.get_rare_executable()
         executable, args = executable[0], executable[1:]
         args.extend([
             "start", app_name

@@ -1,3 +1,4 @@
+typing_extensions
 requests
 PyQt5
 QtAwesome

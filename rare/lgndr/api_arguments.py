@@ -17,7 +17,7 @@ class LgndrCommonArgs:
 
 class _GetBooleanChoiceP(Protocol):
     def __call__(self, prompt: str, default: bool = ...) -> bool:
-        ...
+        pass
 
 
 def _get_boolean_choice(prompt: str, default: bool = True) -> bool:
