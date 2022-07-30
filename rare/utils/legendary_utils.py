@@ -104,6 +104,7 @@ class VerifyWorker(QRunnable):
         # TODO: requires the client to be online. To do it this way, we need to
         # TODO: somehow detect the error and offer a dialog in which case `verify_games` is
         # TODO: re-run with `repair_mode` and `repair_online`
+        # FIXME: This will crash in offline mode. Offline mode needs a re-thinking in general.
         result = self.cli.verify_game(
             args, print_command=False, repair_mode=True, repair_online=True)
         # success, failed, missing = self.cli.verify_game(args, print_command=False)

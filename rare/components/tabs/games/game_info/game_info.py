@@ -85,7 +85,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         if self.args.offline:
             self.repair_button.setDisabled(True)
         else:
-            self.repair_button.clicked.connect(self.repair)
+            self.repair_button.clicked.connect(lambda: self.repair(self.igame))
 
         self.install_button.clicked.connect(lambda: self.game_utils.launch_game(self.game.app_name))
 
@@ -117,8 +117,10 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.game_utils.update_list.emit(self.game.app_name)
             self.uninstalled.emit(self.game.app_name)
 
-    def repair(self):
-        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.game.app_name}.repair")
+    @pyqtSlot(InstalledGame)
+    def repair(self, igame: InstalledGame):
+        game = self.core.get_game(igame.app_name)
+        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{igame.app_name}.repair")
         if not os.path.exists(repair_file):
             QMessageBox.warning(
                 self,
@@ -128,8 +130,9 @@ class GameInfo(QWidget, Ui_GameInfo):
                 ),
             )
             return
+        update = igame.version != game.app_version(igame.platform)
         self.signals.install_game.emit(
-            InstallOptionsModel(app_name=self.game.app_name, repair_mode=True, repair_and_update=True, update=True)
+            InstallOptionsModel(app_name=self.game.app_name, repair_mode=True, repair_and_update=update, update=True)
         )
 
     def verify(self):
@@ -188,7 +191,7 @@ class GameInfo(QWidget, Ui_GameInfo):
                 QMessageBox.Yes,
             )
             if ans == QMessageBox.Yes:
-                self.repair()
+                self.repair(igame)
         self.verify_widget.setCurrentIndex(0)
         self.verify_threads.pop(app_name)
         self.move_button.setEnabled(True)

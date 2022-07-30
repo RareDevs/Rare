@@ -16,6 +16,10 @@ class LegendaryCore(LegendaryCoreReal):
         self.handler = LgndrCoreLogHandler()
         self.log.addHandler(self.handler)
 
+    # skip_sync defaults to false but since Rare is persistent, skip by default
+    # def get_installed_game(self, app_name, skip_sync=True) -> InstalledGame:
+    #     return super(LegendaryCore, self).get_installed_game(app_name, skip_sync)
+
     def prepare_download(self, game: Game, base_game: Game = None, base_path: str = '',
                          status_q: Queue = None, max_shm: int = 0, max_workers: int = 0,
                          force: bool = False, disable_patching: bool = False,
