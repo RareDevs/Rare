@@ -25,7 +25,7 @@ from rare.utils import config_helper
 class InstallDialog(QDialog, Ui_InstallDialog):
     result_ready = pyqtSignal(InstallQueueItemModel)
 
-    def __init__(self, dl_item: InstallQueueItemModel, update=False, silent=False, parent=None):
+    def __init__(self, dl_item: InstallQueueItemModel, update=False, repair=False, silent=False, parent=None):
         super(InstallDialog, self).__init__(parent)
         self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
@@ -44,6 +44,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.game_path = self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value", "")
 
         self.update = update
+        self.repair = repair
         self.silent = silent
 
         self.options_changed = False

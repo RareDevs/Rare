@@ -8,7 +8,7 @@ from legendary.core import LegendaryCore
 from rare.lgndr.api_monkeys import LgndrIndirectStatus
 from rare.lgndr.api_arguments import LgndrVerifyGameArgs, LgndrUninstallGameArgs
 from rare.lgndr.api_exception import LgndrException
-from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton
+from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, ArgumentsSingleton
 from rare.utils import config_helper
 
 logger = getLogger("Legendary Utils")
@@ -90,6 +90,7 @@ class VerifyWorker(QRunnable):
         self.setAutoDelete(True)
         self.cli = LegendaryCLISingleton()
         self.core = LegendaryCoreSingleton()
+        self.args = ArgumentsSingleton()
         self.app_name = app_name
 
     def status_callback(self, num: int, total: int, percentage: float, speed: float):
@@ -100,15 +101,37 @@ class VerifyWorker(QRunnable):
         args = LgndrVerifyGameArgs(app_name=self.app_name,
                                    indirect_status=status,
                                    verify_stdout=self.status_callback)
-        # TODO: offer this as an alternative when manifest doesn't exist
-        # TODO: requires the client to be online. To do it this way, we need to
-        # TODO: somehow detect the error and offer a dialog in which case `verify_games` is
-        # TODO: re-run with `repair_mode` and `repair_online`
-        # FIXME: This will crash in offline mode. Offline mode needs a re-thinking in general.
+
+        # lk: first pass, verify with the current manifest
+        repair_mode = False
         result = self.cli.verify_game(
-            args, print_command=False, repair_mode=True, repair_online=True)
-        # success, failed, missing = self.cli.verify_game(args, print_command=False)
-        if result:
-            self.signals.result.emit(self.app_name, not any(result), *result)
-        else:
-            self.signals.error.emit(self.app_name, status.message)
+            args, print_command=False, repair_mode=repair_mode, repair_online=not self.args.offline
+        )
+        if result is None:
+            # lk: second pass with the latest manifest
+            # lk: this happens if the manifest was not found and repair_mode was not requested
+            # lk: we already have checked if the directory exists before starting the worker
+            try:
+                # lk: this try-except block handles the exception caused by a missing manifest
+                # lk: and is raised only in the case we are offline
+                repair_mode = True
+                result = self.cli.verify_game(
+                    args, print_command=False, repair_mode=repair_mode, repair_online=not self.args.offline
+                )
+                if result is None:
+                    raise ValueError
+            except ValueError:
+                self.signals.error.emit(self.app_name, status.message)
+                return
+
+        success = result is not None and not any(result)
+        if success:
+            # lk: if verification was successful we delete the repair file and run the clean procedure
+            # lk: this could probably be cut down to what is relevant for this use-case and skip the `cli` call
+            igame = self.core.get_installed_game(self.app_name)
+            game = self.core.get_game(self.app_name, platform=igame.platform)
+            repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.app_name}.repair')
+            self.cli.clean_post_install(game=game, igame=igame, repair=True, repair_file=repair_file)
+
+        self.signals.result.emit(self.app_name, success, *result)
+
