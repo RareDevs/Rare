@@ -1,7 +1,6 @@
 import datetime
 import json
 import os
-from dataclasses import dataclass
 from logging import getLogger
 
 from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QTimer
@@ -120,13 +119,6 @@ class GameProcess(QObject):
 
     def _game_finished(self, exit_code: int):
         self.game_finished.emit(exit_code, self.app_name)
-
-
-@dataclass
-class RunningGameModel:
-    process: GameProcess
-    app_name: str
-    always_ask_sync: bool = False
 
 
 class GameUtils(QObject):
@@ -265,6 +257,8 @@ class GameUtils(QObject):
             return
 
         if exit_code != 0:
+            pass
+            """
             QMessageBox.warning(
                 None,
                 "Warning",
@@ -272,8 +266,8 @@ class GameUtils(QObject):
                     self.core.get_game(app_name).app_title
                 ),
             )
+            """
 
-        game: RunningGameModel = self.running_games.get(app_name, None)
         if app_name in self.running_games.keys():
             self.running_games.pop(app_name)
 

@@ -94,7 +94,7 @@ class GameProcessApp(RareApp):
         if self.console:
             self.game_process.readyReadStandardOutput.connect(
                 lambda: self.console.log(
-                   self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
+                    self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
                 )
             )
             self.game_process.readyReadStandardError.connect(
@@ -160,13 +160,14 @@ class GameProcessApp(RareApp):
         if args.cwd:
             self.game_process.setWorkingDirectory(args.cwd)
         self.game_process.setProcessEnvironment(args.env)
-        self.game_process.start(args.executable, args.args)
-        self.send_message(
+        # send start message after process started
+        self.game_process.started.connect(lambda: self.send_message(
             StateChangedModel(
                 action=Actions.state_update, app_name=self.app_name,
                 new_state=StateChangedModel.States.started
             )
-        )
+        ))
+        self.game_process.start(args.executable, args.args)
 
     def error_occurred(self, error_str: str):
         self.logger.warning(error_str)
@@ -208,6 +209,7 @@ def start_game(args: Namespace):
     )
 
     app = GameProcessApp(args.app_name)
+    app.setQuitOnLastWindowClosed(True)
 
     def excepthook(exc_type, exc_value, exc_tb):
         tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
@@ -226,10 +228,6 @@ def start_game(args: Namespace):
     if not app.success:
         return
     app.start(args)
-    app.exit_app.connect(lambda: app.exit(0))
+    # app.exit_app.connect(lambda: app.exit(0))
 
-    # this button is for debug. Closing with keyboard interrupt does not kill the server
-    # quit_button = QPushButton("Quit")
-    # quit_button.show()
-    # quit_button.clicked.connect(lambda: app.exit(0))
-    app.exec_()
+    sys.exit(app.exec_())
