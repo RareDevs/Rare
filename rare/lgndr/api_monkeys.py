@@ -7,7 +7,7 @@ from typing_extensions import Protocol
 
 class GetBooleanChoiceProtocol(Protocol):
     def __call__(self, prompt: str, default: bool = ...) -> bool:
-        pass
+        ...
 
 
 def get_boolean_choice(prompt: str, default: bool = True) -> bool:
@@ -16,15 +16,6 @@ def get_boolean_choice(prompt: str, default: bool = True) -> bool:
 
 def verify_stdout(a0: int, a1: int, a2: float, a3: float) -> None:
     print(f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r")
-
-
-class UILogHandler(logging.Handler):
-    def __init__(self, dest: QLabel):
-        super(UILogHandler, self).__init__()
-        self.widget = dest
-
-    def emit(self, record: logging.LogRecord) -> None:
-        self.widget.setText(record.getMessage())
 
 
 @dataclass

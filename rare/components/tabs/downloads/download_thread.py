@@ -11,7 +11,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from legendary.core import LegendaryCore
 from legendary.models.downloading import WriterTask
 
-from rare.shared import GlobalSignalsSingleton
+from rare.shared import GlobalSignalsSingleton, LegendaryCLISingleton
 from rare.models.install import InstallQueueItemModel
 from rare.utils.misc import create_desktop_link
 from rare.lgndr.downloading import UIUpdate
@@ -139,7 +139,6 @@ class DownloadThread(QThread):
             self.status.emit("dl_finished")
             end_t = time.time()
             logger.info(f"Download finished in {end_t - start_time}s")
-            game = self.core.get_game(self.item.download.igame.app_name)
 
             if self.item.options.overlay:
                 self.signals.overlay_installation_finished.emit()
@@ -163,28 +162,18 @@ class DownloadThread(QThread):
                         "Manually installing DLCs works the same; just use the DLC app name instead."
                     )
 
-                    # install_dlcs = QMessageBox.question(self, "", "Do you want to install the prequisites", QMessageBox.Yes|QMessageBox.No) == QMessageBox.Yes
-                    # TODO
-                if game.supports_cloud_saves and not game.is_dlc:
+                if self.item.download.game.supports_cloud_saves and not self.item.download.game.is_dlc:
                     logger.info(
                         'This game supports cloud saves, syncing is handled by the "sync-saves" command.'
                     )
                     logger.info(
-                        f'To download saves for this game run "legendary sync-saves {game.app_name}"'
+                        f'To download saves for this game run "legendary sync-saves {self.item.download.game.app_name}"'
                     )
-        old_igame = self.core.get_installed_game(game.app_name)
-        if old_igame and self.item.download.repair and os.path.exists(self.item.download.repair_file):
-            if old_igame.needs_verification:
-                old_igame.needs_verification = False
-                self.core.install_game(old_igame)
 
-            logger.debug("Removing repair file.")
-            os.remove(self.item.download.repair_file)
-        if old_igame and old_igame.install_tags != self.item.download.igame.install_tags:
-            old_igame.install_tags = self.item.download.igame.install_tags
-            logger.info("Deleting now untagged files.")
-            self.core.uninstall_tag(old_igame)
-            self.core.install_game(old_igame)
+        LegendaryCLISingleton().clean_post_install(
+            self.item.download.game, self.item.download.igame,
+            self.item.download.repair, self.item.download.repair_file
+        )
 
         if not self.item.options.update and self.item.options.create_shortcut:
             if not create_desktop_link(self.item.options.app_name, self.core, "desktop"):

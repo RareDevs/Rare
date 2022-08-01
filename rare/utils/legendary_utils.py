@@ -108,7 +108,7 @@ class VerifyWorker(QRunnable):
             args, print_command=False, repair_mode=repair_mode, repair_online=not self.args.offline
         )
         if result is None:
-            # lk: second pass with the latest manifest
+            # lk: second pass with downloading the latest manifest
             # lk: this happens if the manifest was not found and repair_mode was not requested
             # lk: we already have checked if the directory exists before starting the worker
             try:

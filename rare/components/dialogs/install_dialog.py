@@ -176,8 +176,9 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                     if tag == "__required":
                         cb.setChecked(True)
                         cb.setDisabled(True)
-                    if all(elem in self.config_tags for elem in info["tags"]):
-                        cb.setChecked(True)
+                    if self.config_tags is not None:
+                        if all(elem in self.config_tags for elem in info["tags"]):
+                            cb.setChecked(True)
                     self.sdl_list_layout.addWidget(cb)
                     self.sdl_list_cbs.append(cb)
                 self.sdl_list_frame.resize(self.sdl_list_frame.minimumSize())
