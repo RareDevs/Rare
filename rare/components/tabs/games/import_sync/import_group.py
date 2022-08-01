@@ -10,10 +10,10 @@ from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThrea
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, qApp, QMessageBox
 
+from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.api_arguments import LgndrImportGameArgs
-from rare.lgndr.api_exception import LgndrException
 from rare.lgndr.api_monkeys import LgndrIndirectStatus
-from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
 from rare.widgets.elide_label import ElideLabel
@@ -28,7 +28,7 @@ def find_app_name(path: str, core) -> Optional[str]:
                 with open(os.path.join(path, ".egstore", i)) as file:
                     app_name = json.load(file).get("AppName")
                 return app_name
-    elif app_name := LegendaryCLISingleton().resolve_aliases(os.path.basename(os.path.normpath(path))):
+    elif app_name := LegendaryCLI(core).resolve_aliases(os.path.basename(os.path.normpath(path))):
         # return None if game does not exist (Workaround for overlay)
         if not core.get_game(app_name):
             return None
@@ -99,7 +99,7 @@ class ImportWorker(QRunnable):
         return result
 
     def __import_game(self, path: Path, app_name: str, app_title: str):
-        cli = LegendaryCLISingleton()
+        cli = LegendaryCLI(self.core)
         status = LgndrIndirectStatus()
         args = LgndrImportGameArgs(
             app_path=str(path),

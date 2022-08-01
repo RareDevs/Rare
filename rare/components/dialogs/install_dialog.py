@@ -10,11 +10,12 @@ from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
 from legendary.utils.selective_dl import get_sdl_appname
 
+from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.api_arguments import LgndrInstallGameArgs
 from rare.lgndr.api_exception import LgndrException
 from rare.lgndr.api_monkeys import LgndrIndirectStatus
 from rare.lgndr.core import LegendaryCore
-from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, ApiResultsSingleton, ArgumentsSingleton
+from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton, ArgumentsSingleton
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils.extra_widgets import PathEdit
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel
@@ -337,7 +338,7 @@ class InstallInfoWorker(QRunnable):
     def run(self):
         try:
             if not self.dl_item.options.overlay:
-                cli = LegendaryCLISingleton()
+                cli = LegendaryCLI(self.core)
                 status = LgndrIndirectStatus()
                 result = cli.install_game(
                     LgndrInstallGameArgs(**self.dl_item.options.as_install_kwargs(), indirect_status=status)

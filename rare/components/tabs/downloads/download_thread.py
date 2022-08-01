@@ -11,7 +11,8 @@ from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from legendary.core import LegendaryCore
 from legendary.models.downloading import WriterTask
 
-from rare.shared import GlobalSignalsSingleton, LegendaryCLISingleton
+from rare.lgndr.cli import LegendaryCLI
+from rare.shared import GlobalSignalsSingleton
 from rare.models.install import InstallQueueItemModel
 from rare.utils.misc import create_desktop_link
 from rare.lgndr.downloading import UIUpdate
@@ -170,7 +171,7 @@ class DownloadThread(QThread):
                         f'To download saves for this game run "legendary sync-saves {self.item.download.game.app_name}"'
                     )
 
-        LegendaryCLISingleton().clean_post_install(
+        LegendaryCLI(self.core).clean_post_install(
             self.item.download.game, self.item.download.igame,
             self.item.download.repair, self.item.download.repair_file
         )

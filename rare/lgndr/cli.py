@@ -17,8 +17,9 @@ from .manager import DLManager
 
 class LegendaryCLI(LegendaryCLIReal):
 
-    def __init__(self, override_config=None, api_timeout=None):
-        self.core = LegendaryCore(override_config, timeout=api_timeout)
+    # noinspection PyMissingConstructor
+    def __init__(self, core: LegendaryCore):
+        self.core = core
         self.logger = logging.getLogger('cli')
         self.logging_queue = None
 
@@ -96,19 +97,10 @@ class LegendaryCLI(LegendaryCLIReal):
 
             if not os.path.exists(repair_file):
                 logger.info('Game has not been verified yet.')
-                # Rare: Dodge the path below for now
+                # Rare: we do not want to verify while preparing the download in the InstallDialog
+                # Rare: we handle it differently through the GameInfo tab
                 logger.error('Game has not been verified yet.')
                 return
-                if not args.yes:
-                    if not get_boolean_choice(f'Verify "{game.app_name}" now ("no" will abort repair)?'):
-                        return
-                try:
-                    self.verify_game(args, print_command=False, repair_mode=True, repair_online=args.repair_and_update)
-                except ValueError:
-                    logger.error('To repair a game with a missing manifest you must run the command with '
-                                 '"--repair-and-update". However this will redownload any file that does '
-                                 'not match the current hash in its entirety.')
-                    return
             else:
                 logger.info(f'Using existing repair file: {repair_file}')
 

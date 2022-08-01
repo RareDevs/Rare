@@ -14,7 +14,7 @@ from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 from .message_models import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
-from ..shared import LegendaryCLISingleton, LegendaryCoreSingleton
+from ..shared import LegendaryCoreSingleton
 from ..widgets.rare_app import RareApp
 
 
@@ -69,8 +69,7 @@ class GameProcessApp(RareApp):
         self.game_process = QProcess()
         self.app_name = app_name
         self.logger = getLogger(self.app_name)
-        LegendaryCLISingleton(init=True)
-        self.core = LegendaryCoreSingleton()
+        self.core = LegendaryCoreSingleton(init=True)
 
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)

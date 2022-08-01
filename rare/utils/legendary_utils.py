@@ -5,10 +5,10 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QObject, QRunnable, QStandardPaths
 from legendary.core import LegendaryCore
 
+from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.api_monkeys import LgndrIndirectStatus
 from rare.lgndr.api_arguments import LgndrVerifyGameArgs, LgndrUninstallGameArgs
-from rare.lgndr.api_exception import LgndrException
-from rare.shared import LegendaryCLISingleton, LegendaryCoreSingleton, ArgumentsSingleton
+from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
 from rare.utils import config_helper
 
 logger = getLogger("Legendary Utils")
@@ -40,7 +40,7 @@ def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_co
             os.remove(start_menu_shortcut)
 
     status = LgndrIndirectStatus()
-    LegendaryCLISingleton().uninstall_game(
+    LegendaryCLI(core).uninstall_game(
         LgndrUninstallGameArgs(
             app_name=app_name,
             keep_files=keep_files,
@@ -88,7 +88,6 @@ class VerifyWorker(QRunnable):
         super(VerifyWorker, self).__init__()
         self.signals = VerifyWorker.Signals()
         self.setAutoDelete(True)
-        self.cli = LegendaryCLISingleton()
         self.core = LegendaryCoreSingleton()
         self.args = ArgumentsSingleton()
         self.app_name = app_name
@@ -97,6 +96,7 @@ class VerifyWorker(QRunnable):
         self.signals.status.emit(self.app_name, num, total, percentage, speed)
 
     def run(self):
+        cli = LegendaryCLI(self.core)
         status = LgndrIndirectStatus()
         args = LgndrVerifyGameArgs(app_name=self.app_name,
                                    indirect_status=status,
@@ -104,7 +104,7 @@ class VerifyWorker(QRunnable):
 
         # lk: first pass, verify with the current manifest
         repair_mode = False
-        result = self.cli.verify_game(
+        result = cli.verify_game(
             args, print_command=False, repair_mode=repair_mode, repair_online=not self.args.offline
         )
         if result is None:
@@ -115,7 +115,7 @@ class VerifyWorker(QRunnable):
                 # lk: this try-except block handles the exception caused by a missing manifest
                 # lk: and is raised only in the case we are offline
                 repair_mode = True
-                result = self.cli.verify_game(
+                result = cli.verify_game(
                     args, print_command=False, repair_mode=repair_mode, repair_online=not self.args.offline
                 )
                 if result is None:
@@ -131,7 +131,7 @@ class VerifyWorker(QRunnable):
             igame = self.core.get_installed_game(self.app_name)
             game = self.core.get_game(self.app_name, platform=igame.platform)
             repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.app_name}.repair')
-            self.cli.clean_post_install(game=game, igame=igame, repair=True, repair_file=repair_file)
+            cli.clean_post_install(game=game, igame=igame, repair=True, repair_file=repair_file)
 
         self.signals.result.emit(self.app_name, success, *result)
 
