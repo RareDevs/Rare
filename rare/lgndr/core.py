@@ -8,7 +8,11 @@ from legendary.models.manifest import ManifestMeta
 from .api_exception import LgndrException, LgndrCoreLogHandler
 from .manager import DLManager
 
+# import legendary.core
+# legendary.core.DLManager = DLManager
 
+
+# fmt: off
 class LegendaryCore(LegendaryCoreReal):
 
     def __init__(self, override_config=None, timeout=10.0):
@@ -48,7 +52,11 @@ class LegendaryCore(LegendaryCoreReal):
         )
         # lk: monkeypatch run_real (the method that emits the stats) into DLManager
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
+        # lk: set the queue for reporting statistics back the UI
         dlm.status_queue = Queue()
+        # lk: set the queue to send control signals to the DLManager
+        # lk: this doesn't exist in the original class, but it is monkeypatched in
+        dlm.signals_queue = Queue()
         return dlm, analysis, igame
 
     def uninstall_game(self, installed_game: InstalledGame, delete_files=True, delete_root_directory=False):
@@ -79,6 +87,11 @@ class LegendaryCore(LegendaryCoreReal):
         dlm, analysis_result, igame = super(LegendaryCore, self).prepare_overlay_install(path)
         # lk: monkeypatch status_q (the queue for download stats)
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
+        # lk: set the queue for reporting statistics back the UI
         dlm.status_queue = Queue()
+        # lk: set the queue to send control signals to the DLManager
+        # lk: this doesn't exist in the original class, but it is monkeypatched in
+        dlm.signals_queue = Queue()
         return dlm, analysis_result, igame
 
+# fmt: on

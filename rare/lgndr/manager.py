@@ -1,5 +1,6 @@
 import logging
 import os
+import queue
 import time
 from multiprocessing import Queue as MPQueue
 from multiprocessing.shared_memory import SharedMemory
@@ -11,10 +12,14 @@ from legendary.downloader.mp.workers import DLWorker, FileWorker
 from legendary.models.downloading import ChunkTask, SharedMemorySegment, TerminateWorkerTask
 
 from .downloading import UIUpdate
+from .api_monkeys import DLManagerSignals
 
 
+# fmt: off
 class DLManager(DLManagerReal):
-    # fmt: off
+    # Rare: prototype to avoid undefined variable in type checkers
+    signals_queue: MPQueue
+
     # @staticmethod
     def run_real(self):
         self.shared_memory = SharedMemory(create=True, size=self.max_shared_memory)
@@ -77,6 +82,9 @@ class DLManager(DLManagerReal):
 
         last_update = time.time()
 
+        # Rare: kill requested
+        kill_request = False
+
         while processed_tasks < num_tasks:
             delta = time.time() - last_update
             if not delta:
@@ -121,7 +129,7 @@ class DLManager(DLManagerReal):
                 rt_hours = rt_minutes = rt_seconds = 0
 
             log_level = self.log.level
-            # lk: Disable up to INFO logging level for the segment below
+            # Rare: Disable up to INFO logging level for the segment below
             self.log.setLevel(logging.ERROR)
             self.log.info(f'= Progress: {perc:.02f}% ({processed_chunks}/{num_chunk_tasks}), '
                           f'Running for {rt_hours:02d}:{rt_minutes:02d}:{rt_seconds:02d}, '
@@ -133,7 +141,7 @@ class DLManager(DLManagerReal):
                           f'/ {dl_unc_speed / 1024 / 1024:.02f} MiB/s (decompressed)')
             self.log.info(f' + Disk\t- {w_speed / 1024 / 1024:.02f} MiB/s (write) / '
                           f'{r_speed / 1024 / 1024:.02f} MiB/s (read)')
-            # lk: Restore previous logging level
+            # Rare: Restore previous logging level
             self.log.setLevel(log_level)
 
             # send status update to back to instantiator (if queue exists)
@@ -154,6 +162,29 @@ class DLManager(DLManagerReal):
                     ), timeout=1.0)
                 except Exception as e:
                     self.log.warning(f'Failed to send status update to queue: {e!r}')
+
+            # Rare: queue of control signals
+            try:
+                signals: DLManagerSignals = self.signals_queue.get(timeout=0.5)
+                self.log.warning('Immediate stop requested!')
+                if signals.kill is True:
+                    # lk: graceful but not what legendary does
+                    self.running = False
+                    # send conditions to unlock threads if they aren't already
+                    for cond in self.conditions:
+                        with cond:
+                            cond.notify()
+                    kill_request = True
+                    break
+                    # # lk: alternative way, but doesn't clean shm
+                    # for i in range(self.max_workers):
+                    #     self.dl_worker_queue.put_nowait(TerminateWorkerTask())
+                    #
+                    # self.log.info('Waiting for installation to finish...')
+                    # self.writer_queue.put_nowait(TerminateWorkerTask())
+                    # raise KeyboardInterrupt
+            except queue.Empty:
+                pass
 
             time.sleep(self.update_interval)
 
@@ -180,7 +211,7 @@ class DLManager(DLManagerReal):
                 self.log.warning(f'Thread did not terminate! {repr(t)}')
 
         # clean up resume file
-        if self.resume_file:
+        if self.resume_file and not kill_request:
             try:
                 os.remove(self.resume_file)
             except OSError as e:
@@ -194,4 +225,5 @@ class DLManager(DLManagerReal):
         self.log.info('All done! Download manager quitting...')
         # finally, exit the process.
         exit(0)
-    # fmt: on
+
+# fmt: on

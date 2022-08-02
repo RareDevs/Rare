@@ -5,9 +5,9 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QObject, QRunnable, QStandardPaths
 from legendary.core import LegendaryCore
 
-from rare.lgndr.cli import LegendaryCLI
-from rare.lgndr.api_monkeys import LgndrIndirectStatus
 from rare.lgndr.api_arguments import LgndrVerifyGameArgs, LgndrUninstallGameArgs
+from rare.lgndr.api_monkeys import LgndrIndirectStatus
+from rare.lgndr.cli import LegendaryCLI
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
 from rare.utils import config_helper
 
@@ -70,9 +70,7 @@ def update_manifest(app_name: str, core: LegendaryCore):
     new_manifest = core.load_manifest(new_manifest_data)
     logger.debug(f"Base urls: {base_urls}")
     # save manifest with version name as well for testing/downgrading/etc.
-    core.lgd.save_manifest(
-        game.app_name, new_manifest_data, version=new_manifest.meta.build_version
-    )
+    core.lgd.save_manifest(game.app_name, new_manifest_data, version=new_manifest.meta.build_version)
 
 
 class VerifyWorker(QRunnable):
@@ -98,9 +96,9 @@ class VerifyWorker(QRunnable):
     def run(self):
         cli = LegendaryCLI(self.core)
         status = LgndrIndirectStatus()
-        args = LgndrVerifyGameArgs(app_name=self.app_name,
-                                   indirect_status=status,
-                                   verify_stdout=self.status_callback)
+        args = LgndrVerifyGameArgs(
+            app_name=self.app_name, indirect_status=status, verify_stdout=self.status_callback
+        )
 
         # lk: first pass, verify with the current manifest
         repair_mode = False
@@ -130,8 +128,7 @@ class VerifyWorker(QRunnable):
             # lk: this could probably be cut down to what is relevant for this use-case and skip the `cli` call
             igame = self.core.get_installed_game(self.app_name)
             game = self.core.get_game(self.app_name, platform=igame.platform)
-            repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.app_name}.repair')
+            repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.app_name}.repair")
             cli.clean_post_install(game=game, igame=igame, repair=True, repair_file=repair_file)
 
         self.signals.result.emit(self.app_name, success, *result)
-

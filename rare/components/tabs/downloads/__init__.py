@@ -2,7 +2,7 @@ import datetime
 from logging import getLogger
 from typing import List, Dict
 
-from PyQt5.QtCore import QThread, pyqtSignal, QSettings
+from PyQt5.QtCore import QThread, pyqtSignal, QSettings, pyqtSlot
 from PyQt5.QtWidgets import (
     QWidget,
     QMessageBox,
@@ -21,7 +21,7 @@ from rare.lgndr.downloading import UIUpdate
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab
-from rare.utils.misc import get_size
+from rare.utils.misc import get_size, create_desktop_link
 
 logger = getLogger("Download")
 
@@ -137,7 +137,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             self.queue_widget.update_queue(self.dl_queue)
         self.active_game = queue_item.download.game
         self.thread = DownloadThread(self.core, queue_item)
-        self.thread.status.connect(self.status)
+        self.thread.exit_status.connect(self.status)
         self.thread.statistics.connect(self.statistics)
         self.thread.start()
         self.kill_button.setDisabled(False)
@@ -146,8 +146,16 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 
         self.signals.installation_started.emit(self.active_game.app_name)
 
-    def status(self, text):
-        if text == "finish":
+    @pyqtSlot(DownloadThread.ExitStatus)
+    def status(self, result: DownloadThread.ExitStatus):
+        if result.exit_code == DownloadThread.ExitCode.FINISHED:
+            if result.shortcuts:
+                if not create_desktop_link(result.app_name, self.core, "desktop"):
+                    # maybe add it to download summary, to show in finished downloads
+                    pass
+                else:
+                    logger.info("Desktop shortcut written")
+
             self.dl_name.setText(self.tr("Download finished. Reload library"))
             logger.info(f"Download finished: {self.active_game.app_title}")
 
@@ -182,10 +190,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             else:
                 self.queue_widget.update_queue(self.dl_queue)
 
-        elif text[:5] == "error":
-            QMessageBox.warning(self, "warn", f"Download error: {text[6:]}")
+        elif result.exit_code == DownloadThread.ExitCode.ERROR:
+            QMessageBox.warning(self, self.tr("Error"), f"Download error: {result.message}")
 
-        elif text == "stop":
+        elif result.exit_code == DownloadThread.ExitCode.STOPPED:
             self.reset_infos()
             if w := self.update_widgets.get(self.active_game.app_name):
                 w.update_button.setDisabled(False)

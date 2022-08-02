@@ -1,7 +1,6 @@
 import logging
 from dataclasses import dataclass
 
-from PyQt5.QtWidgets import QLabel
 from typing_extensions import Protocol
 
 
@@ -16,6 +15,27 @@ def get_boolean_choice(prompt: str, default: bool = True) -> bool:
 
 def verify_stdout(a0: int, a1: int, a2: float, a3: float) -> None:
     print(f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r")
+
+
+class DLManagerSignals:
+    _kill = False
+    _update = False
+
+    @property
+    def kill(self) -> bool:
+        self._update = False
+        return self._kill
+
+    @kill.setter
+    def kill(self, value: bool) -> None:
+        self._update = True
+        self._kill = value
+
+    @property
+    def update(self) -> bool:
+        _update = self._update
+        self._update = False
+        return _update
 
 
 @dataclass

@@ -5,7 +5,8 @@ from typing import Optional
 @dataclass
 class UIUpdate:
     """
-    Status update object sent from the manager to the CLI/GUI to update status indicators
+        Status update object sent from the manager to the CLI/GUI to update status indicators
+        Inheritance doesn't work due to optional arguments in UIUpdate proper
     """
     progress: float
     download_speed: float

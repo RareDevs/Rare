@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import subprocess
 from typing import Optional, Union, Tuple
 
 from legendary.cli import LegendaryCLI as LegendaryCLIReal
@@ -15,6 +16,7 @@ from .core import LegendaryCore
 from .manager import DLManager
 
 
+# fmt: off
 class LegendaryCLI(LegendaryCLIReal):
 
     # noinspection PyMissingConstructor
@@ -205,8 +207,42 @@ class LegendaryCLI(LegendaryCLIReal):
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 
-    def handle_postinstall(self, postinstall, igame, yes=False):
-        super(LegendaryCLI, self)._handle_postinstall(postinstall, igame, yes)
+    def _handle_postinstall(self, postinstall, igame, yes=False, choice=False):
+        # Override logger for the local context to use message as part of the indirect return value
+        logger = LgndrIndirectLogger(LgndrIndirectStatus(), self.logger)
+        # noinspection PyShadowingBuiltins
+        def print(x): self.logger.info(x) if x else None
+        # noinspection PyShadowingBuiltins
+        def input(x): return 'y' if choice else 'i'
+
+        print('\nThis game lists the following prequisites to be installed:')
+        print(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
+        print('')
+
+        if os.name == 'nt':
+            if yes:
+                c = 'n'  # we don't want to launch anything, just silent install.
+            else:
+                choice = input('Do you wish to install the prerequisites? ([y]es, [n]o, [i]gnore): ')
+                c = choice.lower()[0]
+                print('')
+
+            if c == 'i':  # just set it to installed
+                logger.info('Marking prerequisites as installed...')
+                self.core.prereq_installed(igame.app_name)
+            elif c == 'y':  # set to installed and launch installation
+                logger.info('Launching prerequisite executable..')
+                self.core.prereq_installed(igame.app_name)
+                req_path, req_exec = os.path.split(postinstall['path'])
+                work_dir = os.path.join(igame.install_path, req_path)
+                fullpath = os.path.join(work_dir, req_exec)
+                try:
+                    p = subprocess.Popen([fullpath, postinstall['args']], cwd=work_dir, shell=True)
+                    p.wait()
+                except Exception as e:
+                    logger.error(f'Failed to run prereq executable with: {e!r}')
+        else:
+            logger.info('Automatic installation not available on Linux.')
 
     def uninstall_game(self, args: LgndrUninstallGameArgs) -> None:
         # Override logger for the local context to use message as part of the indirect return value
@@ -489,3 +525,5 @@ class LegendaryCLI(LegendaryCLIReal):
         igame.install_path = new_path
         self.core.install_game(igame)
         logger.info('Finished.')
+
+# fmt: on

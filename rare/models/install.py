@@ -3,9 +3,10 @@ import platform as pf
 from dataclasses import dataclass
 from typing import List, Optional, Callable, Dict
 
-from legendary.downloader.mp.manager import DLManager
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame
+
+from rare.lgndr.manager import DLManager
 
 
 @dataclass
