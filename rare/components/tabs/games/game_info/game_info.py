@@ -33,6 +33,7 @@ from rare.utils.legendary_utils import VerifyWorker
 from rare.utils.misc import get_size
 from rare.utils.steam_grades import SteamWorker
 from rare.widgets.image_widget import ImageWidget
+from .move_game import CopyGameInstallation, MoveGamePopUp, is_game_dir
 
 logger = getLogger("GameInfo")
 
@@ -353,8 +354,9 @@ class GameInfo(QWidget, Ui_GameInfo):
             is_ue = self.core.get_asset(app_name).namespace == "ue"
         except ValueError:
             is_ue = False
-        self.grade.setVisible(not is_ue)
-        self.lbl_grade.setVisible(not is_ue)
+        grade_visible = not is_ue and platform.system() != "Windows"
+        self.grade.setVisible(grade_visible)
+        self.lbl_grade.setVisible(grade_visible)
 
         if platform.system() != "Windows" and not is_ue:
             self.grade.setText(self.tr("Loading"))
