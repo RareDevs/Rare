@@ -99,7 +99,7 @@ class DownloadThread(QThread):
                     self._handle_postinstall(postinstall, self.item.download.igame)
 
                 dlcs = self.core.get_dlc_for_game(self.item.download.igame.app_name)
-                if dlcs:
+                if dlcs and not self.item.options.skip_dlcs:
                     for dlc in dlcs:
                         _exit_status.dlcs.append(
                             {"app_name": dlc.app_name, "app_title": dlc.app_title, "app_version": dlc.app_version}

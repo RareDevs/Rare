@@ -23,6 +23,8 @@ class InstallOptionsModel:
     repair_and_update: bool = False
     no_install: bool = False
     ignore_space: bool = False
+    skip_dlcs: bool = False
+    with_dlcs: bool = False
     # Rare's internal arguments
     # FIXME: Do we really need all of these?
     create_shortcut: bool = True
