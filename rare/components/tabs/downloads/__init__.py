@@ -138,7 +138,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.active_game = queue_item.download.game
         self.thread = DownloadThread(self.core, queue_item)
         self.thread.exit_status.connect(self.status)
-        self.thread.statistics.connect(self.statistics)
+        self.thread.ui_update.connect(self.progress_update)
         self.thread.start()
         self.kill_button.setDisabled(False)
         self.analysis = queue_item.download.analysis
@@ -213,7 +213,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.downloaded.setText("n/a")
         self.analysis = None
 
-    def statistics(self, ui_update: UIUpdate):
+    def progress_update(self, ui_update: UIUpdate):
         self.progress_bar.setValue(
             100 * ui_update.total_downloaded // self.analysis.dl_size
         )

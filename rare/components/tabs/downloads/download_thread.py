@@ -14,7 +14,7 @@ from rare.lgndr.api_monkeys import DLManagerSignals
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.downloading import UIUpdate
 from rare.models.install import InstallQueueItemModel
-from rare.shared import GlobalSignalsSingleton
+from rare.shared import GlobalSignalsSingleton, ArgumentsSingleton
 
 logger = getLogger("DownloadThread")
 
@@ -35,7 +35,7 @@ class DownloadThread(QThread):
         shortcuts: bool = False
 
     exit_status = pyqtSignal(ExitStatus)
-    statistics = pyqtSignal(UIUpdate)
+    ui_update = pyqtSignal(UIUpdate)
 
     def __init__(self, core: LegendaryCore, item: InstallQueueItemModel):
         super(DownloadThread, self).__init__()
@@ -45,46 +45,49 @@ class DownloadThread(QThread):
         self.dlm_signals: DLManagerSignals = DLManagerSignals()
 
     def run(self):
-        _exit_status = DownloadThread.ExitStatus(self.item.download.game.app_name, DownloadThread.ExitCode.ERROR)
+        cli = LegendaryCLI(self.core)
+        self.item.download.dlm.logging_queue = cli.logging_queue
+        self.item.download.dlm.proc_debug = ArgumentsSingleton().debug
+        exit_status = DownloadThread.ExitStatus(self.item.download.game.app_name, DownloadThread.ExitCode.ERROR)
         start_t = time.time()
         try:
-            self.item.download.dlmanager.start()
+            self.item.download.dlm.start()
             time.sleep(1)
-            while self.item.download.dlmanager.is_alive():
+            while self.item.download.dlm.is_alive():
                 try:
-                    self.statistics.emit(self.item.download.dlmanager.status_queue.get(timeout=1.0))
+                    self.ui_update.emit(self.item.download.dlm.status_queue.get(timeout=1.0))
                 except queue.Empty:
                     pass
                 if self.dlm_signals.update:
                     try:
-                        self.item.download.dlmanager.signals_queue.put(self.dlm_signals, block=False, timeout=1.0)
+                        self.item.download.dlm.signals_queue.put(self.dlm_signals, block=False, timeout=1.0)
                     except queue.Full:
                         pass
-                time.sleep(self.item.download.dlmanager.update_interval/10)
-            self.item.download.dlmanager.join()
+                time.sleep(self.item.download.dlm.update_interval / 10)
+            self.item.download.dlm.join()
         except Exception as e:
             end_t = time.time()
             logger.error(f"Installation failed after {end_t - start_t:.02f} seconds.")
             logger.warning(f"The following exception occurred while waiting for the downloader to finish: {e!r}.")
-            _exit_status.exit_code = DownloadThread.ExitCode.ERROR
-            _exit_status.message = f"{e!r}"
-            self.exit_status.emit(_exit_status)
+            exit_status.exit_code = DownloadThread.ExitCode.ERROR
+            exit_status.message = f"{e!r}"
+            self.exit_status.emit(exit_status)
             return
         else:
             end_t = time.time()
             if self.dlm_signals.kill is True:
                 logger.info(f"Download stopped after {end_t - start_t:.02f} seconds.")
-                _exit_status.exit_code = DownloadThread.ExitCode.STOPPED
-                self.exit_status.emit(_exit_status)
+                exit_status.exit_code = DownloadThread.ExitCode.STOPPED
+                self.exit_status.emit(exit_status)
                 return
             logger.info(f"Download finished in {end_t - start_t:.02f} seconds.")
 
-            _exit_status.exit_code = DownloadThread.ExitCode.FINISHED
+            exit_status.exit_code = DownloadThread.ExitCode.FINISHED
 
             if self.item.options.overlay:
                 self.signals.overlay_installation_finished.emit()
                 self.core.finish_overlay_install(self.item.download.igame)
-                self.exit_status.emit(_exit_status)
+                self.exit_status.emit(exit_status)
                 return
 
             if not self.item.options.no_install:
@@ -101,14 +104,14 @@ class DownloadThread(QThread):
                 dlcs = self.core.get_dlc_for_game(self.item.download.igame.app_name)
                 if dlcs and not self.item.options.skip_dlcs:
                     for dlc in dlcs:
-                        _exit_status.dlcs.append(
+                        exit_status.dlcs.append(
                             {"app_name": dlc.app_name, "app_title": dlc.app_title, "app_version": dlc.app_version}
                         )
 
                 if self.item.download.game.supports_cloud_saves and not self.item.download.game.is_dlc:
-                    _exit_status.sync_saves = True
+                    exit_status.sync_saves = True
 
-            LegendaryCLI(self.core).clean_post_install(
+            LegendaryCLI(self.core).install_game_cleanup(
                 self.item.download.game,
                 self.item.download.igame,
                 self.item.download.repair,
@@ -116,9 +119,9 @@ class DownloadThread(QThread):
             )
 
             if not self.item.options.update and self.item.options.create_shortcut:
-                _exit_status.shortcuts = True
+                exit_status.shortcuts = True
 
-        self.exit_status.emit(_exit_status)
+        self.exit_status.emit(exit_status)
 
     def _handle_postinstall(self, postinstall, igame):
         logger.info("This game lists the following prequisites to be installed:")

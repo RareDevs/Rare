@@ -47,7 +47,7 @@ class InstallOptionsModel:
 
 @dataclass
 class InstallDownloadModel:
-    dlmanager: DLManager
+    dlm: DLManager
     analysis: AnalysisResult
     igame: InstalledGame
     game: Game

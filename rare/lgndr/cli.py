@@ -1,7 +1,7 @@
 import logging
 import os
-import time
 import subprocess
+import time
 from typing import Optional, Union, Tuple
 
 from legendary.cli import LegendaryCLI as LegendaryCLIReal
@@ -10,7 +10,13 @@ from legendary.models.game import Game, InstalledGame, VerifyResult
 from legendary.utils.lfs import validate_files
 from legendary.utils.selective_dl import get_sdl_appname
 
-from .api_arguments import LgndrInstallGameArgs, LgndrImportGameArgs, LgndrVerifyGameArgs, LgndrUninstallGameArgs
+from .api_arguments import (
+    LgndrInstallGameArgs,
+    LgndrImportGameArgs,
+    LgndrVerifyGameArgs,
+    LgndrUninstallGameArgs,
+    LgndrInstallGameRealArgs,
+)
 from .api_monkeys import LgndrIndirectStatus, LgndrIndirectLogger
 from .core import LegendaryCore
 from .manager import DLManager
@@ -24,6 +30,10 @@ class LegendaryCLI(LegendaryCLIReal):
         self.core = core
         self.logger = logging.getLogger('cli')
         self.logging_queue = None
+        self.ql = self.setup_threaded_logging()
+
+    def __del__(self):
+        self.ql.stop()
 
     def resolve_aliases(self, name):
         return super(LegendaryCLI, self)._resolve_aliases(name)
@@ -178,7 +188,7 @@ class LegendaryCLI(LegendaryCLIReal):
         # game is either up-to-date or hasn't changed, so we have nothing to do
         if not analysis.dl_size:
             logger.info('Download size is 0, the game is either already up to date or has not changed. Exiting...')
-            self.clean_post_install(game, igame, args.repair_mode, repair_file)
+            self.install_game_cleanup(game, igame, args.repair_mode, repair_file)
             return
 
         res = self.core.check_installation_conditions(analysis=analysis, install=igame, game=game,
@@ -187,12 +197,82 @@ class LegendaryCLI(LegendaryCLIReal):
 
         return dlm, analysis, igame, game, args.repair_mode, repair_file, res
 
-    def clean_post_install(self, game: Game, igame: InstalledGame, repair: bool = False, repair_file: str = '') -> None:
+    # Rare: This is currently handled in DownloadThread, this is a trial
+    def install_game_real(self, args: LgndrInstallGameRealArgs, dlm: DLManager, game: Game, igame: InstalledGame) -> None:
+        # Override logger for the local context to use message as part of the indirect return value
+        logger = LgndrIndirectLogger(args.indirect_status, self.logger)
+        get_boolean_choice = args.get_boolean_choice
+
+        start_t = time.time()
+
+        try:
+            # set up logging stuff (should be moved somewhere else later)
+            dlm.logging_queue = self.logging_queue
+            dlm.proc_debug = args.dlm_debug
+
+            dlm.start()
+            dlm.join()
+        except Exception as e:
+            end_t = time.time()
+            logger.info(f'Installation failed after {end_t - start_t:.02f} seconds.')
+            logger.warning(f'The following exception occurred while waiting for the downloader to finish: {e!r}. '
+                           f'Try restarting the process, the resume file will be used to start where it failed. '
+                           f'If it continues to fail please open an issue on GitHub.')
+        else:
+            end_t = time.time()
+            if not args.no_install:
+                # Allow setting savegame directory at install time so sync-saves will work immediately
+                if (game.supports_cloud_saves or game.supports_mac_cloud_saves) and args.save_path:
+                    igame.save_path = args.save_path
+
+                postinstall = self.core.install_game(igame)
+                if postinstall:
+                    self._handle_postinstall(postinstall, igame, yes=args.yes)
+
+                dlcs = self.core.get_dlc_for_game(game.app_name)
+                if dlcs and not args.skip_dlcs:
+                    print('\nThe following DLCs are available for this game:')
+                    for dlc in dlcs:
+                        print(f' - {dlc.app_title} (App name: {dlc.app_name}, version: '
+                              f'{dlc.app_version(args.platform)})')
+                    print('\nYou can manually install these later by running this command with the DLC\'s app name.')
+
+                    install_dlcs = not args.skip_dlcs
+                    if not args.yes and not args.with_dlcs and not args.skip_dlcs:
+                        if not get_boolean_choice(f'Do you wish to automatically install DLCs?'):
+                            install_dlcs = False
+
+                    if install_dlcs:
+                        _yes, _app_name = args.yes, args.app_name
+                        args.yes = True
+                        for dlc in dlcs:
+                            args.app_name = dlc.app_name
+                            self.install_game(args)
+                        args.yes, args.app_name = _yes, _app_name
+                    else:
+                        print('')
+
+                if (game.supports_cloud_saves or game.supports_mac_cloud_saves) and not game.is_dlc:
+                    # todo option to automatically download saves after the installation
+                    #  args does not have the required attributes for sync_saves in here,
+                    #  not sure how to solve that elegantly.
+                    logger.info(f'This game supports cloud saves, syncing is handled by the "sync-saves" command. '
+                                f'To download saves for this game run "legendary sync-saves {args.app_name}"')
+
+                # show tip again after installation finishes so users hopefully actually see it
+                if tip_url := self.core.get_game_tip(igame.app_name):
+                    print(f'\nThis game may require additional setup, see: {tip_url}\n')
+
+            self.install_game_cleanup(game, igame, args.repair_mode, args.repair_file)
+
+            logger.info(f'Finished installation process in {end_t - start_t:.02f} seconds.')
+
+    def install_game_cleanup(self, game: Game, igame: InstalledGame, repair_mode: bool = False, repair_file: str = '') -> None:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(LgndrIndirectStatus(), self.logger)
 
         old_igame = self.core.get_installed_game(game.app_name)
-        if old_igame and repair and os.path.exists(repair_file):
+        if old_igame and repair_mode and os.path.exists(repair_file):
             if old_igame.needs_verification:
                 old_igame.needs_verification = False
                 self.core.install_game(old_igame)
@@ -207,7 +287,7 @@ class LegendaryCLI(LegendaryCLIReal):
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 
-    def _handle_postinstall(self, postinstall, igame, yes=False, choice=False):
+    def _handle_postinstall(self, postinstall, igame, yes=False, choice=True):
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(LgndrIndirectStatus(), self.logger)
         # noinspection PyShadowingBuiltins

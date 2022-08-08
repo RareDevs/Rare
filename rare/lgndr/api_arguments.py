@@ -76,8 +76,6 @@ class LgndrInstallGameArgs:
     reset_sdl: bool = False
     skip_sdl: bool = False
     disable_https: bool = False
-    skip_dlcs: bool = False
-    with_dlcs: bool = False
     yes: bool = True
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
@@ -89,3 +87,20 @@ class LgndrInstallGameArgs:
     #     if self.sdl_prompt is None:
     #         self.sdl_prompt: Callable[[str, str], list] = \
     #             lambda app_name, title: self.install_tag if self.install_tag is not None else [""]
+
+
+@dataclass
+class LgndrInstallGameRealArgs:
+    app_name: str
+    platform: str = "Windows"
+    repair_mode: bool = False
+    repair_file: str = ""
+    no_install: bool = False
+    save_path: str = ""
+    skip_dlcs: bool = False
+    with_dlcs: bool = False
+    dlm_debug: bool = False
+    yes: bool = True
+    # Rare: Extra arguments
+    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
+    get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice

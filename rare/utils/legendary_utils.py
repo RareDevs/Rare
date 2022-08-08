@@ -129,6 +129,6 @@ class VerifyWorker(QRunnable):
             igame = self.core.get_installed_game(self.app_name)
             game = self.core.get_game(self.app_name, platform=igame.platform)
             repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.app_name}.repair")
-            cli.clean_post_install(game=game, igame=igame, repair=True, repair_file=repair_file)
+            cli.install_game_cleanup(game=game, igame=igame, repair_mode=True, repair_file=repair_file)
 
         self.signals.result.emit(self.app_name, success, *result)
