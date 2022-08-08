@@ -76,6 +76,10 @@ class LgndrInstallGameArgs:
     reset_sdl: bool = False
     skip_sdl: bool = False
     disable_https: bool = False
+    # FIXME: move to LgndrInstallGameRealArgs
+    skip_dlcs: bool = False
+    with_dlcs: bool = False
+    # end of FIXME
     yes: bool = True
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
