@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
-    <height>483</height>
+    <width>530</width>
+    <height>489</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,6 +59,9 @@
      <property name="text">
       <string>Create shortcut</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="9" column="1">
@@ -66,24 +69,8 @@
      <property name="text">
       <string notr="true"/>
      </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
-    <widget class="QLabel" name="install_preqs_lbl">
-     <property name="text">
-      <string>Install prerequisites</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="1">
-    <widget class="QCheckBox" name="install_preqs_check">
-     <property name="font">
-      <font>
-       <italic>true</italic>
-      </font>
-     </property>
-     <property name="text">
-      <string notr="true"/>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -308,14 +295,14 @@
        </item>
       </layout>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="dl_optimizations_label">
        <property name="text">
         <string>Enable reordering</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QCheckBox" name="dl_optimizations_check">
        <property name="text">
         <string notr="true"/>
@@ -325,14 +312,14 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="force_download_label">
        <property name="text">
         <string>Force redownload</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QCheckBox" name="force_download_check">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -345,14 +332,14 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="ignore_space_label">
        <property name="text">
         <string>Ignore free space</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QCheckBox" name="ignore_space_check">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -370,14 +357,14 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="download_only_label">
        <property name="text">
         <string>Download only</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QCheckBox" name="download_only_check">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -392,6 +379,28 @@
        </property>
        <property name="text">
         <string>Do not try to install.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="install_preqs_lbl">
+       <property name="text">
+        <string>Install prerequisites</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="install_preqs_check">
+       <property name="font">
+        <font>
+         <italic>true</italic>
+        </font>
+       </property>
+       <property name="text">
+        <string notr="true"/>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
        </property>
       </widget>
      </item>

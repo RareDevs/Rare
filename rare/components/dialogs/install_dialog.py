@@ -153,6 +153,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.verify_button.clicked.connect(self.verify_clicked)
         self.install_button.clicked.connect(self.install_clicked)
 
+        self.install_preqs_check.setChecked(self.dl_item.options.install_preqs)
+
         self.install_dialog_layout.setSizeConstraint(self.install_dialog_layout.SetFixedSize)
 
     def execute(self):
@@ -205,6 +207,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.dl_item.options.ignore_space = self.ignore_space_check.isChecked()
         self.dl_item.options.no_install = self.download_only_check.isChecked()
         self.dl_item.options.platform = self.platform_combo_box.currentText()
+        self.dl_item.options.install_preqs = self.install_preqs_check.isChecked()
+        self.dl_item.options.create_shortcut = self.shortcut_cb.isChecked()
         if self.sdl_list_cbs:
             self.dl_item.options.install_tag = [""]
             for cb in self.sdl_list_cbs:
@@ -286,6 +290,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             if dl_item.igame.prereq_info and not dl_item.igame.prereq_info.get("installed", False):
                 self.install_preqs_check.setVisible(True)
                 self.install_preqs_lbl.setVisible(True)
+                self.install_preqs_check.setChecked(True)
                 self.install_preqs_check.setText(
                     self.tr("Also install: {}").format(dl_item.igame.prereq_info.get("name", ""))
                 )
