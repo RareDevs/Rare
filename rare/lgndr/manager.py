@@ -128,8 +128,8 @@ class DLManager(DLManagerReal):
                 hours = minutes = seconds = 0
                 rt_hours = rt_minutes = rt_seconds = 0
 
-            log_level = self.log.level
             # Rare: Disable up to INFO logging level for the segment below
+            log_level = self.log.level
             self.log.setLevel(logging.ERROR)
             self.log.info(f'= Progress: {perc:.02f}% ({processed_chunks}/{num_chunk_tasks}), '
                           f'Running for {rt_hours:02d}:{rt_minutes:02d}:{rt_seconds:02d}, '

@@ -123,6 +123,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 
     def stop_download(self):
         self.thread.kill()
+        self.kill_button.setEnabled(False)
 
     def install_game(self, queue_item: InstallQueueItemModel):
         if self.active_game is None:
@@ -137,7 +138,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             self.queue_widget.update_queue(self.dl_queue)
         self.active_game = queue_item.download.game
         self.thread = DownloadThread(self.core, queue_item)
-        self.thread.exit_status.connect(self.status)
+        self.thread.ret_status.connect(self.status)
         self.thread.ui_update.connect(self.progress_update)
         self.thread.start()
         self.kill_button.setDisabled(False)
@@ -146,9 +147,9 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 
         self.signals.installation_started.emit(self.active_game.app_name)
 
-    @pyqtSlot(DownloadThread.ExitStatus)
-    def status(self, result: DownloadThread.ExitStatus):
-        if result.exit_code == DownloadThread.ExitCode.FINISHED:
+    @pyqtSlot(DownloadThread.ReturnStatus)
+    def status(self, result: DownloadThread.ReturnStatus):
+        if result.ret_code == result.ReturnCode.FINISHED:
             if result.shortcuts:
                 if not create_desktop_link(result.app_name, self.core, "desktop"):
                     # maybe add it to download summary, to show in finished downloads
@@ -190,10 +191,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             else:
                 self.queue_widget.update_queue(self.dl_queue)
 
-        elif result.exit_code == DownloadThread.ExitCode.ERROR:
+        elif result.ret_code == result.ReturnCode.ERROR:
             QMessageBox.warning(self, self.tr("Error"), f"Download error: {result.message}")
 
-        elif result.exit_code == DownloadThread.ExitCode.STOPPED:
+        elif result.ret_code == result.ReturnCode.STOPPED:
             self.reset_infos()
             if w := self.update_widgets.get(self.active_game.app_name):
                 w.update_button.setDisabled(False)

@@ -1,7 +1,15 @@
 from dataclasses import dataclass
-from typing import Callable, List, Optional
+from enum import IntEnum
+from typing import Callable, List, Optional, Dict
 
-from .api_monkeys import LgndrIndirectStatus, GetBooleanChoiceProtocol, get_boolean_choice, verify_stdout
+from .api_monkeys import (
+    LgndrIndirectStatus,
+    GetBooleanChoiceProtocol,
+    get_boolean_choice,
+    verify_stdout,
+    DLManagerSignals
+)
+from .downloading import UIUpdate
 
 """
 @dataclass(kw_only=True)
@@ -104,7 +112,25 @@ class LgndrInstallGameRealArgs:
     skip_dlcs: bool = False
     with_dlcs: bool = False
     dlm_debug: bool = False
-    yes: bool = True
+    yes: bool = False
     # Rare: Extra arguments
+    install_preqs: bool = False
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
-    get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
+    ui_update: Callable[[UIUpdate], None] = lambda ui: None
+    dlm_signals: DLManagerSignals = DLManagerSignals()
+
+
+@dataclass
+class LgndrInstallGameRealRet:
+    class ReturnCode(IntEnum):
+        ERROR = 1
+        STOPPED = 2
+        FINISHED = 3
+
+    app_name: str
+    ret_code: ReturnCode = ReturnCode.ERROR
+    message: str = ""
+    dlcs: Optional[List[Dict]] = None
+    sync_saves: bool = False
+    tip_url: str = ""
+    shortcuts: bool = False
