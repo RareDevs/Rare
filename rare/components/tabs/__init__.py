@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.components.tabs.account import MiniWidget
+from rare.components.tabs.account import AccountWidget
 from rare.components.tabs.downloads import DownloadsTab
 from rare.components.tabs.games import GamesTab
 from rare.components.tabs.settings import SettingsTab
@@ -54,9 +54,9 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
 
-        self.mini_widget = MiniWidget()
+        self.account_widget = AccountWidget()
         account_action = QWidgetAction(self)
-        account_action.setDefaultWidget(self.mini_widget)
+        account_action.setDefaultWidget(self.account_widget)
         account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)

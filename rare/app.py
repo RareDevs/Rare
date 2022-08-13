@@ -167,8 +167,7 @@ class App(RareApp):
                 logger.info(f"{igame.title} needs verification")
 
         self.mainwindow = MainWindow()
-        self.launch_dialog.close()
-        self.tray_icon = TrayIcon(self)
+        self.tray_icon: TrayIcon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(self.exit_app)
         self.tray_icon.start_rare.triggered.connect(self.show_mainwindow)
         self.tray_icon.activated.connect(

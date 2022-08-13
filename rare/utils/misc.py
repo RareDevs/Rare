@@ -4,7 +4,7 @@ import shlex
 import subprocess
 import sys
 from logging import getLogger
-from typing import List
+from typing import List, Union
 
 import qtawesome
 import requests
@@ -157,7 +157,7 @@ def get_latest_version():
         return "0.0.0"
 
 
-def get_size(b: int) -> str:
+def get_size(b: Union[int, float]) -> str:
     for i in ["", "K", "M", "G", "T", "P", "E"]:
         if b < 1024:
             return f"{b:.2f}{i}B"

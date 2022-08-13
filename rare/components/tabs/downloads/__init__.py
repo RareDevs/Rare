@@ -1,6 +1,6 @@
 import datetime
 from logging import getLogger
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from PyQt5.QtCore import QThread, pyqtSignal, QSettings, pyqtSlot
 from PyQt5.QtWidgets import (
@@ -230,7 +230,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             100 * ui_update.total_downloaded // self.analysis.dl_size
         )
 
-    def get_time(self, seconds: int) -> str:
+    def get_time(self, seconds: Union[int, float]) -> str:
         return str(datetime.timedelta(seconds=seconds))
 
     def on_install_dialog_closed(self, download_item: InstallQueueItemModel):
@@ -256,19 +256,6 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         )
         install_dialog.result_ready.connect(self.on_install_dialog_closed)
         install_dialog.execute()
-
-    def start_download(self, download_item: InstallQueueItemModel):
-        downloads = (
-            len(self.downloadTab.dl_queue)
-            + len(self.downloadTab.update_widgets.keys())
-            + 1
-        )
-        self.setTabText(
-            1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else "")
-        )
-        self.setCurrentIndex(1)
-        self.downloadTab.install_game(download_item)
-        self.games_tab.start_download(download_item.options.app_name)
 
     @property
     def is_download_active(self):
@@ -298,7 +285,7 @@ class UpdateWidget(QWidget):
             QLabel(
                 self.tr("Version: <b>")
                 + self.igame.version
-                + "</b> \u2B9E <b>"
+                + "</b> >> <b>"
                 + self.game.app_version(self.igame.platform)
                 + "</b>"
             )

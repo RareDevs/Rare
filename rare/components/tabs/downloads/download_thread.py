@@ -104,6 +104,7 @@ class DownloadThread(QThread):
 
                 dlcs = self.core.get_dlc_for_game(self.item.download.igame.app_name)
                 if dlcs and not self.item.options.skip_dlcs:
+                    ret.dlcs = []
                     for dlc in dlcs:
                         ret.dlcs.append(
                             {
