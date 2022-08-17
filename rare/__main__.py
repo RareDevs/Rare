@@ -125,6 +125,6 @@ if __name__ == "__main__":
     #     0, os.path.join(pathlib.Path(__file__).parent.absolute(), "legendary")
     # )
     # insert source directory
-    sys.path.insert(0, str(pathlib.Path(__file__).parents[1].absolute()))
+    #sys.path.insert(0, str(pathlib.Path(__file__).parents[1].absolute()))
 
     main()

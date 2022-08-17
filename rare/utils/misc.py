@@ -165,7 +165,10 @@ def get_size(b: Union[int, float]) -> str:
 
 
 def get_rare_executable() -> List[str]:
-    if platform.system() == "Linux" or platform.system() == "Darwin":
+    # lk: detech if nuitka
+    if "__compiled__" in globals():
+        executable = [sys.executable]
+    elif platform.system() == "Linux" or platform.system() == "Darwin":
         # TODO flatpak
         if p := os.environ.get("APPIMAGE"):
             executable = [p]
