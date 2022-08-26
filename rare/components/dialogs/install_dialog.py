@@ -356,7 +356,7 @@ class InstallInfoWorker(QRunnable):
                 )
 
                 download = InstallDownloadModel(
-                    dlmanager=dlm,
+                    dlm=dlm,
                     analysis=analysis,
                     igame=igame,
                     game=self.game,
