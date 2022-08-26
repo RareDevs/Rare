@@ -46,7 +46,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.advanced_widget = CollabsibleWidget(
             self.advanced_layout, self.tr("Advanced options"), parent=self
         )
-        self.advanced_placeholder_layout.addWidget(self.advanced_widget)
+        self.collapsible_layout.addWidget(self.advanced_widget)
 
         self.game_path = self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value", "")
 
