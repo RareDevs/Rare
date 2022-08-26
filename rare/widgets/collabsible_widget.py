@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QParallelAnimationGroup, Qt, QPropertyAnimation, QAbstractAnimation
 from PyQt5.QtWidgets import QWidget, QFrame, QToolButton, QGridLayout, QSizePolicy, QLayout
 
+from rare.utils.misc import icon
 
 # https://newbedev.com/how-to-make-an-expandable-collapsable-section-widget-in-qt
 
@@ -24,19 +25,17 @@ class CollabsibleWidget(QWidget):
         self.mainLayout = QGridLayout()
 
         toggleButton = self.toggleButton
-        toggleButton.setStyleSheet("QToolButton { border: none; }")
         toggleButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        toggleButton.setArrowType(Qt.RightArrow)
+        toggleButton.setIcon(icon("fa.arrow-right"))
         toggleButton.setText(str(title))
         toggleButton.setCheckable(True)
         toggleButton.setChecked(False)
 
         headerLine = self.headerLine
-        headerLine.setFrameShape(QFrame.HLine)
-        headerLine.setFrameShadow(QFrame.Sunken)
+        headerLine.setFrameShape(QFrame.StyledPanel)
+        headerLine.setFrameShadow(QFrame.Plain)
         headerLine.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
 
-        self.contentArea.setStyleSheet("QScrollArea { background-color: white; border: none; }")
         self.contentArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         # start out collapsed
         self.contentArea.setMaximumHeight(0)
@@ -58,9 +57,9 @@ class CollabsibleWidget(QWidget):
         self.setLayout(self.mainLayout)
 
         def start_animation(checked):
-            arrow_type = Qt.DownArrow if checked else Qt.RightArrow
+            arrow_type = icon("fa.arrow-down") if checked else icon("fa.arrow-right")
             direction = QAbstractAnimation.Forward if checked else QAbstractAnimation.Backward
-            toggleButton.setArrowType(arrow_type)
+            toggleButton.setIcon(arrow_type)
             self.toggleAnimation.setDirection(direction)
             self.toggleAnimation.start()
 
