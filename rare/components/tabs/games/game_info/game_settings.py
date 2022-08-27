@@ -30,54 +30,37 @@ class GameSettings(DefaultGameSettings):
             "",
             file_type=QFileDialog.DirectoryOnly,
             placeholder=self.tr("Cloud save path"),
-            edit_func=lambda text: (os.path.exists(text), text, PathEdit.reasons.dir_not_exist),
+            edit_func=lambda text: (True, text, None)
+            if os.path.exists(text)
+            else (False, text, PathEdit.reasons.dir_not_exist),
             save_func=self.save_save_path,
         )
-        self.cloud_layout.addRow(
-            QLabel(self.tr("Save path")), self.cloud_save_path_edit
-        )
+        self.cloud_layout.addRow(QLabel(self.tr("Save path")), self.cloud_save_path_edit)
 
-        self.compute_save_path_button = QPushButton(
-            icon("fa.magic"), self.tr("Auto compute save path")
-        )
-        self.compute_save_path_button.setSizePolicy(
-            QSizePolicy.Maximum, QSizePolicy.Fixed
-        )
+        self.compute_save_path_button = QPushButton(icon("fa.magic"), self.tr("Auto compute save path"))
+        self.compute_save_path_button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         self.compute_save_path_button.clicked.connect(self.compute_save_path)
         self.cloud_layout.addRow(None, self.compute_save_path_button)
 
-        self.offline.currentIndexChanged.connect(
-            lambda x: self.update_combobox(x, "offline")
-        )
-        self.skip_update.currentIndexChanged.connect(
-            lambda x: self.update_combobox(x, "skip_update_check")
-        )
+        self.offline.currentIndexChanged.connect(lambda x: self.update_combobox(x, "offline"))
+        self.skip_update.currentIndexChanged.connect(lambda x: self.update_combobox(x, "skip_update_check"))
         self.cloud_sync.stateChanged.connect(
             lambda: self.settings.setValue(
                 f"{self.game.app_name}/auto_sync_cloud", self.cloud_sync.isChecked()
             )
         )
-        self.override_exe_edit.textChanged.connect(
-            lambda text: self.save_line_edit("override_exe", text)
-        )
-        self.launch_params.textChanged.connect(
-            lambda x: self.save_line_edit("start_params", x)
-        )
+        self.override_exe_edit.textChanged.connect(lambda text: self.save_line_edit("override_exe", text))
+        self.launch_params.textChanged.connect(lambda x: self.save_line_edit("start_params", x))
 
         self.game_settings_layout.setAlignment(Qt.AlignTop)
 
     def compute_save_path(self):
-        if (
-                self.core.is_installed(self.game.app_name)
-                and self.game.supports_cloud_saves
-        ):
+        if self.core.is_installed(self.game.app_name) and self.game.supports_cloud_saves:
             try:
                 new_path = self.core.get_save_path(self.game.app_name)
             except Exception as e:
                 logger.warning(str(e))
-                resolver = WineResolver(
-                    get_raw_save_path(self.game), self.game.app_name
-                )
+                resolver = WineResolver(get_raw_save_path(self.game), self.game.app_name)
                 if not resolver.wine_env.get("WINEPREFIX"):
                     self.cloud_save_path_edit.setText("")
                     QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")
@@ -87,18 +70,14 @@ class GameSettings(DefaultGameSettings):
                 self.compute_save_path_button.setDisabled(True)
 
                 app_name = self.game.app_name[:]
-                resolver.signals.result_ready.connect(
-                    lambda x: self.wine_resolver_finished(x, app_name)
-                )
+                resolver.signals.result_ready.connect(lambda x: self.wine_resolver_finished(x, app_name))
                 QThreadPool.globalInstance().start(resolver)
                 return
             else:
                 self.cloud_save_path_edit.setText(new_path)
 
     def wine_resolver_finished(self, path, app_name):
-        logger.info(
-            f"Wine resolver finished for {app_name}. Computed save path: {path}"
-        )
+        logger.info(f"Wine resolver finished for {app_name}. Computed save path: {path}")
         if app_name == self.game.app_name:
             self.cloud_save_path_edit.setDisabled(False)
             self.compute_save_path_button.setDisabled(False)
@@ -110,9 +89,9 @@ class GameSettings(DefaultGameSettings):
                     QMessageBox.warning(
                         None,
                         "Error",
-                        self.tr(
-                            "Error while launching {}. No permission to create {}"
-                        ).format(self.game.app_title, path),
+                        self.tr("Error while launching {}. No permission to create {}").format(
+                            self.game.app_title, path
+                        ),
                     )
                     return
             if not path:
@@ -160,9 +139,7 @@ class GameSettings(DefaultGameSettings):
         self.igame = self.core.get_installed_game(self.game.app_name)
         if self.igame:
             if self.igame.can_run_offline:
-                offline = self.core.lgd.config.get(
-                    self.game.app_name, "offline", fallback="unset"
-                )
+                offline = self.core.lgd.config.get(self.game.app_name, "offline", fallback="unset")
                 if offline == "true":
                     self.offline.setCurrentIndex(1)
                 elif offline == "false":
@@ -176,9 +153,7 @@ class GameSettings(DefaultGameSettings):
         else:
             self.offline.setEnabled(False)
 
-        skip_update = self.core.lgd.config.get(
-            self.game.app_name, "skip_update_check", fallback="unset"
-        )
+        skip_update = self.core.lgd.config.get(self.game.app_name, "skip_update_check", fallback="unset")
         if skip_update == "true":
             self.skip_update.setCurrentIndex(1)
         elif skip_update == "false":
@@ -198,18 +173,14 @@ class GameSettings(DefaultGameSettings):
             self.cloud_save_path_edit.setText("")
         else:
             self.cloud_group.setEnabled(True)
-            sync_cloud = self.settings.value(
-                f"{self.game.app_name}/auto_sync_cloud", True, bool
-            )
+            sync_cloud = self.settings.value(f"{self.game.app_name}/auto_sync_cloud", True, bool)
             self.cloud_sync.setChecked(sync_cloud)
             if self.igame.save_path:
                 self.cloud_save_path_edit.setText(self.igame.save_path)
             else:
                 self.cloud_save_path_edit.setText("")
 
-        self.launch_params.setText(
-            self.core.lgd.config.get(self.game.app_name, "start_params", fallback="")
-        )
+        self.launch_params.setText(self.core.lgd.config.get(self.game.app_name, "start_params", fallback=""))
         self.override_exe_edit.setText(
             self.core.lgd.config.get(self.game.app_name, "override_exe", fallback="")
         )

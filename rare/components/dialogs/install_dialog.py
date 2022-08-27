@@ -10,17 +10,18 @@ from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
 from legendary.utils.selective_dl import get_sdl_appname
 
-from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.api_arguments import LgndrInstallGameArgs
 from rare.lgndr.api_exception import LgndrException
 from rare.lgndr.api_monkeys import LgndrIndirectStatus
+from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
+from rare.models.install import InstallDownloadModel, InstallQueueItemModel
 from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton, ArgumentsSingleton
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
-from rare.utils.extra_widgets import PathEdit
-from rare.models.install import InstallDownloadModel, InstallQueueItemModel
-from rare.utils.misc import get_size
 from rare.utils import config_helper
+from rare.utils.extra_widgets import PathEdit
+from rare.utils.misc import get_size
+from rare.widgets.collabsible_widget import CollabsibleWidget
 
 
 class InstallDialog(QDialog, Ui_InstallDialog):
@@ -41,6 +42,11 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             if not self.dl_item.options.overlay
             else Game(app_name=self.app_name, app_title="Epic Overlay")
         )
+        self.advanced_layout.setParent(None)
+        self.advanced_widget = CollabsibleWidget(
+            self.advanced_layout, self.tr("Advanced options"), parent=self
+        )
+        self.advanced_placeholder_layout.addWidget(self.advanced_widget)
 
         self.game_path = self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value", "")
 
@@ -147,6 +153,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.verify_button.clicked.connect(self.verify_clicked)
         self.install_button.clicked.connect(self.install_clicked)
 
+        self.install_preqs_check.setChecked(self.dl_item.options.install_preqs)
+
         self.install_dialog_layout.setSizeConstraint(self.install_dialog_layout.SetFixedSize)
 
     def execute(self):
@@ -199,6 +207,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.dl_item.options.ignore_space = self.ignore_space_check.isChecked()
         self.dl_item.options.no_install = self.download_only_check.isChecked()
         self.dl_item.options.platform = self.platform_combo_box.currentText()
+        self.dl_item.options.install_preqs = self.install_preqs_check.isChecked()
+        self.dl_item.options.create_shortcut = self.shortcut_cb.isChecked()
         if self.sdl_list_cbs:
             self.dl_item.options.install_tag = [""]
             for cb in self.sdl_list_cbs:
@@ -280,6 +290,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             if dl_item.igame.prereq_info and not dl_item.igame.prereq_info.get("installed", False):
                 self.install_preqs_check.setVisible(True)
                 self.install_preqs_lbl.setVisible(True)
+                self.install_preqs_check.setChecked(True)
                 self.install_preqs_check.setText(
                     self.tr("Also install: {}").format(dl_item.igame.prereq_info.get("name", ""))
                 )

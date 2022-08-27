@@ -40,7 +40,7 @@ class PreLaunchThread(QRunnable):
     def prepare_launch(self, app_name) -> Union[LaunchArgs, None]:
         try:
             args = get_launch_args(self.core, InitArgs(app_name))
-        except GameArgsError as e:
+        except Exception as e:
             self.signals.error_occurred.emit(str(e))
             return None
         if not args:
@@ -196,8 +196,11 @@ class GameProcessApp(RareApp):
 
     def stop(self):
         self.logger.info("Stopping server")
-        self.server.close()
-        self.server.deleteLater()
+        try:
+            self.server.close()
+            self.server.deleteLater()
+        except RuntimeError:
+            pass
         self.exit_app.emit()
 
 
