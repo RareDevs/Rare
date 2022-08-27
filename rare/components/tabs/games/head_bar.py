@@ -10,7 +10,7 @@ from qtawesome import IconWidget
 
 from rare.shared import ApiResultsSingleton
 from rare.utils.extra_widgets import SelectViewWidget, ButtonLineEdit
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 
 
 class GameListHeadBar(QWidget):

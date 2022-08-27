@@ -13,7 +13,7 @@ from rare.components.tabs.games import CloudSaveUtils
 from rare.game_launch_helper import message_models
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import legendary_utils
-from rare.utils import utils
+from rare.utils import misc
 from rare.utils.meta import RareGameMeta
 
 logger = getLogger("GameUtils")
@@ -24,7 +24,7 @@ class GameProcess(QObject):
     game_launched = pyqtSignal(str)
     tried_connections = 0
 
-    def __init__(self, app_name: str, on_startup=False, always_ask_sync: bool= False):
+    def __init__(self, app_name: str, on_startup=False, always_ask_sync: bool = False):
         super(GameProcess, self).__init__()
         self.app_name = app_name
         self.on_startup = on_startup
@@ -152,7 +152,7 @@ class GameUtils(QObject):
         if not os.path.exists(igame.install_path):
             if QMessageBox.Yes == QMessageBox.question(
                     None,
-                    "Uninstall",
+                    self.tr("Uninstall - {}").format(igame.title),
                     self.tr(
                         "Game files of {} do not exist. Remove it from installed games?"
                     ).format(igame.title),
@@ -164,10 +164,12 @@ class GameUtils(QObject):
             else:
                 return False
 
-        infos = UninstallDialog(game).get_information()
-        if infos == 0:
+        proceed, keep_files, keep_config = UninstallDialog(game).get_options()
+        if not proceed:
             return False
-        legendary_utils.uninstall(game.app_name, self.core, infos)
+        success, message = legendary_utils.uninstall_game(self.core, game.app_name, keep_files, keep_config)
+        if not success:
+            QMessageBox.warning(None, self.tr("Uninstall - {}").format(igame.title), message, QMessageBox.Close)
         self.signals.game_uninstalled.emit(app_name)
         return True
 
@@ -206,7 +208,7 @@ class GameUtils(QObject):
             wine_pfx: str = None,
             ask_always_sync: bool = False,
     ):
-        executable = utils.get_rare_executable()
+        executable = misc.get_rare_executable()
         executable, args = executable[0], executable[1:]
         args.extend([
             "start", app_name

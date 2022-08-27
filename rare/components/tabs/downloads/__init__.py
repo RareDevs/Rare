@@ -1,8 +1,8 @@
 import datetime
 from logging import getLogger
-from typing import List, Dict
+from typing import List, Dict, Union
 
-from PyQt5.QtCore import QThread, pyqtSignal, QSettings
+from PyQt5.QtCore import QThread, pyqtSignal, QSettings, pyqtSlot
 from PyQt5.QtWidgets import (
     QWidget,
     QMessageBox,
@@ -11,17 +11,17 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QGroupBox,
 )
-
 from legendary.core import LegendaryCore
-from legendary.models.downloading import UIUpdate
 from legendary.models.game import Game, InstalledGame
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
+from rare.lgndr.downloading import UIUpdate
+from rare.models.install import InstallOptionsModel, InstallQueueItemModel
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab
-from rare.utils.models import InstallOptionsModel, InstallQueueItemModel
-from rare.utils.utils import get_size
+from rare.utils.misc import get_size, create_desktop_link
 
 logger = getLogger("Download")
 
@@ -56,8 +56,8 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.update_layout.addWidget(self.update_text)
         self.update_text.setVisible(len(updates) == 0)
 
-        for name in updates:
-            self.add_update(self.core.get_installed_game(name))
+        for app_name in updates:
+            self.add_update(app_name)
 
         self.queue_widget.item_removed.connect(self.queue_item_removed)
 
@@ -66,7 +66,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.signals.game_uninstalled.connect(self.remove_update)
 
         self.signals.add_download.connect(
-            lambda app_name: self.add_update(self.core.get_installed_game(app_name))
+            lambda app_name: self.add_update(app_name)
         )
         self.signals.game_uninstalled.connect(self.game_uninstalled)
 
@@ -77,14 +77,17 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             w.update_button.setDisabled(False)
             w.update_with_settings.setDisabled(False)
 
-    def add_update(self, igame: InstalledGame):
-        widget = UpdateWidget(self.core, igame, self)
+    def add_update(self, app_name: str):
+        if old_widget := self.update_widgets.get(app_name, False):
+            old_widget.deleteLater()
+            self.update_widgets.pop(app_name)
+        widget = UpdateWidget(self.core, app_name, self)
         self.update_layout.addWidget(widget)
-        self.update_widgets[igame.app_name] = widget
+        self.update_widgets[app_name] = widget
         widget.update_signal.connect(self.get_install_options)
         if QSettings().value("auto_update", False, bool):
             self.get_install_options(
-                InstallOptionsModel(app_name=igame.app_name, update=True, silent=True)
+                InstallOptionsModel(app_name=app_name, update=True, silent=True)
             )
             widget.update_button.setDisabled(True)
         self.update_text.setVisible(False)
@@ -97,13 +100,13 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
                 self.queue_widget.update_queue(self.dl_queue)
             break
 
-        # game has available update
-        if app_name in self.update_widgets.keys():
-            self.remove_update(app_name)
-
         # if game is updating
         if self.active_game and self.active_game.app_name == app_name:
             self.stop_download()
+
+        # game has available update
+        if app_name in self.update_widgets.keys():
+            self.remove_update(app_name)
 
     def remove_update(self, app_name):
         if w := self.update_widgets.get(app_name):
@@ -120,6 +123,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 
     def stop_download(self):
         self.thread.kill()
+        self.kill_button.setEnabled(False)
 
     def install_game(self, queue_item: InstallQueueItemModel):
         if self.active_game is None:
@@ -134,8 +138,8 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             self.queue_widget.update_queue(self.dl_queue)
         self.active_game = queue_item.download.game
         self.thread = DownloadThread(self.core, queue_item)
-        self.thread.status.connect(self.status)
-        self.thread.statistics.connect(self.statistics)
+        self.thread.ret_status.connect(self.status)
+        self.thread.ui_update.connect(self.progress_update)
         self.thread.start()
         self.kill_button.setDisabled(False)
         self.analysis = queue_item.download.analysis
@@ -143,8 +147,16 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 
         self.signals.installation_started.emit(self.active_game.app_name)
 
-    def status(self, text):
-        if text == "finish":
+    @pyqtSlot(DownloadThread.ReturnStatus)
+    def status(self, result: DownloadThread.ReturnStatus):
+        if result.ret_code == result.ReturnCode.FINISHED:
+            if result.shortcuts:
+                if not create_desktop_link(result.app_name, self.core, "desktop"):
+                    # maybe add it to download summary, to show in finished downloads
+                    pass
+                else:
+                    logger.info("Desktop shortcut written")
+
             self.dl_name.setText(self.tr("Download finished. Reload library"))
             logger.info(f"Download finished: {self.active_game.app_title}")
 
@@ -179,10 +191,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             else:
                 self.queue_widget.update_queue(self.dl_queue)
 
-        elif text[:5] == "error":
-            QMessageBox.warning(self, "warn", f"Download error: {text[6:]}")
+        elif result.ret_code == result.ReturnCode.ERROR:
+            QMessageBox.warning(self, self.tr("Error"), f"Download error: {result.message}")
 
-        elif text == "stop":
+        elif result.ret_code == result.ReturnCode.STOPPED:
             self.reset_infos()
             if w := self.update_widgets.get(self.active_game.app_name):
                 w.update_button.setDisabled(False)
@@ -202,7 +214,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.downloaded.setText("n/a")
         self.analysis = None
 
-    def statistics(self, ui_update: UIUpdate):
+    def progress_update(self, ui_update: UIUpdate):
         self.progress_bar.setValue(
             100 * ui_update.total_downloaded // self.analysis.dl_size
         )
@@ -218,12 +230,16 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             100 * ui_update.total_downloaded // self.analysis.dl_size
         )
 
-    def get_time(self, seconds: int) -> str:
+    def get_time(self, seconds: Union[int, float]) -> str:
         return str(datetime.timedelta(seconds=seconds))
 
     def on_install_dialog_closed(self, download_item: InstallQueueItemModel):
         if download_item:
             self.install_game(download_item)
+            # lk: In case the download in comming from game verification/repair
+            if w := self.update_widgets.get(download_item.options.app_name):
+                w.update_button.setDisabled(True)
+                w.update_with_settings.setDisabled(True)
             self.signals.set_main_tab_index.emit(1)
         else:
             if w := self.update_widgets.get(download_item.options.app_name):
@@ -241,19 +257,6 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         install_dialog.result_ready.connect(self.on_install_dialog_closed)
         install_dialog.execute()
 
-    def start_download(self, download_item: InstallQueueItemModel):
-        downloads = (
-            len(self.downloadTab.dl_queue)
-            + len(self.downloadTab.update_widgets.keys())
-            + 1
-        )
-        self.setTabText(
-            1, "Downloads" + ((" (" + str(downloads) + ")") if downloads != 0 else "")
-        )
-        self.setCurrentIndex(1)
-        self.downloadTab.install_game(download_item)
-        self.games_tab.start_download(download_item.options.app_name)
-
     @property
     def is_download_active(self):
         return self.active_game is not None
@@ -262,37 +265,37 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 class UpdateWidget(QWidget):
     update_signal = pyqtSignal(InstallOptionsModel)
 
-    def __init__(self, core: LegendaryCore, igame: InstalledGame, parent):
+    def __init__(self, core: LegendaryCore, app_name: str, parent):
         super(UpdateWidget, self).__init__(parent=parent)
         self.core = core
-        self.game = igame
+        self.game: Game = core.get_game(app_name)
+        self.igame: InstalledGame = self.core.get_installed_game(app_name)
 
-        self.layout = QVBoxLayout()
-        self.title = QLabel(self.game.title)
-        self.layout.addWidget(self.title)
+        layout = QVBoxLayout()
+        self.title = QLabel(self.igame.title)
+        layout.addWidget(self.title)
 
         self.update_button = QPushButton(self.tr("Update Game"))
         self.update_button.clicked.connect(lambda: self.update_game(True))
         self.update_with_settings = QPushButton("Update with settings")
         self.update_with_settings.clicked.connect(lambda: self.update_game(False))
-        self.layout.addWidget(self.update_button)
-        self.layout.addWidget(self.update_with_settings)
-        self.layout.addWidget(
+        layout.addWidget(self.update_button)
+        layout.addWidget(self.update_with_settings)
+        layout.addWidget(
             QLabel(
-                self.tr("Version: ")
-                + self.game.version
-                + " -> "
-                + self.core.get_asset(
-                    self.game.app_name, self.game.platform, False
-                ).build_version
+                self.tr("Version: <b>")
+                + self.igame.version
+                + "</b> >> <b>"
+                + self.game.app_version(self.igame.platform)
+                + "</b>"
             )
         )
 
-        self.setLayout(self.layout)
+        self.setLayout(layout)
 
     def update_game(self, auto: bool):
         self.update_button.setDisabled(True)
         self.update_with_settings.setDisabled(True)
         self.update_signal.emit(
-            InstallOptionsModel(app_name=self.game.app_name, silent=auto)
+            InstallOptionsModel(app_name=self.igame.app_name, silent=auto)
         )  # True if settings

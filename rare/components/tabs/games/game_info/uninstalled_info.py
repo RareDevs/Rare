@@ -15,7 +15,7 @@ from rare.shared.image_manager import ImageManagerSingleton, ImageSize
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabWidget
 from rare.utils.json_formatter import QJsonModel
-from rare.utils.models import InstallOptionsModel
+from rare.models.install import InstallOptionsModel
 from rare.utils.steam_grades import SteamWorker
 from rare.widgets.image_widget import ImageWidget
 

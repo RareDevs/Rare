@@ -3,21 +3,18 @@ import webbrowser
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel, QPushButton
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 
 
-class MiniWidget(QWidget):
+class AccountWidget(QWidget):
     def __init__(self):
-        super(MiniWidget, self).__init__()
-        self.layout = QVBoxLayout()
+        super(AccountWidget, self).__init__()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
-        self.layout.addWidget(QLabel("Account"))
+
         username = self.core.lgd.userdata.get("display_name")
         if not username:
             username = "Offline"
-
-        self.layout.addWidget(QLabel(self.tr("Logged in as {}").format(username)))
 
         self.open_browser = QPushButton(icon("fa.external-link"), self.tr("Account settings"))
         self.open_browser.clicked.connect(
@@ -25,12 +22,14 @@ class MiniWidget(QWidget):
                 "https://www.epicgames.com/account/personal?productName=epicgames"
             )
         )
-        self.layout.addWidget(self.open_browser)
-
         self.logout_button = QPushButton(self.tr("Logout"))
         self.logout_button.clicked.connect(self.logout)
-        self.layout.addWidget(self.logout_button)
-        self.setLayout(self.layout)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(self.tr("Account")))
+        layout.addWidget(QLabel(self.tr("Logged in as <b>{}</b>").format(username)))
+        layout.addWidget(self.open_browser)
+        layout.addWidget(self.logout_button)
 
     def logout(self):
         reply = QMessageBox.question(

@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QFrame, QMessageBox, QAction
 from rare.components.tabs.games.game_utils import GameUtils
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.shared.image_manager import ImageManagerSingleton, ImageSize
-from rare.utils.utils import create_desktop_link
+from rare.utils.misc import create_desktop_link
 from rare.widgets.image_widget import ImageWidget
 
 logger = getLogger("Game")

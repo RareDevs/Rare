@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QGroupBox, QTableWidgetItem, QMessageBox, QPushButto
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.widgets.env_vars import Ui_EnvVars
 from rare.utils import config_helper
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 
 logger = getLogger("EnvVars")
 

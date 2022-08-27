@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QSizePolicy, QPushButt
 
 from legendary.models.game import Game
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 
 logger = getLogger("Ubisoft")
 

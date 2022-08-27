@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QTabBar, QToolButton
 
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 
 
 class MainTabBar(QTabBar):

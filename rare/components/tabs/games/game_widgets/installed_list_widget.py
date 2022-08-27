@@ -6,8 +6,7 @@ from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 from rare.components.tabs.games.game_widgets.base_installed_widget import (
     BaseInstalledWidget,
 )
-from rare.utils.utils import get_size
-from rare.utils.utils import icon
+from rare.utils.misc import icon, get_size
 
 logger = getLogger("GameWidget")
 

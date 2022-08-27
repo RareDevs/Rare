@@ -13,8 +13,8 @@ def main():
     multiprocessing.freeze_support()
 
     # insert legendary for installed via pip/setup.py submodule to path
-    if not __name__ == "__main__":
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "legendary"))
+    # if not __name__ == "__main__":
+    #     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "legendary"))
 
     # CLI Options
     parser = ArgumentParser()
@@ -70,18 +70,16 @@ def main():
 
     args = parser.parse_args()
 
-    if args.desktop_shortcut:
-        from rare.utils import utils
+    if args.desktop_shortcut or args.startmenu_shortcut:
+        from rare.utils.misc import create_desktop_link
 
-        utils.create_desktop_link(type_of_link="desktop", for_rare=True)
+        if args.desktop_shortcut:
+            create_desktop_link(type_of_link="desktop", for_rare=True)
+
+        if args.startmenu_shortcut:
+            create_desktop_link(type_of_link="start_menu", for_rare=True)
+
         print("Link created")
-        return
-
-    if args.startmenu_shortcut:
-        from rare.utils import utils
-
-        utils.create_desktop_link(type_of_link="start_menu", for_rare=True)
-        print("link created")
         return
 
     if args.version:
@@ -123,10 +121,10 @@ def main():
 if __name__ == "__main__":
     # run from source
     # insert raw legendary submodule
-    sys.path.insert(
-        0, os.path.join(pathlib.Path(__file__).parent.absolute(), "legendary")
-    )
+    # sys.path.insert(
+    #     0, os.path.join(pathlib.Path(__file__).parent.absolute(), "legendary")
+    # )
     # insert source directory
-    sys.path.insert(0, str(pathlib.Path(__file__).parents[1].absolute()))
+    #sys.path.insert(0, str(pathlib.Path(__file__).parents[1].absolute()))
 
     main()

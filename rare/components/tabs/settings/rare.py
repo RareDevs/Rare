@@ -10,14 +10,15 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.settings.widgets.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
-from rare.utils import utils
 from rare.utils.paths import cache_dir
-from rare.utils.utils import (
+from rare.utils.misc import (
     get_translations,
     get_color_schemes,
     set_color_pallete,
     get_style_sheets,
     set_style_sheet,
+    get_size,
+    create_desktop_link,
 )
 
 logger = getLogger("RareSettings")
@@ -148,7 +149,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         for i in os.listdir(logdir):
             size += os.path.getsize(os.path.join(logdir, i))
 
-        self.log_dir_size_label.setText(utils.get_size(size))
+        self.log_dir_size_label.setText(get_size(size))
         # self.log_dir_clean_button.setVisible(False)
         # self.log_dir_size_label.setVisible(False)
 
@@ -160,7 +161,7 @@ class RareSettings(QWidget, Ui_RareSettings):
     def create_start_menu_link(self):
         try:
             if not os.path.exists(self.start_menu_link):
-                utils.create_desktop_link(type_of_link="start_menu", for_rare=True)
+                create_desktop_link(type_of_link="start_menu", for_rare=True)
                 self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
             else:
                 os.remove(self.start_menu_link)
@@ -169,23 +170,24 @@ class RareSettings(QWidget, Ui_RareSettings):
             logger.error(str(e))
             QMessageBox.warning(
                 self,
-                "Error",
-                f"Permission error, cannot remove {self.start_menu_link}",
+                self.tr("Error"),
+                self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
             )
 
     def create_desktop_link(self):
         try:
             if not os.path.exists(self.desktop_file):
-                utils.create_desktop_link(type_of_link="desktop", for_rare=True)
+                create_desktop_link(type_of_link="desktop", for_rare=True)
                 self.desktop_link_btn.setText(self.tr("Remove Desktop link"))
             else:
                 os.remove(self.desktop_file)
                 self.desktop_link_btn.setText(self.tr("Create desktop link"))
         except PermissionError as e:
+            logger.error(str(e))
             logger.warning(
                 self,
-                "Error",
-                f"Permission error, cannot remove {self.desktop_file}",
+                self.tr("Error"),
+                self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
             )
 
     def on_color_select_changed(self, color):

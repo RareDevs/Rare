@@ -149,17 +149,25 @@ class App(RareApp):
     def start_app(self):
         for igame in self.core.get_installed_list():
             if not os.path.exists(igame.install_path):
-                legendary_utils.uninstall(igame.app_name, self.core)
+                # lk; since install_path is lost anyway, set keep_files to True
+                # lk: to avoid spamming the log with "file not found" errors
+                legendary_utils.uninstall_game(self.core, igame.app_name, keep_files=True)
                 logger.info(f"Uninstalled {igame.title}, because no game files exist")
                 continue
-            if not os.path.exists(os.path.join(igame.install_path, igame.executable.replace("\\", "/").lstrip("/"))):
+            # lk: games that don't have an override and can't find their executable due to case sensitivity
+            # lk: will still erroneously require verification. This might need to be removed completely
+            # lk: or be decoupled from the verification requirement
+            if override_exe := self.core.lgd.config.get(igame.app_name, "override_exe", fallback=""):
+                igame_executable = override_exe
+            else:
+                igame_executable = igame.executable
+            if not os.path.exists(os.path.join(igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))):
                 igame.needs_verification = True
                 self.core.lgd.set_installed_game(igame.app_name, igame)
                 logger.info(f"{igame.title} needs verification")
 
         self.mainwindow = MainWindow()
-        self.launch_dialog.close()
-        self.tray_icon = TrayIcon(self)
+        self.tray_icon: TrayIcon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(self.exit_app)
         self.tray_icon.start_rare.triggered.connect(self.show_mainwindow)
         self.tray_icon.activated.connect(
@@ -226,6 +234,7 @@ class App(RareApp):
         self.mainwindow.hide()
         threadpool = QThreadPool.globalInstance()
         threadpool.waitForDone()
+        self.core.exit()
         if self.mainwindow is not None:
             self.mainwindow.close()
         if self.tray_icon is not None:

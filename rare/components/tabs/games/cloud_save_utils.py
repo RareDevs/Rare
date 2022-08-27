@@ -11,7 +11,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import SaveGameStatus, InstalledGame, SaveGameFile
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton
 from rare.ui.components.dialogs.sync_save_dialog import Ui_SyncSaveDialog
-from rare.utils.utils import icon
+from rare.utils.misc import icon
 
 logger = getLogger("Cloud Saves")
 

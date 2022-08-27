@@ -10,7 +10,7 @@ from rare.models.apiresults import ApiResults
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton
 from rare.shared.image_manager import ImageManagerSingleton
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
-from rare.utils.utils import CloudWorker
+from rare.utils.misc import CloudWorker
 
 logger = getLogger("Login")
 

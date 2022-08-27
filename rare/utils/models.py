@@ -1,61 +1,7 @@
 import os
-import platform as pf
-from dataclasses import field, dataclass
-from multiprocessing import Queue
-from typing import Union, List, Optional
+from typing import Union, List
 
 from legendary.core import LegendaryCore
-from legendary.downloader.mp.manager import DLManager
-from legendary.models.downloading import AnalysisResult, ConditionCheckResult
-from legendary.models.game import Game, InstalledGame
-
-
-@dataclass
-class InstallOptionsModel:
-    app_name: str
-    base_path: str = ""
-    max_shm: int = 1024
-    max_workers: int = os.cpu_count() * 2
-    repair: bool = False
-    no_install: bool = False
-    ignore_space_req: bool = False
-    force: bool = False
-    sdl_list: list = field(default_factory=lambda: [""])
-    update: bool = False
-    silent: bool = False
-    platform: str = ""
-    dl_optimizations: bool = False
-    overlay: bool = False
-    create_shortcut: bool = True
-    install_preqs: bool = pf.system() == "Windows"
-
-    def set_no_install(self, enabled: bool) -> None:
-        self.no_install = enabled
-
-
-@dataclass
-class InstallDownloadModel:
-    dlmanager: DLManager
-    analysis: AnalysisResult
-    game: Game
-    igame: InstalledGame
-    repair: bool
-    repair_file: str
-    res: ConditionCheckResult
-
-
-@dataclass
-class InstallQueueItemModel:
-    status_q: Optional[Queue] = None
-    download: Optional[InstallDownloadModel] = None
-    options: Optional[InstallOptionsModel] = None
-
-    def __bool__(self):
-        return (
-            (self.status_q is not None)
-            and (self.download is not None)
-            and (self.options is not None)
-        )
 
 
 class PathSpec:
@@ -80,9 +26,7 @@ class PathSpec:
 
     @property
     def wine_egl_programdata(self):
-        return self.egl_programdata.replace("\\", "/").replace(
-            "%PROGRAMDATA%", self.wine_programdata
-        )
+        return self.egl_programdata.replace("\\", "/").replace("%PROGRAMDATA%", self.wine_programdata)
 
     def wine_egl_prefixes(self, results: int = 0) -> Union[List[str], str]:
         possible_prefixes = [

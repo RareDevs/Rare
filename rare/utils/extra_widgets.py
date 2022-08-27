@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import (
 
 from rare.utils.paths import tmp_dir
 from rare.utils.qt_requests import QtRequestManager
-from rare.utils.utils import icon as qta_icon
+from rare.utils.misc import icon as qta_icon
 
 logger = getLogger("ExtraWidgets")
 

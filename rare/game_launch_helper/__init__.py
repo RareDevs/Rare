@@ -69,7 +69,7 @@ class GameProcessApp(RareApp):
         self.game_process = QProcess()
         self.app_name = app_name
         self.logger = getLogger(self.app_name)
-        self.core = LegendaryCoreSingleton(True)
+        self.core = LegendaryCoreSingleton(init=True)
 
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)

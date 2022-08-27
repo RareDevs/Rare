@@ -7,7 +7,7 @@ from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.shared.image_manager import ImageManagerSingleton, ImageSize
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
-from rare.utils.models import InstallOptionsModel
+from rare.models.install import InstallOptionsModel
 from rare.widgets.image_widget import ImageWidget
 
 

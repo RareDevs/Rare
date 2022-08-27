@@ -23,3 +23,13 @@ To contribute fork the repository and clone **your** repo: `git clone https://gi
 and upload it to GitHub with `git commit -m "message"` and `git push`. Some IDEs like PyCharm can do this automatically.
 
 If you uploaded your changes, create a pull request
+
+# Code Style Guidelines
+
+## Signals and threads
+
+## Function naming
+
+## UI Classes
+
+### Widget and Layout naming

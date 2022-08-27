@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>501</width>
-    <height>136</height>
+    <height>162</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,6 +20,9 @@
    <string>Import EGL game from a directory</string>
   </property>
   <layout class="QFormLayout" name="formLayout">
+   <property name="labelAlignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
    <item row="0" column="0">
     <widget class="QLabel" name="path_edit_label">
      <property name="text">
@@ -59,7 +62,26 @@
      </property>
     </widget>
    </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="import_dlcs_label">
+     <property name="text">
+      <string>Import DLCs</string>
+     </property>
+    </widget>
+   </item>
    <item row="3" column="1">
+    <widget class="QCheckBox" name="import_dlcs_check">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>If a game has DLCs, try to import them too</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
     <layout class="QHBoxLayout" name="button_info_layout">
      <item>
       <widget class="QPushButton" name="import_button">
@@ -71,13 +93,6 @@
        </property>
        <property name="text">
         <string>Import Game</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="info_label">
-       <property name="text">
-        <string notr="true"/>
        </property>
       </widget>
      </item>

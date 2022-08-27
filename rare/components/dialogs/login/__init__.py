@@ -117,8 +117,9 @@ class LoginDialog(QDialog):
                 self.close()
             else:
                 raise ValueError("Login failed.")
-        except ValueError as e:
+        except Exception as e:
             logger.error(str(e))
+            self.core.lgd.invalidate_userdata()
             self.ui.next_button.setEnabled(False)
             self.logged_in = False
-            QMessageBox.warning(self, "Error", str(e))
+            QMessageBox.warning(None, self.tr("Login error"), str(e))

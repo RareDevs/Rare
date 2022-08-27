@@ -29,7 +29,7 @@ class UninstalledIconWidget(BaseUninstalledWidget):
         minilayout.setSpacing(0)
         miniwidget.setLayout(minilayout)
 
-        self.title_label = ElideLabel(f"<h4>{game.app_title}</h4>", parent=miniwidget)
+        self.title_label = ElideLabel(f"<b>{game.app_title}</b>", parent=miniwidget)
         self.title_label.setAlignment(Qt.AlignTop)
         self.title_label.setObjectName("game_widget")
         minilayout.addWidget(self.title_label, stretch=2)

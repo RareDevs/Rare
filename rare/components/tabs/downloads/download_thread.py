@@ -1,209 +1,150 @@
 import os
 import platform
 import queue
-import sys
 import time
+from dataclasses import dataclass
+from enum import IntEnum
 from logging import getLogger
-from queue import Empty
+from typing import List, Optional, Dict
 
-import psutil
 from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from legendary.core import LegendaryCore
-from legendary.models.downloading import UIUpdate, WriterTask
 
-from rare.shared import GlobalSignalsSingleton
-from rare.utils.models import InstallQueueItemModel
-from rare.utils.utils import create_desktop_link
+from rare.lgndr.api_monkeys import DLManagerSignals
+from rare.lgndr.cli import LegendaryCLI
+from rare.lgndr.downloading import UIUpdate
+from rare.models.install import InstallQueueItemModel
+from rare.shared import GlobalSignalsSingleton, ArgumentsSingleton
 
 logger = getLogger("DownloadThread")
 
 
 class DownloadThread(QThread):
-    status = pyqtSignal(str)
-    statistics = pyqtSignal(UIUpdate)
+    @dataclass
+    class ReturnStatus:
+        class ReturnCode(IntEnum):
+            ERROR = 1
+            STOPPED = 2
+            FINISHED = 3
 
-    def __init__(self, core: LegendaryCore, queue_item: InstallQueueItemModel):
+        app_name: str
+        ret_code: ReturnCode = ReturnCode.ERROR
+        message: str = ""
+        dlcs: Optional[List[Dict]] = None
+        sync_saves: bool = False
+        tip_url: str = ""
+        shortcuts: bool = False
+
+    ret_status = pyqtSignal(ReturnStatus)
+    ui_update = pyqtSignal(UIUpdate)
+
+    def __init__(self, core: LegendaryCore, item: InstallQueueItemModel):
         super(DownloadThread, self).__init__()
-        self.core = core
         self.signals = GlobalSignalsSingleton()
-        self.dlm = queue_item.download.dlmanager
-        self.no_install = queue_item.options.no_install
-        self.status_q = queue_item.status_q
-        self.igame = queue_item.download.igame
-        self.repair = queue_item.download.repair
-        self.repair_file = queue_item.download.repair_file
-        self.queue_item = queue_item
-
-        self._kill = False
+        self.core: LegendaryCore = core
+        self.item: InstallQueueItemModel = item
+        self.dlm_signals: DLManagerSignals = DLManagerSignals()
 
     def run(self):
-        start_time = time.time()
-        dl_stopped = False
+        cli = LegendaryCLI(self.core)
+        self.item.download.dlm.logging_queue = cli.logging_queue
+        self.item.download.dlm.proc_debug = ArgumentsSingleton().debug
+        ret = DownloadThread.ReturnStatus(self.item.download.game.app_name)
+        start_t = time.time()
         try:
-
-            self.dlm.start()
+            self.item.download.dlm.start()
             time.sleep(1)
-            while self.dlm.is_alive():
-                if self._kill:
-                    self.status.emit("stop")
-                    logger.info("Download stopping...")
-
-                    # The code below is a temporary solution.
-                    # It should be removed once legendary supports stopping downloads more gracefully.
-
-                    self.dlm.running = False
-
-                    # send conditions to unlock threads if they aren't already
-                    for cond in self.dlm.conditions:
-                        with cond:
-                            cond.notify()
-
-                    # make sure threads are dead.
-                    for t in self.dlm.threads:
-                        t.join(timeout=5.0)
-                        if t.is_alive():
-                            logger.warning(f"Thread did not terminate! {repr(t)}")
-
-                    # clean up all the queues, otherwise this process won't terminate properly
-                    for name, q in zip(
-                            (
-                                    "Download jobs",
-                                    "Writer jobs",
-                                    "Download results",
-                                    "Writer results",
-                            ),
-                            (
-                                    self.dlm.dl_worker_queue,
-                                    self.dlm.writer_queue,
-                                    self.dlm.dl_result_q,
-                                    self.dlm.writer_result_q,
-                            ),
-                    ):
-                        logger.debug(f'Cleaning up queue "{name}"')
-                        try:
-                            while True:
-                                _ = q.get_nowait()
-                        except Empty:
-                            q.close()
-                            q.join_thread()
-                        except AttributeError:
-                            logger.warning(f"Queue {name} did not close")
-
-                    if self.dlm.writer_queue:
-                        # cancel installation
-                        self.dlm.writer_queue.put_nowait(WriterTask("", kill=True))
-
-                    # forcibly kill DL workers that are not actually dead yet
-                    for child in self.dlm.children:
-                        if child.exitcode is None:
-                            child.terminate()
-
-                    if self.dlm.shared_memory:
-                        # close up shared memory
-                        self.dlm.shared_memory.close()
-                        self.dlm.shared_memory.unlink()
-                        self.dlm.shared_memory = None
-
-                    self.dlm.kill()
-
-                    # force kill any threads that are somehow still alive
-                    for proc in psutil.process_iter():
-                        # check whether the process name matches
-                        if (
-                                sys.platform in ["linux", "darwin"]
-                                and proc.name() == "DownloadThread"
-                        ):
-                            proc.kill()
-                        elif (
-                                sys.platform == "win32"
-                                and proc.name() == "python.exe"
-                                and proc.create_time() >= start_time
-                        ):
-                            proc.kill()
-
-                    logger.info("Download stopped. It can be continued later.")
-                    dl_stopped = True
+            while self.item.download.dlm.is_alive():
                 try:
-                    if not dl_stopped:
-                        self.statistics.emit(self.status_q.get(timeout=1))
+                    self.ui_update.emit(self.item.download.dlm.status_queue.get(timeout=1.0))
                 except queue.Empty:
                     pass
-
-            self.dlm.join()
-
+                if self.dlm_signals.update:
+                    try:
+                        self.item.download.dlm.signals_queue.put(self.dlm_signals, block=False, timeout=1.0)
+                    except queue.Full:
+                        pass
+                time.sleep(self.item.download.dlm.update_interval / 10)
+            self.item.download.dlm.join()
         except Exception as e:
-            logger.error(
-                f"Installation failed after {time.time() - start_time:.02f} seconds: {e}"
-            )
-            self.status.emit(f"error {e}")
-            return
-
-        else:
-            if dl_stopped:
-                return
-            self.status.emit("dl_finished")
             end_t = time.time()
-            logger.info(f"Download finished in {end_t - start_time}s")
-            game = self.core.get_game(self.igame.app_name)
+            logger.error(f"Installation failed after {end_t - start_t:.02f} seconds.")
+            logger.warning(f"The following exception occurred while waiting for the downloader to finish: {e!r}.")
+            ret.ret_code = ret.ReturnCode.ERROR
+            ret.message = f"{e!r}"
+            self.ret_status.emit(ret)
+            return
+        else:
+            end_t = time.time()
+            if self.dlm_signals.kill is True:
+                logger.info(f"Download stopped after {end_t - start_t:.02f} seconds.")
+                ret.ret_code = ret.ReturnCode.STOPPED
+                self.ret_status.emit(ret)
+                return
+            logger.info(f"Download finished in {end_t - start_t:.02f} seconds.")
 
-            if self.queue_item.options.overlay:
+            ret.ret_code = ret.ReturnCode.FINISHED
+
+            if self.item.options.overlay:
                 self.signals.overlay_installation_finished.emit()
-                self.core.finish_overlay_install(self.igame)
-                self.status.emit("finish")
+                self.core.finish_overlay_install(self.item.download.igame)
+                self.ret_status.emit(ret)
                 return
 
-            if not self.no_install:
-                postinstall = self.core.install_game(self.igame)
+            if not self.item.options.no_install:
+                postinstall = self.core.install_game(self.item.download.igame)
                 if postinstall:
-                    self._handle_postinstall(postinstall, self.igame)
+                    # LegendaryCLI(self.core)._handle_postinstall(
+                    #     postinstall,
+                    #     self.item.download.igame,
+                    #     False,
+                    #     self.item.options.install_preqs,
+                    # )
+                    self._handle_postinstall(postinstall, self.item.download.igame)
 
-                dlcs = self.core.get_dlc_for_game(self.igame.app_name)
-                if dlcs:
-                    print("The following DLCs are available for this game:")
+                dlcs = self.core.get_dlc_for_game(self.item.download.igame.app_name)
+                if dlcs and not self.item.options.skip_dlcs:
+                    ret.dlcs = []
                     for dlc in dlcs:
-                        print(
-                            f" - {dlc.app_title} (App name: {dlc.app_name}, version: {dlc.app_version})"
+                        ret.dlcs.append(
+                            {
+                                "app_name": dlc.app_name,
+                                "app_title": dlc.app_title,
+                                "app_version": dlc.app_version(self.item.options.platform),
+                            }
                         )
-                    print(
-                        "Manually installing DLCs works the same; just use the DLC app name instead."
-                    )
 
-                    # install_dlcs = QMessageBox.question(self, "", "Do you want to install the prequisites", QMessageBox.Yes|QMessageBox.No) == QMessageBox.Yes
-                    # TODO
-                if game.supports_cloud_saves and not game.is_dlc:
-                    logger.info(
-                        'This game supports cloud saves, syncing is handled by the "sync-saves" command.'
-                    )
-                    logger.info(
-                        f'To download saves for this game run "legendary sync-saves {game.app_name}"'
-                    )
-        old_igame = self.core.get_installed_game(game.app_name)
-        if old_igame and self.repair and os.path.exists(self.repair_file):
-            if old_igame.needs_verification:
-                old_igame.needs_verification = False
-                self.core.install_game(old_igame)
+                if (
+                    self.item.download.game.supports_cloud_saves
+                    or self.item.download.game.supports_mac_cloud_saves
+                ) and not self.item.download.game.is_dlc:
+                    ret.sync_saves = True
 
-            logger.debug("Removing repair file.")
-            os.remove(self.repair_file)
-        if old_igame and old_igame.install_tags != self.igame.install_tags:
-            old_igame.install_tags = self.igame.install_tags
-            self.logger.info("Deleting now untagged files.")
-            self.core.uninstall_tag(old_igame)
-            self.core.install_game(old_igame)
+                # show tip again after installation finishes so users hopefully actually see it
+                if tip_url := self.core.get_game_tip(self.item.download.igame.app_name):
+                    ret.tip_url = tip_url
 
-        if not self.queue_item.options.update and self.queue_item.options.create_shortcut:
-            if not create_desktop_link(self.queue_item.options.app_name, self.core, "desktop"):
-                # maybe add it to download summary, to show in finished downloads
-                pass
-            else:
-                logger.info("Desktop shortcut written")
+            LegendaryCLI(self.core).install_game_cleanup(
+                self.item.download.game,
+                self.item.download.igame,
+                self.item.download.repair,
+                self.item.download.repair_file,
+            )
 
-        self.status.emit("finish")
+            if not self.item.options.update and self.item.options.create_shortcut:
+                ret.shortcuts = True
+
+        self.ret_status.emit(ret)
 
     def _handle_postinstall(self, postinstall, igame):
-        logger.info(f"Postinstall info: {postinstall}")
+        logger.info("This game lists the following prequisites to be installed:")
+        logger.info(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
         if platform.system() == "Windows":
-            if self.queue_item.options.install_preqs:
+            if not self.item.options.install_preqs:
+                logger.info("Marking prerequisites as installed...")
+                self.core.prereq_installed(self.item.download.igame.app_name)
+            else:
+                logger.info("Launching prerequisite executable..")
                 self.core.prereq_installed(igame.app_name)
                 req_path, req_exec = os.path.split(postinstall["path"])
                 work_dir = os.path.join(igame.install_path, req_path)
@@ -211,15 +152,14 @@ class DownloadThread(QThread):
                 proc = QProcess()
                 proc.setProcessChannelMode(QProcess.MergedChannels)
                 proc.readyReadStandardOutput.connect(
-                    lambda: logger.debug(
-                        str(proc.readAllStandardOutput().data(), "utf-8", "ignore")
-                    ))
-                proc.start(fullpath, postinstall.get("args", []))
+                    lambda: logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
+                )
+                proc.setNativeArguments(postinstall.get("args", []))
+                proc.setWorkingDirectory(work_dir)
+                proc.start(fullpath)
                 proc.waitForFinished()  # wait, because it is inside the thread
-            else:
-                self.core.prereq_installed(self.igame.app_name)
         else:
             logger.info("Automatic installation not available on Linux.")
 
     def kill(self):
-        self._kill = True
+        self.dlm_signals.kill = True

@@ -1,11 +1,9 @@
-import platform
-
+from rare.components.tabs.settings.widgets.linux import LinuxSettings
 from rare.utils.extra_widgets import SideTabWidget
 from .about import About
-from .legendary import LegendarySettings
-from rare.components.tabs.settings.widgets.linux import LinuxSettings
-from .rare import RareSettings
 from .default_game_settings import DefaultGameSettings
+from .legendary import LegendarySettings
+from .rare import RareSettings
 
 
 class SettingsTab(SideTabWidget):
