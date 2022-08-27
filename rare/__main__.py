@@ -1,8 +1,4 @@
-#!/usr/bin/python
-import argparse
 import os
-import pathlib
-import sys
 from argparse import ArgumentParser
 
 
