@@ -20,12 +20,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install pylint
           pip install -r requirements.txt
-      - name: Install legendary
-        run: |
-          pip install ./rare/legendary
       - name: Analysing the code with pylint
         run: |
           pylint -E rare --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
+
   deb-package:
     runs-on: ubuntu-latest
     steps:
@@ -92,9 +90,6 @@ jobs:
         run: pip3 install -r requirements.txt
       - name: cx_freeze
         run: pip3 install --upgrade cx_freeze wheel
-      - name: Install legendary
-        run: |
-          pip install ./rare/legendary
       - name: Build
         run: python freeze.py bdist_msi
 
@@ -116,7 +111,6 @@ jobs:
       - name: Pip Dependencies
         run: |
           pip install -r requirements.txt
-          pip install ./rare/legendary
           pip install pyinstaller
 
       - name: copy files

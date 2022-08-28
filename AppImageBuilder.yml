@@ -13,10 +13,7 @@ script:
   # copy Logo
   - cp AppDir/usr/src/rare/resources/images/Rare.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
-  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir pypresence qtawesome
-  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir ./rare/legendary
-  # remove duplicate legendary
-  - rm -rf AppDir/usr/src/rare/legendary
+  - python3 -m pip install --system --ignore-installed --prefix=/usr --root=AppDir pypresence qtawesome legendary-gl
 
 AppDir:
   path: AppDir

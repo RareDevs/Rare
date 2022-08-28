@@ -7,6 +7,7 @@ with open("README.md", "r") as fh:
 
 requirements = [
     "requests<3.0",
+    "legendary-gl",
     "setuptools",
     "wheel",
     "PyQt5",
@@ -32,9 +33,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Dummerle/Rare",
-    packages=setuptools.find_packages() + [
-        "rare.legendary." + i for i in setuptools.find_packages(where="rare/legendary")
-    ] + ["rare.resources"],
+    packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
