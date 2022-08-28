@@ -45,7 +45,6 @@ AppDir:
       - python3-distutils
       - python3-pyqt5
       - python3-pyqt5.qtsvg
-      - python3-psutil
       - python3-requests
 
 

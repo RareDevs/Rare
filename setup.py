@@ -12,7 +12,6 @@ requirements = [
     "wheel",
     "PyQt5",
     "QtAwesome",
-    "psutil",
     'pywin32; platform_system == "Windows"',
 ]
 
