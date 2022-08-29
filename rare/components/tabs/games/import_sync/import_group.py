@@ -8,11 +8,11 @@ from typing import List, Tuple, Optional
 
 from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, qApp, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, QMessageBox
 
-from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.api_arguments import LgndrImportGameArgs
 from rare.lgndr.api_monkeys import LgndrIndirectStatus
+from rare.lgndr.cli import LegendaryCLI
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
@@ -297,6 +297,7 @@ class ImportGroup(QGroupBox):
             success = [r for r in result if r.result == ImportResult.SUCCESS]
             failure = [r for r in result if r.result == ImportResult.FAILED]
             errored = [r for r in result if r.result == ImportResult.ERROR]
+            # pylint: disable=E1101
             messagebox = QMessageBox(
                 QMessageBox.Information,
                 self.tr("Import summary"),

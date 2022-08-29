@@ -1,5 +1,9 @@
 from multiprocessing import Queue
 
+# On Windows the monkeypatching of `run_real` below doesn't work like on Linux
+# This has the side effect of emitting the UIUpdate in DownloadThread complaining with a TypeError
+# So import `legendary.core` and monkeypatch its imported DLManager
+import legendary.core
 from legendary.core import LegendaryCore as LegendaryCoreReal
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
@@ -8,10 +12,6 @@ from legendary.models.manifest import ManifestMeta
 from .api_exception import LgndrException, LgndrCoreLogHandler
 from .manager import DLManager
 
-# On Windows the monkeypatching of `run_real` below doesn't work like on Linux
-# This has the side effect of emitting the UIUpdate in DownloadThread complaining with a TypeError
-# So import `legendary.core` and monkeypatch its imported DLManager
-import legendary.core
 legendary.core.DLManager = DLManager
 
 
@@ -54,6 +54,8 @@ class LegendaryCore(LegendaryCoreReal):
             disable_https=disable_https
         )
         # lk: monkeypatch run_real (the method that emits the stats) into DLManager
+
+        # pylint: disable=E1111
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
         # lk: set the queue for reporting statistics back the UI
         dlm.status_queue = Queue()
@@ -89,6 +91,7 @@ class LegendaryCore(LegendaryCoreReal):
     def prepare_overlay_install(self, path=None):
         dlm, analysis_result, igame = super(LegendaryCore, self).prepare_overlay_install(path)
         # lk: monkeypatch status_q (the queue for download stats)
+        # pylint: disable=E1111
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
         # lk: set the queue for reporting statistics back the UI
         dlm.status_queue = Queue()

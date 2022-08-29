@@ -602,6 +602,7 @@ class LegendaryCLI(LegendaryCLIReal):
 
                 os.rename(igame.install_path, new_path)
             except Exception as e:
+                # pylint: disable=E1101
                 if isinstance(e, OSError) and e.errno == 18:
                     logger.error(f'Moving to a different drive is not supported. Move the folder manually to '
                                  f'"{new_path}" and run "legendary move {app_name} "{args.new_path}" --skip-move"')
