@@ -19,7 +19,7 @@
   <property name="title">
    <string>Import EGL game from a directory</string>
   </property>
-  <layout class="QFormLayout" name="formLayout">
+  <layout class="QFormLayout" name="import_layout">
    <property name="labelAlignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
