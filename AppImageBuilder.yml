@@ -13,12 +13,12 @@ script:
   # copy Logo
   - cp AppDir/usr/src/rare/resources/images/Rare.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
-  - python3 -m pip install --ignore-installed --prefix=/usr --root=AppDir pypresence qtawesome legendary-gl
+  - python3 -m pip install --ignore-installed --prefix=/usr --root=AppDir pypresence qtawesome legendary-gl typing_extensions
 
 AppDir:
   path: AppDir
   app_info:
-    id: org.dummerle.rare
+    id: io.github.dummerle.rare
     name: Rare
     icon: Rare
     version: 1.8.9
@@ -28,17 +28,8 @@ AppDir:
     arch: amd64
     allow_unauthenticated: true
     sources:
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish main restricted
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish-updates main restricted
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish universe
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish-updates universe
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish multiverse
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish-updates multiverse
-      - sourceline: deb http://de.archive.ubuntu.com/ubuntu/ impish-backports main restricted
-          universe multiverse
-      - sourceline: deb http://security.ubuntu.com/ubuntu impish-security main restricted
-      - sourceline: deb http://security.ubuntu.com/ubuntu impish-security universe
-      - sourceline: deb http://security.ubuntu.com/ubuntu impish-security multiverse
+      - sourceline: 'deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse'
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3b4fe6acc0b21f32'
 
     include:
       - python3
@@ -46,7 +37,6 @@ AppDir:
       - python3-pyqt5
       - python3-pyqt5.qtsvg
       - python3-requests
-
 
   runtime:
     env:
