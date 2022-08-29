@@ -8,8 +8,11 @@ from legendary.models.manifest import ManifestMeta
 from .api_exception import LgndrException, LgndrCoreLogHandler
 from .manager import DLManager
 
-# import legendary.core
-# legendary.core.DLManager = DLManager
+# On Windows the monkeypatching of `run_real` below doesn't work like on Linux
+# This has the side effect of emitting the UIUpdate in DownloadThread complaining with a TypeError
+# So import `legendary.core` and monkeypatch its imported DLManager
+import legendary.core
+legendary.core.DLManager = DLManager
 
 
 # fmt: off

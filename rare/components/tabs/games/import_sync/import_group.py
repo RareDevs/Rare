@@ -262,10 +262,13 @@ class ImportGroup(QGroupBox):
         worker.signals.finished.connect(self.import_finished)
         worker.signals.progress.connect(self.import_progress)
         self.threadpool.start(worker)
+        self.info_label.setText(self.tr("Importing games"))
+        self.ui.import_button.setDisabled(True)
 
     @pyqtSlot(list)
     def import_finished(self, result: List):
         logger.info(f"Import finished: {result}")
+        self.info_label.setText("")
 
         self.signals.update_gamelist.emit([r.app_name for r in result if r.result == ImportResult.SUCCESS])
 
