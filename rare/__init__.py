@@ -1,3 +1,3 @@
-__version__ = "1.8.9"
+__version__ = "1.9.0-rc.1"
 
 code_name = "Stellula Kakopo"

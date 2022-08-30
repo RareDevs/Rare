@@ -2,7 +2,6 @@ typing_extensions
 requests
 PyQt5
 QtAwesome
-pypresence
 setuptools
 legendary-gl
 pywin32; platform_system == "Windows"
