@@ -3,9 +3,9 @@ import platform as pf
 import sys
 from typing import Tuple, List, Union, Optional
 
-from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot, QSettings
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
-from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox
+from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout
 from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
 from legendary.utils.selective_dl import get_sdl_appname
@@ -24,14 +24,15 @@ from rare.utils.misc import get_size
 from rare.widgets.collabsible_widget import CollabsibleWidget
 
 
-class InstallDialog(QDialog, Ui_InstallDialog):
+class InstallDialog(QDialog):
     result_ready = pyqtSignal(InstallQueueItemModel)
 
     def __init__(self, dl_item: InstallQueueItemModel, update=False, repair=False, silent=False, parent=None):
         super(InstallDialog, self).__init__(parent)
-        self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        self.ui = Ui_InstallDialog()
+        self.ui.setupUi(self)
 
         self.core = LegendaryCoreSingleton()
         self.api_results = ApiResultsSingleton()
@@ -42,11 +43,11 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             if not self.dl_item.options.overlay
             else Game(app_name=self.app_name, app_title="Epic Overlay")
         )
-        self.advanced_layout.setParent(None)
+        self.ui.advanced_layout.setParent(None)
         self.advanced_widget = CollabsibleWidget(
-            self.advanced_layout, self.tr("Advanced options"), parent=self
+            self.ui.advanced_layout, self.tr("Advanced options"), parent=self
         )
-        self.collapsible_layout.addWidget(self.advanced_widget)
+        self.ui.collapsible_layout.addWidget(self.advanced_widget)
 
         self.game_path = self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value", "")
 
@@ -62,7 +63,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.threadpool.setMaxThreadCount(1)
 
         header = self.tr("Update") if update else self.tr("Install")
-        self.install_dialog_label.setText(f'<h3>{header} "{self.game.app_title}"</h3>')
+        self.ui.install_dialog_label.setText(f'<h3>{header} "{self.game.app_title}"</h3>')
         self.setWindowTitle(f'{self.windowTitle()} - {header} "{self.game.app_title}"')
 
         if not self.dl_item.options.base_path:
@@ -76,14 +77,15 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             edit_func=self.option_changed,
             parent=self,
         )
-        self.install_dir_layout.addWidget(self.install_dir_edit)
+        self.ui.install_dir_layout.addWidget(self.install_dir_edit)
 
         if self.update:
-            self.install_dir_label.setVisible(False)
+            self.ui.install_dir_label.setVisible(False)
             self.install_dir_edit.setVisible(False)
-            self.shortcut_lbl.setVisible(False)
-            self.shortcut_cb.setVisible(False)
-            self.shortcut_cb.setChecked(False)
+            self.ui.shortcut_lbl.setVisible(False)
+            self.ui.shortcut_cb.setVisible(False)
+        else:
+            self.ui.shortcut_cb.setChecked(QSettings().value("create_shortcut", True, bool))
 
         self.error_box()
 
@@ -92,70 +94,70 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             platforms.append("Win32")
         if dl_item.options.app_name in self.api_results.mac_games:
             platforms.append("Mac")
-        self.platform_combo_box.addItems(platforms)
-        self.platform_combo_box.currentIndexChanged.connect(lambda: self.option_changed(None))
-        self.platform_combo_box.currentIndexChanged.connect(lambda: self.error_box())
-        self.platform_combo_box.currentIndexChanged.connect(
+        self.ui.platform_combo_box.addItems(platforms)
+        self.ui.platform_combo_box.currentIndexChanged.connect(lambda: self.option_changed(None))
+        self.ui.platform_combo_box.currentIndexChanged.connect(lambda: self.error_box())
+        self.ui.platform_combo_box.currentIndexChanged.connect(
             lambda i: self.error_box(
                 self.tr("Warning"),
                 self.tr("You will not be able to run the game if you select <b>{}</b> as platform").format(
-                    self.platform_combo_box.itemText(i)
+                    self.ui.platform_combo_box.itemText(i)
                 ),
             )
-            if (self.platform_combo_box.currentText() == "Mac" and pf.system() != "Darwin")
+            if (self.ui.platform_combo_box.currentText() == "Mac" and pf.system() != "Darwin")
             else None
         )
-        self.platform_combo_box.currentTextChanged.connect(self.setup_sdl_list)
+        self.ui.platform_combo_box.currentTextChanged.connect(self.setup_sdl_list)
 
         if pf.system() == "Darwin" and "Mac" in platforms:
-            self.platform_combo_box.setCurrentIndex(platforms.index("Mac"))
+            self.ui.platform_combo_box.setCurrentIndex(platforms.index("Mac"))
 
-        self.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
-        self.max_workers_spin.valueChanged.connect(self.option_changed)
+        self.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
+        self.ui.max_workers_spin.valueChanged.connect(self.option_changed)
 
-        self.max_memory_spin.setValue(self.core.lgd.config.getint("Legendary", "max_memory", fallback=0))
-        self.max_memory_spin.valueChanged.connect(self.option_changed)
+        self.ui.max_memory_spin.setValue(self.core.lgd.config.getint("Legendary", "max_memory", fallback=0))
+        self.ui.max_memory_spin.valueChanged.connect(self.option_changed)
 
-        self.dl_optimizations_check.stateChanged.connect(self.option_changed)
-        self.force_download_check.stateChanged.connect(self.option_changed)
-        self.ignore_space_check.stateChanged.connect(self.option_changed)
-        self.download_only_check.stateChanged.connect(lambda: self.non_reload_option_changed("download_only"))
-        self.shortcut_cb.stateChanged.connect(lambda: self.non_reload_option_changed("shortcut"))
+        self.ui.dl_optimizations_check.stateChanged.connect(self.option_changed)
+        self.ui.force_download_check.stateChanged.connect(self.option_changed)
+        self.ui.ignore_space_check.stateChanged.connect(self.option_changed)
+        self.ui.download_only_check.stateChanged.connect(lambda: self.non_reload_option_changed("download_only"))
+        self.ui.shortcut_cb.stateChanged.connect(lambda: self.non_reload_option_changed("shortcut"))
 
         self.sdl_list_cbs: List[TagCheckBox] = []
         self.config_tags: Optional[List[str]] = None
         self.setup_sdl_list("Mac" if pf.system() == "Darwin" and "Mac" in platforms else "Windows")
 
-        self.install_button.setEnabled(False)
+        self.ui.install_button.setEnabled(False)
 
         if self.dl_item.options.overlay:
-            self.platform_label.setVisible(False)
-            self.platform_combo_box.setVisible(False)
-            self.ignore_space_check.setVisible(False)
-            self.ignore_space_label.setVisible(False)
-            self.download_only_check.setVisible(False)
-            self.download_only_label.setVisible(False)
-            self.shortcut_cb.setVisible(False)
-            self.shortcut_lbl.setVisible(False)
+            self.ui.platform_label.setVisible(False)
+            self.ui.platform_combo_box.setVisible(False)
+            self.ui.ignore_space_check.setVisible(False)
+            self.ui.ignore_space_label.setVisible(False)
+            self.ui.download_only_check.setVisible(False)
+            self.ui.download_only_label.setVisible(False)
+            self.ui.shortcut_cb.setVisible(False)
+            self.ui.shortcut_lbl.setVisible(False)
 
         if pf.system() == "Darwin":
-            self.shortcut_cb.setDisabled(True)
-            self.shortcut_cb.setChecked(False)
-            self.shortcut_cb.setToolTip(self.tr("Creating a shortcut is not supported on MacOS"))
+            self.ui.shortcut_cb.setDisabled(True)
+            self.ui.shortcut_cb.setChecked(False)
+            self.ui.shortcut_cb.setToolTip(self.tr("Creating a shortcut is not supported on MacOS"))
 
-        self.install_preqs_lbl.setVisible(False)
-        self.install_preqs_check.setVisible(False)
-        self.install_preqs_check.stateChanged.connect(lambda: self.non_reload_option_changed("install_preqs"))
+        self.ui.install_preqs_lbl.setVisible(False)
+        self.ui.install_preqs_check.setVisible(False)
+        self.ui.install_preqs_check.stateChanged.connect(lambda: self.non_reload_option_changed("install_preqs"))
 
         self.non_reload_option_changed("shortcut")
 
-        self.cancel_button.clicked.connect(self.cancel_clicked)
-        self.verify_button.clicked.connect(self.verify_clicked)
-        self.install_button.clicked.connect(self.install_clicked)
+        self.ui.cancel_button.clicked.connect(self.cancel_clicked)
+        self.ui.verify_button.clicked.connect(self.verify_clicked)
+        self.ui.install_button.clicked.connect(self.install_clicked)
 
-        self.install_preqs_check.setChecked(self.dl_item.options.install_preqs)
+        self.ui.install_preqs_check.setChecked(self.dl_item.options.install_preqs)
 
-        self.install_dialog_layout.setSizeConstraint(self.install_dialog_layout.SetFixedSize)
+        self.ui.install_dialog_layout.setSizeConstraint(QLayout.SetFixedSize)
 
     def execute(self):
         if self.silent:
@@ -188,27 +190,27 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                     if self.config_tags is not None:
                         if all(elem in self.config_tags for elem in info["tags"]):
                             cb.setChecked(True)
-                    self.sdl_list_layout.addWidget(cb)
+                    self.ui.sdl_list_layout.addWidget(cb)
                     self.sdl_list_cbs.append(cb)
-                self.sdl_list_frame.resize(self.sdl_list_frame.minimumSize())
+                self.ui.sdl_list_layout.setSizeConstraint(QLayout.SetFixedSize)
                 for cb in self.sdl_list_cbs:
                     cb.stateChanged.connect(self.option_changed)
         else:
-            self.sdl_list_frame.setVisible(False)
-            self.sdl_list_label.setVisible(False)
+            self.ui.sdl_list_frame.setVisible(False)
+            self.ui.sdl_list_label.setVisible(False)
 
     def get_options(self):
         self.dl_item.options.base_path = self.install_dir_edit.text() if not self.update else None
 
-        self.dl_item.options.max_workers = self.max_workers_spin.value()
-        self.dl_item.options.shared_memory = self.max_memory_spin.value()
-        self.dl_item.options.order_opt = self.dl_optimizations_check.isChecked()
-        self.dl_item.options.force = self.force_download_check.isChecked()
-        self.dl_item.options.ignore_space = self.ignore_space_check.isChecked()
-        self.dl_item.options.no_install = self.download_only_check.isChecked()
-        self.dl_item.options.platform = self.platform_combo_box.currentText()
-        self.dl_item.options.install_preqs = self.install_preqs_check.isChecked()
-        self.dl_item.options.create_shortcut = self.shortcut_cb.isChecked()
+        self.dl_item.options.max_workers = self.ui.max_workers_spin.value()
+        self.dl_item.options.shared_memory = self.ui.max_memory_spin.value()
+        self.dl_item.options.order_opt = self.ui.dl_optimizations_check.isChecked()
+        self.dl_item.options.force = self.ui.force_download_check.isChecked()
+        self.dl_item.options.ignore_space = self.ui.ignore_space_check.isChecked()
+        self.dl_item.options.no_install = self.ui.download_only_check.isChecked()
+        self.dl_item.options.platform = self.ui.platform_combo_box.currentText()
+        self.dl_item.options.install_preqs = self.ui.install_preqs_check.isChecked()
+        self.dl_item.options.create_shortcut = self.ui.shortcut_cb.isChecked()
         if self.sdl_list_cbs:
             self.dl_item.options.install_tag = [""]
             for cb in self.sdl_list_cbs:
@@ -229,30 +231,31 @@ class InstallDialog(QDialog, Ui_InstallDialog):
     def verify_clicked(self):
         self.error_box()
         message = self.tr("Updating...")
-        self.download_size_info_label.setText(message)
-        self.download_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
-        self.install_size_info_label.setText(message)
-        self.install_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
-        self.cancel_button.setEnabled(False)
-        self.verify_button.setEnabled(False)
-        self.install_button.setEnabled(False)
+        self.ui.download_size_info_label.setText(message)
+        self.ui.download_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
+        self.ui.install_size_info_label.setText(message)
+        self.ui.install_size_info_label.setStyleSheet("font-style: italic; font-weight: normal")
+        self.ui.cancel_button.setEnabled(False)
+        self.ui.verify_button.setEnabled(False)
+        self.ui.install_button.setEnabled(False)
         self.options_changed = False
         self.get_options()
         self.get_download_info()
 
     def option_changed(self, path) -> Tuple[bool, str, str]:
         self.options_changed = True
-        self.install_button.setEnabled(False)
-        self.verify_button.setEnabled(not self.worker_running)
+        self.ui.install_button.setEnabled(False)
+        self.ui.verify_button.setEnabled(not self.worker_running)
         return True, path, ""
 
     def non_reload_option_changed(self, option: str):
         if option == "download_only":
-            self.dl_item.options.no_install = self.download_only_check.isChecked()
+            self.dl_item.options.no_install = self.ui.download_only_check.isChecked()
         elif option == "shortcut":
-            self.dl_item.options.create_shortcut = self.shortcut_cb.isChecked()
+            QSettings().setValue("create_shortcut", self.ui.shortcut_cb.isChecked())
+            self.dl_item.options.create_shortcut = self.ui.shortcut_cb.isChecked()
         elif option == "install_preqs":
-            self.dl_item.options.install_preqs = self.install_preqs_check.isChecked()
+            self.dl_item.options.install_preqs = self.ui.install_preqs_check.isChecked()
 
     def cancel_clicked(self):
         if self.config_tags:
@@ -274,42 +277,42 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         download_size = self.dl_item.download.analysis.dl_size
         install_size = self.dl_item.download.analysis.install_size
         if download_size:
-            self.download_size_info_label.setText("{}".format(get_size(download_size)))
-            self.download_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
-            self.install_button.setEnabled(not self.options_changed)
+            self.ui.download_size_info_label.setText("{}".format(get_size(download_size)))
+            self.ui.download_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
+            self.ui.install_button.setEnabled(not self.options_changed)
         else:
-            self.install_size_info_label.setText(self.tr("Game already installed"))
-            self.install_size_info_label.setStyleSheet("font-style: italics; font-weight: normal")
-        self.install_size_info_label.setText("{}".format(get_size(install_size)))
-        self.install_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
-        self.verify_button.setEnabled(self.options_changed)
-        self.cancel_button.setEnabled(True)
-        if self.silent:
-            self.close()
+            self.ui.install_size_info_label.setText(self.tr("Game already installed"))
+            self.ui.install_size_info_label.setStyleSheet("font-style: italics; font-weight: normal")
+        self.ui.install_size_info_label.setText("{}".format(get_size(install_size)))
+        self.ui.install_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
+        self.ui.verify_button.setEnabled(self.options_changed)
+        self.ui.cancel_button.setEnabled(True)
         if pf.system() == "Windows" or ArgumentsSingleton().debug:
             if dl_item.igame.prereq_info and not dl_item.igame.prereq_info.get("installed", False):
-                self.install_preqs_check.setVisible(True)
-                self.install_preqs_lbl.setVisible(True)
-                self.install_preqs_check.setChecked(True)
-                self.install_preqs_check.setText(
+                self.ui.install_preqs_check.setVisible(True)
+                self.ui.install_preqs_lbl.setVisible(True)
+                self.ui.install_preqs_check.setChecked(True)
+                self.ui.install_preqs_check.setText(
                     self.tr("Also install: {}").format(dl_item.igame.prereq_info.get("name", ""))
                 )
+        if self.silent:
+            self.close()
 
     def on_worker_failed(self, message: str):
         error_text = self.tr("Error")
-        self.download_size_info_label.setText(error_text)
-        self.install_size_info_label.setText(error_text)
+        self.ui.download_size_info_label.setText(error_text)
+        self.ui.install_size_info_label.setText(error_text)
         self.error_box(error_text, message)
-        self.verify_button.setEnabled(self.options_changed)
-        self.cancel_button.setEnabled(True)
+        self.ui.verify_button.setEnabled(self.options_changed)
+        self.ui.cancel_button.setEnabled(True)
         if self.silent:
-            self.close()
+            self.show()
 
     def error_box(self, label: str = "", message: str = ""):
-        self.warn_label.setVisible(bool(label))
-        self.warn_label.setText(label)
-        self.warn_message.setVisible(bool(message))
-        self.warn_message.setText(message)
+        self.ui.warn_label.setVisible(bool(label))
+        self.ui.warn_label.setText(label)
+        self.ui.warn_message.setVisible(bool(message))
+        self.ui.warn_message.setText(message)
 
     def on_worker_finished(self):
         self.worker_running = False

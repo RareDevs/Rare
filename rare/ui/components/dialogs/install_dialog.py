@@ -45,7 +45,6 @@ class Ui_InstallDialog(object):
         self.install_dialog_layout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.shortcut_lbl)
         self.shortcut_cb = QtWidgets.QCheckBox(InstallDialog)
         self.shortcut_cb.setText("")
-        self.shortcut_cb.setChecked(True)
         self.shortcut_cb.setObjectName("shortcut_cb")
         self.install_dialog_layout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.shortcut_cb)
         self.sdl_list_label = QtWidgets.QLabel(InstallDialog)
