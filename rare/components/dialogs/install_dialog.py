@@ -3,7 +3,7 @@ import platform as pf
 import sys
 from typing import Tuple, List, Union, Optional
 
-from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot, QSettings
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox
 from legendary.models.downloading import ConditionCheckResult
@@ -83,7 +83,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
             self.install_dir_edit.setVisible(False)
             self.shortcut_lbl.setVisible(False)
             self.shortcut_cb.setVisible(False)
-            self.shortcut_cb.setChecked(False)
+        else:
+            self.shortcut_cb.setChecked(QSettings().value("create_shortcut", True, bool))
 
         self.error_box()
 
@@ -250,6 +251,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         if option == "download_only":
             self.dl_item.options.no_install = self.download_only_check.isChecked()
         elif option == "shortcut":
+            QSettings().setValue("create_shortcut", self.shortcut_cb.isChecked())
             self.dl_item.options.create_shortcut = self.shortcut_cb.isChecked()
         elif option == "install_preqs":
             self.dl_item.options.install_preqs = self.install_preqs_check.isChecked()
@@ -284,8 +286,6 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.install_size_info_label.setStyleSheet("font-style: normal; font-weight: bold")
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)
-        if self.silent:
-            self.close()
         if pf.system() == "Windows" or ArgumentsSingleton().debug:
             if dl_item.igame.prereq_info and not dl_item.igame.prereq_info.get("installed", False):
                 self.install_preqs_check.setVisible(True)
@@ -294,6 +294,8 @@ class InstallDialog(QDialog, Ui_InstallDialog):
                 self.install_preqs_check.setText(
                     self.tr("Also install: {}").format(dl_item.igame.prereq_info.get("name", ""))
                 )
+        if self.silent:
+            self.close()
 
     def on_worker_failed(self, message: str):
         error_text = self.tr("Error")
@@ -303,7 +305,7 @@ class InstallDialog(QDialog, Ui_InstallDialog):
         self.verify_button.setEnabled(self.options_changed)
         self.cancel_button.setEnabled(True)
         if self.silent:
-            self.close()
+            self.show()
 
     def error_box(self, label: str = "", message: str = ""):
         self.warn_label.setVisible(bool(label))

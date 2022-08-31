@@ -66,9 +66,6 @@
      <property name="text">
       <string notr="true"/>
      </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
     </widget>
    </item>
    <item row="4" column="0">
