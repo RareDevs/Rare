@@ -211,7 +211,7 @@ class App(RareApp):
             logger.info("Show App")
 
     def exit_app(self, exit_code=0):
-        # FIXME: Fix this with the downlaod tab redesign
+        # FIXME: Fix this with the download tab redesign
         if self.mainwindow is not None:
             if not self.args.offline and self.mainwindow.tab_widget.downloadTab.is_download_active:
                 question = QMessageBox.question(
@@ -237,8 +237,15 @@ class App(RareApp):
         self.core.exit()
         if self.mainwindow is not None:
             self.mainwindow.close()
+            self.mainwindow.deleteLater()
+            self.mainwindow = None
         if self.tray_icon is not None:
             self.tray_icon.deleteLater()
+            self.tray_icon = None
+        if self.timer is not None:
+            self.timer.stop()
+            self.timer.deleteLater()
+            self.timer = None
         self.processEvents()
         shutil.rmtree(tmp_dir)
         os.makedirs(tmp_dir)
