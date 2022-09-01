@@ -42,8 +42,9 @@ class ImportLogin(QFrame):
                 self.ui.status_label.setText(self.text_egl_found)
                 self.found = True
         else:
-            if wine_pfx := self.core.egl.programdata_path.split("drive_c"):
-                self.ui.prefix_combo.addItems(wine_pfx)
+            if programdata_path := self.core.egl.programdata_path:
+                if wine_pfx := programdata_path.split("drive_c"):
+                    self.ui.prefix_combo.addItems(wine_pfx)
             self.ui.info_label.setText(
                 self.tr("Please select the Wine prefix where Epic Games Launcher is installed. ")
                 + self.ui.info_label.text()
