@@ -82,14 +82,13 @@ class ApiRequestWorker(LaunchWorker):
         self.signals.result.emit(result, "32bit")
 
 
-class LaunchDialog(QDialog, Ui_LaunchDialog):
+class LaunchDialog(QDialog):
     quit_app = pyqtSignal(int)
     start_app = pyqtSignal()
     completed = 0
 
     def __init__(self, parent=None):
         super(LaunchDialog, self).__init__(parent=parent)
-        self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(
             Qt.Window
@@ -101,6 +100,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             | Qt.MSWindowsFixedSizeDialogHint
         )
         self.setWindowModality(Qt.WindowModal)
+        self.ui = Ui_LaunchDialog()
+        self.ui.setupUi(self)
 
         self.core = LegendaryCoreSingleton()
         self.args = ArgumentsSingleton()
@@ -143,7 +144,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
     def launch(self):
 
         if not self.args.offline:
-            self.image_info.setText(self.tr("Downloading Images"))
+            self.ui.image_info.setText(self.tr("Downloading Images"))
             image_worker = ImageWorker()
             image_worker.signals.result.connect(self.handle_api_worker_result)
             image_worker.signals.progress.connect(self.update_image_progbar)
@@ -202,13 +203,13 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.finish()
 
     def update_image_progbar(self, i: int):
-        self.image_prog_bar.setValue(i)
+        self.ui.image_prog_bar.setValue(i)
 
     def finish(self):
         self.completed += 1
         if self.completed == 2:
             logger.info("App starting")
-            self.image_info.setText(self.tr("Starting..."))
+            self.ui.image_info.setText(self.tr("Starting..."))
             ApiResultsSingleton(self.api_results)
             self.completed += 1
             self.start_app.emit()

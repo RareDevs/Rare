@@ -18,9 +18,6 @@ logger = getLogger("BrowserLogin")
 class BrowserLogin(QFrame):
     success = pyqtSignal()
     changed = pyqtSignal()
-    login_url = (
-        "https://www.epicgames.com/id/login?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Fapi%2Fredirect"
-    )
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(BrowserLogin, self).__init__(parent=parent)
@@ -29,9 +26,10 @@ class BrowserLogin(QFrame):
         self.ui.setupUi(self)
 
         self.core = core
+        self.login_url = self.core.egs.get_auth_url()
 
         self.sid_edit = IndicatorLineEdit(
-            placeholder=self.tr("Insert SID here"), edit_func=self.text_changed, parent=self
+            placeholder=self.tr("Insert authorizationCode here"), edit_func=self.text_changed, parent=self
         )
         self.ui.link_text.setText(self.login_url)
         self.ui.copy_button.setIcon(icon("mdi.content-copy", "fa.copy"))
@@ -56,7 +54,7 @@ class BrowserLogin(QFrame):
             text = text.strip()
             if text.startswith("{") and text.endswith("}"):
                 try:
-                    text = json.loads(text).get("sid")
+                    text = json.loads(text).get("authorizationCode")
                 except json.JSONDecodeError:
                     return False, text, IndicatorLineEdit.reasons.wrong_format
             elif '"' in text:
@@ -67,10 +65,9 @@ class BrowserLogin(QFrame):
 
     def do_login(self):
         self.ui.status_label.setText(self.tr("Logging in..."))
-        sid = self.sid_edit.text()
+        auth_code = self.sid_edit.text()
         try:
-            token = self.core.auth_sid(sid)
-            if self.core.auth_code(token):
+            if self.core.auth_code(auth_code):
                 logger.info(f"Successfully logged in as {self.core.lgd.userdata['displayName']}")
                 self.success.emit()
             else:
@@ -80,13 +77,11 @@ class BrowserLogin(QFrame):
             logger.warning(e)
 
     def open_browser(self):
-        if webview_login.webview_available is False:
-            logger.warning("You don't have webengine installed, " "you will need to manually copy the SID.")
+        if not webview_login.webview_available:
+            logger.warning("You don't have webengine installed, you will need to manually copy the authorizationCode.")
             QDesktopServices.openUrl(QUrl(self.login_url))
         else:
-            if webview_login.do_webview_login(
-                callback_sid=self.core.auth_sid, callback_code=self.core.auth_code
-            ):
+            if webview_login.do_webview_login(callback_code=self.core.auth_ex_token):
                 logger.info("Successfully logged in as " f"{self.core.lgd.userdata['displayName']}")
                 self.success.emit()
             else:

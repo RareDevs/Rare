@@ -113,7 +113,7 @@ class App(RareApp):
         )
 
         # launch app
-        self.launch_dialog = LaunchDialog()
+        self.launch_dialog = LaunchDialog(parent=None)
         self.launch_dialog.quit_app.connect(self.launch_dialog.close)
         self.launch_dialog.quit_app.connect(lambda ec: exit(ec))
         self.launch_dialog.start_app.connect(self.start_app)
