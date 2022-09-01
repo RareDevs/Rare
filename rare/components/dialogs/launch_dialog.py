@@ -2,7 +2,7 @@ import platform
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, QSettings
-from PyQt5.QtWidgets import QDialog, qApp
+from PyQt5.QtWidgets import QDialog, QApplication
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.components.dialogs.login import LoginDialog
@@ -108,23 +108,29 @@ class LaunchDialog(QDialog):
         self.thread_pool = QThreadPool().globalInstance()
         self.api_results = ApiResults()
 
+        self.login_dialog = LoginDialog(core=self.core, parent=self)
+
     def login(self):
         do_launch = True
         try:
             if self.args.offline:
                 pass
             else:
-                qApp.processEvents()
+                QApplication.instance().processEvents()
                 if self.core.login():
                     logger.info("You are logged in")
                 else:
                     raise ValueError("You are not logged in. Open Login Window")
         except ValueError as e:
             logger.info(str(e))
+            # Force an update check and notice in case there are API changes
+            self.core.check_for_updates(force=True)
+            self.core.force_show_update = True
             # Do not set parent, because it won't show a task bar icon
             # Update: Inherit the same parent as LaunchDialog
-            do_launch = LoginDialog(core=self.core, parent=self.parent()).login()
-        except ConnectionError as e:
+            do_launch = self.login_dialog.login()
+            self.login_dialog.deleteLater()
+        except (HTTPError, ConnectionError) as e:
             logger.warning(e)
             self.args.offline = True
         finally:
