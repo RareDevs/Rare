@@ -98,7 +98,7 @@ class DownloadThread(QThread):
                     #     postinstall,
                     #     self.item.download.igame,
                     #     False,
-                    #     self.item.options.install_preqs,
+                    #     self.item.options.install_prereqs,
                     # )
                     self._handle_postinstall(postinstall, self.item.download.igame)
 
@@ -140,7 +140,7 @@ class DownloadThread(QThread):
         logger.info("This game lists the following prequisites to be installed:")
         logger.info(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
         if platform.system() == "Windows":
-            if not self.item.options.install_preqs:
+            if not self.item.options.install_prereqs:
                 logger.info("Marking prerequisites as installed...")
                 self.core.prereq_installed(self.item.download.igame.app_name)
             else:

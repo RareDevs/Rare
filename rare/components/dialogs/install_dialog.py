@@ -145,9 +145,9 @@ class InstallDialog(QDialog):
             self.ui.shortcut_cb.setChecked(False)
             self.ui.shortcut_cb.setToolTip(self.tr("Creating a shortcut is not supported on MacOS"))
 
-        self.ui.install_preqs_lbl.setVisible(False)
-        self.ui.install_preqs_check.setVisible(False)
-        self.ui.install_preqs_check.stateChanged.connect(lambda: self.non_reload_option_changed("install_preqs"))
+        self.ui.install_prereqs_lbl.setVisible(False)
+        self.ui.install_prereqs_check.setVisible(False)
+        self.ui.install_prereqs_check.stateChanged.connect(lambda: self.non_reload_option_changed("install_prereqs"))
 
         self.non_reload_option_changed("shortcut")
 
@@ -155,7 +155,7 @@ class InstallDialog(QDialog):
         self.ui.verify_button.clicked.connect(self.verify_clicked)
         self.ui.install_button.clicked.connect(self.install_clicked)
 
-        self.ui.install_preqs_check.setChecked(self.dl_item.options.install_preqs)
+        self.ui.install_prereqs_check.setChecked(self.dl_item.options.install_prereqs)
 
         self.ui.install_dialog_layout.setSizeConstraint(QLayout.SetFixedSize)
 
@@ -209,7 +209,7 @@ class InstallDialog(QDialog):
         self.dl_item.options.ignore_space = self.ui.ignore_space_check.isChecked()
         self.dl_item.options.no_install = self.ui.download_only_check.isChecked()
         self.dl_item.options.platform = self.ui.platform_combo_box.currentText()
-        self.dl_item.options.install_preqs = self.ui.install_preqs_check.isChecked()
+        self.dl_item.options.install_prereqs = self.ui.install_prereqs_check.isChecked()
         self.dl_item.options.create_shortcut = self.ui.shortcut_cb.isChecked()
         if self.sdl_list_cbs:
             self.dl_item.options.install_tag = [""]
@@ -254,8 +254,8 @@ class InstallDialog(QDialog):
         elif option == "shortcut":
             QSettings().setValue("create_shortcut", self.ui.shortcut_cb.isChecked())
             self.dl_item.options.create_shortcut = self.ui.shortcut_cb.isChecked()
-        elif option == "install_preqs":
-            self.dl_item.options.install_preqs = self.ui.install_preqs_check.isChecked()
+        elif option == "install_prereqs":
+            self.dl_item.options.install_prereqs = self.ui.install_prereqs_check.isChecked()
 
     def cancel_clicked(self):
         if self.config_tags:
@@ -289,10 +289,10 @@ class InstallDialog(QDialog):
         self.ui.cancel_button.setEnabled(True)
         if pf.system() == "Windows" or ArgumentsSingleton().debug:
             if dl_item.igame.prereq_info and not dl_item.igame.prereq_info.get("installed", False):
-                self.ui.install_preqs_check.setVisible(True)
-                self.ui.install_preqs_lbl.setVisible(True)
-                self.ui.install_preqs_check.setChecked(True)
-                self.ui.install_preqs_check.setText(
+                self.ui.install_prereqs_check.setVisible(True)
+                self.ui.install_prereqs_lbl.setVisible(True)
+                self.ui.install_prereqs_check.setChecked(True)
+                self.ui.install_prereqs_check.setText(
                     self.tr("Also install: {}").format(dl_item.igame.prereq_info.get("name", ""))
                 )
         if self.silent:

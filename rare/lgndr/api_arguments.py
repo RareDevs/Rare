@@ -114,7 +114,7 @@ class LgndrInstallGameRealArgs:
     dlm_debug: bool = False
     yes: bool = False
     # Rare: Extra arguments
-    install_preqs: bool = False
+    install_prereqs: bool = False
     indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
     ui_update: Callable[[UIUpdate], None] = lambda ui: None
     dlm_signals: DLManagerSignals = DLManagerSignals()

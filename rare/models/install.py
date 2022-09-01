@@ -31,7 +31,7 @@ class InstallOptionsModel:
     overlay: bool = False
     update: bool = False
     silent: bool = False
-    install_preqs: bool = pf.system() == "Windows"
+    install_prereqs: bool = pf.system() == "Windows"
 
     def __post_init__(self):
         self.sdl_prompt: Callable[[str, str], list] = \
@@ -41,7 +41,7 @@ class InstallOptionsModel:
         return {
             k: getattr(self, k)
             for k in self.__dict__
-            if k not in ["update", "silent", "create_shortcut", "overlay", "install_preqs"]
+            if k not in ["update", "silent", "create_shortcut", "overlay", "install_prereqs"]
         }
 
 
