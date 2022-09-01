@@ -129,7 +129,6 @@ class LaunchDialog(QDialog):
             # Do not set parent, because it won't show a task bar icon
             # Update: Inherit the same parent as LaunchDialog
             do_launch = self.login_dialog.login()
-            self.login_dialog.deleteLater()
         except (HTTPError, ConnectionError) as e:
             logger.warning(e)
             self.args.offline = True
