@@ -13,8 +13,8 @@ logger = getLogger("Window")
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
-        super(MainWindow, self).__init__()
+    def __init__(self, parent=None):
+        super(MainWindow, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
@@ -83,17 +83,7 @@ class MainWindow(QMainWindow):
             file = open(file_path, "r")
             action = file.read()
             file.close()
-            if action.startswith("launch"):
-                game = action.replace("launch ", "").replace("\n", "")
-                if game in [
-                    i.app_name for i in self.tab_widget.games_tab.game_list
-                ] and self.core.is_installed(game):
-                    self.tab_widget.games_tab.game_utils.prepare_launch(
-                        game, offline=self.args.offline
-                    )
-                else:
-                    logger.info(f"Could not find {game} in Games")
-            elif action.startswith("start"):
+            if action.startswith("show"):
                 self.show()
             os.remove(file_path)
         self.timer.start(1000)
