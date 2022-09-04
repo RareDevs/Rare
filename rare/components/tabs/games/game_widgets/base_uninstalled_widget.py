@@ -4,7 +4,8 @@ from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QFrame, QAction
 from legendary.models.game import Game
 
-from rare.shared.image_manager import ImageManagerSingleton, ImageSize
+from rare.shared import ImageManagerSingleton
+from rare.shared.image_manager import ImageSize
 from rare.widgets.image_widget import ImageWidget
 
 logger = getLogger("Uninstalled")

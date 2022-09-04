@@ -11,7 +11,7 @@ from rare.shared import (
     ArgumentsSingleton,
     ApiResultsSingleton,
 )
-from rare.shared.image_manager import ImageManagerSingleton
+from rare.shared import ImageManagerSingleton
 from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .cloud_save_utils import CloudSaveUtils

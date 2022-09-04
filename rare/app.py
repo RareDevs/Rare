@@ -1,4 +1,3 @@
-import configparser
 import logging
 import os
 import platform
@@ -23,10 +22,8 @@ from rare.shared import (
     LegendaryCoreSingleton,
     GlobalSignalsSingleton,
     ArgumentsSingleton,
-    ApiResultsSingleton,
-    clear_singleton_instance
 )
-from rare.shared.image_manager import ImageManagerSingleton
+from rare.shared.rare_core import RareCore
 from rare.utils import legendary_utils, config_helper
 from rare.utils.paths import cache_dir, tmp_dir
 from rare.widgets.rare_app import RareApp
@@ -61,8 +58,12 @@ def excepthook(exc_type, exc_value, exc_tb):
 class App(RareApp):
     def __init__(self, args: Namespace):
         super(App, self).__init__()
+        self.rare_core = RareCore(args=args)
+        self.args = ArgumentsSingleton()
+        self.signals = GlobalSignalsSingleton()
         self.core = LegendaryCoreSingleton()
-        self.args = ArgumentsSingleton(args)  # add some options
+
+        config_helper.init_config_handler(self.core)
 
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)
@@ -70,9 +71,6 @@ class App(RareApp):
         # set Application name for settings
         self.mainwindow: Optional[MainWindow] = None
         self.launch_dialog: Optional[LaunchDialog] = None
-
-        self.signals = GlobalSignalsSingleton(init=True)
-        self.image_manager = ImageManagerSingleton(init=True)
 
         # launch app
         self.launch_dialog = LaunchDialog(parent=None)
@@ -141,9 +139,8 @@ class App(RareApp):
         if self.mainwindow is not None:
             self.mainwindow.close()
             self.mainwindow = None
-        clear_singleton_instance(self.signals)
-        clear_singleton_instance(self.args)
-        clear_singleton_instance(ApiResultsSingleton())
+        self.rare_core.deleteLater()
+        del self.rare_core
         self.processEvents()
         shutil.rmtree(tmp_dir)
         os.makedirs(tmp_dir)
@@ -182,15 +179,11 @@ def start(args):
         logger.info(f"Operating System: {platform.system()}")
 
     while True:
-        core = LegendaryCoreSingleton(init=True)
-        config_helper.init_config_handler(core)
         app = App(args)
         exit_code = app.exec_()
         # if not restart
         # restart app
         del app
-        core.exit()
-        clear_singleton_instance(core)
         if exit_code != -133742:
             break
 

@@ -11,7 +11,8 @@ from rare.shared import (
     ArgumentsSingleton,
     ApiResultsSingleton,
 )
-from rare.shared.image_manager import ImageManagerSingleton, ImageSize
+from rare.shared import ImageManagerSingleton
+from rare.shared.image_manager import ImageSize
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.extra_widgets import SideTabWidget
 from rare.utils.json_formatter import QJsonModel

@@ -3,8 +3,8 @@ from PyQt5.QtWidgets import QFrame, QWidget, QMessageBox
 from legendary.models.game import Game
 
 from rare.components.tabs.games.game_utils import GameUtils
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.shared.image_manager import ImageManagerSingleton, ImageSize
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ImageManagerSingleton
+from rare.shared.image_manager import ImageSize
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
 from rare.models.install import InstallOptionsModel

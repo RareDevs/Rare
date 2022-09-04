@@ -7,12 +7,11 @@ from requests.exceptions import ConnectionError, HTTPError
 
 from rare.components.dialogs.login import LoginDialog
 from rare.models.apiresults import ApiResults
-from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton
-from rare.shared.image_manager import ImageManagerSingleton
+from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton, ImageManagerSingleton
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.misc import CloudWorker
 
-logger = getLogger("Login")
+logger = getLogger("LoginDialog")
 
 
 class LaunchWorker(QRunnable):
