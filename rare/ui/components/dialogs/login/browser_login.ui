@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>246</width>
-    <height>184</height>
+    <width>182</width>
+    <height>210</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -94,7 +94,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Click the button to open the login page in a browser or copy the link and paste it in a browser. After logging in, copy the SID code in the input above.</string>
+      <string>Click the button to open the login page in a browser or copy the link and paste it in a browser. After logging in, copy the &lt;b&gt;&lt;code&gt;authorizationCode&lt;/code&gt;&lt;/b&gt; in the input above.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

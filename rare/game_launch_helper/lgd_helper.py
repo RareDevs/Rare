@@ -6,8 +6,10 @@ from logging import getLogger
 from typing import List
 
 from PyQt5.QtCore import QProcess, QProcessEnvironment
-from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame, LaunchParameters
+
+from rare.lgndr.core import LegendaryCore
+
 
 logger = getLogger("Helper")
 

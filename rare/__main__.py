@@ -45,10 +45,7 @@ def main():
     )
     subparsers = parser.add_subparsers(title="Commands", dest="subparser")
 
-    launch_parser = subparsers.add_parser("launch")
-    launch_parser.add_argument("app_name", help="Name of the app", metavar="<App Name>")
-
-    launch_minimal_parser = subparsers.add_parser("start")
+    launch_minimal_parser = subparsers.add_parser("start", aliases=["launch"])
     launch_minimal_parser.add_argument("app_name", help="AppName of the game to launch",
                                        metavar="<App Name>", action="store")
     launch_minimal_parser.add_argument("--offline", help="Launch game offline",
@@ -56,11 +53,11 @@ def main():
     launch_minimal_parser.add_argument("--skip_update_check", help="Do not check for updates",
                                        action="store_true")
     launch_minimal_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
-                               default=os.environ.get('LGDRY_WINE_BINARY', None),
-                               help='Set WINE binary to use to launch the app')
+                                       default=os.environ.get('LGDRY_WINE_BINARY', None),
+                                       help='Set WINE binary to use to launch the app')
     launch_minimal_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
-                               default=os.environ.get('LGDRY_WINE_PREFIX', None),
-                               help='Set WINE prefix to use')
+                                       default=os.environ.get('LGDRY_WINE_PREFIX', None),
+                                       help='Set WINE prefix to use')
     launch_minimal_parser.add_argument("--ask-alyways-sync", help="Ask for cloud saves",
                                        action="store_true")
 
@@ -80,10 +77,10 @@ def main():
 
     if args.version:
         from rare import __version__, code_name
-
         print(f"Rare {__version__} Codename: {code_name}")
         return
-    if args.subparser == "start":
+
+    if args.subparser == "start" or args.subparser == "launch":
         from rare import game_launch_helper as helper
         helper.start_game(args)
         return
@@ -99,15 +96,9 @@ def main():
         from rare.utils.paths import data_dir
 
         with open(os.path.join(data_dir, "lockfile"), "w") as file:
-            if args.subparser == "launch":
-                file.write(f"launch {args.app_name}")
-            else:
-                file.write("start")
+            file.write("show")
             file.close()
         return
-
-    if args.subparser == "launch":
-        args.silent = True
 
     from rare.app import start
 

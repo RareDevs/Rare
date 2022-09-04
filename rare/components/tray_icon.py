@@ -13,7 +13,7 @@ logger = getLogger("TrayIcon")
 
 class TrayIcon(QSystemTrayIcon):
     def __init__(self, parent):
-        super(TrayIcon, self).__init__(parent)
+        super(TrayIcon, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
 
         self.setIcon(QIcon(":/images/Rare.png"))
@@ -33,7 +33,7 @@ class TrayIcon(QSystemTrayIcon):
         if len(installed := self.core.get_installed_list()) < 5:
             last_played = [GameMeta(i.app_name) for i in sorted(installed, key=lambda x: x.title)]
         elif games := sorted(
-                parent.mainwindow.tab_widget.games_tab.game_utils.game_meta.get_games(),
+                parent.tab_widget.games_tab.game_utils.game_meta.get_games(),
                 key=lambda x: x.last_played, reverse=True):
             last_played: List[GameMeta] = games[0:5]
         else:
@@ -46,7 +46,7 @@ class TrayIcon(QSystemTrayIcon):
             a.setProperty("app_name", game.app_name)
             self.game_actions.append(a)
             a.triggered.connect(
-                lambda: parent.mainwindow.tab_widget.games_tab.game_utils.prepare_launch(
+                lambda: parent.tab_widget.games_tab.game_utils.prepare_launch(
                     self.sender().property("app_name"))
             )
 

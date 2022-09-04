@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>359</width>
+    <width>379</width>
     <height>208</height>
    </rect>
   </property>
@@ -102,14 +102,14 @@
     </layout>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="install_preqs_lbl">
+    <widget class="QLabel" name="install_prereqs_lbl">
      <property name="text">
       <string>Install prerequisites</string>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QCheckBox" name="install_preqs_check">
+    <widget class="QCheckBox" name="install_prereqs_check">
      <property name="font">
       <font>
        <italic>true</italic>

@@ -2,17 +2,16 @@ import platform
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, QSettings
-from PyQt5.QtWidgets import QDialog, qApp
+from PyQt5.QtWidgets import QDialog, QApplication
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.components.dialogs.login import LoginDialog
 from rare.models.apiresults import ApiResults
-from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton
-from rare.shared.image_manager import ImageManagerSingleton
+from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton, ImageManagerSingleton
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.misc import CloudWorker
 
-logger = getLogger("Login")
+logger = getLogger("LoginDialog")
 
 
 class LaunchWorker(QRunnable):
@@ -82,14 +81,13 @@ class ApiRequestWorker(LaunchWorker):
         self.signals.result.emit(result, "32bit")
 
 
-class LaunchDialog(QDialog, Ui_LaunchDialog):
+class LaunchDialog(QDialog):
     quit_app = pyqtSignal(int)
     start_app = pyqtSignal()
     completed = 0
 
     def __init__(self, parent=None):
         super(LaunchDialog, self).__init__(parent=parent)
-        self.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(
             Qt.Window
@@ -101,11 +99,15 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             | Qt.MSWindowsFixedSizeDialogHint
         )
         self.setWindowModality(Qt.WindowModal)
+        self.ui = Ui_LaunchDialog()
+        self.ui.setupUi(self)
 
         self.core = LegendaryCoreSingleton()
         self.args = ArgumentsSingleton()
         self.thread_pool = QThreadPool().globalInstance()
         self.api_results = ApiResults()
+
+        self.login_dialog = LoginDialog(core=self.core, parent=self)
 
     def login(self):
         do_launch = True
@@ -113,7 +115,10 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             if self.args.offline:
                 pass
             else:
-                qApp.processEvents()
+                QApplication.instance().processEvents()
+                # Force an update check and notice in case there are API changes
+                self.core.check_for_updates(force=True)
+                self.core.force_show_update = True
                 if self.core.login():
                     logger.info("You are logged in")
                 else:
@@ -122,8 +127,8 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             logger.info(str(e))
             # Do not set parent, because it won't show a task bar icon
             # Update: Inherit the same parent as LaunchDialog
-            do_launch = LoginDialog(core=self.core, parent=self.parent()).login()
-        except ConnectionError as e:
+            do_launch = self.login_dialog.login()
+        except (HTTPError, ConnectionError) as e:
             logger.warning(e)
             self.args.offline = True
         finally:
@@ -143,7 +148,7 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
     def launch(self):
 
         if not self.args.offline:
-            self.image_info.setText(self.tr("Downloading Images"))
+            self.ui.image_info.setText(self.tr("Downloading Images"))
             image_worker = ImageWorker()
             image_worker.signals.result.connect(self.handle_api_worker_result)
             image_worker.signals.progress.connect(self.update_image_progbar)
@@ -202,13 +207,13 @@ class LaunchDialog(QDialog, Ui_LaunchDialog):
             self.finish()
 
     def update_image_progbar(self, i: int):
-        self.image_prog_bar.setValue(i)
+        self.ui.image_prog_bar.setValue(i)
 
     def finish(self):
         self.completed += 1
         if self.completed == 2:
             logger.info("App starting")
-            self.image_info.setText(self.tr("Starting..."))
+            self.ui.image_info.setText(self.tr("Starting..."))
             ApiResultsSingleton(self.api_results)
             self.completed += 1
             self.start_app.emit()

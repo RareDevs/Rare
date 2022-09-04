@@ -20,7 +20,6 @@ class RareApp(QApplication):
     def __init__(self):
         super(RareApp, self).__init__(sys.argv)
         self.setQuitOnLastWindowClosed(False)
-        self.core = LegendaryCore()
         if hasattr(Qt, "AA_UseHighDpiPixmaps"):
             self.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
@@ -36,7 +35,6 @@ class RareApp(QApplication):
         # lk: this is a bit silly but serves well until we have a class
         # lk: store the default qt style name from the system on startup as a property for later reference
         self.setProperty("rareDefaultQtStyle", self.style().objectName())
-
         if (
                 self.settings.value("color_scheme", None) is None
                 and self.settings.value("style_sheet", None) is None

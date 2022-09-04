@@ -27,7 +27,8 @@ from rare.shared import (
     GlobalSignalsSingleton,
     ArgumentsSingleton,
 )
-from rare.shared.image_manager import ImageManagerSingleton, ImageSize
+from rare.shared import ImageManagerSingleton
+from rare.shared.image_manager import ImageSize
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.legendary_utils import VerifyWorker
 from rare.utils.misc import get_size

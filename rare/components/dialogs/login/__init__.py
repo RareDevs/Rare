@@ -36,8 +36,6 @@ class LoginDialog(QDialog):
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(LoginDialog, self).__init__(parent=parent)
-        self.ui = Ui_LoginDialog()
-        self.ui.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(
             Qt.Window
@@ -50,6 +48,8 @@ class LoginDialog(QDialog):
             | Qt.MSWindowsFixedSizeDialogHint
         )
         self.setWindowModality(Qt.WindowModal)
+        self.ui = Ui_LoginDialog()
+        self.ui.setupUi(self)
 
         self.core = core
         self.args = ArgumentsSingleton()
@@ -76,7 +76,10 @@ class LoginDialog(QDialog):
         self.ui.back_button.setEnabled(False)
 
         self.landing_page.ui.login_browser_radio.clicked.connect(lambda: self.ui.next_button.setEnabled(True))
+        self.landing_page.ui.login_browser_radio.clicked.connect(self.browser_radio_clicked)
         self.landing_page.ui.login_import_radio.clicked.connect(lambda: self.ui.next_button.setEnabled(True))
+        self.landing_page.ui.login_import_radio.clicked.connect(self.import_radio_clicked)
+
         self.ui.exit_button.clicked.connect(self.close)
         self.ui.back_button.clicked.connect(self.back_clicked)
         self.ui.next_button.clicked.connect(self.next_clicked)
@@ -90,15 +93,22 @@ class LoginDialog(QDialog):
         self.ui.next_button.setEnabled(True)
         self.login_stack.slideInIndex(self.pages.landing)
 
+    def browser_radio_clicked(self):
+        self.login_stack.slideInIndex(self.pages.browser)
+        self.ui.back_button.setEnabled(True)
+        self.ui.next_button.setEnabled(False)
+
+    def import_radio_clicked(self):
+        self.login_stack.slideInIndex(self.pages.import_egl)
+        self.ui.back_button.setEnabled(True)
+        self.ui.next_button.setEnabled(self.import_page.is_valid())
+
     def next_clicked(self):
         if self.login_stack.currentIndex() == self.pages.landing:
             if self.landing_page.ui.login_browser_radio.isChecked():
-                self.login_stack.slideInIndex(self.pages.browser)
-                self.ui.next_button.setEnabled(False)
+                self.browser_radio_clicked()
             if self.landing_page.ui.login_import_radio.isChecked():
-                self.login_stack.slideInIndex(self.pages.import_egl)
-                self.ui.next_button.setEnabled(self.import_page.is_valid())
-            self.ui.back_button.setEnabled(True)
+                self.import_radio_clicked()
         elif self.login_stack.currentIndex() == self.pages.browser:
             self.browser_page.do_login()
         elif self.login_stack.currentIndex() == self.pages.import_egl:

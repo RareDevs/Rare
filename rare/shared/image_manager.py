@@ -7,7 +7,7 @@ import zlib
 from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
-from typing import Tuple, Dict, Union, Type, List, Callable, Optional
+from typing import Tuple, Dict, Union, Type, List, Callable
 
 import requests
 from PyQt5.QtCore import (
@@ -26,7 +26,8 @@ from PyQt5.QtGui import (
 from PyQt5.QtWidgets import QApplication
 from legendary.models.game import Game
 
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.lgndr.core import LegendaryCore
+from rare.models.signals import GlobalSignals
 from rare.utils.paths import image_dir, resources_path
 
 if TYPE_CHECKING:
@@ -111,10 +112,10 @@ class ImageManager(QObject):
     __dl_retries = 1
     __worker_app_names: List[str] = list()
 
-    def __init__(self):
+    def __init__(self, signals: GlobalSignals, core: LegendaryCore):
         super(QObject, self).__init__()
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
+        self.signals = signals
+        self.core = core
 
         self.image_dir = Path(image_dir)
         if not self.image_dir.is_dir():
@@ -357,15 +358,3 @@ class ImageManager(QObject):
         """
         image: QImage = self.__get_cover(QImage, app_name, color)
         return image
-
-
-_image_manager_singleton: Optional[ImageManager] = None
-
-
-def ImageManagerSingleton(init: bool = False) -> ImageManager:
-    global _image_manager_singleton
-    if _image_manager_singleton is None and not init:
-        raise RuntimeError("Uninitialized use of ImageManagerSingleton")
-    if _image_manager_singleton is None:
-        _image_manager_singleton = ImageManager()
-    return _image_manager_singleton

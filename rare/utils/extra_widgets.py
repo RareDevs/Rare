@@ -54,7 +54,6 @@ class IndicatorReasons:
 
 class IndicatorLineEdit(QWidget):
     textChanged = pyqtSignal(str)
-    is_valid = False
     reasons = IndicatorReasons()
 
     def __init__(
@@ -97,9 +96,10 @@ class IndicatorLineEdit(QWidget):
             layout.addWidget(self.indicator_label)
 
         if not placeholder:
-            _translate = QCoreApplication.translate
+            _translate = QCoreApplication.instance().translate
             self.line_edit.setPlaceholderText(_translate(self.__class__.__name__, "Default"))
 
+        self.is_valid = False
         self.edit_func = edit_func
         self.save_func = save_func
         self.line_edit.textChanged.connect(self.__edit)
@@ -107,7 +107,7 @@ class IndicatorLineEdit(QWidget):
             self.line_edit.textChanged.connect(self.__save)
 
         # lk: this can be placed here to trigger __edit
-        # lk: it going to save the input again if it is valid which
+        # lk: it is going to save the input again if it is valid which
         # lk: is ok to do given the checks don't misbehave (they shouldn't)
         # lk: however it is going to edit any "understood" bad input to good input
         # lk: and we might not want that (but the validity check reports on the edited string)
@@ -185,9 +185,6 @@ class PathEditIconProvider(QFileIconProvider):
 
 
 class PathEdit(IndicatorLineEdit):
-    completer = QCompleter()
-    compl_model = QFileSystemModel()
-
     def __init__(
         self,
         path: str = "",
@@ -200,6 +197,9 @@ class PathEdit(IndicatorLineEdit):
         horiz_policy: QSizePolicy = QSizePolicy.Expanding,
         parent=None,
     ):
+        self.completer = QCompleter()
+        self.compl_model = QFileSystemModel()
+
         try:
             self.compl_model.setOptions(
                 QFileSystemModel.DontWatchForChanges
@@ -230,7 +230,7 @@ class PathEdit(IndicatorLineEdit):
         layout = self.layout()
         layout.addWidget(self.path_select)
 
-        _translate = QCoreApplication.translate
+        _translate = QCoreApplication.instance().translate
         self.path_select.setText(_translate("PathEdit", "Browse..."))
 
         self.type_filter = type_filter
@@ -414,7 +414,7 @@ class SelectViewWidget(QWidget):
 class ImageLabel(QLabel):
     image = None
     img_size = None
-    name = str()
+    name = ""
 
     def __init__(self):
         super(ImageLabel, self).__init__()

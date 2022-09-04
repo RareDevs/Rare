@@ -14,12 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_BrowserLogin(object):
     def setupUi(self, BrowserLogin):
         BrowserLogin.setObjectName("BrowserLogin")
-        BrowserLogin.resize(400, 200)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(BrowserLogin.sizePolicy().hasHeightForWidth())
-        BrowserLogin.setSizePolicy(sizePolicy)
+        BrowserLogin.resize(182, 210)
         BrowserLogin.setWindowTitle("BrowserLogin")
         self.browser_layout = QtWidgets.QGridLayout(BrowserLogin)
         self.browser_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
@@ -78,7 +73,7 @@ class Ui_BrowserLogin(object):
         _translate = QtCore.QCoreApplication.translate
         self.open_button.setText(_translate("BrowserLogin", "Open Browser"))
         self.title_label.setText(_translate("BrowserLogin", "Login through browser"))
-        self.info_label.setText(_translate("BrowserLogin", "Click the button to open the login page in a browser or copy the link and paste it in a browser. After logging in, copy the SID code in the input above."))
+        self.info_label.setText(_translate("BrowserLogin", "Click the button to open the login page in a browser or copy the link and paste it in a browser. After logging in, copy the <b><code>authorizationCode</code></b> in the input above."))
 
 
 if __name__ == "__main__":

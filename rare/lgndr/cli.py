@@ -248,7 +248,7 @@ class LegendaryCLI(LegendaryCLIReal):
 
                 postinstall = self.core.install_game(igame)
                 if postinstall:
-                    self._handle_postinstall(postinstall, igame, yes=args.yes, choice=args.install_preqs)
+                    self._handle_postinstall(postinstall, igame, skip_prereqs=args.yes, choice=args.install_prereqs)
 
                 dlcs = self.core.get_dlc_for_game(game.app_name)
                 if dlcs and not args.skip_dlcs:
@@ -301,7 +301,7 @@ class LegendaryCLI(LegendaryCLIReal):
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 
-    def _handle_postinstall(self, postinstall, igame, yes=False, choice=True):
+    def _handle_postinstall(self, postinstall, igame, skip_prereqs=False, choice=True):
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(LgndrIndirectStatus(), self.logger)
         # noinspection PyShadowingBuiltins
@@ -309,12 +309,12 @@ class LegendaryCLI(LegendaryCLIReal):
         # noinspection PyShadowingBuiltins
         def input(x): return 'y' if choice else 'i'
 
-        print('\nThis game lists the following prequisites to be installed:')
+        print('\nThis game lists the following prerequisites to be installed:')
         print(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
         print('')
 
         if os.name == 'nt':
-            if yes:
+            if skip_prereqs:
                 c = 'n'  # we don't want to launch anything, just silent install.
             else:
                 choice = input('Do you wish to install the prerequisites? ([y]es, [n]o, [i]gnore): ')

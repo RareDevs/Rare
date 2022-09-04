@@ -3,8 +3,8 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QFrame
 from legendary.models.game import Game
 
-from rare.shared import LegendaryCoreSingleton
-from rare.shared.image_manager import ImageManagerSingleton, ImageSize
+from rare.shared import LegendaryCoreSingleton, ImageManagerSingleton
+from rare.shared.image_manager import ImageSize
 from rare.widgets.elide_label import ElideLabel
 from .library_widget import LibraryWidget
 

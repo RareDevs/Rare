@@ -14,12 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ImportLogin(object):
     def setupUi(self, ImportLogin):
         ImportLogin.setObjectName("ImportLogin")
-        ImportLogin.resize(400, 200)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(ImportLogin.sizePolicy().hasHeightForWidth())
-        ImportLogin.setSizePolicy(sizePolicy)
+        ImportLogin.resize(242, 120)
         ImportLogin.setWindowTitle("ImportLogin")
         self.import_layout = QtWidgets.QGridLayout(ImportLogin)
         self.import_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
@@ -51,6 +46,7 @@ class Ui_ImportLogin(object):
         font.setItalic(True)
         self.status_label.setFont(font)
         self.status_label.setText("")
+        self.status_label.setWordWrap(True)
         self.status_label.setObjectName("status_label")
         self.import_layout.addWidget(self.status_label, 2, 1, 1, 2)
         self.info_label = QtWidgets.QLabel(ImportLogin)
@@ -68,7 +64,7 @@ class Ui_ImportLogin(object):
 
     def retranslateUi(self, ImportLogin):
         _translate = QtCore.QCoreApplication.translate
-        self.prefix_label.setText(_translate("ImportLogin", "Select path"))
+        self.prefix_label.setText(_translate("ImportLogin", "Select prefix"))
         self.title_label.setText(_translate("ImportLogin", "Import existing session from EGL"))
         self.prefix_tool.setText(_translate("ImportLogin", "Browse"))
         self.info_label.setText(_translate("ImportLogin", "You will get logged out from EGL in the process."))
