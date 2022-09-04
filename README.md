@@ -86,7 +86,7 @@ Run it via:
 
 #### Other
 
-Install via `pip` or use the AppImage.
+Install via `pip`, use the AppImage or install via flatpak.
 
 ### macOS
 
@@ -110,21 +110,19 @@ In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find pack
 
 ### Run from source
 
-**Note**: Cloning **with submodules** is very important, as Rare uses a custom version of legendary and bundles it as a submodule.
-
-1. Clone the repo with Submodule: `git clone https://github.com/Dummerle/Rare --recurse-submodules`.
+1. Clone the repo: `git clone https://github.com/Dummerle/Rare
 2. Change your working directory to the project folder: `cd Rare`
 3. Run `pip install -r requirements.txt` to install all required dependencies.
    If you want to be able to use the automatic login, run `pip install -r optional_requirements.txt`
-   If you are on Arch you can run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-psutil`
-3. Run `python3 -m rare`
+   If you are on Arch you can
+   run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-psutil`
+4. Run `python3 -m rare`
 
 ## Contributing
 
 There are several options to contribute.
 
 - If you know Python and PyQt, you can implement new features (Some ideas are in the projects tab).
-- If you are a designer, you can add Stylesheets or create a logo or a banner.
 - You can translate the application in your language: Check our [transifex](https://www.transifex.com/rare-1/rare) page
   for that.
 
