@@ -117,15 +117,15 @@ class LaunchDialog(QDialog):
                 pass
             else:
                 QApplication.instance().processEvents()
+                # Force an update check and notice in case there are API changes
+                self.core.check_for_updates(force=True)
+                self.core.force_show_update = True
                 if self.core.login():
                     logger.info("You are logged in")
                 else:
                     raise ValueError("You are not logged in. Open Login Window")
         except ValueError as e:
             logger.info(str(e))
-            # Force an update check and notice in case there are API changes
-            self.core.check_for_updates(force=True)
-            self.core.force_show_update = True
             # Do not set parent, because it won't show a task bar icon
             # Update: Inherit the same parent as LaunchDialog
             do_launch = self.login_dialog.login()
