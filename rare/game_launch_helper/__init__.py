@@ -11,11 +11,11 @@ from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThread
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 
+from rare.lgndr.core import LegendaryCore
+from rare.widgets.rare_app import RareApp
 from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 from .message_models import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
-from ..shared import LegendaryCoreSingleton
-from ..widgets.rare_app import RareApp
 
 
 class PreLaunchThread(QRunnable):
@@ -25,9 +25,9 @@ class PreLaunchThread(QRunnable):
         pre_launch_command_finished = pyqtSignal(int)  # exit_code
         error_occurred = pyqtSignal(str)
 
-    def __init__(self, args: InitArgs):
+    def __init__(self, core: LegendaryCore, args: InitArgs):
         super(PreLaunchThread, self).__init__()
-        self.core = LegendaryCoreSingleton()
+        self.core = core
         self.app_name = args.app_name
         self.signals = self.Signals()
 
@@ -69,7 +69,7 @@ class GameProcessApp(RareApp):
         self.game_process = QProcess()
         self.app_name = app_name
         self.logger = getLogger(self.app_name)
-        self.core = LegendaryCoreSingleton(init=True)
+        self.core = LegendaryCore()
 
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)
@@ -187,7 +187,7 @@ class GameProcessApp(RareApp):
                 self.logger.error("Not logged in. Try to launch game offline")
                 args.offline = True
 
-        worker = PreLaunchThread(args)
+        worker = PreLaunchThread(self.core, args)
         worker.signals.ready_to_launch.connect(self.launch_game)
         worker.signals.error_occurred.connect(self.error_occurred)
         # worker.signals.started_pre_launch_command(None)
