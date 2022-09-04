@@ -13,13 +13,19 @@ def init_config_handler(core: LegendaryCore):
     _save_config = core.lgd.save_config
 
 
+def save_config():
+    if _save_config is None:
+        raise RuntimeError("Uninitialized use of config_helper")
+    _save_config()
+
+
 def add_option(app_name: str, option: str, value: str):
     value = value.replace("%%", "%").replace("%", "%%")
     if not _config.has_section(app_name):
         _config[app_name] = {}
 
     _config.set(app_name, option, value)
-    _save_config()
+    save_config()
 
 
 def remove_option(app_name, option):
@@ -29,10 +35,10 @@ def remove_option(app_name, option):
     if _config.has_section(app_name) and not _config[app_name]:
         _config.remove_section(app_name)
 
-    _save_config()
+    save_config()
 
 
 def remove_section(app_name):
     if _config.has_section(app_name):
         _config.remove_section(app_name)
-        _save_config()
+        save_config()
