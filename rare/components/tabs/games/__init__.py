@@ -32,12 +32,9 @@ logger = getLogger("GamesTab")
 
 
 class GamesTab(QStackedWidget):
-    widgets: Dict[str, Tuple[
-        Union[InstalledIconWidget, UninstalledIconWidget], Union[InstalledListWidget, UninstalledListWidget]]] = dict()
-    running_games = list()
+
     updates = set()
     active_filter = 0
-    uninstalled_games: List[Game] = []
 
     def __init__(self, parent=None):
         super(GamesTab, self).__init__(parent=parent)
@@ -47,6 +44,10 @@ class GamesTab(QStackedWidget):
         self.api_results = ApiResultsSingleton()
         self.image_manager = ImageManagerSingleton()
         self.settings = QSettings()
+
+        self.widgets: Dict[str, Tuple[
+            Union[InstalledIconWidget, UninstalledIconWidget], Union[InstalledListWidget, UninstalledListWidget]]] = {}
+        self.uninstalled_games: List[Game] = []
 
         self.game_list: List[Game] = self.api_results.game_list
         self.dlcs = self.api_results.dlcs
