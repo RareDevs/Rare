@@ -44,9 +44,9 @@ Nuitka = "^1.0.6"
 pylint = "^2.15.0"
 black = "^22.6.0"
 
-[build-system]
-requires = ["setuptools>=42", "wheel", "nuitka", "toml"]
-build-backend = "nuitka.distutils.Build"
+#[build-system]
+#requires = ["setuptools>=42"z, "wheel", "nuitka", "toml"]
+#build-backend = "nuitka.distutils.Build"
 
 
 [nuitka]
