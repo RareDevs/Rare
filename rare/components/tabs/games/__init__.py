@@ -5,13 +5,13 @@ from PyQt5.QtCore import QSettings, Qt, pyqtSlot
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
 from legendary.models.game import InstalledGame, Game
 
+from rare.shared import ImageManagerSingleton
 from rare.shared import (
     LegendaryCoreSingleton,
     GlobalSignalsSingleton,
     ArgumentsSingleton,
     ApiResultsSingleton,
 )
-from rare.shared import ImageManagerSingleton
 from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .cloud_save_utils import CloudSaveUtils
@@ -37,7 +37,7 @@ class GamesTab(QStackedWidget):
     running_games = list()
     updates = set()
     active_filter = 0
-    uninstalled_games = None
+    uninstalled_games: List[Game] = []
 
     def __init__(self, parent=None):
         super(GamesTab, self).__init__(parent=parent)
@@ -224,14 +224,16 @@ class GamesTab(QStackedWidget):
             self.list_view.layout().addWidget(list_widget)
 
         for game in self.no_assets:
-            icon_widget, list_widget = self.add_installed_widget(game.app_name)
+            if not game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin":
+                icon_widget, list_widget = self.add_uninstalled_widget(game)
+            else:
+                icon_widget, list_widget = self.add_installed_widget(game.app_name)
             if not icon_widget or not list_widget:
                 logger.warning(f"Ignoring {game.app_name} in game list")
                 continue
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
 
-        self.uninstalled_games = []
         for game in sorted(self.game_list, key=lambda x: x.app_title):
             if not self.core.is_installed(game.app_name):
                 self.uninstalled_games.append(game)
@@ -330,8 +332,8 @@ class GamesTab(QStackedWidget):
                 visible = True
 
             if (
-                search_text.lower() not in widget.game.app_name.lower()
-                and search_text.lower() not in widget.game.app_title.lower()
+                    search_text.lower() not in widget.game.app_name.lower()
+                    and search_text.lower() not in widget.game.app_title.lower()
             ):
                 opacity = 0.25
             else:
@@ -365,7 +367,8 @@ class GamesTab(QStackedWidget):
                 )
             )
         self.icon_view.layout().insert(0, installing_widget)
-        list_widgets = self.list_view.findChildren(InstalledListWidget) + self.list_view.findChildren(UninstalledListWidget)
+        list_widgets = self.list_view.findChildren(InstalledListWidget) + self.list_view.findChildren(
+            UninstalledListWidget)
         if sort_by:
             list_widgets.sort(key=lambda x: (sort_by not in x.game.app_title.lower(),))
         else:

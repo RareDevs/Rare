@@ -29,7 +29,7 @@ class InstalledListWidget(BaseInstalledWidget):
         self.setLayout(self.layout)
         self.layout.addWidget(self.image)
 
-        ##Layout on the right
+        # Layout on the right
         self.childLayout = QVBoxLayout()
         self.layout.addLayout(self.childLayout)
 
@@ -39,8 +39,13 @@ class InstalledListWidget(BaseInstalledWidget):
         self.childLayout.addWidget(self.title_label)
         self.app_name_label = QLabel(self.game.app_name)
         self.launch_button = QPushButton(
-            play_icon, self.tr("Launch") if self.igame else self.tr("Link/Play")
+            play_icon,
+            self.tr("Launch") if self.igame else self.tr("Link/Play") if self.is_origin else self.texts["hover"][
+                "no_launch"]
         )
+        if not self.is_origin and not self.igame:
+            self.launch_button.setDisabled(True)
+
         self.launch_button.setObjectName("launch_game_button")
         self.launch_button.setFixedWidth(150)
 

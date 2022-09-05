@@ -38,7 +38,8 @@ class BaseInstalledWidget(QFrame):
                 "launch": self.tr("Launch Game"),
                 "launch_origin": self.tr("Launch/Link"),
                 "running": self.tr("Game running"),
-                "launch_offline": self.tr("Launch offline")
+                "launch_offline": self.tr("Launch offline"),
+                "no_launch": self.tr("Can't launch game")
             },
             "default": {
                 "running": self.tr("Game running"),
@@ -231,6 +232,10 @@ class BaseInstalledWidget(QFrame):
         @return bool If the game doesn't have assets
         """
         return not self.game.asset_infos
+
+    @property
+    def is_origin(self) -> bool:
+        return self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
 
     @property
     def is_installed(self) -> bool:

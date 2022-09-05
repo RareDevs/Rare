@@ -88,7 +88,7 @@ class InstalledIconWidget(BaseInstalledWidget):
             self.info_label.setText(self.texts["hover"]["update_available"])
         else:
             self.info_label.setText(
-                self.texts["hover"]["launch" if self.igame else "launch_origin"]
+                self.texts["hover"]["launch" if self.igame else "launch_origin" if self.is_origin else "no_launch"]
             )
 
     def leaveEvent(self, a0: QEvent = None) -> None:
