@@ -38,17 +38,13 @@ logger = getLogger("ImageManager")
 
 class ImageSize:
     class Preset:
-        __img_factor = 67
-        __size: QSize
-        __divisor: float = 1.0
-        __pixel_ratio: float = 1.0
-        # lk: for prettier images set this to true
-        __smooth_transform: bool = False
-
         def __init__(self, divisor: float, pixel_ratio: float):
-            self.__pixel_ratio = pixel_ratio
+            self.__img_factor = 67
             self.__divisor = divisor
+            self.__pixel_ratio = pixel_ratio
             self.__size = QSize(self.__img_factor * 3, self.__img_factor * 4) * pixel_ratio / divisor
+            # lk: for prettier images set this to true
+            self.__smooth_transform: bool = False
             if divisor > 2:
                 self.__smooth_transform = False
 
@@ -107,12 +103,11 @@ class ImageManager(QObject):
             logger.debug(f" Emitting singal for game {self.game.app_name} - {self.game.app_title}")
             self.signals.completed.emit(self.game.app_name)
 
-    # lk: the ordering in __img_types matters for the order of fallbacks
-    __img_types: List = ["DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo"]
-    __dl_retries = 1
-    __worker_app_names: List[str] = list()
-
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
+        # lk: the ordering in __img_types matters for the order of fallbacks
+        self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo")
+        self.__dl_retries = 1
+        self.__worker_app_names: List[str] = []
         super(QObject, self).__init__()
         self.signals = signals
         self.core = core

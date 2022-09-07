@@ -309,6 +309,9 @@ class InstallDialog(QDialog):
             self.show()
 
     def error_box(self, label: str = "", message: str = ""):
+        if message.startswith("403 Client Error: Forbidden for url:"):
+            message = self.tr("403 Client Error: Wait a few seconds and try <b>Verify</b> again")
+            self.options_changed = True
         self.ui.warn_label.setVisible(bool(label))
         self.ui.warn_label.setText(label)
         self.ui.warn_message.setVisible(bool(message))

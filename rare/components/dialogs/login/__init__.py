@@ -12,7 +12,7 @@ from rare.widgets.sliding_stack import SlidingStackedWidget
 from .browser_login import BrowserLogin
 from .import_login import ImportLogin
 
-logger = getLogger("Login")
+logger = getLogger("LoginDialog")
 
 
 @dataclass

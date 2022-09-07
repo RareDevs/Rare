@@ -71,6 +71,7 @@ class App(RareApp):
         # set Application name for settings
         self.mainwindow: Optional[MainWindow] = None
         self.launch_dialog: Optional[LaunchDialog] = None
+        self.timer = QTimer()
 
         # launch app
         self.launch_dialog = LaunchDialog(parent=None)
@@ -84,7 +85,6 @@ class App(RareApp):
         dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1])
         dt_now = datetime.utcnow()
         td = abs(dt_exp - dt_now)
-        self.timer = QTimer()
         self.timer.timeout.connect(self.re_login)
         self.timer.start(int(td.total_seconds() - 60) * 1000)
 
