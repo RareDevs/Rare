@@ -1,8 +1,10 @@
 import os
 import sys
+from argparse import Namespace
 from logging import getLogger
+from pathlib import Path
 
-from PyQt5.QtCore import Qt, QSettings, QTranslator
+from PyQt5.QtCore import Qt, QSettings, QTranslator, QStandardPaths
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
@@ -17,7 +19,7 @@ from rare.utils.misc import set_color_pallete, set_style_sheet
 class RareApp(QApplication):
     logger = getLogger("RareApp")
 
-    def __init__(self):
+    def __init__(self, args: Namespace):
         super(RareApp, self).__init__(sys.argv)
         self.setQuitOnLastWindowClosed(False)
         if hasattr(Qt, "AA_UseHighDpiPixmaps"):

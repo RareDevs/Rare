@@ -1,6 +1,6 @@
 import datetime
 from logging import getLogger
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Set
 
 from PyQt5.QtCore import QThread, pyqtSignal, QSettings, pyqtSlot
 from PyQt5.QtWidgets import (
@@ -31,7 +31,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
     dl_queue: List[InstallQueueItemModel] = []
     dl_status = pyqtSignal(int)
 
-    def __init__(self, updates: list):
+    def __init__(self, updates: Set):
         super(DownloadsTab, self).__init__()
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()

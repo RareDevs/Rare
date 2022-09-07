@@ -64,10 +64,10 @@ class GameProcessApp(RareApp):
     console: Console = None
     success: bool = True
 
-    def __init__(self, app_name: str):
-        super(GameProcessApp, self).__init__()
+    def __init__(self, args: Namespace):
+        super(GameProcessApp, self).__init__(args)
         self.game_process = QProcess()
-        self.app_name = app_name
+        self.app_name = args.app_name
         self.logger = getLogger(self.app_name)
         self.core = LegendaryCore()
 
@@ -211,7 +211,7 @@ def start_game(args: Namespace):
         level=logging.INFO,
     )
 
-    app = GameProcessApp(args.app_name)
+    app = GameProcessApp(args)
     app.setQuitOnLastWindowClosed(True)
 
     def excepthook(exc_type, exc_value, exc_tb):

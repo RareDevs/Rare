@@ -24,14 +24,9 @@ from rare.shared import (
     ArgumentsSingleton,
 )
 from rare.shared.rare_core import RareCore
-from rare.utils import legendary_utils, config_helper
-from rare.utils.paths import cache_dir, tmp_dir
+from rare.utils import legendary_utils, config_helper, paths
 from rare.widgets.rare_app import RareApp
 
-start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
-file_name = os.path.join(cache_dir, "logs", f"Rare_{start_time}.log")
-if not os.path.exists(os.path.dirname(file_name)):
-    os.makedirs(os.path.dirname(file_name))
 
 logger = logging.getLogger("Rare")
 
@@ -57,7 +52,39 @@ def excepthook(exc_type, exc_value, exc_tb):
 
 class App(RareApp):
     def __init__(self, args: Namespace):
-        super(App, self).__init__()
+        super(App, self).__init__(args)
+
+        paths.create_dirs()
+        start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
+        file_name = os.path.join(paths.log_dir(), f"Rare_{start_time}.log")
+
+        # configure logging
+        if args.debug:
+            logging.basicConfig(
+                format="[%(name)s] %(levelname)s: %(message)s", level=logging.DEBUG
+            )
+            logging.getLogger().setLevel(level=logging.DEBUG)
+            # keep requests, asyncio and pillow quiet
+            logging.getLogger("requests").setLevel(logging.WARNING)
+            logging.getLogger("urllib3").setLevel(logging.WARNING)
+            logging.getLogger("asyncio").setLevel(logging.WARNING)
+            logger.info(
+                f"Launching Rare version {rare.__version__} Codename: {rare.code_name}\n"
+                f" - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
+                f" - Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
+                f" - Running {sys.executable} {' '.join(sys.argv)}\n"
+                f" - Qt version: {QT_VERSION_STR}, PyQt version: {PYQT_VERSION_STR}"
+            )
+        else:
+            print(file_name)
+            logging.basicConfig(
+                format="[%(name)s] %(levelname)s: %(message)s",
+                level=logging.INFO,
+                filename=file_name,
+            )
+            logger.info(f"Launching Rare version {rare.__version__}")
+            logger.info(f"Operating System: {platform.system()}")
+
         self.rare_core = RareCore(args=args)
         self.args = ArgumentsSingleton()
         self.signals = GlobalSignalsSingleton()
@@ -142,8 +169,8 @@ class App(RareApp):
         self.rare_core.deleteLater()
         del self.rare_core
         self.processEvents()
-        shutil.rmtree(tmp_dir)
-        os.makedirs(tmp_dir)
+        shutil.rmtree(paths.tmp_dir())
+        os.makedirs(paths.tmp_dir())
 
         self.exit(exit_code)
 
@@ -151,32 +178,6 @@ class App(RareApp):
 def start(args):
     # set excepthook to show dialog with exception
     sys.excepthook = excepthook
-
-    # configure logging
-    if args.debug:
-        logging.basicConfig(
-            format="[%(name)s] %(levelname)s: %(message)s", level=logging.DEBUG
-        )
-        logging.getLogger().setLevel(level=logging.DEBUG)
-        # keep requests, asyncio and pillow quiet
-        logging.getLogger("requests").setLevel(logging.WARNING)
-        logging.getLogger("urllib3").setLevel(logging.WARNING)
-        logging.getLogger("asyncio").setLevel(logging.WARNING)
-        logger.info(
-            f"Launching Rare version {rare.__version__} Codename: {rare.code_name}\n"
-            f" - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
-            f" - Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
-            f" - Running {sys.executable} {' '.join(sys.argv)}\n"
-            f" - Qt version: {QT_VERSION_STR}, PyQt version: {PYQT_VERSION_STR}"
-        )
-    else:
-        logging.basicConfig(
-            format="[%(name)s] %(levelname)s: %(message)s",
-            level=logging.INFO,
-            filename=file_name,
-        )
-        logger.info(f"Launching Rare version {rare.__version__}")
-        logger.info(f"Operating System: {platform.system()}")
 
     while True:
         app = App(args)

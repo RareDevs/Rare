@@ -6,13 +6,11 @@ from datetime import date
 import requests
 from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, QCoreApplication
 
-from legendary.core import LegendaryCore
+from rare.lgndr.core import LegendaryCore
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
 from rare.utils.paths import data_dir, cache_dir
 
 replace_chars = ",;.:-_ "
-
-file = os.path.join(cache_dir, "game_list.json")
 url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 
 
@@ -20,7 +18,7 @@ class SteamWorker(QRunnable):
     class Signals(QObject):
         rating_signal = pyqtSignal(str)
 
-    app_name:str = ""
+    app_name: str = ""
 
     def __init__(self, core: LegendaryCore):
         super(SteamWorker, self).__init__()
@@ -55,7 +53,7 @@ def get_rating(app_name: str):
     args = ArgumentsSingleton()
     global __grades_json
     if __grades_json is None:
-        if os.path.exists(p := os.path.join(data_dir, "steam_ids.json")):
+        if os.path.exists(p := os.path.join(data_dir(), "steam_ids.json")):
             grades = json.loads(open(p).read())
             __grades_json = grades
         else:
@@ -72,7 +70,7 @@ def get_rating(app_name: str):
         steam_id = get_steam_id(game.app_title)
         grade = get_grade(steam_id)
         grades[app_name] = {"steam_id": steam_id, "grade": grade}
-        with open(os.path.join(data_dir, "steam_ids.json"), "w") as f:
+        with open(os.path.join(data_dir(), "steam_ids.json"), "w") as f:
             f.write(json.dumps(grades))
             f.close()
         return grade
@@ -96,8 +94,8 @@ def get_grade(steam_code):
 
 
 def load_json() -> dict:
+    file = os.path.join(cache_dir(), "game_list.json")
     if not os.path.exists(file):
-
         response = requests.get(url)
         steam_ids = json.loads(response.text)["applist"]["apps"]
         ids = {}
@@ -113,6 +111,7 @@ def load_json() -> dict:
 
 
 def get_steam_id(title: str):
+    file = os.path.join(cache_dir(), "game_list.json")
     # workarounds for satisfactory
     title = title.replace("Early Access", "").replace("Experimental", "").strip()
     global __steam_ids_json
@@ -146,7 +145,7 @@ def get_steam_id(title: str):
 
 
 def check_time():  # this function check if it's time to update
-    global file
+    file = os.path.join(cache_dir(), "game_list.json")
     json_table = json.loads(open(file, "r").read())
 
     today = date.today()

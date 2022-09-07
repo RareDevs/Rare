@@ -112,7 +112,7 @@ class ImageManager(QObject):
         self.signals = signals
         self.core = core
 
-        self.image_dir = Path(image_dir)
+        self.image_dir: Path = image_dir()
         if not self.image_dir.is_dir():
             self.image_dir.mkdir()
             logger.info(f"Created image directory at {self.image_dir}")

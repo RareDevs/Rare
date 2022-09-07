@@ -34,7 +34,7 @@ class RareGameMeta:
 
     def __init__(self):
         meta_data = {}
-        if os.path.exists(p := os.path.join(data_dir, "game_meta.json")):
+        if os.path.exists(p := os.path.join(data_dir(), "game_meta.json")):
             try:
                 meta_data = json.load(open(p))
             except json.JSONDecodeError:
@@ -59,6 +59,6 @@ class RareGameMeta:
     def save_file(self):
         json.dump(
             {app_name: data.__dict__() for app_name, data in self._meta.items()},
-            open(os.path.join(data_dir, "game_meta.json"), "w"),
+            open(os.path.join(data_dir(), "game_meta.json"), "w"),
             indent=4
         )

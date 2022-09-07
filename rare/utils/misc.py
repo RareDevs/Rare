@@ -195,7 +195,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
     if not for_rare:
         igame = core.get_installed_game(app_name)
 
-        icon = os.path.join(os.path.join(image_dir, igame.app_name, "installed.png"))
+        icon = os.path.join(os.path.join(image_dir(), igame.app_name, "installed.png"))
         icon = icon.replace(".png", "")
 
     if platform.system() == "Linux":
