@@ -77,7 +77,6 @@ jobs:
           name: Rare.AppImage
           path: Rare.AppImage
 
-
   cx_freeze:
     runs-on: "windows-latest"
     steps:
@@ -91,6 +90,8 @@ jobs:
         run: pip3 install -r requirements.txt
       - name: cx_freeze
         run: pip3 install --upgrade cx_freeze wheel
+      - name: pypresence
+        run: pip3 install pypresence
       - name: Build
         run: python freeze.py bdist_msi
 
@@ -98,6 +99,7 @@ jobs:
         with:
           name: Rare-Windows.msi
           path: dist/*.msi
+
   mac_os:
     runs-on: macos-latest
     steps:

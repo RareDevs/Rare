@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import pathlib
 import sys
@@ -6,8 +7,6 @@ from argparse import ArgumentParser
 
 def main():
     # fix cx_freeze
-    import multiprocessing
-
     multiprocessing.freeze_support()
 
     # insert legendary for installed via pip/setup.py submodule to path

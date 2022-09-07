@@ -165,7 +165,7 @@ def get_size(b: Union[int, float]) -> str:
 
 
 def get_rare_executable() -> List[str]:
-    # lk: detech if nuitka
+    # lk: detect if nuitka
     if "__compiled__" in globals():
         executable = [sys.executable]
     elif platform.system() == "Linux" or platform.system() == "Darwin":
@@ -285,7 +285,10 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
             arguments.extend(["launch", app_name])
 
         # Maybe there is a better solution, but windows does not accept single quotes (Windows is weird)
+        logger.warning(executable)
+        logger.warning(shlex.quote(executable).replace("'", '"'))
         shortcut.Targetpath = shlex.quote(executable).replace("'", '"')
+        logger.warning(shlex.join(arguments).replace("'", '"'))
         shortcut.Arguments = shlex.join(arguments).replace("'", '"')
         if for_rare:
             shortcut.WorkingDirectory = QStandardPaths.writableLocation(QStandardPaths.HomeLocation)
