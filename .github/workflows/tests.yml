@@ -20,6 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pylint
           pip install -r requirements.txt
+          pip install pypresence
       - name: Analysing the code with pylint
         run: |
           pylint -E rare --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
