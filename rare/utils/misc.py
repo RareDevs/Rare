@@ -284,10 +284,9 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
         if not for_rare:
             arguments.extend(["launch", app_name])
 
-        shortcut.Targetpath = executable
-        shortcut.Arguments = shlex.join(arguments)
         # Maybe there is a better solution, but windows does not accept single quotes (Windows is weird)
-        shortcut.Arguments = shortcut.Arguments.replace("'", '"')
+        shortcut.Targetpath = shlex.quote(executable).replace("'", '"')
+        shortcut.Arguments = shlex.join(arguments).replace("'", '"')
         if for_rare:
             shortcut.WorkingDirectory = QStandardPaths.writableLocation(QStandardPaths.HomeLocation)
 
