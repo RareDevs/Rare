@@ -54,15 +54,24 @@ class App(RareApp):
     def __init__(self, args: Namespace):
         super(App, self).__init__(args)
 
-        paths.create_dirs()
         start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
         file_name = os.path.join(paths.log_dir(), f"Rare_{start_time}.log")
+
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
+
+        stream_handler = logging.StreamHandler(sys.stderr)
+        stream_handler.setFormatter(fmt=logging.Formatter("[%(name)s] %(levelname)s: %(message)s"))
 
         # configure logging
         if args.debug:
             logging.basicConfig(
-                format="[%(name)s] %(levelname)s: %(message)s", level=logging.DEBUG
+                format="[%(name)s] %(levelname)s: %(message)s",
+                level=logging.DEBUG,
+                filename=file_name,
             )
+            stream_handler.setLevel(logging.DEBUG)
+            logging.root.addHandler(stream_handler)
             logging.getLogger().setLevel(level=logging.DEBUG)
             # keep requests, asyncio and pillow quiet
             logging.getLogger("requests").setLevel(logging.WARNING)
@@ -76,12 +85,13 @@ class App(RareApp):
                 f" - Qt version: {QT_VERSION_STR}, PyQt version: {PYQT_VERSION_STR}"
             )
         else:
-            print(file_name)
             logging.basicConfig(
                 format="[%(name)s] %(levelname)s: %(message)s",
                 level=logging.INFO,
                 filename=file_name,
             )
+            stream_handler.setLevel(logging.INFO)
+            logging.root.addHandler(stream_handler)
             logger.info(f"Launching Rare version {rare.__version__}")
             logger.info(f"Operating System: {platform.system()}")
 

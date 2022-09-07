@@ -2,9 +2,8 @@ import os
 import sys
 from argparse import Namespace
 from logging import getLogger
-from pathlib import Path
 
-from PyQt5.QtCore import Qt, QSettings, QTranslator, QStandardPaths
+from PyQt5.QtCore import Qt, QSettings, QTranslator
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
@@ -12,7 +11,7 @@ from PyQt5.QtWidgets import QApplication
 from legendary.core import LegendaryCore
 
 import rare.resources.resources
-from rare.utils.paths import resources_path
+from rare.utils import paths
 from rare.utils.misc import set_color_pallete, set_style_sheet
 
 
@@ -27,6 +26,7 @@ class RareApp(QApplication):
 
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")
+        paths.create_dirs()
         self.settings = QSettings()
 
         # Translator
@@ -53,7 +53,7 @@ class RareApp(QApplication):
         self.setWindowIcon(QIcon(":/images/Rare.png"))
 
     def load_translator(self, lang: str):
-        if os.path.isfile(f := os.path.join(resources_path, "languages", f"{lang}.qm")):
+        if os.path.isfile(f := os.path.join(paths.resources_path, "languages", f"{lang}.qm")):
             self.translator.load(f)
             self.logger.info(f"Your language is supported: {lang}")
         elif not lang == "en":
@@ -61,7 +61,7 @@ class RareApp(QApplication):
         self.installTranslator(self.translator)
 
         # translator for qt stuff
-        if os.path.isfile(f := os.path.join(resources_path, f"qt_{lang}.qm")):
+        if os.path.isfile(f := os.path.join(paths.resources_path, f"qt_{lang}.qm")):
             self.qt_translator = QTranslator()
             self.qt_translator.load(f)
             self.installTranslator(self.qt_translator)

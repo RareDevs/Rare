@@ -16,7 +16,6 @@ for old_dir in [
     if old_dir.exists():
         # lk: case-sensitive matching on Winblows
         if old_dir.stem in os.listdir(old_dir.parent):
-            print(old_dir)
             shutil.rmtree(old_dir, ignore_errors=True)
 
 
