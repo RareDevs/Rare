@@ -25,6 +25,7 @@ class InitArgs:
     skip_version_check: bool = False
     wine_prefix: str = ""
     wine_bin: str = ""
+    debug: str = ""
 
     @classmethod
     def from_argparse(cls, args):
@@ -33,7 +34,8 @@ class InitArgs:
             offline=args.offline,
             skip_version_check=args.skip_update_check,
             wine_bin=args.wine_bin,
-            wine_prefix=args.wine_pfx
+            wine_prefix=args.wine_pfx,
+            debug=args.debug,
         )
 
 

@@ -17,6 +17,8 @@ from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 from .message_models import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
 
+logger = logging.getLogger("RareLauncher")
+
 
 class PreLaunchThread(QRunnable):
     class Signals(QObject):
@@ -65,7 +67,8 @@ class GameProcessApp(RareApp):
     success: bool = True
 
     def __init__(self, args: Namespace):
-        super(GameProcessApp, self).__init__(args)
+        log_file = f"Rare_Launcher_{args.app_name}" + "_{0}.log"
+        super(GameProcessApp, self).__init__(args, log_file)
         self.game_process = QProcess()
         self.app_name = args.app_name
         self.logger = getLogger(self.app_name)
@@ -206,10 +209,6 @@ class GameProcessApp(RareApp):
 
 def start_game(args: Namespace):
     args = InitArgs.from_argparse(args)
-    logging.basicConfig(
-        format="[%(name)s] %(levelname)s: %(message)s",
-        level=logging.INFO,
-    )
 
     app = GameProcessApp(args)
     app.setQuitOnLastWindowClosed(True)
