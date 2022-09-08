@@ -97,6 +97,13 @@ manually in `Settings -> Security and Privacy`. Otherwise, Gatekeeper will block
 
 You can also use `pip`.
 
+### windows
+
+Rare is available as a [Chocolatey package](https://community.chocolatey.org/packages/rare) on Windows.
+You can install rare with the following one-liner:
+
+`choco install rare`
+
 ### Packages
 
 In [releases page](https://github.com/Dummerle/Rare/releases), AppImages are available for Linux, a .msi file for windows and a .dmg
