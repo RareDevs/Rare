@@ -189,6 +189,7 @@ def get_rare_executable() -> List[str]:
     else:
         executable = [sys.executable]
 
+    executable[0] = os.path.abspath(executable[0])
     return executable
 
 
