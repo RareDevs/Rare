@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar, QScrollArea, 
 from rare.components.tabs import TabWidget
 from rare.components.tray_icon import TrayIcon
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.utils.paths import data_dir
+from rare.utils.paths import lock_file
 
 logger = getLogger("MainWindow")
 
@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
             self.hide()
 
     def timer_finished(self):
-        file_path = os.path.join(data_dir, "lockfile")
+        file_path = lock_file()
         if os.path.exists(file_path):
             file = open(file_path, "r")
             action = file.read()

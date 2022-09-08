@@ -23,7 +23,7 @@ class Shop(QStackedWidget):
             self.core.country_code,
         )
 
-        self.shop = ShopWidget(cache_dir, self.core, self.api_core)
+        self.shop = ShopWidget(cache_dir(), self.core, self.api_core)
         self.wishlist_widget = Wishlist(self.api_core)
 
         self.store_tabs = QTabWidget()

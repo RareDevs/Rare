@@ -1,7 +1,7 @@
 import platform
 
-from PyQt5.QtCore import QProcessEnvironment, pyqtSignal
-from PyQt5.QtGui import QTextCursor, QFont
+from PyQt5.QtCore import QProcessEnvironment, pyqtSignal, QSize
+from PyQt5.QtGui import QTextCursor, QFont, QCursor
 from PyQt5.QtWidgets import (
     QPlainTextEdit,
     QDialog,
@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QSpacerItem,
-    QSizePolicy, QTableWidgetItem, QHeaderView,
+    QSizePolicy, QTableWidgetItem, QHeaderView, QApplication,
 )
 
 from rare.ui.components.extra.console_env import Ui_ConsoleEnv
@@ -24,7 +24,7 @@ class Console(QDialog):
     def __init__(self, parent=None):
         super(Console, self).__init__(parent=parent)
         self.setWindowTitle("Rare - Console")
-        self.setGeometry(0, 0, 600, 400)
+        self.setGeometry(0, 0, 640, 480)
         layout = QVBoxLayout()
 
         self.console = ConsoleEdit(self)
@@ -62,6 +62,31 @@ class Console(QDialog):
 
         self.env_variables = ConsoleEnv(self)
         self.env_variables.hide()
+
+    def show(self) -> None:
+        super(Console, self).show()
+        self.center_window()
+
+    def center_window(self):
+        # get the margins of the decorated window
+        margins = self.windowHandle().frameMargins()
+        # get the screen the cursor is on
+        current_screen = QApplication.screenAt(QCursor.pos())
+        if not current_screen:
+            current_screen = QApplication.primaryScreen()
+        # get the available screen geometry (excludes panels/docks)
+        screen_rect = current_screen.availableGeometry()
+        decor_width = margins.left() + margins.right()
+        decor_height = margins.top() + margins.bottom()
+        window_size = QSize(self.width(), self.height()).boundedTo(
+            screen_rect.size() - QSize(decor_width, decor_height)
+        )
+
+        self.resize(window_size)
+        self.move(
+            screen_rect.center()
+            - self.rect().adjusted(0, 0, decor_width, decor_height).center()
+        )
 
     def save(self):
         file, ok = QFileDialog.getSaveFileName(

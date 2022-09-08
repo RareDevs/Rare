@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import pathlib
 import sys
@@ -6,8 +7,6 @@ from argparse import ArgumentParser
 
 def main():
     # fix cx_freeze
-    import multiprocessing
-
     multiprocessing.freeze_support()
 
     # insert legendary for installed via pip/setup.py submodule to path
@@ -95,9 +94,9 @@ def main():
         me = singleton.SingleInstance()
     except singleton.SingleInstanceException:
         print("Rare is already running")
-        from rare.utils.paths import data_dir
+        from rare.utils.paths import lock_file
 
-        with open(os.path.join(data_dir, "lockfile"), "w") as file:
+        with open(lock_file(), "w") as file:
             file.write("show")
             file.close()
         return

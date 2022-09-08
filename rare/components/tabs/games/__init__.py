@@ -1,16 +1,16 @@
 from logging import getLogger
-from typing import Tuple, Dict, Union, List
+from typing import Tuple, Dict, Union, List, Set
 
 from PyQt5.QtCore import QSettings, Qt, pyqtSlot
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
 from legendary.models.game import InstalledGame, Game
 
-from rare.shared import ImageManagerSingleton
 from rare.shared import (
     LegendaryCoreSingleton,
     GlobalSignalsSingleton,
     ArgumentsSingleton,
     ApiResultsSingleton,
+    ImageManagerSingleton,
 )
 from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
@@ -32,10 +32,6 @@ logger = getLogger("GamesTab")
 
 
 class GamesTab(QStackedWidget):
-
-    updates = set()
-    active_filter = 0
-
     def __init__(self, parent=None):
         super(GamesTab, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
@@ -47,6 +43,8 @@ class GamesTab(QStackedWidget):
 
         self.widgets: Dict[str, Tuple[
             Union[InstalledIconWidget, UninstalledIconWidget], Union[InstalledListWidget, UninstalledListWidget]]] = {}
+        self.updates: Set = set()
+        self.active_filter: int = 0
         self.uninstalled_games: List[Game] = []
 
         self.game_list: List[Game] = self.api_results.game_list

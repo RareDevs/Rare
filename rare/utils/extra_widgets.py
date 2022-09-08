@@ -418,7 +418,7 @@ class ImageLabel(QLabel):
 
     def __init__(self):
         super(ImageLabel, self).__init__()
-        self.path = tmp_dir
+        self.path = tmp_dir()
         self.manager = QtRequestManager("bytes")
 
     def update_image(self, url, name="", size: tuple = (240, 320)):

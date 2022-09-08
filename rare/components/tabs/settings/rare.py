@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.settings.widgets.rpc import RPCSettings
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
-from rare.utils.paths import cache_dir
+from rare.utils.paths import log_dir
 from rare.utils.misc import (
     get_translations,
     get_color_schemes,
@@ -51,7 +51,6 @@ class RareSettings(QWidget, Ui_RareSettings):
 
         self.settings = QSettings()
         language = self.settings.value("language", self.core.language_code, type=str)
-        self.logdir = os.path.join(cache_dir, "logs")
 
         # Select lang
         self.lang_select.addItems([i[1] for i in languages])
@@ -143,19 +142,18 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.log_dir_open_button.clicked.connect(self.open_dir)
         self.log_dir_clean_button.clicked.connect(self.clean_logdir)
 
-        logdir = os.path.join(cache_dir, "logs")
         # get size of logdir
         size = 0
-        for i in os.listdir(logdir):
-            size += os.path.getsize(os.path.join(logdir, i))
+        for i in os.listdir(log_dir()):
+            size += os.path.getsize(os.path.join(log_dir(), i))
 
         self.log_dir_size_label.setText(get_size(size))
         # self.log_dir_clean_button.setVisible(False)
         # self.log_dir_size_label.setVisible(False)
 
     def clean_logdir(self):
-        for i in os.listdir(os.path.join(cache_dir, "logs")):
-            os.remove(os.path.join(cache_dir, f"logs/{i}"))
+        for i in os.listdir(log_dir()):
+            os.remove(os.path.join(log_dir(), f"{i}"))
         self.log_dir_size_label.setText("0KB")
 
     def create_start_menu_link(self):
@@ -216,10 +214,10 @@ class RareSettings(QWidget, Ui_RareSettings):
 
     def open_dir(self):
         if platform.system() == "Windows":
-            os.startfile(self.logdir)  # pylint: disable=E1101
+            os.startfile(log_dir())  # pylint: disable=E1101
         else:
             opener = "open" if sys.platform == "darwin" else "xdg-open"
-            subprocess.Popen([opener, self.logdir])
+            subprocess.Popen([opener, log_dir()])
 
     def save_window_size(self):
         self.settings.setValue("save_size", self.save_size.isChecked())

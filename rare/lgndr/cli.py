@@ -30,7 +30,7 @@ class LegendaryCLI(LegendaryCLIReal):
     # noinspection PyMissingConstructor
     def __init__(self, core: LegendaryCore):
         self.core = core
-        self.logger = logging.getLogger('cli')
+        self.logger = logging.getLogger('Api')
         self.logging_queue = None
         self.ql = self.setup_threaded_logging()
 

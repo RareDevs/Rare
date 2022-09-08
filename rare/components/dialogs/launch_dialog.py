@@ -11,7 +11,7 @@ from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSi
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.misc import CloudWorker
 
-logger = getLogger("LoginDialog")
+logger = getLogger("LaunchDialog")
 
 
 class LaunchWorker(QRunnable):
