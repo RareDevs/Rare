@@ -128,6 +128,7 @@ class Console(QDialog):
             super(Console, self).closeEvent(a0)
             a0.accept()
         else:
+            self.showMinimized()
             a0.ignore()
 
 
