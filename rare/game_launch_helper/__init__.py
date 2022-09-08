@@ -61,7 +61,7 @@ class GameProcessApp(RareApp):
     server: QLocalServer
     socket: Optional[QLocalSocket] = None
     exit_app = pyqtSignal()
-    console: Console = None
+    console: Optional[Console] = None
     success: bool = True
 
     def __init__(self, args: Namespace):
