@@ -21,21 +21,21 @@ class GameArgsError(Exception):
 @dataclass
 class InitArgs:
     app_name: str
+    debug: bool = False
     offline: bool = False
     skip_version_check: bool = False
     wine_prefix: str = ""
     wine_bin: str = ""
-    debug: str = ""
 
     @classmethod
     def from_argparse(cls, args):
         return cls(
             app_name=args.app_name,
+            debug=args.debug,
             offline=args.offline,
             skip_version_check=args.skip_update_check,
             wine_bin=args.wine_bin,
             wine_prefix=args.wine_pfx,
-            debug=args.debug,
         )
 
 

@@ -1,7 +1,8 @@
 import platform
+from typing import Union
 
-from PyQt5.QtCore import QProcessEnvironment, pyqtSignal, QSize
-from PyQt5.QtGui import QTextCursor, QFont, QCursor
+from PyQt5.QtCore import QProcessEnvironment, pyqtSignal, QSize, Qt
+from PyQt5.QtGui import QTextCursor, QFont, QCursor, QCloseEvent
 from PyQt5.QtWidgets import (
     QPlainTextEdit,
     QDialog,
@@ -23,6 +24,7 @@ class Console(QDialog):
 
     def __init__(self, parent=None):
         super(Console, self).__init__(parent=parent)
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowTitle("Rare - Console")
         self.setGeometry(0, 0, 640, 480)
         layout = QVBoxLayout()
@@ -46,15 +48,15 @@ class Console(QDialog):
 
         button_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
 
-        self.terminate_button = QPushButton(self.tr("Terminate"))
-        self.terminate_button.setVisible(platform.system() == "Windows")
-        button_layout.addWidget(self.terminate_button)
-        self.terminate_button.clicked.connect(lambda: self.term.emit())
-
-        self.kill_button = QPushButton(self.tr("Kill"))
-        self.kill_button.setVisible(platform.system() == "Windows")
-        button_layout.addWidget(self.kill_button)
-        self.kill_button.clicked.connect(lambda: self.kill.emit())
+        # self.terminate_button = QPushButton(self.tr("Terminate"))
+        # self.terminate_button.setVisible(platform.system() == "Windows")
+        # button_layout.addWidget(self.terminate_button)
+        # self.terminate_button.clicked.connect(lambda: self.term.emit())
+        #
+        # self.kill_button = QPushButton(self.tr("Kill"))
+        # self.kill_button.setVisible(platform.system() == "Windows")
+        # button_layout.addWidget(self.kill_button)
+        # self.kill_button.clicked.connect(lambda: self.kill.emit())
 
         layout.addLayout(button_layout)
 
@@ -62,6 +64,8 @@ class Console(QDialog):
 
         self.env_variables = ConsoleEnv(self)
         self.env_variables.hide()
+
+        self.accept_close = False
 
     def show(self) -> None:
         super(Console, self).show()
@@ -113,11 +117,25 @@ class Console(QDialog):
     def error(self, text, end: str = "\n"):
         self.console.error(text + end)
 
+    def on_process_exit(self, app_title: str, status: Union[int, str]):
+        self.error(
+            self.tr("Application \"{}\" finished with \"{}\"").format(app_title, status)
+        )
+        self.accept_close = True
+
+    def closeEvent(self, a0: QCloseEvent) -> None:
+        if self.accept_close:
+            super(Console, self).closeEvent(a0)
+            a0.accept()
+        else:
+            a0.ignore()
+
 
 class ConsoleEnv(QDialog):
 
     def __init__(self, parent=None):
         super(ConsoleEnv, self).__init__(parent=parent)
+        self.setAttribute(Qt.WA_DeleteOnClose, False)
         self.ui = Ui_ConsoleEnv()
         self.ui.setupUi(self)
 
@@ -133,10 +151,13 @@ class ConsoleEnv(QDialog):
 
 
 class ConsoleEdit(QPlainTextEdit):
+
     def __init__(self, parent=None):
         super(ConsoleEdit, self).__init__(parent=parent)
         self.setReadOnly(True)
-        self.setFont(QFont("monospace"))
+        font = QFont("Monospace")
+        font.setStyleHint(QFont.Monospace)
+        self.setFont(font)
         self._cursor_output = self.textCursor()
 
     def log(self, text):

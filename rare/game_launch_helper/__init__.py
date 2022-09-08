@@ -101,7 +101,7 @@ class GameProcessApp(RareApp):
                 )
             )
             self.game_process.readyReadStandardError.connect(
-                lambda: self.console.log(
+                lambda: self.console.error(
                     self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
                 )
             )
@@ -135,6 +135,8 @@ class GameProcessApp(RareApp):
 
     def game_finished(self, exit_code):
         self.logger.info("game finished")
+        if self.console:
+            self.console.on_process_exit(self.core.get_game(self.app_name).app_title, exit_code)
         self.send_message(
             FinishedModel(
                 action=Actions.finished,
@@ -174,6 +176,8 @@ class GameProcessApp(RareApp):
 
     def error_occurred(self, error_str: str):
         self.logger.warning(error_str)
+        if self.console:
+            self.console.on_process_exit(self.core.get_game(self.app_name).app_title, error_str)
         self.send_message(ErrorModel(
             error_string=error_str, app_name=self.app_name,
             action=Actions.error)
