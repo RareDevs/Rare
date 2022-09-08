@@ -60,18 +60,18 @@ class App(RareApp):
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
 
-        stream_handler = logging.StreamHandler(sys.stderr)
-        stream_handler.setFormatter(fmt=logging.Formatter("[%(name)s] %(levelname)s: %(message)s"))
+        file_handler = logging.FileHandler(filename=file_name, encoding="utf-8")
+        file_handler.setFormatter(fmt=logging.Formatter("[%(name)s] %(levelname)s: %(message)s"))
 
         # configure logging
         if args.debug:
             logging.basicConfig(
                 format="[%(name)s] %(levelname)s: %(message)s",
                 level=logging.DEBUG,
-                filename=file_name,
+                stream=sys.stderr,
             )
-            stream_handler.setLevel(logging.DEBUG)
-            logging.root.addHandler(stream_handler)
+            file_handler.setLevel(logging.DEBUG)
+            logging.root.addHandler(file_handler)
             logging.getLogger().setLevel(level=logging.DEBUG)
             # keep requests, asyncio and pillow quiet
             logging.getLogger("requests").setLevel(logging.WARNING)
@@ -88,10 +88,10 @@ class App(RareApp):
             logging.basicConfig(
                 format="[%(name)s] %(levelname)s: %(message)s",
                 level=logging.INFO,
-                filename=file_name,
+                stream=sys.stderr,
             )
-            stream_handler.setLevel(logging.INFO)
-            logging.root.addHandler(stream_handler)
+            file_handler.setLevel(logging.INFO)
+            logging.root.addHandler(file_handler)
             logger.info(f"Launching Rare version {rare.__version__}")
             logger.info(f"Operating System: {platform.system()}")
 

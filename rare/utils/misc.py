@@ -180,10 +180,12 @@ def get_rare_executable() -> List[str]:
     elif platform.system() == "Windows":
         executable = [sys.executable]
 
-        if not sys.executable.endswith("Rare.exe"):
+        if sys.executable != os.path.abspath(sys.argv[0]):
+            executable.append(os.path.abspath(sys.argv[0]))
+
+        if executable[0].endswith("python.exe"):
             # be sure to start consoleless then
             executable[0] = executable[0].replace("python.exe", "pythonw.exe")
-            executable.extend(["-m", "rare"])
     else:
         executable = [sys.executable]
 
@@ -208,6 +210,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
         if not os.path.exists(path):
             return False
         executable = get_rare_executable()
+        executable = shlex.join(executable)
 
         if for_rare:
             with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
@@ -274,21 +277,13 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
 
         if len(executable) > 1:
             arguments.extend(executable[1:])
-            executable = executable[0]
-
-        if not sys.executable.endswith("Rare.exe"):
-            # be sure to start consoleless then
-            executable = sys.executable.replace("python.exe", "pythonw.exe")
-            arguments.append(os.path.abspath(sys.argv[0]))
+        executable = executable[0]
 
         if not for_rare:
             arguments.extend(["launch", app_name])
 
+        shortcut.Targetpath = executable
         # Maybe there is a better solution, but windows does not accept single quotes (Windows is weird)
-        logger.warning(executable)
-        logger.warning(shlex.quote(executable).replace("'", '"'))
-        shortcut.Targetpath = shlex.quote(executable).replace("'", '"')
-        logger.warning(shlex.join(arguments).replace("'", '"'))
         shortcut.Arguments = shlex.join(arguments).replace("'", '"')
         if for_rare:
             shortcut.WorkingDirectory = QStandardPaths.writableLocation(QStandardPaths.HomeLocation)
