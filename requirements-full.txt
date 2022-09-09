@@ -1,0 +1,10 @@
+typing_extensions
+requests
+PyQt5
+QtAwesome
+setuptools
+legendary-gl
+pywin32; platform_system == "Windows"
+pywebview[qt]; platform_system == "Linux"
+pywebview[cef]; platform_system == "Windows"
+pypresence

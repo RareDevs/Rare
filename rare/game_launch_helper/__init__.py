@@ -17,6 +17,8 @@ from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 from .message_models import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
 
+logger = logging.getLogger("RareLauncher")
+
 
 class PreLaunchThread(QRunnable):
     class Signals(QObject):
@@ -65,7 +67,8 @@ class GameProcessApp(RareApp):
     success: bool = True
 
     def __init__(self, args: Namespace):
-        super(GameProcessApp, self).__init__(args)
+        log_file = f"Rare_Launcher_{args.app_name}" + "_{0}.log"
+        super(GameProcessApp, self).__init__(args, log_file)
         self.game_process = QProcess()
         self.app_name = args.app_name
         self.logger = getLogger(self.app_name)
@@ -98,7 +101,7 @@ class GameProcessApp(RareApp):
                 )
             )
             self.game_process.readyReadStandardError.connect(
-                lambda: self.console.log(
+                lambda: self.console.error(
                     self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
                 )
             )
@@ -132,6 +135,8 @@ class GameProcessApp(RareApp):
 
     def game_finished(self, exit_code):
         self.logger.info("game finished")
+        if self.console:
+            self.console.on_process_exit(self.core.get_game(self.app_name).app_title, exit_code)
         self.send_message(
             FinishedModel(
                 action=Actions.finished,
@@ -171,6 +176,8 @@ class GameProcessApp(RareApp):
 
     def error_occurred(self, error_str: str):
         self.logger.warning(error_str)
+        if self.console:
+            self.console.on_process_exit(self.core.get_game(self.app_name).app_title, error_str)
         self.send_message(ErrorModel(
             error_string=error_str, app_name=self.app_name,
             action=Actions.error)
@@ -206,10 +213,6 @@ class GameProcessApp(RareApp):
 
 def start_game(args: Namespace):
     args = InitArgs.from_argparse(args)
-    logging.basicConfig(
-        format="[%(name)s] %(levelname)s: %(message)s",
-        level=logging.INFO,
-    )
 
     app = GameProcessApp(args)
     app.setQuitOnLastWindowClosed(True)

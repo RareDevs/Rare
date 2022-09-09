@@ -189,6 +189,7 @@ def get_rare_executable() -> List[str]:
     else:
         executable = [sys.executable]
 
+    executable[0] = os.path.abspath(executable[0])
     return executable
 
 
@@ -222,7 +223,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
                     f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
                     f"Exec={executable}\n"
                     "Terminal=false\n"
-                    "StartupWMClass=rare\n"
+                    "StartupWMClass=Rare\n"
                 )
         else:
             with open(os.path.join(path, f"{igame.title}.desktop"), "w") as desktop_file:
@@ -234,7 +235,7 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
                     f"Icon={icon}.png\n"
                     f"Exec={executable} launch {app_name}\n"
                     "Terminal=false\n"
-                    "StartupWMClass=rare-game\n"
+                    "StartupWMClass=Rare\n"
                 )
             os.chmod(os.path.join(path, f"{igame.title}.desktop"), 0o755)
 

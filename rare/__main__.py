@@ -114,6 +114,7 @@ if __name__ == "__main__":
     # )
 
     # insert source directory
-    sys.path.insert(0, str(pathlib.Path(__file__).parents[1].absolute()))
+    if "__compiled__" not in globals():
+        sys.path.insert(0, str(pathlib.Path(__file__).parents[1].absolute()))
 
     main()

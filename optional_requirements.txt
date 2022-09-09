@@ -1,4 +1,0 @@
-pywebview[gtk]; platform_system == "Linux"
-pywebview[cef]; platform_system == "Windows"
-pypresence
-

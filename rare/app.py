@@ -1,21 +1,17 @@
 import logging
 import os
-import platform
 import shutil
 import sys
-import time
 import traceback
 from argparse import Namespace
 from datetime import datetime
 from typing import Optional
 
-import legendary
 import requests.exceptions
-from PyQt5.QtCore import QThreadPool, QTimer, QT_VERSION_STR, PYQT_VERSION_STR
+from PyQt5.QtCore import QThreadPool, QTimer
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from requests import HTTPError
 
-import rare
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.shared import (
@@ -26,7 +22,6 @@ from rare.shared import (
 from rare.shared.rare_core import RareCore
 from rare.utils import legendary_utils, config_helper, paths
 from rare.widgets.rare_app import RareApp
-
 
 logger = logging.getLogger("Rare")
 
@@ -52,49 +47,8 @@ def excepthook(exc_type, exc_value, exc_tb):
 
 class App(RareApp):
     def __init__(self, args: Namespace):
-        super(App, self).__init__(args)
-
-        start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
-        file_name = os.path.join(paths.log_dir(), f"Rare_{start_time}.log")
-
-        for handler in logging.root.handlers[:]:
-            logging.root.removeHandler(handler)
-
-        file_handler = logging.FileHandler(filename=file_name, encoding="utf-8")
-        file_handler.setFormatter(fmt=logging.Formatter("[%(name)s] %(levelname)s: %(message)s"))
-
-        # configure logging
-        if args.debug:
-            logging.basicConfig(
-                format="[%(name)s] %(levelname)s: %(message)s",
-                level=logging.DEBUG,
-                stream=sys.stderr,
-            )
-            file_handler.setLevel(logging.DEBUG)
-            logging.root.addHandler(file_handler)
-            logging.getLogger().setLevel(level=logging.DEBUG)
-            # keep requests, asyncio and pillow quiet
-            logging.getLogger("requests").setLevel(logging.WARNING)
-            logging.getLogger("urllib3").setLevel(logging.WARNING)
-            logging.getLogger("asyncio").setLevel(logging.WARNING)
-            logger.info(
-                f"Launching Rare version {rare.__version__} Codename: {rare.code_name}\n"
-                f" - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
-                f" - Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
-                f" - Running {sys.executable} {' '.join(sys.argv)}\n"
-                f" - Qt version: {QT_VERSION_STR}, PyQt version: {PYQT_VERSION_STR}"
-            )
-        else:
-            logging.basicConfig(
-                format="[%(name)s] %(levelname)s: %(message)s",
-                level=logging.INFO,
-                stream=sys.stderr,
-            )
-            file_handler.setLevel(logging.INFO)
-            logging.root.addHandler(file_handler)
-            logger.info(f"Launching Rare version {rare.__version__}")
-            logger.info(f"Operating System: {platform.system()}")
-
+        log_file = "Rare_{0}.log"
+        super(App, self).__init__(args, log_file)
         self.rare_core = RareCore(args=args)
         self.args = ArgumentsSingleton()
         self.signals = GlobalSignalsSingleton()
