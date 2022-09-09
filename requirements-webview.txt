@@ -1,0 +1,3 @@
+pywebview[qt]; platform_system == "Linux"
+pywebview[cef]; platform_system == "Windows"
+
