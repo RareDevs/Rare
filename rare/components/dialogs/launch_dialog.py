@@ -12,6 +12,7 @@ from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSi
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils import legendary_utils
 from rare.utils.misc import CloudWorker
+from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("LaunchDialog")
 
@@ -89,6 +90,8 @@ class ImageWorker(LaunchWorker):
                 self.core.lgd.set_installed_game(igame.app_name, igame)
                 logger.info(f"{igame.title} needs verification")
             # FIXME: end
+
+        self.signals.progress.emit(100, self.tr("Launching Rare"))
         self.signals.finished.emit()
 
 
@@ -138,6 +141,9 @@ class LaunchDialog(QDialog):
         self.ui = Ui_LaunchDialog()
         self.ui.setupUi(self)
 
+        self.progress_info = ElideLabel(parent=self)
+        self.layout().addWidget(self.progress_info)
+
         self.core = LegendaryCoreSingleton()
         self.args = ArgumentsSingleton()
         self.thread_pool = QThreadPool().globalInstance()
@@ -182,9 +188,9 @@ class LaunchDialog(QDialog):
         self.thread_pool.start(api_worker)
 
     def launch(self):
+        self.progress_info.setText(self.tr("Preparing Rare"))
 
         if not self.args.offline:
-            self.ui.image_info.setText(self.tr("Downloading Images"))
             image_worker = ImageWorker()
             image_worker.signals.result.connect(self.handle_api_worker_result)
             image_worker.signals.progress.connect(self.update_progress)
@@ -244,14 +250,13 @@ class LaunchDialog(QDialog):
 
     @pyqtSlot(int, str)
     def update_progress(self, i: int, m: str):
-        self.ui.image_prog_bar.setValue(i)
-        self.ui.image_info.setText(m)
+        self.ui.progress_bar.setValue(i)
+        self.progress_info.setText(m)
 
     def finish(self):
         self.completed += 1
         if self.completed == 2:
             logger.info("App starting")
-            self.ui.image_info.setText(self.tr("Starting..."))
             ApiResultsSingleton(self.api_results)
             self.completed += 1
             self.start_app.emit()

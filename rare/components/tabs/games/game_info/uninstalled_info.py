@@ -87,7 +87,7 @@ class UninstalledInfo(QWidget, Ui_GameInfo):
         self.install_button.clicked.connect(self.install_game)
         if platform.system() != "Windows":
             self.steam_worker = SteamWorker(self.core)
-            self.steam_worker.signals.rating_signal.connect(self.grade.setText)
+            self.steam_worker.signals.rating.connect(self.grade.setText)
             self.steam_worker.setAutoDelete(False)
 
         else:
