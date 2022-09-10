@@ -1,3 +1,4 @@
+import os
 import platform
 from logging import getLogger
 
@@ -9,6 +10,7 @@ from rare.components.dialogs.login import LoginDialog
 from rare.models.apiresults import ApiResults
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton, ImageManagerSingleton
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
+from rare.utils import legendary_utils
 from rare.utils.misc import CloudWorker
 
 logger = getLogger("LaunchDialog")
@@ -52,6 +54,26 @@ class ImageWorker(LaunchWorker):
                 game.app_title += f" {game.app_name.split('_')[-1]}"
                 self.core.lgd.set_game_meta(game.app_name, game)
             self.image_manager.download_image_blocking(game)
+            # FIXME: incorporate installed game status checking here for now, still slow
+            if igame := self.core.get_installed_game(game.app_name, skip_sync=True):
+                if not os.path.exists(igame.install_path):
+                    # lk; since install_path is lost anyway, set keep_files to True
+                    # lk: to avoid spamming the log with "file not found" errors
+                    legendary_utils.uninstall_game(self.core, igame.app_name, keep_files=True)
+                    logger.info(f"Uninstalled {igame.title}, because no game files exist")
+                    continue
+                # lk: games that don't have an override and can't find their executable due to case sensitivity
+                # lk: will still erroneously require verification. This might need to be removed completely
+                # lk: or be decoupled from the verification requirement
+                if override_exe := self.core.lgd.config.get(igame.app_name, "override_exe", fallback=""):
+                    igame_executable = override_exe
+                else:
+                    igame_executable = igame.executable
+                if not os.path.exists(os.path.join(igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))):
+                    igame.needs_verification = True
+                    self.core.lgd.set_installed_game(igame.app_name, igame)
+                    logger.info(f"{igame.title} needs verification")
+            # FIXME: end
             self.signals.progress.emit(int(i / len(game_list) * 100))
         self.signals.finished.emit()
 
