@@ -2,7 +2,7 @@ import os
 import platform
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, QSettings
+from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, QSettings, pyqtSlot, QCoreApplication
 from PyQt5.QtWidgets import QDialog, QApplication
 from requests.exceptions import ConnectionError, HTTPError
 
@@ -18,7 +18,7 @@ logger = getLogger("LaunchDialog")
 
 class LaunchWorker(QRunnable):
     class Signals(QObject):
-        progress = pyqtSignal(int)
+        progress = pyqtSignal(int, str)
         result = pyqtSignal(object, str)
         finished = pyqtSignal()
 
@@ -37,6 +37,9 @@ class ImageWorker(LaunchWorker):
         super(ImageWorker, self).__init__()
         self.image_manager = ImageManagerSingleton()
 
+    def tr(self, t) -> str:
+        return QCoreApplication.translate(self.__class__.__name__, t)
+
     def run(self):
         # Download Images
         games, dlcs = self.core.get_game_and_dlc_list(update_assets=True, skip_ue=False)
@@ -53,28 +56,39 @@ class ImageWorker(LaunchWorker):
             if game.app_title == "Unreal Engine":
                 game.app_title += f" {game.app_name.split('_')[-1]}"
                 self.core.lgd.set_game_meta(game.app_name, game)
+            self.signals.progress.emit(
+                int(i / len(game_list) * 50),
+                self.tr("Downloading image for {}").format(game.app_title)
+            )
             self.image_manager.download_image_blocking(game)
-            # FIXME: incorporate installed game status checking here for now, still slow
-            if igame := self.core.get_installed_game(game.app_name, skip_sync=True):
-                if not os.path.exists(igame.install_path):
-                    # lk; since install_path is lost anyway, set keep_files to True
-                    # lk: to avoid spamming the log with "file not found" errors
-                    legendary_utils.uninstall_game(self.core, igame.app_name, keep_files=True)
-                    logger.info(f"Uninstalled {igame.title}, because no game files exist")
-                    continue
-                # lk: games that don't have an override and can't find their executable due to case sensitivity
-                # lk: will still erroneously require verification. This might need to be removed completely
-                # lk: or be decoupled from the verification requirement
-                if override_exe := self.core.lgd.config.get(igame.app_name, "override_exe", fallback=""):
-                    igame_executable = override_exe
-                else:
-                    igame_executable = igame.executable
-                if not os.path.exists(os.path.join(igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))):
-                    igame.needs_verification = True
-                    self.core.lgd.set_installed_game(igame.app_name, igame)
-                    logger.info(f"{igame.title} needs verification")
+
+        igame_list = self.core.get_installed_list(include_dlc=True)
+
+        # FIXME: incorporate installed game status checking here for now, still slow
+        # if igame := self.core.get_installed_game(game.app_name, skip_sync=True):
+        for i, igame in enumerate(igame_list):
+            self.signals.progress.emit(
+                int(i / len(igame_list) * 50) + 50,
+                self.tr("Validating install for {}").format(igame.title)
+            )
+            if not os.path.exists(igame.install_path):
+                # lk; since install_path is lost anyway, set keep_files to True
+                # lk: to avoid spamming the log with "file not found" errors
+                legendary_utils.uninstall_game(self.core, igame.app_name, keep_files=True)
+                logger.info(f"Uninstalled {igame.title}, because no game files exist")
+                continue
+            # lk: games that don't have an override and can't find their executable due to case sensitivity
+            # lk: will still erroneously require verification. This might need to be removed completely
+            # lk: or be decoupled from the verification requirement
+            if override_exe := self.core.lgd.config.get(igame.app_name, "override_exe", fallback=""):
+                igame_executable = override_exe
+            else:
+                igame_executable = igame.executable
+            if not os.path.exists(os.path.join(igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))):
+                igame.needs_verification = True
+                self.core.lgd.set_installed_game(igame.app_name, igame)
+                logger.info(f"{igame.title} needs verification")
             # FIXME: end
-            self.signals.progress.emit(int(i / len(game_list) * 100))
         self.signals.finished.emit()
 
 
@@ -173,7 +187,7 @@ class LaunchDialog(QDialog):
             self.ui.image_info.setText(self.tr("Downloading Images"))
             image_worker = ImageWorker()
             image_worker.signals.result.connect(self.handle_api_worker_result)
-            image_worker.signals.progress.connect(self.update_image_progbar)
+            image_worker.signals.progress.connect(self.update_progress)
             # lk: start the api requests worker after the manifests have been downloaded
             # lk: to avoid force updating the assets twice and causing inconsistencies
             image_worker.signals.finished.connect(self.start_api_requests)
@@ -228,8 +242,10 @@ class LaunchDialog(QDialog):
         if self.api_results:
             self.finish()
 
-    def update_image_progbar(self, i: int):
+    @pyqtSlot(int, str)
+    def update_progress(self, i: int, m: str):
         self.ui.image_prog_bar.setValue(i)
+        self.ui.image_info.setText(m)
 
     def finish(self):
         self.completed += 1

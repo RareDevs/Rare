@@ -60,7 +60,7 @@ class App(RareApp):
         self.load_translator(lang)
 
         # set Application name for settings
-        self.mainwindow: Optional[MainWindow] = None
+        self.main_window: Optional[MainWindow] = None
         self.launch_dialog: Optional[LaunchDialog] = None
         self.timer = QTimer()
 
@@ -92,12 +92,12 @@ class App(RareApp):
         self.timer.start(int(td.total_seconds() - 60) * 1000)
 
     def start_app(self):
-        self.mainwindow = MainWindow()
-        self.mainwindow.exit_app.connect(self.exit_app)
+        self.main_window = MainWindow()
+        self.main_window.exit_app.connect(self.exit_app)
         # self.launch_dialog.close()
 
         if not self.args.silent:
-            self.mainwindow.show()
+            self.main_window.show()
 
         if self.args.test_start:
             self.exit_app(0)
@@ -109,9 +109,9 @@ class App(RareApp):
             self.timer.stop()
             self.timer.deleteLater()
             self.timer = None
-        if self.mainwindow is not None:
-            self.mainwindow.close()
-            self.mainwindow = None
+        if self.main_window is not None:
+            self.main_window.close()
+            self.main_window = None
         self.rare_core.deleteLater()
         del self.rare_core
         self.processEvents()
