@@ -16,7 +16,7 @@ url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 
 class SteamWorker(QRunnable):
     class Signals(QObject):
-        rating_signal = pyqtSignal(str)
+        rating = pyqtSignal(str)
 
     app_name: str = ""
 
@@ -39,7 +39,7 @@ class SteamWorker(QRunnable):
         self.app_name = app_name
 
     def run(self) -> None:
-        self.signals.rating_signal.emit(
+        self.signals.rating.emit(
             self.ratings.get(get_rating(self.app_name), self.ratings["fail"])
         )
 

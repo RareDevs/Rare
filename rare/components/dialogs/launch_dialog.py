@@ -58,7 +58,7 @@ class ImageWorker(LaunchWorker):
                 self.core.lgd.set_game_meta(game.app_name, game)
             self.signals.progress.emit(
                 int(i / len(game_list) * 50),
-                self.tr("Downloading image for {}").format(game.app_title)
+                self.tr("Downloading image for <b>{}</b>").format(game.app_title)
             )
             self.image_manager.download_image_blocking(game)
 
@@ -69,7 +69,7 @@ class ImageWorker(LaunchWorker):
         for i, igame in enumerate(igame_list):
             self.signals.progress.emit(
                 int(i / len(igame_list) * 50) + 50,
-                self.tr("Validating install for {}").format(igame.title)
+                self.tr("Validating install for <b>{}</b>").format(igame.title)
             )
             if not os.path.exists(igame.install_path):
                 # lk; since install_path is lost anyway, set keep_files to True

@@ -63,8 +63,8 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.lbl_grade.setVisible(False)
             self.grade.setVisible(False)
         else:
-            self.steam_worker = SteamWorker(self.core)
-            self.steam_worker.signals.rating_signal.connect(self.grade.setText)
+            self.steam_worker: SteamWorker = SteamWorker(self.core)
+            self.steam_worker.signals.rating.connect(self.grade.setText)
             self.steam_worker.setAutoDelete(False)
 
         self.game_actions_stack.setCurrentIndex(0)
