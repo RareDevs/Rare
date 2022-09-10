@@ -62,7 +62,7 @@ class App(RareApp):
         # set Application name for settings
         self.main_window: Optional[MainWindow] = None
         self.launch_dialog: Optional[LaunchDialog] = None
-        self.timer = QTimer()
+        self.timer: Optional[QTimer] = None
 
         # launch app
         self.launch_dialog = LaunchDialog(parent=None)
@@ -73,10 +73,10 @@ class App(RareApp):
 
         self.launch_dialog.login()
 
+    def poke_timer(self):
         dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1])
         dt_now = datetime.utcnow()
         td = abs(dt_exp - dt_now)
-        self.timer.timeout.connect(self.re_login)
         self.timer.start(int(td.total_seconds() - 60) * 1000)
 
     def re_login(self):
@@ -86,12 +86,13 @@ class App(RareApp):
         except requests.exceptions.ConnectionError:
             self.timer.start(3000)  # try again if no connection
             return
-        dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1])
-        dt_now = datetime.utcnow()
-        td = abs(dt_exp - dt_now)
-        self.timer.start(int(td.total_seconds() - 60) * 1000)
+        self.poke_timer()
 
     def start_app(self):
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.re_login)
+        self.poke_timer()
+
         self.main_window = MainWindow()
         self.main_window.exit_app.connect(self.exit_app)
         # self.launch_dialog.close()

@@ -143,7 +143,7 @@ class LaunchDialog(QDialog):
         self.thread_pool = QThreadPool().globalInstance()
         self.api_results = ApiResults()
 
-        self.login_dialog = LoginDialog(core=self.core, parent=self)
+        self.login_dialog = LoginDialog(core=self.core, parent=parent)
 
     def login(self):
         do_launch = True
