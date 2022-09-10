@@ -94,13 +94,12 @@ jobs:
         run: pip3 install nuitka ordered-set PyQt5-stubs
       - name: Build
         run: |
-          python -m nuitka --assume-yes-for-downloads --follow-imports --prefer-source-code --mingw64 --lto=no --static-libpython=no --standalone --enable-plugin=anti-bloat --enable-plugin=pyqt5 --show-anti-bloat-changes --nofollow-import-to="*.tests" --nofollow-import-to="*.distutils" --include-package-data=qtawesome --include-data-dir=rare\resources\images=rare\resources\images --include-data-files=rare\resources\languages=rare\resources\languages="*.ts" --windows-icon-from-ico=rare\resources\images\Rare.ico --windows-company-name=Rare --windows-product-name=Rare --windows-file-version=1.9.0 --windows-product-version=1.9.0 --windows-disable-console rare
-          python -c "import shutil; shutil.make_archive('Rare-Windows-Nuitka', 'zip', 'rare.dist')"
+          python -m nuitka --assume-yes-for-downloads --follow-imports --prefer-source-code --mingw64 --lto=yes --jobs=2 --static-libpython=no --standalone --enable-plugin=anti-bloat --enable-plugin=pyqt5 --show-anti-bloat-changes --nofollow-import-to="*.tests" --nofollow-import-to="*.distutils" --include-package-data=qtawesome --include-data-dir=rare\resources\images=rare\resources\images --include-data-files=rare\resources\languages=rare\resources\languages="*.ts" --windows-icon-from-ico=rare\resources\images\Rare.ico --windows-company-name=Rare --windows-product-name=Rare --windows-file-version=1.9.0 --windows-product-version=1.9.0 --windows-disable-console rare
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Rare-Windows-Nuitka.zip
-          path: Rare-Windows-Nuitka.zip
+          name: Rare-Windows-Nuitka
+          path: rare.dist
 
   cx_freeze:
     runs-on: "windows-latest"
