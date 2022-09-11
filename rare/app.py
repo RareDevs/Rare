@@ -95,7 +95,6 @@ class App(RareApp):
 
         self.main_window = MainWindow()
         self.main_window.exit_app.connect(self.exit_app)
-        # self.launch_dialog.close()
 
         if not self.args.silent:
             self.main_window.show()

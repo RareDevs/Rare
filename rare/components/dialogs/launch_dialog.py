@@ -50,7 +50,7 @@ class ImageWorker(LaunchWorker):
         @pyqtSlot(object)
         def counter_inc(self, game: Game):
             self.signals.progress.emit(
-                int(self.counter / self.length * 50),
+                int(self.counter / self.length * 75),
                 self.tr("Downloading image for <b>{}</b>").format(game.app_title)
             )
             self.counter += 1
@@ -93,7 +93,7 @@ class ImageWorker(LaunchWorker):
         # FIXME: incorporate installed game status checking here for now, still slow
         for i, igame in enumerate(igame_list):
             self.signals.progress.emit(
-                int(i / len(igame_list) * 50) + 50,
+                int(i / len(igame_list) * 25) + 75,
                 self.tr("Validating install for <b>{}</b>").format(igame.title)
             )
             if not os.path.exists(igame.install_path):
