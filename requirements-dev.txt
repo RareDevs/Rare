@@ -1,0 +1,7 @@
+build
+wheel
+black
+toml
+nuitka
+ordered-set
+PyQt5-stubs

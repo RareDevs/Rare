@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 import hashlib
 import json
 import pickle
 import zlib
+# from concurrent import futures
 from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -29,6 +28,8 @@ from legendary.models.game import Game
 from rare.lgndr.core import LegendaryCore
 from rare.models.signals import GlobalSignals
 from rare.utils.paths import image_dir, resources_path
+
+# from requests_futures.sessions import FuturesSession
 
 if TYPE_CHECKING:
     pass
@@ -86,8 +87,8 @@ class ImageSize:
 class ImageManager(QObject):
     class Worker(QRunnable):
         class Signals(QObject):
-            # str: app_name
-            completed = pyqtSignal(str)
+            # object: Game
+            completed = pyqtSignal(object)
 
         def __init__(self, func: Callable, updates: List, json_data: Dict, game: Game):
             super(ImageManager.Worker, self).__init__()
@@ -101,7 +102,7 @@ class ImageManager(QObject):
         def run(self):
             self.func(self.updates, self.json_data, self.game)
             logger.debug(f" Emitting singal for game {self.game.app_name} - {self.game.app_title}")
-            self.signals.completed.emit(self.game.app_name)
+            self.signals.completed.emit(self.game)
 
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
         # lk: the ordering in __img_types matters for the order of fallbacks
@@ -179,7 +180,7 @@ class ImageManager(QObject):
 
         return updates, json_data
 
-    def __download(self, updates, json_data, game) -> bool:
+    def __download(self, updates, json_data, game, use_async: bool = False) -> bool:
         # Decompress existing image.cache
         if not self.__img_cache(game.app_name).is_file():
             cache_data = dict(zip(self.__img_types, [None] * len(self.__img_types)))
@@ -193,6 +194,22 @@ class ImageManager(QObject):
             if cache_data[image["type"]] is None or json_data[image["type"]] != image["md5"]
         ]
 
+        # Download
+        # # lk: Keep this so I don't have to go looking for it again,
+        # # lk: it might be useful in the future.
+        # if use_async and len(updates) > 1:
+        #     session = FuturesSession(max_workers=len(self.__img_types))
+        #     image_requests = []
+        #     for image in updates:
+        #         logger.info(f"Downloading {image['type']} for {game.app_title}")
+        #         json_data[image["type"]] = image["md5"]
+        #         payload = {"resize": 1, "w": ImageSize.Image.size.width(), "h": ImageSize.Image.size.height()}
+        #         req = session.get(image["url"], params=payload)
+        #         req.image_type = image["type"]
+        #         image_requests.append(req)
+        #     for req in futures.as_completed(image_requests):
+        #         cache_data[req.image_type] = req.result().content
+        # else:
         for image in updates:
             logger.info(f"Downloading {image['type']} for {game.app_title}")
             json_data[image["type"]] = image["md5"]
@@ -291,18 +308,18 @@ class ImageManager(QObject):
         return data
 
     def download_image(
-        self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False
+        self, game: Game, load_callback: Callable[[Game], None], priority: int, force: bool = False
     ) -> None:
         updates, json_data = self.__prepare_download(game, force)
         if not updates:
-            load_callback()
+            load_callback(game)
             return
         if updates and game.app_name not in self.__worker_app_names:
             image_worker = ImageManager.Worker(self.__download, updates, json_data, game)
             self.__worker_app_names.append(game.app_name)
 
             image_worker.signals.completed.connect(load_callback)
-            image_worker.signals.completed.connect(lambda app_name: self.__worker_app_names.remove(app_name))
+            image_worker.signals.completed.connect(lambda g: self.__worker_app_names.remove(g.app_name))
             self.threadpool.start(image_worker, priority)
 
     def download_image_blocking(self, game: Game, force: bool = False) -> None:
@@ -310,7 +327,7 @@ class ImageManager(QObject):
         if not updates:
             return
         if updates:
-            self.__download(updates, json_data, game)
+            self.__download(updates, json_data, game, use_async=True)
 
     def __get_cover(
         self, container: Union[Type[QPixmap], Type[QImage]], app_name: str, color: bool = True

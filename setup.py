@@ -47,5 +47,5 @@ setuptools.setup(
     python_requires=">=3.8",
     entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
     install_requires=requirements,
-    extras_require=optional_reqs
+    extras_require=optional_reqs,
 )

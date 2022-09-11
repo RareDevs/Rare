@@ -1,36 +1,12 @@
 
-name: "Release"
+name: "Release Tests"
 
 
 on:
-  release:
-    types: [ published ]
+  workflow_dispatch:
 
 
 jobs:
-  pypi-deploy:
-    if: "!github.event.release.prerelease"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine
-      - name: Build and publish
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          python setup.py sdist bdist_wheel
-          twine upload dist/*
-
   deb-package:
     runs-on: ubuntu-latest
     steps:
@@ -40,10 +16,11 @@ jobs:
           echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.hunterwittenborn.com/ makedeb main' | sudo tee /etc/apt/sources.list.d/makedeb.list
           sudo apt update
           sudo apt install makedeb
-      - name: prepare pkgbuild
+      - name: prepare source directory
         run: |
           git clone https://mpr.hunterwittenborn.com/rare.git build
-          sed -i "s/pkgver=.*/pkgver=${{ github.event.release.tag_name }}/g" build/PKGBUILD
+          sed -i 's/source=.*/source=("rare-test::git+$url")/g' build/PKGBUILD
+          sed -i "s/\$pkgver/test/g" build/PKGBUILD
 
       - name: build deb
         run: |
@@ -51,14 +28,11 @@ jobs:
           makedeb -d
           mv *.deb Rare.deb
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/Rare.deb
-          asset_name: Rare-${{ github.event.release.tag_name }}.deb
-          tag: ${{ github.ref }}
-          overwrite: true
+          name: Rare.deb
+          path: build/Rare.deb
 
   appimage:
     runs-on: ubuntu-22.04
@@ -80,24 +54,12 @@ jobs:
           cp rare/__main__.py .
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
-          mv Rare-*.AppImage.zsync Rare.AppImage.zsync
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.AppImage
-          asset_name: Rare-${{ github.event.release.tag_name }}.AppImage
-          tag: ${{ github.ref }}
-          overwrite: true
-      - name: Upload zsync file to GitHub
-        uses: svenstaro/upload-release-action@2.2.1
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.AppImage.zsync
-          asset_name: Rare-${{ github.event.release.tag_name }}.AppImage.zsync
-          tag: ${{ github.ref }}
-          overwrite: true
+          name: Rare.AppImage
+          path: Rare.AppImage
 
   nuitka:
     runs-on: "windows-latest"
@@ -114,6 +76,12 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
+      - name: Version
+        id: version
+        run: |
+          git fetch --prune --unshallow
+          echo "::set-output name=tag_offset::$(git describe --long --tags)"
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Build
         run: >-
           python -m nuitka
@@ -125,22 +93,16 @@ jobs:
           --include-data-files=rare\resources\languages=rare\resources\languages="*.qm"
           --windows-icon-from-ico=rare\resources\images\Rare.ico
           --windows-company-name=Rare --windows-product-name=Rare --windows-file-description=rare.exe
-          --windows-file-version=${{ github.event.release.tag_name }}
-          --windows-product-version=${{ github.event.release.tag_name }}
+          --windows-file-version=0.0.0.0
+          --windows-product-version=0.0.0.0
           --windows-disable-console
           rare
-      - name: Compress
-        run: |
-          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'rare.dist')"
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare-Windows.zip
-          asset_name: Rare-Windows-${{ github.event.release.tag_name }}.zip
-          tag: ${{ github.ref }}
-          overwrite: true
+          name: Rare-Windows-${{ steps.version.outputs.tag_offset }}
+          path: rare.dist
 
   cx_freeze:
     runs-on: "windows-latest"
@@ -157,19 +119,22 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
+      - name: Version
+        id: version
+        run: |
+          git fetch --prune --unshallow
+          echo "::set-output name=tag_offset::$(git describe --long --tags)"
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Build
         run: |
           python freeze.py bdist_msi
           mv dist/*.msi dist/Rare-Windows.msi
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: dist/Rare-Windows.msi
-          asset_name: Rare-Windows-${{ github.event.release.tag_name }}.msi
-          tag: ${{ github.ref }}
-          overwrite: true
+          name: Rare-Windows-${{ steps.version.outputs.tag_offset }}.msi
+          path: dist/*.msi
 
   mac_os:
     runs-on: macos-latest
@@ -201,13 +166,9 @@ jobs:
       - name: create dmg
         run: |
           git clone https://github.com/create-dmg/create-dmg
-          create-dmg/create-dmg Rare.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
+          create-dmg/create-dmg Rare-${{github.ref}}.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
 
-      - name: upload to GitHub
-        uses: svenstaro/upload-release-action@2.2.1
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.dmg
-          asset_name: Rare-${{ github.event.release.tag_name }}.dmg
-          tag: ${{ github.ref }}
-          overwrite: true
+          name: Rare-MacOS.dmg
+          path: ./*.dmg

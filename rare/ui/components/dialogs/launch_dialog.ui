@@ -7,13 +7,31 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>168</height>
+    <height>160</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>400</width>
+    <height>160</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>400</width>
+    <height>160</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Launching Rare</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="launch_dialog_layout">
    <item>
     <widget class="QLabel" name="title_label">
      <property name="text">
@@ -22,16 +40,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QProgressBar" name="image_prog_bar">
+    <widget class="QProgressBar" name="progress_bar">
      <property name="value">
       <number>0</number>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="image_info">
-     <property name="text">
-      <string>Downloading images</string>
      </property>
     </widget>
    </item>

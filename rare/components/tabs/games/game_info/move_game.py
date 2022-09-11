@@ -135,11 +135,15 @@ class MoveGamePopUp(QWidget):
         return True, dir_selected, str()
 
     def update_game(self, app_name):
-        igame = self.core.get_installed_game(app_name, False)
+        igame = self.core.get_installed_game(app_name, skip_sync=True)
         if igame is None:
             return
         self.install_path = igame.install_path
+        # FIXME: Make edit_func lighter instead of blocking signals
+        self.move_path_edit.line_edit.blockSignals(True)
         self.move_path_edit.setText(igame.install_path)
+        # FIXME: Make edit_func lighter instead of blocking signals
+        self.move_path_edit.line_edit.blockSignals(False)
         self.warn_overwriting.setText(
             self.tr("Moving here will overwrite the dir/file {}/").format(Path(self.install_path).stem)
         )
