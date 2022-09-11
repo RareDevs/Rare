@@ -1,30 +1,12 @@
 
-name: "Test"
+name: "Release Tests"
+
 
 on:
   workflow_dispatch:
 
-jobs:
-  pylint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pylint
-          pip install -r requirements.txt
-          pip install pypresence
-      - name: Analysing the code with pylint
-        run: |
-          pylint -E rare --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
 
+jobs:
   deb-package:
     runs-on: ubuntu-latest
     steps:
@@ -46,7 +28,8 @@ jobs:
           makedeb -d
           mv *.deb Rare.deb
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v2
         with:
           name: Rare.deb
           path: build/Rare.deb
@@ -72,7 +55,8 @@ jobs:
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v2
         with:
           name: Rare.AppImage
           path: Rare.AppImage
@@ -86,19 +70,38 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
-      - name: Dependencies
+      - name: Install build dependencies
+        run: pip3 install nuitka ordered-set
+      - name: Install target dependencies
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
-      - name: Build Dependencies
-        run: pip3 install nuitka ordered-set PyQt5-stubs
-      - name: Build
+      - name: Version
+        id: version
         run: |
-          python -m nuitka --assume-yes-for-downloads --follow-imports --prefer-source-code --mingw64 --lto=no --jobs=2 --static-libpython=no --standalone --enable-plugin=anti-bloat --enable-plugin=pyqt5 --show-anti-bloat-changes --nofollow-import-to="*.tests" --nofollow-import-to="*.distutils" --include-package-data=qtawesome --include-data-dir=rare\resources\images=rare\resources\images --include-data-files=rare\resources\languages=rare\resources\languages="*.qm" --windows-icon-from-ico=rare\resources\images\Rare.ico --windows-company-name=Rare --windows-product-name=Rare --windows-file-description=rare.exe --windows-file-version=1.9.0 --windows-product-version=1.9.0 --windows-disable-console rare
+          git fetch --prune --unshallow
+          echo "::set-output name=tag_offset::$(git describe --long --tags)"
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Build
+        run: >-
+          python -m nuitka
+          --assume-yes-for-downloads
+          --follow-imports --prefer-source-code --mingw64 --lto=no --jobs=2 --static-libpython=no --standalone
+          --enable-plugin=anti-bloat --enable-plugin=pyqt5 --show-anti-bloat-changes --nofollow-import-to="*.tests"
+          --nofollow-import-to="*.distutils" --include-package-data=qtawesome
+          --include-data-dir=rare\resources\images=rare\resources\images
+          --include-data-files=rare\resources\languages=rare\resources\languages="*.qm"
+          --windows-icon-from-ico=rare\resources\images\Rare.ico
+          --windows-company-name=Rare --windows-product-name=Rare --windows-file-description=rare.exe
+          --windows-file-version=0.0.0.0
+          --windows-product-version=0.0.0.0
+          --windows-disable-console
+          rare
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          name: Rare-Windows-Nuitka
+          name: Rare-Windows-${{ steps.version.outputs.tag_offset }}
           path: rare.dist
 
   cx_freeze:
@@ -109,19 +112,28 @@ jobs:
           submodules: true
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.10'
-      - name: Dependencies
-        run: pip3 install -r requirements.txt
-      - name: cx_freeze
+          python-version: '3.9'
+      - name: Install Build Dependencies
         run: pip3 install --upgrade cx_freeze wheel
-      - name: pypresence
-        run: pip3 install pypresence
+      - name: Install Target Dependencies
+        run: |
+          pip3 install -r requirements.txt
+          pip3 install -r requirements-presence.txt
+      - name: Version
+        id: version
+        run: |
+          git fetch --prune --unshallow
+          echo "::set-output name=tag_offset::$(git describe --long --tags)"
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Build
-        run: python freeze.py bdist_msi
+        run: |
+          python freeze.py bdist_msi
+          mv dist/*.msi dist/Rare-Windows.msi
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          name: Rare-Windows.msi
+          name: Rare-Windows-${{ steps.version.outputs.tag_offset }}.msi
           path: dist/*.msi
 
   mac_os:
@@ -144,8 +156,12 @@ jobs:
         run: mv rare/__main__.py __main__.py
 
       - name: run pyinstaller
-        run: |
-          pyinstaller -F --name Rare --add-data "rare/resources/languages/*:rare/resources/languages" --add-data "rare/resources/images/*:rare/resources/images/" --windowed --icon rare/resources/images/Rare.icns --hidden-import=legendary __main__.py
+        run: >-
+          pyinstaller -F --name Rare
+          --add-data "rare/resources/languages/*:rare/resources/languages"
+          --add-data "rare/resources/images/*:rare/resources/images/"
+          --windowed --icon rare/resources/images/Rare.icns
+          --hidden-import=legendary __main__.py
 
       - name: create dmg
         run: |

@@ -1,8 +1,11 @@
-name: New Release
+
+name: "Release"
+
 
 on:
   release:
     types: [ published ]
+
 
 jobs:
   pypi-deploy:
@@ -48,7 +51,7 @@ jobs:
           makedeb -d
           mv *.deb Rare.deb
 
-      - name: Upload files to GitHub
+      - name: Upload to Releases
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -79,7 +82,7 @@ jobs:
           mv Rare-*.AppImage Rare.AppImage
           mv Rare-*.AppImage.zsync Rare.AppImage.zsync
 
-      - name: Upload AppImage to GitHub
+      - name: Upload to Releases
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -96,6 +99,49 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
 
+  nuitka:
+    runs-on: "windows-latest"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install build dependencies
+        run: pip3 install nuitka ordered-set
+      - name: Install target dependencies
+        run: |
+          pip3 install -r requirements.txt
+          pip3 install -r requirements-presence.txt
+      - name: Build
+        run: >-
+          python -m nuitka
+          --assume-yes-for-downloads
+          --follow-imports --prefer-source-code --mingw64 --lto=no --jobs=2 --static-libpython=no --standalone
+          --enable-plugin=anti-bloat --enable-plugin=pyqt5 --show-anti-bloat-changes --nofollow-import-to="*.tests"
+          --nofollow-import-to="*.distutils" --include-package-data=qtawesome
+          --include-data-dir=rare\resources\images=rare\resources\images
+          --include-data-files=rare\resources\languages=rare\resources\languages="*.qm"
+          --windows-icon-from-ico=rare\resources\images\Rare.ico
+          --windows-company-name=Rare --windows-product-name=Rare --windows-file-description=rare.exe
+          --windows-file-version=${{ github.event.release.tag_name }}
+          --windows-product-version=${{ github.event.release.tag_name }}
+          --windows-disable-console
+          rare
+      - name: Compress
+        run: |
+          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'rare.dist')"
+
+      - name: Upload to Releases
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Rare-Windows.zip
+          asset_name: Rare-Windows-${{ github.event.release.tag_name }}.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+
   cx_freeze:
     runs-on: "windows-latest"
     steps:
@@ -104,24 +150,27 @@ jobs:
           submodules: true
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
-      - name: Dependencies
-        run: pip3 install -r requirements.txt
-      - name: cx_freeze
+          python-version: '3.9'
+      - name: Install Build Dependencies
         run: pip3 install --upgrade cx_freeze wheel
+      - name: Install Target Dependencies
+        run: |
+          pip3 install -r requirements.txt
+          pip3 install -r requirements-presence.txt
       - name: Build
-        run: python freeze.py bdist_msi
+        run: |
+          python freeze.py bdist_msi
+          mv dist/*.msi dist/Rare-Windows.msi
 
-      - name: Rename File
-        run: mv dist/*.msi dist/Rare.msi
-      - name: Upload to GitHub
+      - name: Upload to Releases
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: dist/Rare.msi
-          asset_name: Rare-${{ github.event.release.tag_name }}.msi
+          file: dist/Rare-Windows.msi
+          asset_name: Rare-Windows-${{ github.event.release.tag_name }}.msi
           tag: ${{ github.ref }}
           overwrite: true
+
   mac_os:
     runs-on: macos-latest
     steps:
@@ -142,8 +191,12 @@ jobs:
         run: mv rare/__main__.py __main__.py
 
       - name: run pyinstaller
-        run: |
-          pyinstaller -F --name Rare --add-data "rare/resources/languages/*:rare/resources/languages" --add-data "rare/resources/images/*:rare/resources/images/" --windowed --icon rare/resources/images/Rare.icns --hidden-import=legendary __main__.py
+        run: >-
+          pyinstaller -F --name Rare
+          --add-data "rare/resources/languages/*:rare/resources/languages"
+          --add-data "rare/resources/images/*:rare/resources/images/"
+          --windowed --icon rare/resources/images/Rare.icns
+          --hidden-import=legendary __main__.py
 
       - name: create dmg
         run: |
