@@ -88,7 +88,6 @@ jobs:
           python-version: '3.9'
       - name: Dependencies
         run: |
-          pip3 install certifi==2022.6.15
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
       - name: Build Dependencies

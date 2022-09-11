@@ -2,8 +2,9 @@ import os
 import platform
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, QSettings, pyqtSlot, QCoreApplication
+from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, QSettings, pyqtSlot
 from PyQt5.QtWidgets import QDialog, QApplication
+from legendary.models.game import Game
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.components.dialogs.login import LoginDialog
@@ -29,19 +30,41 @@ class LaunchWorker(QRunnable):
         self.signals = LaunchWorker.Signals()
         self.core = LegendaryCoreSingleton()
 
-    def run(self):
+    def run_real(self):
         pass
+
+    def run(self):
+        self.run_real()
+        self.signals.deleteLater()
 
 
 class ImageWorker(LaunchWorker):
+    # FIXME: this is a middle-ground solution for concurrent downloads
+    class DownloadSlot(QObject):
+        def __init__(self, signals: LaunchWorker.Signals):
+            super(ImageWorker.DownloadSlot, self).__init__()
+            self.signals = signals
+            self.counter = 0
+            self.length = 0
+
+        @pyqtSlot(object)
+        def counter_inc(self, game: Game):
+            self.signals.progress.emit(
+                int(self.counter / self.length * 50),
+                self.tr("Downloading image for <b>{}</b>").format(game.app_title)
+            )
+            self.counter += 1
+
     def __init__(self):
         super(ImageWorker, self).__init__()
+        # FIXME: this is a middle-ground solution for concurrent downloads
+        self.dl_slot = ImageWorker.DownloadSlot(self.signals)
         self.image_manager = ImageManagerSingleton()
 
     def tr(self, t) -> str:
-        return QCoreApplication.translate(self.__class__.__name__, t)
+        return QApplication.instance().translate(self.__class__.__name__, t)
 
-    def run(self):
+    def run_real(self):
         # Download Images
         games, dlcs = self.core.get_game_and_dlc_list(update_assets=True, skip_ue=False)
         self.signals.result.emit((games, dlcs), "gamelist")
@@ -53,20 +76,21 @@ class ImageWorker(LaunchWorker):
 
         game_list = games + dlc_list + na_games + na_dlc_list
 
+        self.dl_slot.length = len(game_list)
         for i, game in enumerate(game_list):
             if game.app_title == "Unreal Engine":
                 game.app_title += f" {game.app_name.split('_')[-1]}"
                 self.core.lgd.set_game_meta(game.app_name, game)
-            self.signals.progress.emit(
-                int(i / len(game_list) * 50),
-                self.tr("Downloading image for <b>{}</b>").format(game.app_title)
-            )
-            self.image_manager.download_image_blocking(game)
+            # self.image_manager.download_image_blocking(game)
+            self.image_manager.download_image(game, self.dl_slot.counter_inc, priority=0)
+        # FIXME: this is a middle-ground solution for concurrent downloads
+        while self.dl_slot.counter < len(game_list):
+            QApplication.instance().processEvents()
+        self.dl_slot.deleteLater()
 
         igame_list = self.core.get_installed_list(include_dlc=True)
 
         # FIXME: incorporate installed game status checking here for now, still slow
-        # if igame := self.core.get_installed_game(game.app_name, skip_sync=True):
         for i, igame in enumerate(igame_list):
             self.signals.progress.emit(
                 int(i / len(igame_list) * 50) + 50,
@@ -100,7 +124,7 @@ class ApiRequestWorker(LaunchWorker):
         super(ApiRequestWorker, self).__init__()
         self.settings = QSettings()
 
-    def run(self) -> None:
+    def run_real(self) -> None:
         if self.settings.value("mac_meta", platform.system() == "Darwin", bool):
             try:
                 result = self.core.get_game_and_dlc_list(update_assets=False, platform="Mac")
