@@ -13,6 +13,11 @@ python -m nuitka ^
 --follow-imports ^
 --nofollow-import-to="*.tests" ^
 --nofollow-import-to="*.distutils" ^
+--nofollow-import-to="distutils" ^
+--nofollow-import-to="unittest" ^
+--nofollow-import-to="pydoc" ^
+--nofollow-import-to="tkinter" ^
+--nofollow-import-to="test" ^
 --prefer-source-code ^
 --include-package=pypresence ^
 --include-package-data=qtawesome ^
