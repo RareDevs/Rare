@@ -118,16 +118,31 @@ jobs:
         run: >-
           python -m nuitka
           --assume-yes-for-downloads
-          --follow-imports --prefer-source-code --mingw64 --lto=no --jobs=2 --static-libpython=no --standalone
-          --enable-plugin=anti-bloat --enable-plugin=pyqt5 --show-anti-bloat-changes --nofollow-import-to="*.tests"
-          --nofollow-import-to="*.distutils" --include-package-data=qtawesome
+          --mingw64
+          --lto=no
+          --jobs=2
+          --static-libpython=no
+          --standalone
+          --enable-plugin=anti-bloat
+          --enable-plugin=pyqt5
+          --show-modules
+          --show-anti-bloat-changes
+          --follow-stdlib
+          --follow-imports
+          --nofollow-import-to="*.tests"
+          --nofollow-import-to="*.distutils"
+          --prefer-source-code
+          --include-package=pypresence
+          --include-package-data=qtawesome
           --include-data-dir=rare\resources\images=rare\resources\images
           --include-data-files=rare\resources\languages=rare\resources\languages="*.qm"
           --windows-icon-from-ico=rare\resources\images\Rare.ico
-          --windows-company-name=Rare --windows-product-name=Rare --windows-file-description=rare.exe
+          --windows-company-name=Rare
+          --windows-product-name=Rare
+          --windows-file-description=rare.exe
           --windows-file-version=${{ github.event.release.tag_name }}
           --windows-product-version=${{ github.event.release.tag_name }}
-          --windows-disable-console
+          --disable-console
           rare
       - name: Compress
         run: |
