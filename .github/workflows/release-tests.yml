@@ -89,7 +89,7 @@ jobs:
         run: >-
           python -m nuitka
           --assume-yes-for-downloads
-          --msvc=latest
+          --msvc=14.14
           --lto=yes
           --jobs=2
           --static-libpython=no
