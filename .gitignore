@@ -10,9 +10,7 @@ __pycache__
 /deb_dist
 *.tar.gz
 /Rare.egg-info/
-/venv
-/venv310/
-/venv311/
+/venv*
 /test.py
 /.eggs
 /appimage-builder-cache/

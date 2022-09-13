@@ -5,7 +5,6 @@ name: "Release Tests"
 on:
   workflow_dispatch:
 
-
 jobs:
   deb-package:
     runs-on: ubuntu-latest
@@ -29,7 +28,7 @@ jobs:
           mv *.deb Rare.deb
 
       - name: Upload to Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Rare.deb
           path: build/Rare.deb
@@ -64,86 +63,109 @@ jobs:
   nuitka:
     runs-on: "windows-latest"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          submodules: true
-      - uses: actions/setup-python@v2
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          architecture: x64
       - name: Install build dependencies
         run: pip3 install nuitka ordered-set
       - name: Install target dependencies
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
-      - name: Version
+      - name: Versions
         id: version
+        shell: bash
         run: |
-          git fetch --prune --unshallow
-          echo "::set-output name=tag_offset::$(git describe --long --tags)"
+          tag_abbrev=$(git describe --tags --abbrev=0)
+          echo "::set-output name=tag_abbrev::${tag_abbrev%%-rc*}"
+          echo "::set-output name=tag_offset::$(git rev-list $tag_abbrev..HEAD --count)"
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=full_desc::$(git describe --long --tags)"
       - name: Build
         run: >-
           python -m nuitka
           --assume-yes-for-downloads
-          --follow-imports --prefer-source-code --mingw64 --lto=no --jobs=2 --static-libpython=no --standalone
-          --enable-plugin=anti-bloat --enable-plugin=pyqt5 --show-anti-bloat-changes --nofollow-import-to="*.tests"
-          --nofollow-import-to="*.distutils" --include-package-data=qtawesome
+          --msvc=latest
+          --lto=yes
+          --jobs=2
+          --static-libpython=no
+          --standalone
+          --enable-plugin=anti-bloat
+          --enable-plugin=pyqt5
+          --show-modules
+          --show-anti-bloat-changes
+          --follow-stdlib
+          --follow-imports
+          --nofollow-import-to="*.tests"
+          --nofollow-import-to="*.distutils"
+          --prefer-source-code
+          --include-package=pypresence
+          --include-package-data=qtawesome
           --include-data-dir=rare\resources\images=rare\resources\images
           --include-data-files=rare\resources\languages=rare\resources\languages="*.qm"
           --windows-icon-from-ico=rare\resources\images\Rare.ico
-          --windows-company-name=Rare --windows-product-name=Rare --windows-file-description=rare.exe
-          --windows-file-version=0.0.0.0
-          --windows-product-version=0.0.0.0
-          --windows-disable-console
+          --windows-company-name=Rare
+          --windows-product-name=Rare
+          --windows-file-description=rare.exe
+          --windows-file-version=${{ steps.version.outputs.tag_abbrev }}.${{ steps.version.outputs.tag_offset }}
+          --windows-product-version=${{ steps.version.outputs.tag_abbrev }}.${{ steps.version.outputs.tag_offset }}
+          --enable-console
           rare
 
       - name: Upload to Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: Rare-Windows-${{ steps.version.outputs.tag_offset }}
+          name: Rare-Windows-${{ steps.version.outputs.tag_abbrev }}.${{ steps.version.outputs.tag_offset }}
           path: rare.dist
 
   cx_freeze:
     runs-on: "windows-latest"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          submodules: true
-      - uses: actions/setup-python@v2
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          architecture: x64
       - name: Install Build Dependencies
         run: pip3 install --upgrade cx_freeze wheel
       - name: Install Target Dependencies
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
-      - name: Version
+      - name: Versions
         id: version
+        shell: bash
         run: |
-          git fetch --prune --unshallow
-          echo "::set-output name=tag_offset::$(git describe --long --tags)"
+          tag_abbrev=$(git describe --tags --abbrev=0)
+          echo "::set-output name=tag_abbrev::${tag_abbrev%%-rc*}"
+          echo "::set-output name=tag_offset::$(git rev-list $tag_abbrev..HEAD --count)"
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=full_desc::$(git describe --long --tags)"
       - name: Build
         run: |
           python freeze.py bdist_msi
           mv dist/*.msi dist/Rare-Windows.msi
 
       - name: Upload to Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: Rare-Windows-${{ steps.version.outputs.tag_offset }}.msi
+          name: Rare-Windows-${{ steps.version.outputs.tag_abbrev }}.${{ steps.version.outputs.tag_offset }}.msi
           path: dist/*.msi
 
   mac_os:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -160,15 +182,17 @@ jobs:
           pyinstaller -F --name Rare
           --add-data "rare/resources/languages/*:rare/resources/languages"
           --add-data "rare/resources/images/*:rare/resources/images/"
-          --windowed --icon rare/resources/images/Rare.icns
-          --hidden-import=legendary __main__.py
+          --windowed
+          --icon rare/resources/images/Rare.icns
+          --hidden-import=legendary
+          __main__.py
 
       - name: create dmg
         run: |
           git clone https://github.com/create-dmg/create-dmg
           create-dmg/create-dmg Rare-${{github.ref}}.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: Rare-MacOS.dmg
           path: ./*.dmg

@@ -143,18 +143,28 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.log_dir_clean_button.clicked.connect(self.clean_logdir)
 
         # get size of logdir
-        size = 0
-        for i in os.listdir(log_dir()):
-            size += os.path.getsize(os.path.join(log_dir(), i))
-
+        size = sum(
+            log_dir().joinpath(f).stat().st_size
+            for f in log_dir().iterdir()
+            if log_dir().joinpath(f).is_file()
+        )
         self.log_dir_size_label.setText(get_size(size))
         # self.log_dir_clean_button.setVisible(False)
         # self.log_dir_size_label.setVisible(False)
 
     def clean_logdir(self):
-        for i in os.listdir(log_dir()):
-            os.remove(os.path.join(log_dir(), f"{i}"))
-        self.log_dir_size_label.setText("0KB")
+        for f in log_dir().iterdir():
+            try:
+                if log_dir().joinpath(f).is_file():
+                    log_dir().joinpath(f).unlink()
+            except PermissionError as e:
+                logger.error(e)
+        size = sum(
+            log_dir().joinpath(f).stat().st_size
+            for f in log_dir().iterdir()
+            if log_dir().joinpath(f).is_file()
+        )
+        self.log_dir_size_label.setText(get_size(size))
 
     def create_start_menu_link(self):
         try:
