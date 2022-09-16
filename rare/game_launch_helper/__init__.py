@@ -208,7 +208,9 @@ class GameProcessApp(RareApp):
             self.server.deleteLater()
         except RuntimeError:
             pass
-        self.exit_app.emit()
+        self.processEvents()
+        if not self.console:
+            self.exit()
 
 
 def start_game(args: Namespace):
