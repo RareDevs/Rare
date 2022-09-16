@@ -6,7 +6,30 @@ on:
   workflow_dispatch:
 
 jobs:
+  version:
+    name: "Describe version"
+    runs-on: ubuntu-latest
+    outputs:
+      tag_abbrev: ${{ steps.version.outputs.tag_abbrev }}
+      tag_offset: ${{ steps.version.outputs.tag_offset }}
+      sha_short: ${{ steps.version.outputs.sha_short }}
+      full_desc: ${{ steps.version.outputs.full_desc }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Version
+        id: version
+        shell: bash
+        run: |
+          tag_abbrev=$(git describe --tags --abbrev=0)
+          echo "::set-output name=tag_abbrev::${tag_abbrev%%-rc*}"
+          echo "::set-output name=tag_offset::$(git rev-list $tag_abbrev..HEAD --count)"
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=full_desc::$(git describe --long --tags)"
+
   deb-package:
+    needs: version
     runs-on: ubuntu-latest
     steps:
       - name: Install Makedeb
@@ -34,11 +57,10 @@ jobs:
           path: build/Rare.deb
 
   appimage:
+    needs: version
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
+      - uses: actions/checkout@v3
       - name: install Deps
         run: |
           sudo apt update
@@ -61,11 +83,10 @@ jobs:
           path: Rare.AppImage
 
   nuitka:
+    needs: version
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
@@ -76,15 +97,6 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
-      - name: Versions
-        id: version
-        shell: bash
-        run: |
-          tag_abbrev=$(git describe --tags --abbrev=0)
-          echo "::set-output name=tag_abbrev::${tag_abbrev%%-rc*}"
-          echo "::set-output name=tag_offset::$(git rev-list $tag_abbrev..HEAD --count)"
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=full_desc::$(git describe --long --tags)"
       - name: Build
         run: >-
           python -m nuitka
@@ -111,23 +123,22 @@ jobs:
           --windows-company-name=Rare
           --windows-product-name=Rare
           --windows-file-description=rare.exe
-          --windows-file-version=${{ steps.version.outputs.tag_abbrev }}.${{ steps.version.outputs.tag_offset }}
-          --windows-product-version=${{ steps.version.outputs.tag_abbrev }}.${{ steps.version.outputs.tag_offset }}
+          --windows-file-version=${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
+          --windows-product-version=${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
           --enable-console
           rare
 
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Rare-Windows-${{ steps.version.outputs.tag_abbrev }}.${{ steps.version.outputs.tag_offset }}
+          name: Rare-Windows-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
           path: rare.dist
 
   cx_freeze:
+    needs: version
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
@@ -138,15 +149,6 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
-      - name: Versions
-        id: version
-        shell: bash
-        run: |
-          tag_abbrev=$(git describe --tags --abbrev=0)
-          echo "::set-output name=tag_abbrev::${tag_abbrev%%-rc*}"
-          echo "::set-output name=tag_offset::$(git rev-list $tag_abbrev..HEAD --count)"
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=full_desc::$(git describe --long --tags)"
       - name: Build
         run: |
           python freeze.py bdist_msi
@@ -155,10 +157,11 @@ jobs:
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Rare-Windows-${{ steps.version.outputs.tag_abbrev }}.${{ steps.version.outputs.tag_offset }}.msi
+          name: Rare-Windows-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.msi
           path: dist/*.msi
 
   mac_os:
+    needs: version
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
