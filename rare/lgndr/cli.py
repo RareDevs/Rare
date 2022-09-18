@@ -307,7 +307,7 @@ class LegendaryCLI(LegendaryCLIReal):
         # noinspection PyShadowingBuiltins
         def print(x): self.logger.info(x) if x else None
         # noinspection PyShadowingBuiltins
-        def input(x): return 'y' if choice else 'i'
+        def input(x): return 'y' if choice else 'n'
 
         print('\nThis game lists the following prerequisites to be installed:')
         print(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
