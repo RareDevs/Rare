@@ -137,7 +137,7 @@ class DownloadThread(QThread):
         self.ret_status.emit(ret)
 
     def _handle_postinstall(self, postinstall, igame):
-        logger.info("This game lists the following prequisites to be installed:")
+        logger.info("This game lists the following prerequisites to be installed:")
         logger.info(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
         if platform.system() == "Windows":
             if not self.item.options.install_prereqs:
@@ -154,7 +154,7 @@ class DownloadThread(QThread):
                 proc.readyReadStandardOutput.connect(
                     lambda: logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
                 )
-                proc.setNativeArguments(postinstall.get("args", []))
+                proc.setArguments(postinstall.get("args", []))
                 proc.setWorkingDirectory(work_dir)
                 proc.start(fullpath)
                 proc.waitForFinished()  # wait, because it is inside the thread
