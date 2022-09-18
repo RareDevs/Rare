@@ -137,13 +137,10 @@ class DownloadThread(QThread):
         self.ret_status.emit(ret)
 
     def _handle_postinstall(self, postinstall, igame):
-        logger.info("This game lists the following prequisites to be installed:")
+        logger.info("This game lists the following prerequisites to be installed:")
         logger.info(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
         if platform.system() == "Windows":
-            if not self.item.options.install_prereqs:
-                logger.info("Marking prerequisites as installed...")
-                self.core.prereq_installed(self.item.download.igame.app_name)
-            else:
+            if self.item.options.install_prereqs:
                 logger.info("Launching prerequisite executable..")
                 self.core.prereq_installed(igame.app_name)
                 req_path, req_exec = os.path.split(postinstall["path"])
@@ -154,9 +151,10 @@ class DownloadThread(QThread):
                 proc.readyReadStandardOutput.connect(
                     lambda: logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
                 )
-                proc.setNativeArguments(postinstall.get("args", []))
+                proc.setProgram(fullpath)
+                proc.setArguments(postinstall.get("args", "").split(" "))
                 proc.setWorkingDirectory(work_dir)
-                proc.start(fullpath)
+                proc.start()
                 proc.waitForFinished()  # wait, because it is inside the thread
         else:
             logger.info("Automatic installation not available on Linux.")

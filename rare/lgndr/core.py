@@ -28,30 +28,6 @@ class LegendaryCore(LegendaryCoreReal):
     # def get_installed_game(self, app_name, skip_sync=True) -> InstalledGame:
     #     return super(LegendaryCore, self).get_installed_game(app_name, skip_sync)
 
-    # FIXME: delete this when legendary merges https://github.com/derrod/legendary/pull/477
-    def get_cdn_manifest(self, game, platform='Windows', disable_https=False):
-        manifest_urls, base_urls, manifest_hash = self.get_cdn_urls(game, platform)
-
-        if disable_https:
-            manifest_urls = [url.replace('https://', 'http://') for url in manifest_urls]
-
-        manifest_bytes = None
-        for url in manifest_urls:
-            self.log.debug(f'Trying to download manifest from {url} ...')
-            r = self.egs.unauth_session.get(url)
-            if r.ok:
-                manifest_bytes = r.content
-                break
-            else:
-                self.log.warning(f'Unable to download manifest from {url}, trying next one ...')
-        if not manifest_bytes:
-            raise ValueError('Unable to get manifest data from any CDN URL')
-
-        if sha1(manifest_bytes).hexdigest() != manifest_hash:
-            raise ValueError('Manifest sha hash mismatch!')
-
-        return manifest_bytes, base_urls
-
     def prepare_download(self, game: Game, base_game: Game = None, base_path: str = '',
                          status_q: Queue = None, max_shm: int = 0, max_workers: int = 0,
                          force: bool = False, disable_patching: bool = False,

@@ -292,8 +292,11 @@ class InstallDialog(QDialog):
                 self.ui.install_prereqs_check.setVisible(True)
                 self.ui.install_prereqs_lbl.setVisible(True)
                 self.ui.install_prereqs_check.setChecked(True)
+                prereq_name = dl_item.igame.prereq_info.get("name", "")
+                prereq_path = os.path.split(dl_item.igame.prereq_info.get("path", ""))[-1]
+                prereq_desc = prereq_name if prereq_name else prereq_path
                 self.ui.install_prereqs_check.setText(
-                    self.tr("Also install: {}").format(dl_item.igame.prereq_info.get("name", ""))
+                    self.tr("Also install: {}").format(prereq_desc)
                 )
         if self.silent:
             self.close()
