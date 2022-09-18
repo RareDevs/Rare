@@ -159,7 +159,13 @@ class EosWidget(QGroupBox, Ui_EosWidget):
     def change_enable(self):
         enabled = self.enabled_cb.isChecked()
         if not enabled:
-            eos.remove_registry_entries(self.current_prefix)
+            try:
+                eos.remove_registry_entries(self.current_prefix)
+            except PermissionError:
+                logger.error("Can't disable eos overlay")
+                QMessageBox.warning(self, "Error", self.tr(
+                    "Failed to disable Overlay. Probably it is installed by Epic Games Launcher"))
+                return
             logger.info("Disabled Epic Overlay")
             self.enabled_info_label.setText(self.tr("Disabled"))
         else:
@@ -185,8 +191,20 @@ class EosWidget(QGroupBox, Ui_EosWidget):
                     return
                 else:
                     logger.info(f'Updating overlay registry entries from "{old_path}" to "{path}"')
-                eos.remove_registry_entries(self.current_prefix)
-            eos.add_registry_entries(path, self.current_prefix)
+                try:
+                    eos.remove_registry_entries(self.current_prefix)
+                except PermissionError:
+                    logger.error("Can't disable eos overlay")
+                    QMessageBox.warning(self, "Error", self.tr(
+                        "Failed to disable Overlay. Probably it is installed by Epic Games Launcher"))
+                    return
+            try:
+                eos.add_registry_entries(path, self.current_prefix)
+            except PermissionError:
+                logger.error("Failed to disable eos overlay")
+                QMessageBox.warning(self, "Error", self.tr(
+                    "Failed to enable EOS overlay. Maybe it is already installed by Epic Games Launcher"))
+                return
             self.enabled_info_label.setText(self.tr("Enabled"))
             logger.info(f'Enabled overlay at: {path}')
 
