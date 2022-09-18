@@ -154,9 +154,10 @@ class DownloadThread(QThread):
                 proc.readyReadStandardOutput.connect(
                     lambda: logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
                 )
-                proc.setArguments(postinstall.get("args", []))
+                proc.setProgram(fullpath)
+                proc.setArguments(postinstall.get("args", "").split(" "))
                 proc.setWorkingDirectory(work_dir)
-                proc.start(fullpath)
+                proc.start()
                 proc.waitForFinished()  # wait, because it is inside the thread
         else:
             logger.info("Automatic installation not available on Linux.")
