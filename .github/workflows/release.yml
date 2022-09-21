@@ -141,6 +141,10 @@ jobs:
           --windows-product-version=${{ github.event.release.tag_name }}
           --disable-console
           rare
+      - name: Fix QtNetwork SSL
+        run: |
+          Copy-Item -Path "rare.dist\libcrypto-1_1.dll" -Destination "rare.dist\libcrypto-1_1-x64.dll"
+          Copy-Item -Path "rare.dist\libssl-1_1.dll" -Destination "rare.dist\libssl-1_1-x64.dll"
       - name: Compress
         run: |
           python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'rare.dist')"
