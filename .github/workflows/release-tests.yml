@@ -127,6 +127,10 @@ jobs:
           --windows-product-version=${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
           --enable-console
           rare
+      - name: Fix QtNetwork SSL
+        run: |
+          Copy-Item -Path "rare.dist\libcrypto-1_1.dll" -Destination "rare.dist\libcrypto-1_1-x64.dll"
+          Copy-Item -Path "rare.dist\libssl-1_1.dll" -Destination "rare.dist\libssl-1_1-x64.dll"
 
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
