@@ -31,6 +31,12 @@ class RPCSettings(QGroupBox, Ui_RPCSettings):
             lambda: self.settings.setValue("rpc_time", self.show_time.isChecked())
         )
 
+        try:
+            import pypresence
+        except ModuleNotFoundError:
+            self.setDisabled(True)
+            self.setToolTip(self.tr("Pypresence is not installed"))
+
     def changed(self, i):
         self.settings.setValue("rpc_enable", i)
         self.signals.rpc_settings_updated.emit()
