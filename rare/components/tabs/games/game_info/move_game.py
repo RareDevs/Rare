@@ -62,16 +62,9 @@ class MoveGamePopUp(QWidget):
         self.move_path_edit.setText(str())
         self.move_path_edit.setText(text)
 
-    # Thanks to lk.
     @staticmethod
-    def find_mount(path):
-        mount_point = path
-        while path != path.anchor:
-            if path.is_mount():
-                return path
-            else:
-                path = path.parent
-        return mount_point
+    def is_different_drive(dir1: str, dir2: str):
+        return os.stat(dir1).st_dev != os.stat(dir2).st_dev
 
     def edit_func_move_game(self, dir_selected):
         self.move_game.setEnabled(True)
@@ -149,6 +142,7 @@ class MoveGamePopUp(QWidget):
         )
 
 
+# noinspection PyUnresolvedReferences
 class CopyGameInstallation(QRunnable):
     class Signals(QObject):
         progress = pyqtSignal(int)

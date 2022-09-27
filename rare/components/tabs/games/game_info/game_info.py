@@ -258,7 +258,7 @@ class GameInfo(QWidget, Ui_GameInfo):
 
         self.verify_button.setEnabled(False)
 
-        if self.move_game_pop_up.find_mount(dest_path) != self.move_game_pop_up.find_mount(install_path):
+        if self.move_game_pop_up.is_different_drive(str(dest_path), str(install_path)):
             # Destination dir on different drive
             self.start_copy_diff_drive()
         else:
