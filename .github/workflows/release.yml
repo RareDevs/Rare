@@ -64,6 +64,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: "release"
       - name: Install build dependencies
         run: |
           sudo apt update
@@ -101,6 +103,8 @@ jobs:
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: "release"
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
@@ -162,6 +166,8 @@ jobs:
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: "release"
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
@@ -190,6 +196,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: "release"
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
