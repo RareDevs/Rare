@@ -51,8 +51,6 @@ def main():
                                        metavar="<App Name>", action="store")
     launch_minimal_parser.add_argument("--offline", help="Launch game offline",
                                        action="store_true")
-    launch_minimal_parser.add_argument("--skip_update_check", help="Do not check for updates",
-                                       action="store_true")
     launch_minimal_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
                                        default=os.environ.get('LGDRY_WINE_BINARY', None),
                                        help='Set WINE binary to use to launch the app')
@@ -60,6 +58,8 @@ def main():
                                        default=os.environ.get('LGDRY_WINE_PREFIX', None),
                                        help='Set WINE prefix to use')
     launch_minimal_parser.add_argument("--ask-alyways-sync", help="Ask for cloud saves",
+                                       action="store_true")
+    launch_minimal_parser.add_argument("--skip-update-check", help="Do not check for updates",
                                        action="store_true")
 
     args = parser.parse_args()

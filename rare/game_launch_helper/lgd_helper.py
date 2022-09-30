@@ -23,17 +23,18 @@ class InitArgs:
     app_name: str
     debug: bool = False
     offline: bool = False
-    skip_version_check: bool = False
+    skip_update_check: bool = False
     wine_prefix: str = ""
     wine_bin: str = ""
 
     @classmethod
     def from_argparse(cls, args):
+        print(args.skip_update_check)
         return cls(
             app_name=args.app_name,
             debug=args.debug,
             offline=args.offline,
-            skip_version_check=args.skip_update_check,
+            skip_update_check=args.skip_update_check,
             wine_bin=args.wine_bin,
             wine_prefix=args.wine_pfx,
         )
@@ -81,7 +82,8 @@ def get_origin_params(core: LegendaryCore, app_name, offline: bool,
 def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
                     launch_args: LaunchArgs) -> LaunchArgs:
     if not args.offline:  # skip for update
-        if not args.skip_version_check and not core.is_noupdate_game(igame.app_name):
+        if not args.skip_update_check and not core.is_noupdate_game(igame.app_name):
+            print("Checking for updates...")
             # check updates
             try:
                 latest = core.get_asset(

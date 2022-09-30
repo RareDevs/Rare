@@ -32,16 +32,17 @@ class PreLaunchThread(QRunnable):
         self.core = core
         self.app_name = args.app_name
         self.signals = self.Signals()
+        self.args = args
 
     def run(self) -> None:
-        args = self.prepare_launch(self.app_name)
+        args = self.prepare_launch(self.args)
         if not args:
             return
         self.signals.ready_to_launch.emit(args)
 
-    def prepare_launch(self, app_name) -> Union[LaunchArgs, None]:
+    def prepare_launch(self, args: InitArgs) -> Union[LaunchArgs, None]:
         try:
-            args = get_launch_args(self.core, InitArgs(app_name))
+            args = get_launch_args(self.core, args)
         except Exception as e:
             self.signals.error_occurred.emit(str(e))
             return None
