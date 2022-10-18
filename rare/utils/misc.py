@@ -169,7 +169,6 @@ def get_rare_executable() -> List[str]:
     if "__compiled__" in globals():
         executable = [sys.executable]
     elif platform.system() == "Linux" or platform.system() == "Darwin":
-        # TODO flatpak
         if p := os.environ.get("APPIMAGE"):
             executable = [p]
         else:
@@ -186,6 +185,8 @@ def get_rare_executable() -> List[str]:
         if executable[0].endswith("python.exe"):
             # be sure to start consoleless then
             executable[0] = executable[0].replace("python.exe", "pythonw.exe")
+            if executable[1].endswith("rare"):
+                executable[1] = executable[1] + ".exe"
     else:
         executable = [sys.executable]
 
