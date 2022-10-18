@@ -89,8 +89,11 @@ class GameProcess(QObject):
         elif action == message_models.Actions.error:
             model = message_models.ErrorModel.from_json(data)
             logger.error(f"Error in game {self.game.app_title}: {model.error_string}")
+            self.socket.close()
+            self._game_finished(1)
             QMessageBox.warning(None, "Error", self.tr(
                 "Error in game {}: \n{}").format(self.game.app_title, model.error_string))
+
         elif action == message_models.Actions.state_update:
             model = message_models.StateChangedModel.from_json(data)
             if model.new_state == message_models.StateChangedModel.States.started:
