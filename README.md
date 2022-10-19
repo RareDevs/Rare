@@ -26,7 +26,68 @@ If you run into any issues, please report it by creating an issue on GitHub or o
 
 ## Installation
 
-### Installation via pip (recommended)
+### Linux
+
+#### Flatpak
+
+Rare is available as a flatpak. See [rare](https://flathub.org/apps/details/io.github.dummerle.rare).
+
+Install it via:
+
+`flatpak install flathub io.github.dummerle.rare`
+
+Run it via:
+
+`flatpak run io.github.dummerle.rare`
+
+#### Arch based
+
+There are some AUR packages available:
+
+- [rare](https://aur.archlinux.org/packages/rare) - for stable releases
+- [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest features, which are not in a stable release
+
+#### Debian based
+
+- DUR package: [rare](https://mpr.hunterwittenborn.com/packages/rare)
+- .deb file in [releases page](https://github.com/Dummerle/Rare/releases)
+
+**Note**:
+
+- pypresence is an optional package. You can install it
+  from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip.
+- Do not wonder if some icons look strange, because the official python3-qtawesome package is too old. Many icons were
+  replaced.
+
+
+### macOS
+
+There is a .dmg file available in [releases page](https://github.com/Dummerle/Rare/releases).
+
+**Note**: When you launch it, you will see an error, that the package is from an unknown source. You have to enable it
+manually in `Settings -> Security and Privacy`. Otherwise, Gatekeeper will block Rare from running.
+
+You can also use `pip`.
+
+### Windows
+
+Rare is available as a [Chocolatey package](https://community.chocolatey.org/packages/rare) on Windows.
+You can install rare with the following one-liner:
+
+`choco install rare`
+
+### Packages
+
+In [releases page](https://github.com/Dummerle/Rare/releases), AppImages are available for Linux, a .msi file for windows and a .dmg
+file for macOS.
+
+### Latest packages
+
+In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find packages for the latest commits.
+
+**Note**: They might be unstable.
+
+### Installation via pip (platform independent)
 
 Execute `pip install Rare` for all users, or `pip install Rare --user` for the current user only.
 
@@ -51,69 +112,6 @@ On Mac:
 
 `/Users/user/Library/Python/3.x/bin` must be in your PATH.
 
-### Linux
-
-#### Arch based
-
-There are some AUR packages available:
-
-- [rare](https://aur.archlinux.org/packages/rare) - for stable releases
-- [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest features, which are not in a stable release
-
-#### Debian based
-
-- DUR package: [rare](https://mpr.hunterwittenborn.com/packages/rare)
-- .deb file in [releases page](https://github.com/Dummerle/Rare/releases)
-
-**Note**:
-
-- pypresence is an optional package. You can install it
-  from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip.
-- Do not wonder if some icons look strange, because the official python3-qtawesome package is too old. Many icons were
-  replaced.
-
-#### Flatpak
-
-Rare is available as a flatpak. See [rare](https://flathub.org/apps/details/io.github.dummerle.rare).
-
-Install it via:
-
-`flatpak install flathub io.github.dummerle.rare`
-
-Run it via:
-
-`flatpak run io.github.dummerle.rare`
-
-#### Other
-
-Install via `pip`, use the AppImage or install via flatpak.
-
-### macOS
-
-There is a .dmg file available in [releases page](https://github.com/Dummerle/Rare/releases).
-
-**Note**: When you launch it, you will see an error, that the package is from an unknown source. You have to enable it
-manually in `Settings -> Security and Privacy`. Otherwise, Gatekeeper will block Rare from running.
-
-You can also use `pip`.
-
-### windows
-
-Rare is available as a [Chocolatey package](https://community.chocolatey.org/packages/rare) on Windows.
-You can install rare with the following one-liner:
-
-`choco install rare`
-
-### Packages
-
-In [releases page](https://github.com/Dummerle/Rare/releases), AppImages are available for Linux, a .msi file for windows and a .dmg
-file for macOS.
-
-### Latest packages
-
-In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find packages for the latest commits.
-
-**Note**: They might be unstable.
 
 ### Run from source
 
