@@ -15,19 +15,15 @@ logger = getLogger("EOS")
 
 
 def get_wine_prefixes() -> List[str]:
+    prefixes = list()
     if os.path.exists(p := os.path.expanduser("~/.wine")):
-        prefixes = [p]
-    else:
-        prefixes = []
-    for i in LegendaryCoreSingleton().get_installed_list():
-        # get prefix from environment
-        env = LegendaryCoreSingleton().get_app_environment(i.app_name)
-        if pfx := env.get("WINEPREFIX"):
-            if pfx not in prefixes and os.path.exists(os.path.join(pfx, "user.reg")):
-                prefixes.append(pfx)
-        if steam_pfx := env.get("STEAM_COMPAT_DATA_PATH"):
-            if steam_pfx not in prefixes and os.path.exists(os.path.join(steam_pfx, "user.reg")):
-                prefixes.append(os.path.join(steam_pfx, "pfx"))
+        prefixes.append(p)
+
+    for name, section in LegendaryCoreSingleton().lgd.config.items():
+        pfx = section.get("WINEPREFIX") or section.get("wine_prefix")
+        if pfx and pfx not in prefixes:
+            prefixes.append(pfx)
+
     return prefixes
 
 
