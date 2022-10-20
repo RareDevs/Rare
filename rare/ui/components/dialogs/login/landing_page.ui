@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>295</width>
-    <height>78</height>
+    <width>311</width>
+    <height>87</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>LandingPage</string>
+   <string notr="true">LandingPage</string>
   </property>
   <layout class="QGridLayout" name="landing_layout" rowstretch="0,1,1">
    <property name="sizeConstraint">

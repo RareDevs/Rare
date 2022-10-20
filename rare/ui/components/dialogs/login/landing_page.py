@@ -14,12 +14,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_LandingPage(object):
     def setupUi(self, LandingPage):
         LandingPage.setObjectName("LandingPage")
-        LandingPage.resize(400, 200)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(LandingPage.sizePolicy().hasHeightForWidth())
-        LandingPage.setSizePolicy(sizePolicy)
+        LandingPage.resize(311, 87)
+        LandingPage.setWindowTitle("LandingPage")
         self.landing_layout = QtWidgets.QGridLayout(LandingPage)
         self.landing_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.landing_layout.setObjectName("landing_layout")
@@ -68,7 +64,6 @@ class Ui_LandingPage(object):
 
     def retranslateUi(self, LandingPage):
         _translate = QtCore.QCoreApplication.translate
-        LandingPage.setWindowTitle(_translate("LandingPage", "LandingPage"))
         self.login_label.setText(_translate("LandingPage", "Select login method"))
         self.login_browser_radio.setText(_translate("LandingPage", "Browser"))
         self.login_browser_label.setText(_translate("LandingPage", "Login using a browser."))

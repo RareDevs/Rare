@@ -171,10 +171,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             if game.app_name in self.update_widgets.keys():
                 igame = self.core.get_installed_game(game.app_name)
                 if (
-                    self.core.get_asset(
-                        game.app_name, igame.platform, False
-                    ).build_version
-                    == igame.version
+                        self.core.get_asset(
+                            game.app_name, igame.platform, False
+                        ).build_version
+                        == igame.version
                 ):
                     self.remove_update(game.app_name)
 
@@ -283,11 +283,8 @@ class UpdateWidget(QWidget):
         layout.addWidget(self.update_with_settings)
         layout.addWidget(
             QLabel(
-                self.tr("Version: <b>")
-                + self.igame.version
-                + "</b> >> <b>"
-                + self.game.app_version(self.igame.platform)
-                + "</b>"
+                self.tr("Version: <b>{}</b> >> <b>{}</b>")
+                .format(self.igame.version, self.game.app_version(self.igame.platform))
             )
         )
 
