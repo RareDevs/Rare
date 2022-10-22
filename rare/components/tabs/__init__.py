@@ -54,7 +54,7 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
 
-        self.account_widget = AccountWidget()
+        self.account_widget = AccountWidget(self, self.downloads_tab)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
         account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")

@@ -7,10 +7,13 @@ from rare.utils.misc import icon
 
 
 class AccountWidget(QWidget):
-    def __init__(self):
-        super(AccountWidget, self).__init__()
+    def __init__(self, parent, downloads_tab):
+        super(AccountWidget, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
+        # FIXME: This is why widgets should be decoupled from procedures.
+        # FIXME: pass downloads tab as argument to check if there are active downloads
+        self.downloads_tab = downloads_tab
 
         username = self.core.lgd.userdata.get("display_name")
         if not username:
@@ -32,6 +35,17 @@ class AccountWidget(QWidget):
         layout.addWidget(self.logout_button)
 
     def logout(self):
+        # FIXME: Don't allow logging out if there are active downloads
+        if self.downloads_tab.is_download_active:
+            warning = QMessageBox.warning(
+                self,
+                self.tr("Logout"),
+                self.tr("There are active downloads. Stop them before logging out."),
+                buttons=(QMessageBox.Ok),
+                defaultButton=QMessageBox.Ok
+            )
+            return
+        # FIXME: End of FIXME
         reply = QMessageBox.question(
             self,
             self.tr("Logout"),
