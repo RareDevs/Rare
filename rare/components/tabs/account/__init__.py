@@ -33,11 +33,11 @@ class AccountWidget(QWidget):
 
     def logout(self):
         reply = QMessageBox.question(
-            self.parent().parent(),
-            "Message",
-            self.tr("Do you really want to logout"),
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
+            self,
+            self.tr("Logout"),
+            self.tr("Do you really want to logout <b>{}</b>?").format(self.core.lgd.userdata.get("display_name")),
+            buttons=(QMessageBox.Yes | QMessageBox.No),
+            defaultButton=QMessageBox.No,
         )
 
         if reply == QMessageBox.Yes:

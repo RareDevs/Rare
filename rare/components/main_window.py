@@ -3,7 +3,15 @@ from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QCursor
-from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar, QScrollArea, QScroller, QComboBox, QMessageBox
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QApplication,
+    QStatusBar,
+    QScrollArea,
+    QScroller,
+    QComboBox,
+    QMessageBox,
+)
 
 from rare.components.tabs import TabWidget
 from rare.components.tray_icon import TrayIcon
@@ -18,6 +26,9 @@ class MainWindow(QMainWindow):
     exit_app: pyqtSignal = pyqtSignal(int)
 
     def __init__(self, parent=None):
+        self._exit_code = 0
+        self._accept_close = False
+        self._window_launched = False
         super(MainWindow, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.core = LegendaryCoreSingleton()
@@ -42,6 +53,7 @@ class MainWindow(QMainWindow):
         if not self.args.offline:
             try:
                 from rare.utils.rpc import DiscordRPC
+
                 self.rpc = DiscordRPC()
             except ModuleNotFoundError:
                 logger.warning("Discord RPC module not found")
@@ -51,17 +63,11 @@ class MainWindow(QMainWindow):
         self.timer.start(1000)
 
         self.signals.exit_app.connect(self.on_exit_app)
-        self.exit_code = 0
-        self.accept_close = False
 
         self.tray_icon: TrayIcon = TrayIcon(self)
         self.tray_icon.exit_action.triggered.connect(self.on_exit_app)
         self.tray_icon.start_rare.triggered.connect(self.show)
-        self.tray_icon.activated.connect(
-            lambda r: self.toggle()
-            if r == self.tray_icon.DoubleClick
-            else None
-        )
+        self.tray_icon.activated.connect(lambda r: self.toggle() if r == self.tray_icon.DoubleClick else None)
 
         self.signals.send_notification.connect(
             lambda title: self.tray_icon.showMessage(
@@ -73,8 +79,6 @@ class MainWindow(QMainWindow):
             if self.settings.value("notification", True, bool)
             else None
         )
-
-        self.window_launched = False
 
         # enable kinetic scrolling
         for scroll_area in self.findChildren(QScrollArea):
@@ -101,16 +105,13 @@ class MainWindow(QMainWindow):
         )
 
         self.resize(window_size)
-        self.move(
-            screen_rect.center()
-            - self.rect().adjusted(0, 0, decor_width, decor_height).center()
-        )
+        self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
 
     def show(self) -> None:
         super(MainWindow, self).show()
-        if not self.window_launched:
+        if not self._window_launched:
             self.center_window()
-        self.window_launched = True
+        self._window_launched = True
 
     def hide(self) -> None:
         if self.settings.value("save_size", False, bool):
@@ -138,40 +139,41 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     @pyqtSlot(int)
     def on_exit_app(self, exit_code=0) -> None:
-        # FIXME: Fix this with the download tab redesign
-        if not self.args.offline and self.tab_widget.downloadTab.is_download_active:
-            question = QMessageBox.question(
-                self,
-                self.tr("Close"),
-                self.tr(
-                    "There is a download active. Do you really want to exit app?"
-                ),
-                QMessageBox.Yes,
-                QMessageBox.No,
-            )
-            if question == QMessageBox.No:
-                return
-            else:
-                # clear queue
-                self.tab_widget.downloadTab.queue_widget.update_queue([])
-                self.tab_widget.downloadTab.stop_download()
-        # FIXME: End of FIXME
-        self.exit_code = exit_code
+        self._exit_code = exit_code
         self.close()
 
     def close(self) -> bool:
-        self.accept_close = True
+        self._accept_close = True
         return super(MainWindow, self).close()
 
-    def closeEvent(self, e: QCloseEvent):
-        if not self.accept_close:
-            if self.settings.value("sys_tray", True, bool):
+    def closeEvent(self, e: QCloseEvent) -> None:
+        # lk: set to `True` by the `close()` method, overrides exiting to tray in `closeEvent()`
+        # lk: ensures exiting when instead of hiding when `close()` is called programmatically
+        if not self._accept_close:
+            if self.settings.value("sys_tray", False, bool):
                 self.hide()
                 e.ignore()
                 return
+        # FIXME: Fix this with the download tab redesign
+        if not self.args.offline and self.tab_widget.downloads_tab.is_download_active:
+            reply = QMessageBox.question(
+                self,
+                self.tr("Quit {}?").format(QApplication.applicationName()),
+                self.tr("There are active downloads. Do you really want to exit?"),
+                buttons=(QMessageBox.Yes | QMessageBox.No),
+                defaultButton=QMessageBox.No,
+            )
+            if reply == QMessageBox.No:
+                # clear queue
+                self.tab_widget.downloads_tab.queue_widget.update_queue([])
+                self.tab_widget.downloads_tab.stop_download()
+            else:
+                e.ignore()
+                return
+        # FIXME: End of FIXME
         self.timer.stop()
         self.tray_icon.deleteLater()
         self.hide()
-        self.exit_app.emit(self.exit_code)
+        self.exit_app.emit(self._exit_code)
         super(MainWindow, self).closeEvent(e)
-        e.accept()
+

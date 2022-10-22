@@ -29,9 +29,9 @@ class TabWidget(QTabWidget):
 
         if not self.args.offline:
             # updates = self.games_tab.default_widget.game_list.updates
-            self.downloadTab = DownloadsTab(self.games_tab.updates)
+            self.downloads_tab = DownloadsTab(self.games_tab.updates)
             self.addTab(
-                self.downloadTab,
+                self.downloads_tab,
                 "Downloads"
                 + (
                     " (" + str(len(self.games_tab.updates)) + ")"
@@ -89,8 +89,8 @@ class TabWidget(QTabWidget):
     def update_dl_tab_text(self):
         num_downloads = len(
             set(
-                [i.options.app_name for i in self.downloadTab.dl_queue]
-                + [i for i in self.downloadTab.update_widgets.keys()]
+                [i.options.app_name for i in self.downloads_tab.dl_queue]
+                + [i for i in self.downloads_tab.update_widgets.keys()]
             )
         )
 
