@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
@@ -13,6 +13,9 @@ from rare.utils.misc import icon
 
 
 class TabWidget(QTabWidget):
+    # int: exit code
+    exit_app: pyqtSignal = pyqtSignal(int)
+
     def __init__(self, parent):
         super(TabWidget, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
@@ -55,6 +58,7 @@ class TabWidget(QTabWidget):
         self.setTabEnabled(disabled_tab + 1, False)
 
         self.account_widget = AccountWidget(self, self.downloads_tab)
+        self.account_widget.exit_app.connect(self.exit_app)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
         account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")

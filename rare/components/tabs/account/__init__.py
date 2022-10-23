@@ -1,5 +1,6 @@
 import webbrowser
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel, QPushButton
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
@@ -7,6 +8,9 @@ from rare.utils.misc import icon
 
 
 class AccountWidget(QWidget):
+    # int: exit code
+    exit_app: pyqtSignal = pyqtSignal(int)
+
     def __init__(self, parent, downloads_tab):
         super(AccountWidget, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
@@ -56,4 +60,4 @@ class AccountWidget(QWidget):
 
         if reply == QMessageBox.Yes:
             self.core.lgd.invalidate_userdata()
-            self.signals.exit_app.emit(-133742)  # restart exit code
+            self.exit_app.emit(-133742)  # restart exit code

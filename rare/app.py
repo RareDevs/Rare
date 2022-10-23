@@ -95,7 +95,7 @@ class App(RareApp):
         self.poke_timer()
 
         self.main_window = MainWindow()
-        self.main_window.exit_app.connect(self.exit_app)
+        self.main_window.exit_app.connect(self.on_exit_app)
 
         if not self.args.silent:
             self.main_window.show()
@@ -103,11 +103,11 @@ class App(RareApp):
         if self.args.test_start:
             self.main_window.close()
             self.main_window = None
-            self.exit_app(0)
+            self.on_exit_app(0)
 
     @pyqtSlot()
     @pyqtSlot(int)
-    def exit_app(self, exit_code=0):
+    def on_exit_app(self, exit_code=0):
         threadpool = QThreadPool.globalInstance()
         threadpool.waitForDone()
         if self.timer is not None:

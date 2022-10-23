@@ -39,6 +39,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Rare - GUI for legendary")
         self.tab_widget = TabWidget(self)
+        self.tab_widget.exit_app.connect(self.on_exit_app)
         self.setCentralWidget(self.tab_widget)
 
         self.status_bar = QStatusBar()
@@ -62,11 +63,9 @@ class MainWindow(QMainWindow):
         self.timer.timeout.connect(self.timer_finished)
         self.timer.start(1000)
 
-        self.signals.exit_app.connect(self.on_exit_app)
-
         self.tray_icon: TrayIcon = TrayIcon(self)
-        self.tray_icon.exit_action.triggered.connect(self.on_exit_app)
-        self.tray_icon.start_rare.triggered.connect(self.show)
+        self.tray_icon.exit_app.connect(self.on_exit_app)
+        self.tray_icon.show_app.connect(self.show)
         self.tray_icon.activated.connect(lambda r: self.toggle() if r == self.tray_icon.DoubleClick else None)
 
         self.signals.send_notification.connect(
@@ -107,6 +106,7 @@ class MainWindow(QMainWindow):
         self.resize(window_size)
         self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
 
+    @pyqtSlot()
     def show(self) -> None:
         super(MainWindow, self).show()
         if not self._window_launched:
@@ -147,8 +147,8 @@ class MainWindow(QMainWindow):
         return super(MainWindow, self).close()
 
     def closeEvent(self, e: QCloseEvent) -> None:
-        # lk: set to `True` by the `close()` method, overrides exiting to tray in `closeEvent()`
-        # lk: ensures exiting when instead of hiding when `close()` is called programmatically
+        # lk: `accept_close` is set to `True` by the `close()` method, overrides exiting to tray in `closeEvent()`
+        # lk: ensures exiting instead of hiding when `close()` is called programmatically
         if not self._accept_close:
             if self.settings.value("sys_tray", False, bool):
                 self.hide()
@@ -159,11 +159,11 @@ class MainWindow(QMainWindow):
             reply = QMessageBox.question(
                 self,
                 self.tr("Quit {}?").format(QApplication.applicationName()),
-                self.tr("There are active downloads. Do you really want to exit?"),
+                self.tr("There are active downloads. Are you sure you want to quit?"),
                 buttons=(QMessageBox.Yes | QMessageBox.No),
                 defaultButton=QMessageBox.No,
             )
-            if reply == QMessageBox.No:
+            if reply == QMessageBox.Yes:
                 # clear queue
                 self.tab_widget.downloads_tab.queue_widget.update_queue([])
                 self.tab_widget.downloads_tab.stop_download()
