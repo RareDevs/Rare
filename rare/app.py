@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Optional
 
 import requests.exceptions
-from PyQt5.QtCore import QThreadPool, QTimer
+from PyQt5.QtCore import QThreadPool, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from requests import HTTPError
 
@@ -78,6 +78,7 @@ class App(RareApp):
         dt_now = datetime.utcnow()
         td = abs(dt_exp - dt_now)
         self.timer.start(int(td.total_seconds() - 60) * 1000)
+        logger.info(f"Renewed session expires at {self.core.lgd.userdata['expires_at']}")
 
     def re_login(self):
         logger.info("Session expires shortly. Renew session")
@@ -94,24 +95,25 @@ class App(RareApp):
         self.poke_timer()
 
         self.main_window = MainWindow()
-        self.main_window.exit_app.connect(self.exit_app)
+        self.main_window.exit_app.connect(self.on_exit_app)
 
         if not self.args.silent:
             self.main_window.show()
 
         if self.args.test_start:
-            self.exit_app(0)
+            self.main_window.close()
+            self.main_window = None
+            self.on_exit_app(0)
 
-    def exit_app(self, exit_code=0):
+    @pyqtSlot()
+    @pyqtSlot(int)
+    def on_exit_app(self, exit_code=0):
         threadpool = QThreadPool.globalInstance()
         threadpool.waitForDone()
         if self.timer is not None:
             self.timer.stop()
             self.timer.deleteLater()
             self.timer = None
-        if self.main_window is not None:
-            self.main_window.close()
-            self.main_window = None
         self.rare_core.deleteLater()
         del self.rare_core
         self.processEvents()

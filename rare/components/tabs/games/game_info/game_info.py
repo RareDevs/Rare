@@ -134,7 +134,7 @@ class GameInfo(QWidget, Ui_GameInfo):
                 self,
                 self.tr("Repair and update?"),
                 self.tr(
-                    "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>."
+                    "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. "
                     "Do you want to update the game while repairing it?"
                 ).format(igame.title, igame.version, game.app_version(igame.platform)),
             ) == QMessageBox.Yes

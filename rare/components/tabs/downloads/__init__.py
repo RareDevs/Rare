@@ -297,5 +297,5 @@ class UpdateWidget(QWidget):
         self.update_button.setDisabled(True)
         self.update_with_settings.setDisabled(True)
         self.update_signal.emit(
-            InstallOptionsModel(app_name=self.igame.app_name, silent=auto)
+            InstallOptionsModel(app_name=self.igame.app_name, update=True, silent=auto)
         )  # True if settings

@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import (
 )
 
 from legendary.models.game import Game
+from legendary.utils.selective_dl import get_sdl_appname
+
 from rare.utils.misc import icon
 
 
@@ -21,11 +23,11 @@ class UninstallDialog(QDialog):
         self.setWindowTitle("Uninstall Game")
         layout = QVBoxLayout()
         self.info_text = QLabel(
-            self.tr("Do you really want to uninstall <b>{}</b> ?").format(game.app_title)
+            self.tr("Do you really want to uninstall <b>{}</b>?").format(game.app_title)
         )
         layout.addWidget(self.info_text)
-        self.keep_files = QCheckBox(self.tr("Keep game files?"))
-        self.keep_config = QCheckBox(self.tr("Keep game configuation?"))
+        self.keep_files = QCheckBox(self.tr("Keep game files."))
+        self.keep_config = QCheckBox(self.tr("Keep game configuation."))
         form_layout = QVBoxLayout()
         form_layout.setContentsMargins(6, 6, 0, 6)
         form_layout.addWidget(self.keep_files)
@@ -47,7 +49,12 @@ class UninstallDialog(QDialog):
         layout.addLayout(button_layout)
         self.setLayout(layout)
 
-        self.options: Tuple[bool, bool, bool] = (False, False, False)
+        if get_sdl_appname(game.app_name) is not None:
+            self.keep_config.setChecked(True)
+
+        self.options: Tuple[bool, bool, bool] = (
+            False, self.keep_files.isChecked(), self.keep_config.isChecked()
+        )
 
     def get_options(self) -> Tuple[bool, bool, bool]:
         self.exec_()

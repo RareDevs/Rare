@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
@@ -13,6 +13,9 @@ from rare.utils.misc import icon
 
 
 class TabWidget(QTabWidget):
+    # int: exit code
+    exit_app: pyqtSignal = pyqtSignal(int)
+
     def __init__(self, parent):
         super(TabWidget, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
@@ -29,9 +32,9 @@ class TabWidget(QTabWidget):
 
         if not self.args.offline:
             # updates = self.games_tab.default_widget.game_list.updates
-            self.downloadTab = DownloadsTab(self.games_tab.updates)
+            self.downloads_tab = DownloadsTab(self.games_tab.updates)
             self.addTab(
-                self.downloadTab,
+                self.downloads_tab,
                 "Downloads"
                 + (
                     " (" + str(len(self.games_tab.updates)) + ")"
@@ -54,7 +57,8 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
 
-        self.account_widget = AccountWidget()
+        self.account_widget = AccountWidget(self, self.downloads_tab)
+        self.account_widget.exit_app.connect(self.exit_app)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
         account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")
@@ -89,8 +93,8 @@ class TabWidget(QTabWidget):
     def update_dl_tab_text(self):
         num_downloads = len(
             set(
-                [i.options.app_name for i in self.downloadTab.dl_queue]
-                + [i for i in self.downloadTab.update_widgets.keys()]
+                [i.options.app_name for i in self.downloads_tab.dl_queue]
+                + [i for i in self.downloads_tab.update_widgets.keys()]
             )
         )
 

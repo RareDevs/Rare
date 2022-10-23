@@ -1,6 +1,7 @@
 from logging import getLogger
 from typing import List
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction
 
@@ -12,6 +13,11 @@ logger = getLogger("TrayIcon")
 
 
 class TrayIcon(QSystemTrayIcon):
+    # none:
+    show_app: pyqtSignal = pyqtSignal()
+    # int: exit code
+    exit_app: pyqtSignal = pyqtSignal(int)
+
     def __init__(self, parent):
         super(TrayIcon, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
@@ -22,8 +28,9 @@ class TrayIcon(QSystemTrayIcon):
 
         self.menu = QMenu()
 
-        self.start_rare = QAction("Rare")
-        self.menu.addAction(self.start_rare)
+        self.show_action = QAction("Rare")
+        self.show_action.triggered.connect(self.show_app)
+        self.menu.addAction(self.show_action)
 
         self.menu.addSeparator()
         self.text_action = QAction("Quick launch")
@@ -53,7 +60,8 @@ class TrayIcon(QSystemTrayIcon):
         self.menu.addActions(self.game_actions)
         self.menu.addSeparator()
 
-        self.exit_action = QAction(self.tr("Exit"))
+        self.exit_action = QAction(self.tr("Quit"))
+        self.exit_action.triggered.connect(lambda: self.exit_app.emit(0))
         self.menu.addAction(self.exit_action)
         self.setContextMenu(self.menu)
 
