@@ -7,9 +7,10 @@ from argparse import Namespace
 from logging import getLogger
 from typing import Union, Optional
 
-from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings
+from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings, Qt
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
+from PyQt5.QtWidgets import QApplication
 
 from rare.lgndr.core import LegendaryCore
 from rare.widgets.rare_app import RareApp
@@ -216,6 +217,9 @@ class GameProcessApp(RareApp):
 
 def start_game(args: Namespace):
     args = InitArgs.from_argparse(args)
+
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
     app = GameProcessApp(args)
     app.setQuitOnLastWindowClosed(True)

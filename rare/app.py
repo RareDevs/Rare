@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Optional
 
 import requests.exceptions
-from PyQt5.QtCore import QThreadPool, QTimer, pyqtSlot
+from PyQt5.QtCore import QThreadPool, QTimer, pyqtSlot, Qt
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from requests import HTTPError
 
@@ -128,6 +128,8 @@ def start(args):
     sys.excepthook = excepthook
 
     while True:
+        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
         app = App(args)
         exit_code = app.exec_()
         # if not restart
