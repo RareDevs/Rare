@@ -115,14 +115,11 @@ QPushButton {
 QToolButton {
     height: 1.10em;
 }
+QFrame[frameShape="0"] {
+    border-width: 0px;
+}
 QFrame[frameShape="6"] {
     border-radius: 4px;
-}
-QFrame[noBorder="1"],
-QListView[noBorder="1"],
-QScrollArea[noBorder="1"],
-QStackedWidget[noBorder="1"] {
-    border-color: transparent;
 }
 QComboBox {
     background-color: rgb( 51, 54, 59);
@@ -383,6 +380,7 @@ QTableView::indicator {
     border-style: solid;
     background-color: rgb( 32,  34,  37);
 }
+QGroupBox::indicator,
 QCheckBox::indicator,
 QRadioButton::indicator,
 QListView::indicator,
@@ -390,6 +388,9 @@ QTreeView::indicator,
 QTableView::indicator {
     width: 11px;
     height: 11px;
+}
+QGroupBox::indicator {
+    padding: 0px;
 }
 QGroupBox::indicator:disabled,
 QCheckBox::indicator:disabled,

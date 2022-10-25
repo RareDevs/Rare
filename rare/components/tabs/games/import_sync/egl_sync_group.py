@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import Tuple, Iterable, List
 
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
-from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame
 
 from rare.lgndr.api_exception import LgndrException
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
@@ -207,51 +207,50 @@ class EGLSyncListItem(QListWidgetItem):
         return self.game.app_title
 
 
-class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
+class EGLSyncListGroup(QGroupBox):
     action_errors = pyqtSignal(list)
 
     def __init__(self, export: bool, parent=None):
         super(EGLSyncListGroup, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.ui = Ui_EGLSyncListGroup()
+        self.ui.setupUi(self)
+        self.ui.list.setFrameShape(QFrame.NoFrame)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
-        self.list.setProperty("noBorder", 1)
-        # TODO: Convert the CSS and the code to adhere to NoFrame
-        # self.list.setFrameShape(self.list.NoFrame)
 
         self.export = export
 
         if export:
             self.setTitle(self.tr("Exportable games"))
-            self.label.setText(self.tr("No games to export to EGL"))
-            self.action_button.setText(self.tr("Export"))
+            self.ui.label.setText(self.tr("No games to export to EGL"))
+            self.ui.action_button.setText(self.tr("Export"))
             self.list_func = self.core.egl_get_exportable
         else:
             self.setTitle(self.tr("Importable games"))
-            self.label.setText(self.tr("No games to import from EGL"))
-            self.action_button.setText(self.tr("Import"))
+            self.ui.label.setText(self.tr("No games to import from EGL"))
+            self.ui.action_button.setText(self.tr("Import"))
             self.list_func = self.core.egl_get_importable
 
-        self.list.itemDoubleClicked.connect(
+        self.ui.list.itemDoubleClicked.connect(
             lambda item: item.setCheckState(Qt.Unchecked)
             if item.checkState() != Qt.Unchecked
             else item.setCheckState(Qt.Checked)
         )
-        self.list.itemChanged.connect(self.has_selected)
+        self.ui.list.itemChanged.connect(self.has_selected)
 
-        self.select_all_button.clicked.connect(lambda: self.mark(Qt.Checked))
-        self.select_none_button.clicked.connect(lambda: self.mark(Qt.Unchecked))
+        self.ui.select_all_button.clicked.connect(lambda: self.mark(Qt.Checked))
+        self.ui.select_none_button.clicked.connect(lambda: self.mark(Qt.Unchecked))
 
-        self.action_button.clicked.connect(self.action)
+        self.ui.action_button.clicked.connect(self.action)
 
         self.action_errors.connect(self.show_errors)
 
     def has_selected(self):
         for item in self.items:
             if item.is_checked():
-                self.action_button.setEnabled(True)
+                self.ui.action_button.setEnabled(True)
                 return
-        self.action_button.setEnabled(False)
+        self.ui.action_button.setEnabled(False)
 
     def mark(self, state):
         for item in self.items:
@@ -259,17 +258,17 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
 
     def populate(self, enabled: bool):
         if enabled:
-            self.list.clear()
+            self.ui.list.clear()
             for item in self.list_func():
                 try:
-                    i = EGLSyncListItem(item, self.export, self.list)
+                    i = EGLSyncListItem(item, self.export, self.ui.list)
                 except AttributeError:
                     logger.error(f"{item.app_name} does not work. Ignoring")
                 else:
-                    self.list.addItem(i)
-        self.label.setVisible(not enabled or not bool(self.list.count()))
-        self.list.setVisible(enabled and bool(self.list.count()))
-        self.buttons_widget.setVisible(enabled and bool(self.list.count()))
+                    self.ui.list.addItem(i)
+        self.ui.label.setVisible(not enabled or not bool(self.ui.list.count()))
+        self.ui.list.setVisible(enabled and bool(self.ui.list.count()))
+        self.ui.buttons_widget.setVisible(enabled and bool(self.ui.list.count()))
 
     def action(self):
         imported: List = []
@@ -280,7 +279,7 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
                     errors.append(e)
                 else:
                     imported.append(item.app_name)
-                    self.list.takeItem(self.list.row(item))
+                    self.ui.list.takeItem(self.ui.list.row(item))
         if not self.export and imported:
             self.signals.update_gamelist.emit(imported)
         self.populate(True)
@@ -301,7 +300,7 @@ class EGLSyncListGroup(QGroupBox, Ui_EGLSyncListGroup):
     def items(self) -> Iterable[EGLSyncListItem]:
         # for i in range(self.list.count()):
         #     yield self.list.item(i)
-        return [self.list.item(i) for i in range(self.list.count())]
+        return [self.ui.list.item(i) for i in range(self.ui.list.count())]
 
 
 class EGLSyncWorker(QRunnable):
