@@ -21,7 +21,7 @@ from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.misc import get_size
-from rare.widgets.collabsible_widget import CollabsibleWidget
+from rare.widgets.collapsible_widget import CollapsibleWidget
 
 
 class InstallDialog(QDialog):
@@ -44,7 +44,7 @@ class InstallDialog(QDialog):
             else Game(app_name=self.app_name, app_title="Epic Overlay")
         )
         self.ui.advanced_layout.setParent(None)
-        self.advanced_widget = CollabsibleWidget(
+        self.advanced_widget = CollapsibleWidget(
             child_layout=self.ui.advanced_layout, title=self.tr("Advanced options"), parent=self
         )
         self.ui.collapsible_layout.addWidget(self.advanced_widget)

@@ -6,7 +6,7 @@ from rare.utils.misc import icon
 # https://newbedev.com/how-to-make-an-expandable-collapsable-section-widget-in-qt
 
 
-class CollabsibleWidget(QWidget):
+class CollapsibleWidget(QWidget):
     def __init__(
         self, child_layout: QLayout = None, title: str = "", animation_duration: int = 200, parent=None
     ):
@@ -15,7 +15,7 @@ class CollabsibleWidget(QWidget):
             # Adapted from c++ version
             https://stackoverflow.com/questions/32476006/how-to-make-an-expandable-collapsable-section-widget-in-qt
         """
-        super(CollabsibleWidget, self).__init__(parent=parent)
+        super(CollapsibleWidget, self).__init__(parent=parent)
 
         self.animationDuration = animation_duration
         self.toggleAnimation = QParallelAnimationGroup()
