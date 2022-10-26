@@ -8,7 +8,7 @@ from typing import Optional, Union, Tuple
 from legendary.cli import LegendaryCLI as LegendaryCLIReal
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame, VerifyResult
-from legendary.utils.lfs import validate_files
+from legendary.lfs.utils import validate_files
 from legendary.utils.selective_dl import get_sdl_appname
 
 from .api_arguments import (

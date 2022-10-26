@@ -7,7 +7,7 @@ from typing import Tuple
 from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFileDialog
 from legendary.models.game import VerifyResult, InstalledGame
-from legendary.utils.lfs import validate_files
+from legendary.lfs.utils import validate_files
 
 from rare.shared import LegendaryCoreSingleton
 from rare.utils.extra_widgets import PathEdit

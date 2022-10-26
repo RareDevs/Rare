@@ -6,7 +6,7 @@ from typing import List
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QGroupBox, QMessageBox
 
-from legendary.utils import eos
+from legendary.lfs import eos
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.settings.widgets.eos_widget import Ui_EosWidget
 from rare.models.install import InstallOptionsModel

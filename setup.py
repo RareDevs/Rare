@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 requirements = [
     "requests<3.0",
-    "legendary-gl",
+    "legendary-gl==0.20.30",
     "setuptools",
     "wheel",
     "PyQt5",

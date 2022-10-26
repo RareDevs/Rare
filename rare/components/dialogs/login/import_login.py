@@ -5,7 +5,7 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QFrame, QFileDialog
 from legendary.core import LegendaryCore
-from legendary.utils.wine_helpers import read_registry, get_shell_folders
+from legendary.lfs.wine_helpers import get_shell_folders, read_registry
 
 from rare.ui.components.dialogs.login.import_login import Ui_ImportLogin
 
