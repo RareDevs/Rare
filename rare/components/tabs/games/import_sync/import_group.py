@@ -173,7 +173,7 @@ class ImportGroup(QGroupBox):
         self.path_edit = PathEdit(
             self.core.get_default_install_dir(),
             QFileDialog.DirectoryOnly,
-            edit_func=self.path_edit_cb,
+            edit_func=self.path_edit_callback,
             parent=self,
         )
         self.path_edit.textChanged.connect(self.path_changed)
@@ -184,7 +184,7 @@ class ImportGroup(QGroupBox):
             completer=AppNameCompleter(
                 app_names=[(i.app_name, i.app_title) for i in self.api_results.game_list]
             ),
-            edit_func=self.app_name_edit_cb,
+            edit_func=self.app_name_edit_callback,
             parent=self,
         )
         self.app_name_edit.textChanged.connect(self.app_name_changed)
@@ -192,6 +192,7 @@ class ImportGroup(QGroupBox):
 
         self.ui.import_folder_check.stateChanged.connect(self.import_folder_changed)
         self.ui.import_dlcs_check.setEnabled(False)
+        self.ui.import_dlcs_check.stateChanged.connect(self.import_dlcs_changed)
 
         self.ui.import_button.setEnabled(False)
         self.ui.import_button.clicked.connect(
@@ -203,7 +204,7 @@ class ImportGroup(QGroupBox):
 
         self.threadpool = QThreadPool.globalInstance()
 
-    def path_edit_cb(self, path) -> Tuple[bool, str, str]:
+    def path_edit_callback(self, path) -> Tuple[bool, str, str]:
         if os.path.exists(path):
             if os.path.exists(os.path.join(path, ".egstore")):
                 return True, path, ""
@@ -213,7 +214,8 @@ class ImportGroup(QGroupBox):
             return False, path, PathEdit.reasons.dir_not_exist
         return False, path, ""
 
-    def path_changed(self, path):
+    @pyqtSlot(str)
+    def path_changed(self, path: str):
         self.info_label.setText("")
         self.ui.import_folder_check.setCheckState(Qt.Unchecked)
         if self.path_edit.is_valid:
@@ -221,7 +223,7 @@ class ImportGroup(QGroupBox):
         else:
             self.app_name_edit.setText("")
 
-    def app_name_edit_cb(self, text) -> Tuple[bool, str, str]:
+    def app_name_edit_callback(self, text) -> Tuple[bool, str, str]:
         if not text:
             return False, text, ""
         if text in self.app_name_list:
@@ -229,6 +231,7 @@ class ImportGroup(QGroupBox):
         else:
             return False, text, IndicatorLineEdit.reasons.game_not_installed
 
+    @pyqtSlot(str)
     def app_name_changed(self, app_name: str):
         self.info_label.setText("")
         self.ui.import_dlcs_check.setCheckState(Qt.Unchecked)
@@ -241,7 +244,8 @@ class ImportGroup(QGroupBox):
             self.ui.import_dlcs_check.setEnabled(False)
             self.ui.import_button.setEnabled(False)
 
-    def import_folder_changed(self, state):
+    @pyqtSlot(int)
+    def import_folder_changed(self, state: Qt.CheckState):
         self.app_name_edit.setEnabled(not state)
         self.ui.import_dlcs_check.setCheckState(Qt.Unchecked)
         self.ui.import_dlcs_check.setEnabled(
@@ -249,6 +253,10 @@ class ImportGroup(QGroupBox):
             or (self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(self.app_name_edit.text())))
         )
         self.ui.import_button.setEnabled(state or (not state and self.app_name_edit.is_valid))
+
+    @pyqtSlot(int)
+    def import_dlcs_changed(self, state: Qt.CheckState):
+        self.ui.import_button.setEnabled(self.ui.import_folder_check.isChecked() or self.app_name_edit.is_valid)
 
     def import_pressed(self, path=None):
         if not path:
