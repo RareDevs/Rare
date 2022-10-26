@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
 from legendary.core import LegendaryCore
-from legendary.lfs.lgndry import LGDConf
+from legendary.models.config import LGDConf
 
 _config: Optional[LGDConf] = None
 _save_config: Optional[Callable[[], None]] = None
