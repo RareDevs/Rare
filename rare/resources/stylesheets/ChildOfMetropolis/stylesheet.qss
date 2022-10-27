@@ -65,6 +65,7 @@ QTableView::item,
 QHeaderView::section,
 QTableView QTableCornerButton::section,
 QFrame[frameShape="6"],
+QGroupBox,
 QLineEdit,
 QTextEdit,
 QTimeEdit,
@@ -483,6 +484,7 @@ QGroupBox::title {
     */
     background-color: #B2D3DE;
 }
+QToolBox::tab:disabled,
 QGroupBox::title:disabled {
     border-color: #767778;
     background-color: #A8AAAB;

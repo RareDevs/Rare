@@ -65,6 +65,7 @@ QTableView::item,
 QHeaderView::section,
 QTableView QTableCornerButton::section,
 QFrame[frameShape="6"],
+QGroupBox,
 QLineEdit,
 QTextEdit,
 QTimeEdit,
@@ -390,7 +391,7 @@ QTableView::indicator {
     height: 11px;
 }
 QGroupBox::indicator {
-    padding: 1px;
+    padding: 0px;
 }
 QGroupBox::indicator:disabled,
 QCheckBox::indicator:disabled,
@@ -483,6 +484,7 @@ QGroupBox::title {
     */
     background-color: rgb( 42, 40, 63);
 }
+QToolBox::tab:disabled,
 QGroupBox::title:disabled {
     border-color: rgb( 67,  71,  77);
     background-color: rgb( 41, 43, 47);
