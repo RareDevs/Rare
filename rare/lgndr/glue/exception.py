@@ -1,5 +1,5 @@
 import logging
-import warnings
+# import warnings
 
 
 class LgndrException(RuntimeError):

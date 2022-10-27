@@ -6,15 +6,15 @@ from typing import Tuple, Iterable, List
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame
 
-from rare.lgndr.api_exception import LgndrException
+from rare.lgndr.glue.exception import LgndrException
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.games.import_sync.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.import_sync.egl_sync_list_group import (
     Ui_EGLSyncListGroup,
 )
 from rare.utils.extra_widgets import PathEdit
-from rare.utils.models import PathSpec
 from rare.utils.misc import WineResolver
+from rare.utils.models import PathSpec
 
 logger = getLogger("EGLSync")
 

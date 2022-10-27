@@ -5,9 +5,9 @@ from logging import getLogger
 from PyQt5.QtCore import pyqtSignal, QObject, QRunnable, QStandardPaths
 from legendary.core import LegendaryCore
 
-from rare.lgndr.api_arguments import LgndrVerifyGameArgs, LgndrUninstallGameArgs
-from rare.lgndr.api_monkeys import LgndrIndirectStatus
 from rare.lgndr.cli import LegendaryCLI
+from rare.lgndr.glue.arguments import LgndrVerifyGameArgs, LgndrUninstallGameArgs
+from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
 from rare.utils import config_helper
 

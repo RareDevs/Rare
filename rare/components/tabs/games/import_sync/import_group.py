@@ -10,9 +10,9 @@ from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThrea
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, QMessageBox
 
-from rare.lgndr.api_arguments import LgndrImportGameArgs
-from rare.lgndr.api_monkeys import LgndrIndirectStatus
 from rare.lgndr.cli import LegendaryCLI
+from rare.lgndr.glue.arguments import LgndrImportGameArgs
+from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit

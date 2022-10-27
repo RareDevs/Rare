@@ -10,11 +10,11 @@ from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
 from legendary.utils.selective_dl import get_sdl_appname
 
-from rare.lgndr.api_arguments import LgndrInstallGameArgs
-from rare.lgndr.api_exception import LgndrException
-from rare.lgndr.api_monkeys import LgndrIndirectStatus
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
+from rare.lgndr.glue.arguments import LgndrInstallGameArgs
+from rare.lgndr.glue.exception import LgndrException
+from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel
 from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton, ArgumentsSingleton
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog

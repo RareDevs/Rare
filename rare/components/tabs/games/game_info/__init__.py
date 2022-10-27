@@ -1,12 +1,12 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 
+from rare.components.tabs.games.game_utils import GameUtils
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.utils.extra_widgets import SideTabWidget
 from .game_dlc import GameDlc
 from .game_info import GameInfo
 from .game_settings import GameSettings
-from ..game_utils import GameUtils
 
 
 class GameInfoTabs(SideTabWidget):
