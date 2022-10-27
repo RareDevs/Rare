@@ -390,7 +390,7 @@ QTableView::indicator {
     height: 11px;
 }
 QGroupBox::indicator {
-    padding: 0px;
+    padding: 1px;
 }
 QGroupBox::indicator:disabled,
 QCheckBox::indicator:disabled,
