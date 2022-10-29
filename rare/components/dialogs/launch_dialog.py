@@ -279,7 +279,7 @@ class LaunchDialog(QDialog):
 
     def finish(self):
         self.completed += 1
-        if self.completed == 2:
+        if self.completed >= 2:
             logger.info("App starting")
             ApiResultsSingleton(self.api_results)
             self.completed += 1

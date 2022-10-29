@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QSize, pyqtSignal
-from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut
+from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.components.tabs.account import AccountWidget
@@ -57,8 +57,9 @@ class TabWidget(QTabWidget):
         self.addTab(self.account, "")
         self.setTabEnabled(disabled_tab + 1, False)
 
-        self.account_widget = AccountWidget(self, self.downloads_tab)
+        self.account_widget = AccountWidget(self)
         self.account_widget.exit_app.connect(self.exit_app)
+        self.account_widget.logout.connect(self.logout)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
         account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")
@@ -113,3 +114,25 @@ class TabWidget(QTabWidget):
     def resizeEvent(self, event):
         self.tabBar().setMinimumWidth(self.width())
         super(TabWidget, self).resizeEvent(event)
+
+    def logout(self):
+        # FIXME: Don't allow logging out if there are active downloads
+        if self.downloads_tab.is_download_active:
+            QMessageBox.warning(
+                self,
+                self.tr("Logout"),
+                self.tr("There are active downloads. Stop them before logging out."),
+            )
+            return
+        # FIXME: End of FIXME
+        reply = QMessageBox.question(
+            self,
+            self.tr("Logout"),
+            self.tr("Do you really want to logout <b>{}</b>?").format(self.core.lgd.userdata.get("display_name")),
+            buttons=(QMessageBox.Yes | QMessageBox.No),
+            defaultButton=QMessageBox.No,
+        )
+
+        if reply == QMessageBox.Yes:
+            self.core.lgd.invalidate_userdata()
+            self.exit_app(-133742)  # restart exit code
