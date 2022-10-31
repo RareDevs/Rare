@@ -5,7 +5,7 @@ from typing import Tuple, List, Union, Optional
 
 from PyQt5.QtCore import Qt, QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot, QSettings
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
-from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout
+from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout, QWidget, QVBoxLayout, QApplication
 from legendary.models.downloading import ConditionCheckResult
 from legendary.models.game import Game
 from legendary.utils.selective_dl import get_sdl_appname
@@ -18,10 +18,20 @@ from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel
 from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton, ArgumentsSingleton
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
+from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
 from rare.utils.misc import get_size
-from rare.widgets.collapsible_widget import CollapsibleWidget
+from rare.widgets.collapsible_widget import CollapsibleFrame
+
+
+class InstallDialogAdvanced(CollapsibleFrame):
+    def __init__(self, parent=None):
+        widget = QWidget()
+        title = widget.tr("Advanced Options")
+        self.ui = Ui_InstallDialogAdvanced()
+        self.ui.setupUi(widget)
+        super(InstallDialogAdvanced, self).__init__(widget=widget, title=title, parent=parent)
 
 
 class InstallDialog(QDialog):
@@ -43,11 +53,12 @@ class InstallDialog(QDialog):
             if not self.dl_item.options.overlay
             else Game(app_name=self.app_name, app_title="Epic Overlay")
         )
-        self.ui.advanced_layout.setParent(None)
-        self.advanced_widget = CollapsibleWidget(
-            child_layout=self.ui.advanced_layout, title=self.tr("Advanced options"), parent=self
-        )
-        self.ui.collapsible_layout.addWidget(self.advanced_widget)
+
+        self.advanced = InstallDialogAdvanced(parent=self)
+        self.ui.advanced_layout.addWidget(self.advanced)
+
+        self.selectable = CollapsibleFrame(widget=None, title=self.tr("Optional downloads"), parent=self)
+        self.ui.selectable_layout.addWidget(self.selectable)
 
         self.game_path = self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value", "")
 
@@ -64,7 +75,7 @@ class InstallDialog(QDialog):
 
         header = self.tr("Update") if update else self.tr("Install")
         self.ui.install_dialog_label.setText(f'<h3>{header} "{self.game.app_title}"</h3>')
-        self.setWindowTitle(f'{self.windowTitle()} - {header} "{self.game.app_title}"')
+        self.setWindowTitle(f'{QApplication.instance().applicationName()} - {header} "{self.game.app_title}"')
 
         if not self.dl_item.options.base_path:
             self.dl_item.options.base_path = self.core.lgd.config.get(
@@ -112,19 +123,23 @@ class InstallDialog(QDialog):
         if pf.system() == "Darwin" and "Mac" in platforms:
             self.ui.platform_combo.setCurrentIndex(platforms.index("Mac"))
 
-        self.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
-        self.ui.max_workers_spin.valueChanged.connect(self.option_changed)
+        self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
+        self.advanced.ui.max_workers_spin.valueChanged.connect(self.option_changed)
 
-        self.ui.max_memory_spin.setValue(self.core.lgd.config.getint("Legendary", "max_memory", fallback=0))
-        self.ui.max_memory_spin.valueChanged.connect(self.option_changed)
+        self.advanced.ui.max_memory_spin.setValue(self.core.lgd.config.getint("Legendary", "max_memory", fallback=0))
+        self.advanced.ui.max_memory_spin.valueChanged.connect(self.option_changed)
 
-        self.ui.dl_optimizations_check.stateChanged.connect(self.option_changed)
-        self.ui.force_download_check.stateChanged.connect(self.option_changed)
-        self.ui.ignore_space_check.stateChanged.connect(self.option_changed)
-        self.ui.download_only_check.stateChanged.connect(lambda: self.non_reload_option_changed("download_only"))
-        self.ui.shortcut_check.stateChanged.connect(lambda: self.non_reload_option_changed("shortcut"))
+        self.advanced.ui.dl_optimizations_check.stateChanged.connect(self.option_changed)
+        self.advanced.ui.force_download_check.stateChanged.connect(self.option_changed)
+        self.advanced.ui.ignore_space_check.stateChanged.connect(self.option_changed)
+        self.advanced.ui.download_only_check.stateChanged.connect(
+            lambda: self.non_reload_option_changed("download_only")
+        )
+        self.ui.shortcut_check.stateChanged.connect(
+            lambda: self.non_reload_option_changed("shortcut")
+        )
 
-        self.sdl_list_cbs: List[TagCheckBox] = []
+        self.selectable_checks: List[TagCheckBox] = []
         self.config_tags: Optional[List[str]] = None
         self.setup_sdl_list("Mac" if pf.system() == "Darwin" and "Mac" in platforms else "Windows")
 
@@ -133,23 +148,24 @@ class InstallDialog(QDialog):
         if self.dl_item.options.overlay:
             self.ui.platform_label.setVisible(False)
             self.ui.platform_combo.setVisible(False)
-            self.ui.ignore_space_label.setVisible(False)
-            self.ui.ignore_space_check.setVisible(False)
-            self.ui.download_only_label.setVisible(False)
-            self.ui.download_only_check.setVisible(False)
+            self.advanced.ui.ignore_space_label.setVisible(False)
+            self.advanced.ui.ignore_space_check.setVisible(False)
+            self.advanced.ui.download_only_label.setVisible(False)
+            self.advanced.ui.download_only_check.setVisible(False)
             self.ui.shortcut_label.setVisible(False)
             self.ui.shortcut_check.setVisible(False)
-            self.ui.sdl_list_label.setVisible(False)
-            self.ui.sdl_list_frame.setVisible(False)
+            self.selectable.setVisible(False)
 
         if pf.system() == "Darwin":
             self.ui.shortcut_check.setDisabled(True)
             self.ui.shortcut_check.setChecked(False)
             self.ui.shortcut_check.setToolTip(self.tr("Creating a shortcut is not supported on MacOS"))
 
-        self.ui.install_prereqs_label.setEnabled(False)
-        self.ui.install_prereqs_check.setEnabled(False)
-        self.ui.install_prereqs_check.stateChanged.connect(lambda: self.non_reload_option_changed("install_prereqs"))
+        self.advanced.ui.install_prereqs_label.setEnabled(False)
+        self.advanced.ui.install_prereqs_check.setEnabled(False)
+        self.advanced.ui.install_prereqs_check.stateChanged.connect(
+            lambda: self.non_reload_option_changed("install_prereqs")
+        )
 
         self.non_reload_option_changed("shortcut")
 
@@ -157,7 +173,7 @@ class InstallDialog(QDialog):
         self.ui.verify_button.clicked.connect(self.verify_clicked)
         self.ui.install_button.clicked.connect(self.install_clicked)
 
-        self.ui.install_prereqs_check.setChecked(self.dl_item.options.install_prereqs)
+        self.advanced.ui.install_prereqs_check.setChecked(self.dl_item.options.install_prereqs)
 
         self.ui.install_dialog_layout.setSizeConstraint(QLayout.SetFixedSize)
 
@@ -171,20 +187,22 @@ class InstallDialog(QDialog):
 
     @pyqtSlot(str)
     def setup_sdl_list(self, platform="Windows"):
-        for cb in self.sdl_list_cbs:
+        for cb in self.selectable_checks:
             cb.disconnect()
             cb.deleteLater()
-        self.sdl_list_cbs.clear()
+        self.selectable_checks.clear()
 
         if config_tags := self.core.lgd.config.get(self.game.app_name, 'install_tags', fallback=None):
             self.config_tags = config_tags.split(",")
         config_disable_sdl = self.core.lgd.config.getboolean(self.game.app_name, 'disable_sdl', fallback=False)
         sdl_name = get_sdl_appname(self.game.app_name)
         if not config_disable_sdl and sdl_name is not None:
-            self.ui.sdl_list_text.hide()
             # FIXME: this should be updated whenever platform changes
             sdl_data = self.core.get_sdl_data(sdl_name, platform=platform)
             if sdl_data:
+                widget = QWidget(self.selectable)
+                layout = QVBoxLayout(widget)
+                layout.setSpacing(0)
                 for tag, info in sdl_data.items():
                     cb = TagCheckBox(info["name"], info["tags"])
                     if tag == "__required":
@@ -193,30 +211,29 @@ class InstallDialog(QDialog):
                     if self.config_tags is not None:
                         if all(elem in self.config_tags for elem in info["tags"]):
                             cb.setChecked(True)
-                    self.ui.sdl_list_layout.addWidget(cb)
-                    self.sdl_list_cbs.append(cb)
-                for cb in self.sdl_list_cbs:
+                    layout.addWidget(cb)
+                    self.selectable_checks.append(cb)
+                for cb in self.selectable_checks:
                     cb.stateChanged.connect(self.option_changed)
+                self.selectable.setWidget(widget)
         else:
-            self.ui.sdl_list_text.show()
-            self.ui.sdl_list_label.setEnabled(False)
-            self.ui.sdl_list_frame.setEnabled(False)
+            self.selectable.setDisabled(True)
 
     def get_options(self):
         self.dl_item.options.base_path = self.install_dir_edit.text() if not self.update else None
 
-        self.dl_item.options.max_workers = self.ui.max_workers_spin.value()
-        self.dl_item.options.shared_memory = self.ui.max_memory_spin.value()
-        self.dl_item.options.order_opt = self.ui.dl_optimizations_check.isChecked()
-        self.dl_item.options.force = self.ui.force_download_check.isChecked()
-        self.dl_item.options.ignore_space = self.ui.ignore_space_check.isChecked()
-        self.dl_item.options.no_install = self.ui.download_only_check.isChecked()
+        self.dl_item.options.max_workers = self.advanced.ui.max_workers_spin.value()
+        self.dl_item.options.shared_memory = self.advanced.ui.max_memory_spin.value()
+        self.dl_item.options.order_opt = self.advanced.ui.dl_optimizations_check.isChecked()
+        self.dl_item.options.force = self.advanced.ui.force_download_check.isChecked()
+        self.dl_item.options.ignore_space = self.advanced.ui.ignore_space_check.isChecked()
+        self.dl_item.options.no_install = self.advanced.ui.download_only_check.isChecked()
         self.dl_item.options.platform = self.ui.platform_combo.currentText()
-        self.dl_item.options.install_prereqs = self.ui.install_prereqs_check.isChecked()
+        self.dl_item.options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
         self.dl_item.options.create_shortcut = self.ui.shortcut_check.isChecked()
-        if self.sdl_list_cbs:
+        if self.selectable_checks:
             self.dl_item.options.install_tag = [""]
-            for cb in self.sdl_list_cbs:
+            for cb in self.selectable_checks:
                 if data := cb.isChecked():
                     # noinspection PyTypeChecker
                     self.dl_item.options.install_tag.extend(data)
@@ -253,12 +270,12 @@ class InstallDialog(QDialog):
 
     def non_reload_option_changed(self, option: str):
         if option == "download_only":
-            self.dl_item.options.no_install = self.ui.download_only_check.isChecked()
+            self.dl_item.options.no_install = self.advanced.ui.download_only_check.isChecked()
         elif option == "shortcut":
             QSettings().setValue("create_shortcut", self.ui.shortcut_check.isChecked())
             self.dl_item.options.create_shortcut = self.ui.shortcut_check.isChecked()
         elif option == "install_prereqs":
-            self.dl_item.options.install_prereqs = self.ui.install_prereqs_check.isChecked()
+            self.dl_item.options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
 
     def cancel_clicked(self):
         if self.config_tags:
@@ -292,13 +309,13 @@ class InstallDialog(QDialog):
         self.ui.cancel_button.setEnabled(True)
         if pf.system() == "Windows" or ArgumentsSingleton().debug:
             if dl_item.igame.prereq_info and not dl_item.igame.prereq_info.get("installed", False):
-                self.ui.install_prereqs_check.setEnabled(True)
-                self.ui.install_prereqs_label.setEnabled(True)
-                self.ui.install_prereqs_check.setChecked(True)
+                self.advanced.ui.install_prereqs_check.setEnabled(True)
+                self.advanced.ui.install_prereqs_label.setEnabled(True)
+                self.advanced.ui.install_prereqs_check.setChecked(True)
                 prereq_name = dl_item.igame.prereq_info.get("name", "")
                 prereq_path = os.path.split(dl_item.igame.prereq_info.get("path", ""))[-1]
                 prereq_desc = prereq_name if prereq_name else prereq_path
-                self.ui.install_prereqs_check.setText(
+                self.advanced.ui.install_prereqs_check.setText(
                     self.tr("Also install: {}").format(prereq_desc)
                 )
         if self.silent:
@@ -333,7 +350,7 @@ class InstallDialog(QDialog):
             self.threadpool.clear()
             self.threadpool.waitForDone()
             self.result_ready.emit(self.dl_item)
-            a0.accept()
+            super(InstallDialog, self).closeEvent(a0)
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key_Escape:
@@ -403,7 +420,4 @@ class TagCheckBox(QCheckBox):
         self.tags = tags
 
     def isChecked(self) -> Union[bool, List[str]]:
-        if super(TagCheckBox, self).isChecked():
-            return self.tags
-        else:
-            return False
+        return self.tags if super(TagCheckBox, self).isChecked() else False

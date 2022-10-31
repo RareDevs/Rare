@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true">InstallDialogAdvanced</string>
   </property>
   <layout class="QFormLayout" name="install_dialog_advanced_layout">
    <item row="0" column="0">
@@ -37,7 +37,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="max_workers_info_label">
+      <widget class="QLabel" name="max_workers_info">
        <property name="font">
         <font>
          <italic>true</italic>
@@ -88,7 +88,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="max_memory_info_label">
+      <widget class="QLabel" name="max_memory_info">
        <property name="font">
         <font>
          <italic>true</italic>
@@ -102,7 +102,7 @@
     </layout>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="install_prereqs_lbl">
+    <widget class="QLabel" name="install_prereqs_label">
      <property name="text">
       <string>Install prerequisites</string>
      </property>
