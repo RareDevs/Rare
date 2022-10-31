@@ -8,16 +8,12 @@ from rare.utils.misc import icon
 
 
 class AccountWidget(QWidget):
-    # int: exit code
-    exit_app: pyqtSignal = pyqtSignal(int)
-    logout = pyqtSignal()
+    logout: pyqtSignal = pyqtSignal()
 
     def __init__(self, parent):
         super(AccountWidget, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
-        # FIXME: This is why widgets should be decoupled from procedures.
-        # FIXME: pass downloads tab as argument to check if there are active downloads
 
         username = self.core.lgd.userdata.get("display_name")
         if not username:
@@ -30,7 +26,7 @@ class AccountWidget(QWidget):
             )
         )
         self.logout_button = QPushButton(self.tr("Logout"))
-        self.logout_button.clicked.connect(lambda: self.logout.emit())
+        self.logout_button.clicked.connect(self.logout)
 
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel(self.tr("Account")))
