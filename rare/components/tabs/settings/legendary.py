@@ -6,8 +6,6 @@ from typing import Tuple
 from PyQt5.QtCore import Qt, QRunnable, QObject, pyqtSignal, QThreadPool, QSettings
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
-from rare.components.tabs.settings.widgets.eos import EosWidget
-from rare.components.tabs.settings.widgets.ubisoft_activation import UbiActivationHelper
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit
@@ -86,10 +84,6 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
             parent=self,
         )
         self.locale_layout.addWidget(self.locale_edit)
-
-        self.ubi_helper = UbiActivationHelper(self.ubisoft_gb)
-        self.eos_widget = EosWidget()
-        self.left_layout.insertWidget(3, self.eos_widget, alignment=Qt.AlignTop)
 
         self.win32_cb.setChecked(self.settings.value("win32_meta", False, bool))
         self.win32_cb.stateChanged.connect(lambda: self.settings.setValue("win32_meta", self.win32_cb.isChecked()))

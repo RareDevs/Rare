@@ -5,11 +5,11 @@ from typing import List
 
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
 from PyQt5.QtWidgets import QGroupBox, QMessageBox
-
 from legendary.lfs import eos
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.ui.components.tabs.settings.widgets.eos_widget import Ui_EosWidget
+
 from rare.models.install import InstallOptionsModel
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from ui.components.tabs.games.import_sync.eos_widget import Ui_EosWidget
 
 logger = getLogger("EOS")
 
@@ -42,9 +42,9 @@ class CheckForUpdateWorker(QRunnable):
         self.signals.update_available.emit(self.core.overlay_update_available)
 
 
-class EosWidget(QGroupBox, Ui_EosWidget):
-    def __init__(self):
-        super(EosWidget, self).__init__()
+class EOSGroup(QGroupBox, Ui_EosWidget):
+    def __init__(self, parent=None):
+        super(EOSGroup, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
@@ -55,7 +55,6 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.uninstall_button.clicked.connect(self.uninstall_overlay)
 
         self.update_button.setVisible(False)
-        self.update_info_lbl.setVisible(False)
         self.overlay = self.core.lgd.get_overlay_install_info()
 
         self.signals.overlay_installation_finished.connect(self.overlay_installation_finished)
@@ -66,12 +65,12 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         self.update_button.clicked.connect(lambda: self.install_overlay(True))
 
         if self.overlay:  # installed
-            self.installed_version_lbl.setText(self.overlay.version)
-            self.installed_path_lbl.setText(self.overlay.install_path)
-            self.info_stack.setCurrentIndex(0)
+            self.installed_version_lbl.setText(f"<b>{self.overlay.version}</b>")
+            self.installed_path_lbl.setText(f"<b>{self.overlay.install_path}</b>")
+            self.overlay_stack.setCurrentIndex(0)
         else:
-            self.info_stack.setCurrentIndex(1)
-            self.enable_gb.setDisabled(True)
+            self.overlay_stack.setCurrentIndex(1)
+            self.enable_frame.setDisabled(True)
 
         if platform.system() == "Windows":
             self.current_prefix = None
@@ -84,7 +83,7 @@ class EosWidget(QGroupBox, Ui_EosWidget):
             for pfx in pfxs:
                 self.select_pfx_combo.addItem(pfx.replace(os.path.expanduser("~/"), "~/"))
             if not pfxs:
-                self.enable_gb.setDisabled(True)
+                self.enable_frame.setDisabled(True)
             else:
                 self.select_pfx_combo.setCurrentIndex(0)
 
@@ -111,7 +110,6 @@ class EosWidget(QGroupBox, Ui_EosWidget):
     def check_for_update(self):
         def worker_finished(update_available):
             self.update_button.setVisible(update_available)
-            self.update_info_lbl.setVisible(update_available)
             self.update_check_button.setDisabled(False)
             if not update_available:
                 self.update_check_button.setText(self.tr("No update available"))
@@ -129,14 +127,13 @@ class EosWidget(QGroupBox, Ui_EosWidget):
             QMessageBox.warning(self, "Error", self.tr("Something went wrong, when installing overlay"))
             return
 
-        self.info_stack.setCurrentIndex(0)
-        self.installed_version_lbl.setText(self.overlay.version)
-        self.installed_path_lbl.setText(self.overlay.install_path)
+        self.overlay_stack.setCurrentIndex(0)
+        self.installed_version_lbl.setText(f"<b>{self.overlay.version}</b>")
+        self.installed_path_lbl.setText(f"<b>{self.overlay.install_path}</b>")
 
         self.update_button.setVisible(False)
-        self.update_info_lbl.setVisible(False)
 
-        self.enable_gb.setEnabled(True)
+        self.enable_frame.setEnabled(True)
 
     def update_select_combo(self, i: None):
         if i is None:
@@ -215,8 +212,8 @@ class EosWidget(QGroupBox, Ui_EosWidget):
         base_path = os.path.expanduser("~/legendary/.overlay")
         if update:
             if not self.overlay:
-                self.info_stack.setCurrentIndex(1)
-                self.enable_gb.setDisabled(True)
+                self.overlay_stack.setCurrentIndex(1)
+                self.enable_frame.setDisabled(True)
                 QMessageBox.warning(self, "Warning", self.tr("Overlay is not installed. Could not update"))
                 return
             base_path = self.overlay.install_path
@@ -229,7 +226,7 @@ class EosWidget(QGroupBox, Ui_EosWidget):
     def uninstall_overlay(self):
         if not self.core.is_overlay_installed():
             logger.error('No legendary-managed overlay installation found.')
-            self.info_stack.setCurrentIndex(1)
+            self.overlay_stack.setCurrentIndex(1)
             return
 
         if QMessageBox.No == QMessageBox.question(
@@ -248,6 +245,6 @@ class EosWidget(QGroupBox, Ui_EosWidget):
                     logger.warning(f"{prefix}: {e}")
 
         self.core.remove_overlay_install()
-        self.info_stack.setCurrentIndex(1)
+        self.overlay_stack.setCurrentIndex(1)
 
-        self.enable_gb.setDisabled(True)
+        self.enable_frame.setDisabled(True)
