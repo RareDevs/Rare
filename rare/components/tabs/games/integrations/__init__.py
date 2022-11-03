@@ -10,31 +10,31 @@ from .eos_group import EOSGroup
 from .ubisoft_group import UbisoftGroup
 
 
-class ImportSyncTabs(SideTabWidget):
+class IntegrationsTabs(SideTabWidget):
     def __init__(self, parent=None):
-        super(ImportSyncTabs, self).__init__(show_back=True, parent=parent)
-        self.import_widget = ImportSyncWidget(
+        super(IntegrationsTabs, self).__init__(show_back=True, parent=parent)
+        self.import_widget = IntegrationsWidget(
             ImportGroup(self),
             self.tr("To import games from Epic Games Store, please enable EGL Sync."),
             self,
         )
         self.addTab(self.import_widget, self.tr("Import Games"))
 
-        self.egl_sync_widget = ImportSyncWidget(
+        self.egl_sync_widget = IntegrationsWidget(
             EGLSyncGroup(self),
             self.tr("To import EGL games from directories, please use Import Game."),
             self,
         )
         self.addTab(self.egl_sync_widget, self.tr("Sync with EGL"))
 
-        self.egl_eos_ubisoft = ImportSyncWidget(
+        self.eos_ubisoft = IntegrationsWidget(
             None,
             self.tr(""),
             self,
         )
-        self.egl_eos_ubisoft.addWidget(UbisoftGroup(self.egl_eos_ubisoft))
-        self.egl_eos_ubisoft.addWidget(EOSGroup(self.egl_eos_ubisoft))
-        self.addTab(self.egl_eos_ubisoft, self.tr("EOS and Ubisoft"))
+        self.eos_ubisoft.addWidget(UbisoftGroup(self.eos_ubisoft))
+        self.eos_ubisoft.addWidget(EOSGroup(self.eos_ubisoft))
+        self.addTab(self.eos_ubisoft, self.tr("EOS and Ubisoft"))
 
         self.tabBar().setCurrentIndex(1)
 
@@ -48,9 +48,9 @@ class ImportSyncTabs(SideTabWidget):
         self.setCurrentIndex(3)
 
 
-class ImportSyncWidget(QWidget):
+class IntegrationsWidget(QWidget):
     def __init__(self, widget: Optional[QWidget], info: str, parent=None):
-        super(ImportSyncWidget, self).__init__(parent=parent)
+        super(IntegrationsWidget, self).__init__(parent=parent)
         self.info = QLabel(f"<b>{info}</b>")
 
         layout = QVBoxLayout()

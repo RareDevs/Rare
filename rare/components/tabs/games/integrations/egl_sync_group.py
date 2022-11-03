@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox
 
 from rare.lgndr.glue.exception import LgndrException
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.ui.components.tabs.games.import_sync.egl_sync_group import Ui_EGLSyncGroup
-from rare.ui.components.tabs.games.import_sync.egl_sync_list_group import (
+from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
+from rare.ui.components.tabs.games.integrations.egl_sync_list_group import (
     Ui_EGLSyncListGroup,
 )
 from rare.utils.extra_widgets import PathEdit

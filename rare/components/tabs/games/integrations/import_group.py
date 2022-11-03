@@ -14,7 +14,7 @@ from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.glue.arguments import LgndrImportGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
-from rare.ui.components.tabs.games.import_sync.import_group import Ui_ImportGroup
+from rare.ui.components.tabs.games.integrations.import_group import Ui_ImportGroup
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
 from rare.widgets.elide_label import ElideLabel
 

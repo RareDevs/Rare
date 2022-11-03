@@ -9,7 +9,7 @@ from legendary.lfs import eos
 
 from rare.models.install import InstallOptionsModel
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from ui.components.tabs.games.import_sync.eos_widget import Ui_EosWidget
+from rare.ui.components.tabs.games.integrations.eos_widget import Ui_EosWidget
 
 logger = getLogger("EOS")
 
