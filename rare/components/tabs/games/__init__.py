@@ -60,8 +60,9 @@ class GamesTab(QStackedWidget):
         self.addWidget(self.games)
 
         self.head_bar = GameListHeadBar(parent=self.games)
-        self.head_bar.import_clicked.connect(self.show_import)
-        self.head_bar.egl_sync_clicked.connect(self.show_egl_sync)
+        self.head_bar.goto_import.connect(self.show_import)
+        self.head_bar.goto_egl_sync.connect(self.show_egl_sync)
+        self.head_bar.goto_eos_ubisoft.connect(self.show_eos_ubisoft)
         self.games.layout().addWidget(self.head_bar)
 
         self.game_info_tabs = GameInfoTabs(self.dlcs, self.game_utils, self)
@@ -193,13 +194,20 @@ class GamesTab(QStackedWidget):
         i_widget.leaveEvent(None)
         l_widget.update_text()
 
+    @pyqtSlot()
     def show_import(self):
         self.setCurrentWidget(self.import_sync_tabs)
         self.import_sync_tabs.show_import()
 
-    def show_egl_sync(self, idx):
+    @pyqtSlot()
+    def show_egl_sync(self):
         self.setCurrentWidget(self.import_sync_tabs)
         self.import_sync_tabs.show_egl_sync()
+
+    @pyqtSlot()
+    def show_eos_ubisoft(self):
+        self.setCurrentWidget(self.import_sync_tabs)
+        self.import_sync_tabs.show_eos_ubisoft()
 
     def show_game_info(self, app_name):
         self.game_info_tabs.update_game(app_name)

@@ -51,8 +51,7 @@ class TabWidget(QTabWidget):
         self.addTab(QWidget(), "")
         self.setTabEnabled(disabled_tab, False)
         # Button
-        self.account = QWidget()
-        self.addTab(self.account, "")
+        self.addTab(QWidget(), "")
         self.setTabEnabled(disabled_tab + 1, False)
 
         self.account_widget = AccountWidget(self)

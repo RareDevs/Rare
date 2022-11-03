@@ -22,6 +22,13 @@ class ImportSyncTabs(SideTabWidget):
         )
         self.addTab(self.egl_sync_widget, self.tr("Sync with EGL"))
 
+        self.egl_eos_ubisoft = ImportSyncWidget(
+            QWidget(self),
+            self.tr("To import EGL games from directories, please use Import Game."),
+            self,
+        )
+        self.addTab(self.egl_eos_ubisoft, self.tr("EOS and Ubisoft"))
+
         self.tabBar().setCurrentIndex(1)
 
     def show_import(self):
@@ -30,11 +37,14 @@ class ImportSyncTabs(SideTabWidget):
     def show_egl_sync(self):
         self.setCurrentIndex(2)
 
+    def show_eos_ubisoft(self):
+        self.setCurrentIndex(3)
+
 
 class ImportSyncWidget(QWidget):
     def __init__(self, widget: QWidget, info: str, parent=None):
         super(ImportSyncWidget, self).__init__(parent=parent)
-        self.info = QLabel(f"<h4>{info}</h4>")
+        self.info = QLabel(f"<b>{info}</b>")
 
         layout = QVBoxLayout()
         layout.addWidget(widget)
