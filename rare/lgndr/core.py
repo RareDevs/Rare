@@ -1,4 +1,3 @@
-from hashlib import sha1
 from multiprocessing import Queue
 
 # On Windows the monkeypatching of `run_real` below doesn't work like on Linux
@@ -10,8 +9,8 @@ from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
 from legendary.models.manifest import ManifestMeta
 
-from .api_exception import LgndrException, LgndrCoreLogHandler
-from .manager import DLManager
+from rare.lgndr.downloader.mp.manager import DLManager
+from rare.lgndr.glue.exception import LgndrException, LgndrCoreLogHandler
 
 legendary.core.DLManager = DLManager
 

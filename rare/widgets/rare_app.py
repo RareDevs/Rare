@@ -6,7 +6,7 @@ import time
 from argparse import Namespace
 
 import legendary
-from PyQt5.QtCore import Qt, QSettings, QTranslator, QT_VERSION_STR, PYQT_VERSION_STR
+from PyQt5.QtCore import QSettings, QTranslator, QT_VERSION_STR, PYQT_VERSION_STR
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
@@ -21,8 +21,6 @@ class RareApp(QApplication):
     def __init__(self, args: Namespace, log_file: str):
         super(RareApp, self).__init__(sys.argv)
         self.setQuitOnLastWindowClosed(False)
-        if hasattr(Qt, "AA_UseHighDpiPixmaps"):
-            self.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")

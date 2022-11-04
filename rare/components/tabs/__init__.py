@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QSize, pyqtSignal
+from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
@@ -23,9 +23,7 @@ class TabWidget(QTabWidget):
         self.args = ArgumentsSingleton()
         disabled_tab = 3 if not self.args.offline else 1
         self.setTabBar(MainTabBar(disabled_tab))
-        # lk: Figure out why this adds a white line at the top
-        # lk: despite setting qproperty-drawBase to 0 in the stylesheet
-        # self.setDocumentMode(True)
+
         # Generate Tabs
         self.games_tab = GamesTab()
         self.addTab(self.games_tab, self.tr("Games"))
@@ -53,12 +51,10 @@ class TabWidget(QTabWidget):
         self.addTab(QWidget(), "")
         self.setTabEnabled(disabled_tab, False)
         # Button
-        self.account = QWidget()
-        self.addTab(self.account, "")
+        self.addTab(QWidget(), "")
         self.setTabEnabled(disabled_tab + 1, False)
 
         self.account_widget = AccountWidget(self)
-        self.account_widget.exit_app.connect(self.exit_app)
         self.account_widget.logout.connect(self.logout)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
@@ -115,6 +111,7 @@ class TabWidget(QTabWidget):
         self.tabBar().setMinimumWidth(self.width())
         super(TabWidget, self).resizeEvent(event)
 
+    @pyqtSlot()
     def logout(self):
         # FIXME: Don't allow logging out if there are active downloads
         if self.downloads_tab.is_download_active:
@@ -135,4 +132,4 @@ class TabWidget(QTabWidget):
 
         if reply == QMessageBox.Yes:
             self.core.lgd.invalidate_userdata()
-            self.exit_app(-133742)  # restart exit code
+            self.exit_app.emit(-133742)  # restart exit code

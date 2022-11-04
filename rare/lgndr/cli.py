@@ -11,7 +11,9 @@ from legendary.models.game import Game, InstalledGame, VerifyResult
 from legendary.lfs.utils import validate_files
 from legendary.utils.selective_dl import get_sdl_appname
 
-from .api_arguments import (
+from rare.lgndr.core import LegendaryCore
+from rare.lgndr.downloader.mp.manager import DLManager
+from rare.lgndr.glue.arguments import (
     LgndrInstallGameArgs,
     LgndrImportGameArgs,
     LgndrVerifyGameArgs,
@@ -19,9 +21,7 @@ from .api_arguments import (
     LgndrInstallGameRealArgs,
     LgndrInstallGameRealRet,
 )
-from .api_monkeys import LgndrIndirectStatus, LgndrIndirectLogger
-from .core import LegendaryCore
-from .manager import DLManager
+from rare.lgndr.glue.monkeys import LgndrIndirectStatus, LgndrIndirectLogger
 
 
 # fmt: off

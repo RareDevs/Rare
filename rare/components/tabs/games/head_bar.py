@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QWidget,
     QHBoxLayout,
-    QComboBox,
+    QComboBox, QToolButton, QMenu, QAction,
 )
 from qtawesome import IconWidget
 
@@ -14,7 +14,10 @@ from rare.utils.misc import icon
 
 
 class GameListHeadBar(QWidget):
-    filterChanged = pyqtSignal(str)
+    filterChanged: pyqtSignal = pyqtSignal(str)
+    goto_import: pyqtSignal = pyqtSignal()
+    goto_egl_sync: pyqtSignal = pyqtSignal()
+    goto_eos_ubisoft: pyqtSignal = pyqtSignal()
 
     def __init__(self, parent=None):
         super(GameListHeadBar, self).__init__(parent=parent)
@@ -58,13 +61,24 @@ class GameListHeadBar(QWidget):
 
         self.filter.currentIndexChanged.connect(self.filter_changed)
 
-        self.import_game = QPushButton(icon("mdi.import", "fa.arrow-down"), self.tr("Import Game"))
-        self.import_clicked = self.import_game.clicked
+        integrations_menu = QMenu(self)
+        import_action = QAction(icon("mdi.import", "fa.arrow-down"), self.tr("Import Game"), integrations_menu)
 
-        self.egl_sync = QPushButton(icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"))
-        self.egl_sync_clicked = self.egl_sync.clicked
-        # FIXME: Until it is ready
-        # self.egl_sync.setEnabled(False)
+        import_action.triggered.connect(self.goto_import)
+        egl_sync_action = QAction(icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"), integrations_menu)
+        egl_sync_action.triggered.connect(self.goto_egl_sync)
+
+        eos_ubisoft_action = QAction(icon("mdi.rocket", "fa.rocket"), self.tr("Epic Overlay and Ubisoft"), integrations_menu)
+        eos_ubisoft_action.triggered.connect(self.goto_eos_ubisoft)
+
+        integrations_menu.addAction(import_action)
+        integrations_menu.addAction(egl_sync_action)
+        integrations_menu.addAction(eos_ubisoft_action)
+
+        integrations = QToolButton(self)
+        integrations.setText(self.tr("Integrations"))
+        integrations.setMenu(integrations_menu)
+        integrations.setPopupMode(QToolButton.InstantPopup)
 
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Game"))
         self.search_bar.setObjectName("search_bar")
@@ -97,10 +111,9 @@ class GameListHeadBar(QWidget):
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 5, 0, 5)
         layout.addWidget(self.filter)
-        layout.addStretch(1)
-        layout.addWidget(self.import_game)
-        layout.addWidget(self.egl_sync)
-        layout.addStretch(2)
+        layout.addStretch(0)
+        layout.addWidget(integrations)
+        layout.addStretch(5)
         layout.addWidget(self.search_bar)
         layout.addStretch(2)
         layout.addWidget(self.installed_icon)

@@ -166,17 +166,6 @@
        </layout>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
-      <widget class="QGroupBox" name="ubisoft_gb">
-       <property name="title">
-        <string>Link Ubisoft Games</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout"/>
-      </widget>
-     </item>
      <item>
       <spacer name="left_vspacer">
        <property name="orientation">

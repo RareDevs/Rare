@@ -26,7 +26,7 @@ from .game_widgets.installing_game_widget import InstallingGameWidget
 from .game_widgets.uninstalled_icon_widget import UninstalledIconWidget
 from .game_widgets.uninstalled_list_widget import UninstalledListWidget
 from .head_bar import GameListHeadBar
-from .import_sync import ImportSyncTabs
+from .integrations import IntegrationsTabs
 
 logger = getLogger("GamesTab")
 
@@ -60,8 +60,9 @@ class GamesTab(QStackedWidget):
         self.addWidget(self.games)
 
         self.head_bar = GameListHeadBar(parent=self.games)
-        self.head_bar.import_clicked.connect(self.show_import)
-        self.head_bar.egl_sync_clicked.connect(self.show_egl_sync)
+        self.head_bar.goto_import.connect(self.show_import)
+        self.head_bar.goto_egl_sync.connect(self.show_egl_sync)
+        self.head_bar.goto_eos_ubisoft.connect(self.show_eos_ubisoft)
         self.games.layout().addWidget(self.head_bar)
 
         self.game_info_tabs = GameInfoTabs(self.dlcs, self.game_utils, self)
@@ -73,9 +74,9 @@ class GamesTab(QStackedWidget):
         )
         self.game_info_tabs.info.uninstalled.connect(lambda x: self.setCurrentWidget(self.games))
 
-        self.import_sync_tabs = ImportSyncTabs(self)
-        self.import_sync_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
-        self.addWidget(self.import_sync_tabs)
+        self.integrations_tabs = IntegrationsTabs(self)
+        self.integrations_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
+        self.addWidget(self.integrations_tabs)
 
         for i in self.game_list:
             if i.app_name.startswith("UE_4"):
@@ -193,13 +194,20 @@ class GamesTab(QStackedWidget):
         i_widget.leaveEvent(None)
         l_widget.update_text()
 
+    @pyqtSlot()
     def show_import(self):
-        self.setCurrentWidget(self.import_sync_tabs)
-        self.import_sync_tabs.show_import()
+        self.setCurrentWidget(self.integrations_tabs)
+        self.integrations_tabs.show_import()
 
-    def show_egl_sync(self, idx):
-        self.setCurrentWidget(self.import_sync_tabs)
-        self.import_sync_tabs.show_egl_sync()
+    @pyqtSlot()
+    def show_egl_sync(self):
+        self.setCurrentWidget(self.integrations_tabs)
+        self.integrations_tabs.show_egl_sync()
+
+    @pyqtSlot()
+    def show_eos_ubisoft(self):
+        self.setCurrentWidget(self.integrations_tabs)
+        self.integrations_tabs.show_eos_ubisoft()
 
     def show_game_info(self, app_name):
         self.game_info_tabs.update_game(app_name)

@@ -2,14 +2,14 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Callable, List, Optional, Dict
 
-from .api_monkeys import (
+from rare.lgndr.glue.monkeys import (
     LgndrIndirectStatus,
     GetBooleanChoiceProtocol,
     get_boolean_choice,
     verify_stdout,
     DLManagerSignals
 )
-from .downloading import UIUpdate
+from rare.lgndr.models.downloading import UIUpdate
 
 """
 @dataclass(kw_only=True)

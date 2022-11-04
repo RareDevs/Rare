@@ -17,7 +17,7 @@ from legendary.models.game import Game, InstalledGame
 from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
 from rare.components.tabs.downloads.download_thread import DownloadThread
-from rare.lgndr.downloading import UIUpdate
+from rare.lgndr.models.downloading import UIUpdate
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab

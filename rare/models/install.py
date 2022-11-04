@@ -6,7 +6,7 @@ from typing import List, Optional, Callable, Dict
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame
 
-from rare.lgndr.manager import DLManager
+from rare.lgndr.downloader.mp.manager import DLManager
 
 
 @dataclass

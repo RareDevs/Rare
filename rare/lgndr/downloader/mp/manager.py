@@ -11,8 +11,8 @@ from legendary.downloader.mp.manager import DLManager as DLManagerReal
 from legendary.downloader.mp.workers import DLWorker, FileWorker
 from legendary.models.downloading import ChunkTask, SharedMemorySegment, TerminateWorkerTask
 
-from .downloading import UIUpdate
-from .api_monkeys import DLManagerSignals
+from rare.lgndr.glue.monkeys import DLManagerSignals
+from rare.lgndr.models.downloading import UIUpdate
 
 
 # fmt: off

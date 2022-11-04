@@ -10,9 +10,9 @@ from typing import List, Optional, Dict
 from PyQt5.QtCore import QThread, pyqtSignal, QProcess
 from legendary.core import LegendaryCore
 
-from rare.lgndr.api_monkeys import DLManagerSignals
 from rare.lgndr.cli import LegendaryCLI
-from rare.lgndr.downloading import UIUpdate
+from rare.lgndr.glue.monkeys import DLManagerSignals
+from rare.lgndr.models.downloading import UIUpdate
 from rare.models.install import InstallQueueItemModel
 from rare.shared import GlobalSignalsSingleton, ArgumentsSingleton
 

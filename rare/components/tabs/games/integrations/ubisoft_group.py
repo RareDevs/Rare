@@ -3,7 +3,7 @@ import webbrowser
 from logging import getLogger
 
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSize
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QSizePolicy, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QSizePolicy, QPushButton, QGroupBox, QVBoxLayout
 
 from legendary.models.game import Game
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
@@ -82,6 +82,7 @@ class UbiLinkWidget(QWidget):
         super(UbiLinkWidget, self).__init__()
         self.args = ArgumentsSingleton()
         layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
         self.game = game
         self.ubi_account_id = ubi_account_id
 
@@ -130,12 +131,13 @@ class UbiLinkWidget(QWidget):
             self.link_button.setDisabled(False)
 
 
-class UbiActivationHelper(QObject):
-    def __init__(self, widget: QWidget):
-        super(UbiActivationHelper, self).__init__()
+class UbisoftGroup(QGroupBox):
+    def __init__(self, parent=None):
+        super(UbisoftGroup, self).__init__(parent=parent)
+        self.setTitle(self.tr("Link Ubisoft Games"))
+        self.setLayout(QVBoxLayout())
         self.core = LegendaryCoreSingleton()
         self.args = ArgumentsSingleton()
-        self.widget = widget
 
         self.thread_pool = QThreadPool.globalInstance()
         worker = UbiGetInfoWorker()
@@ -147,7 +149,7 @@ class UbiActivationHelper(QObject):
             logger.error(
                 "No linked ubisoft account found! Link your accounts via your browser and try again."
             )
-            self.widget.layout().addWidget(
+            self.layout().addWidget(
                 QLabel(
                     self.tr(
                         "Your account is not linked with Ubisoft. Please link your account first"
@@ -158,10 +160,10 @@ class UbiActivationHelper(QObject):
             open_browser_button.clicked.connect(
                 lambda: webbrowser.open("https://www.epicgames.com/id/link/ubisoft")
             )
-            self.widget.layout().addWidget(open_browser_button)
+            self.layout().addWidget(open_browser_button)
             return
         elif ubi_account_id == "error":
-            self.widget.layout().addWidget(QLabel(self.tr("An error occurred")))
+            self.layout().addWidget(QLabel(self.tr("An error occurred")))
             return
 
         games = self.core.get_game_list(False)
@@ -195,13 +197,13 @@ class UbiActivationHelper(QObject):
 
         if not uplay_games:
             if activated >= 1:
-                self.widget.layout().addWidget(
+                self.layout().addWidget(
                     QLabel(
                         self.tr("All your Ubisoft games have already been activated")
                     )
                 )
             else:
-                self.widget.layout().addWidget(
+                self.layout().addWidget(
                     QLabel(self.tr("You don't own any Ubisoft games"))
                 )
             if self.args.debug:
@@ -209,10 +211,10 @@ class UbiActivationHelper(QObject):
                     Game(app_name="Test", app_title="This is a test game"),
                     ubi_account_id,
                 )
-                self.widget.layout().addWidget(widget)
+                self.layout().addWidget(widget)
             return
         logger.info(f"Found {len(uplay_games)} game(s) to redeem")
 
         for game in uplay_games:
             widget = UbiLinkWidget(game, ubi_account_id)
-            self.widget.layout().addWidget(widget)
+            self.layout().addWidget(widget)
