@@ -34,7 +34,7 @@ class IntegrationsTabs(SideTabWidget):
         )
         self.eos_ubisoft.addWidget(UbisoftGroup(self.eos_ubisoft))
         self.eos_ubisoft.addWidget(EOSGroup(self.eos_ubisoft))
-        self.addTab(self.eos_ubisoft, self.tr("EOS and Ubisoft"))
+        self.addTab(self.eos_ubisoft, self.tr("Epic Overlay and Ubisoft"))
 
         self.tabBar().setCurrentIndex(1)
 

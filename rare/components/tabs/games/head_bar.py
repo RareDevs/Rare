@@ -68,7 +68,7 @@ class GameListHeadBar(QWidget):
         egl_sync_action = QAction(icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"), integrations_menu)
         egl_sync_action.triggered.connect(self.goto_egl_sync)
 
-        eos_ubisoft_action = QAction(icon("mdi.rocket", "fa.rocket"), self.tr("EOS and Ubisoft"), integrations_menu)
+        eos_ubisoft_action = QAction(icon("mdi.rocket", "fa.rocket"), self.tr("Epic Overlay and Ubisoft"), integrations_menu)
         eos_ubisoft_action.triggered.connect(self.goto_eos_ubisoft)
 
         integrations_menu.addAction(import_action)
