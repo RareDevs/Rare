@@ -20,7 +20,7 @@ readme = "README.md"
 repository = "https://github.com/Dummerle/Rare"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 PyQt5 = "^5.15.7"
 requests = "^2.28.1"
 QtAwesome = "^1.1.1"
@@ -30,7 +30,7 @@ pywebview = [
     { version = "^3.6.3", extras = ["cef"], platform = "windows", optional = true },
     { version = "^3.6.3", extras = ["gtk"], platform = "linux", optional = true },
 ]
-legendary-gl = "^0.20.30"
+legendary-gl = "^0.20.31"
 typing-extensions = "^4.3.0"
 
 [tool.poetry.scripts]

@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 requirements = [
     "requests<3.0",
-    "legendary-gl==0.20.30",
+    "legendary-gl==0.20.31",
     "setuptools",
     "wheel",
     "PyQt5",
@@ -44,7 +44,7 @@ setuptools.setup(
         "Operating System :: OS Independent"
     ],
     include_package_data=True,
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
     install_requires=requirements,
     extras_require=optional_reqs,
