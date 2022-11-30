@@ -218,7 +218,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         self.progress_bar.setValue(
             100 * ui_update.total_downloaded // self.analysis.dl_size
         )
-        self.dl_speed.setText(f"{get_size(ui_update.download_speed)}/s")
+        self.dl_speed.setText(f"{get_size(ui_update.download_compressed_speed)}/s")
         self.cache_used.setText(
             f"{get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}"
         )
