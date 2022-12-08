@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 110
-target-version = ['py39', 'py310']
+target-version = ['py39', 'py310', 'py311']
 include = '\.py$'
 force-exclude = '''
 /(
@@ -12,7 +12,7 @@ force-exclude = '''
 
 [tool.poetry]
 name = "rare"
-version = "1.9.3"
+version = "1.9.4"
 description = "A GUI for Legendary"
 authors = ["Dummerle"]
 license = "GPL3"
