@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import Callable, List, Optional, Dict
 
@@ -7,7 +7,7 @@ from rare.lgndr.glue.monkeys import (
     GetBooleanChoiceProtocol,
     get_boolean_choice,
     verify_stdout,
-    DLManagerSignals
+    DLManagerSignals,
 )
 from rare.lgndr.models.downloading import UIUpdate
 
@@ -32,7 +32,7 @@ class LgndrImportGameArgs:
     with_dlcs: bool = False
     yes: bool = False
     # Rare: Extra arguments
-    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
+    indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
     get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
 
 
@@ -42,7 +42,7 @@ class LgndrUninstallGameArgs:
     keep_files: bool = False
     yes: bool = False
     # Rare: Extra arguments
-    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
+    indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
     get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
 
 
@@ -50,7 +50,7 @@ class LgndrUninstallGameArgs:
 class LgndrVerifyGameArgs:
     app_name: str
     # Rare: Extra arguments
-    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
+    indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
     verify_stdout: Callable[[int, int, float, float], None] = verify_stdout
 
 
@@ -90,7 +90,7 @@ class LgndrInstallGameArgs:
     # end of FIXME
     yes: bool = True
     # Rare: Extra arguments
-    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
+    indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
     get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
     sdl_prompt: Callable[[str, str], List[str]] = lambda app_name, title: [""]
     verify_stdout: Callable[[int, int, float, float], None] = verify_stdout
@@ -115,7 +115,7 @@ class LgndrInstallGameRealArgs:
     yes: bool = False
     # Rare: Extra arguments
     install_prereqs: bool = False
-    indirect_status: LgndrIndirectStatus = LgndrIndirectStatus()
+    indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
     ui_update: Callable[[UIUpdate], None] = lambda ui: None
     dlm_signals: DLManagerSignals = DLManagerSignals()
 
