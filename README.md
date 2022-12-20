@@ -71,10 +71,12 @@ You can also use `pip`.
 
 ### Windows
 
-Rare is available as a [Chocolatey package](https://community.chocolatey.org/packages/rare) on Windows.
+- There is a small beta tool for Windows: [Rare Updater](https://github.com/Dummerle/RareUpdater), which installs and updates rare with a single click
+
+- Rare is available as a [Chocolatey package](https://community.chocolatey.org/packages/rare) on Windows.
 You can install rare with the following one-liner:
 
-`choco install rare`
+    `choco install rare`
 
 ### Packages
 
