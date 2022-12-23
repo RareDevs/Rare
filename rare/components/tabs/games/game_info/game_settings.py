@@ -8,9 +8,10 @@ from legendary.models.game import Game, InstalledGame
 
 from rare.components.tabs.settings import DefaultGameSettings
 from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
+from rare.shared.workers.wine_resolver import WineResolver
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
-from rare.utils.misc import icon, WineResolver, get_raw_save_path
+from rare.utils.misc import icon, get_raw_save_path
 
 logger = getLogger("GameSettings")
 
