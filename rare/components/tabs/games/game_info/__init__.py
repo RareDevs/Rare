@@ -20,7 +20,7 @@ class GameInfoTabs(SideTabWidget):
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
 
-        self.info = GameInfo(self, game_utils)
+        self.info = GameInfo(game_utils, self)
         self.addTab(self.info, self.tr("Information"))
 
         self.settings = GameSettings(self)

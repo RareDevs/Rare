@@ -3,8 +3,10 @@ import platform
 import shutil
 from logging import getLogger
 from pathlib import Path
+from typing import Dict, Optional
 
 from PyQt5.QtCore import (
+    QRunnable,
     Qt,
     pyqtSignal,
     QThreadPool,
@@ -40,13 +42,10 @@ logger = getLogger("GameInfo")
 
 
 class GameInfo(QWidget, Ui_GameInfo):
-    igame: InstalledGame
-    game: Game = None
-    verify_threads = dict()
     verification_finished = pyqtSignal(InstalledGame)
     uninstalled = pyqtSignal(str)
 
-    def __init__(self, parent, game_utils):
+    def __init__(self, game_utils, parent=None):
         super(GameInfo, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()
@@ -54,6 +53,10 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.args = ArgumentsSingleton()
         self.image_manager = ImageManagerSingleton()
         self.game_utils = game_utils
+
+        self.game: Optional[Game] = None
+        self.igame: Optional[InstalledGame] = None
+        self.verify_threads: Dict[str, QRunnable] = {}
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.Display)
@@ -68,7 +71,6 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.steam_worker.setAutoDelete(False)
 
         self.game_actions_stack.setCurrentIndex(0)
-        self.install_button.setText(self.tr("Link to Origin/Launch"))
         self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
 
         self.uninstall_button.clicked.connect(self.uninstall)
@@ -102,9 +104,9 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.widget_container.setLayout(box_layout)
         index = self.move_stack.addWidget(self.widget_container)
         self.move_stack.setCurrentIndex(index)
+        self.move_game_pop_up.browse_done.connect(self.show_menu_after_browse)
         self.move_game_pop_up.move_clicked.connect(self.move_button.menu().close)
         self.move_game_pop_up.move_clicked.connect(self.move_game)
-        self.move_game_pop_up.browse_done.connect(self.show_menu_after_browse)
 
     def uninstall(self):
         if self.game_utils.uninstall_game(self.game.app_name):
@@ -328,23 +330,30 @@ class GameInfo(QWidget, Ui_GameInfo):
         if self.igame:
             self.install_size.setText(get_size(self.igame.install_size))
             self.install_path.setText(self.igame.install_path)
-            self.install_size.setVisible(True)
-            self.install_path.setVisible(True)
             self.platform.setText(self.igame.platform)
         else:
-            self.install_size.setVisible(False)
-            self.install_path.setVisible(False)
+            self.install_size.setText("N/A")
+            self.install_path.setText("N/A")
             self.platform.setText("Windows")
 
+        self.install_size.setEnabled(bool(self.igame))
+        self.lbl_install_size.setEnabled(bool(self.igame))
+        self.install_path.setEnabled(bool(self.igame))
+        self.lbl_install_path.setEnabled(bool(self.igame))
+
+        self.uninstall_button.setEnabled(bool(self.igame))
+        self.verify_button.setEnabled(bool(self.igame))
+        self.repair_button.setEnabled(bool(self.igame))
+
         if not self.igame:
-            # origin game
-            self.uninstall_button.setDisabled(True)
-            self.verify_button.setDisabled(True)
-            self.repair_button.setDisabled(True)
             self.game_actions_stack.setCurrentIndex(1)
+            if self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin":
+                self.version.setText("N/A")
+                self.version.setEnabled(False)
+                self.install_button.setText(self.tr("Link to Origin/Launch"))
+            else:
+                self.install_button.setText(self.tr("Install"))
         else:
-            self.uninstall_button.setDisabled(False)
-            self.verify_button.setDisabled(False)
             if not self.args.offline:
                 self.repair_button.setDisabled(
                     not os.path.exists(os.path.join(self.core.lgd.get_tmp_path(), f"{self.igame.app_name}.repair"))
