@@ -26,11 +26,11 @@ from rare.shared import (
     LegendaryCoreSingleton,
     GlobalSignalsSingleton,
     ArgumentsSingleton,
+    ImageManagerSingleton,
 )
-from rare.shared import ImageManagerSingleton
 from rare.shared.image_manager import ImageSize
+from rare.shared.workers.verify import VerifyWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
-from rare.utils.legendary_utils import VerifyWorker
 from rare.utils.misc import get_size
 from rare.utils.steam_grades import SteamWorker
 from rare.widgets.image_widget import ImageWidget
