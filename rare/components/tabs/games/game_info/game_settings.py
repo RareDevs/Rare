@@ -24,7 +24,7 @@ class GameSettings(DefaultGameSettings):
         super(GameSettings, self).__init__(False, parent)
         self.pre_launch_settings = PreLaunchSettings()
         self.launch_settings_group.layout().addRow(
-            QLabel(self.tr("Pre launch command")), self.pre_launch_settings
+            QLabel(self.tr("Pre-launch command")), self.pre_launch_settings
         )
 
         self.cloud_save_path_edit = PathEdit(
@@ -176,7 +176,7 @@ class GameSettings(DefaultGameSettings):
             self.cloud_group.setEnabled(True)
             sync_cloud = self.settings.value(f"{self.game.app_name}/auto_sync_cloud", True, bool)
             self.cloud_sync.setChecked(sync_cloud)
-            if self.igame.save_path:
+            if hasattr(self.igame, "save_path") and self.igame.save_path:
                 self.cloud_save_path_edit.setText(self.igame.save_path)
             else:
                 self.cloud_save_path_edit.setText("")
