@@ -63,7 +63,7 @@ class IndicatorLineEdit(QWidget):
         completer: QCompleter = None,
         edit_func: Callable[[str], Tuple[bool, str, str]] = None,
         save_func: Callable[[str], None] = None,
-        horiz_policy: QSizePolicy = QSizePolicy.Expanding,
+        horiz_policy: QSizePolicy.Policy = QSizePolicy.Expanding,
         parent=None,
     ):
         super(IndicatorLineEdit, self).__init__(parent=parent)
@@ -194,7 +194,7 @@ class PathEdit(IndicatorLineEdit):
         placeholder: str = "",
         edit_func: Callable[[str], Tuple[bool, str, str]] = None,
         save_func: Callable[[str], None] = None,
-        horiz_policy: QSizePolicy = QSizePolicy.Expanding,
+        horiz_policy: QSizePolicy.Policy = QSizePolicy.Expanding,
         parent=None,
     ):
         self.completer = QCompleter()
@@ -256,8 +256,7 @@ class PathEdit(IndicatorLineEdit):
 
     def __wrap_edit_function(self, edit_function: Callable[[str], Tuple[bool, str, str]]):
         if edit_function:
-            return lambda text: edit_function(os.path.expanduser(text)
-                                              if text.startswith("~") else text)
+            return lambda text: edit_function(os.path.expanduser(text) if text.startswith("~") else text)
         else:
             return edit_function
 
@@ -296,7 +295,7 @@ class SideTabBar(QTabBar):
 
 
 class SideTabContainer(QWidget):
-    def __init__(self, widget: QWidget, title: str = str(), parent: QWidget = None):
+    def __init__(self, widget: QWidget, title: str = "", parent: QWidget = None):
         super(SideTabContainer, self).__init__(parent=parent)
         self.title = QLabel(self)
         self.setTitle(title)
@@ -346,7 +345,7 @@ class SideTabWidget(QTabWidget):
         if not tab:
             self.back_clicked.emit()
 
-    def addTab(self, widget: QWidget, a1: str, title: str = str()) -> int:
+    def addTab(self, widget: QWidget, a1: str, title: str = "") -> int:
         container = SideTabContainer(widget, title, parent=self)
         return super(SideTabWidget, self).addTab(container, a1)
 
@@ -375,9 +374,7 @@ class SelectViewWidget(QWidget):
         self.icon_button = QPushButton()
         self.list_button = QPushButton()
         if icon_view:
-            self.icon_button.setIcon(
-                qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange")
-            )
+            self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
             self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list"))
         else:
             self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
@@ -397,9 +394,7 @@ class SelectViewWidget(QWidget):
         return self.icon_view
 
     def icon(self):
-        self.icon_button.setIcon(
-            qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange")
-        )
+        self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
         self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list"))
         self.icon_view = False
         self.toggled.emit()
@@ -479,9 +474,7 @@ class ButtonLineEdit(QLineEdit):
         frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
         buttonSize = self.button.sizeHint()
 
-        self.setStyleSheet(
-            "QLineEdit {padding-right: %dpx; }" % (buttonSize.width() + frameWidth + 1)
-        )
+        self.setStyleSheet("QLineEdit {padding-right: %dpx; }" % (buttonSize.width() + frameWidth + 1))
         self.setMinimumSize(
             max(self.minimumSizeHint().width(), buttonSize.width() + frameWidth * 2 + 2),
             max(
