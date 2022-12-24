@@ -16,7 +16,6 @@ from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .cloud_save_utils import CloudSaveUtils
 from .game_info import GameInfoTabs
-from .game_info.uninstalled_info import UninstalledInfoTabs
 from .game_utils import GameUtils
 from .game_widgets.base_installed_widget import BaseInstalledWidget
 from .game_widgets.base_uninstalled_widget import BaseUninstalledWidget
@@ -89,10 +88,6 @@ class GamesTab(QStackedWidget):
         else:
             logger.warning("No Unreal engine in library found")
             self.ue_name = ""
-
-        self.uninstalled_info_tabs = UninstalledInfoTabs(self)
-        self.uninstalled_info_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
-        self.addWidget(self.uninstalled_info_tabs)
 
         self.no_asset_names = []
         if not self.args.offline:
@@ -209,13 +204,10 @@ class GamesTab(QStackedWidget):
         self.setCurrentWidget(self.integrations_tabs)
         self.integrations_tabs.show_eos_ubisoft()
 
+    @pyqtSlot(str)
     def show_game_info(self, app_name):
         self.game_info_tabs.update_game(app_name)
         self.setCurrentWidget(self.game_info_tabs)
-
-    def show_uninstalled_info(self, game):
-        self.uninstalled_info_tabs.update_game(game)
-        self.setCurrentWidget(self.uninstalled_info_tabs)
 
     @pyqtSlot()
     def update_count_games_label(self):
@@ -292,8 +284,8 @@ class GamesTab(QStackedWidget):
             logger.error(f"{game.app_name} is broken. Don't add it to game list: {e}")
             return None, None
 
-        icon_widget.show_uninstalled_info.connect(self.show_uninstalled_info)
-        list_widget.show_uninstalled_info.connect(self.show_uninstalled_info)
+        icon_widget.show_info.connect(self.show_game_info)
+        list_widget.show_info.connect(self.show_game_info)
 
         self.widgets[game.app_name] = (icon_widget, list_widget)
 

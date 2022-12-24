@@ -12,7 +12,7 @@ logger = getLogger("Uninstalled")
 
 
 class BaseUninstalledWidget(QFrame):
-    show_uninstalled_info = pyqtSignal(Game)
+    show_info = pyqtSignal(str)
 
     def __init__(self, game, core, pixmap):
         super(BaseUninstalledWidget, self).__init__()
@@ -39,7 +39,7 @@ class BaseUninstalledWidget(QFrame):
         self.image.setPixmap(pm)
 
     def install(self):
-        self.show_uninstalled_info.emit(self.game)
+        self.show_info.emit(self.game.app_name)
 
     # From RareGame, added from sorting to work
     @property
