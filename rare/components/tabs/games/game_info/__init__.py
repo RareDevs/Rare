@@ -1,6 +1,6 @@
 from typing import Optional
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QTreeView
 from legendary.models.game import Game
@@ -54,7 +54,7 @@ class GameInfoTabs(SideTabWidget):
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
-            self.parent().layout().setCurrentIndex(0)
+            self.back_clicked.emit()
 
 
 class GameMetadataView(QTreeView):
