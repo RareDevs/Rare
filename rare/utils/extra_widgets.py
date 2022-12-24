@@ -300,25 +300,24 @@ class SideTabContainer(QWidget):
         self.title = QLabel(self)
         self.setTitle(title)
 
-        self.scroll = QScrollArea(self)
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scroll.setFrameStyle(QScrollArea.NoFrame)
+        self.scrollarea = QScrollArea(self)
+        self.scrollarea.setWidgetResizable(True)
+        self.scrollarea.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
+        self.scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scrollarea.setFrameStyle(QScrollArea.NoFrame)
         if widget.layout():
             widget.layout().setAlignment(Qt.AlignTop)
             widget.layout().setContentsMargins(0, 0, 9, 0)
         widget.title = self.title
         widget.title.setTitle = self.setTitle
-        self.scroll.setMinimumWidth(
-            widget.sizeHint().width()
-            + self.scroll.verticalScrollBar().sizeHint().width()
+        self.scrollarea.setMinimumWidth(
+            widget.sizeHint().width() + self.scrollarea.verticalScrollBar().sizeHint().width()
         )
-        self.scroll.setWidget(widget)
+        self.scrollarea.setWidget(widget)
 
         layout = QVBoxLayout()
         layout.addWidget(self.title)
-        layout.addWidget(self.scroll)
+        layout.addWidget(self.scrollarea)
         self.setLayout(layout)
 
     def setTitle(self, text: str) -> None:
