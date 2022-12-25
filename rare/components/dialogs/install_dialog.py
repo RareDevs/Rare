@@ -28,7 +28,7 @@ from rare.widgets.collapsible_widget import CollapsibleFrame
 class InstallDialogAdvanced(CollapsibleFrame):
     def __init__(self, parent=None):
         widget = QWidget()
-        title = widget.tr("Advanced Options")
+        title = widget.tr("Advanced options")
         self.ui = Ui_InstallDialogAdvanced()
         self.ui.setupUi(widget)
         super(InstallDialogAdvanced, self).__init__(widget=widget, title=title, parent=parent)
