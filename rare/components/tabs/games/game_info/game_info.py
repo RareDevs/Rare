@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import (
 )
 from legendary.models.game import Game, InstalledGame
 
+from rare.models.game import RareGame
 from rare.models.install import InstallOptionsModel
 from rare.shared import (
     LegendaryCoreSingleton,
@@ -313,12 +314,13 @@ class GameInfo(QWidget, Ui_GameInfo):
     def show_menu_after_browse(self):
         self.move_button.showMenu()
 
-    def update_game(self, app_name: str):
-        self.game = self.core.get_game(app_name)
-        self.igame = self.core.get_installed_game(self.game.app_name)
+    def update_game(self, rgame: RareGame):
+        # FIXME: Use RareGame for the rest of the code
+        self.game = rgame.game
+        self.igame = rgame.igame
         self.title.setTitle(self.game.app_title)
 
-        self.image.setPixmap(self.image_manager.get_pixmap(self.game.app_name, color=True))
+        self.image.setPixmap(rgame.pixmap)
 
         self.app_name.setText(self.game.app_name)
         if self.igame:
@@ -361,7 +363,7 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.game_actions_stack.setCurrentIndex(0)
 
         try:
-            is_ue = self.core.get_asset(app_name).namespace == "ue"
+            is_ue = self.core.get_asset(rgame.app_name).namespace == "ue"
         except ValueError:
             is_ue = False
         grade_visible = not is_ue and platform.system() != "Windows"
@@ -403,5 +405,5 @@ class GameInfo(QWidget, Ui_GameInfo):
             self.move_button.setEnabled(False)
             self.verify_button.setEnabled(False)
 
-        self.move_game_pop_up.update_game(app_name)
+        self.move_game_pop_up.update_game(rgame.app_name)
 

@@ -8,6 +8,7 @@ from legendary.models.game import Game, InstalledGame
 
 from rare.components.tabs.settings import DefaultGameSettings
 from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
+from rare.models.game import RareGame
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.utils import config_helper
 from rare.utils.extra_widgets import PathEdit
@@ -133,11 +134,13 @@ class GameSettings(DefaultGameSettings):
                 config_helper.remove_option(self.game.app_name, option)
             config_helper.save_config()
 
-    def load_settings(self, app_name):
+    def load_settings(self, rgame: RareGame):
         self.change = False
+        # FIXME: Use RareGame for the rest of the code
+        app_name = rgame.app_name
         super(GameSettings, self).load_settings(app_name)
-        self.game = self.core.get_game(app_name)
-        self.igame = self.core.get_installed_game(self.game.app_name)
+        self.game = rgame.game
+        self.igame = rgame.igame
         if self.igame:
             if self.igame.can_run_offline:
                 offline = self.core.lgd.config.get(self.game.app_name, "offline", fallback="unset")

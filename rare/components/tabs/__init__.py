@@ -25,18 +25,18 @@ class TabWidget(QTabWidget):
         self.setTabBar(MainTabBar(disabled_tab))
 
         # Generate Tabs
-        self.games_tab = GamesTab()
+        self.games_tab = GamesTab(self)
         self.addTab(self.games_tab, self.tr("Games"))
 
         if not self.args.offline:
             # updates = self.games_tab.default_widget.game_list.updates
-            self.downloads_tab = DownloadsTab(self.games_tab.updates)
+            self.downloads_tab = DownloadsTab(self.games_tab.game_updates, self)
             self.addTab(
                 self.downloads_tab,
                 "Downloads"
                 + (
-                    " (" + str(len(self.games_tab.updates)) + ")"
-                    if len(self.games_tab.updates) != 0
+                    " (" + str(len(self.games_tab.game_updates)) + ")"
+                    if len(self.games_tab.game_updates) != 0
                     else ""
                 ),
             )

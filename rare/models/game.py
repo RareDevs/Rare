@@ -71,17 +71,17 @@ class RareGame(QObject):
     progress: int = 0
     active_thread: Optional[QRunnable] = None
 
-    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
+    def __init__(self, game: Game, legendary_core: LegendaryCore, image_manager: ImageManager):
         super(RareGame, self).__init__()
         self.signals = RareGame.Signals()
 
         self.core = legendary_core
         self.image_manager = image_manager
 
-        # Update names for Unreal Engine
-        if game.app_title == "Unreal Engine":
-            game.app_title += f" {game.app_name.split('_')[-1]}"
         self.game: Game = game
+        # Update names for Unreal Engine
+        if self.game.app_title == "Unreal Engine":
+            self.game.app_title += f" {self.game.app_name.split('_')[-1]}"
 
         # None if origin or not installed
         self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)

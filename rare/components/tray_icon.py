@@ -66,7 +66,7 @@ class TrayIcon(QSystemTrayIcon):
         self.setContextMenu(self.menu)
 
         self.signals = GlobalSignalsSingleton()
-        self.signals.game_uninstalled.connect(self.remove_button)
+        self.signals.game.uninstalled.connect(self.remove_button)
 
     def remove_button(self, app_name: str):
         if action := next((i for i in self.game_actions if i.property("app_name") == app_name), None):

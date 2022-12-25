@@ -36,7 +36,7 @@ class DownloadThread(QThread):
         shortcuts: bool = False
 
     ret_status = pyqtSignal(ReturnStatus)
-    ui_update = pyqtSignal(UIUpdate)
+    ui_update = pyqtSignal(str, UIUpdate)
 
     def __init__(self, core: LegendaryCore, item: InstallQueueItemModel):
         super(DownloadThread, self).__init__()
@@ -56,7 +56,8 @@ class DownloadThread(QThread):
             time.sleep(1)
             while self.item.download.dlm.is_alive():
                 try:
-                    self.ui_update.emit(self.item.download.dlm.status_queue.get(timeout=1.0))
+                    self.ui_update.emit(self.item.download.game.app_name,
+                                        self.item.download.dlm.status_queue.get(timeout=1.0))
                 except queue.Empty:
                     pass
                 if self.dlm_signals.update:
