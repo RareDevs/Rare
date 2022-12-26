@@ -279,7 +279,7 @@ class EGLSyncListGroup(QGroupBox):
                     imported.append(item.app_name)
                     self.ui.list.takeItem(self.ui.list.row(item))
         if not self.export and imported:
-            self.signals.update_gamelist.emit(imported)
+            self.signals.game.installed.emit(imported)
         self.populate(True)
         if errors:
             self.action_errors.emit(errors)

@@ -278,13 +278,13 @@ class ImportGroup(QGroupBox):
         logger.info(f"Import finished: {result}")
         self.info_label.setText("")
 
-        self.signals.update_gamelist.emit([r.app_name for r in result if r.result == ImportResult.SUCCESS])
+        self.signals.game.installed.emit([r.app_name for r in result if r.result == ImportResult.SUCCESS])
 
         for failed in (f for f in result if f.result == ImportResult.FAILED):
             igame = self.core.get_installed_game(failed.app_name)
             if igame and igame.version != self.core.get_asset(igame.app_name, igame.platform, False).build_version:
                 # update available
-                self.signals.add_download.emit(igame.app_name)
+                self.signals.download.enqueue_game.emit(igame.app_name)
                 self.signals.update_download_tab_text.emit()
 
         if len(result) == 1:
