@@ -4,9 +4,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QTreeView
 
-from rare.components.tabs.games.game_utils import GameUtils
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared.game_utils import GameUtils
 from rare.utils.extra_widgets import SideTabWidget
 from rare.utils.json_formatter import QJsonModel
 from .game_dlc import GameDlc

@@ -1,19 +1,16 @@
-import os
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
 from typing import List, Optional
 
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QMetaObject
+from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMessageBox
 from legendary.models.game import Game, InstalledGame, SaveGameFile
 
-from rare.models.install import InstallOptionsModel
 from rare.lgndr.core import LegendaryCore
+from rare.models.install import InstallOptionsModel
 from rare.shared.image_manager import ImageManager
-# from rare.utils.legendary_utils import VerificationWorker
 
 logger = getLogger("RareGame")
 

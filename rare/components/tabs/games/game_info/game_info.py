@@ -55,6 +55,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.image_manager = ImageManagerSingleton()
         self.game_utils = game_utils
 
+        self.rgame: Optional[RareGame] = None
         self.game: Optional[Game] = None
         self.igame: Optional[InstalledGame] = None
         self.verify_threads: Dict[str, QRunnable] = {}
@@ -84,7 +85,7 @@ class GameInfo(QWidget, Ui_GameInfo):
         else:
             self.repair_button.clicked.connect(self.repair)
 
-        self.install_button.clicked.connect(lambda: self.game_utils.launch_game(self.game.app_name))
+        self.install_button.clicked.connect(self.install)
 
         self.move_game_pop_up = MoveGamePopUp()
         self.move_action = QWidgetAction(self)
@@ -109,10 +110,18 @@ class GameInfo(QWidget, Ui_GameInfo):
         self.move_game_pop_up.move_clicked.connect(self.move_button.menu().close)
         self.move_game_pop_up.move_clicked.connect(self.move_game)
 
+    @pyqtSlot()
+    def install(self):
+        if self.rgame.is_origin:
+            self.game_utils.launch_game(self.rgame.app_name)
+        else:
+            self.signals.game.install.emit(InstallOptionsModel(app_name=self.rgame.app_name))
+
+    @pyqtSlot()
     def uninstall(self):
         if self.game_utils.uninstall_game(self.game.app_name):
             self.game_utils.update_list.emit(self.game.app_name)
-            self.uninstalled.emit(self.game.app_name)
+            self.signals.game.uninstalled.emit(self.game.app_name)
 
     @pyqtSlot()
     def repair(self):
@@ -141,7 +150,7 @@ class GameInfo(QWidget, Ui_GameInfo):
                     "Do you want to update the game while repairing it?"
                 ).format(igame.title, igame.version, game.app_version(igame.platform)),
             ) == QMessageBox.Yes
-        self.signals.install_game.emit(
+        self.signals.game.install.emit(
             InstallOptionsModel(
                 app_name=igame.app_name, repair_mode=True, repair_and_update=ans, update=True
             )
@@ -316,6 +325,7 @@ class GameInfo(QWidget, Ui_GameInfo):
 
     def update_game(self, rgame: RareGame):
         # FIXME: Use RareGame for the rest of the code
+        self.rgame = rgame
         self.game = rgame.game
         self.igame = rgame.igame
         self.title.setTitle(self.game.app_title)

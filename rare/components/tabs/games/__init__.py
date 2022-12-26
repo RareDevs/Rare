@@ -1,10 +1,10 @@
 import time
 from logging import getLogger
-from typing import Tuple, Dict, Union, List, Set
+from typing import Tuple, Dict, List, Set
 
 from PyQt5.QtCore import QSettings, Qt, pyqtSlot
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
-from legendary.models.game import InstalledGame, Game
+from legendary.models.game import Game
 
 from rare.models.game import RareGame
 from rare.shared import (
@@ -14,11 +14,10 @@ from rare.shared import (
     ApiResultsSingleton,
     ImageManagerSingleton,
 )
+from rare.shared.game_utils import GameUtils
 from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
-from .cloud_save_utils import CloudSaveUtils
 from .game_info import GameInfoTabs
-from .game_utils import GameUtils
 from .game_widgets import LibraryWidgetController
 from .game_widgets.icon_game_widget import IconGameWidget
 from .game_widgets.list_game_widget import ListGameWidget

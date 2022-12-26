@@ -3,10 +3,10 @@ from typing import Optional
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QFrame, QWidget, QMessageBox
 
-from rare.components.tabs.games.game_utils import GameUtils
 from rare.models.game import RareGame
 from rare.models.install import InstallOptionsModel
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared.game_utils import GameUtils
 from rare.shared.image_manager import ImageSize
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget

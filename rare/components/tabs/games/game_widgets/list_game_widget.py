@@ -11,8 +11,8 @@ from PyQt5.QtGui import (
     QPixmap, QImage, QResizeEvent,
 )
 
-from rare.components.tabs.games.game_utils import GameUtils
 from rare.models.game import RareGame
+from rare.shared.game_utils import GameUtils
 from rare.utils.misc import get_size
 from rare.widgets.image_widget import ImageWidget
 from .game_widget import GameWidget

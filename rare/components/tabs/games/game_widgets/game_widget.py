@@ -1,14 +1,11 @@
 import os
 import platform
 from logging import getLogger
-from typing import Optional
 
 from PyQt5.QtCore import pyqtSignal, QSettings, QStandardPaths, Qt
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QMessageBox, QAction
-from legendary.models.game import Game, InstalledGame
 
-from rare.components.tabs.games.game_utils import GameUtils
 from rare.models.game import RareGame
 from rare.shared import (
     LegendaryCoreSingleton,
@@ -16,6 +13,7 @@ from rare.shared import (
     ArgumentsSingleton,
     ImageManagerSingleton,
 )
+from rare.shared.game_utils import GameUtils
 from rare.utils.misc import create_desktop_link
 from .library_widget import LibraryWidget
 

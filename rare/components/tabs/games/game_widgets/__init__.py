@@ -3,11 +3,11 @@ from typing import Tuple, List, Union, Optional
 from PyQt5.QtCore import QObject, pyqtSlot
 from PyQt5.QtWidgets import QWidget
 
-from rare.components.tabs.games.game_utils import GameUtils
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.models.signals import GlobalSignals
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
+from rare.shared.game_utils import GameUtils
 from .icon_game_widget import IconGameWidget
 from .list_game_widget import ListGameWidget
 

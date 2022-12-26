@@ -1,20 +1,25 @@
 import datetime
 import json
 import os
+import platform
 from logging import getLogger
 
 from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QTimer
+from PyQt5.QtCore import QStandardPaths
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalSocket
 from PyQt5.QtWidgets import QMessageBox, QPushButton
+from legendary.core import LegendaryCore
 
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
-from rare.components.tabs.games import CloudSaveUtils
 from rare.game_launch_helper import message_models
+from rare.lgndr.cli import LegendaryCLI
+from rare.lgndr.glue.arguments import LgndrUninstallGameArgs
+from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.utils import legendary_utils
-from rare.utils import misc
+from rare.utils import config_helper, misc
 from rare.utils.meta import RareGameMeta
+from .cloud_save_utils import CloudSaveUtils
 
 logger = getLogger("GameUtils")
 
@@ -124,6 +129,50 @@ class GameProcess(QObject):
         self.game_finished.emit(exit_code, self.app_name)
 
 
+def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_config=False):
+    igame = core.get_installed_game(app_name)
+
+    # remove shortcuts link
+    desktop = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
+    applications = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
+    if platform.system() == "Linux":
+        desktop_shortcut = os.path.join(desktop, f"{igame.title}.desktop")
+        if os.path.exists(desktop_shortcut):
+            os.remove(desktop_shortcut)
+
+        applications_shortcut = os.path.join(applications, f"{igame.title}.desktop")
+        if os.path.exists(applications_shortcut):
+            os.remove(applications_shortcut)
+
+    elif platform.system() == "Windows":
+        game_title = igame.title.split(":")[0]
+        desktop_shortcut = os.path.join(desktop, f"{game_title}.lnk")
+        if os.path.exists(desktop_shortcut):
+            os.remove(desktop_shortcut)
+
+        start_menu_shortcut = os.path.join(applications, "..", f"{game_title}.lnk")
+        if os.path.exists(start_menu_shortcut):
+            os.remove(start_menu_shortcut)
+
+    status = LgndrIndirectStatus()
+    LegendaryCLI(core).uninstall_game(
+        LgndrUninstallGameArgs(
+            app_name=app_name,
+            keep_files=keep_files,
+            indirect_status=status,
+            yes=True,
+        )
+    )
+    if not keep_config:
+        logger.info("Removing sections in config file")
+        config_helper.remove_section(app_name)
+        config_helper.remove_section(f"{app_name}.env")
+
+        config_helper.save_config()
+
+    return status.success, status.message
+
+
 class GameUtils(QObject):
     running_games = dict()
     finished = pyqtSignal(str, str)  # app_name, error
@@ -170,10 +219,10 @@ class GameUtils(QObject):
         proceed, keep_files, keep_config = UninstallDialog(game).get_options()
         if not proceed:
             return False
-        success, message = legendary_utils.uninstall_game(self.core, game.app_name, keep_files, keep_config)
+        success, message = uninstall_game(self.core, game.app_name, keep_files, keep_config)
         if not success:
             QMessageBox.warning(None, self.tr("Uninstall - {}").format(igame.title), message, QMessageBox.Close)
-        self.signals.game_uninstalled.emit(app_name)
+        self.signals.game.uninstalled.emit(app_name)
         return True
 
     def prepare_launch(

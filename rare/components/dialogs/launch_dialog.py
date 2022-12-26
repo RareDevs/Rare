@@ -10,8 +10,8 @@ from requests.exceptions import ConnectionError, HTTPError
 from rare.components.dialogs.login import LoginDialog
 from rare.models.apiresults import ApiResults
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton, ImageManagerSingleton
+from rare.shared.game_utils import uninstall_game
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
-from rare.utils import legendary_utils
 from rare.utils.misc import CloudWorker
 from rare.widgets.elide_label import ElideLabel
 
@@ -99,7 +99,7 @@ class ImageWorker(LaunchWorker):
             if not os.path.exists(igame.install_path):
                 # lk; since install_path is lost anyway, set keep_files to True
                 # lk: to avoid spamming the log with "file not found" errors
-                legendary_utils.uninstall_game(self.core, igame.app_name, keep_files=True)
+                uninstall_game(self.core, igame.app_name, keep_files=True)
                 logger.info(f"Uninstalled {igame.title}, because no game files exist")
                 continue
             # lk: games that don't have an override and can't find their executable due to case sensitivity

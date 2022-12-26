@@ -2,8 +2,8 @@ from logging import getLogger
 
 from PyQt5.QtCore import QEvent, pyqtSignal
 
-from rare.components.tabs.games.game_utils import GameUtils
 from rare.models.game import RareGame
+from rare.shared.game_utils import GameUtils
 from rare.shared.image_manager import ImageSize
 from .game_widget import GameWidget
 from .icon_widget import IconWidget
