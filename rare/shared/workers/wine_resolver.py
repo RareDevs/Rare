@@ -3,6 +3,7 @@ import subprocess
 
 from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, pyqtSlot
 
+from rare.lgndr.core import LegendaryCore
 from rare.models.pathspec import PathSpec
 
 
@@ -10,12 +11,11 @@ class WineResolver(QRunnable):
     class Signals(QObject):
         result_ready = pyqtSignal(str)
 
-    def __init__(self, rare_core, path: str, app_name: str):
+    def __init__(self, core: LegendaryCore, path: str, app_name: str):
         super(WineResolver, self).__init__()
         self.signals = WineResolver.Signals()
         self.setAutoDelete(True)
         self.wine_env = os.environ.copy()
-        core = rare_core.core()
         self.wine_env.update(core.get_app_environment(app_name))
         self.wine_env["WINEDLLOVERRIDES"] = "winemenubuilder=d;mscoree=d;mshtml=d;"
         self.wine_env["DISPLAY"] = ""
