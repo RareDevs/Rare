@@ -19,8 +19,8 @@ class MoveGamePopUp(QWidget):
     move_clicked = pyqtSignal(str)
     browse_done = pyqtSignal()
 
-    def __init__(self):
-        super(MoveGamePopUp, self).__init__()
+    def __init__(self, parent=None):
+        super(MoveGamePopUp, self).__init__(parent=parent)
         layout: QVBoxLayout = QVBoxLayout()
         self.install_path = str()
         self.core = LegendaryCoreSingleton()

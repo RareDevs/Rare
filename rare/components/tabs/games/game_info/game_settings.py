@@ -22,7 +22,7 @@ class GameSettings(DefaultGameSettings):
     igame: InstalledGame
 
     def __init__(self, parent=None):
-        super(GameSettings, self).__init__(False, parent)
+        super(GameSettings, self).__init__(False, parent=parent)
         self.pre_launch_settings = PreLaunchSettings()
         self.launch_settings_group.layout().addRow(
             QLabel(self.tr("Pre-launch command")), self.pre_launch_settings
