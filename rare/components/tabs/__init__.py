@@ -72,10 +72,10 @@ class TabWidget(QTabWidget):
         )
         # Signals
         # set current index
-        self.signals.set_main_tab_index.connect(self.setCurrentIndex)
+        # self.signals.set_main_tab_index.connect(self.setCurrentIndex)
 
         # update dl tab text
-        self.signals.update_download_tab_text.connect(self.update_dl_tab_text)
+        self.signals.download.update_tab.connect(self.update_dl_tab_text)
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)

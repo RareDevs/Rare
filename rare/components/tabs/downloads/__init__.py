@@ -118,7 +118,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
         if len(self.update_widgets) == 0:
             self.update_text.setVisible(True)
 
-        self.signals.update_download_tab_text.emit()
+        self.signals.download.update_tab.emit()
 
     def update_dl_queue(self, dl_queue):
         self.dl_queue = dl_queue
@@ -180,9 +180,9 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
                 ):
                     self.remove_update(game.app_name)
 
-            self.signals.send_notification.emit(game.app_title)
+            self.signals.application.notify.emit(game.app_title)
             self.signals.game.installed.emit([game.app_name])
-            self.signals.update_download_tab_text.emit()
+            self.signals.download.update_tab.emit()
 
             self.signals.progress.finished.emit(game.app_name, True)
 
@@ -244,7 +244,7 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
             if w := self.update_widgets.get(download_item.options.app_name):
                 w.update_button.setDisabled(True)
                 w.update_with_settings.setDisabled(True)
-            self.signals.set_main_tab_index.emit(1)
+            # self.signals.set_main_tab_index.emit(1)
         else:
             if w := self.update_widgets.get(download_item.options.app_name):
                 w.update_button.setDisabled(False)

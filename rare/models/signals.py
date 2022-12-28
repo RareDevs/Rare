@@ -3,12 +3,20 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from .install import InstallOptionsModel
 
 
-class GlobalSignals(QObject):
-    exit_app = pyqtSignal(int)  # exit code
-    send_notification = pyqtSignal(str)  # app_title
+class GlobalSignals:
 
-    set_main_tab_index = pyqtSignal(int)  # tab index
-    update_download_tab_text = pyqtSignal()
+    # set_main_tab_index = pyqtSignal(int)  # tab index
+    # update_gamelist = pyqtSignal(list)
+
+    class ApplicationSignals(QObject):
+        # int: exit code
+        quit =  pyqtSignal(int)
+        # str: app_title
+        notify = pyqtSignal(str)
+        # none
+        prefix_updated = pyqtSignal()
+        # none
+        overlay_installed = pyqtSignal()
 
     class ProgressSignals(QObject):
         # str: app_name
@@ -17,29 +25,43 @@ class GlobalSignals(QObject):
         value = pyqtSignal(str, int)
         # str: app_name, bool: stopped
         finished = pyqtSignal(str, bool)
-    progress = ProgressSignals()
 
     class GameSignals(QObject):
         install = pyqtSignal(InstallOptionsModel)
-        # list of app_name
+        # list: app_name
         installed = pyqtSignal(list)
         # str: app_name
         uninstalled = pyqtSignal(str)
         # str: app_name
         verified = pyqtSignal(str)
-    game = GameSignals()
 
     class DownloadSignals(QObject):
         # str: app_name
         enqueue_game = pyqtSignal(str)
-    download = DownloadSignals()
+        # none
+        update_tab = pyqtSignal()
 
-    overlay_installation_finished = pyqtSignal()
+    class DiscordRPCSignals(QObject):
+        # str: app_title
+        set_title = pyqtSignal(str)
+        # none
+        apply_settings = pyqtSignal()
 
-    # update_gamelist = pyqtSignal(list)
-    # game_uninstalled = pyqtSignal(str)
+    def __init__(self):
+        self.application = GlobalSignals.ApplicationSignals()
+        self.progress = GlobalSignals.ProgressSignals()
+        self.game = GlobalSignals.GameSignals()
+        self.download = GlobalSignals.DownloadSignals()
+        self.discord_rpc = GlobalSignals.DiscordRPCSignals()
 
-    set_discord_rpc = pyqtSignal(str)  # app_name of running game
-    rpc_settings_updated = pyqtSignal()
-
-    wine_prefix_updated = pyqtSignal()
+    def deleteLater(self):
+        self.application.deleteLater()
+        del self.application
+        self.progress.deleteLater()
+        del self.progress
+        self.game.deleteLater()
+        del self.game
+        self.download.deleteLater()
+        del self.download
+        self.discord_rpc.deleteLater()
+        del self.discord_rpc

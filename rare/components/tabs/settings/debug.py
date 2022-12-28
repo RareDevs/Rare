@@ -13,7 +13,7 @@ class DebugSettings(QWidget):
         self.raise_runtime_exception_button.clicked.connect(self.raise_exception)
         self.restart_button = QPushButton("Restart")
         self.layout().addWidget(self.restart_button)
-        self.restart_button.clicked.connect(lambda: GlobalSignalsSingleton().exit_app.emit(-133742))
+        self.restart_button.clicked.connect(lambda: GlobalSignalsSingleton().application.quit.emit(-133742))
 
         self.layout().addStretch(1)
 

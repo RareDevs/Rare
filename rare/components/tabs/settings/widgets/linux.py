@@ -68,7 +68,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
     def save_prefix(self, text: str):
         self.save_setting(text, f"{self.name}.env", "WINEPREFIX")
         self.save_setting(text, self.name, "wine_prefix")
-        self.signals.wine_prefix_updated.emit()
+        self.signals.application.prefix_updated.emit()
 
     def load_setting(self, section: str, setting: str, fallback: str = str()):
         return self.core.lgd.config.get(section, setting, fallback=fallback)

@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         self.tray_icon.show_app.connect(self.show)
         self.tray_icon.activated.connect(lambda r: self.toggle() if r == self.tray_icon.DoubleClick else None)
 
-        self.signals.send_notification.connect(
+        self.signals.application.notify.connect(
             lambda title: self.tray_icon.showMessage(
                 self.tr("Download finished"),
                 self.tr("Download finished. {} is playable now").format(title),

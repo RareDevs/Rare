@@ -57,8 +57,8 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
         self.update_button.setVisible(False)
         self.overlay = self.core.lgd.get_overlay_install_info()
 
-        self.signals.overlay_installation_finished.connect(self.overlay_installation_finished)
-        self.signals.wine_prefix_updated.connect(self.update_prefixes)
+        self.signals.application.overlay_installed.connect(self.overlay_installation_finished)
+        self.signals.application.prefix_updated.connect(self.update_prefixes)
 
         self.update_check_button.clicked.connect(self.check_for_update)
         self.install_button.clicked.connect(self.install_overlay)
@@ -221,7 +221,7 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
         options = InstallOptionsModel(app_name="", base_path=base_path,
                                       platform="Windows", overlay=True)
 
-        self.signals.install_game.emit(options)
+        self.signals.game.install.emit(options)
 
     def uninstall_overlay(self):
         if not self.core.is_overlay_installed():

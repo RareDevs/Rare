@@ -87,7 +87,7 @@ class DownloadThread(QThread):
             ret.ret_code = ret.ReturnCode.FINISHED
 
             if self.item.options.overlay:
-                self.signals.overlay_installation_finished.emit()
+                self.signals.application.overlay_installed.emit()
                 self.core.finish_overlay_install(self.item.download.igame)
                 self.ret_status.emit(ret)
                 return

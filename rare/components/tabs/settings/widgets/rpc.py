@@ -39,4 +39,4 @@ class RPCSettings(QGroupBox, Ui_RPCSettings):
 
     def changed(self, i):
         self.settings.setValue("rpc_enable", i)
-        self.signals.rpc_settings_updated.emit()
+        self.signals.discord_rpc.apply_settings.emit()

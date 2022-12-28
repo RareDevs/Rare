@@ -285,7 +285,7 @@ class ImportGroup(QGroupBox):
             if igame and igame.version != self.core.get_asset(igame.app_name, igame.platform, False).build_version:
                 # update available
                 self.signals.download.enqueue_game.emit(igame.app_name)
-                self.signals.update_download_tab_text.emit()
+                self.signals.download.update_tab.emit()
 
         if len(result) == 1:
             res = result[0]
