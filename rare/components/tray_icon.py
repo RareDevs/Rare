@@ -1,16 +1,33 @@
 from logging import getLogger
-from typing import List
+from typing import List, Dict
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction
 
-from rare.shared import GlobalSignalsSingleton
-from rare.shared import LegendaryCoreSingleton
-from rare.utils.meta import GameMeta
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.models.game import RareGame
 
 logger = getLogger("TrayIcon")
 
+
+# FIXME: Remove when RareCore gets merged and replace it below
+class RareGameMeta:
+    def __init__(self):
+        self.core = LegendaryCoreSingleton()
+        metadata = RareGame.load_metadata_json()
+        self.metadata: Dict[str, RareGame.Metadata] = {}
+        for app_name, data in metadata.items():
+            self.metadata[app_name] = RareGame.Metadata.from_dict(data)
+
+    def get_list(self) -> List[str]:
+        last_played = [
+            item for item in self.metadata.items() if (bool(item[1]) and self.core.is_installed(item[0]))
+        ]
+        last_played.sort(key=lambda item: item[1].last_played, reverse=True)
+        last_played = last_played[0:5]
+        last_played = [item[0] for item in last_played]
+        return last_played
 
 class TrayIcon(QSystemTrayIcon):
     # none:
@@ -18,7 +35,7 @@ class TrayIcon(QSystemTrayIcon):
     # int: exit code
     exit_app: pyqtSignal = pyqtSignal(int)
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         super(TrayIcon, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
 
@@ -37,20 +54,14 @@ class TrayIcon(QSystemTrayIcon):
         self.text_action.setEnabled(False)
         self.menu.addAction(self.text_action)
 
-        if len(installed := self.core.get_installed_list()) < 5:
-            last_played = [GameMeta(i.app_name) for i in sorted(installed, key=lambda x: x.title)]
-        elif games := sorted(
-                parent.tab_widget.games_tab.game_utils.game_meta.get_games(),
-                key=lambda x: x.last_played, reverse=True):
-            last_played: List[GameMeta] = games[0:5]
-        else:
-            last_played = [GameMeta(i.app_name) for i in sorted(installed, key=lambda x: x.title)][0:5]
+        metadata = RareGameMeta()
+        last_played = metadata.get_list()
 
         self.game_actions: List[QAction] = []
 
-        for game in last_played:
-            a = QAction(self.core.get_game(game.app_name).app_title)
-            a.setProperty("app_name", game.app_name)
+        for app_name in last_played:
+            a = QAction(self.core.get_game(app_name).app_title)
+            a.setProperty("app_name", app_name)
             self.game_actions.append(a)
             a.triggered.connect(
                 lambda: parent.tab_widget.games_tab.game_utils.prepare_launch(

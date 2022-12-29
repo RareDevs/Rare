@@ -1,4 +1,3 @@
-import datetime
 import json
 import os
 import platform
@@ -18,7 +17,6 @@ from rare.lgndr.glue.arguments import LgndrUninstallGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import config_helper, misc
-from rare.utils.meta import RareGameMeta
 from .cloud_save_utils import CloudSaveUtils
 
 logger = getLogger("GameUtils")
@@ -34,7 +32,6 @@ class GameProcess(QObject):
         self.app_name = app_name
         self.on_startup = on_startup
         self.game = LegendaryCoreSingleton().get_game(app_name)
-        self.game_meta = RareGameMeta()
         self.socket = QLocalSocket()
         self.socket.connected.connect(self._socket_connected)
         try:
@@ -104,9 +101,6 @@ class GameProcess(QObject):
             if model.new_state == message_models.StateChangedModel.States.started:
                 logger.info("Launched Game")
                 self.game_launched.emit(self.app_name)
-                meta_data = self.game_meta.get_game(self.app_name)
-                meta_data.last_played = datetime.datetime.now()
-                self.game_meta.set_game(self.app_name, meta_data)
 
     def _socket_connected(self):
         self.timer.stop()
@@ -189,7 +183,6 @@ class GameUtils(QObject):
 
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
-        self.game_meta = RareGameMeta()
 
         for igame in self.core.get_installed_list():
             game_process = GameProcess(igame.app_name, True)

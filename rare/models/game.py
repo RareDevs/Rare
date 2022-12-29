@@ -1,16 +1,19 @@
+import json
+import os
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
-from typing import List, Optional
+from typing import List, Optional, Dict
 
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool
+from PyQt5.QtCore import QObject, pyqtSignal, QRunnable
 from PyQt5.QtGui import QPixmap
 from legendary.models.game import Game, InstalledGame, SaveGameFile
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel
 from rare.shared.image_manager import ImageManager
+from rare.utils.paths import data_dir
 
 logger = getLogger("RareGame")
 
@@ -29,14 +32,14 @@ class RareGame(QObject):
         last_played: Optional[datetime] = None
 
         @classmethod
-        def from_json(cls, data):
+        def from_dict(cls, data: Dict):
             return cls(
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
                 last_played=datetime.strptime(data.get("last_played", "None"), "%Y-%m-%dT%H:%M:%S.%f"),
             )
 
-        def __dict__(self):
+        def as_dict(self):
             return dict(
                 queued=self.queued,
                 queue_pos=self.queue_pos,
@@ -65,9 +68,6 @@ class RareGame(QObject):
             self.widget = RareGame.Signals.Widget()
             self.game = RareGame.Signals.Game()
 
-    progress: int = 0
-    active_thread: Optional[QRunnable] = None
-
     def __init__(self, game: Game, legendary_core: LegendaryCore, image_manager: ImageManager):
         super(RareGame, self).__init__()
         self.signals = RareGame.Signals()
@@ -85,6 +85,7 @@ class RareGame(QObject):
 
         self.pixmap: QPixmap = QPixmap()
         self.metadata: RareGame.Metadata = RareGame.Metadata()
+        self.load_metadata()
 
         self.owned_dlcs: List[RareGame] = []
         self.saves: List[SaveGameFile] = []
@@ -92,9 +93,34 @@ class RareGame(QObject):
         if self.has_update:
             logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
 
-        self.threadpool = QThreadPool.globalInstance()
+        self.progress: int = 0
+        self.active_thread: Optional[QRunnable] = None
 
         self.game_running = False
+
+    @staticmethod
+    def load_metadata_json() -> Dict:
+        metadata = {}
+        try:
+            with open(os.path.join(data_dir(), "game_meta.json"), "r") as metadata_fh:
+                metadata = json.load(metadata_fh)
+        except FileNotFoundError:
+            logger.info("Game metadata json file does not exist.")
+        except json.JSONDecodeError:
+            logger.warning("Game metadata json file is corrupt.")
+        return metadata
+
+    def load_metadata(self):
+        metadata = self.load_metadata_json()
+        if self.app_name in metadata:
+            self.metadata = RareGame.Metadata.from_dict(metadata[self.app_name])
+            print(self.metadata.as_dict())
+
+    def save_metadata(self):
+        metadata = self.load_metadata_json()
+        metadata[self.app_name] = self.metadata.as_dict()
+        with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
+            json.dump(metadata, metadata_json, indent=2)
 
     @property
     def app_name(self) -> str:
