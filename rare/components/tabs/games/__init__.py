@@ -14,6 +14,7 @@ from rare.shared import (
     ApiResultsSingleton,
     ImageManagerSingleton,
 )
+from rare.shared import RareCore
 from rare.shared.game_utils import GameUtils
 from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
@@ -30,6 +31,7 @@ logger = getLogger("GamesTab")
 class GamesTab(QStackedWidget):
     def __init__(self, parent=None):
         super(GamesTab, self).__init__(parent=parent)
+        self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
@@ -195,6 +197,7 @@ class GamesTab(QStackedWidget):
         self.update_count_games_label()
         for game in self.game_list + self.no_assets:
             rgame = self.__create_game_with_dlcs(game)
+            self.rcore.add_game(rgame)
             icon_widget, list_widget = self.add_library_widget(rgame)
             if not icon_widget or not list_widget:
                 logger.warning(f"Excluding {rgame.app_name} from the game list")

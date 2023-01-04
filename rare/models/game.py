@@ -346,6 +346,11 @@ class RareGame(QObject):
         """
         return not self.game.asset_infos
 
+    def install(self):
+        self.signals.game.install.emit(
+            InstallOptionsModel(app_name=self.game.app_name)
+        )
+
     @property
     def is_origin(self) -> bool:
         return self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"

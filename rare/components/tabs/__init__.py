@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
 
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
+from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.components.tabs.account import AccountWidget
 from rare.components.tabs.downloads import DownloadsTab
 from rare.components.tabs.games import GamesTab
@@ -18,6 +18,7 @@ class TabWidget(QTabWidget):
 
     def __init__(self, parent):
         super(TabWidget, self).__init__(parent=parent)
+        self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
@@ -28,17 +29,13 @@ class TabWidget(QTabWidget):
         self.games_tab = GamesTab(self)
         self.addTab(self.games_tab, self.tr("Games"))
 
+        # Downloads Tab after Games Tab to use populated RareCore games list
         if not self.args.offline:
-            # updates = self.games_tab.default_widget.game_list.updates
-            self.downloads_tab = DownloadsTab(self.games_tab.game_updates, self)
+            self.downloads_tab = DownloadsTab(self)
+            updates = list(self.rcore.updates)
             self.addTab(
                 self.downloads_tab,
-                "Downloads"
-                + (
-                    " (" + str(len(self.games_tab.game_updates)) + ")"
-                    if len(self.games_tab.game_updates) != 0
-                    else ""
-                ),
+                self.tr("Downloads {}").format(f"({len(updates) if updates else 0})"),
             )
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))

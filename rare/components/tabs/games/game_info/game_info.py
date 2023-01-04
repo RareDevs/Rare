@@ -116,7 +116,7 @@ class GameInfo(QWidget):
         if self.rgame.is_origin:
             self.game_utils.launch_game(self.rgame.app_name)
         else:
-            self.signals.game.install.emit(InstallOptionsModel(app_name=self.rgame.app_name))
+            self.rgame.install()
 
     @pyqtSlot()
     def uninstall(self):

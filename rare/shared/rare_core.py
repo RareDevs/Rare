@@ -1,13 +1,16 @@
 import configparser
 import os
 from argparse import Namespace
+from itertools import chain
 from logging import getLogger
-from typing import Optional
+from typing import Optional, Dict, Iterator, Callable
 
 from PyQt5.QtCore import QObject
+from legendary.models.game import Game, SaveGameFile
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.apiresults import ApiResults
+from rare.models.game import RareGame
 from rare.models.signals import GlobalSignals
 from .image_manager import ImageManager
 
@@ -31,6 +34,8 @@ class RareCore(QObject):
         self.signals(init=True)
         self.core(init=True)
         self.image_manager(init=True)
+
+        self.__games: Dict[str, RareGame] = {}
 
         RareCore._instance = self
 
@@ -130,4 +135,81 @@ class RareCore(QObject):
         RareCore._instance = None
 
         super(RareCore, self).deleteLater()
+
+    def get_game(self, app_name: str) -> RareGame:
+        return self.__games[app_name]
+
+    def add_game(self, rgame: RareGame) -> None:
+        rgame.signals.game.install.connect(self._signals.game.install)
+        self.__games[rgame.app_name] = rgame
+
+    def __filter_games(self, condition: Callable[[RareGame], bool]) -> Iterator[RareGame]:
+        return filter(condition, self.__games.values())
+
+    @property
+    def games_and_dlcs(self) -> Iterator[RareGame]:
+        for app_name in self.__games:
+            yield self.__games[app_name]
+
+    @property
+    def games(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: not game.is_dlc)
+
+    @property
+    def installed_games(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: game.is_installed and not game.is_dlc)
+
+    @property
+    def game_list(self) -> Iterator[Game]:
+        for game in self.games:
+            yield game.game
+
+    @property
+    def dlcs(self) -> Dict[str, Game]:
+        """!
+        RareGames that ARE DLCs themselves
+        """
+        return {game.game.catalog_item_id: game.owned_dlcs for game in self.has_dlcs}
+        # return self.__filter_games(lambda game: game.is_dlc)
+
+    @property
+    def has_dlcs(self) -> Iterator[RareGame]:
+        """!
+        RareGames that HAVE DLCs associated with them
+        """
+        return self.__filter_games(lambda game: bool(game.owned_dlcs))
+
+    @property
+    def bit32_games(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: game.is_win32)
+
+    @property
+    def mac_games(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: game.is_mac)
+
+    @property
+    def no_asset_games(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: game.is_non_asset)
+
+    @property
+    def unreal_engine(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: game.is_unreal)
+
+    @property
+    def updates(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: game.has_update)
+
+    @property
+    def saves(self) -> Iterator[SaveGameFile]:
+        """!
+        SaveGameFiles across games
+        """
+        return chain.from_iterable([game.saves for game in self.has_saves])
+
+    @property
+    def has_saves(self) -> Iterator[RareGame]:
+        """!
+        RareGames that have SaveGameFiles associated with them
+        """
+        return self.__filter_games(lambda game: bool(game.saves))
 

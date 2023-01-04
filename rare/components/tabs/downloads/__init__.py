@@ -20,7 +20,7 @@ from rare.components.tabs.downloads.download_thread import DownloadThread
 from rare.lgndr.models.downloading import UIUpdate
 from rare.models.game import RareGame
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab
 from rare.utils.misc import get_size, create_desktop_link
 
@@ -32,9 +32,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
     dl_queue: List[InstallQueueItemModel] = []
     dl_status = pyqtSignal(int)
 
-    def __init__(self, game_updates: Set[RareGame], parent=None):
+    def __init__(self, parent=None):
         super(DownloadsTab, self).__init__(parent=parent)
         self.setupUi(self)
+        self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
 
@@ -56,9 +57,10 @@ class DownloadsTab(QWidget, Ui_DownloadsTab):
 
         self.update_text = QLabel(self.tr("No updates available"))
         self.update_layout.addWidget(self.update_text)
-        self.update_text.setVisible(len(game_updates) == 0)
 
-        for rgame in game_updates:
+        has_updates = False
+        for rgame in self.rcore.updates:
+            has_updates = True
             self.add_update(rgame)
 
         self.queue_widget.item_removed.connect(self.queue_item_removed)
