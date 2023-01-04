@@ -61,6 +61,8 @@ class RareGame(QObject):
         class Game(QObject):
             install = pyqtSignal(InstallOptionsModel)
             uninstalled = pyqtSignal()
+            launched = pyqtSignal()
+            finished = pyqtSignal()
 
         def __init__(self):
             super(RareGame.Signals, self).__init__()
@@ -114,7 +116,6 @@ class RareGame(QObject):
         metadata = self.load_metadata_json()
         if self.app_name in metadata:
             self.metadata = RareGame.Metadata.from_dict(metadata[self.app_name])
-            print(self.metadata.as_dict())
 
     def save_metadata(self):
         metadata = self.load_metadata_json()
@@ -133,7 +134,6 @@ class RareGame(QObject):
     @property
     def title(self) -> str:
         return self.app_title
-
 
     @property
     def developer(self) -> str:

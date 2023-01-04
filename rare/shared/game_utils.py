@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import platform
@@ -15,6 +16,7 @@ from rare.game_launch_helper import message_models
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.glue.arguments import LgndrUninstallGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
+from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils import config_helper, misc
 from .cloud_save_utils import CloudSaveUtils
@@ -23,15 +25,16 @@ logger = getLogger("GameUtils")
 
 
 class GameProcess(QObject):
-    game_finished = pyqtSignal(int, str)  # exit_code, appname
+    # str: app_name, int: exit_code
+    game_finished = pyqtSignal(str, int)
+    # str: app_name
     game_launched = pyqtSignal(str)
-    tried_connections = 0
 
-    def __init__(self, app_name: str, on_startup=False, always_ask_sync: bool = False):
+    def __init__(self, rgame: RareGame, on_startup=False, always_ask_sync: bool = False):
         super(GameProcess, self).__init__()
-        self.app_name = app_name
+        self.rgame = rgame
         self.on_startup = on_startup
-        self.game = LegendaryCoreSingleton().get_game(app_name)
+        self.tried_connections = 0
         self.socket = QLocalSocket()
         self.socket.connected.connect(self._socket_connected)
         try:
@@ -59,13 +62,13 @@ class GameProcess(QObject):
             self.connect_to_server()
 
     def connect_to_server(self):
-        self.socket.connectToServer(f"rare_{self.app_name}")
+        self.socket.connectToServer(f"rare_{self.rgame.app_name}")
         self.tried_connections += 1
 
         if self.tried_connections > 50:  # 10 seconds
             QMessageBox.warning(None, "Error", self.tr("Connection to game process failed (Timeout)"))
             self.timer.stop()
-            self.game_finished.emit(1, self.app_name)
+            self.game_finished.emit(self.rgame.app_name, 1)
 
     def _message_available(self):
         message = self.socket.readAll().data()
@@ -84,43 +87,46 @@ class GameProcess(QObject):
         if action == -1:
             logger.error("Got unexpected action")
         elif action == message_models.Actions.finished:
-            logger.info(f"{self.app_name} finished")
+            logger.info(f"{self.rgame.app_name} {self.rgame.app_title} finished")
             model = message_models.FinishedModel.from_json(data)
             self.socket.close()
             self._game_finished(model.exit_code)
         elif action == message_models.Actions.error:
             model = message_models.ErrorModel.from_json(data)
-            logger.error(f"Error in game {self.game.app_title}: {model.error_string}")
+            logger.error(f"Error in game {self.rgame.app_title}: {model.error_string}")
             self.socket.close()
             self._game_finished(1)
             QMessageBox.warning(None, "Error", self.tr(
-                "Error in game {}: \n{}").format(self.game.app_title, model.error_string))
+                "Error in game {}: \n{}").format(self.rgame.app_title, model.error_string))
 
         elif action == message_models.Actions.state_update:
             model = message_models.StateChangedModel.from_json(data)
             if model.new_state == message_models.StateChangedModel.States.started:
                 logger.info("Launched Game")
-                self.game_launched.emit(self.app_name)
+                self.game_launched.emit(self.rgame.app_name)
+                meta_data = self.rgame.metadata
+                meta_data.last_played = datetime.datetime.now()
+                self.rgame.save_metadata()
 
     def _socket_connected(self):
         self.timer.stop()
         self.timer.deleteLater()
-        logger.info(f"Connection established for {self.app_name}")
+        logger.info(f"Connection established for {self.rgame.app_name} ({self.rgame.app_title})")
         if self.on_startup:
-            logger.info(f"Found {self.app_name} running at startup")
+            logger.info(f"Found {self.rgame.app_name} ({self.rgame.app_title}) running at startup")
 
             # FIXME run this after startup, widgets do not exist at this time
-            QTimer.singleShot(1000, lambda: self.game_launched.emit(self.app_name))
+            QTimer.singleShot(1000, lambda: self.game_launched.emit(self.rgame.app_name))
 
     def _error_occurred(self, _):
         if self.on_startup:
             self.socket.close()
             self.deleteLater()
             self._game_finished(-1234)  # 1234 is exit code for startup
-        logger.error(f"{self.app_name}: {self.socket.errorString()}")
+        logger.error(f"{self.rgame.app_name} ({self.rgame.app_title}): {self.socket.errorString()}")
 
     def _game_finished(self, exit_code: int):
-        self.game_finished.emit(exit_code, self.app_name)
+        self.game_finished.emit(self.rgame.app_name, exit_code)
 
 
 def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_config=False):
@@ -168,10 +174,8 @@ def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_co
 
 
 class GameUtils(QObject):
-    running_games = dict()
     finished = pyqtSignal(str, str)  # app_name, error
     cloud_save_finished = pyqtSignal(str)
-    launch_queue = dict()
     game_launched = pyqtSignal(str)
     update_list = pyqtSignal(str)
 
@@ -181,14 +185,18 @@ class GameUtils(QObject):
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
 
+        self.running_games = {}
+        self.launch_queue = {}
+
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
 
-        for igame in self.core.get_installed_list():
-            game_process = GameProcess(igame.app_name, True)
+    def check_running(self, rgame: RareGame):
+        if rgame.is_installed:
+            game_process = GameProcess(rgame, True)
             game_process.game_finished.connect(self.game_finished)
             game_process.game_launched.connect(self.game_launched.emit)
-            self.running_games[igame.app_name] = game_process
+            self.running_games[rgame.app_name] = game_process
 
     def uninstall_game(self, app_name) -> bool:
         # returns if uninstalled
@@ -219,34 +227,33 @@ class GameUtils(QObject):
         return True
 
     def prepare_launch(
-            self, app_name, offline: bool = False, skip_update_check: bool = False
+            self, rgame: RareGame, offline: bool = False, skip_update_check: bool = False
     ):
-        game = self.core.get_game(app_name)
         dont_sync_after_finish = False
 
         # TODO move this to helper
-        if game.supports_cloud_saves and not offline:
+        if rgame.game.supports_cloud_saves and not offline:
             try:
-                sync = self.cloud_save_utils.sync_before_launch_game(app_name)
+                sync = self.cloud_save_utils.sync_before_launch_game(rgame.app_name)
             except ValueError:
                 logger.info("Cancel startup")
-                self.sync_finished(app_name)
+                self.sync_finished(rgame.app_name)
                 return
             except AssertionError:
                 dont_sync_after_finish = True
             else:
                 if sync:
-                    self.launch_queue[app_name] = (app_name, skip_update_check, offline)
+                    self.launch_queue[rgame.app_name] = (rgame.app_name, skip_update_check, offline)
                     return
-            self.sync_finished(app_name)
+            self.sync_finished(rgame.app_name)
 
         self.launch_game(
-            app_name, offline, skip_update_check, ask_always_sync=dont_sync_after_finish
+            rgame, offline, skip_update_check, ask_always_sync=dont_sync_after_finish
         )
 
     def launch_game(
             self,
-            app_name: str,
+            rgame: RareGame,
             offline: bool = False,
             skip_update_check: bool = False,
             wine_bin: str = None,
@@ -256,7 +263,7 @@ class GameUtils(QObject):
         executable = misc.get_rare_executable()
         executable, args = executable[0], executable[1:]
         args.extend([
-            "start", app_name
+            "start", rgame.app_name
         ])
         if offline:
             args.append("--offline")
@@ -272,12 +279,12 @@ class GameUtils(QObject):
         # kill me, if I don't change it before commit
         QProcess.startDetached(executable, args)
         logger.info(f"Start new Process: ({executable} {' '.join(args)})")
-        game_process = GameProcess(app_name, ask_always_sync)
+        game_process = GameProcess(rgame, ask_always_sync)
         game_process.game_finished.connect(self.game_finished)
         game_process.game_launched.connect(self.game_launched.emit)
-        self.running_games[app_name] = game_process
+        self.running_games[rgame.app_name] = game_process
 
-    def game_finished(self, exit_code, app_name):
+    def game_finished(self, app_name, exit_code):
         if self.running_games.get(app_name):
             self.running_games.pop(app_name)
         if exit_code == -1234:
