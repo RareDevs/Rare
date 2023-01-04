@@ -1,10 +1,11 @@
 import os
 import platform
+from abc import abstractmethod
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QSettings, QStandardPaths, Qt
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import QMessageBox, QAction
+from PyQt5.QtWidgets import QMessageBox, QAction, QLabel
 
 from rare.models.game import RareGame
 from rare.shared import (
@@ -112,9 +113,6 @@ class GameWidget(LibraryWidget):
             )
 
         self.texts = {
-            "static": {
-                "needs_verification": self.tr("Please verify game before playing"),
-            },
             "hover": {
                 "update_available": self.tr("Start without version check"),
                 "launch": self.tr("Launch Game"),
@@ -123,21 +121,37 @@ class GameWidget(LibraryWidget):
                 "launch_offline": self.tr("Launch offline"),
                 "no_launch": self.tr("Can't launch game")
             },
-            "default": {
+            "status": {
+                "needs_verification": self.tr("Please verify game before playing"),
                 "running": self.tr("Game running"),
                 "syncing": self.tr("Syncing cloud saves"),
                 "update_available": self.tr("Update available"),
-                "no_meta": self.tr("Game is only offline available")
+                "no_meta": self.tr("Game is only offline available"),
+                "no_launch": self.tr("Can't launch game"),
             },
         }
+
+        self.rgame.signals.progress.finish.connect(self.set_status)
+
+    @abstractmethod
+    def set_status(self, label: QLabel):
+        if self.rgame.is_installed:
+            if self.rgame.has_update:
+                label.setText(self.texts["status"]["update_available"])
+                return
+            if self.rgame.needs_verification:
+                label.setText(self.texts["status"]["needs_verification"])
+                return
+        label.setText("")
+        label.setVisible(False)
 
     @property
     def enterEventText(self) -> str:
         if self.rgame.is_installed:
             if self.game_running:
-                return self.texts["hover"]["running"]
+                return self.texts["status"]["running"]
             elif (not self.rgame.is_origin) and self.rgame.needs_verification:
-                return self.texts["static"]["needs_verification"]
+                return self.texts["status"]["needs_verification"]
             elif self.rgame.is_foreign:
                 return self.texts["hover"]["launch_offline"]
             elif self.rgame.has_update:
@@ -155,15 +169,15 @@ class GameWidget(LibraryWidget):
     def leaveEventText(self) -> str:
         if self.rgame.is_installed:
             if self.game_running:
-                return self.texts["default"]["running"]
+                return self.texts["status"]["running"]
             elif self.syncing_cloud_saves:
-                return self.texts["default"]["syncing"]
+                return self.texts["status"]["syncing"]
             elif self.rgame.is_foreign:
-                return self.texts["default"]["no_meta"]
+                return self.texts["status"]["no_meta"]
             elif self.rgame.has_update:
-                return self.texts["default"]["update_available"]
+                return self.texts["status"]["update_available"]
             elif (not self.rgame.is_origin) and self.rgame.needs_verification:
-                return self.texts["static"]["needs_verification"]
+                return self.texts["status"]["needs_verification"]
             else:
                 return ""
         else:

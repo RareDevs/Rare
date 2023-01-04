@@ -15,10 +15,35 @@ from rare.widgets.elide_label import ElideLabel
 
 
 class IconWidget(object):
-    _effect = None
-    _animation = None
+    def __init__(self):
+        self._effect = None
+        self._animation = None
+
+        self.status_label = None
+        self.mini_widget = None
+        self.mini_effect = None
+        self.title_label = None
+        self.tooltip_label = None
+        self.launch_btn = None
+        self.install_btn = None
 
     def setupUi(self, widget: QWidget):
+        # information at top
+        self.status_label = ElideLabel(parent=widget)
+        self.status_label.setObjectName(f"{type(self).__name__}StatusLabel")
+        self.status_label.setStyleSheet(
+            f"QLabel#{self.status_label.objectName()}"
+            "{"
+            "color: white;"
+            "background-color: rgba(0, 0, 0, 65%);"
+            "border-radius: 5%;"
+            "border-top-left-radius: 11%;"
+            "border-top-right-radius: 11%;"
+            "}"
+        )
+        self.status_label.setContentsMargins(6, 6, 6, 6)
+        self.status_label.setAutoFillBackground(False)
+
         # on-hover popup
         self.mini_widget = QWidget(parent=widget)
         self.mini_widget.setObjectName(f"{type(self).__name__}MiniWidget")
@@ -52,15 +77,15 @@ class IconWidget(object):
         self.title_label.setWordWrap(True)
 
         # information below title
-        self.status_label = ElideLabel(parent=self.mini_widget)
-        self.status_label.setObjectName(f"{type(self).__name__}StatusLabel")
-        self.status_label.setStyleSheet(
-            f"QLabel#{self.status_label.objectName()}"
+        self.tooltip_label = ElideLabel(parent=self.mini_widget)
+        self.tooltip_label.setObjectName(f"{type(self).__name__}StatusLabel")
+        self.tooltip_label.setStyleSheet(
+            f"QLabel#{self.tooltip_label.objectName()}"
             "{"
             "background-color: rgba(0, 0, 0, 0%); color: white;"
             "}"
         )
-        self.status_label.setAutoFillBackground(False)
+        self.tooltip_label.setAutoFillBackground(False)
 
         # play button
         self.launch_btn = QPushButton(parent=self.mini_widget)
@@ -125,9 +150,10 @@ class IconWidget(object):
         row_layout.addWidget(self.launch_btn)
         row_layout.addWidget(self.install_btn)
         mini_layout.addLayout(row_layout, stretch=2)
-        mini_layout.addWidget(self.status_label)
+        mini_layout.addWidget(self.tooltip_label)
         self.mini_widget.setLayout(mini_layout)
 
+        image_layout.addWidget(self.status_label)
         image_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Expanding))
         image_layout.addWidget(self.mini_widget)
         widget.setLayout(image_layout)

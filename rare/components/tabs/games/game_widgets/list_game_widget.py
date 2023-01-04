@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QEvent, QRect
+from PyQt5.QtCore import Qt, QEvent, QRect, pyqtSlot
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import (
     QPalette,
@@ -33,8 +33,6 @@ class ListGameWidget(GameWidget):
 
         self.ui.title_label.setText(f"<h3>{self.rgame.app_title}</h3>")
 
-        self.update_text()
-
         self.ui.install_btn.setVisible(not self.rgame.is_installed)
         self.ui.install_btn.clicked.connect(self.install)
 
@@ -58,16 +56,22 @@ class ListGameWidget(GameWidget):
 
         self.ui.launch_btn.setEnabled(self.rgame.can_launch)
 
+        self.set_status()
+
+    @pyqtSlot()
+    def set_status(self):
+        super(ListGameWidget, self).set_status(self.ui.status_label)
+
     def update_text(self, e=None):
         if self.rgame.is_installed:
             if self.rgame.has_update:
-                self.ui.status_label.setText(self.texts["default"]["update_available"])
+                self.ui.status_label.setText(self.texts["status"]["update_available"])
             elif self.rgame.is_foreign:
-                self.ui.status_label.setText(self.texts["default"]["no_meta"])
+                self.ui.status_label.setText(self.texts["status"]["no_meta"])
             elif self.rgame.igame and self.rgame.needs_verification:
-                self.ui.status_label.setText(self.texts["static"]["needs_verification"])
+                self.ui.status_label.setText(self.texts["status"]["needs_verification"])
             elif self.syncing_cloud_saves:
-                self.ui.status_label.setText(self.texts["default"]["syncing"])
+                self.ui.status_label.setText(self.texts["status"]["syncing"])
             else:
                 self.ui.status_label.setText("")
                 self.ui.status_label.setVisible(False)
@@ -75,26 +79,30 @@ class ListGameWidget(GameWidget):
             self.ui.status_label.setVisible(False)
 
     def enterEvent(self, a0: QEvent = None) -> None:
+        if a0 is not None:
+            a0.accept()
         status = self.enterEventText
-        self.ui.status_label.setText(status)
-        self.ui.status_label.setVisible(bool(status))
+        self.ui.tooltip_label.setText(status)
+        self.ui.tooltip_label.setVisible(bool(status))
 
     def leaveEvent(self, a0: QEvent = None) -> None:
+        if a0 is not None:
+            a0.accept()
         status = self.leaveEventText
-        self.ui.status_label.setText(status)
-        self.ui.status_label.setVisible(bool(status))
+        self.ui.tooltip_label.setText(status)
+        self.ui.tooltip_label.setVisible(bool(status))
 
     def game_started(self, app_name):
         if app_name == self.rgame.app_name:
             self.game_running = True
-            self.update_text()
+            # self.update_text()
             self.ui.launch_btn.setDisabled(True)
 
     def game_finished(self, app_name, error):
         if app_name != self.rgame.app_name:
             return
         super().game_finished(app_name, error)
-        self.update_text(None)
+        # self.update_text(None)
         self.ui.launch_btn.setDisabled(False)
 
     """

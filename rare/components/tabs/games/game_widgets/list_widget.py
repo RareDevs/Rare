@@ -15,6 +15,17 @@ from rare.widgets.elide_label import ElideLabel
 
 
 class ListWidget(object):
+    def __init__(self):
+        self.title_label = None
+        self.status_label = None
+        self.tooltip_label = None
+        self.install_btn = None
+        self.launch_btn = None
+
+        self.developer_text = None
+        self.version_text = None
+        self.size_text = None
+
     def setupUi(self, widget: QWidget):
         self.title_label = QLabel(parent=widget)
         self.title_label.setWordWrap(False)
@@ -22,6 +33,14 @@ class ListWidget(object):
         self.status_label = QLabel(parent=widget)
         self.status_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.status_label.setStyleSheet(
+            "background-color: rgba(0,0,0,75%);"
+            "border: 1px solid black;"
+            "border-radius: 5px;"
+        )
+
+        self.tooltip_label = QLabel(parent=widget)
+        self.tooltip_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.tooltip_label.setStyleSheet(
             "background-color: rgba(0,0,0,75%);"
             "border: 1px solid black;"
             "border-radius: 5px;"
@@ -92,8 +111,10 @@ class ListWidget(object):
         bottom_layout.addWidget(self.version_text, stretch=0, alignment=Qt.AlignLeft)
         bottom_layout.addItem(QSpacerItem(20, 0, QSizePolicy.Fixed, QSizePolicy.Minimum))
         bottom_layout.addWidget(self.size_text, stretch=0, alignment=Qt.AlignLeft)
+        bottom_layout.addItem(QSpacerItem(20, 0, QSizePolicy.Fixed, QSizePolicy.Minimum))
+        bottom_layout.addWidget(self.status_label, stretch=0, alignment=Qt.AlignLeft)
         bottom_layout.addItem(QSpacerItem(20, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        bottom_layout.addWidget(self.status_label, stretch=0, alignment=Qt.AlignRight)
+        bottom_layout.addWidget(self.tooltip_label, stretch=0, alignment=Qt.AlignRight)
         # bottom_layout.addWidget(self.info_btn, stretch=0, alignment=Qt.AlignRight)
         bottom_layout.addWidget(self.install_btn, stretch=0, alignment=Qt.AlignRight)
         bottom_layout.addWidget(self.launch_btn, stretch=0, alignment=Qt.AlignRight)
@@ -104,6 +125,7 @@ class ListWidget(object):
         widget.setLayout(layout)
 
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+        widget.leaveEvent(None)
 
         # lk: for debug, DO NOT REMOVE
         # self.image.setObjectName(f"{type(self).__name__}_image")

@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import QEvent, pyqtSignal
+from PyQt5.QtCore import QEvent, pyqtSignal, pyqtSlot
 
 from rare.models.game import RareGame
 from rare.shared.game_utils import GameUtils
@@ -30,25 +30,28 @@ class IconGameWidget(GameWidget):
         self.ui.install_btn.clicked.connect(self.install)
         self.ui.install_btn.setVisible(not self.rgame.is_installed)
 
-        if self.rgame.igame and self.rgame.needs_verification:
-            self.ui.status_label.setText(self.texts["static"]["needs_verification"])
-
         self.game_utils.game_launched.connect(self.game_started)
 
         self.is_ready = True
         self.ui.launch_btn.setEnabled(self.rgame.can_launch)
 
+        self.set_status()
+
+    @pyqtSlot()
+    def set_status(self):
+        super(IconGameWidget, self).set_status(self.ui.status_label)
+
     def enterEvent(self, a0: QEvent = None) -> None:
         if a0 is not None:
             a0.accept()
-        self.ui.status_label.setText(self.enterEventText)
+        self.ui.tooltip_label.setText(self.enterEventText)
         self.ui.enterAnimation(self)
 
     def leaveEvent(self, a0: QEvent = None) -> None:
         if a0 is not None:
             a0.accept()
         self.ui.leaveAnimation(self)
-        self.ui.status_label.setText(self.leaveEventText)
+        self.ui.tooltip_label.setText(self.leaveEventText)
 
     def game_launch(self):
         if not self.game_running:
