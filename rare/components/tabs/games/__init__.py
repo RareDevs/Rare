@@ -124,17 +124,9 @@ class GamesTab(QStackedWidget):
             self.view_stack.setCurrentWidget(self.icon_view_scroll)
 
         self.head_bar.search_bar.textChanged.connect(lambda x: self.filter_games("", x))
-        self.head_bar.search_bar.textChanged.connect(
-            lambda x: self.icon_view_scroll.verticalScrollBar().setSliderPosition(
-                self.icon_view_scroll.verticalScrollBar().minimum()
-            )
-        )
-        self.head_bar.search_bar.textChanged.connect(
-            lambda x: self.list_view_scroll.verticalScrollBar().setSliderPosition(
-                self.list_view_scroll.verticalScrollBar().minimum()
-            )
-        )
+        self.head_bar.search_bar.textChanged.connect(self.scroll_to_top)
         self.head_bar.filterChanged.connect(self.filter_games)
+        self.head_bar.filterChanged.connect(self.scroll_to_top)
         self.head_bar.refresh_list.clicked.connect(self.library_controller.update_list)
         self.head_bar.view.toggled.connect(self.toggle_view)
 
@@ -154,6 +146,15 @@ class GamesTab(QStackedWidget):
         start_t = time.time()
         self.setup_game_list()
         print(f"Game list setup time: {time.time() - start_t}")
+
+    @pyqtSlot()
+    def scroll_to_top(self):
+        self.icon_view_scroll.verticalScrollBar().setSliderPosition(
+            self.icon_view_scroll.verticalScrollBar().minimum()
+        )
+        self.list_view_scroll.verticalScrollBar().setSliderPosition(
+            self.list_view_scroll.verticalScrollBar().minimum()
+        )
 
     @pyqtSlot()
     def show_import(self):
