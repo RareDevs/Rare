@@ -59,7 +59,6 @@ class GameInfo(QWidget):
         self.rgame: Optional[RareGame] = None
         self.game: Optional[Game] = None
         self.igame: Optional[InstalledGame] = None
-        self.verify_threads: Dict[str, QRunnable] = {}
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.Display)
@@ -127,99 +126,95 @@ class GameInfo(QWidget):
     @pyqtSlot()
     def repair(self):
         """ This function is to be called from the button only """
-        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.igame.app_name}.repair")
+        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.rgame.app_name}.repair")
         if not os.path.exists(repair_file):
             QMessageBox.warning(
                 self,
-                self.tr("Error - {}").format(self.igame.title),
+                self.tr("Error - {}").format(self.rgame.title),
                 self.tr(
                     "Repair file does not exist or game does not need a repair. Please verify game first"
                 ),
             )
             return
-        self.repair_game(self.igame)
+        self.repair_game(self.rgame)
 
-    def repair_game(self, igame: InstalledGame):
-        game = self.core.get_game(igame.app_name)
+    def repair_game(self, rgame: RareGame):
+        rgame.update_game()
         ans = False
-        if igame.version != game.app_version(igame.platform):
+        if rgame.has_update:
             ans = QMessageBox.question(
                 self,
                 self.tr("Repair and update?"),
                 self.tr(
                     "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. "
                     "Do you want to update the game while repairing it?"
-                ).format(igame.title, igame.version, game.app_version(igame.platform)),
+                ).format(rgame.title, rgame.version, rgame.remote_version),
             ) == QMessageBox.Yes
         self.signals.game.install.emit(
             InstallOptionsModel(
-                app_name=igame.app_name, repair_mode=True, repair_and_update=ans, update=True
+                app_name=rgame.app_name, repair_mode=True, repair_and_update=ans, update=True
             )
         )
 
     @pyqtSlot()
     def verify(self):
         """ This function is to be called from the button only """
-        if not os.path.exists(self.igame.install_path):
-            logger.error(f"Installation path {self.igame.install_path} for {self.igame.title} does not exist")
+        if not os.path.exists(self.rgame.igame.install_path):
+            logger.error(f"Installation path {self.rgame.igame.install_path} for {self.rgame.title} does not exist")
             QMessageBox.warning(
                 self,
-                self.tr("Error - {}").format(self.igame.title),
-                self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.igame.title),
+                self.tr("Error - {}").format(self.rgame.title),
+                self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.rgame.title),
             )
             return
-        self.verify_game(self.igame)
+        self.verify_game(self.rgame)
 
-    def verify_game(self, igame: InstalledGame):
+    def verify_game(self, rgame: RareGame):
         self.ui.verify_widget.setCurrentIndex(1)
-        verify_worker = VerifyWorker(igame.app_name)
+        verify_worker = VerifyWorker(rgame, self.core, self.args)
         verify_worker.signals.status.connect(self.verify_status)
         verify_worker.signals.result.connect(self.verify_result)
         verify_worker.signals.error.connect(self.verify_error)
         self.ui.verify_progress.setValue(0)
-        self.verify_threads[igame.app_name] = verify_worker
+        self.rgame.active_thread = verify_worker
         self.verify_pool.start(verify_worker)
         self.ui.move_button.setEnabled(False)
 
-    def verify_cleanup(self, app_name: str):
+    def verify_cleanup(self, rgame: RareGame):
         self.ui.verify_widget.setCurrentIndex(0)
-        self.verify_threads.pop(app_name)
+        rgame.active_thread = None
         self.ui.move_button.setEnabled(True)
         self.ui.verify_button.setEnabled(True)
 
-    @pyqtSlot(str, str)
-    def verify_error(self, app_name, message):
-        self.verify_cleanup(app_name)
-        igame = self.core.get_installed_game(app_name)
+    @pyqtSlot(RareGame, str)
+    def verify_error(self, rgame: RareGame, message):
+        self.verify_cleanup(rgame)
         QMessageBox.warning(
             self,
-            self.tr("Error - {}").format(igame.title),
+            self.tr("Error - {}").format(rgame.title),
             message
         )
 
-    @pyqtSlot(str, int, int, float, float)
-    def verify_status(self, app_name, num, total, percentage, speed):
-        # checked, max, app_name
-        if app_name == self.game.app_name:
-            self.ui.verify_progress.setValue(num * 100 // total)
+    @pyqtSlot(RareGame, int, int, float, float)
+    def verify_status(self, rgame: RareGame, num, total, percentage, speed):
+        self.ui.verify_progress.setValue(num * 100 // total)
 
-    @pyqtSlot(str, bool, int, int)
-    def verify_result(self, app_name, success, failed, missing):
-        self.verify_cleanup(app_name)
+    @pyqtSlot(RareGame, bool, int, int)
+    def verify_result(self, rgame: RareGame, success, failed, missing):
+        self.verify_cleanup(rgame)
         self.ui.repair_button.setDisabled(success)
-        igame = self.core.get_installed_game(app_name)
         if success:
             QMessageBox.information(
                 self,
-                self.tr("Summary - {}").format(igame.title),
+                self.tr("Summary - {}").format(rgame.title),
                 self.tr("<b>{}</b> has been verified successfully. "
-                        "No missing or corrupt files found").format(igame.title),
+                        "No missing or corrupt files found").format(rgame.title),
             )
-            self.verification_finished.emit(igame)
+            self.verification_finished.emit(rgame.igame)
         else:
             ans = QMessageBox.question(
                 self,
-                self.tr("Summary - {}").format(igame.title),
+                self.tr("Summary - {}").format(rgame.title),
                 self.tr(
                     "Verification failed, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. "
                     "Do you want to repair them?"
@@ -228,7 +223,7 @@ class GameInfo(QWidget):
                 QMessageBox.Yes,
             )
             if ans == QMessageBox.Yes:
-                self.repair_game(igame)
+                self.repair_game(rgame)
 
     @pyqtSlot(str)
     def move_game(self, dest_path):
@@ -325,8 +320,22 @@ class GameInfo(QWidget):
         self.ui.move_button.showMenu()
 
     def update_game(self, rgame: RareGame):
-        # FIXME: Use RareGame for the rest of the code
+        if self.rgame is not None:
+            if worker:= self.rgame.active_thread is not None:
+                if isinstance(worker, VerifyWorker):
+                    try:
+                        worker.signals.status.disconnect(self.verify_status)
+                    except TypeError as e:
+                        logger.warning(f"{self.rgame.app_title} verify worker: {e}")
         self.rgame = rgame
+        if worker:= self.rgame.active_thread is not None:
+            if isinstance(worker, VerifyWorker):
+                self.ui.verify_widget.setCurrentIndex(1)
+                self.ui.verify_progress.setValue(self.rgame.progress)
+                worker.signals.status.connect(self.verify_status)
+        else:
+            self.ui.verify_widget.setCurrentIndex(0)
+        # FIXME: Use RareGame for the rest of the code
         self.game = rgame.game
         self.igame = rgame.igame
         self.title.setTitle(self.game.app_title)
@@ -386,17 +395,17 @@ class GameInfo(QWidget):
             self.steam_worker.set_app_name(self.game.app_name)
             QThreadPool.globalInstance().start(self.steam_worker)
 
-        if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(self.game.app_name):
-            self.ui.verify_widget.setCurrentIndex(0)
-        elif self.verify_threads.get(self.game.app_name):
-            self.ui.verify_widget.setCurrentIndex(1)
-            self.ui.verify_progress.setValue(
-                int(
-                    self.verify_threads[self.game.app_name].num
-                    / self.verify_threads[self.game.app_name].total
-                    * 100
-                )
-            )
+        # if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(self.game.app_name):
+        #     self.ui.verify_widget.setCurrentIndex(0)
+        # elif self.verify_threads.get(self.game.app_name):
+        #     self.ui.verify_widget.setCurrentIndex(1)
+        #     self.ui.verify_progress.setValue(
+        #         int(
+        #             self.verify_threads[self.game.app_name].num
+        #             / self.verify_threads[self.game.app_name].total
+        #             * 100
+        #         )
+        #     )
 
         # If the game that is currently moving matches with the current app_name, we show the progressbar.
         # Otherwhise, we show the move tool button.
@@ -409,7 +418,7 @@ class GameInfo(QWidget):
                 self.ui.move_stack.setCurrentIndex(index)
 
         # If a game is verifying or moving, disable both verify and moving buttons.
-        if len(self.verify_threads):
+        if rgame.active_thread is not None:
             self.ui.verify_button.setEnabled(False)
             self.ui.move_button.setEnabled(False)
         if self.is_moving:

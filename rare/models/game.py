@@ -1,6 +1,6 @@
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
@@ -18,18 +18,21 @@ from rare.utils.paths import data_dir
 logger = getLogger("RareGame")
 
 
-class RareGameState(IntEnum):
-    IDLE = 0,
-    RUNNING = 1,
-
-
 class RareGame(QObject):
+
+    class State(IntEnum):
+        IDLE = 0
+        RUNNING = 1
+        DOWNLOADING = 2
+        VERIFYING = 3
+        MOVING = 4
 
     @dataclass
     class Metadata:
         queued: bool = False
         queue_pos: Optional[int] = None
         last_played: Optional[datetime] = None
+        tags: List[str] = field(default_factory=list)
 
         @classmethod
         def from_dict(cls, data: Dict):
@@ -37,6 +40,7 @@ class RareGame(QObject):
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
                 last_played=datetime.strptime(data.get("last_played", "None"), "%Y-%m-%dT%H:%M:%S.%f"),
+                tags=data.get("tags", []),
             )
 
         def as_dict(self):
@@ -44,6 +48,7 @@ class RareGame(QObject):
                 queued=self.queued,
                 queue_pos=self.queue_pos,
                 last_played=self.last_played.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                tags=self.tags,
             )
 
         def __bool__(self):
@@ -122,6 +127,18 @@ class RareGame(QObject):
         metadata[self.app_name] = self.metadata.as_dict()
         with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
             json.dump(metadata, metadata_json, indent=2)
+
+    def update_game(self):
+        self.game = self.core.get_game(
+            self.app_name, update_meta=True, platform=self.igame.platform if self.igame else "Windows"
+        )
+
+    def update_igame(self):
+        self.igame = self.core.get_installed_game(self.app_name)
+
+    def update_rgame(self):
+        self.update_igame()
+        self.update_game()
 
     @property
     def app_name(self) -> str:
@@ -346,11 +363,6 @@ class RareGame(QObject):
         """
         return not self.game.asset_infos
 
-    def install(self):
-        self.signals.game.install.emit(
-            InstallOptionsModel(app_name=self.game.app_name)
-        )
-
     @property
     def is_origin(self) -> bool:
         return self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
@@ -387,3 +399,9 @@ class RareGame(QObject):
     def finish_progress(self, fail: bool, miss: int, app: str):
         self.set_installed(True)
         self.signals.progress.finish.emit(fail)
+
+    def install(self):
+        self.signals.game.install.emit(
+            InstallOptionsModel(app_name=self.game.app_name)
+        )
+
