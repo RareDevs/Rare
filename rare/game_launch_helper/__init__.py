@@ -1,5 +1,7 @@
 import json
 import logging
+import platform
+import subprocess
 import sys
 import time
 import traceback
@@ -19,6 +21,10 @@ from .lgd_helper import get_launch_args, InitArgs, get_configured_process, Launc
 from .message_models import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
 
 logger = logging.getLogger("RareLauncher")
+
+DETACHED_APP_NAMES = [
+    "0a2d9f6403244d12969e11da6713137b"
+]
 
 
 class PreLaunchThread(QRunnable):
@@ -174,6 +180,14 @@ class GameProcessApp(RareApp):
                 new_state=StateChangedModel.States.started
             )
         ))
+        if self.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
+            self.game_process.deleteLater()
+            subprocess.Popen([args.executable] + args.args, cwd=args.cwd,
+                             env={i: args.env.value(i) for i in args.env.keys()})
+            if self.console:
+                self.console.log("Launching game detached")
+            self.stop()
+            return
         self.game_process.start(args.executable, args.args)
 
     def error_occurred(self, error_str: str):
@@ -213,6 +227,8 @@ class GameProcessApp(RareApp):
         self.processEvents()
         if not self.console:
             self.exit()
+        else:
+            self.console.on_process_exit(self.app_name, 0)
 
 
 def start_game(args: Namespace):

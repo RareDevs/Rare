@@ -162,7 +162,7 @@ class ConsoleEdit(QPlainTextEdit):
         self._cursor_output = self.textCursor()
 
     def log(self, text):
-        html = f"<p style=\"color:#999;white-space:pre\">{text}</p>"
+        html = f"<p style=\"color:#BBB;white-space:pre\">{text}</p>"
         self._cursor_output.insertHtml(html)
         self.scroll_to_last_line()
 
