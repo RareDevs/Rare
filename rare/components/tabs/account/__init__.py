@@ -15,7 +15,7 @@ class AccountWidget(QWidget):
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
 
-        username = self.core.lgd.userdata.get("display_name")
+        username = self.core.lgd.userdata.get("displayName")
         if not username:
             username = "Offline"
 
