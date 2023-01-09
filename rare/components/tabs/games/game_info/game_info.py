@@ -251,10 +251,10 @@ class GameInfo(QWidget, SideTabContents):
             format_size(self.rgame.igame.install_size) if self.rgame.is_installed and not self.rgame.is_non_asset else "N/A"
         )
 
-        self.ui.lbl_install_path.setEnabled(self.rgame.is_installed and not self.rgame.is_non_asset)
-        self.ui.install_path.setEnabled(self.rgame.is_installed and not self.rgame.is_non_asset)
+        self.ui.lbl_install_path.setEnabled(bool(self.rgame.install_path))
+        self.ui.install_path.setEnabled(bool(self.rgame.install_path))
         self.ui.install_path.setText(
-            self.rgame.igame.install_path if self.rgame.is_installed and not self.rgame.is_non_asset else "N/A"
+            self.rgame.install_path if self.rgame.install_path else "N/A"
         )
 
         self.ui.platform.setText(
@@ -338,7 +338,7 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.dev.setText(rgame.developer)
 
         if rgame.is_non_asset:
-            self.ui.install_button.setText(self.tr("Link to Origin/Launch"))
+            self.ui.install_button.setText(self.tr("Link/Launch"))
             self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
         else:
             self.ui.install_button.setText(self.tr("Install Game"))

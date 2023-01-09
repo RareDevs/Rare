@@ -321,6 +321,24 @@ class RareGame(RareGameSlim):
         return self.igame.install_size if self.igame is not None else 0
 
     @property
+    def install_path(self) -> Optional[str]:
+        if self.igame:
+            return self.igame.install_path
+        elif self.is_origin:
+            # TODO Linux is also C:\\...
+            return self.__get_origin_install_path()
+        return None
+
+    @install_path.setter
+    def install_path(self, path: str) -> None:
+        if self.igame:
+            self.igame.install_path = path
+            self.store_igame()
+            self.update_igame()
+        elif self.is_origin:
+            self.__origin_install_path = path
+
+    @property
     def version(self) -> str:
         """!
         @brief Reports the currently installed version of the Game
@@ -378,7 +396,7 @@ class RareGame(RareGameSlim):
         @return bool If the game should be considered installed
         """
         return (self.igame is not None) \
-            or (self.is_origin and self.__origin_install_path() is not None) \
+            or (self.is_origin and self.__get_origin_install_path() is not None) \
             or (self.is_non_asset and  platform.system() != "Windows")  # TODO: Remove this line
 
     def set_installed(self, installed: bool) -> None:
@@ -532,16 +550,6 @@ class RareGame(RareGameSlim):
             return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
         return ""
 
-    @property
-    def install_path(self) -> str:
-        return self.igame.install_path
-
-    @install_path.setter
-    def install_path(self, path: str) -> None:
-        self.igame.install_path = path
-        self.store_igame()
-        self.update_igame()
-
     def steam_grade(self) -> str:
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
@@ -601,13 +609,13 @@ class RareGame(RareGameSlim):
         )
         return True
 
-    __origin_install_path_cache = None
+    __origin_install_path = None
 
-    def __origin_install_path(self) -> Optional[str]:
-        if self.__origin_install_path_cache == "err":
+    def __get_origin_install_path(self) -> Optional[str]:
+        if self.__origin_install_path == "":
             return None
-        elif self.__origin_install_path_cache:
-            return self.__origin_install_path_cache
+        elif self.__origin_install_path:
+            return self.__origin_install_path
         reg_path: str = self.game.metadata \
             .get("customAttributes", {}) \
             .get("RegistryPath", {}).get("value", None)
@@ -616,10 +624,9 @@ class RareGame(RareGameSlim):
 
         if platform.system() == "Windows":
             install_dir = windows_helpers.query_registry_value(winreg.HKEY_LOCAL_MACHINE, reg_path, "Install Dir")
-            self.__origin_install_path_cache = install_dir
+            self.__origin_install_path = install_dir
             return install_dir
 
-        # TODO: Do not get install path on non windows, because of performance
         wine_prefix = self.core.lgd.config.get(self.game.app_name, "wine_prefix",
                                                fallback=os.path.expanduser("~/.wine"))
 
@@ -630,15 +637,13 @@ class RareGame(RareGameSlim):
 
         # TODO: find a better solution
         reg_path = reg_path.replace("\\", "\\\\").replace("SOFTWARE", "Software").replace("WOW6432Node", "Wow6432Node")
-        t = time.time()
         install_dir = reg.get(reg_path, '"Install Dir"', fallback=None)
-        print(f"Get install dir {self.title}: {time.time() - t}s")
 
         if install_dir:
             install_dir = install_dir.strip('"')
-            self.__origin_install_path_cache = install_dir
+            self.__origin_install_path = install_dir
             return install_dir
-        self.__origin_install_path_cache = "err"
+        self.__origin_install_path = ""
         return None
 
     def repair(self, repair_and_update):
