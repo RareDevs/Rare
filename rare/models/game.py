@@ -101,7 +101,7 @@ class RareGame(QObject):
             logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
 
         self.progress: int = 0
-        self.active_thread: Optional[QRunnable] = None
+        self.active_worker: Optional[QRunnable] = None
 
         self.game_running = False
 
@@ -402,6 +402,12 @@ class RareGame(QObject):
 
     def install(self):
         self.signals.game.install.emit(
-            InstallOptionsModel(app_name=self.game.app_name)
+            InstallOptionsModel(app_name=self.app_name)
         )
 
+    def repair(self, repair_and_update):
+        self.signals.game.install.emit(
+            InstallOptionsModel(
+                app_name=self.app_name, repair_mode=True, repair_and_update=repair_and_update, update=True
+            )
+        )
