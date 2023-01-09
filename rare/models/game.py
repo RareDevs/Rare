@@ -16,6 +16,7 @@ from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
+from rare.utils.misc import read_registry
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
 
@@ -370,7 +371,9 @@ class RareGame(RareGameSlim):
 
         @return bool If the game should be considered installed
         """
-        return (self.igame is not None) or self.is_non_asset
+        return (self.igame is not None) \
+            or (self.is_origin and self.__origin_install_path() is not None) \
+            or (self.is_non_asset and platform.system() != "Windows")  # TODO: Remove this line
 
     def set_installed(self, installed: bool) -> None:
         """!
@@ -509,8 +512,8 @@ class RareGame(RareGameSlim):
         @return bool If the game is an Origin game
         """
         return (
-            self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value")
-            == "Origin"
+                self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value")
+                == "Origin"
         )
 
     @property
@@ -591,6 +594,33 @@ class RareGame(RareGameSlim):
             InstallOptionsModel(app_name=self.app_name)
         )
         return True
+
+    def __origin_install_path(self) -> Optional[str]:
+        reg_path: str = self.game.metadata \
+            .get("customAttributes", {}) \
+            .get("RegistryPath", {}).get("value", None)
+        if not reg_path:
+            return None
+        if platform.system() == "Windows":
+            import winreg
+            from legendary.lfs import windows_helpers
+            return windows_helpers.query_registry_value(winreg.HKEY_LOCAL_MACHINE, reg_path, "Install Dir")
+
+        return None
+        # TODO: Do not get install path on non windows, because of performance
+        wine_prefix = self.core.lgd.config.get(self.game.app_name, "wine_prefix",
+                                               fallback=os.path.expanduser("~/.wine"))
+
+        # TODO cache this line
+        reg = read_registry("system.reg", wine_prefix)
+
+        # TODO: find a better solution
+        reg_path = reg_path.replace("\\", "\\\\").replace("SOFTWARE", "Software").replace("WOW6432Node", "Wow6432Node")
+
+        install_dir = reg.get(reg_path, '"Install Dir"', fallback=None)
+        if install_dir:
+            return install_dir.strip('"')
+        return None
 
     def repair(self, repair_and_update):
         self.signals.game.install.emit(

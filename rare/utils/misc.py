@@ -1,5 +1,5 @@
 import os
-import platform
+from configparser import ConfigParser
 from logging import getLogger
 from typing import List, Union, Type
 
@@ -163,6 +163,18 @@ def format_size(b: Union[int, float]) -> str:
         if b < 1024:
             return f"{b:.2f} {s}B"
         b /= 1024
+
+
+# this is a copied function from legendary.utils.wine_helpers, but registry file can be specified
+def read_registry(registry: str, wine_pfx: str) -> ConfigParser:
+    accepted = ["system.reg", "user.reg"]
+    if registry not in accepted:
+        raise RuntimeError(f'Unknown target "{registry}" not in {accepted}')
+    reg = ConfigParser(comment_prefixes=(';', '#', '/', 'WINE'), allow_no_value=True,
+                       strict=False)
+    reg.optionxform = str
+    reg.read(os.path.join(wine_pfx, 'system.reg'))
+    return reg
 
 
 class CloudWorker(QRunnable):
