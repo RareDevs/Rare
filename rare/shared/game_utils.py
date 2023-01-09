@@ -4,7 +4,7 @@ import os
 import platform
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QTimer
+from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QTimer, pyqtSlot
 from PyQt5.QtCore import QStandardPaths
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalSocket
@@ -26,9 +26,9 @@ logger = getLogger("GameUtils")
 
 class GameProcess(QObject):
     # str: app_name, int: exit_code
-    game_finished = pyqtSignal(str, int)
+    game_finished = pyqtSignal(RareGame, int)
     # str: app_name
-    game_launched = pyqtSignal(str)
+    game_launched = pyqtSignal(RareGame)
 
     def __init__(self, rgame: RareGame, on_startup=False, always_ask_sync: bool = False):
         super(GameProcess, self).__init__()
@@ -68,7 +68,7 @@ class GameProcess(QObject):
         if self.tried_connections > 50:  # 10 seconds
             QMessageBox.warning(None, "Error", self.tr("Connection to game process failed (Timeout)"))
             self.timer.stop()
-            self.game_finished.emit(self.rgame.app_name, 1)
+            self.game_finished.emit(self.rgame, 1)
 
     def _message_available(self):
         message = self.socket.readAll().data()
@@ -103,7 +103,7 @@ class GameProcess(QObject):
             model = message_models.StateChangedModel.from_json(data)
             if model.new_state == message_models.StateChangedModel.States.started:
                 logger.info("Launched Game")
-                self.game_launched.emit(self.rgame.app_name)
+                self.game_launched.emit(self.rgame)
                 meta_data = self.rgame.metadata
                 meta_data.last_played = datetime.datetime.now()
                 self.rgame.save_metadata()
@@ -116,7 +116,7 @@ class GameProcess(QObject):
             logger.info(f"Found {self.rgame.app_name} ({self.rgame.app_title}) running at startup")
 
             # FIXME run this after startup, widgets do not exist at this time
-            QTimer.singleShot(1000, lambda: self.game_launched.emit(self.rgame.app_name))
+            QTimer.singleShot(1000, lambda: self.game_launched.emit(self.rgame))
 
     def _error_occurred(self, _):
         if self.on_startup:
@@ -126,7 +126,7 @@ class GameProcess(QObject):
         logger.error(f"{self.rgame.app_name} ({self.rgame.app_title}): {self.socket.errorString()}")
 
     def _game_finished(self, exit_code: int):
-        self.game_finished.emit(self.rgame.app_name, exit_code)
+        self.game_finished.emit(self.rgame, exit_code)
 
 
 def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_config=False):
@@ -198,32 +198,30 @@ class GameUtils(QObject):
             game_process.game_launched.connect(self.game_launched.emit)
             self.running_games[rgame.app_name] = game_process
 
-    def uninstall_game(self, app_name) -> bool:
+    def uninstall_game(self, rgame: RareGame) -> bool:
         # returns if uninstalled
-        game = self.core.get_game(app_name)
-        igame = self.core.get_installed_game(app_name)
-        if not os.path.exists(igame.install_path):
+        if not os.path.exists(rgame.igame.install_path):
             if QMessageBox.Yes == QMessageBox.question(
                     None,
-                    self.tr("Uninstall - {}").format(igame.title),
+                    self.tr("Uninstall - {}").format(rgame.igame.title),
                     self.tr(
                         "Game files of {} do not exist. Remove it from installed games?"
-                    ).format(igame.title),
+                    ).format(rgame.igame.title),
                     QMessageBox.Yes | QMessageBox.No,
                     QMessageBox.Yes,
             ):
-                self.core.lgd.remove_installed_game(app_name)
+                self.core.lgd.remove_installed_game(rgame.app_name)
                 return True
             else:
                 return False
 
-        proceed, keep_files, keep_config = UninstallDialog(game).get_options()
+        proceed, keep_files, keep_config = UninstallDialog(rgame.game).get_options()
         if not proceed:
             return False
-        success, message = uninstall_game(self.core, game.app_name, keep_files, keep_config)
+        success, message = uninstall_game(self.core, rgame.app_name, keep_files, keep_config)
         if not success:
-            QMessageBox.warning(None, self.tr("Uninstall - {}").format(igame.title), message, QMessageBox.Close)
-        self.signals.game.uninstalled.emit(app_name)
+            QMessageBox.warning(None, self.tr("Uninstall - {}").format(rgame.title), message, QMessageBox.Close)
+        self.signals.game.uninstalled.emit(rgame.app_name)
         return True
 
     def prepare_launch(
@@ -234,18 +232,18 @@ class GameUtils(QObject):
         # TODO move this to helper
         if rgame.game.supports_cloud_saves and not offline:
             try:
-                sync = self.cloud_save_utils.sync_before_launch_game(rgame.app_name)
+                sync = self.cloud_save_utils.sync_before_launch_game(rgame)
             except ValueError:
                 logger.info("Cancel startup")
-                self.sync_finished(rgame.app_name)
+                self.sync_finished(rgame)
                 return
             except AssertionError:
                 dont_sync_after_finish = True
             else:
                 if sync:
-                    self.launch_queue[rgame.app_name] = (rgame.app_name, skip_update_check, offline)
+                    self.launch_queue[rgame.app_name] = (rgame, skip_update_check, offline)
                     return
-            self.sync_finished(rgame.app_name)
+            self.sync_finished(rgame)
 
         self.launch_game(
             rgame, offline, skip_update_check, ask_always_sync=dont_sync_after_finish
@@ -284,18 +282,17 @@ class GameUtils(QObject):
         game_process.game_launched.connect(self.game_launched.emit)
         self.running_games[rgame.app_name] = game_process
 
-    def game_finished(self, app_name, exit_code):
-        if self.running_games.get(app_name):
-            self.running_games.pop(app_name)
+    def game_finished(self, rgame: RareGame, exit_code):
+        if self.running_games.get(rgame.app_name):
+            self.running_games.pop(rgame.app_name)
         if exit_code == -1234:
             return
 
-        self.finished.emit(app_name, "")
+        self.finished.emit(rgame.app_name, "")
 
         logger.info(f"Game exited with exit code: {exit_code}")
         self.signals.discord_rpc.set_title.emit("")
-        is_origin = self.core.get_game(app_name).third_party_store == "Origin"
-        if exit_code == 1 and is_origin:
+        if exit_code == 1 and rgame.is_origin:
             msg_box = QMessageBox()
             msg_box.setText(
                 self.tr(
@@ -322,10 +319,10 @@ class GameUtils(QObject):
             )
             """
 
-        if app_name in self.running_games.keys():
-            self.running_games.pop(app_name)
+        if rgame.app_name in self.running_games.keys():
+            self.running_games.pop(rgame.app_name)
 
-        if self.core.get_game(app_name).supports_cloud_saves:
+        if rgame.game.supports_cloud_saves:
             if exit_code != 0:
                 r = QMessageBox.question(
                     None,
@@ -341,13 +338,14 @@ class GameUtils(QObject):
                     return
 
             # TODO move this to helper
-            self.cloud_save_utils.game_finished(app_name, always_ask=False)
+            self.cloud_save_utils.game_finished(rgame, always_ask=False)
 
-    def sync_finished(self, app_name):
-        if app_name in self.launch_queue.keys():
-            self.cloud_save_finished.emit(app_name)
-            params = self.launch_queue[app_name]
-            self.launch_queue.pop(app_name)
+    @pyqtSlot(RareGame)
+    def sync_finished(self, rgame: RareGame):
+        if rgame.app_name in self.launch_queue.keys():
+            self.cloud_save_finished.emit(rgame.app_name)
+            params = self.launch_queue[rgame.app_name]
+            self.launch_queue.pop(rgame.app_name)
             self.launch_game(*params)
         else:
-            self.cloud_save_finished.emit(app_name)
+            self.cloud_save_finished.emit(rgame.app_name)
