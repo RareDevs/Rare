@@ -176,7 +176,7 @@ def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_co
 class GameUtils(QObject):
     finished = pyqtSignal(str, str)  # app_name, error
     cloud_save_finished = pyqtSignal(str)
-    game_launched = pyqtSignal(str)
+    game_launched = pyqtSignal(RareGame)
     update_list = pyqtSignal(str)
 
     def __init__(self, parent=None):
@@ -193,7 +193,7 @@ class GameUtils(QObject):
 
     def check_running(self, rgame: RareGame):
         if rgame.is_installed:
-            game_process = GameProcess(rgame, True)
+            game_process = GameProcess(rgame, on_startup=True)
             game_process.game_finished.connect(self.game_finished)
             game_process.game_launched.connect(self.game_launched.emit)
             self.running_games[rgame.app_name] = game_process
