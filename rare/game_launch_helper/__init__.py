@@ -15,10 +15,10 @@ from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 from PyQt5.QtWidgets import QApplication
 
 from rare.lgndr.core import LegendaryCore
+from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
 from rare.widgets.rare_app import RareApp
 from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
-from .message_models import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
 
 logger = logging.getLogger("RareLauncher")
 
