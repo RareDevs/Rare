@@ -105,25 +105,30 @@ class RareGame(QObject):
 
         self.game_running = False
 
+    __metadata_json: Optional[Dict] = None
+
     @staticmethod
-    def load_metadata_json() -> Dict:
-        metadata = {}
-        try:
-            with open(os.path.join(data_dir(), "game_meta.json"), "r") as metadata_fh:
-                metadata = json.load(metadata_fh)
-        except FileNotFoundError:
-            logger.info("Game metadata json file does not exist.")
-        except json.JSONDecodeError:
-            logger.warning("Game metadata json file is corrupt.")
-        return metadata
+    def __load_metadata_json() -> Dict:
+        if RareGame.__metadata_json is None:
+            metadata = {}
+            try:
+                with open(os.path.join(data_dir(), "game_meta.json"), "r") as metadata_fh:
+                    metadata = json.load(metadata_fh)
+            except FileNotFoundError:
+                logger.info("Game metadata json file does not exist.")
+            except json.JSONDecodeError:
+                logger.warning("Game metadata json file is corrupt.")
+            finally:
+                RareGame.__metadata_json = metadata
+        return RareGame.__metadata_json
 
     def load_metadata(self):
-        metadata = self.load_metadata_json()
+        metadata = self.__load_metadata_json()
         if self.app_name in metadata:
             self.metadata = RareGame.Metadata.from_dict(metadata[self.app_name])
 
     def save_metadata(self):
-        metadata = self.load_metadata_json()
+        metadata = self.__load_metadata_json()
         metadata[self.app_name] = self.metadata.as_dict()
         with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
             json.dump(metadata, metadata_json, indent=2)
@@ -345,10 +350,7 @@ class RareGame(QObject):
 
         @return bool
         """
-        if not self.is_non_asset:
-            return self.game.asset_infos["Windows"].namespace == "ue"
-        else:
-            return False
+        return False if self.is_non_asset else self.game.asset_infos["Windows"].namespace == "ue"
 
     @property
     def is_non_asset(self) -> bool:
