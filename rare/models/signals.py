@@ -17,6 +17,8 @@ class GlobalSignals:
         prefix_updated = pyqtSignal()
         # none
         overlay_installed = pyqtSignal()
+        # none
+        update_tray = pyqtSignal()
 
     class ProgressSignals(QObject):
         # str: app_name

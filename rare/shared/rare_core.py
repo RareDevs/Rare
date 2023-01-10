@@ -141,6 +141,7 @@ class RareCore(QObject):
 
     def add_game(self, rgame: RareGame) -> None:
         rgame.signals.game.install.connect(self._signals.game.install)
+        rgame.signals.game.finished.connect(self._signals.application.update_tray)
         self.__games[rgame.app_name] = rgame
 
     def __filter_games(self, condition: Callable[[RareGame], bool]) -> Iterator[RareGame]:

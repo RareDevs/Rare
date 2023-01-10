@@ -182,6 +182,7 @@ class GameUtils(QObject):
             return
 
         self.finished.emit(rgame.app_name, "")
+        rgame.signals.game.finished.emit()
 
         logger.info(f"Game exited with exit code: {exit_code}")
         self.signals.discord_rpc.set_title.emit("")
