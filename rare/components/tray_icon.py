@@ -1,33 +1,14 @@
 from logging import getLogger
-from typing import List, Dict
+from typing import List
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction
 
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.models.game import RareGame
+from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton
 
 logger = getLogger("TrayIcon")
 
-
-# FIXME: Remove when RareCore gets merged and replace it below
-class RareGameMeta:
-    def __init__(self):
-        self.core = LegendaryCoreSingleton()
-        metadata = RareGame.load_metadata_json()
-        self.metadata: Dict[str, RareGame.Metadata] = {}
-        for app_name, data in metadata.items():
-            self.metadata[app_name] = RareGame.Metadata.from_dict(data)
-
-    def get_list(self) -> List[str]:
-        last_played = [
-            item for item in self.metadata.items() if (bool(item[1]) and self.core.is_installed(item[0]))
-        ]
-        last_played.sort(key=lambda item: item[1].last_played, reverse=True)
-        last_played = last_played[0:5]
-        last_played = [item[0] for item in last_played]
-        return last_played
 
 class TrayIcon(QSystemTrayIcon):
     # none:
@@ -37,6 +18,7 @@ class TrayIcon(QSystemTrayIcon):
 
     def __init__(self, parent=None):
         super(TrayIcon, self).__init__(parent=parent)
+        self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
 
         self.setIcon(QIcon(":/images/Rare.png"))
@@ -54,14 +36,15 @@ class TrayIcon(QSystemTrayIcon):
         self.text_action.setEnabled(False)
         self.menu.addAction(self.text_action)
 
-        metadata = RareGameMeta()
-        last_played = metadata.get_list()
+        last_played = [game for game in self.rcore.games if (game.metadata and game.is_installed)]
+        last_played.sort(key=lambda g: g.metadata.last_played, reverse=True)
+        last_played = last_played[0:5]
 
         self.game_actions: List[QAction] = []
 
-        for app_name in last_played:
-            a = QAction(self.core.get_game(app_name).app_title)
-            a.setProperty("app_name", app_name)
+        for game in last_played:
+            a = QAction(game.game.app_title)
+            a.setProperty("app_name", game.app_name)
             self.game_actions.append(a)
             a.triggered.connect(
                 lambda: parent.tab_widget.games_tab.game_utils.prepare_launch(
