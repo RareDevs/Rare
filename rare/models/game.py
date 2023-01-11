@@ -256,7 +256,6 @@ class RareGame(RareGameSlim):
         self.state = RareGame.State.IDLE
         self.signals.game.finished.emit(self.app_name)
 
-    __registry_cache: Optional[Dict] = None
     __metadata_json: Optional[Dict] = None
 
     @staticmethod
@@ -450,7 +449,7 @@ class RareGame(RareGameSlim):
         """
         ret = True
         try:
-            if self.igame is not None:
+            if self.is_installed:
                 _ = self.core.get_asset(self.game.app_name, platform=self.igame.platform).build_version
                 ret = False
         except ValueError:
@@ -610,6 +609,7 @@ class RareGame(RareGameSlim):
         )
         return True
 
+    __registry_cache: Optional[Dict] = None
     __origin_install_path = None
 
     def __get_origin_install_path(self) -> Optional[str]:
