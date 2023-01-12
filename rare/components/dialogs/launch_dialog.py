@@ -225,7 +225,7 @@ class LaunchDialog(QDialog):
             self.thread_pool.start(image_worker)
 
             # cloud save from another worker, because it is used in cloud_save_utils too
-            cloud_worker = CloudWorker()
+            cloud_worker = CloudWorker(self.core)
             cloud_worker.signals.result_ready.connect(lambda x: self.handle_api_worker_result(x, "saves"))
             self.thread_pool.start(cloud_worker)
 

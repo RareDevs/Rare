@@ -18,21 +18,16 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import QPalette, QColor, QImage
 from PyQt5.QtWidgets import qApp, QStyleFactory
+from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from requests.exceptions import HTTPError
 
-# Windows
+from rare.models.apiresults import ApiResults
+from rare.utils.paths import image_dir, resources_path
 
 if platform.system() == "Windows":
     # noinspection PyUnresolvedReferences
     from win32com.client import Dispatch  # pylint: disable=E0401
-
-from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton
-from rare.utils.paths import image_dir, resources_path
-
-# Mac not supported
-
-from legendary.core import LegendaryCore
 
 logger = getLogger("Utils")
 settings = QSettings("Rare", "Rare")
@@ -306,16 +301,16 @@ def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link=
         return False
 
 
-class CloudSignals(QObject):
-    result_ready = pyqtSignal(list)  # List[SaveGameFile]
-
-
 class CloudWorker(QRunnable):
-    def __init__(self):
+    class Signals(QObject):
+        # List[SaveGameFile]
+        result_ready = pyqtSignal(list)
+
+    def __init__(self, core: LegendaryCore):
         super(CloudWorker, self).__init__()
-        self.signals = CloudSignals()
+        self.core = core
+        self.signals = CloudWorker.Signals()
         self.setAutoDelete(True)
-        self.core = LegendaryCoreSingleton()
 
     def run(self) -> None:
         try:
@@ -334,8 +329,7 @@ def get_raw_save_path(game: Game):
         )
 
 
-def get_default_platform(app_name):
-    api_results = ApiResultsSingleton()
+def get_default_platform(app_name, api_results: ApiResults):
     if platform.system() != "Darwin" or app_name not in api_results.mac_games:
         return "Windows"
     else:
