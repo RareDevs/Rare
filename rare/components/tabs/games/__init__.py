@@ -206,7 +206,6 @@ class GamesTab(QStackedWidget):
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
             rgame.set_pixmap()
-            self.game_utils.check_running(rgame)
         self.filter_games(self.active_filter)
 
     def add_library_widget(self, rgame: RareGame):

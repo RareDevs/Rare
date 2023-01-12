@@ -252,8 +252,8 @@ class GameWidget(LibraryWidget):
 
         if self.rgame.game.supports_cloud_saves and not offline:
             self.syncing_cloud_saves = True
-        self.game_utils.prepare_launch(
-            self.rgame, offline, skip_version_check
+        self.rgame.launch(
+            offline=offline, skip_update_check=skip_version_check
         )
 
     def sync_finished(self, app_name):

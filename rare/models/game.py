@@ -6,14 +6,17 @@ from enum import IntEnum
 from logging import getLogger
 from typing import List, Optional, Dict
 
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable
+from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, pyqtSlot, QProcess
 from PyQt5.QtGui import QPixmap
 from legendary.models.game import Game, InstalledGame, SaveGameFile
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel
 from rare.shared.image_manager import ImageManager
+from rare.shared.game_process import GameProcess
 from rare.utils.paths import data_dir
+from rare.utils.misc import get_rare_executable
+
 
 logger = getLogger("RareGame")
 
@@ -92,7 +95,7 @@ class RareGame(QObject):
 
         self.pixmap: QPixmap = QPixmap()
         self.metadata: RareGame.Metadata = RareGame.Metadata()
-        self.load_metadata()
+        self.__load_metadata()
 
         self.owned_dlcs: List[RareGame] = []
         self.saves: List[SaveGameFile] = []
@@ -103,7 +106,29 @@ class RareGame(QObject):
         self.progress: int = 0
         self.active_worker: Optional[QRunnable] = None
 
-        self.game_running = False
+        self.state = RareGame.State.IDLE
+
+        self.game_process = GameProcess(self)
+        self.game_process.launched.connect(self.__game_launched)
+        self.game_process.finished.connect(self.__game_finished)
+        if self.is_installed and not self.is_dlc:
+            self.game_process.connect(on_startup=True)
+
+    @pyqtSlot(int)
+    def __game_launched(self, code: int):
+        self.state = RareGame.State.RUNNING
+        if code == GameProcess.Code.ON_STARTUP:
+            return
+        self.metadata.last_played = datetime.now()
+        self.__save_metadata()
+        self.signals.game.launched.emit()
+
+    @pyqtSlot(int)
+    def __game_finished(self, exit_code: int):
+        self.state = RareGame.State.IDLE
+        if exit_code == GameProcess.Code.ON_STARTUP:
+            return
+        self.signals.game.finished.emit()
 
     __metadata_json: Optional[Dict] = None
 
@@ -122,12 +147,12 @@ class RareGame(QObject):
                 RareGame.__metadata_json = metadata
         return RareGame.__metadata_json
 
-    def load_metadata(self):
+    def __load_metadata(self):
         metadata = self.__load_metadata_json()
         if self.app_name in metadata:
             self.metadata = RareGame.Metadata.from_dict(metadata[self.app_name])
 
-    def save_metadata(self):
+    def __save_metadata(self):
         metadata = self.__load_metadata_json()
         metadata[self.app_name] = self.metadata.as_dict()
         with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
@@ -367,6 +392,15 @@ class RareGame(QObject):
 
     @property
     def is_origin(self) -> bool:
+        """!
+        @brief Property to report if a Game is an Origin game
+
+        Legendary and by extenstion Rare can't launch Origin games directly,
+        it just launches the Origin client and thus requires a bit of a special
+        handling to let the user know.
+
+        @return bool If the game is an Origin game
+        """
         return self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
 
     @property
@@ -374,12 +408,10 @@ class RareGame(QObject):
         if self.is_installed:
             if self.is_non_asset:
                 return True
-            elif self.game_running or self.needs_verification:
+            if self.state == RareGame.State.RUNNING or self.needs_verification:
                 return False
-            else:
-                return True
-        else:
-            return False
+            return True
+        return False
 
     def set_pixmap(self):
         self.pixmap = self.image_manager.get_pixmap(self.app_name, self.is_installed)
@@ -413,3 +445,32 @@ class RareGame(QObject):
                 app_name=self.app_name, repair_mode=True, repair_and_update=repair_and_update, update=True
             )
         )
+
+    def launch(
+            self,
+            offline: bool = False,
+            skip_update_check: bool = False,
+            wine_bin: str = None,
+            wine_pfx: str = None,
+            ask_sync_saves: bool = False,
+    ):
+        executable = get_rare_executable()
+        executable, args = executable[0], executable[1:]
+        args.extend([
+            "start", self.app_name
+        ])
+        if offline:
+            args.append("--offline")
+        if skip_update_check:
+            args.append("--skip-update-check")
+        if wine_bin:
+            args.extend(["--wine-bin", wine_bin])
+        if wine_pfx:
+            args.extend(["--wine-prefix", wine_pfx])
+        if ask_sync_saves:
+            args.extend("--ask-sync-saves")
+
+        # kill me, if I don't change it before commit
+        QProcess.startDetached(executable, args)
+        logger.info(f"Start new Process: ({executable} {' '.join(args)})")
+        self.game_process.connect(on_startup=False)

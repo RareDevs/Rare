@@ -57,7 +57,7 @@ def main():
     launch_minimal_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
                                        default=os.environ.get('LGDRY_WINE_PREFIX', None),
                                        help='Set WINE prefix to use')
-    launch_minimal_parser.add_argument("--ask-alyways-sync", help="Ask for cloud saves",
+    launch_minimal_parser.add_argument("--ask-sync-saves", help="Ask to sync cloud saves",
                                        action="store_true")
     launch_minimal_parser.add_argument("--skip-update-check", help="Do not check for updates",
                                        action="store_true")

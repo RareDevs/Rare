@@ -2,7 +2,7 @@ import os
 import platform
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSignal, QUrl, pyqtSlot
 from PyQt5.QtCore import QStandardPaths
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMessageBox, QPushButton
@@ -14,8 +14,7 @@ from rare.lgndr.glue.arguments import LgndrUninstallGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.shared.game_process import GameProcess
-from rare.utils import config_helper, misc
+from rare.utils import config_helper
 from .cloud_save_utils import CloudSaveUtils
 
 logger = getLogger("GameUtils")
@@ -83,13 +82,6 @@ class GameUtils(QObject):
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
 
-    def check_running(self, rgame: RareGame):
-        if rgame.is_installed:
-            game_process = GameProcess(rgame, on_startup=True)
-            game_process.game_finished.connect(self.game_finished)
-            game_process.game_launched.connect(self.game_launched.emit)
-            self.running_games[rgame.app_name] = game_process
-
     def uninstall_game(self, rgame: RareGame) -> bool:
         # returns if uninstalled
         if not os.path.exists(rgame.igame.install_path):
@@ -138,41 +130,8 @@ class GameUtils(QObject):
             self.sync_finished(rgame)
 
         self.launch_game(
-            rgame, offline, skip_update_check, ask_always_sync=dont_sync_after_finish
+            rgame, offline, skip_update_check, ask_sync_saves=dont_sync_after_finish
         )
-
-    def launch_game(
-            self,
-            rgame: RareGame,
-            offline: bool = False,
-            skip_update_check: bool = False,
-            wine_bin: str = None,
-            wine_pfx: str = None,
-            ask_always_sync: bool = False,
-    ):
-        executable = misc.get_rare_executable()
-        executable, args = executable[0], executable[1:]
-        args.extend([
-            "start", rgame.app_name
-        ])
-        if offline:
-            args.append("--offline")
-        if skip_update_check:
-            args.append("--skip-update-check")
-        if wine_bin:
-            args.extend(["--wine-bin", wine_bin])
-        if wine_pfx:
-            args.extend(["--wine-prefix", wine_pfx])
-        if ask_always_sync:
-            args.extend("--ask-always-sync")
-
-        # kill me, if I don't change it before commit
-        QProcess.startDetached(executable, args)
-        logger.info(f"Start new Process: ({executable} {' '.join(args)})")
-        game_process = GameProcess(rgame, ask_always_sync)
-        game_process.game_finished.connect(self.game_finished)
-        game_process.game_launched.connect(self.game_launched.emit)
-        self.running_games[rgame.app_name] = game_process
 
     @pyqtSlot(RareGame, int)
     def game_finished(self, rgame: RareGame, exit_code):
