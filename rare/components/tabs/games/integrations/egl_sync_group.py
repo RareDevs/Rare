@@ -1,14 +1,17 @@
 import os
 import platform
+from abc import abstractmethod
 from logging import getLogger
-from typing import Tuple, Iterable, List
+from typing import Tuple, Iterable, List, Union
 
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame
+from legendary.models.egl import EGLManifest
+from legendary.models.game import InstalledGame
 
 from rare.lgndr.glue.exception import LgndrException
 from rare.models.pathspec import PathSpec
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
@@ -17,19 +20,20 @@ from rare.utils.extra_widgets import PathEdit
 logger = getLogger("EGLSync")
 
 
-class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
+class EGLSyncGroup(QGroupBox):
     def __init__(self, parent=None):
         super(EGLSyncGroup, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.ui = Ui_EGLSyncGroup()
+        self.ui.setupUi(self)
         self.core = LegendaryCoreSingleton()
-        self.egl_path_info.setProperty("infoLabel", 1)
+        self.ui.egl_path_info.setProperty("infoLabel", 1)
 
         self.thread_pool = QThreadPool.globalInstance()
 
         if platform.system() == "Windows":
-            self.egl_path_edit_label.setVisible(False)
-            self.egl_path_info_label.setVisible(False)
-            self.egl_path_info.setVisible(False)
+            self.ui.egl_path_edit_label.setVisible(False)
+            self.ui.egl_path_info_label.setVisible(False)
+            self.ui.egl_path_info.setVisible(False)
         else:
             self.egl_path_edit = PathEdit(
                 path=self.core.egl.programdata_path,
@@ -42,26 +46,26 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
                 parent=self,
             )
             self.egl_path_edit.textChanged.connect(self.egl_path_changed)
-            self.egl_path_edit_layout.addWidget(self.egl_path_edit)
+            self.ui.egl_path_edit_layout.addWidget(self.egl_path_edit)
 
             if not self.core.egl.programdata_path:
-                self.egl_path_info.setText(self.tr("Updating..."))
+                self.ui.egl_path_info.setText(self.tr("Updating..."))
                 wine_resolver = WineResolver(
                     self.core, PathSpec.egl_programdata, "default"
                 )
                 wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
                 self.thread_pool.start(wine_resolver)
             else:
-                self.egl_path_info_label.setVisible(False)
-                self.egl_path_info.setVisible(False)
+                self.ui.egl_path_info_label.setVisible(False)
+                self.ui.egl_path_info.setVisible(False)
 
-        self.egl_sync_check.setChecked(self.core.egl_sync_enabled)
-        self.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
+        self.ui.egl_sync_check.setChecked(self.core.egl_sync_enabled)
+        self.ui.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
 
-        self.import_list = EGLSyncListGroup(export=False, parent=self)
-        self.import_export_layout.addWidget(self.import_list)
-        self.export_list = EGLSyncListGroup(export=True, parent=self)
-        self.import_export_layout.addWidget(self.export_list)
+        self.import_list = EGLSyncImportGroup(parent=self)
+        self.ui.import_export_layout.addWidget(self.import_list)
+        self.export_list = EGLSyncExportGroup(parent=self)
+        self.ui.import_export_layout.addWidget(self.export_list)
 
         # self.egl_watcher = QFileSystemWatcher([self.egl_path_edit.text()], self)
         # self.egl_watcher.directoryChanged.connect(self.update_lists)
@@ -69,16 +73,16 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         self.update_lists()
 
     def wine_resolver_cb(self, path):
-        self.egl_path_info.setText(path)
+        self.ui.egl_path_info.setText(path)
         if not path:
-            self.egl_path_info.setText(
+            self.ui.egl_path_info.setText(
                 self.tr(
                     "Default Wine prefix is unset, or path does not exist. "
                     "Create it or configure it in Settings -> Linux."
                 )
             )
         elif not os.path.exists(path):
-            self.egl_path_info.setText(
+            self.ui.egl_path_info.setText(
                 self.tr(
                     "Default Wine prefix is set but EGL manifests path does not exist. "
                     "Your configured default Wine prefix might not be where EGL is installed."
@@ -127,8 +131,8 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
     def egl_path_changed(self, path):
         if self.egl_path_edit.is_valid:
-            self.egl_sync_check.setEnabled(bool(path))
-        self.egl_sync_check.setCheckState(Qt.Unchecked)
+            self.ui.egl_sync_check.setEnabled(bool(path))
+        self.ui.egl_sync_check.setCheckState(Qt.Unchecked)
         # self.egl_watcher.removePaths([p for p in self.egl_watcher.directories()])
         # self.egl_watcher.addPaths([path])
         self.update_lists()
@@ -157,8 +161,8 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
         ):
             # NOTE: need to clear known manifests to force refresh
             self.core.egl.manifests.clear()
-        self.egl_sync_check_label.setEnabled(have_path)
-        self.egl_sync_check.setEnabled(have_path)
+        self.ui.egl_sync_check_label.setEnabled(have_path)
+        self.ui.egl_sync_check.setEnabled(have_path)
         self.import_list.populate(have_path)
         self.import_list.setEnabled(have_path)
         self.export_list.populate(have_path)
@@ -167,67 +171,75 @@ class EGLSyncGroup(QGroupBox, Ui_EGLSyncGroup):
 
 
 class EGLSyncListItem(QListWidgetItem):
-    def __init__(self, game, export: bool, parent=None):
+    def __init__(self, game: Union[EGLManifest,InstalledGame], parent=None):
         super(EGLSyncListItem, self).__init__(parent=parent)
         self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
         self.setCheckState(Qt.Unchecked)
         self.core = LegendaryCoreSingleton()
         self.game = game
-        self.export = export
-        if export:
-            self.setText(game.title)
-        else:  # import
-            self.setText(self.core.get_game(game.app_name).app_title)
+        self.setText(self.app_title)
 
     def is_checked(self) -> bool:
         return self.checkState() == Qt.Checked
 
-    def action(self) -> str:
-        error = ""
-        if self.export:
-            try:
-                self.core.egl_export(self.game.app_name)
-            except LgndrException as ret:
-                error = ret.message
-        else:
-            try:
-                self.core.egl_import(self.game.app_name)
-            except LgndrException as ret:
-                error = ret.message
-        return error
+    @abstractmethod
+    def action(self) -> Union[str,bool]:
+        ...
 
     @property
     def app_name(self):
         return self.game.app_name
 
     @property
-    def app_title(self):
-        return self.game.app_title
+    @abstractmethod
+    def app_title(self) -> str:
+        ...
+
+
+class EGLSyncExportItem(EGLSyncListItem):
+    def __init__(self, game: InstalledGame, parent=None):
+        super(EGLSyncExportItem, self).__init__(game=game, parent=parent)
+
+    def action(self) -> Union[str,bool]:
+        error = False
+        try:
+            self.core.egl_export(self.game.app_name)
+        except LgndrException as ret:
+            error = ret.message
+        return error
+
+    @property
+    def app_title(self) -> str:
+        return self.game.title
+
+
+class EGLSyncImportItem(EGLSyncListItem):
+    def __init__(self, game: EGLManifest, parent=None):
+        super(EGLSyncImportItem, self).__init__(game=game, parent=parent)
+
+    def action(self) -> Union[str,bool]:
+        error = False
+        try:
+            self.core.egl_import(self.game.app_name)
+        except LgndrException as ret:
+            error = ret.message
+        return error
+
+    @property
+    def app_title(self) -> str:
+        return self.core.get_game(self.game.app_name).app_title
 
 
 class EGLSyncListGroup(QGroupBox):
     action_errors = pyqtSignal(list)
 
-    def __init__(self, export: bool, parent=None):
+    def __init__(self, parent=None):
         super(EGLSyncListGroup, self).__init__(parent=parent)
         self.ui = Ui_EGLSyncListGroup()
         self.ui.setupUi(self)
         self.ui.list.setFrameShape(QFrame.NoFrame)
+        self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
-
-        self.export = export
-
-        if export:
-            self.setTitle(self.tr("Exportable games"))
-            self.ui.label.setText(self.tr("No games to export to EGL"))
-            self.ui.action_button.setText(self.tr("Export"))
-            self.list_func = self.core.egl_get_exportable
-        else:
-            self.setTitle(self.tr("Importable games"))
-            self.ui.label.setText(self.tr("No games to import from EGL"))
-            self.ui.action_button.setText(self.tr("Import"))
-            self.list_func = self.core.egl_get_importable
 
         self.ui.list.itemDoubleClicked.connect(
             lambda item: item.setCheckState(Qt.Unchecked)
@@ -255,44 +267,18 @@ class EGLSyncListGroup(QGroupBox):
             item.setCheckState(state)
 
     def populate(self, enabled: bool):
-        if enabled:
-            self.ui.list.clear()
-            for item in self.list_func():
-                try:
-                    i = EGLSyncListItem(item, self.export, self.ui.list)
-                except AttributeError:
-                    logger.error(f"{item.app_name} does not work. Ignoring")
-                else:
-                    self.ui.list.addItem(i)
         self.ui.label.setVisible(not enabled or not bool(self.ui.list.count()))
         self.ui.list.setVisible(enabled and bool(self.ui.list.count()))
         self.ui.buttons_widget.setVisible(enabled and bool(self.ui.list.count()))
 
+    @abstractmethod
     def action(self):
-        imported: List = []
-        errors: List = []
-        for item in self.items:
-            if item.is_checked():
-                if e := item.action():
-                    errors.append(e)
-                else:
-                    imported.append(item.app_name)
-                    self.ui.list.takeItem(self.ui.list.row(item))
-        if not self.export and imported:
-            self.signals.game.installed.emit(imported)
-        self.populate(True)
-        if errors:
-            self.action_errors.emit(errors)
+        ...
 
     @pyqtSlot(list)
+    @abstractmethod
     def show_errors(self, errors: List):
-        QMessageBox.warning(
-            self.parent(),
-            self.tr("The following errors occurred while {}.").format(
-                self.tr("exporting") if self.export else self.tr("importing")
-            ),
-            "\n".join(errors),
-        )
+        ...
 
     @property
     def items(self) -> Iterable[EGLSyncListItem]:
@@ -300,6 +286,84 @@ class EGLSyncListGroup(QGroupBox):
         #     yield self.list.item(i)
         return [self.ui.list.item(i) for i in range(self.ui.list.count())]
 
+
+class EGLSyncExportGroup(EGLSyncListGroup):
+    def __init__(self, parent=None):
+        super(EGLSyncExportGroup, self).__init__(parent=parent)
+        self.setTitle(self.tr("Exportable games"))
+        self.ui.label.setText(self.tr("No games to export to EGL"))
+        self.ui.action_button.setText(self.tr("Export"))
+
+    def populate(self, enabled: bool):
+        if enabled:
+            self.ui.list.clear()
+            for item in self.core.egl_get_exportable():
+                try:
+                    i = EGLSyncExportItem(item, self.ui.list)
+                except AttributeError:
+                    logger.error(f"{item.app_name} does not work. Ignoring")
+                else:
+                    self.ui.list.addItem(i)
+        super(EGLSyncExportGroup, self).populate(enabled)
+
+    @pyqtSlot(list)
+    def show_errors(self, errors: List):
+        QMessageBox.warning(
+            self.parent(),
+            self.tr("The following errors occurred while exporting."),
+            "\n".join(errors),
+        )
+
+    def action(self):
+        errors: List = []
+        for item in self.items:
+            if item.is_checked():
+                if e := item.action():
+                    errors.append(e)
+        self.populate(True)
+        if errors:
+            self.action_errors.emit(errors)
+
+
+class EGLSyncImportGroup(EGLSyncListGroup):
+    def __init__(self, parent=None):
+        super(EGLSyncImportGroup, self).__init__(parent=parent)
+        self.setTitle(self.tr("Importable games"))
+        self.ui.label.setText(self.tr("No games to import from EGL"))
+        self.ui.action_button.setText(self.tr("Import"))
+        self.list_func = self.core.egl_get_importable
+
+    def populate(self, enabled: bool):
+        if enabled:
+            self.ui.list.clear()
+            for item in self.core.egl_get_importable():
+                try:
+                    i = EGLSyncImportItem(item, self.ui.list)
+                except AttributeError:
+                    logger.error(f"{item.app_name} does not work. Ignoring")
+                else:
+                    self.ui.list.addItem(i)
+        super(EGLSyncImportGroup, self).populate(enabled)
+
+    @pyqtSlot(list)
+    def show_errors(self, errors: List):
+        QMessageBox.warning(
+            self.parent(),
+            self.tr("The following errors occurred while importing."),
+            "\n".join(errors),
+        )
+
+    def action(self):
+        errors: List = []
+        for item in self.items:
+            if item.is_checked():
+                if e := item.action():
+                    errors.append(e)
+                else:
+                    self.rcore.get_game(item.app_name).set_installed(True)
+        self.populate(True)
+        if errors:
+            self.action_errors.emit(errors)
 
 class EGLSyncWorker(QRunnable):
     def __init__(self, import_list: EGLSyncListGroup, export_list: EGLSyncListGroup):
