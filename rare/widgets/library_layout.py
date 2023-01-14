@@ -131,8 +131,8 @@ class LibraryLayout(FlowLayout):
             lineheight = max(lineheight, item.sizeHint().height())
         return y + lineheight - rect.y() + bottom
 
-    def sort(self, key: Callable):
-        self._items.sort(key=key)
+    def sort(self, key: Callable, reverse=False):
+        self._items.sort(key=key, reverse=reverse)
         self.setGeometry(self.parent().rect())
 
     # These are used to pop and insert the installing widget, remove them when no longer needed
