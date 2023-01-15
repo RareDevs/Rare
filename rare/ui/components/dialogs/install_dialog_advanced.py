@@ -110,7 +110,6 @@ class Ui_InstallDialogAdvanced(object):
         self.install_dialog_advanced_layout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.download_only_check)
 
         self.retranslateUi(InstallDialogAdvanced)
-        QtCore.QMetaObject.connectSlotsByName(InstallDialogAdvanced)
 
     def retranslateUi(self, InstallDialogAdvanced):
         _translate = QtCore.QCoreApplication.translate

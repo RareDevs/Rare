@@ -224,7 +224,6 @@ class Ui_GameInfo(object):
         self.retranslateUi(GameInfo)
         self.game_actions_stack.setCurrentIndex(0)
         self.verify_widget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(GameInfo)
 
     def retranslateUi(self, GameInfo):
         _translate = QtCore.QCoreApplication.translate

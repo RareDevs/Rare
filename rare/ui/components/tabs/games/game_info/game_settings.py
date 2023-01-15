@@ -92,7 +92,6 @@ class Ui_GameSettings(object):
         self.game_settings_layout.addWidget(self.linux_settings_widget)
 
         self.retranslateUi(GameSettings)
-        QtCore.QMetaObject.connectSlotsByName(GameSettings)
 
     def retranslateUi(self, GameSettings):
         _translate = QtCore.QCoreApplication.translate

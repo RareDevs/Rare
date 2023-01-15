@@ -107,7 +107,6 @@ class Ui_browse_games(object):
 
         self.retranslateUi(browse_games)
         self.stack.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(browse_games)
 
     def retranslateUi(self, browse_games):
         _translate = QtCore.QCoreApplication.translate

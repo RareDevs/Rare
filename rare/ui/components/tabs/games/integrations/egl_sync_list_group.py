@@ -52,7 +52,6 @@ class Ui_EGLSyncListGroup(object):
         self.egl_sync_list_layout.addWidget(self.buttons_widget)
 
         self.retranslateUi(EGLSyncListGroup)
-        QtCore.QMetaObject.connectSlotsByName(EGLSyncListGroup)
 
     def retranslateUi(self, EGLSyncListGroup):
         _translate = QtCore.QCoreApplication.translate

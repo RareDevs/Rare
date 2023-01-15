@@ -47,7 +47,6 @@ class Ui_EGLSyncGroup(object):
         self.egl_sync_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.egl_sync_check_label)
 
         self.retranslateUi(EGLSyncGroup)
-        QtCore.QMetaObject.connectSlotsByName(EGLSyncGroup)
 
     def retranslateUi(self, EGLSyncGroup):
         _translate = QtCore.QCoreApplication.translate

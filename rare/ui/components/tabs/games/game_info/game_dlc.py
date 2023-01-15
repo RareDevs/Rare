@@ -90,7 +90,6 @@ class Ui_GameDlc(object):
         self.game_dlc_layout.addItem(spacerItem)
 
         self.retranslateUi(GameDlc)
-        QtCore.QMetaObject.connectSlotsByName(GameDlc)
 
     def retranslateUi(self, GameDlc):
         _translate = QtCore.QCoreApplication.translate

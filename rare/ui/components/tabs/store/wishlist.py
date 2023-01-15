@@ -89,7 +89,6 @@ class Ui_Wishlist(object):
         Wishlist.addWidget(self.page)
 
         self.retranslateUi(Wishlist)
-        QtCore.QMetaObject.connectSlotsByName(Wishlist)
 
     def retranslateUi(self, Wishlist):
         _translate = QtCore.QCoreApplication.translate

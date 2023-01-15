@@ -67,7 +67,6 @@ class Ui_DxvkSettings(object):
         self.dxvk_layout.addWidget(self.show_dxvk, 0, 1, 1, 2)
 
         self.retranslateUi(DxvkSettings)
-        QtCore.QMetaObject.connectSlotsByName(DxvkSettings)
 
     def retranslateUi(self, DxvkSettings):
         _translate = QtCore.QCoreApplication.translate

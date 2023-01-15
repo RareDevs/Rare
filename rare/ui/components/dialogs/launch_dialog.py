@@ -33,7 +33,6 @@ class Ui_LaunchDialog(object):
         self.launch_dialog_layout.addWidget(self.progress_bar)
 
         self.retranslateUi(LaunchDialog)
-        QtCore.QMetaObject.connectSlotsByName(LaunchDialog)
 
     def retranslateUi(self, LaunchDialog):
         _translate = QtCore.QCoreApplication.translate

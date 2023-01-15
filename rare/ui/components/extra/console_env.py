@@ -45,7 +45,6 @@ class Ui_ConsoleEnv(object):
         self.retranslateUi(ConsoleEnv)
         self.buttons.accepted.connect(ConsoleEnv.accept) # type: ignore
         self.buttons.rejected.connect(ConsoleEnv.reject) # type: ignore
-        QtCore.QMetaObject.connectSlotsByName(ConsoleEnv)
 
     def retranslateUi(self, ConsoleEnv):
         _translate = QtCore.QCoreApplication.translate

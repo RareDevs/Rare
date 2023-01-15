@@ -43,7 +43,6 @@ class Ui_LoginDialog(object):
         self.login_layout.addLayout(self.button_layout)
 
         self.retranslateUi(LoginDialog)
-        QtCore.QMetaObject.connectSlotsByName(LoginDialog)
 
     def retranslateUi(self, LoginDialog):
         _translate = QtCore.QCoreApplication.translate

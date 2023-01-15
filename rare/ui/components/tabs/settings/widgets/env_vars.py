@@ -42,7 +42,6 @@ class Ui_EnvVars(object):
         self.verticalLayout.addWidget(self.env_vars_table)
 
         self.retranslateUi(EnvVars)
-        QtCore.QMetaObject.connectSlotsByName(EnvVars)
 
     def retranslateUi(self, EnvVars):
         _translate = QtCore.QCoreApplication.translate

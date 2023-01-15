@@ -102,7 +102,6 @@ class Ui_GameDlcWidget(object):
         self.dlc_layout.setStretch(1, 1)
 
         self.retranslateUi(GameDlcWidget)
-        QtCore.QMetaObject.connectSlotsByName(GameDlcWidget)
 
     def retranslateUi(self, GameDlcWidget):
         _translate = QtCore.QCoreApplication.translate

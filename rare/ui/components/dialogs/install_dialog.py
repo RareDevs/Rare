@@ -101,7 +101,6 @@ class Ui_InstallDialog(object):
         self.install_dialog_layout.setLayout(9, QtWidgets.QFormLayout.SpanningRole, self.button_layout)
 
         self.retranslateUi(InstallDialog)
-        QtCore.QMetaObject.connectSlotsByName(InstallDialog)
 
     def retranslateUi(self, InstallDialog):
         _translate = QtCore.QCoreApplication.translate

@@ -127,7 +127,6 @@ class Ui_EosWidget(object):
 
         self.retranslateUi(EosWidget)
         self.overlay_stack.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(EosWidget)
 
     def retranslateUi(self, EosWidget):
         _translate = QtCore.QCoreApplication.translate

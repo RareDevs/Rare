@@ -44,7 +44,6 @@ class Ui_LinuxSettings(object):
         self.linux_layout.addItem(spacerItem)
 
         self.retranslateUi(LinuxSettings)
-        QtCore.QMetaObject.connectSlotsByName(LinuxSettings)
 
     def retranslateUi(self, LinuxSettings):
         _translate = QtCore.QCoreApplication.translate

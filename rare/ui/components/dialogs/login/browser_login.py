@@ -67,7 +67,6 @@ class Ui_BrowserLogin(object):
         self.browser_layout.addWidget(self.status_label, 3, 0, 1, 2)
 
         self.retranslateUi(BrowserLogin)
-        QtCore.QMetaObject.connectSlotsByName(BrowserLogin)
 
     def retranslateUi(self, BrowserLogin):
         _translate = QtCore.QCoreApplication.translate

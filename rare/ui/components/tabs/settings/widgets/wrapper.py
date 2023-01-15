@@ -42,7 +42,6 @@ class Ui_WrapperSettings(object):
 
         self.retranslateUi(WrapperSettings)
         self.widget_stack.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(WrapperSettings)
 
     def retranslateUi(self, WrapperSettings):
         _translate = QtCore.QCoreApplication.translate

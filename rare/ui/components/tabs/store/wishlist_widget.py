@@ -72,7 +72,6 @@ class Ui_WishlistWidget(object):
         self.horizontalLayout.addWidget(self.delete_button)
 
         self.retranslateUi(WishlistWidget)
-        QtCore.QMetaObject.connectSlotsByName(WishlistWidget)
 
     def retranslateUi(self, WishlistWidget):
         pass

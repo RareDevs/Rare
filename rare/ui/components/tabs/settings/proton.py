@@ -39,7 +39,6 @@ class Ui_ProtonSettings(object):
         self.proton_settings_layout.setLayout(1, QtWidgets.QFormLayout.FieldRole, self.prefix_layout)
 
         self.retranslateUi(ProtonSettings)
-        QtCore.QMetaObject.connectSlotsByName(ProtonSettings)
 
     def retranslateUi(self, ProtonSettings):
         _translate = QtCore.QCoreApplication.translate

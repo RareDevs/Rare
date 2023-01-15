@@ -84,7 +84,6 @@ class Ui_SyncSaveDialog(object):
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
         self.retranslateUi(SyncSaveDialog)
-        QtCore.QMetaObject.connectSlotsByName(SyncSaveDialog)
 
     def retranslateUi(self, SyncSaveDialog):
         _translate = QtCore.QCoreApplication.translate

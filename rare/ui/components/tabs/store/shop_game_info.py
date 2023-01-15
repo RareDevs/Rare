@@ -102,7 +102,6 @@ class Ui_shop_info(object):
 
         self.retranslateUi(shop_info)
         self.image_stack.setCurrentIndex(-1)
-        QtCore.QMetaObject.connectSlotsByName(shop_info)
 
     def retranslateUi(self, shop_info):
         _translate = QtCore.QCoreApplication.translate

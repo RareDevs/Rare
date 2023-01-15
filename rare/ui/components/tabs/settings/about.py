@@ -84,7 +84,6 @@ class Ui_About(object):
         self.about_layout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.license)
 
         self.retranslateUi(About)
-        QtCore.QMetaObject.connectSlotsByName(About)
 
     def retranslateUi(self, About):
         _translate = QtCore.QCoreApplication.translate
