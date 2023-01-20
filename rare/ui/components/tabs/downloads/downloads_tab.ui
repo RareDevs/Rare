@@ -206,6 +206,9 @@
     </layout>
    </item>
    <item>
+    <layout class="QVBoxLayout" name="active_layout"/>
+   </item>
+   <item>
     <widget class="QScrollArea" name="queue_scroll">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
