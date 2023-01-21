@@ -1,303 +1,265 @@
 import datetime
+from ctypes import c_ulonglong
 from logging import getLogger
-from typing import List, Dict, Union, Set, Optional
+from typing import Union, Optional
 
-from PyQt5.QtCore import QThread, pyqtSignal, QSettings, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, QSettings, pyqtSlot, QThreadPool
 from PyQt5.QtWidgets import (
     QWidget,
     QMessageBox,
-    QVBoxLayout,
-    QLabel,
-    QPushButton,
-    QGroupBox,
 )
-from legendary.core import LegendaryCore
-from legendary.models.game import Game, InstalledGame
 
-from rare.components.dialogs.install_dialog import InstallDialog
-from rare.components.tabs.downloads.dl_queue_widget import DlQueueWidget, DlWidget
-from rare.components.tabs.downloads.download_thread import DownloadThread
+from rare.components.dialogs.install_dialog import InstallDialog, InstallInfoWorker
 from rare.lgndr.models.downloading import UIUpdate
 from rare.models.game import RareGame
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
-from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab
 from rare.utils.misc import get_size, create_desktop_link
+from .groups import UpdateGroup, QueueGroup
+from .thread import DlThread, DlResultModel, DlResultCode
+from .widgets import UpdateWidget, QueueWidget
 
 logger = getLogger("Download")
 
 
-class DownloadsTab(QWidget, Ui_DownloadsTab):
-    thread: QThread
-    dl_queue: List[InstallQueueItemModel] = []
-    dl_status = pyqtSignal(int)
+def get_time(seconds: Union[int, float]) -> str:
+    return str(datetime.timedelta(seconds=seconds))
+
+
+class DownloadsTab(QWidget):
+    # int: number of updates
+    update_title = pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(DownloadsTab, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.ui = Ui_DownloadsTab()
+        self.ui.setupUi(self)
         self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
+        self.args = ArgumentsSingleton()
 
-        self.active_game: Optional[Game] = None
-        self.analysis = None
+        self.thread: Optional[DlThread] = None
+        self.threadpool = QThreadPool(self)
+        self.threadpool.setMaxThreadCount(1)
 
-        self.kill_button.clicked.connect(self.stop_download)
+        self.ui.kill_button.clicked.connect(self.stop_download)
 
-        self.queue_widget = DlQueueWidget()
-        self.queue_widget.update_list.connect(self.update_dl_queue)
-        self.queue_scroll_contents_layout.addWidget(self.queue_widget)
+        self.queue_group = QueueGroup(self)
+        # lk: todo recreate update widget
+        self.queue_group.removed.connect(self.__on_queue_removed)
+        self.queue_group.force.connect(self.__on_queue_force)
+        self.ui.queue_scroll_contents_layout.addWidget(self.queue_group)
 
-        self.updates = QGroupBox(self.tr("Updates"))
-        self.updates.setObjectName("updates_group")
-        self.update_layout = QVBoxLayout(self.updates)
-        self.queue_scroll_contents_layout.addWidget(self.updates)
+        self.updates_group = UpdateGroup(self)
+        self.updates_group.enqueue.connect(self.__get_install_options)
+        self.ui.queue_scroll_contents_layout.addWidget(self.updates_group)
 
-        self.update_widgets: Dict[str, UpdateWidget] = {}
+        self.__check_updates()
 
-        self.update_text = QLabel(self.tr("No updates available"))
-        self.update_layout.addWidget(self.update_text)
+        self.signals.game.install.connect(self.__get_install_options)
+        self.signals.download.enqueue.connect(self.__add_update)
+        self.signals.download.dequeue.connect(self.__on_game_uninstalled)
 
-        has_updates = False
+        self.__reset_download()
+
+        self.forced_item: Optional[InstallQueueItemModel] = None
+        self.on_exit = False
+
+    def __check_updates(self):
         for rgame in self.rcore.updates:
-            has_updates = True
-            self.add_update(rgame)
+            self.__add_update(rgame)
 
-        self.queue_widget.item_removed.connect(self.queue_item_removed)
-
-        self.signals.game.install.connect(self.get_install_options)
-        self.signals.game.uninstalled.connect(self.queue_item_removed)
-        self.signals.game.uninstalled.connect(self.remove_update)
-
-        self.signals.download.enqueue_game.connect(
-            lambda app_name: self.add_update(app_name)
-        )
-        self.signals.game.uninstalled.connect(self.game_uninstalled)
-
-        self.reset_infos()
-
-    def queue_item_removed(self, app_name):
-        if w := self.update_widgets.get(app_name):
-            w.update_button.setDisabled(False)
-            w.update_with_settings.setDisabled(False)
-
-    def add_update(self, rgame: RareGame):
-        if old_widget := self.update_widgets.get(rgame.app_name, False):
-            old_widget.deleteLater()
-            self.update_widgets.pop(rgame.app_name)
-        widget = UpdateWidget(self.core, rgame, self)
-        self.update_layout.addWidget(widget)
-        self.update_widgets[rgame.app_name] = widget
-        widget.update_signal.connect(self.get_install_options)
-        if QSettings().value("auto_update", False, bool):
-            self.get_install_options(
-                InstallOptionsModel(app_name=rgame.app_name, update=True, silent=True)
+    def __add_update(self, update: Union[str,RareGame]):
+        if isinstance(update, str):
+            update = self.rcore.get_game(update)
+        if update.metadata.auto_update or QSettings().value("auto_update", False, bool):
+            self.__get_install_options(
+                InstallOptionsModel(app_name=update.app_name, update=True, silent=True)
             )
-            widget.update_button.setDisabled(True)
-        self.update_text.setVisible(False)
+        else:
+            self.updates_group.append(update.game, update.igame)
 
-    def game_uninstalled(self, app_name):
-        # game in dl_queue
-        for i, item in enumerate(self.dl_queue):
-            if item.options.app_name == app_name:
-                self.dl_queue.pop(i)
-                self.queue_widget.update_queue(self.dl_queue)
-            break
+    @pyqtSlot(str)
+    def __on_queue_removed(self, app_name: str):
+        """
+        Handle removing a queued item.
+        If the item exists in the updates (it means a repair was removed), re-enable the buttons.
+        If it doesn't exist in the updates, recreate the widget.
+        :param app_name:
+        :return:
+        """
+        if self.updates_group.contains(app_name):
+            self.updates_group.set_widget_enabled(app_name, True)
+        else:
+            if self.rcore.get_game(app_name).is_installed:
+                self.__add_update(app_name)
 
-        # if game is updating
-        if self.active_game and self.active_game.app_name == app_name:
+    @pyqtSlot(InstallQueueItemModel)
+    def __on_queue_force(self, item: InstallQueueItemModel):
+        if self.thread:
+            self.stop_download()
+            self.forced_item = item
+        else:
+            self.__start_installation(item)
+
+    @pyqtSlot(str)
+    def __on_game_uninstalled(self, app_name):
+        if self.thread and self.thread.item.options.app_name == app_name:
             self.stop_download()
 
-        # game has available update
-        if app_name in self.update_widgets.keys():
-            self.remove_update(app_name)
+        if self.queue_group.contains(app_name):
+            self.queue_group.remove(app_name)
 
-    def remove_update(self, app_name):
-        if w := self.update_widgets.get(app_name):
-            w.deleteLater()
-            self.update_widgets.pop(app_name)
+        if self.updates_group.contains(app_name):
+            self.updates_group.remove(app_name)
 
-        if len(self.update_widgets) == 0:
-            self.update_text.setVisible(True)
+        self.update_title.emit(self.queues_count())
 
-        self.signals.download.update_tab.emit()
-
-    def update_dl_queue(self, dl_queue):
-        self.dl_queue = dl_queue
-
-    def stop_download(self):
+    def stop_download(self, on_exit=False):
         self.thread.kill()
-        self.kill_button.setEnabled(False)
+        self.ui.kill_button.setEnabled(False)
+        # lk: if we are exitin Rare, waif for thread to finish
+        # `self.on_exit` control whether we try to add the download
+        # back in the queue. If we are on exit we wait for the thread
+        # to finish, we do not care about handling the result really
+        if on_exit:
+            self.on_exit = on_exit
+            self.thread.wait()
 
-    def install_game(self, queue_item: InstallQueueItemModel):
-        if self.active_game is None:
-            self.start_installation(queue_item)
-        else:
-            self.dl_queue.append(queue_item)
-            self.queue_widget.update_queue(self.dl_queue)
+    def __start_installation(self, item: InstallQueueItemModel):
+        thread = DlThread(item, self.rcore.get_game(item.options.app_name), self.core, self.args.debug)
+        thread.result.connect(self.__on_download_result)
+        thread.progress.connect(self.__on_download_progress)
+        thread.finished.connect(thread.deleteLater)
+        thread.start()
+        self.thread = thread
+        self.ui.kill_button.setDisabled(False)
+        self.ui.dl_name.setText(item.download.game.app_title)
 
-    def start_installation(self, queue_item: InstallQueueItemModel):
-        if self.dl_queue:
-            self.dl_queue.pop(0)
-            self.queue_widget.update_queue(self.dl_queue)
-        self.active_game = queue_item.download.game
-        self.thread = DownloadThread(self.core, queue_item)
-        self.thread.ret_status.connect(self.status)
-        self.thread.ui_update.connect(self.progress_update)
-        self.thread.start()
-        self.kill_button.setDisabled(False)
-        self.analysis = queue_item.download.analysis
-        self.dl_name.setText(self.active_game.app_title)
+    def queues_count(self) -> int:
+        return self.updates_group.count() + self.queue_group.count()
 
-        self.signals.progress.started.emit(self.active_game.app_name)
+    @pyqtSlot(InstallQueueItemModel)
+    def __on_info_worker_result(self, item: InstallQueueItemModel):
+        rgame = self.rcore.get_game(item.options.app_name)
+        self.queue_group.push_front(item, rgame.igame)
+        logger.info(f"Re-queued download for {item.download.game.app_name} ({item.download.game.app_title})")
 
-    @pyqtSlot(DownloadThread.ReturnStatus)
-    def status(self, result: DownloadThread.ReturnStatus):
-        if result.ret_code == result.ReturnCode.FINISHED:
+    @pyqtSlot(str)
+    def __on_info_worker_failed(self, message: str):
+        logger.error(f"Failed to re-queue stopped download with error: {message}")
+
+    @pyqtSlot()
+    def __on_info_worker_finished(self):
+        logger.info("Download re-queue worker finished")
+
+    @pyqtSlot(DlResultModel)
+    def __on_download_result(self, result: DlResultModel):
+        if result.code == DlResultCode.FINISHED:
             if result.shortcuts:
-                if not create_desktop_link(result.app_name, self.core, "desktop"):
+                if not create_desktop_link(result.item.options.app_name, self.core, "desktop"):
                     # maybe add it to download summary, to show in finished downloads
                     pass
                 else:
                     logger.info("Desktop shortcut written")
+            logger.info(
+                f"Download finished: {result.item.download.game.app_name} ({result.item.download.game.app_title})"
+            )
 
-            self.dl_name.setText(self.tr("Download finished. Reload library"))
-            logger.info(f"Download finished: {self.active_game.app_title}")
-
-            game = self.active_game
-            self.active_game = None
-
-            if self.dl_queue:
-                if self.dl_queue[0].download.game.app_name == game.app_name:
-                    self.dl_queue.pop(0)
-                    self.queue_widget.update_queue(self.dl_queue)
-
-            if game.app_name in self.update_widgets.keys():
-                igame = self.core.get_installed_game(game.app_name)
-                if (
-                        self.core.get_asset(
-                            game.app_name, igame.platform, False
-                        ).build_version
-                        == igame.version
-                ):
-                    self.remove_update(game.app_name)
-
-            self.signals.application.notify.emit(game.app_title)
-            self.signals.game.installed.emit([game.app_name])
-            self.signals.download.update_tab.emit()
-
-            self.signals.progress.finished.emit(game.app_name, True)
-
-            self.reset_infos()
-
-            if len(self.dl_queue) != 0:
-                self.start_installation(self.dl_queue[0])
+            if result.item.options.overlay:
+                self.signals.application.overlay_installed.emit()
             else:
-                self.queue_widget.update_queue(self.dl_queue)
+                self.signals.application.notify.emit(result.item.download.game.app_name)
 
-        elif result.ret_code == result.ReturnCode.ERROR:
-            QMessageBox.warning(self, self.tr("Error"), f"Download error: {result.message}")
+            if self.updates_group.contains(result.item.options.app_name):
+                self.updates_group.set_widget_enabled(result.item.options.app_name, True)
 
-        elif result.ret_code == result.ReturnCode.STOPPED:
-            self.reset_infos()
-            if w := self.update_widgets.get(self.active_game.app_name):
-                w.update_button.setDisabled(False)
-                w.update_with_settings.setDisabled(False)
-            self.signals.progress.finished.emit(self.active_game.app_name, False)
-            self.active_game = None
-            if self.dl_queue:
-                self.start_installation(self.dl_queue[0])
+        elif result.code == DlResultCode.ERROR:
+            QMessageBox.warning(self, self.tr("Error"), self.tr("Download error: {}").format(result.message))
+            logger.error(f"Download error: {result.message}")
 
-    def reset_infos(self):
-        self.kill_button.setDisabled(True)
-        self.dl_name.setText(self.tr("No active download"))
-        self.progress_bar.setValue(0)
-        self.dl_speed.setText("n/a")
-        self.time_left.setText("n/a")
-        self.cache_used.setText("n/a")
-        self.downloaded.setText("n/a")
-        self.analysis = None
+        elif result.code == DlResultCode.STOPPED:
+            logger.info(f"Download stopped: {result.item.download.game.app_title}")
+            if not self.on_exit:
+                info_worker = InstallInfoWorker(self.core, result.item.options)
+                info_worker.signals.result.connect(self.__on_info_worker_result)
+                info_worker.signals.failed.connect(self.__on_info_worker_failed)
+                info_worker.signals.finished.connect(self.__on_info_worker_finished)
+                self.threadpool.start(info_worker)
+            else:
+                return
 
-    @pyqtSlot(str, UIUpdate)
-    def progress_update(self, app_name: str, ui_update: UIUpdate):
-        self.progress_bar.setValue(
-            100 * ui_update.total_downloaded // self.analysis.dl_size
-        )
-        self.dl_speed.setText(f"{get_size(ui_update.download_compressed_speed)}/s")
-        self.cache_used.setText(
+        self.update_title.emit(self.queues_count())
+
+        # lk: if we finished a repair and we have a disabled update, re-enable it
+        if self.updates_group.contains(result.item.options.app_name):
+            self.updates_group.set_widget_enabled(result.item.options.app_name, True)
+
+        if result.code == DlResultCode.FINISHED and self.queue_group.count():
+                self.__start_installation(self.queue_group.pop_front())
+        elif result.code == DlResultCode.STOPPED and self.forced_item:
+            self.__start_installation(self.forced_item)
+            self.forced_item = None
+        else:
+            self.__reset_download()
+
+    def __reset_download(self):
+        self.ui.kill_button.setDisabled(True)
+        self.ui.dl_name.setText(self.tr("No active download"))
+        self.ui.progress_bar.setValue(0)
+        self.ui.dl_speed.setText("n/a")
+        self.ui.time_left.setText("n/a")
+        self.ui.cache_used.setText("n/a")
+        self.ui.downloaded.setText("n/a")
+        self.thread = None
+
+    @pyqtSlot(UIUpdate, c_ulonglong)
+    def __on_download_progress(self, ui_update: UIUpdate, dl_size: c_ulonglong):
+        self.ui.progress_bar.setValue(int(ui_update.progress))
+        self.ui.dl_speed.setText(f"{get_size(ui_update.download_compressed_speed)}/s")
+        self.ui.cache_used.setText(
             f"{get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}"
         )
-        self.downloaded.setText(
-            f"{get_size(ui_update.total_downloaded)} / {get_size(self.analysis.dl_size)}"
+        self.ui.downloaded.setText(
+            f"{get_size(ui_update.total_downloaded)} / {get_size(dl_size.value)}"
         )
-        self.time_left.setText(self.get_time(ui_update.estimated_time_left))
-        self.signals.progress.value.emit(
-            app_name,
-            100 * ui_update.total_downloaded // self.analysis.dl_size
-        )
+        self.ui.time_left.setText(get_time(ui_update.estimated_time_left))
 
-    def get_time(self, seconds: Union[int, float]) -> str:
-        return str(datetime.timedelta(seconds=seconds))
-
-    def on_install_dialog_closed(self, download_item: InstallQueueItemModel):
-        if download_item:
-            self.install_game(download_item)
-            # lk: In case the download in comming from game verification/repair
-            if w := self.update_widgets.get(download_item.options.app_name):
-                w.update_button.setDisabled(True)
-                w.update_with_settings.setDisabled(True)
-            # self.signals.set_main_tab_index.emit(1)
+    @pyqtSlot(InstallQueueItemModel)
+    def __on_install_dialog_closed(self, item: InstallQueueItemModel):
+        if item:
+            # lk: start update only if there is no other active thread and there is no queue
+            if self.thread is None and not self.queue_group.count():
+                self.__start_installation(item)
+            else:
+                rgame = self.rcore.get_game(item.options.app_name)
+                self.queue_group.push_back(item, rgame.igame)
+            # lk: Handle repairing into the current version
+            # When we add something to the queue from repair, we might select to update or not
+            # if we do select to update with repair, we can remove the widget from the updates groups
+            # otherwise we disable it and keep it in the updates
+            if self.updates_group.contains(item.options.app_name):
+                if item.download.igame.version == self.updates_group.get_update_version(item.options.app_name):
+                    self.updates_group.remove(item.options.app_name)
+                else:
+                    self.updates_group.set_widget_enabled(item.options.app_name, False)
         else:
-            if w := self.update_widgets.get(download_item.options.app_name):
-                w.update_button.setDisabled(False)
-                w.update_with_settings.setDisabled(False)
+            if self.updates_group.contains(item.options.app_name):
+                self.updates_group.set_widget_enabled(item.options.app_name, True)
 
-    def get_install_options(self, options: InstallOptionsModel):
 
+    @pyqtSlot(InstallOptionsModel)
+    def __get_install_options(self, options: InstallOptionsModel):
         install_dialog = InstallDialog(
-            InstallQueueItemModel(options=options),
-            update=options.update,
-            silent=options.silent,
+            self.rcore.get_game(options.app_name),
+            options=options,
             parent=self,
         )
-        install_dialog.result_ready.connect(self.on_install_dialog_closed)
+        install_dialog.result_ready.connect(self.__on_install_dialog_closed)
         install_dialog.execute()
 
     @property
     def is_download_active(self):
-        return self.active_game is not None
-
-
-class UpdateWidget(QWidget):
-    update_signal = pyqtSignal(InstallOptionsModel)
-
-    def __init__(self, core: LegendaryCore, rgame: RareGame, parent):
-        super(UpdateWidget, self).__init__(parent=parent)
-        self.core = core
-        self.rgame = rgame
-
-        layout = QVBoxLayout()
-        self.title = QLabel(self.rgame.app_title)
-        layout.addWidget(self.title)
-
-        self.update_button = QPushButton(self.tr("Update Game"))
-        self.update_button.clicked.connect(lambda: self.update_game(True))
-        self.update_with_settings = QPushButton("Update with settings")
-        self.update_with_settings.clicked.connect(lambda: self.update_game(False))
-        layout.addWidget(self.update_button)
-        layout.addWidget(self.update_with_settings)
-        layout.addWidget(
-            QLabel(
-                self.tr("Version: <b>{}</b> >> <b>{}</b>")
-                .format(self.rgame.version, self.rgame.remote_version)
-            )
-        )
-
-        self.setLayout(layout)
-
-    def update_game(self, auto: bool):
-        self.update_button.setDisabled(True)
-        self.update_with_settings.setDisabled(True)
-        self.update_signal.emit(
-            InstallOptionsModel(app_name=self.rgame.app_name, update=True, silent=auto)
-        )  # True if settings
+        return self.thread is not None

@@ -133,7 +133,7 @@ class IconWidget(object):
 
         # layout for the image, holds the mini widget and a spacer item
         image_layout = QVBoxLayout()
-        image_layout.setContentsMargins(0, 0, 0, 0)
+        image_layout.setContentsMargins(2, 2, 2, 2)
 
         # layout for the mini widget, holds the top row and the info label
         mini_layout = QVBoxLayout()

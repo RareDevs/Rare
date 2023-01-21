@@ -20,28 +20,18 @@ class GlobalSignals:
         # none
         update_tray = pyqtSignal()
 
-    class ProgressSignals(QObject):
-        # str: app_name
-        started = pyqtSignal(str)
-        # str: app_name, int: progress
-        value = pyqtSignal(str, int)
-        # str: app_name, bool: stopped
-        finished = pyqtSignal(str, bool)
-
     class GameSignals(QObject):
         install = pyqtSignal(InstallOptionsModel)
-        # list: app_name
-        installed = pyqtSignal(list)
+        # str: app_name
+        installed = pyqtSignal(str)
         # str: app_name
         uninstalled = pyqtSignal(str)
-        # str: app_name
-        verified = pyqtSignal(str)
 
     class DownloadSignals(QObject):
         # str: app_name
-        enqueue_game = pyqtSignal(str)
-        # none
-        update_tab = pyqtSignal()
+        enqueue = pyqtSignal(str)
+        # str: app_name
+        dequeue = pyqtSignal(str)
 
     class DiscordRPCSignals(QObject):
         # str: app_title
@@ -51,7 +41,6 @@ class GlobalSignals:
 
     def __init__(self):
         self.application = GlobalSignals.ApplicationSignals()
-        self.progress = GlobalSignals.ProgressSignals()
         self.game = GlobalSignals.GameSignals()
         self.download = GlobalSignals.DownloadSignals()
         self.discord_rpc = GlobalSignals.DiscordRPCSignals()
@@ -59,8 +48,6 @@ class GlobalSignals:
     def deleteLater(self):
         self.application.deleteLater()
         del self.application
-        self.progress.deleteLater()
-        del self.progress
         self.game.deleteLater()
         del self.game
         self.download.deleteLater()

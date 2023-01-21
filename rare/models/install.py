@@ -58,8 +58,8 @@ class InstallDownloadModel:
 
 @dataclass
 class InstallQueueItemModel:
-    download: Optional[InstallDownloadModel] = None
     options: Optional[InstallOptionsModel] = None
+    download: Optional[InstallDownloadModel] = None
 
     def __bool__(self):
         return (self.download is not None) and (self.options is not None)

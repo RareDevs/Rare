@@ -108,7 +108,7 @@ class GameWidget(LibraryWidget):
             self.addAction(uninstall)
             uninstall.triggered.connect(
                 lambda: self.signals.game.uninstalled.emit(self.rgame.app_name)
-                if self.game_utils.uninstall_game(self.rgame.app_name)
+                if self.game_utils.uninstall_game(self.rgame)
                 else None
             )
 

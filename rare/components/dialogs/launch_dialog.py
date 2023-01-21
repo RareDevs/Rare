@@ -282,6 +282,8 @@ class LaunchDialog(QDialog):
         if self.completed >= 2:
             logger.info("App starting")
             ApiResultsSingleton(self.api_results)
+            # FIXME: Add this to RareCore
+            self.core.lgd.entitlements = self.core.egs.get_user_entitlements()
             self.completed += 1
             self.start_app.emit()
 

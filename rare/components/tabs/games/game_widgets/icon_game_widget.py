@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import Optional
 
-from PyQt5.QtCore import QEvent, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QEvent, pyqtSlot
 
 from rare.models.game import RareGame
 from rare.shared.game_utils import GameUtils
@@ -12,9 +13,6 @@ logger = getLogger("IconGameWidget")
 
 
 class IconGameWidget(GameWidget):
-    is_ready = False
-    update_game = pyqtSignal()
-
     def __init__(self, rgame: RareGame, game_utils: GameUtils, parent=None):
         super(IconGameWidget, self).__init__(rgame, game_utils, parent)
         self.setObjectName(f"{rgame.app_name}")
@@ -30,7 +28,7 @@ class IconGameWidget(GameWidget):
         self.ui.install_btn.clicked.connect(self.install)
         self.ui.install_btn.setVisible(not self.rgame.is_installed)
 
-        self.game_utils.game_launched.connect(self.game_started)
+        # self.game_utils.game_launched.connect(self.game_started)
 
         self.is_ready = True
         self.ui.launch_btn.setEnabled(self.rgame.can_launch)
@@ -41,13 +39,13 @@ class IconGameWidget(GameWidget):
     def set_status(self):
         super(IconGameWidget, self).set_status(self.ui.status_label)
 
-    def enterEvent(self, a0: QEvent = None) -> None:
+    def enterEvent(self, a0: Optional[QEvent] = None) -> None:
         if a0 is not None:
             a0.accept()
         self.ui.tooltip_label.setText(self.enterEventText)
         self.ui.enterAnimation(self)
 
-    def leaveEvent(self, a0: QEvent = None) -> None:
+    def leaveEvent(self, a0: Optional[QEvent] = None) -> None:
         if a0 is not None:
             a0.accept()
         self.ui.leaveAnimation(self)

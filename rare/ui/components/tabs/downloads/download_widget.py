@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DownloadWidget(object):
     def setupUi(self, DownloadWidget):
         DownloadWidget.setObjectName("DownloadWidget")
-        DownloadWidget.resize(574, 70)
+        DownloadWidget.resize(332, 70)
         DownloadWidget.setWindowTitle("DownloadWidget")
         DownloadWidget.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.download_widget_layout = QtWidgets.QHBoxLayout(DownloadWidget)
@@ -54,12 +54,12 @@ class Ui_DownloadWidget(object):
         self.queue_buttons_layout = QtWidgets.QVBoxLayout(self.queue_buttons)
         self.queue_buttons_layout.setContentsMargins(0, 0, 0, 0)
         self.queue_buttons_layout.setObjectName("queue_buttons_layout")
+        self.force_button = QtWidgets.QPushButton(self.queue_buttons)
+        self.force_button.setObjectName("force_button")
+        self.queue_buttons_layout.addWidget(self.force_button)
         self.remove_button = QtWidgets.QPushButton(self.queue_buttons)
         self.remove_button.setObjectName("remove_button")
         self.queue_buttons_layout.addWidget(self.remove_button, 0, QtCore.Qt.AlignTop)
-        self.force_button = QtWidgets.QPushButton(self.queue_buttons)
-        self.force_button.setObjectName("force_button")
-        self.queue_buttons_layout.addWidget(self.force_button, 0, QtCore.Qt.AlignTop)
         self.download_widget_layout.addWidget(self.queue_buttons)
         self.update_buttons = QtWidgets.QWidget(DownloadWidget)
         self.update_buttons.setObjectName("update_buttons")
@@ -79,8 +79,8 @@ class Ui_DownloadWidget(object):
 
     def retranslateUi(self, DownloadWidget):
         _translate = QtCore.QCoreApplication.translate
-        self.remove_button.setText(_translate("DownloadWidget", "Remove from queue"))
         self.force_button.setText(_translate("DownloadWidget", "Update now"))
+        self.remove_button.setText(_translate("DownloadWidget", "Remove from queue"))
         self.update_button.setText(_translate("DownloadWidget", "Update game"))
         self.settings_button.setText(_translate("DownloadWidget", "Update with settings"))
 

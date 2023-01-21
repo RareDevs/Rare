@@ -67,7 +67,6 @@ def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_co
 class GameUtils(QObject):
     finished = pyqtSignal(str, str)  # app_name, error
     cloud_save_finished = pyqtSignal(str)
-    game_launched = pyqtSignal(RareGame)
     update_list = pyqtSignal(str)
 
     def __init__(self, parent=None):
@@ -105,7 +104,8 @@ class GameUtils(QObject):
         success, message = uninstall_game(self.core, rgame.app_name, keep_files, keep_config)
         if not success:
             QMessageBox.warning(None, self.tr("Uninstall - {}").format(rgame.title), message, QMessageBox.Close)
-        self.signals.game.uninstalled.emit(rgame.app_name)
+        rgame.set_installed(False)
+        self.signals.download.dequeue.emit(rgame.app_name)
         return True
 
     def prepare_launch(

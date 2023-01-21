@@ -168,7 +168,7 @@ class GameInfo(QWidget):
 
     def verify_game(self, rgame: RareGame):
         self.ui.verify_widget.setCurrentIndex(1)
-        verify_worker = VerifyWorker(rgame, self.core, self.args)
+        verify_worker = VerifyWorker(self.core, self.args, rgame)
         verify_worker.signals.status.connect(self.verify_status)
         verify_worker.signals.result.connect(self.verify_result)
         verify_worker.signals.error.connect(self.verify_error)

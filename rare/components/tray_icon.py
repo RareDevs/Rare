@@ -66,8 +66,7 @@ class TrayIcon(QSystemTrayIcon):
             a = QAction(rgame.app_title)
             a.setProperty("app_name", rgame.app_name)
             a.triggered.connect(
-                lambda: self.__parent.tab_widget.games_tab.game_utils.prepare_launch(
-                    self.sender().property("app_name"))
+                lambda: self.rcore.get_game(self.sender().property("app_name")).launch()
             )
             self.menu.insertAction(self.separator, a)
             self.game_actions.append(a)

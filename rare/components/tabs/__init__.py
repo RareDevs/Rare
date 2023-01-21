@@ -32,11 +32,10 @@ class TabWidget(QTabWidget):
         # Downloads Tab after Games Tab to use populated RareCore games list
         if not self.args.offline:
             self.downloads_tab = DownloadsTab(self)
-            updates = list(self.rcore.updates)
-            self.addTab(
-                self.downloads_tab,
-                self.tr("Downloads {}").format(f"({len(updates) if updates else 0})"),
-            )
+            # update dl tab text
+            self.addTab(self.downloads_tab, "")
+            self.__on_downloads_update_title(self.downloads_tab.queues_count())
+            self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
 
@@ -71,12 +70,9 @@ class TabWidget(QTabWidget):
         # set current index
         # self.signals.set_main_tab_index.connect(self.setCurrentIndex)
 
-        # update dl tab text
-        self.signals.download.update_tab.connect(self.update_dl_tab_text)
-
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
-        self.setIconSize(QSize(25, 25))
+        self.setIconSize(QSize(24, 24))
 
         # shortcuts
         QShortcut("Alt+1", self).activated.connect(lambda: self.setCurrentIndex(0))
@@ -84,18 +80,9 @@ class TabWidget(QTabWidget):
         QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(2))
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(5))
 
-    def update_dl_tab_text(self):
-        num_downloads = len(
-            set(
-                [i.options.app_name for i in self.downloads_tab.dl_queue]
-                + [i for i in self.downloads_tab.update_widgets.keys()]
-            )
-        )
-
-        if num_downloads != 0:
-            self.setTabText(1, f"Downloads ({num_downloads})")
-        else:
-            self.setTabText(1, "Downloads")
+    @pyqtSlot(int)
+    def __on_downloads_update_title(self, num_downloads: int):
+        self.setTabText(self.indexOf(self.downloads_tab), self.tr("Downloads ({})").format(num_downloads))
 
     def mouse_clicked(self, tab_num):
         if tab_num == 0:

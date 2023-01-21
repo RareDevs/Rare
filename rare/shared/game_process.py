@@ -46,7 +46,7 @@ class GameProcess(QObject):
         self.socket.readyRead.connect(self.__on_message)
         self.socket.disconnected.connect(self.__close)
 
-    def connect(self, on_startup: bool):
+    def connect_to_server(self, on_startup: bool):
         self.on_startup = on_startup
         self.timer.start(200)
 

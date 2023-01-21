@@ -22,8 +22,6 @@ logger = getLogger("ListGameWidget")
 
 
 class ListGameWidget(GameWidget):
-    signal = pyqtSignal(str)
-    update_game = pyqtSignal()
 
     def __init__(self, rgame: RareGame, game_utils: GameUtils, parent=None):
         super(ListGameWidget, self).__init__(rgame, game_utils, parent)

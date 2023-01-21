@@ -17,7 +17,7 @@ from PyQt5.QtCore import (
     QDir,
 )
 from PyQt5.QtGui import QPalette, QColor, QImage
-from PyQt5.QtWidgets import qApp, QStyleFactory
+from PyQt5.QtWidgets import qApp, QStyleFactory, QWidget
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from requests.exceptions import HTTPError
@@ -350,3 +350,7 @@ def icon(icn_str: str, fallback: str = None, **kwargs):
     if kwargs.get("color"):
         kwargs["color"] = "red"
     return qtawesome.icon("ei.error", **kwargs)
+
+
+def widget_object_name(widget: QWidget, app_name: str) -> str:
+    return f"{type(widget).__name__}_{app_name}"

@@ -12,11 +12,10 @@ from legendary.models.game import Game, InstalledGame, SaveGameFile
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel
-from rare.shared.image_manager import ImageManager
 from rare.shared.game_process import GameProcess
-from rare.utils.paths import data_dir
+from rare.shared.image_manager import ImageManager
 from rare.utils.misc import get_rare_executable
-
+from rare.utils.paths import data_dir
 
 logger = getLogger("RareGame")
 
@@ -32,25 +31,31 @@ class RareGame(QObject):
 
     @dataclass
     class Metadata:
+        auto_update: bool = False
         queued: bool = False
         queue_pos: Optional[int] = None
         last_played: Optional[datetime] = None
+        grant_date: Optional[datetime] = None
         tags: List[str] = field(default_factory=list)
 
         @classmethod
         def from_dict(cls, data: Dict):
             return cls(
+                auto_update=data.get("auto_update", False),
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
-                last_played=datetime.strptime(data.get("last_played", "None"), "%Y-%m-%dT%H:%M:%S.%f"),
+                last_played=datetime.fromisoformat(data["last_played"]) if data.get("last_played", None) else None,
+                grant_date=datetime.fromisoformat(data["grant_date"]) if data.get("grant_date", None) else None,
                 tags=data.get("tags", []),
             )
 
         def as_dict(self):
             return dict(
+                auto_update=self.auto_update,
                 queued=self.queued,
                 queue_pos=self.queue_pos,
-                last_played=self.last_played.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                last_played=self.last_played.isoformat() if self.last_played else None,
+                grant_date=self.grant_date.isoformat() if self.grant_date else None,
                 tags=self.tags,
             )
 
@@ -68,9 +73,10 @@ class RareGame(QObject):
 
         class Game(QObject):
             install = pyqtSignal(InstallOptionsModel)
-            uninstalled = pyqtSignal()
-            launched = pyqtSignal()
-            finished = pyqtSignal()
+            installed = pyqtSignal(str)
+            uninstalled = pyqtSignal(str)
+            launched = pyqtSignal(str)
+            finished = pyqtSignal(str)
 
         def __init__(self):
             super(RareGame.Signals, self).__init__()
@@ -78,7 +84,7 @@ class RareGame(QObject):
             self.widget = RareGame.Signals.Widget()
             self.game = RareGame.Signals.Game()
 
-    def __init__(self, game: Game, legendary_core: LegendaryCore, image_manager: ImageManager):
+    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
         super(RareGame, self).__init__()
         self.signals = RareGame.Signals()
 
@@ -108,29 +114,30 @@ class RareGame(QObject):
 
         self.state = RareGame.State.IDLE
 
-        self.game_process = GameProcess(self)
+        self.game_process = GameProcess(self.game)
         self.game_process.launched.connect(self.__game_launched)
         self.game_process.finished.connect(self.__game_finished)
         if self.is_installed and not self.is_dlc:
-            self.game_process.connect(on_startup=True)
+            self.game_process.connect_to_server(on_startup=True)
+        # self.grant_date(True)
 
     @pyqtSlot(int)
     def __game_launched(self, code: int):
-        self.state = RareGame.State.RUNNING
         if code == GameProcess.Code.ON_STARTUP:
             return
+        self.state = RareGame.State.RUNNING
         self.metadata.last_played = datetime.now()
         self.__save_metadata()
         self.signals.game.launched.emit()
 
     @pyqtSlot(int)
     def __game_finished(self, exit_code: int):
-        self.state = RareGame.State.IDLE
         if exit_code == GameProcess.Code.ON_STARTUP:
             return
+        self.state = RareGame.State.IDLE
         self.signals.game.finished.emit()
 
-    __metadata_json: Optional[Dict] = None
+    __metadata_json: Dict = None
 
     @staticmethod
     def __load_metadata_json() -> Dict:
@@ -270,9 +277,11 @@ class RareGame(QObject):
         @return None
         """
         if installed:
-            self.igame = self.core.get_installed_game(self.app_name)
+            self.update_igame()
+            self.signals.game.installed.emit(self.app_name)
         else:
             self.igame = None
+            self.signals.game.uninstalled.emit(self.app_name)
         self.set_pixmap()
 
     @property
@@ -401,14 +410,33 @@ class RareGame(QObject):
 
         @return bool If the game is an Origin game
         """
-        return self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
+        return (
+            self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value")
+            == "Origin"
+        )
+
+    def grant_date(self, force=False) -> datetime:
+        if self.metadata.grant_date is None or force:
+            entitlements = self.core.lgd.entitlements
+            matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
+            entitlement = next(matching, None)
+            grant_date = datetime.fromisoformat(
+                entitlement["grantDate"].replace("Z", "+00:00")
+            ) if entitlement else None
+            if force:
+                print(grant_date)
+            self.metadata.grant_date = grant_date
+            self.__save_metadata()
+        return self.metadata.grant_date
 
     @property
     def can_launch(self) -> bool:
         if self.is_installed:
-            if self.is_non_asset:
+            if self.is_origin:
                 return True
-            if self.state == RareGame.State.RUNNING or self.needs_verification:
+            if not self.state == RareGame.State.IDLE or self.needs_verification:
+                return False
+            if self.is_foreign and not self.can_run_offline:
                 return False
             return True
         return False
@@ -442,23 +470,24 @@ class RareGame(QObject):
     def repair(self, repair_and_update):
         self.signals.game.install.emit(
             InstallOptionsModel(
-                app_name=self.app_name, repair_mode=True, repair_and_update=repair_and_update, update=True
+                app_name=self.app_name, repair_mode=True, repair_and_update=repair_and_update, update=repair_and_update
             )
         )
 
     def launch(
-            self,
-            offline: bool = False,
-            skip_update_check: bool = False,
-            wine_bin: str = None,
-            wine_pfx: str = None,
-            ask_sync_saves: bool = False,
+        self,
+        offline: bool = False,
+        skip_update_check: bool = False,
+        wine_bin: Optional[str] = None,
+        wine_pfx: Optional[str] = None,
+        ask_sync_saves: bool = False,
     ):
-        executable = get_rare_executable()
-        executable, args = executable[0], executable[1:]
-        args.extend([
-            "start", self.app_name
-        ])
+        if not self.can_launch:
+            return
+
+        cmd_line = get_rare_executable()
+        executable, args = cmd_line[0], cmd_line[1:]
+        args.extend(["start", self.app_name])
         if offline:
             args.append("--offline")
         if skip_update_check:
@@ -473,4 +502,52 @@ class RareGame(QObject):
         # kill me, if I don't change it before commit
         QProcess.startDetached(executable, args)
         logger.info(f"Start new Process: ({executable} {' '.join(args)})")
-        self.game_process.connect(on_startup=False)
+        self.game_process.connect_to_server(on_startup=False)
+
+
+class RareEosOverlay(QObject):
+    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
+        super(RareEosOverlay, self).__init__()
+        self.signals = RareGame.Signals()
+
+        self.core = legendary_core
+        self.image_manager = image_manager
+
+        self.game: Game = game
+
+        # None if origin or not installed
+        self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
+
+        self.state = RareGame.State.IDLE
+
+    @property
+    def app_name(self) -> str:
+        return self.igame.app_name if self.igame is not None else self.game.app_name
+
+    @property
+    def app_title(self) -> str:
+        return self.igame.title if self.igame is not None else self.game.app_title
+
+    @property
+    def title(self) -> str:
+        return self.app_title
+
+    @property
+    def is_installed(self) -> bool:
+        return self.igame is not None
+
+    def set_installed(self, installed: bool) -> None:
+        if installed:
+            self.igame = self.core.lgd.get_overlay_install_info()
+            self.signals.game.installed.emit(self.app_name)
+        else:
+            self.igame = None
+            self.signals.game.uninstalled.emit(self.app_name)
+
+    @property
+    def is_mac(self) -> bool:
+        return False
+
+    @property
+    def is_win32(self) -> bool:
+        return False

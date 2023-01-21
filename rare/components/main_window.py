@@ -164,9 +164,7 @@ class MainWindow(QMainWindow):
                 defaultButton=QMessageBox.No,
             )
             if reply == QMessageBox.Yes:
-                # clear queue
-                self.tab_widget.downloads_tab.queue_widget.update_queue([])
-                self.tab_widget.downloads_tab.stop_download()
+                self.tab_widget.downloads_tab.stop_download(on_exit=True)
             else:
                 e.ignore()
                 return

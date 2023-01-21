@@ -23,7 +23,7 @@ class VerifyWorker(QRunnable):
     num: int = 0
     total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized
 
-    def __init__(self, rgame: RareGame, core: LegendaryCore, args: Namespace):
+    def __init__(self, core: LegendaryCore, args: Namespace, rgame: RareGame):
         sys.excepthook = sys.__excepthook__
         super(VerifyWorker, self).__init__()
         self.signals = VerifyWorker.Signals()

@@ -209,7 +209,9 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
         self.enabled_cb.setChecked(enabled)
 
     def install_overlay(self, update=False):
-        base_path = os.path.expanduser("~/legendary/.overlay")
+        base_path = os.path.join(
+            self.core.lgd.config.get("Legendary", "install_dir", fallback=os.path.expanduser("~/legendary")),".overlay"
+        )
         if update:
             if not self.overlay:
                 self.overlay_stack.setCurrentIndex(1)
@@ -218,8 +220,9 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
                 return
             base_path = self.overlay.install_path
 
-        options = InstallOptionsModel(app_name="", base_path=base_path,
-                                      platform="Windows", overlay=True)
+        options = InstallOptionsModel(
+            app_name=eos.EOSOverlayApp.app_name, base_path=base_path, platform="Windows", overlay=True
+        )
 
         self.signals.game.install.emit(options)
 

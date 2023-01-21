@@ -1,6 +1,6 @@
 import time
 from logging import getLogger
-from typing import Tuple, Dict, List, Set
+from typing import Dict, List
 
 from PyQt5.QtCore import QSettings, Qt, pyqtSlot
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
@@ -39,14 +39,10 @@ class GamesTab(QStackedWidget):
         self.image_manager = ImageManagerSingleton()
         self.settings = QSettings()
 
-        self.widgets:  Dict[str, Tuple[IconGameWidget, ListGameWidget]] = {}
-        self.game_updates: Set[RareGame] = set()
         self.active_filter: int = 0
 
         self.game_list: List[Game] = self.api_results.game_list
         self.dlcs: Dict[str, List[Game]] = self.api_results.dlcs
-        self.bit32: List[str] = self.api_results.bit32_games
-        self.mac_games: List[str] = self.api_results.mac_games
         self.no_assets: List[Game] = self.api_results.no_asset_games
 
         self.game_utils = GameUtils(parent=self)
@@ -70,18 +66,6 @@ class GamesTab(QStackedWidget):
         self.integrations_tabs = IntegrationsTabs(self)
         self.integrations_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
         self.addWidget(self.integrations_tabs)
-
-        for i in self.game_list:
-            if i.app_name.startswith("UE_4"):
-                pixmap = self.image_manager.get_pixmap(i.app_name)
-                if pixmap.isNull():
-                    continue
-                self.ue_name = i.app_name
-                logger.debug(f"Found Unreal AppName {self.ue_name}")
-                break
-        else:
-            logger.warning("No Unreal engine in library found")
-            self.ue_name = ""
 
         self.no_asset_names = []
         if not self.args.offline:
@@ -108,9 +92,7 @@ class GamesTab(QStackedWidget):
         self.list_view.setLayout(QVBoxLayout(self.list_view))
         self.list_view.layout().setContentsMargins(3, 3, 9, 3)
         self.list_view.layout().setAlignment(Qt.AlignTop)
-        self.library_controller = LibraryWidgetController(
-            self.icon_view, self.list_view, self
-        )
+        self.library_controller = LibraryWidgetController(self.icon_view, self.list_view, self)
         self.icon_view_scroll.setWidget(self.icon_view)
         self.list_view_scroll.setWidget(self.list_view)
         self.view_stack.addWidget(self.icon_view_scroll)
@@ -182,14 +164,15 @@ class GamesTab(QStackedWidget):
 
     # FIXME: Remove this when RareCore is in place
     def __create_game_with_dlcs(self, game: Game) -> RareGame:
-        rgame = RareGame(game, self.core, self.image_manager)
-        if rgame.has_update:
-            self.game_updates.add(rgame)
+        rgame = RareGame(self.core, self.image_manager, game)
         if game_dlcs := self.dlcs[rgame.game.catalog_item_id]:
             for dlc in game_dlcs:
-                rdlc = RareGame(dlc, self.core, self.image_manager)
-                if rdlc.has_update:
-                    self.game_updates.add(rdlc)
+                rdlc = RareGame(self.core, self.image_manager, dlc)
+                self.rcore.add_game(rdlc)
+                # lk: plug dlc progress signals to the game's
+                rdlc.signals.progress.start.connect(rgame.signals.progress.start)
+                rdlc.signals.progress.update.connect(rgame.signals.progress.update)
+                rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
                 rdlc.set_pixmap()
                 rgame.owned_dlcs.append(rdlc)
         return rgame
@@ -210,12 +193,11 @@ class GamesTab(QStackedWidget):
 
     def add_library_widget(self, rgame: RareGame):
         try:
-            icon_widget, list_widget = self.library_controller.add_game(rgame, self.game_utils, self)
+            icon_widget, list_widget = self.library_controller.add_game(rgame, self.game_utils)
         except Exception as e:
             raise e
             logger.error(f"{rgame.app_name} is broken. Don't add it to game list: {e}")
             return None, None
-        self.widgets[rgame.app_name] = (icon_widget, list_widget)
         icon_widget.show_info.connect(self.show_game_info)
         list_widget.show_info.connect(self.show_game_info)
         return icon_widget, list_widget
