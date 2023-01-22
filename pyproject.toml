@@ -12,7 +12,7 @@ force-exclude = '''
 
 [tool.poetry]
 name = "rare"
-version = "1.9.4"
+version = "1.9.5"
 description = "A GUI for Legendary"
 authors = ["Dummerle"]
 license = "GPL3"
