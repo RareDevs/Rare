@@ -109,7 +109,10 @@ class ImageWorker(LaunchWorker):
                 igame_executable = override_exe
             else:
                 igame_executable = igame.executable
-            if not os.path.exists(os.path.join(igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))):
+            # lk: Case-insensitive search for the game's executable (example: Brothers - A Tale of two Sons)
+            executable_path = os.path.join(igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))
+            file_list = map(str.lower, os.listdir(os.path.dirname(executable_path)))
+            if not os.path.basename(executable_path).lower() in file_list:
                 igame.needs_verification = True
                 self.core.lgd.set_installed_game(igame.app_name, igame)
                 logger.info(f"{igame.title} needs verification")
