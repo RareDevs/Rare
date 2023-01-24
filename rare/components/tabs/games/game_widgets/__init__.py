@@ -8,7 +8,6 @@ from rare.models.apiresults import ApiResults
 from rare.models.game import RareGame
 from rare.models.signals import GlobalSignals
 from rare.shared import RareCore
-from rare.shared.game_utils import GameUtils
 from .icon_game_widget import IconGameWidget
 from .list_game_widget import ListGameWidget
 
@@ -23,12 +22,12 @@ class LibraryWidgetController(QObject):
         self.signals: GlobalSignals = self.rcore.signals()
         self.api_results: ApiResults = self.rcore.api_results()
 
-    def add_game(self, rgame: RareGame, game_utils: GameUtils):
-        return self.add_widgets(rgame, game_utils)
+    def add_game(self, rgame: RareGame):
+        return self.add_widgets(rgame)
 
-    def add_widgets(self, rgame: RareGame, game_utils: GameUtils) -> Tuple[IconGameWidget, ListGameWidget]:
-        icon_widget = IconGameWidget(rgame, game_utils, self._icon_container)
-        list_widget = ListGameWidget(rgame, game_utils, self._list_container)
+    def add_widgets(self, rgame: RareGame) -> Tuple[IconGameWidget, ListGameWidget]:
+        icon_widget = IconGameWidget(rgame, self._icon_container)
+        list_widget = ListGameWidget(rgame, self._list_container)
         return icon_widget, list_widget
 
     @staticmethod
@@ -131,20 +130,3 @@ class LibraryWidgetController(QObject):
         iw = self._icon_container.findChild(IconGameWidget, app_name)
         lw = self._list_container.findChild(ListGameWidget, app_name)
         return iw, lw
-
-    # lk: this should go in downloads and happen once
-    def __find_game_for_dlc(self, app_name: str) -> Optional[str]:
-        game = self.core.get_game(app_name, False)
-        # lk: how can an app_name not refer to a game?
-        if not game:
-            return None
-        if game.is_dlc:
-            game_list = self.core.get_game_list(update_assets=False)
-            game = list(
-                filter(
-                    lambda x: x.asset_infos["Windows"].catalog_item_id == game.metadata["mainGameItem"]["id"],
-                    game_list,
-                )
-            )
-            return game[0].app_name
-        return app_name

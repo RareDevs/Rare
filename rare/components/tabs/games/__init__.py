@@ -61,8 +61,6 @@ class GamesTab(QStackedWidget):
         self.game_info_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
         self.addWidget(self.game_info_tabs)
 
-        self.game_info_tabs.info.uninstalled.connect(lambda x: self.setCurrentWidget(self.games))
-
         self.integrations_tabs = IntegrationsTabs(self)
         self.integrations_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
         self.addWidget(self.integrations_tabs)
@@ -119,11 +117,10 @@ class GamesTab(QStackedWidget):
 
         # signals
         self.signals.game.installed.connect(self.update_count_games_label)
+        # self.signals.game.installed.connect(self.library_controller.update_list)
         self.signals.game.uninstalled.connect(self.update_count_games_label)
-        self.signals.game.uninstalled.connect(lambda x: self.setCurrentIndex(0))
-
-        # self.signals.update_gamelist.connect(self.library_controller.update_list)
-        # self.game_utils.update_list.connect(self.library_controller.update_list)
+        # self.signals.game.uninstalled.connect(self.library_controller.update_list)
+        # self.signals.game.uninstalled.connect(lambda x: self.setCurrentWidget(self.games))
 
         start_t = time.time()
         self.setup_game_list()
@@ -193,7 +190,7 @@ class GamesTab(QStackedWidget):
 
     def add_library_widget(self, rgame: RareGame):
         try:
-            icon_widget, list_widget = self.library_controller.add_game(rgame, self.game_utils)
+            icon_widget, list_widget = self.library_controller.add_game(rgame)
         except Exception as e:
             raise e
             logger.error(f"{rgame.app_name} is broken. Don't add it to game list: {e}")

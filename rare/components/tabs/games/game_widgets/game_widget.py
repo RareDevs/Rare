@@ -3,9 +3,9 @@ import platform
 from abc import abstractmethod
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QSettings, QStandardPaths, Qt
+from PyQt5.QtCore import pyqtSignal, QStandardPaths, Qt, pyqtSlot
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import QMessageBox, QAction, QLabel
+from PyQt5.QtWidgets import QMessageBox, QAction, QLabel, QPushButton
 
 from rare.models.game import RareGame
 from rare.shared import (
@@ -14,7 +14,6 @@ from rare.shared import (
     ArgumentsSingleton,
     ImageManagerSingleton,
 )
-from rare.shared.game_utils import GameUtils
 from rare.utils.misc import create_desktop_link
 from .library_widget import LibraryWidget
 
@@ -24,49 +23,29 @@ logger = getLogger("BaseGameWidget")
 class GameWidget(LibraryWidget):
     show_info = pyqtSignal(RareGame)
 
-    def __init__(self, rgame: RareGame, game_utils: GameUtils, parent=None):
+    def __init__(self, rgame: RareGame, parent=None):
         super(GameWidget, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
         self.image_manager = ImageManagerSingleton()
 
-        self.game_utils = game_utils
-
-        self.rgame = rgame
-        self.rgame.signals.widget.update.connect(
-            lambda: self.setPixmap(self.rgame.pixmap)
-        )
-        self.rgame.signals.progress.start.connect(
-            lambda: self.showProgress(
-                self.image_manager.get_pixmap(self.rgame.app_name, True),
-                self.image_manager.get_pixmap(self.rgame.app_name, False)
-            )
-        )
-        self.rgame.signals.progress.update.connect(
-            lambda p: self.updateProgress(p)
-        )
-        self.rgame.signals.progress.finish.connect(
-            lambda e: self.hideProgress(e)
-        )
-
         self.rgame: RareGame = rgame
-        self.syncing_cloud_saves = False
 
-        self.game_running = False
-
-        self.settings = QSettings()
-
-        self.installing = False
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
-        launch = QAction(self.tr("Launch"), self)
-        launch.triggered.connect(self.launch)
-        self.addAction(launch)
+        if self.rgame.is_installed or self.rgame.is_origin:
+            self.launch_action = QAction(self.tr("Launch"), self)
+            self.launch_action.triggered.connect(self._launch)
+            self.addAction(self.launch_action)
+        else:
+            self.install_action = QAction(self.tr("Install"), self)
+            self.install_action.triggered.connect(self._install)
+            self.addAction(self.install_action)
 
-        if self.rgame.game.supports_cloud_saves:
-            sync = QAction(self.tr("Sync with cloud"), self)
-            sync.triggered.connect(self.sync_game)
-            self.addAction(sync)
+        # if self.rgame.game.supports_cloud_saves:
+        #     sync = QAction(self.tr("Sync with cloud"), self)
+        #     sync.triggered.connect(self.sync_game)
+        #     self.addAction(sync)
 
         desktop = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
         if os.path.exists(
@@ -100,17 +79,13 @@ class GameWidget(LibraryWidget):
                 self.addAction(self.create_start_menu)
 
         reload_image = QAction(self.tr("Reload Image"), self)
-        reload_image.triggered.connect(self.reload_image)
+        reload_image.triggered.connect(self._on_reload_image)
         self.addAction(reload_image)
 
-        if not self.rgame.is_origin:
-            uninstall = QAction(self.tr("Uninstall"), self)
-            self.addAction(uninstall)
-            uninstall.triggered.connect(
-                lambda: self.signals.game.uninstalled.emit(self.rgame.app_name)
-                if self.game_utils.uninstall_game(self.rgame)
-                else None
-            )
+        if self.rgame.is_installed and not self.rgame.is_origin:
+            self.uninstall_action = QAction(self.tr("Uninstall"), self)
+            self.uninstall_action.triggered.connect(self._uninstall)
+            self.addAction(self.uninstall_action)
 
         self.texts = {
             "hover": {
@@ -131,6 +106,25 @@ class GameWidget(LibraryWidget):
             },
         }
 
+        # signals
+        self.rgame.signals.widget.update.connect(
+            lambda: self.setPixmap(self.rgame.pixmap)
+        )
+        self.rgame.signals.widget.update.connect(
+            self.update_widget
+        )
+        self.rgame.signals.progress.start.connect(
+            lambda: self.showProgress(
+                self.image_manager.get_pixmap(self.rgame.app_name, True),
+                self.image_manager.get_pixmap(self.rgame.app_name, False)
+            )
+        )
+        self.rgame.signals.progress.update.connect(
+            lambda p: self.updateProgress(p)
+        )
+        self.rgame.signals.progress.finish.connect(
+            lambda e: self.hideProgress(e)
+        )
         self.rgame.signals.progress.finish.connect(self.set_status)
 
     @abstractmethod
@@ -145,10 +139,15 @@ class GameWidget(LibraryWidget):
         label.setText("")
         label.setVisible(False)
 
+    @abstractmethod
+    def update_widget(self, install_btn: QPushButton, launch_btn: QPushButton):
+        install_btn.setVisible(not self.rgame.is_installed)
+        launch_btn.setVisible(self.rgame.is_installed)
+
     @property
     def enterEventText(self) -> str:
         if self.rgame.is_installed:
-            if self.game_running:
+            if self.rgame.state == RareGame.State.RUNNING:
                 return self.texts["status"]["running"]
             elif (not self.rgame.is_origin) and self.rgame.needs_verification:
                 return self.texts["status"]["needs_verification"]
@@ -160,7 +159,7 @@ class GameWidget(LibraryWidget):
                 return self.tr("Game Info")
                 # return self.texts["hover"]["launch" if self.igame else "launch_origin"]
         else:
-            if not self.installing:
+            if not self.rgame.state == RareGame.State.DOWNLOADING:
                 return self.tr("Game Info")
             else:
                 return self.tr("Installation running")
@@ -168,10 +167,10 @@ class GameWidget(LibraryWidget):
     @property
     def leaveEventText(self) -> str:
         if self.rgame.is_installed:
-            if self.game_running:
+            if self.rgame.state == RareGame.State.RUNNING:
                 return self.texts["status"]["running"]
-            elif self.syncing_cloud_saves:
-                return self.texts["status"]["syncing"]
+            # elif self.syncing_cloud_saves:
+            #     return self.texts["status"]["syncing"]
             elif self.rgame.is_foreign:
                 return self.texts["status"]["no_meta"]
             elif self.rgame.has_update:
@@ -181,7 +180,7 @@ class GameWidget(LibraryWidget):
             else:
                 return ""
         else:
-            if self.installing:
+            if self.rgame.state == RareGame.State.DOWNLOADING:
                 return "Installation..."
             else:
                 return ""
@@ -194,10 +193,29 @@ class GameWidget(LibraryWidget):
         elif e.button() == 2:
             pass  # self.showMenu(e)
 
-    def reload_image(self) -> None:
+    @pyqtSlot()
+    def _on_reload_image(self) -> None:
         self.rgame.refresh_pixmap()
 
-    def install(self):
+    @pyqtSlot()
+    @pyqtSlot(bool, bool)
+    def _launch(self, offline=False, skip_version_check=False):
+        if offline or (self.rgame.is_foreign and self.rgame.can_run_offline):
+            offline = True
+        # if self.rgame.game.supports_cloud_saves and not offline:
+        #     self.syncing_cloud_saves = True
+        if self.rgame.has_update:
+            skip_version_check = True
+        self.rgame.launch(
+            offline=offline, skip_update_check=skip_version_check
+        )
+
+    @pyqtSlot()
+    def _install(self):
+        self.show_info.emit(self.rgame)
+
+    @pyqtSlot()
+    def _uninstall(self):
         self.show_info.emit(self.rgame)
 
     def create_desktop_link(self, type_of_link):
@@ -241,35 +259,20 @@ class GameWidget(LibraryWidget):
             elif type_of_link == "start_menu":
                 self.create_start_menu.setText(self.tr("Create Start menu link"))
 
-    def launch(self, offline=False, skip_version_check=False):
-        if self.game_running:
-            return
-        offline = offline or self.rgame.is_foreign
-        if self.rgame.is_foreign and not self.rgame.can_run_offline:
-            QMessageBox.warning(self, "Warning",
-                                self.tr("This game is probably not in your library and it cannot be launched offline"))
-            return
+    # def sync_finished(self, app_name):
+    #     self.syncing_cloud_saves = False
 
-        if self.rgame.game.supports_cloud_saves and not offline:
-            self.syncing_cloud_saves = True
-        self.rgame.launch(
-            offline=offline, skip_update_check=skip_version_check
-        )
+    # def sync_game(self):
+    #     try:
+    #         sync = self.game_utils.cloud_save_utils.sync_before_launch_game(
+    #             self.rgame.app_name, True
+    #         )
+    #     except Exception:
+    #         sync = False
+    #     if sync:
+    #         self.syncing_cloud_saves = True
 
-    def sync_finished(self, app_name):
-        self.syncing_cloud_saves = False
-
-    def sync_game(self):
-        try:
-            sync = self.game_utils.cloud_save_utils.sync_before_launch_game(
-                self.rgame.app_name, True
-            )
-        except Exception:
-            sync = False
-        if sync:
-            self.syncing_cloud_saves = True
-
-    def game_finished(self, app_name, error):
-        if error:
-            QMessageBox.warning(self, "Error", error)
-        self.game_running = False
+    # def game_finished(self, app_name, error):
+    #     if error:
+    #         QMessageBox.warning(self, "Error", error)
+    #     self.game_running = False
