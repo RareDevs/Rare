@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>791</width>
-    <height>583</height>
+    <width>533</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QHBoxLayout" name="layout_game_info">
    <item>
-    <layout class="QGridLayout" name="layout_game_info_form">
+    <layout class="QGridLayout" name="game_info_layout" rowstretch="0,0,0,0,0,0,0,0,1" columnstretch="0,1">
      <property name="leftMargin">
       <number>6</number>
      </property>
@@ -32,14 +32,14 @@
       <number>12</number>
      </property>
      <item row="8" column="1">
-      <spacer name="hs_game_info_form">
+      <spacer name="game_info_hspacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>0</width>
-         <height>20</height>
+         <width>20</width>
+         <height>0</height>
         </size>
        </property>
       </spacer>
@@ -161,14 +161,14 @@
       </widget>
      </item>
      <item row="8" column="0">
-      <spacer name="vs_game_info_form">
+      <spacer name="game_info_vspacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>20</width>
-         <height>0</height>
+         <width>0</width>
+         <height>20</height>
         </size>
        </property>
       </spacer>
@@ -180,12 +180,18 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1" alignment="Qt::AlignLeft|Qt::AlignTop">
+     <item row="7" column="1">
       <widget class="QStackedWidget" name="game_actions_stack">
        <property name="minimumSize">
         <size>
          <width>250</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>250</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="currentIndex">
@@ -206,12 +212,12 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QStackedWidget" name="verify_widget">
+          <widget class="QStackedWidget" name="verify_stack">
            <property name="currentIndex">
             <number>0</number>
            </property>
-           <widget class="QWidget" name="page_verify_button">
-            <layout class="QVBoxLayout" name="layout_verify_button">
+           <widget class="QWidget" name="verify_button_page">
+            <layout class="QHBoxLayout" name="verify_page_layout">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -236,8 +242,8 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="page_verify_progress">
-            <layout class="QVBoxLayout" name="layout_verify_progress">
+           <widget class="QWidget" name="verify_progress_page">
+            <layout class="QHBoxLayout" name="verify_progress_layout">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -273,14 +279,14 @@
          </item>
          <item>
           <widget class="QStackedWidget" name="move_stack">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
+           <property name="currentIndex">
+            <number>0</number>
            </property>
-           <widget class="QWidget" name="page">
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <widget class="QWidget" name="move_button_page">
+            <layout class="QHBoxLayout" name="move_button_layout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -307,11 +313,42 @@
                <property name="popupMode">
                 <enum>QToolButton::InstantPopup</enum>
                </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextOnly</enum>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::DownArrow</enum>
+               </property>
               </widget>
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="page_2"/>
+           <widget class="QWidget" name="move_progress_page">
+            <layout class="QHBoxLayout" name="move_progress_layout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QProgressBar" name="move_progress">
+               <property name="value">
+                <number>24</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </widget>
          </item>
          <item>
@@ -327,7 +364,26 @@
         </layout>
        </widget>
        <widget class="QWidget" name="uninstalled_page">
-        <layout class="QVBoxLayout" name="uninstalled_layout">
+        <layout class="QVBoxLayout" name="uninstalled_layout" stretch="1,0,0,1">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <spacer name="uninstalled_page_top_vspacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </spacer>
+         </item>
          <item>
           <widget class="QPushButton" name="install_button">
            <property name="styleSheet">
@@ -337,6 +393,26 @@
             <string>Install Game</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="import_button">
+           <property name="text">
+            <string>Import Game</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="uninstalled_page_bot_vspacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>

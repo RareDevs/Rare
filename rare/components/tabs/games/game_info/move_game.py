@@ -21,22 +21,21 @@ class MoveGamePopUp(QWidget):
 
     def __init__(self, parent=None):
         super(MoveGamePopUp, self).__init__(parent=parent)
-        layout: QVBoxLayout = QVBoxLayout()
-        self.install_path = str()
         self.core = LegendaryCoreSingleton()
-        self.move_path_edit = PathEdit(str(), QFileDialog.Directory, edit_func=self.edit_func_move_game)
+        self.install_path = ""
+        self.move_path_edit = PathEdit("", QFileDialog.Directory, edit_func=self.edit_func_move_game)
         self.move_path_edit.path_select.clicked.connect(self.emit_browse_done_signal)
 
-        self.move_game = QPushButton(self.tr("Move"))
-        self.move_game.setMaximumWidth(50)
-        self.move_game.clicked.connect(self.emit_move_game_signal)
+        self.move_button = QPushButton(self.tr("Move"))
+        self.move_button.setFixedSize(self.move_path_edit.path_select.sizeHint())
+        self.move_button.clicked.connect(self.emit_move_game_signal)
 
         self.warn_overwriting = QLabel()
 
         middle_layout = QHBoxLayout()
         middle_layout.setAlignment(Qt.AlignRight)
         middle_layout.addWidget(self.warn_overwriting, stretch=1)
-        middle_layout.addWidget(self.move_game)
+        middle_layout.addWidget(self.move_button)
 
         bottom_layout = QVBoxLayout()
         self.aval_space_label = QLabel()
@@ -44,6 +43,7 @@ class MoveGamePopUp(QWidget):
         bottom_layout.addWidget(self.aval_space_label)
         bottom_layout.addWidget(self.req_space_label)
 
+        layout: QVBoxLayout = QVBoxLayout()
         layout.addWidget(self.move_path_edit)
         layout.addLayout(middle_layout)
         layout.addLayout(bottom_layout)
@@ -67,11 +67,11 @@ class MoveGamePopUp(QWidget):
         return os.stat(dir1).st_dev != os.stat(dir2).st_dev
 
     def edit_func_move_game(self, dir_selected):
-        self.move_game.setEnabled(True)
+        self.move_button.setEnabled(True)
         self.warn_overwriting.setHidden(True)
 
         def helper_func(reason: str) -> Tuple[bool, str, str]:
-            self.move_game.setEnabled(False)
+            self.move_button.setEnabled(False)
             return False, dir_selected, self.tr(reason)
 
         if not self.install_path or not dir_selected:
@@ -124,7 +124,7 @@ class MoveGamePopUp(QWidget):
             return helper_func("Not enough space available on drive.")
 
         # Fallback
-        self.move_game.setEnabled(True)
+        self.move_button.setEnabled(True)
         return True, dir_selected, str()
 
     def update_game(self, app_name):
