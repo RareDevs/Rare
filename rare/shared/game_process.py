@@ -20,6 +20,7 @@ class GameProcess(QObject):
 
     class Code(IntEnum):
         SUCCESS = 0
+        ERROR = 1
         TIMEOUT = -1
         ON_STARTUP = -1234
 
@@ -93,10 +94,9 @@ class GameProcess(QObject):
             model = ErrorModel.from_json(data)
             logger.error(f"Error in game {self.game.app_title}: {model.error_string}")
             self.socket.close()
-            self.__game_finished(1)
+            self.__game_finished(GameProcess.Code.ERROR)
             QMessageBox.warning(None, "Error", self.tr(
                 "Error in game {}:\n{}").format(self.game.app_title, model.error_string))
-
         elif action == Actions.state_update:
             model = StateChangedModel.from_json(data)
             if model.new_state == StateChangedModel.States.started:

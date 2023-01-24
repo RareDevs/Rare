@@ -128,14 +128,14 @@ class RareGame(QObject):
         self.state = RareGame.State.RUNNING
         self.metadata.last_played = datetime.now()
         self.__save_metadata()
-        self.signals.game.launched.emit()
+        self.signals.game.launched.emit(self.app_name)
 
     @pyqtSlot(int)
     def __game_finished(self, exit_code: int):
         if exit_code == GameProcess.Code.ON_STARTUP:
             return
         self.state = RareGame.State.IDLE
-        self.signals.game.finished.emit()
+        self.signals.game.finished.emit(self.app_name)
 
     __metadata_json: Dict = None
 
@@ -283,6 +283,7 @@ class RareGame(QObject):
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
         self.set_pixmap()
+        self.signals.widget.update.emit()
 
     @property
     def can_run_offline(self) -> bool:

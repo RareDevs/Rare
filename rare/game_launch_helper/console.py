@@ -119,7 +119,7 @@ class Console(QDialog):
 
     def on_process_exit(self, app_title: str, status: Union[int, str]):
         self.error(
-            self.tr("Application \"{}\" finished with \"{}\"").format(app_title, status)
+            self.tr("Application \"{}\" finished with \"{}\"\n").format(app_title, status)
         )
         self.accept_close = True
 

@@ -2,10 +2,11 @@ from dataclasses import dataclass
 
 
 class Actions:
-    finished = 0
-    error = 1
-    message = 2
-    state_update = 3
+    undefined = 0
+    finished = 1
+    error = 2
+    message = 3
+    state_update = 4
 
 
 @dataclass
@@ -38,11 +39,10 @@ class FinishedModel(BaseModel):
 @dataclass
 class StateChangedModel(BaseModel):
     class States:
-        started = 0
-
+        started = 1
         # for future
-        syncing_cloud = 1
-        cloud_sync_finished = 2
+        syncing_cloud = 2
+        cloud_sync_finished = 3
 
     new_state: int
 
