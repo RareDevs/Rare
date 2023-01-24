@@ -1,7 +1,8 @@
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, QFileSystemWatcher
-from PyQt5.QtWidgets import QGroupBox, QTableWidgetItem, QMessageBox, QPushButton
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QGroupBox, QTableWidgetItem, QMessageBox, QPushButton, QHeaderView, QFrame
 
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.widgets.env_vars import Ui_EnvVars
@@ -18,7 +19,13 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         self.app_name = None
         self.core = LegendaryCoreSingleton()
         self.latest_item = None
-        self.list_of_readonly = ["STEAM_COMPAT_DATA_PATH", "DXVK_HUD", "WINEPREFIX", "STEAM_COMPAT_CLIENT_INSTALL_PATH"]
+        self.list_of_readonly = [
+            "STEAM_COMPAT_DATA_PATH",
+            "STEAM_COMPAT_CLIENT_INSTALL_PATH",
+            "WINEPREFIX",
+            "DXVK_HUD",
+            "MANGOHUD_CONFIG",
+        ]
         self.warn_msg = self.tr("Readonly, please edit this via the appropriate setting above.")
         self.setup_file_watcher()
         self.env_vars_table.cellChanged.connect(self.update_env_vars)
@@ -74,11 +81,16 @@ class EnvVars(QGroupBox, Ui_EnvVars):
             trash_icon.setIcon(icon("mdi.delete", "ei.minus"))
             self.env_vars_table.setVerticalHeaderItem(i, trash_icon)
 
+            font = QFont("Monospace")
+            font.setStyleHint(QFont.Monospace)
+
             key_item = QTableWidgetItem()
             key_item.setText(key)
+            key_item.setFont(font)
             self.env_vars_table.setItem(i, 0, key_item)
 
             value_item = QTableWidgetItem()
+            value_item.setFont(font)
             value_item.setText(value)
             self.env_vars_table.setItem(i, 1, value_item)
             if key in self.list_of_readonly:
@@ -91,6 +103,7 @@ class EnvVars(QGroupBox, Ui_EnvVars):
         trash_icon = QTableWidgetItem()
         trash_icon.setIcon(icon("mdi.delete", "ei.minus"))
         self.env_vars_table.setVerticalHeaderItem(self.env_vars_table.rowCount() - 1, trash_icon)
+        self.env_vars_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         self.env_vars_table.blockSignals(False)
 

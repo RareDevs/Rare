@@ -2,7 +2,16 @@ from abc import abstractmethod
 from typing import Optional
 
 from PyQt5.QtCore import QParallelAnimationGroup, Qt, QPropertyAnimation, QAbstractAnimation, QSize
-from PyQt5.QtWidgets import QWidget, QFrame, QToolButton, QGridLayout, QSizePolicy, QGroupBox, QLabel
+from PyQt5.QtWidgets import (
+    QWidget,
+    QFrame,
+    QToolButton,
+    QVBoxLayout,
+    QGridLayout,
+    QSizePolicy,
+    QGroupBox,
+    QLabel,
+)
 
 from rare.utils.misc import icon
 
@@ -182,7 +191,7 @@ class CollapsibleGroupBox(QGroupBox, CollapsibleBase):
 
 if __name__ == "__main__":
     import sys
-    from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout
+    from PyQt5.QtWidgets import QApplication, QDialog
     from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
     from rare.utils.misc import set_style_sheet
     from rare.resources.stylesheets import RareStyle
