@@ -193,7 +193,7 @@ class DownloadsTab(QWidget):
 
         self.update_title.emit(self.queues_count())
 
-        # lk: if we finished a repair and we have a disabled update, re-enable it
+        # lk: if we finished a repair, and we have a disabled update, re-enable it
         if self.updates_group.contains(result.item.options.app_name):
             self.updates_group.set_widget_enabled(result.item.options.app_name, True)
 

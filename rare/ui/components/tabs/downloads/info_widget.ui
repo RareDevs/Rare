@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string notr="true">InfoWidget</string>
   </property>
-  <layout class="QGridLayout" name="info_widget_layout" columnstretch="0,0,0,0,0,1">
+  <layout class="QGridLayout" name="info_widget_layout" columnstretch="0,0,0,0,0,0">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -32,42 +32,32 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item row="2" column="4">
-    <widget class="QLabel" name="install_size">
-     <property name="minimumSize">
-      <size>
-       <width>160</width>
-       <height>0</height>
-      </size>
+   <item row="1" column="3">
+    <widget class="QLabel" name="dl_size_label">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
      </property>
      <property name="text">
-      <string notr="true">install_size</string>
+      <string>Download size</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="remote_version">
-     <property name="minimumSize">
-      <size>
-       <width>160</width>
-       <height>0</height>
-      </size>
+   <item row="0" column="1" colspan="4">
+    <widget class="QLabel" name="title">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
      </property>
      <property name="text">
-      <string notr="true">remote_version</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QLabel" name="local_version">
-     <property name="minimumSize">
-      <size>
-       <width>160</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string notr="true">local_version</string>
+      <string notr="true">title</string>
      </property>
     </widget>
    </item>
@@ -81,22 +71,6 @@
      </property>
      <property name="text">
       <string>Local version</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="remote_version_label">
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Remote version</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -126,24 +100,8 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="3">
-    <widget class="QLabel" name="dl_size_label">
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Download size</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="4">
-    <widget class="QLabel" name="dl_size">
+   <item row="2" column="4">
+    <widget class="QLabel" name="install_size">
      <property name="minimumSize">
       <size>
        <width>160</width>
@@ -151,7 +109,7 @@
       </size>
      </property>
      <property name="text">
-      <string notr="true">dl_size</string>
+      <string notr="true">install_size</string>
      </property>
     </widget>
    </item>
@@ -168,8 +126,21 @@
      </property>
     </spacer>
    </item>
-   <item row="0" column="1" colspan="4">
-    <widget class="QLabel" name="title">
+   <item row="1" column="4">
+    <widget class="QLabel" name="dl_size">
+     <property name="minimumSize">
+      <size>
+       <width>160</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string notr="true">dl_size</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLabel" name="remote_version_label">
      <property name="font">
       <font>
        <weight>75</weight>
@@ -177,7 +148,48 @@
       </font>
      </property>
      <property name="text">
-      <string notr="true">title</string>
+      <string>Remote version</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QLabel" name="local_version">
+     <property name="minimumSize">
+      <size>
+       <width>160</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>160</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string notr="true">local_version</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLabel" name="remote_version">
+     <property name="minimumSize">
+      <size>
+       <width>160</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>160</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string notr="true">remote_version</string>
      </property>
     </widget>
    </item>

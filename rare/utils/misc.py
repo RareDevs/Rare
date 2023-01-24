@@ -14,10 +14,10 @@ from PyQt5.QtCore import (
     QSettings,
     QStandardPaths,
     QFile,
-    QDir,
+    QDir, Qt,
 )
-from PyQt5.QtGui import QPalette, QColor, QImage
-from PyQt5.QtWidgets import qApp, QStyleFactory, QWidget
+from PyQt5.QtGui import QPalette, QColor, QImage, QFontMetrics
+from PyQt5.QtWidgets import qApp, QStyleFactory, QWidget, QLabel
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from requests.exceptions import HTTPError
@@ -354,3 +354,8 @@ def icon(icn_str: str, fallback: str = None, **kwargs):
 
 def widget_object_name(widget: QWidget, app_name: str) -> str:
     return f"{type(widget).__name__}_{app_name}"
+
+
+def elide_text(label: QLabel, text: str) -> str:
+    metrics = QFontMetrics(label.font())
+    return metrics.elidedText(text, Qt.ElideRight, label.width())

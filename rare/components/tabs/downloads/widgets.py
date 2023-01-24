@@ -10,7 +10,7 @@ from rare.models.install import InstallQueueItemModel, InstallOptionsModel
 from rare.shared import ImageManagerSingleton
 from rare.ui.components.tabs.downloads.download_widget import Ui_DownloadWidget
 from rare.ui.components.tabs.downloads.info_widget import Ui_InfoWidget
-from rare.utils.misc import get_size, widget_object_name
+from rare.utils.misc import get_size, widget_object_name, elide_text
 from rare.widgets.image_widget import ImageWidget, ImageSize
 
 
@@ -30,8 +30,10 @@ class InfoWidget(QWidget):
         self.image_manager = ImageManagerSingleton()
 
         self.ui.title.setText(game.app_title)
-        self.ui.remote_version.setText(old_igame.version if old_igame else game.app_version(igame.platform))
-        self.ui.local_version.setText(igame.version)
+        self.ui.remote_version.setText(
+            elide_text(self.ui.remote_version, old_igame.version if old_igame else game.app_version(igame.platform))
+        )
+        self.ui.local_version.setText(elide_text(self.ui.local_version, igame.version))
         self.ui.dl_size.setText(get_size(analysis.dl_size) if analysis else "")
         self.ui.install_size.setText(get_size(analysis.install_size) if analysis else "")
 
