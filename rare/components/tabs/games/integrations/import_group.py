@@ -11,9 +11,10 @@ from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, QMessageBox
 
 from rare.lgndr.cli import LegendaryCLI
+from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrImportGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
+from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
 from rare.ui.components.tabs.games.integrations.import_group import Ui_ImportGroup
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
 from rare.widgets.elide_label import ElideLabel
@@ -58,10 +59,10 @@ class ImportWorker(QRunnable):
         finished = pyqtSignal(list)
         progress = pyqtSignal(int)
 
-    def __init__(self, path: str, app_name: str = None, import_folder: bool = False, import_dlcs: bool = False):
+    def __init__(self, core: LegendaryCore, path: str, app_name: str = None, import_folder: bool = False, import_dlcs: bool = False):
         super(ImportWorker, self).__init__()
+        self.core = core
         self.signals = self.Signals()
-        self.core = LegendaryCoreSingleton()
 
         self.path = Path(path)
         self.app_name = app_name
@@ -157,6 +158,7 @@ class ImportGroup(QGroupBox):
         super(ImportGroup, self).__init__(parent=parent)
         self.ui = Ui_ImportGroup()
         self.ui.setupUi(self)
+        self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.api_results = ApiResultsSingleton()
@@ -262,6 +264,7 @@ class ImportGroup(QGroupBox):
         if not path:
             path = self.path_edit.text()
         worker = ImportWorker(
+            self.core,
             path,
             self.app_name_edit.text(),
             self.ui.import_folder_check.isChecked(),
@@ -274,18 +277,22 @@ class ImportGroup(QGroupBox):
         self.ui.import_button.setDisabled(True)
 
     @pyqtSlot(list)
-    def import_finished(self, result: List):
-        logger.info(f"Import finished: {result}")
+    def import_finished(self, result: List[ImportedGame]):
+        for r in result:
+            logger.info(f"Import finished: {r.app_title}: {r.path} ({r.message})")
+            logger.debug(f"Import finished: {r}")
         self.info_label.setText("")
 
-        self.signals.game.installed.emit([r.app_name for r in result if r.result == ImportResult.SUCCESS])
+        successes = filter(lambda r: r.result == ImportResult.SUCCESS, result)
+        for succeded in successes:
+            self.rcore.get_game(succeded.app_name).set_installed(True)
 
-        for failed in (f for f in result if f.result == ImportResult.FAILED):
+        failures = filter(lambda r: r.result == ImportResult.FAILED, result)
+        for failed in failures:
             igame = self.core.get_installed_game(failed.app_name)
             if igame and igame.version != self.core.get_asset(igame.app_name, igame.platform, False).build_version:
                 # update available
-                self.signals.download.enqueue_game.emit(igame.app_name)
-                self.signals.download.update_tab.emit()
+                self.signals.download.enqueue.emit(igame.app_name)
 
         if len(result) == 1:
             res = result[0]
