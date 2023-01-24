@@ -8,7 +8,6 @@ from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMessageBox, QPushButton
 from legendary.core import LegendaryCore
 
-from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.glue.arguments import LgndrUninstallGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
@@ -80,33 +79,6 @@ class GameUtils(QObject):
 
         self.cloud_save_utils = CloudSaveUtils()
         self.cloud_save_utils.sync_finished.connect(self.sync_finished)
-
-    def uninstall_game(self, rgame: RareGame) -> bool:
-        # returns if uninstalled
-        if not os.path.exists(rgame.igame.install_path):
-            if QMessageBox.Yes == QMessageBox.question(
-                    None,
-                    self.tr("Uninstall - {}").format(rgame.igame.title),
-                    self.tr(
-                        "Game files of {} do not exist. Remove it from installed games?"
-                    ).format(rgame.igame.title),
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.Yes,
-            ):
-                self.core.lgd.remove_installed_game(rgame.app_name)
-                return True
-            else:
-                return False
-
-        proceed, keep_files, keep_config = UninstallDialog(rgame.game).get_options()
-        if not proceed:
-            return False
-        success, message = uninstall_game(self.core, rgame.app_name, keep_files, keep_config)
-        if not success:
-            QMessageBox.warning(None, self.tr("Uninstall - {}").format(rgame.title), message, QMessageBox.Close)
-        rgame.set_installed(False)
-        self.signals.download.dequeue.emit(rgame.app_name)
-        return True
 
     def prepare_launch(
             self, rgame: RareGame, offline: bool = False, skip_update_check: bool = False

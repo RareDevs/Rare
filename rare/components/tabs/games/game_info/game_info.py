@@ -3,10 +3,9 @@ import platform
 import shutil
 from logging import getLogger
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Optional, Union
 
 from PyQt5.QtCore import (
-    QRunnable,
     Qt,
     pyqtSignal,
     QThreadPool,
@@ -21,16 +20,17 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QWidgetAction,
 )
-from legendary.models.game import Game, InstalledGame
 
+from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.models.game import RareGame
-from rare.models.install import InstallOptionsModel
 from rare.shared import (
+    RareCore,
     LegendaryCoreSingleton,
     GlobalSignalsSingleton,
     ArgumentsSingleton,
     ImageManagerSingleton,
 )
+from rare.shared.game_utils import uninstall_game
 from rare.shared.image_manager import ImageSize
 from rare.shared.workers.verify import VerifyWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
@@ -43,13 +43,14 @@ logger = getLogger("GameInfo")
 
 
 class GameInfo(QWidget):
-    verification_finished = pyqtSignal(InstalledGame)
-    uninstalled = pyqtSignal(str)
+    # verification_finished = pyqtSignal(InstalledGame)
+    # uninstalled = pyqtSignal(str)
 
     def __init__(self, game_utils, parent=None):
         super(GameInfo, self).__init__(parent=parent)
         self.ui = Ui_GameInfo()
         self.ui.setupUi(self)
+        self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
@@ -75,17 +76,17 @@ class GameInfo(QWidget):
         self.ui.game_actions_stack.setCurrentIndex(0)
         self.ui.game_actions_stack.resize(self.ui.game_actions_stack.minimumSize())
 
-        self.ui.uninstall_button.clicked.connect(self.uninstall)
-        self.ui.verify_button.clicked.connect(self.verify)
+        self.ui.uninstall_button.clicked.connect(self.__on_uninstall)
+        self.ui.verify_button.clicked.connect(self.__on_verify)
 
         self.verify_pool = QThreadPool()
         self.verify_pool.setMaxThreadCount(2)
         if self.args.offline:
             self.ui.repair_button.setDisabled(True)
         else:
-            self.ui.repair_button.clicked.connect(self.repair)
+            self.ui.repair_button.clicked.connect(self.__on_repair)
 
-        self.ui.install_button.clicked.connect(self.install)
+        self.ui.install_button.clicked.connect(self.__on_install)
 
         self.move_game_pop_up = MoveGamePopUp()
         self.move_action = QWidgetAction(self)
@@ -111,21 +112,48 @@ class GameInfo(QWidget):
         self.move_game_pop_up.move_clicked.connect(self.move_game)
 
     @pyqtSlot()
-    def install(self):
+    def __on_install(self):
         if self.rgame.is_origin:
-            self.game_utils.launch_game(self.rgame.app_name)
+            self.rgame.launch()
         else:
             self.rgame.install()
 
     # FIXME: Move to RareGame
     @pyqtSlot()
-    def uninstall(self):
-        if self.game_utils.uninstall_game(self.rgame.app_name):
-            self.game_utils.update_list.emit(self.rgame.app_name)
-            self.signals.game.uninstalled.emit(self.rgame.app_name)
+    def __on_uninstall(self):
+        """ This function is to be called from the button only """
+        self.uninstall_game(self.rgame)
+
+    def uninstall_game(self, rgame: RareGame) -> bool:
+        # returns if uninstalled
+        if not os.path.exists(rgame.igame.install_path):
+            if QMessageBox.Yes == QMessageBox.question(
+                    None,
+                    self.tr("Uninstall - {}").format(rgame.igame.title),
+                    self.tr(
+                        "Game files of {} do not exist. Remove it from installed games?"
+                    ).format(rgame.igame.title),
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.Yes,
+            ):
+                self.core.lgd.remove_installed_game(rgame.app_name)
+                rgame.set_installed(False)
+                return True
+            else:
+                return False
+
+        proceed, keep_files, keep_config = UninstallDialog(rgame.game).get_options()
+        if not proceed:
+            return False
+        success, message = uninstall_game(self.core, rgame.app_name, keep_files, keep_config)
+        if not success:
+            QMessageBox.warning(None, self.tr("Uninstall - {}").format(rgame.title), message, QMessageBox.Close)
+        rgame.set_installed(False)
+        self.signals.download.dequeue.emit(rgame.app_name)
+        return True
 
     @pyqtSlot()
-    def repair(self):
+    def __on_repair(self):
         """ This function is to be called from the button only """
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.rgame.app_name}.repair")
         if not os.path.exists(repair_file):
@@ -154,7 +182,7 @@ class GameInfo(QWidget):
         rgame.repair(repair_and_update=ans)
 
     @pyqtSlot()
-    def verify(self):
+    def __on_verify(self):
         """ This function is to be called from the button only """
         if not os.path.exists(self.rgame.igame.install_path):
             logger.error(f"Installation path {self.rgame.igame.install_path} for {self.rgame.title} does not exist")
@@ -169,22 +197,22 @@ class GameInfo(QWidget):
     def verify_game(self, rgame: RareGame):
         self.ui.verify_widget.setCurrentIndex(1)
         verify_worker = VerifyWorker(self.core, self.args, rgame)
-        verify_worker.signals.status.connect(self.verify_status)
-        verify_worker.signals.result.connect(self.verify_result)
-        verify_worker.signals.error.connect(self.verify_error)
+        verify_worker.signals.progress.connect(self.__on_verify_progress)
+        verify_worker.signals.result.connect(self.__on_verify_result)
+        verify_worker.signals.error.connect(self.__on_verify_error)
         self.ui.verify_progress.setValue(0)
         self.rgame.active_worker = verify_worker
         self.verify_pool.start(verify_worker)
         self.ui.move_button.setEnabled(False)
 
     def verify_cleanup(self, rgame: RareGame):
-        self.ui.verify_widget.setCurrentIndex(0)
         rgame.active_worker = None
+        self.ui.verify_widget.setCurrentIndex(0)
         self.ui.move_button.setEnabled(True)
         self.ui.verify_button.setEnabled(True)
 
     @pyqtSlot(RareGame, str)
-    def verify_error(self, rgame: RareGame, message):
+    def __on_verify_error(self, rgame: RareGame, message):
         self.verify_cleanup(rgame)
         QMessageBox.warning(
             self,
@@ -193,11 +221,11 @@ class GameInfo(QWidget):
         )
 
     @pyqtSlot(RareGame, int, int, float, float)
-    def verify_status(self, rgame: RareGame, num, total, percentage, speed):
+    def __on_verify_progress(self, rgame: RareGame, num, total, percentage, speed):
         self.ui.verify_progress.setValue(num * 100 // total)
 
     @pyqtSlot(RareGame, bool, int, int)
-    def verify_result(self, rgame: RareGame, success, failed, missing):
+    def __on_verify_result(self, rgame: RareGame, success, failed, missing):
         self.verify_cleanup(rgame)
         self.ui.repair_button.setDisabled(success)
         if success:
@@ -207,7 +235,7 @@ class GameInfo(QWidget):
                 self.tr("<b>{}</b> has been verified successfully. "
                         "No missing or corrupt files found").format(rgame.title),
             )
-            self.verification_finished.emit(rgame.igame)
+            # self.verification_finished.emit(rgame.igame)
         else:
             ans = QMessageBox.question(
                 self,
@@ -316,29 +344,34 @@ class GameInfo(QWidget):
     def show_menu_after_browse(self):
         self.ui.move_button.showMenu()
 
-    def update_game(self, rgame: RareGame):
+    @pyqtSlot(str)
+    @pyqtSlot(RareGame)
+    def update_game(self, rgame: Union[RareGame, str]):
+        if isinstance(rgame, str):
+            rgame = self.rcore.get_game(rgame)
+
         if self.rgame is not None:
             if (worker := self.rgame.active_worker) is not None:
                 if isinstance(worker, VerifyWorker):
                     try:
-                        worker.signals.status.disconnect(self.verify_status)
+                        worker.signals.progress.disconnect(self.__on_verify_progress)
                     except TypeError as e:
                         logger.warning(f"{self.rgame.app_title} verify worker: {e}")
+            self.rgame.signals.game.installed.disconnect(self.update_game)
+            self.rgame.signals.game.uninstalled.disconnect(self.update_game)
         self.rgame = rgame
+        self.rgame.signals.game.installed.connect(self.update_game)
+        self.rgame.signals.game.uninstalled.connect(self.update_game)
         if (worker := self.rgame.active_worker) is not None:
             if isinstance(worker, VerifyWorker):
                 self.ui.verify_widget.setCurrentIndex(1)
                 self.ui.verify_progress.setValue(self.rgame.progress)
-                worker.signals.status.connect(self.verify_status)
+                worker.signals.progress.connect(self.__on_verify_progress)
         else:
             self.ui.verify_widget.setCurrentIndex(0)
-        # FIXME: Use RareGame for the rest of the code
-        # self.game = rgame.game
-        # self.igame = rgame.igame
+
         self.title.setTitle(self.rgame.app_title)
-
         self.image.setPixmap(rgame.pixmap)
-
         self.ui.app_name.setText(self.rgame.app_name)
         self.ui.version.setText(self.rgame.version)
         self.ui.dev.setText(self.rgame.developer)

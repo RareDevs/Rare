@@ -11,12 +11,12 @@ from rare.lgndr.glue.arguments import LgndrVerifyGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
 
-logger = getLogger("VerificationWorker")
+logger = getLogger("VerifyWorker")
 
 
 class VerifyWorker(QRunnable):
     class Signals(QObject):
-        status = pyqtSignal(RareGame, int, int, float, float)
+        progress = pyqtSignal(RareGame, int, int, float, float)
         result = pyqtSignal(RareGame, bool, int, int)
         error = pyqtSignal(RareGame, str)
 
@@ -34,7 +34,7 @@ class VerifyWorker(QRunnable):
 
     def status_callback(self, num: int, total: int, percentage: float, speed: float):
         self.rgame.signals.progress.update.emit(num * 100 // total)
-        self.signals.status.emit(self.rgame, num, total, percentage, speed)
+        self.signals.progress.emit(self.rgame, num, total, percentage, speed)
 
     def run(self):
         self.rgame.signals.progress.start.emit()
@@ -72,9 +72,10 @@ class VerifyWorker(QRunnable):
             # lk: if verification was successful we delete the repair file and run the clean procedure
             # lk: this could probably be cut down to what is relevant for this use-case and skip the `cli` call
             repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.rgame.app_name}.repair")
-            cli.install_game_cleanup(game=self.rgame.game, igame=self.rgame.igame, repair_mode=True, repair_file=repair_file)
+            cli.install_game_cleanup(
+                game=self.rgame.game, igame=self.rgame.igame, repair_mode=True, repair_file=repair_file
+            )
             self.rgame.update_rgame()
 
         self.rgame.signals.progress.finish.emit(False)
         self.signals.result.emit(self.rgame, success, *result)
-
