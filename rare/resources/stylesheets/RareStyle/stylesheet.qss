@@ -320,49 +320,29 @@ QPushButton::menu-indicator {
     left: -2px;
     border-style: none;
 }
-QPushButton#menu {
-    padding: 0px;
-    margin: 0px;
-    border-style: none;
-}
-QPushButton#menu_button {
-    border-width: 0px;
-    background-color: rgb( 60,  63,  65);
-    width: 18px;
-    height: 18px;
-}
-QPushButton#menu_button:hover {
-    background-color: rgb( 51,  51,  68);
-}
-QPushButton[install="1"],
-QPushButton#install_button {
+QPushButton#InstallButton {
+    border-color: rgb(  0, 119,   0);
     background-color: rgb(  0, 119,   0);
 }
-QPushButton[install="1"]:hover,
-QPushButton#install_button:hover {
+QPushButton#InstallButton:hover {
+    border-color: rgb(  0,  85,   0);
     background-color: rgb(  0,  85,   0);
 }
-QPushButton[install="1"]:disabled,
-QPushButton#install_button:disabled {
+QPushButton#InstallButton:disabled {
+    border-color: rgb(  0,  34,   0);
     background-color: rgb(  0,  34,   0);
 }
-QPushButton[uninstall="1"],
-QPushButton#uninstall_button {
+QPushButton#UninstallButton {
+    border-color: rgb(119,   0,   0);
     background-color: rgb(119,   0,   0);
 }
-QPushButton[uninstall="1"]:hover,
-QPushButton#uninstall_button:hover {
+QPushButton#UninstallButton:hover {
+    border-color: rgb( 85,   0,   0);
     background-color: rgb( 85,   0,   0);
 }
-QPushButton[uninstall="1"]:disabled,
-QPushButton#uninstall_button:disabled {
+QPushButton#UninstallButton:disabled {
+    border-color: rgb( 34,   0,   0);
     background-color: rgb( 34,   0,   0);
-}
-QPushButton#success{
-    background-color: lime;
-}
-QPushButton#installed_menu_button:hover {
-    background-color: green;
 }
 
 QGroupBox,
@@ -449,9 +429,7 @@ QRadioButton::indicator:checked:disabled {
     image: url(":/stylesheets/RareStyle/circle-disabled.svg");
 }
 
-QGroupBox,
-QGroupBox#group,
-QGroupBox#settings_widget {
+QGroupBox {
     font-weight: bold;
     margin-top: 0.5em;
     /* margin-left: 0.5em; /* Offset to the left */
@@ -460,10 +438,8 @@ QGroupBox#settings_widget {
     border-radius: 4px;
     padding-top: 1.2em;
 }
-QGroupBox#game_widget_icon {
-    margin: 2px;
-    border-width: 0px;
-    padding: 0px;
+QToolBox {
+    font-weight: bold;
 }
 QToolBox::tab,
 QGroupBox::title {
@@ -496,11 +472,7 @@ QSizeGrip {
     height: 4px;
 }
 
-#list_widget {
-    border-top-width: 2px;
-}
-
-#search_bar {
+QLineEdit#SearchBar {
     padding: 3px;
     border-radius: 5px;
     background-color: rgb( 51,  51,  68);

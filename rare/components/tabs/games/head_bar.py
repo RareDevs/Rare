@@ -81,7 +81,7 @@ class GameListHeadBar(QWidget):
         integrations.setPopupMode(QToolButton.InstantPopup)
 
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Game"))
-        self.search_bar.setObjectName("search_bar")
+        self.search_bar.setObjectName("SearchBar")
         self.search_bar.setFrame(False)
         self.search_bar.setMinimumWidth(200)
 

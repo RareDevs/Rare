@@ -46,6 +46,10 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
     def __init__(self, parent=None):
         super(EOSGroup, self).__init__(parent=parent)
         self.setupUi(self)
+        # lk: set object names for CSS properties
+        self.install_button.setObjectName("InstallButton")
+        self.uninstall_button.setObjectName("UninstallButton")
+
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
 
