@@ -56,8 +56,8 @@ class ImportedGame:
 
 class ImportWorker(QRunnable):
     class Signals(QObject):
-        finished = pyqtSignal(list)
-        progress = pyqtSignal(int)
+        progress = pyqtSignal(ImportedGame, int)
+        result = pyqtSignal(list)
 
     def __init__(self, core: LegendaryCore, path: str, app_name: str = None, import_folder: bool = False, import_dlcs: bool = False):
         super(ImportWorker, self).__init__()
@@ -79,11 +79,12 @@ class ImportWorker(QRunnable):
                     continue
                 result = self.__try_import(child, None)
                 result_list.append(result)
-                self.signals.progress.emit(int(100 * i // number_of_folders))
+                self.signals.progress.emit(result, int(100 * i // number_of_folders))
         else:
             result = self.__try_import(self.path, self.app_name)
             result_list.append(result)
-        self.signals.finished.emit(result_list)
+            self.signals.progress.emit(result, 100)
+        self.signals.result.emit(result_list)
 
     def __try_import(self, path: Path, app_name: str = None) -> ImportedGame:
         result = ImportedGame(ImportResult.ERROR)
@@ -270,30 +271,25 @@ class ImportGroup(QGroupBox):
             self.ui.import_folder_check.isChecked(),
             self.ui.import_dlcs_check.isChecked(),
         )
-        worker.signals.finished.connect(self.import_finished)
-        worker.signals.progress.connect(self.import_progress)
+        worker.signals.result.connect(self.__on_import_result)
+        worker.signals.progress.connect(self.__on_import_progress)
         self.threadpool.start(worker)
         self.info_label.setText(self.tr("Importing games"))
         self.ui.import_button.setDisabled(True)
 
+    @pyqtSlot(ImportedGame, int)
+    def __on_import_progress(self, imported: ImportedGame, progress: int):
+        if imported.result == ImportResult.SUCCESS or imported.result == ImportResult.FAILED:
+            rgame = self.rcore.get_game(imported.app_name)
+            rgame.set_installed(True)
+            if rgame.has_update:
+                self.signals.download.enqueue.emit(rgame.app_name)
+        status = "error" if not imported.result else ("failed" if imported.result == ImportResult.FAILED else "successful")
+        logger.info(f"Import {status}: {imported.app_title}: {imported.path} ({imported.message})")
+
     @pyqtSlot(list)
-    def import_finished(self, result: List[ImportedGame]):
-        for r in result:
-            logger.info(f"Import finished: {r.app_title}: {r.path} ({r.message})")
-            logger.debug(f"Import finished: {r}")
+    def __on_import_result(self, result: List[ImportedGame]):
         self.info_label.setText("")
-
-        successes = filter(lambda r: r.result == ImportResult.SUCCESS, result)
-        for succeded in successes:
-            self.rcore.get_game(succeded.app_name).set_installed(True)
-
-        failures = filter(lambda r: r.result == ImportResult.FAILED, result)
-        for failed in failures:
-            igame = self.core.get_installed_game(failed.app_name)
-            if igame and igame.version != self.core.get_asset(igame.app_name, igame.platform, False).build_version:
-                # update available
-                self.signals.download.enqueue.emit(igame.app_name)
-
         if len(result) == 1:
             res = result[0]
             if res.result == ImportResult.SUCCESS:
@@ -339,6 +335,3 @@ class ImportGroup(QGroupBox):
                 )
             messagebox.setDetailedText("\n".join(details))
             messagebox.show()
-
-    def import_progress(self, progress: int):
-        pass
