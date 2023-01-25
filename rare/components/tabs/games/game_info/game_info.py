@@ -11,7 +11,6 @@ from PyQt5.QtCore import (
     pyqtSlot,
 )
 from PyQt5.QtWidgets import (
-    QHBoxLayout,
     QMenu,
     QPushButton,
     QWidget,
@@ -19,7 +18,6 @@ from PyQt5.QtWidgets import (
     QWidgetAction,
 )
 
-from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.models.game import RareGame
 from rare.shared import (
     RareCore,
@@ -28,7 +26,6 @@ from rare.shared import (
     ArgumentsSingleton,
     ImageManagerSingleton,
 )
-from rare.shared.game_utils import uninstall_game
 from rare.shared.image_manager import ImageSize
 from rare.shared.workers.verify import VerifyWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
@@ -107,35 +104,7 @@ class GameInfo(QWidget):
     @pyqtSlot()
     def __on_uninstall(self):
         """ This function is to be called from the button only """
-        self.uninstall_game(self.rgame)
-
-    def uninstall_game(self, rgame: RareGame) -> bool:
-        # returns if uninstalled
-        if not os.path.exists(rgame.igame.install_path):
-            if QMessageBox.Yes == QMessageBox.question(
-                    None,
-                    self.tr("Uninstall - {}").format(rgame.igame.title),
-                    self.tr(
-                        "Game files of {} do not exist. Remove it from installed games?"
-                    ).format(rgame.igame.title),
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.Yes,
-            ):
-                self.core.lgd.remove_installed_game(rgame.app_name)
-                rgame.set_installed(False)
-                return True
-            else:
-                return False
-
-        proceed, keep_files, keep_config = UninstallDialog(rgame.game).get_options()
-        if not proceed:
-            return False
-        success, message = uninstall_game(self.core, rgame.app_name, keep_files, keep_config)
-        if not success:
-            QMessageBox.warning(None, self.tr("Uninstall - {}").format(rgame.title), message, QMessageBox.Close)
-        rgame.set_installed(False)
-        self.signals.download.dequeue.emit(rgame.app_name)
-        return True
+        self.rgame.uninstall()
 
     @pyqtSlot()
     def __on_repair(self):

@@ -1,7 +1,7 @@
 import os
 import platform as pf
 from dataclasses import dataclass
-from typing import List, Optional, Callable, Dict
+from typing import List, Optional, Callable, Dict, Tuple
 
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame
@@ -63,3 +63,29 @@ class InstallQueueItemModel:
 
     def __bool__(self):
         return (self.download is not None) and (self.options is not None)
+
+
+@dataclass
+class UninstallOptionsModel:
+    app_name: str
+    uninstall: bool = None
+    keep_files: bool = None
+    keep_config: bool = None
+
+    def __bool__(self):
+        return (
+            bool(self.app_name)
+            and (self.uninstall is not None)
+            and (self.keep_files is not None)
+            and (self.keep_config is not None)
+        )
+
+    @property
+    def values(self) -> Tuple[bool, bool, bool]:
+        return self.uninstall, self.keep_config, self.keep_files
+
+    @values.setter
+    def values(self, values: Tuple[bool, bool, bool]):
+        self.uninstall = values[0]
+        self.keep_files = values[1]
+        self.keep_config = values[2]

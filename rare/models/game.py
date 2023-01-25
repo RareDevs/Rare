@@ -11,7 +11,7 @@ from PyQt5.QtGui import QPixmap
 from legendary.models.game import Game, InstalledGame, SaveGameFile
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.install import InstallOptionsModel
+from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils.misc import get_rare_executable
@@ -28,6 +28,7 @@ class RareGame(QObject):
         DOWNLOADING = 2
         VERIFYING = 3
         MOVING = 4
+        UNINSTALLING = 5
 
     @dataclass
     class Metadata:
@@ -74,6 +75,7 @@ class RareGame(QObject):
         class Game(QObject):
             install = pyqtSignal(InstallOptionsModel)
             installed = pyqtSignal(str)
+            uninstall = pyqtSignal(UninstallOptionsModel)
             uninstalled = pyqtSignal(str)
             launched = pyqtSignal(str)
             finished = pyqtSignal(str)
@@ -473,6 +475,11 @@ class RareGame(QObject):
             InstallOptionsModel(
                 app_name=self.app_name, repair_mode=True, repair_and_update=repair_and_update, update=repair_and_update
             )
+        )
+
+    def uninstall(self):
+        self.signals.game.uninstall.emit(
+            UninstallOptionsModel(app_name=self.app_name)
         )
 
     def launch(

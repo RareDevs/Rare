@@ -10,7 +10,7 @@ from requests.exceptions import ConnectionError, HTTPError
 from rare.components.dialogs.login import LoginDialog
 from rare.models.apiresults import ApiResults
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton, ApiResultsSingleton, ImageManagerSingleton
-from rare.shared.game_utils import uninstall_game
+from rare.shared.workers.uninstall import uninstall_game
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.utils.misc import CloudWorker
 from rare.widgets.elide_label import ElideLabel
@@ -92,6 +92,10 @@ class ImageWorker(LaunchWorker):
 
         # FIXME: incorporate installed game status checking here for now, still slow
         for i, igame in enumerate(igame_list):
+            # lk: do not check dlcs, they do not specify an executable
+            if igame.is_dlc:
+                continue
+
             self.signals.progress.emit(
                 int(i / len(igame_list) * 25) + 75,
                 self.tr("Validating install for <b>{}</b>").format(igame.title)
@@ -102,6 +106,7 @@ class ImageWorker(LaunchWorker):
                 uninstall_game(self.core, igame.app_name, keep_files=True)
                 logger.info(f"Uninstalled {igame.title}, because no game files exist")
                 continue
+
             # lk: games that don't have an override and can't find their executable due to case sensitivity
             # lk: will still erroneously require verification. This might need to be removed completely
             # lk: or be decoupled from the verification requirement

@@ -146,6 +146,7 @@ class RareCore(QObject):
 
     def add_game(self, rgame: RareGame) -> None:
         rgame.signals.game.install.connect(self.__signals.game.install)
+        rgame.signals.game.uninstall.connect(self.__signals.game.uninstall)
         rgame.signals.game.installed.connect(self.__signals.game.installed)
         rgame.signals.game.uninstalled.connect(self.__signals.game.uninstalled)
         rgame.signals.game.finished.connect(self.__signals.application.update_tray)

@@ -117,9 +117,9 @@ class GamesTab(QStackedWidget):
 
         # signals
         self.signals.game.installed.connect(self.update_count_games_label)
-        # self.signals.game.installed.connect(self.library_controller.update_list)
+        self.signals.game.installed.connect(self.library_controller.update_list)
         self.signals.game.uninstalled.connect(self.update_count_games_label)
-        # self.signals.game.uninstalled.connect(self.library_controller.update_list)
+        self.signals.game.uninstalled.connect(self.library_controller.update_list)
         # self.signals.game.uninstalled.connect(lambda x: self.setCurrentWidget(self.games))
 
         start_t = time.time()

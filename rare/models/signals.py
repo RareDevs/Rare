@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from .install import InstallOptionsModel
+from .install import InstallOptionsModel, UninstallOptionsModel
 
 
 class GlobalSignals:
@@ -22,6 +22,7 @@ class GlobalSignals:
 
     class GameSignals(QObject):
         install = pyqtSignal(InstallOptionsModel)
+        uninstall = pyqtSignal(UninstallOptionsModel)
         # str: app_name
         installed = pyqtSignal(str)
         # str: app_name
