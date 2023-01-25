@@ -82,10 +82,23 @@ class UninstallOptionsModel:
 
     @property
     def values(self) -> Tuple[bool, bool, bool]:
+        """
+        This model's options
+
+        :return:
+            Tuple of `uninstall` `keep_files` `keep_config`
+        """
         return self.uninstall, self.keep_config, self.keep_files
 
     @values.setter
     def values(self, values: Tuple[bool, bool, bool]):
+        """
+        Set this model's options
+
+        :param values:
+            Tuple of `uninstall` `keep_files` `keep_config`
+        :return:
+        """
         self.uninstall = values[0]
         self.keep_files = values[1]
         self.keep_config = values[2]

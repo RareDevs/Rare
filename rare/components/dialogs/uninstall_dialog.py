@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (

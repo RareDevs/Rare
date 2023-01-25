@@ -41,10 +41,10 @@ class InstallDialog(QDialog):
 
     def __init__(self, rgame: RareGame, options: InstallOptionsModel, parent=None):
         super(InstallDialog, self).__init__(parent=parent)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
         self.ui = Ui_InstallDialog()
         self.ui.setupUi(self)
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
 
         self.core = LegendaryCoreSingleton()
         self.rgame = rgame
@@ -180,6 +180,7 @@ class InstallDialog(QDialog):
             self.reject_close = False
             self.get_download_info()
         else:
+            self.setModal(True)
             self.verify_clicked()
             self.show()
 
