@@ -1,10 +1,13 @@
 import os
 import subprocess
+from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, pyqtSlot
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.pathspec import PathSpec
+
+logger = getLogger("WineResolver")
 
 
 class WineResolver(QRunnable):

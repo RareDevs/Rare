@@ -39,8 +39,8 @@ class InstallDialogAdvanced(CollapsibleFrame):
 class InstallDialog(QDialog):
     result_ready = pyqtSignal(InstallQueueItemModel)
 
-    def __init__(self, rgame: RareGame, options: InstallOptionsModel, parent=None,):
-        super(InstallDialog, self).__init__(parent)
+    def __init__(self, rgame: RareGame, options: InstallOptionsModel, parent=None):
+        super(InstallDialog, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
         self.ui = Ui_InstallDialog()

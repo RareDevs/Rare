@@ -17,7 +17,7 @@ from rare.shared import (
 from rare.utils.misc import create_desktop_link
 from .library_widget import LibraryWidget
 
-logger = getLogger("BaseGameWidget")
+logger = getLogger("GameWidget")
 
 
 class GameWidget(LibraryWidget):
@@ -142,7 +142,9 @@ class GameWidget(LibraryWidget):
     @abstractmethod
     def update_widget(self, install_btn: QPushButton, launch_btn: QPushButton):
         install_btn.setVisible(not self.rgame.is_installed)
+        install_btn.setEnabled(not self.rgame.is_installed)
         launch_btn.setVisible(self.rgame.is_installed)
+        launch_btn.setEnabled(self.rgame.can_launch)
 
     @property
     def enterEventText(self) -> str:
@@ -191,7 +193,7 @@ class GameWidget(LibraryWidget):
             self.show_info.emit(self.rgame)
         # right
         elif e.button() == 2:
-            pass  # self.showMenu(e)
+            super(GameWidget, self).mousePressEvent(e)
 
     @pyqtSlot()
     def _on_reload_image(self) -> None:

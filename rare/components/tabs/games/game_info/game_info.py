@@ -63,8 +63,7 @@ class GameInfo(QWidget):
             self.steam_worker.signals.rating.connect(self.ui.grade.setText)
             self.steam_worker.setAutoDelete(False)
 
-        self.ui.game_actions_stack.setCurrentIndex(0)
-        self.ui.game_actions_stack.resize(self.ui.game_actions_stack.minimumSize())
+        self.ui.game_actions_stack.setCurrentWidget(self.ui.installed_page)
 
         self.ui.uninstall_button.clicked.connect(self.__on_uninstall)
         self.ui.verify_button.clicked.connect(self.__on_verify)

@@ -358,4 +358,4 @@ def widget_object_name(widget: QWidget, app_name: str) -> str:
 
 def elide_text(label: QLabel, text: str) -> str:
     metrics = QFontMetrics(label.font())
-    return metrics.elidedText(text, Qt.ElideRight, label.width())
+    return metrics.elidedText(text, Qt.ElideRight, label.sizeHint().width())
