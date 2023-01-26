@@ -34,8 +34,8 @@ class TabWidget(QTabWidget):
             self.downloads_tab = DownloadsTab(self)
             # update dl tab text
             self.addTab(self.downloads_tab, "")
-            self.__on_downloads_update_title(self.downloads_tab.queues_count())
             self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
+            self.downloads_tab.update_queues_count()
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
 

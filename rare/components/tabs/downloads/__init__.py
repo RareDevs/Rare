@@ -48,12 +48,13 @@ class DownloadsTab(QWidget):
         self.ui.kill_button.clicked.connect(self.stop_download)
 
         self.queue_group = QueueGroup(self)
-        # lk: todo recreate update widget
+        self.queue_group.update_count.connect(self.update_queues_count)
         self.queue_group.removed.connect(self.__on_queue_removed)
         self.queue_group.force.connect(self.__on_queue_force)
         self.ui.queue_scroll_contents_layout.addWidget(self.queue_group)
 
         self.updates_group = UpdateGroup(self)
+        self.updates_group.update_count.connect(self.update_queues_count)
         self.updates_group.enqueue.connect(self.__get_install_options)
         self.ui.queue_scroll_contents_layout.addWidget(self.updates_group)
 
@@ -73,6 +74,12 @@ class DownloadsTab(QWidget):
         for rgame in self.rcore.updates:
             self.__add_update(rgame)
 
+    @pyqtSlot()
+    @pyqtSlot(int)
+    def update_queues_count(self):
+        count = self.updates_group.count() + self.queue_group.count()
+        self.update_title.emit(count)
+
     @pyqtSlot(str)
     @pyqtSlot(RareGame)
     def __add_update(self, update: Union[str,RareGame]):
@@ -84,7 +91,7 @@ class DownloadsTab(QWidget):
             )
         else:
             self.updates_group.append(update.game, update.igame)
-        self.update_title.emit(self.queues_count())
+        self.update_queues_count()
 
     @pyqtSlot(str)
     def __remove_update(self, app_name):
@@ -94,7 +101,6 @@ class DownloadsTab(QWidget):
             self.queue_group.remove(app_name)
         if self.updates_group.contains(app_name):
             self.updates_group.remove(app_name)
-        self.update_title.emit(self.queues_count())
 
     @pyqtSlot(str)
     def __on_queue_removed(self, app_name: str):
@@ -147,9 +153,6 @@ class DownloadsTab(QWidget):
         self.thread = thread
         self.ui.kill_button.setDisabled(False)
         self.ui.dl_name.setText(item.download.game.app_title)
-
-    def queues_count(self) -> int:
-        return self.updates_group.count() + self.queue_group.count()
 
     @property
     def is_download_active(self):
@@ -216,8 +219,6 @@ class DownloadsTab(QWidget):
                 self.threadpool.start(worker)
             else:
                 return
-
-        self.update_title.emit(self.queues_count())
 
         # lk: if we finished a repair, and we have a disabled update, re-enable it
         if self.updates_group.contains(result.item.options.app_name):

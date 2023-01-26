@@ -21,6 +21,7 @@ logger = getLogger("QueueGroup")
 
 
 class UpdateGroup(QGroupBox):
+    update_count = pyqtSignal(int)
     enqueue = pyqtSignal(InstallOptionsModel)
 
     def __init__(self, parent=None):
@@ -49,8 +50,10 @@ class UpdateGroup(QGroupBox):
         return self.__find_widget(app_name) is not None
 
     def __update_group(self):
-        self.__text.setVisible(not bool(self.count()))
-        self.__container.setVisible(bool(self.count()))
+        count = self.count()
+        self.__text.setVisible(not count)
+        self.__container.setVisible(bool(count))
+        self.update_count.emit(count)
 
     def append(self, game: Game, igame: InstalledGame):
         self.__text.setVisible(False)
@@ -79,6 +82,7 @@ class UpdateGroup(QGroupBox):
 
 
 class QueueGroup(QGroupBox):
+    update_count = pyqtSignal(int)
     removed = pyqtSignal(str)
     force = pyqtSignal(InstallQueueItemModel)
 
@@ -114,8 +118,10 @@ class QueueGroup(QGroupBox):
             return False
 
     def __update_group(self):
-        self.__text.setVisible(not bool(self.count()))
-        self.__container.setVisible(bool(self.count()))
+        count = self.count()
+        self.__text.setVisible(not count)
+        self.__container.setVisible(bool(count))
+        self.update_count.emit(count)
 
     def __create_widget(self, item: InstallQueueItemModel, old_igame: InstalledGame) -> QueueWidget:
         widget: QueueWidget = QueueWidget(item, old_igame, parent=self.__container)
