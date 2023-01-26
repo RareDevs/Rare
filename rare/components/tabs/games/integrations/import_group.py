@@ -8,7 +8,8 @@ from typing import List, Tuple, Optional
 
 from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, QMessageBox, QStackedWidget, \
+    QProgressBar, QSizePolicy
 
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
@@ -202,8 +203,13 @@ class ImportGroup(QGroupBox):
             lambda: self.import_pressed(self.path_edit.text())
         )
 
+        self.button_info_stack = QStackedWidget(self)
+        self.button_info_stack.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
         self.info_label = ElideLabel(text="", parent=self)
-        self.ui.button_info_layout.addWidget(self.info_label)
+        self.info_progress = QProgressBar(self)
+        self.button_info_stack.addWidget(self.info_label)
+        self.button_info_stack.addWidget(self.info_progress)
+        self.ui.button_info_layout.addWidget(self.button_info_stack)
 
         self.threadpool = QThreadPool.globalInstance()
 
@@ -275,11 +281,13 @@ class ImportGroup(QGroupBox):
         worker.signals.result.connect(self.__on_import_result)
         worker.signals.progress.connect(self.__on_import_progress)
         self.threadpool.start(worker)
+        self.button_info_stack.setCurrentWidget(self.info_progress)
         self.info_label.setText(self.tr("Importing games"))
         self.ui.import_button.setDisabled(True)
 
     @pyqtSlot(ImportedGame, int)
     def __on_import_progress(self, imported: ImportedGame, progress: int):
+        self.info_progress.setValue(progress)
         if imported.result == ImportResult.SUCCESS or imported.result == ImportResult.FAILED:
             rgame = self.rcore.get_game(imported.app_name)
             rgame.set_installed(True)
@@ -292,7 +300,7 @@ class ImportGroup(QGroupBox):
 
     @pyqtSlot(list)
     def __on_import_result(self, result: List[ImportedGame]):
-        self.info_label.setText("")
+        self.button_info_stack.setCurrentWidget(self.info_label)
         if len(result) == 1:
             res = result[0]
             if res.result == ImportResult.SUCCESS:
@@ -308,6 +316,7 @@ class ImportGroup(QGroupBox):
                     self.tr("Error: Could not find AppName for <b>{}</b>").format(res.path)
                 )
         else:
+            self.info_label.setText("")
             success = [r for r in result if r.result == ImportResult.SUCCESS]
             failure = [r for r in result if r.result == ImportResult.FAILED]
             errored = [r for r in result if r.result == ImportResult.ERROR]
