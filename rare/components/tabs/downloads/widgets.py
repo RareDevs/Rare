@@ -1,24 +1,28 @@
+from logging import getLogger
 from typing import Optional
 
-from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import pyqtSignal, Qt, QThreadPool, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QFrame
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
 from qtawesome import icon
 
-from rare.models.install import InstallQueueItemModel, InstallOptionsModel
-from rare.shared import ImageManagerSingleton
+from rare.models.install import InstallQueueItemModel, InstallOptionsModel, InstallDownloadModel
+from rare.shared import RareCore, ImageManagerSingleton
+from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.tabs.downloads.download_widget import Ui_DownloadWidget
 from rare.ui.components.tabs.downloads.info_widget import Ui_InfoWidget
 from rare.utils.misc import get_size, widget_object_name, elide_text
 from rare.widgets.image_widget import ImageWidget, ImageSize
 
+logger = getLogger("DownloadWidgets")
+
 
 class InfoWidget(QWidget):
     def __init__(
         self,
-        game: Game,
-        igame: InstalledGame,
+        game: Optional[Game],
+        igame: Optional[InstalledGame],
         analysis: Optional[AnalysisResult] = None,
         old_igame: Optional[InstalledGame] = None,
         parent=None,
@@ -29,6 +33,23 @@ class InfoWidget(QWidget):
 
         self.image_manager = ImageManagerSingleton()
 
+        self.image = ImageWidget(self)
+        self.image.setFixedSize(ImageSize.Icon)
+        self.ui.image_layout.addWidget(self.image)
+
+        self.ui.info_widget_layout.setAlignment(Qt.AlignTop)
+
+        if game and igame:
+            self.update_information(game, igame, analysis, old_igame)
+        elif old_igame:
+            self.ui.title.setText(old_igame.title)
+            self.ui.remote_version.setText("...")
+            self.ui.local_version.setText("...")
+            self.ui.dl_size.setText("...")
+            self.ui.install_size.setText("...")
+            self.image.setPixmap(self.image_manager.get_pixmap(old_igame.app_name, color=True))
+
+    def update_information(self, game, igame, analysis, old_igame):
         self.ui.title.setText(game.app_title)
         self.ui.remote_version.setText(
             elide_text(self.ui.remote_version, old_igame.version if old_igame else game.app_version(igame.platform))
@@ -36,13 +57,7 @@ class InfoWidget(QWidget):
         self.ui.local_version.setText(elide_text(self.ui.local_version, igame.version))
         self.ui.dl_size.setText(get_size(analysis.dl_size) if analysis else "")
         self.ui.install_size.setText(get_size(analysis.install_size) if analysis else "")
-
-        self.image = ImageWidget(self)
-        self.image.setFixedSize(ImageSize.Icon)
         self.image.setPixmap(self.image_manager.get_pixmap(game.app_name, color=True))
-        self.ui.image_layout.addWidget(self.image)
-
-        self.ui.info_widget_layout.setAlignment(Qt.AlignTop)
 
 
 class UpdateWidget(QFrame):
@@ -98,27 +113,54 @@ class QueueWidget(QFrame):
         # lk: setObjectName has to be after `setupUi` because it is also set in that function
         self.setObjectName(widget_object_name(self, item.options.app_name))
 
-        self.item = item
+        self.threadpool = QThreadPool.globalInstance()
 
+        if not item:
+            self.ui.queue_buttons.setEnabled(False)
+            worker = InstallInfoWorker(RareCore.instance().core(), item.options)
+            worker.signals.result.connect(self.add_info_widget)
+            worker.signals.failed.connect(self.__on_info_worker_failed)
+            worker.signals.finished.connect(self.__on_info_worker_finished)
+            self.threadpool.start(worker)
+            self.info_widget = InfoWidget(None, None, None, old_igame, parent=self)
+        else:
+            self.info_widget = InfoWidget(
+                item.download.game, item.download.igame, item.download.analysis, old_igame, parent=self
+            )
+        self.ui.info_layout.addWidget(self.info_widget)
         self.ui.update_buttons.setVisible(False)
+
+        self.old_igame = old_igame
+        self.item = item
 
         self.ui.move_up_button.setIcon(icon("fa.arrow-up"))
         self.ui.move_up_button.clicked.connect(
-            lambda: self.move_up.emit(self.item.download.game.app_name)
+            lambda: self.move_up.emit(self.item.options.app_name)
         )
 
         self.ui.move_down_button.setIcon(icon("fa.arrow-down"))
         self.ui.move_down_button.clicked.connect(
-            lambda: self.move_down.emit(self.item.download.game.app_name)
+            lambda: self.move_down.emit(self.item.options.app_name)
         )
 
-        self.info_widget = InfoWidget(
-            item.download.game, item.download.igame, item.download.analysis, old_igame, parent=self
-        )
-        self.ui.info_layout.addWidget(self.info_widget)
-
-        self.ui.remove_button.clicked.connect(lambda: self.remove.emit(self.item.download.game.app_name))
+        self.ui.remove_button.clicked.connect(lambda: self.remove.emit(self.item.options.app_name))
         self.ui.force_button.clicked.connect(lambda: self.force.emit(self.item))
+
+    @pyqtSlot(str)
+    def __on_info_worker_failed(self, message: str):
+        logger.error(f"Failed to requeue download for {self.item.options.app_name} with error: {message}")
+        self.remove.emit(self.item.options.app_name)
+
+    @pyqtSlot()
+    def __on_info_worker_finished(self):
+        logger.info(f"Download requeue worker finished for {self.item.options.app_name}")
+
+    @pyqtSlot(InstallDownloadModel)
+    def add_info_widget(self, download: InstallDownloadModel):
+        self.item.download = download
+        if self.item:
+            self.info_widget.update_information(download.game, download.igame, download.analysis, self.old_igame)
+        self.ui.queue_buttons.setEnabled(bool(self.item))
 
     def toggle_arrows(self, index: int, length: int):
         self.ui.move_up_button.setEnabled(bool(index))

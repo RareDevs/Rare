@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
 )
 
-from rare.components.dialogs.install_dialog import InstallDialog, InstallInfoWorker
+from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.lgndr.models.downloading import UIUpdate
 from rare.models.game import RareGame
@@ -68,17 +68,21 @@ class DownloadsTab(QWidget):
         self.__reset_download()
 
         self.__forced_item: Optional[InstallQueueItemModel] = None
-        self.__omit_queue = False
-
-    def __check_updates(self):
-        for rgame in self.rcore.updates:
-            self.__add_update(rgame)
+        self.__omit_requeue = False
 
     @pyqtSlot()
     @pyqtSlot(int)
     def update_queues_count(self):
         count = self.updates_group.count() + self.queue_group.count()
         self.update_title.emit(count)
+
+    @property
+    def is_download_active(self):
+        return self.thread is not None
+
+    def __check_updates(self):
+        for rgame in self.rcore.updates:
+            self.__add_update(rgame)
 
     @pyqtSlot(str)
     @pyqtSlot(RareGame)
@@ -140,7 +144,7 @@ class DownloadsTab(QWidget):
         # `self.on_exit` control whether we try to add the download
         # back in the queue. If we are on exit we wait for the thread
         # to finish, we do not care about handling the result really
-        self.__omit_queue = omit_queue
+        self.__omit_requeue = omit_queue
         if omit_queue:
             self.thread.wait()
 
@@ -154,10 +158,6 @@ class DownloadsTab(QWidget):
         self.ui.kill_button.setDisabled(False)
         self.ui.dl_name.setText(item.download.game.app_title)
 
-    @property
-    def is_download_active(self):
-        return self.thread is not None
-
     @pyqtSlot(UIUpdate, c_ulonglong)
     def __on_download_progress(self, ui_update: UIUpdate, dl_size: c_ulonglong):
         self.ui.progress_bar.setValue(int(ui_update.progress))
@@ -170,19 +170,10 @@ class DownloadsTab(QWidget):
         )
         self.ui.time_left.setText(get_time(ui_update.estimated_time_left))
 
-    @pyqtSlot(InstallQueueItemModel)
-    def __on_info_worker_result(self, item: InstallQueueItemModel):
+    def __requeue_download(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
         self.queue_group.push_front(item, rgame.igame)
-        logger.info(f"Re-queued download for {item.download.game.app_name} ({item.download.game.app_title})")
-
-    @pyqtSlot(str)
-    def __on_info_worker_failed(self, message: str):
-        logger.error(f"Failed to re-queue stopped download with error: {message}")
-
-    @pyqtSlot()
-    def __on_info_worker_finished(self):
-        logger.info("Download re-queue worker finished")
+        logger.info(f"Re-queued download for {rgame.app_name} ({rgame.app_title})")
 
     @pyqtSlot(DlResultModel)
     def __on_download_result(self, result: DlResultModel):
@@ -211,12 +202,8 @@ class DownloadsTab(QWidget):
 
         elif result.code == DlResultCode.STOPPED:
             logger.info(f"Download stopped: {result.item.download.game.app_title}")
-            if not self.__omit_queue:
-                worker = InstallInfoWorker(self.core, result.item.options)
-                worker.signals.result.connect(self.__on_info_worker_result)
-                worker.signals.failed.connect(self.__on_info_worker_failed)
-                worker.signals.finished.connect(self.__on_info_worker_finished)
-                self.threadpool.start(worker)
+            if not self.__omit_requeue:
+                self.__requeue_download(InstallQueueItemModel(options=result.item.options))
             else:
                 return
 

@@ -1,7 +1,7 @@
 from collections import deque
 from enum import IntEnum
 from logging import getLogger
-from typing import Optional, List, Deque
+from typing import Optional, Deque, Union
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtWidgets import (
@@ -125,7 +125,7 @@ class QueueGroup(QGroupBox):
 
     def __create_widget(self, item: InstallQueueItemModel, old_igame: InstalledGame) -> QueueWidget:
         widget: QueueWidget = QueueWidget(item, old_igame, parent=self.__container)
-        widget.toggle_arrows(self.__queue.index(item.download.game.app_name), len(self.__queue))
+        widget.toggle_arrows(self.__queue.index(item.options.app_name), len(self.__queue))
         widget.destroyed.connect(self.__update_group)
         widget.remove.connect(self.remove)
         widget.force.connect(self.__on_force)
@@ -136,7 +136,7 @@ class QueueGroup(QGroupBox):
     def push_front(self, item: InstallQueueItemModel, old_igame: InstalledGame):
         self.__text.setVisible(False)
         self.__container.setVisible(True)
-        self.__queue.appendleft(item.download.game.app_name)
+        self.__queue.appendleft(item.options.app_name)
         widget = self.__create_widget(item, old_igame)
         self.__container.layout().insertWidget(0, widget)
         if self.count() > 1:

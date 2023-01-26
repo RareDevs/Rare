@@ -1,24 +1,17 @@
 import os
 import platform as pf
-import sys
 from typing import Tuple, List, Union, Optional
 
-from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
 from PyQt5.QtCore import Qt, QThreadPool, QSettings
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout, QWidget, QVBoxLayout, QApplication
-from legendary.lfs.eos import EOSOverlayApp
-from legendary.models.downloading import ConditionCheckResult
 from legendary.utils.selective_dl import get_sdl_appname
 
-from rare.lgndr.cli import LegendaryCLI
-from rare.lgndr.core import LegendaryCore
-from rare.lgndr.glue.arguments import LgndrInstallGameArgs
-from rare.lgndr.glue.exception import LgndrException
-from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel, InstallOptionsModel
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
+from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
 from rare.utils import config_helper
@@ -291,11 +284,11 @@ class InstallDialog(QDialog):
         self.reject_close = False
         self.close()
 
-    @pyqtSlot(InstallQueueItemModel)
-    def on_worker_result(self, dl_item: InstallQueueItemModel):
-        self.__download = dl_item.download
-        download_size = dl_item.download.analysis.dl_size
-        install_size = dl_item.download.analysis.install_size
+    @pyqtSlot(InstallDownloadModel)
+    def on_worker_result(self, download: InstallDownloadModel):
+        self.__download = download
+        download_size = download.analysis.dl_size
+        install_size = download.analysis.install_size
         # install_size = self.dl_item.download.analysis.disk_space_delta
         if download_size:
             self.ui.download_size_text.setText(get_size(download_size))
@@ -309,12 +302,12 @@ class InstallDialog(QDialog):
         self.ui.verify_button.setEnabled(self.options_changed)
         self.ui.cancel_button.setEnabled(True)
         if pf.system() == "Windows" or ArgumentsSingleton().debug:
-            if dl_item.download.igame.prereq_info and not dl_item.download.igame.prereq_info.get("installed", False):
+            if download.igame.prereq_info and not download.igame.prereq_info.get("installed", False):
                 self.advanced.ui.install_prereqs_check.setEnabled(True)
                 self.advanced.ui.install_prereqs_label.setEnabled(True)
                 self.advanced.ui.install_prereqs_check.setChecked(True)
-                prereq_name = dl_item.download.igame.prereq_info.get("name", "")
-                prereq_path = os.path.split(dl_item.download.igame.prereq_info.get("path", ""))[-1]
+                prereq_name = download.igame.prereq_info.get("name", "")
+                prereq_path = os.path.split(download.igame.prereq_info.get("path", ""))[-1]
                 prereq_desc = prereq_name if prereq_name else prereq_path
                 self.advanced.ui.install_prereqs_check.setText(
                     self.tr("Also install: {}").format(prereq_desc)
@@ -356,62 +349,6 @@ class InstallDialog(QDialog):
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key_Escape:
             self.cancel_clicked()
-
-
-class InstallInfoWorker(QRunnable):
-    class Signals(QObject):
-        result = pyqtSignal(InstallQueueItemModel)
-        failed = pyqtSignal(str)
-        finished = pyqtSignal()
-
-    def __init__(self, core: LegendaryCore, options: InstallOptionsModel):
-        sys.excepthook = sys.__excepthook__
-        super(InstallInfoWorker, self).__init__()
-        self.setAutoDelete(True)
-        self.signals = InstallInfoWorker.Signals()
-        self.core = core
-        self.options = options
-
-    @pyqtSlot()
-    def run(self):
-        try:
-            if not self.options.overlay:
-                cli = LegendaryCLI(self.core)
-                status = LgndrIndirectStatus()
-                result = cli.install_game(
-                    LgndrInstallGameArgs(**self.options.as_install_kwargs(), indirect_status=status)
-                )
-                if result:
-                    download = InstallDownloadModel(*result)
-                else:
-                    raise LgndrException(status.message)
-            else:
-                if not os.path.exists(path := self.options.base_path):
-                    os.makedirs(path)
-
-                dlm, analysis, igame = self.core.prepare_overlay_install(
-                    path=self.options.base_path
-                )
-
-                download = InstallDownloadModel(
-                    dlm=dlm,
-                    analysis=analysis,
-                    igame=igame,
-                    game=EOSOverlayApp,
-                    repair=False,
-                    repair_file="",
-                    res=ConditionCheckResult(),  # empty
-                )
-
-            if not download.res or not download.res.failures:
-                self.signals.result.emit(InstallQueueItemModel(options=self.options, download=download))
-            else:
-                self.signals.failed.emit("\n".join(str(i) for i in download.res.failures))
-        except LgndrException as ret:
-            self.signals.failed.emit(ret.message)
-        except Exception as e:
-            self.signals.failed.emit(str(e))
-        self.signals.finished.emit()
 
 
 class TagCheckBox(QCheckBox):
