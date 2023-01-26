@@ -284,7 +284,9 @@ class ImportGroup(QGroupBox):
             rgame.set_installed(True)
             if rgame.has_update:
                 self.signals.download.enqueue.emit(rgame.app_name)
-        status = "error" if not imported.result else ("failed" if imported.result == ImportResult.FAILED else "successful")
+        status = "error" if not imported.result else (
+            "failed" if imported.result == ImportResult.FAILED else "successful"
+        )
         logger.info(f"Import {status}: {imported.app_title}: {imported.path} ({imported.message})")
 
     @pyqtSlot(list)

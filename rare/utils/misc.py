@@ -3,7 +3,7 @@ import platform
 import shlex
 import sys
 from logging import getLogger
-from typing import List, Union
+from typing import List, Union, Type
 
 import qtawesome
 import requests
@@ -18,6 +18,7 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtGui import QPalette, QColor, QImage, QFontMetrics
 from PyQt5.QtWidgets import qApp, QStyleFactory, QWidget, QLabel
+from PyQt5.sip import wrappertype
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from requests.exceptions import HTTPError
@@ -352,8 +353,13 @@ def icon(icn_str: str, fallback: str = None, **kwargs):
     return qtawesome.icon("ei.error", **kwargs)
 
 
-def widget_object_name(widget: QWidget, app_name: str) -> str:
-    return f"{type(widget).__name__}_{app_name}"
+def widget_object_name(widget: Union[wrappertype,QObject,Type], suffix: str) -> str:
+    if isinstance(widget, QObject):
+        return f"{type(widget).__name__}_{suffix}"
+    elif isinstance(widget, wrappertype):
+        return f"{widget.__name__}_{suffix}"
+    else:
+        raise RuntimeError(f"Argument {widget} not a QObject or type of QObject")
 
 
 def elide_text(label: QLabel, text: str) -> str:
