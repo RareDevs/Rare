@@ -265,7 +265,7 @@ class DownloadsTab(QWidget):
             # if we do select to update with repair, we can remove the widget from the updates groups
             # otherwise we disable it and keep it in the updates
             if self.updates_group.contains(item.options.app_name):
-                if item.download.igame.version == self.updates_group.get_update_version(item.options.app_name):
+                if item.download.igame.version == self.updates_group.get_widget_version(item.options.app_name):
                     self.updates_group.remove(item.options.app_name)
                 else:
                     self.updates_group.set_widget_enabled(item.options.app_name, False)

@@ -1,10 +1,9 @@
-from argparse import Namespace
 from collections import deque
 from enum import IntEnum
 from logging import getLogger
 from typing import Optional, List, Deque
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtWidgets import (
     QWidget,
     QGroupBox,
@@ -16,6 +15,7 @@ from legendary.models.game import Game, InstalledGame
 
 from rare.components.tabs.downloads.widgets import QueueWidget, UpdateWidget
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
+from rare.utils.misc import widget_object_name
 
 logger = getLogger("QueueGroup")
 
@@ -39,49 +39,41 @@ class UpdateGroup(QGroupBox):
         self.layout().addWidget(self.__text)
         self.layout().addWidget(self.__container)
 
-        self.__list: List[str] = []
-
-    @staticmethod
-    def __widget_name(app_name: str) -> str:
-        return f"UpdateWidget_{app_name}"
-
     def __find_widget(self, app_name: str) -> Optional[UpdateWidget]:
-        return self.__container.findChild(UpdateWidget, name=self.__widget_name(app_name))
+        return self.__container.findChild(UpdateWidget, name=widget_object_name(UpdateWidget, app_name))
 
     def count(self) -> int:
-        return len(self.__list)
+        return len(self.__container.findChildren(UpdateWidget, options=Qt.FindDirectChildrenOnly))
 
     def contains(self, app_name: str) -> bool:
-        if app_name in self.__list:
-            return self.__find_widget(app_name) is not None
-        else:
-            return False
+        return self.__find_widget(app_name) is not None
+
+    def __update_group(self):
+        self.__text.setVisible(not bool(self.count()))
+        self.__container.setVisible(bool(self.count()))
 
     def append(self, game: Game, igame: InstalledGame):
         self.__text.setVisible(False)
         self.__container.setVisible(True)
-        self.__list.append(game.app_name)
         widget: UpdateWidget = self.__find_widget(game.app_name)
         if widget is not None:
             self.__container.layout().removeWidget(widget)
             widget.deleteLater()
         widget = UpdateWidget(game, igame, parent=self.__container)
+        widget.destroyed.connect(self.__update_group)
         widget.enqueue.connect(self.enqueue)
         self.__container.layout().addWidget(widget)
 
     def remove(self, app_name: str):
-        self.__list.remove(app_name)
         widget: UpdateWidget = self.__find_widget(app_name)
         self.__container.layout().removeWidget(widget)
         widget.deleteLater()
-        self.__text.setVisible(not bool(self.count()))
-        self.__container.setVisible(bool(self.count()))
 
     def set_widget_enabled(self, app_name: str, enabled: bool):
         widget: UpdateWidget = self.__find_widget(app_name)
         widget.set_enabled(enabled)
 
-    def get_update_version(self, app_name: str) -> str:
+    def get_widget_version(self, app_name: str) -> str:
         widget: UpdateWidget = self.__find_widget(app_name)
         return widget.version()
 
@@ -109,25 +101,26 @@ class QueueGroup(QGroupBox):
 
         self.__queue: Deque[str] = deque()
 
-    @staticmethod
-    def __widget_name(app_name:str) -> str:
-        return f"QueueWidget_{app_name}"
-
     def __find_widget(self, app_name: str) -> Optional[QueueWidget]:
-        return self.__container.findChild(QueueWidget, name=self.__widget_name(app_name))
-
-    def contains(self, app_name: str) -> bool:
-        if app_name in self.__queue:
-            return  self.__find_widget(app_name) is not None
-        else:
-            return False
+        return self.__container.findChild(QueueWidget, name=widget_object_name(QueueWidget, app_name))
 
     def count(self) -> int:
         return len(self.__queue)
 
+    def contains(self, app_name: str) -> bool:
+        if app_name in self.__queue:
+            return self.__find_widget(app_name) is not None
+        else:
+            return False
+
+    def __update_group(self):
+        self.__text.setVisible(not bool(self.count()))
+        self.__container.setVisible(bool(self.count()))
+
     def __create_widget(self, item: InstallQueueItemModel, old_igame: InstalledGame) -> QueueWidget:
         widget: QueueWidget = QueueWidget(item, old_igame, parent=self.__container)
         widget.toggle_arrows(self.__queue.index(item.download.game.app_name), len(self.__queue))
+        widget.destroyed.connect(self.__update_group)
         widget.remove.connect(self.remove)
         widget.force.connect(self.__on_force)
         widget.move_up.connect(self.__on_move_up)
@@ -161,13 +154,11 @@ class QueueGroup(QGroupBox):
         widget: QueueWidget = self.__find_widget(app_name)
         item = widget.item
         widget.deleteLater()
-        self.__text.setVisible(not bool(self.count()))
-        self.__container.setVisible(bool(self.count()))
         return item
 
-    def __update_queue(self):
+    def __update_arrows(self):
         """
-        check the first, second, last and second to last widgets in the list
+        Check the first, second, last and second to last widgets in the list
         and update their arrows
         :return: None
         """
@@ -187,9 +178,7 @@ class QueueGroup(QGroupBox):
         widget: QueueWidget = self.__find_widget(app_name)
         self.__container.layout().removeWidget(widget)
         widget.deleteLater()
-        self.__update_queue()
-        self.__text.setVisible(not bool(self.count()))
-        self.__container.setVisible(bool(self.count()))
+        self.__update_arrows()
 
     @pyqtSlot(str)
     def remove(self, app_name: str):
@@ -217,7 +206,7 @@ class QueueGroup(QGroupBox):
         self.__queue.insert(index + int(direction), app_name)
         widget: QueueWidget = self.__find_widget(app_name)
         self.__container.layout().insertWidget(index + int(direction), widget)
-        self.__update_queue()
+        self.__update_arrows()
 
     @pyqtSlot(str)
     def __on_move_up(self, app_name: str):
