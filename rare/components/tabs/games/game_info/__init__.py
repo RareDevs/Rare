@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import QTreeView
 
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.shared.game_utils import GameUtils
 from rare.utils.extra_widgets import SideTabWidget
 from rare.utils.json_formatter import QJsonModel
 from .game_dlc import GameDlc
@@ -15,20 +14,20 @@ from .game_settings import GameSettings
 
 
 class GameInfoTabs(SideTabWidget):
-    def __init__(self, game_utils: GameUtils, parent=None):
+    def __init__(self, parent=None):
         super(GameInfoTabs, self).__init__(show_back=True, parent=parent)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
 
-        self.info = GameInfo(game_utils, self)
-        self.addTab(self.info, self.tr("Information"))
+        self.info_tab = GameInfo(self)
+        self.addTab(self.info_tab, self.tr("Information"))
 
-        self.settings = GameSettings(self)
-        self.addTab(self.settings, self.tr("Settings"))
+        self.settings_tab = GameSettings(self)
+        self.addTab(self.settings_tab, self.tr("Settings"))
 
-        self.dlc = GameDlc(game_utils, self)
-        self.addTab(self.dlc, self.tr("Downloadable Content"))
+        self.dlc_tab = GameDlc(self)
+        self.addTab(self.dlc_tab, self.tr("Downloadable Content"))
 
         # FIXME: Hiding didn't work, so don't add these tabs in normal mode. Fix this properly later
         if self.args.debug:
@@ -37,21 +36,23 @@ class GameInfoTabs(SideTabWidget):
             self.igame_meta_view = GameMetadataView(self)
             self.addTab(self.igame_meta_view, self.tr("InstalledGame Metadata"))
 
-        self.tabBar().setCurrentIndex(1)
+        # self.setCurrentWidget(self.info_tab)
+        self.setCurrentIndex(1)
 
     def update_game(self, rgame: RareGame):
-        self.info.update_game(rgame)
+        self.info_tab.update_game(rgame)
 
-        self.settings.load_settings(rgame)
-        self.settings.setEnabled(rgame.is_installed)
+        self.settings_tab.load_settings(rgame)
+        self.settings_tab.setEnabled(rgame.is_installed)
 
-        self.dlc.update_dlcs(rgame)
-        self.dlc.setEnabled(bool(rgame.owned_dlcs))
+        self.dlc_tab.update_dlcs(rgame)
+        self.dlc_tab.setEnabled(bool(rgame.owned_dlcs))
 
         if self.args.debug:
             self.game_meta_view.update_game(rgame, rgame.game)
             self.igame_meta_view.update_game(rgame, rgame.igame)
 
+        # self.setCurrentWidget(self.info_tab)
         self.setCurrentIndex(1)
 
     def keyPressEvent(self, e: QKeyEvent):

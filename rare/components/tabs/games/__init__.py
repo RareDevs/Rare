@@ -57,7 +57,7 @@ class GamesTab(QStackedWidget):
         self.head_bar.goto_eos_ubisoft.connect(self.show_eos_ubisoft)
         self.games.layout().addWidget(self.head_bar)
 
-        self.game_info_tabs = GameInfoTabs(self.game_utils, self)
+        self.game_info_tabs = GameInfoTabs(self)
         self.game_info_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
         self.addWidget(self.game_info_tabs)
 
@@ -152,8 +152,8 @@ class GamesTab(QStackedWidget):
 
     @pyqtSlot(RareGame)
     def show_game_info(self, rgame):
-        self.game_info_tabs.update_game(rgame)
         self.setCurrentWidget(self.game_info_tabs)
+        self.game_info_tabs.update_game(rgame)
 
     @pyqtSlot()
     def update_count_games_label(self):

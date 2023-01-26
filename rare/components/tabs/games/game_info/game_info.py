@@ -38,16 +38,19 @@ logger = getLogger("GameInfo")
 
 
 class GameInfo(QWidget):
-    def __init__(self, game_utils, parent=None):
+    def __init__(self, parent=None):
         super(GameInfo, self).__init__(parent=parent)
         self.ui = Ui_GameInfo()
         self.ui.setupUi(self)
+        # lk: set object names for CSS properties
+        self.ui.install_button.setObjectName("InstallButton")
+        self.ui.uninstall_button.setObjectName("UninstallButton")
+
         self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
         self.image_manager = ImageManagerSingleton()
-        self.game_utils = game_utils
 
         self.rgame: Optional[RareGame] = None
 
