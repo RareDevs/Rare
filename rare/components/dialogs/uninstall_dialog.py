@@ -33,10 +33,11 @@ class UninstallDialog(QDialog):
         self.keep_config = QCheckBox(self.tr("Keep game configuation."))
         self.keep_config.setChecked(bool(options.keep_config))
 
-        self.ok_button = QPushButton(
+        self.uninstall_button = QPushButton(
             icon("ei.remove-circle", color="red"), self.tr("Uninstall")
         )
-        self.ok_button.clicked.connect(self.__on_uninstall)
+        self.uninstall_button.setObjectName("UninstallButton")
+        self.uninstall_button.clicked.connect(self.__on_uninstall)
 
         self.cancel_button = QPushButton(self.tr("Cancel"))
         self.cancel_button.clicked.connect(self.__on_cancel)
@@ -47,9 +48,9 @@ class UninstallDialog(QDialog):
         form_layout.addWidget(self.keep_config)
 
         button_layout = QHBoxLayout()
-        button_layout.addWidget(self.ok_button)
-        button_layout.addStretch(1)
         button_layout.addWidget(self.cancel_button)
+        button_layout.addStretch(1)
+        button_layout.addWidget(self.uninstall_button)
 
         layout = QVBoxLayout()
         layout.addWidget(self.info_text)

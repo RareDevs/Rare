@@ -45,6 +45,8 @@ class InstallDialog(QDialog):
         self.ui.setupUi(self)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        # lk: set object names for CSS properties
+        self.ui.install_button.setObjectName("InstallButton")
 
         self.core = LegendaryCoreSingleton()
         self.rgame = rgame

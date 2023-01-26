@@ -307,7 +307,7 @@ class SideTabContainer(QWidget):
         self.scrollarea.setFrameStyle(QScrollArea.NoFrame)
         if widget.layout():
             widget.layout().setAlignment(Qt.AlignTop)
-            widget.layout().setContentsMargins(0, 0, 9, 0)
+            widget.layout().setContentsMargins(0, 0, 3, 0)
         widget.title = self.title
         widget.title.setTitle = self.setTitle
         self.scrollarea.setMinimumWidth(

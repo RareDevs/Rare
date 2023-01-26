@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DownloadsTab(object):
     def setupUi(self, DownloadsTab):
         DownloadsTab.setObjectName("DownloadsTab")
-        DownloadsTab.resize(677, 195)
+        DownloadsTab.resize(677, 203)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -161,7 +161,7 @@ class Ui_DownloadsTab(object):
         self.queue_scroll_contents.setSizePolicy(sizePolicy)
         self.queue_scroll_contents.setObjectName("queue_scroll_contents")
         self.queue_scroll_contents_layout = QtWidgets.QVBoxLayout(self.queue_scroll_contents)
-        self.queue_scroll_contents_layout.setContentsMargins(0, 0, 9, 0)
+        self.queue_scroll_contents_layout.setContentsMargins(0, 0, 3, 0)
         self.queue_scroll_contents_layout.setObjectName("queue_scroll_contents_layout")
         self.queue_scroll.setWidget(self.queue_scroll_contents)
         self.downloads_tab_layout.addWidget(self.queue_scroll)

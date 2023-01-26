@@ -431,15 +431,18 @@ QRadioButton::indicator:checked:disabled {
 
 QGroupBox {
     font-weight: bold;
-    margin-top: 0.5em;
     /* margin-left: 0.5em; /* Offset to the left */
     border-width: 1px;
     border-style: solid;
     border-radius: 4px;
     padding-top: 1.2em;
 }
+QGroupBox[checkable="true"] {
+    margin-top: 0.5em;
+}
 QToolBox {
     font-weight: bold;
+    padding: 0px;
 }
 QToolBox::tab,
 QGroupBox::title {
