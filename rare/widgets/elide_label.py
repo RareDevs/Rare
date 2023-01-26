@@ -17,7 +17,7 @@ class ElideLabel(QLabel):
 
     def __setElideText(self, a0: str):
         metrics = QFontMetrics(self.font())
-        elided_text = metrics.elidedText(a0, Qt.ElideRight, self.sizeHint().width())
+        elided_text = metrics.elidedText(a0, Qt.ElideRight, self.width())
         super(ElideLabel, self).setText(elided_text)
 
     def paintEvent(self, a0: QPaintEvent) -> None:
