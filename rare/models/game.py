@@ -396,8 +396,7 @@ class RareGame(RareGameSlim):
         @return bool If the game should be considered installed
         """
         return (self.igame is not None) \
-            or (self.is_origin and self.__get_origin_install_path() is not None) \
-            or (self.is_non_asset and  platform.system() != "Windows")  # TODO: Remove this line
+            or (self.is_origin and self.__get_origin_install_path() is not None)
 
     def set_installed(self, installed: bool) -> None:
         """!
@@ -536,8 +535,7 @@ class RareGame(RareGameSlim):
         @return bool If the game is an Origin game
         """
         return (
-                self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value")
-                == "Origin"
+            self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
         )
 
     @property
@@ -609,7 +607,7 @@ class RareGame(RareGameSlim):
         )
         return True
 
-    __registry_cache: Optional[Dict] = None
+    __registry_cache: Dict = {}
     __origin_install_path = None
 
     def __get_origin_install_path(self) -> Optional[str]:
@@ -633,10 +631,8 @@ class RareGame(RareGameSlim):
 
         # TODO cache this line
         t = time.time()
-        if self.__registry_cache is None:
-            RareGame.__registry_cache = {}
-        if wine_prefix in self.__registry_cache.keys():
-            reg = self.__registry_cache[wine_prefix]
+        if wine_prefix in RareGame.__registry_cache.keys():
+            reg = RareGame.__registry_cache[wine_prefix]
         else:
             reg = read_registry("system.reg", wine_prefix)
             RareGame.__registry_cache[wine_prefix] = reg

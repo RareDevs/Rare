@@ -42,7 +42,7 @@ class GameInfoTabs(SideTabWidget):
         self.info_tab.update_game(rgame)
 
         self.settings_tab.load_settings(rgame)
-        self.settings_tab.setEnabled(rgame.is_installed)
+        self.settings_tab.setEnabled(rgame.is_installed or rgame.is_origin)
 
         self.dlc_tab.update_dlcs(rgame)
         self.dlc_tab.setEnabled(rgame.is_installed and bool(rgame.owned_dlcs))
