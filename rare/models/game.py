@@ -72,6 +72,10 @@ class RareGame(QObject):
         class Widget(QObject):
             update = pyqtSignal()
 
+        class Download(QObject):
+            enqueue = pyqtSignal(str)
+            dequeue = pyqtSignal(str)
+
         class Game(QObject):
             install = pyqtSignal(InstallOptionsModel)
             installed = pyqtSignal(str)
@@ -84,6 +88,7 @@ class RareGame(QObject):
             super(RareGame.Signals, self).__init__()
             self.progress = RareGame.Signals.Progress()
             self.widget = RareGame.Signals.Widget()
+            self.download = RareGame.Signals.Download()
             self.game = RareGame.Signals.Game()
 
     def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
@@ -157,12 +162,12 @@ class RareGame(QObject):
         return RareGame.__metadata_json
 
     def __load_metadata(self):
-        metadata = self.__load_metadata_json()
+        metadata: Dict = self.__load_metadata_json()
         if self.app_name in metadata:
             self.metadata = RareGame.Metadata.from_dict(metadata[self.app_name])
 
     def __save_metadata(self):
-        metadata = self.__load_metadata_json()
+        metadata: Dict = self.__load_metadata_json()
         metadata[self.app_name] = self.metadata.as_dict()
         with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
             json.dump(metadata, metadata_json, indent=2)
@@ -281,7 +286,11 @@ class RareGame(QObject):
         if installed:
             self.update_igame()
             self.signals.game.installed.emit(self.app_name)
+            if self.has_update:
+                self.signals.download.enqueue.emit(self.app_name)
         else:
+            if self.has_update:
+                self.signals.download.dequeue.emit(self.app_name)
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
         self.set_pixmap()
@@ -417,6 +426,10 @@ class RareGame(QObject):
             self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value")
             == "Origin"
         )
+
+    @property
+    def folder_name(self) -> str:
+        return self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value")
 
     def grant_date(self, force=False) -> datetime:
         if self.metadata.grant_date is None or force:

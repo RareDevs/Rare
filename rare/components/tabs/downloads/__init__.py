@@ -274,8 +274,9 @@ class DownloadsTab(QWidget):
     @pyqtSlot(UninstallOptionsModel)
     def __on_uninstall_dialog_closed(self, options: UninstallOptionsModel):
         if options and options.uninstall:
-            self.__remove_update(options.app_name)
-            worker = UninstallWorker(self.core, self.rcore.get_game(options.app_name), options)
+            rgame = self.rcore.get_game(options.app_name)
+            rgame.set_installed(False)
+            worker = UninstallWorker(self.core, rgame, options)
             worker.signals.result.connect(self.__on_uninstall_worker_result)
             self.threadpool.start(worker)
 
@@ -283,4 +284,3 @@ class DownloadsTab(QWidget):
     def __on_uninstall_worker_result(self, rgame: RareGame, success: bool, message: str):
         if not success:
             QMessageBox.warning(None, self.tr("Uninstall - {}").format(rgame.title), message, QMessageBox.Close)
-        rgame.set_installed(False)

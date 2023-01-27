@@ -21,10 +21,12 @@ class GlobalSignals:
         update_tray = pyqtSignal()
 
     class GameSignals(QObject):
+        # model
         install = pyqtSignal(InstallOptionsModel)
-        uninstall = pyqtSignal(UninstallOptionsModel)
         # str: app_name
         installed = pyqtSignal(str)
+        # model
+        uninstall = pyqtSignal(UninstallOptionsModel)
         # str: app_name
         uninstalled = pyqtSignal(str)
 

@@ -15,7 +15,7 @@ from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrImportGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
-from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
+from rare.shared import RareCore
 from rare.ui.components.tabs.games.integrations.import_group import Ui_ImportGroup
 from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
 from rare.widgets.elide_label import ElideLabel
@@ -62,8 +62,8 @@ class ImportWorker(QRunnable):
 
     def __init__(self, core: LegendaryCore, path: str, app_name: str = None, import_folder: bool = False, import_dlcs: bool = False):
         super(ImportWorker, self).__init__()
+        self.signals = ImportWorker.Signals()
         self.core = core
-        self.signals = self.Signals()
 
         self.path = Path(path)
         self.app_name = app_name
@@ -161,11 +161,12 @@ class ImportGroup(QGroupBox):
         self.ui = Ui_ImportGroup()
         self.ui.setupUi(self)
         self.rcore = RareCore.instance()
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
-        self.api_results = ApiResultsSingleton()
+        self.core = RareCore.instance().core()
+        self.api_results = RareCore.instance().api_results()
 
+        #self.app_name_list = [rgame.app_name for rgame in self.rcore.games]
         self.app_name_list = [game.app_name for game in self.api_results.game_list]
+        #self.install_dir_list = [rgame.folder_name for rgame in self.rcore.games if not rgame.is_dlc]
         self.install_dir_list = [
             game.metadata.get("customAttributes", {})
             .get("FolderName", {})
@@ -186,6 +187,7 @@ class ImportGroup(QGroupBox):
         self.app_name_edit = IndicatorLineEdit(
             placeholder=self.tr("Use in case the app name was not found automatically"),
             completer=AppNameCompleter(
+                # app_names=[(rgame.app_name, rgame.app_title) for rgame in self.rcore.games]
                 app_names=[(i.app_name, i.app_title) for i in self.api_results.game_list]
             ),
             edit_func=self.app_name_edit_callback,
@@ -289,10 +291,7 @@ class ImportGroup(QGroupBox):
     def __on_import_progress(self, imported: ImportedGame, progress: int):
         self.info_progress.setValue(progress)
         if imported.result == ImportResult.SUCCESS or imported.result == ImportResult.FAILED:
-            rgame = self.rcore.get_game(imported.app_name)
-            rgame.set_installed(True)
-            if rgame.has_update:
-                self.signals.download.enqueue.emit(rgame.app_name)
+            self.rcore.get_game(imported.app_name).set_installed(True)
         status = "error" if not imported.result else (
             "failed" if imported.result == ImportResult.FAILED else "successful"
         )

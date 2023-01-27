@@ -11,7 +11,7 @@ from legendary.models.game import InstalledGame
 
 from rare.lgndr.glue.exception import LgndrException
 from rare.models.pathspec import PathSpec
-from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
@@ -25,7 +25,7 @@ class EGLSyncGroup(QGroupBox):
         super(EGLSyncGroup, self).__init__(parent=parent)
         self.ui = Ui_EGLSyncGroup()
         self.ui.setupUi(self)
-        self.core = LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
         self.ui.egl_path_info.setProperty("infoLabel", 1)
 
         self.thread_pool = QThreadPool.globalInstance()
@@ -175,7 +175,7 @@ class EGLSyncListItem(QListWidgetItem):
         super(EGLSyncListItem, self).__init__(parent=parent)
         self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
         self.setCheckState(Qt.Unchecked)
-        self.core = LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
         self.game = game
         self.setText(self.app_title)
 
@@ -239,7 +239,7 @@ class EGLSyncListGroup(QGroupBox):
         self.ui.setupUi(self)
         self.ui.list.setFrameShape(QFrame.NoFrame)
         self.rcore = RareCore.instance()
-        self.core = LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
 
         self.ui.list.itemDoubleClicked.connect(
             lambda item: item.setCheckState(Qt.Unchecked)

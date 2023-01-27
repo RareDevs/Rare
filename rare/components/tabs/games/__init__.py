@@ -15,7 +15,6 @@ from rare.shared import (
     ImageManagerSingleton,
 )
 from rare.shared import RareCore
-from rare.shared.game_utils import GameUtils
 from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .game_info import GameInfoTabs
@@ -44,8 +43,6 @@ class GamesTab(QStackedWidget):
         self.game_list: List[Game] = self.api_results.game_list
         self.dlcs: Dict[str, List[Game]] = self.api_results.dlcs
         self.no_assets: List[Game] = self.api_results.no_asset_games
-
-        self.game_utils = GameUtils(parent=self)
 
         self.games = QWidget(parent=self)
         self.games.setLayout(QVBoxLayout())
