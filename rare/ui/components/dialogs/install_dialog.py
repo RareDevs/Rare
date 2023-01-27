@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_InstallDialog(object):
     def setupUi(self, InstallDialog):
         InstallDialog.setObjectName("InstallDialog")
-        InstallDialog.resize(324, 224)
+        InstallDialog.resize(324, 232)
         InstallDialog.setWindowTitle("InstallDialog")
         self.install_dialog_layout = QtWidgets.QFormLayout(InstallDialog)
         self.install_dialog_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
@@ -82,6 +82,7 @@ class Ui_InstallDialog(object):
         self.warning_text.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.warning_text.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.warning_text.setWordWrap(True)
+        self.warning_text.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.warning_text.setObjectName("warning_text")
         self.install_dialog_layout.setWidget(8, QtWidgets.QFormLayout.FieldRole, self.warning_text)
         self.button_layout = QtWidgets.QHBoxLayout()
