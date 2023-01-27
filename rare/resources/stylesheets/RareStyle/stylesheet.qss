@@ -321,28 +321,28 @@ QPushButton::menu-indicator {
     border-style: none;
 }
 QPushButton#InstallButton {
-    border-color: rgb(  0, 119,   0);
-    background-color: rgb(  0, 119,   0);
+    border-color: rgb(  0, 180,   0);
+    background-color: rgb(  0, 120,   0);
 }
 QPushButton#InstallButton:hover {
-    border-color: rgb(  0,  85,   0);
-    background-color: rgb(  0,  85,   0);
+    border-color: rgb(  0, 135,   0);
+    background-color: rgb(  0,  90,   0);
 }
 QPushButton#InstallButton:disabled {
-    border-color: rgb(  0,  34,   0);
-    background-color: rgb(  0,  34,   0);
+    border-color: rgb(  0,  60,   0);
+    background-color: rgb(  0,  40,   0);
 }
 QPushButton#UninstallButton {
-    border-color: rgb(119,   0,   0);
-    background-color: rgb(119,   0,   0);
+    border-color: rgb(180,   0,   0);
+    background-color: rgb(120,   0,   0);
 }
 QPushButton#UninstallButton:hover {
-    border-color: rgb( 85,   0,   0);
-    background-color: rgb( 85,   0,   0);
+    border-color: rgb( 135,   0,   0);
+    background-color: rgb( 90,   0,   0);
 }
 QPushButton#UninstallButton:disabled {
-    border-color: rgb( 34,   0,   0);
-    background-color: rgb( 34,   0,   0);
+    border-color: rgb( 60,   0,   0);
+    background-color: rgb( 40,   0,   0);
 }
 
 QGroupBox,
