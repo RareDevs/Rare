@@ -1,5 +1,6 @@
 import os
 import sys
+from logging import getLogger
 
 from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
 from legendary.lfs.eos import EOSOverlayApp
@@ -11,6 +12,8 @@ from rare.lgndr.glue.arguments import LgndrInstallGameArgs
 from rare.lgndr.glue.exception import LgndrException
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.install import InstallDownloadModel, InstallOptionsModel
+
+logger = getLogger("InstallInfoWorker")
 
 
 class InstallInfoWorker(QRunnable):

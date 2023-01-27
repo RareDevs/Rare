@@ -1,11 +1,11 @@
 from logging import getLogger
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSettings
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction, QApplication
 
-from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared import RareCore
 
 logger = getLogger("TrayIcon")
 
@@ -20,7 +20,8 @@ class TrayIcon(QSystemTrayIcon):
         super(TrayIcon, self).__init__(parent=parent)
         self.__parent = parent
         self.rcore = RareCore.instance()
-        self.core = LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
+        self.settings = QSettings()
 
         self.setIcon(QIcon(":/images/Rare.png"))
         self.setVisible(True)
@@ -48,14 +49,27 @@ class TrayIcon(QSystemTrayIcon):
 
         self.setContextMenu(self.menu)
 
-        self.signals = GlobalSignalsSingleton()
+        self.signals = RareCore.instance().signals()
         self.signals.game.uninstalled.connect(self.remove_button)
+        self.signals.application.notify.connect(self.notify)
         self.signals.application.update_tray.connect(self.update_actions)
 
     def last_played(self) -> List:
         last_played = [game for game in self.rcore.games if (game.metadata and game.is_installed)]
         last_played.sort(key=lambda g: g.metadata.last_played, reverse=True)
         return last_played[0:5]
+
+    @pyqtSlot(str)
+    def notify(self, app_name: str):
+        if self.settings.value("notification", True, bool):
+            self.showMessage(
+                self.tr("Download finished"),
+                self.tr("Download finished. {} is playable now").format(
+                    self.rcore.get_game(app_name).app_title
+                ),
+                self.Information,
+                4000,
+            )
 
     @pyqtSlot()
     def update_actions(self):

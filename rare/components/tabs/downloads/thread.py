@@ -15,7 +15,7 @@ from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.monkeys import DLManagerSignals
 from rare.lgndr.models.downloading import UIUpdate
 from rare.models.game import RareGame
-from rare.models.install import InstallQueueItemModel
+from rare.models.install import InstallQueueItemModel, InstallOptionsModel
 
 logger = getLogger("DownloadThread")
 
@@ -25,15 +25,17 @@ class DlResultCode(IntEnum):
     STOPPED = 2
     FINISHED = 3
 
+
 @dataclass
 class DlResultModel:
-    item: InstallQueueItemModel
+    options: InstallOptionsModel
     code: DlResultCode = DlResultCode.ERROR
     message: str = ""
     dlcs: Optional[List[Dict]] = None
     sync_saves: bool = False
     tip_url: str = ""
     shortcuts: bool = False
+
 
 class DlThread(QThread):
     result = pyqtSignal(DlResultModel)
@@ -59,7 +61,7 @@ class DlThread(QThread):
         cli = LegendaryCLI(self.core)
         self.item.download.dlm.logging_queue = cli.logging_queue
         self.item.download.dlm.proc_debug = self.debug
-        result = DlResultModel(self.item)
+        result = DlResultModel(self.item.options)
         start_t = time.time()
         try:
             self.item.download.dlm.start()

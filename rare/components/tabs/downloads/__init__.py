@@ -13,8 +13,9 @@ from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.lgndr.models.downloading import UIUpdate
 from rare.models.game import RareGame
-from rare.models.install import InstallOptionsModel, InstallQueueItemModel, UninstallOptionsModel
+from rare.models.install import InstallOptionsModel, InstallQueueItemModel, UninstallOptionsModel, InstallDownloadModel
 from rare.shared import RareCore
+from rare.shared.workers.install_info import InstallInfoWorker
 from rare.shared.workers.uninstall import UninstallWorker
 from rare.ui.components.tabs.downloads.downloads_tab import Ui_DownloadsTab
 from rare.utils.misc import get_size, create_desktop_link
@@ -127,7 +128,7 @@ class DownloadsTab(QWidget):
             self.stop_download()
             self.__forced_item = item
         else:
-            self.__start_installation(item)
+            self.__start_download(item)
 
     def stop_download(self, omit_queue=False):
         """
@@ -148,7 +149,23 @@ class DownloadsTab(QWidget):
         if omit_queue:
             self.thread.wait()
 
-    def __start_installation(self, item: InstallQueueItemModel):
+    def __refresh_download(self, item: InstallQueueItemModel):
+        worker = InstallInfoWorker(self.core, item.options)
+        worker.signals.result.connect(
+            lambda d: self.__start_download(InstallQueueItemModel(options=item.options, download=d))
+        )
+        worker.signals.failed.connect(
+            lambda m: logger.error(f"Failed to refresh download for {item.options.app_name} with error: {m}")
+        )
+        worker.signals.finished.connect(
+            lambda: logger.info(f"Download refresh worker finished for {item.options.app_name}")
+        )
+        self.threadpool.start(worker)
+
+    def __start_download(self, item: InstallQueueItemModel):
+        if item.expired:
+            self.__refresh_download(item)
+            return
         thread = DlThread(item, self.rcore.get_game(item.options.app_name), self.core, self.args.debug)
         thread.result.connect(self.__on_download_result)
         thread.progress.connect(self.__on_download_progress)
@@ -179,42 +196,42 @@ class DownloadsTab(QWidget):
     def __on_download_result(self, result: DlResultModel):
         if result.code == DlResultCode.FINISHED:
             if result.shortcuts:
-                if not create_desktop_link(result.item.options.app_name, self.core, "desktop"):
+                if not create_desktop_link(result.options.app_name, self.core, "desktop"):
                     # maybe add it to download summary, to show in finished downloads
                     pass
                 else:
                     logger.info("Desktop shortcut written")
             logger.info(
-                f"Download finished: {result.item.download.game.app_name} ({result.item.download.game.app_title})"
+                f"Download finished: {result.options.app_name}"
             )
 
-            if result.item.options.overlay:
+            if result.options.overlay:
                 self.signals.application.overlay_installed.emit()
             else:
-                self.signals.application.notify.emit(result.item.download.game.app_title)
+                self.signals.application.notify.emit(result.options.app_name)
 
-            if self.updates_group.contains(result.item.options.app_name):
-                self.updates_group.set_widget_enabled(result.item.options.app_name, True)
+            if self.updates_group.contains(result.options.app_name):
+                self.updates_group.set_widget_enabled(result.options.app_name, True)
 
         elif result.code == DlResultCode.ERROR:
             QMessageBox.warning(self, self.tr("Error"), self.tr("Download error: {}").format(result.message))
-            logger.error(f"Download error: {result.message}")
+            logger.error(f"Download error: {result.options.app_name} ({result.message})")
 
         elif result.code == DlResultCode.STOPPED:
-            logger.info(f"Download stopped: {result.item.download.game.app_title}")
+            logger.info(f"Download stopped: {result.options.app_name}")
             if not self.__omit_requeue:
-                self.__requeue_download(InstallQueueItemModel(options=result.item.options))
+                self.__requeue_download(InstallQueueItemModel(options=result.options))
             else:
                 return
 
         # lk: if we finished a repair, and we have a disabled update, re-enable it
-        if self.updates_group.contains(result.item.options.app_name):
-            self.updates_group.set_widget_enabled(result.item.options.app_name, True)
+        if self.updates_group.contains(result.options.app_name):
+            self.updates_group.set_widget_enabled(result.options.app_name, True)
 
         if result.code == DlResultCode.FINISHED and self.queue_group.count():
-                self.__start_installation(self.queue_group.pop_front())
+            self.__start_download(self.queue_group.pop_front())
         elif result.code == DlResultCode.STOPPED and self.__forced_item:
-            self.__start_installation(self.__forced_item)
+            self.__start_download(self.__forced_item)
             self.__forced_item = None
         else:
             self.__reset_download()
@@ -244,7 +261,7 @@ class DownloadsTab(QWidget):
         if item:
             # lk: start update only if there is no other active thread and there is no queue
             if self.thread is None and not self.queue_group.count():
-                self.__start_installation(item)
+                self.__start_download(item)
             else:
                 rgame = self.rcore.get_game(item.options.app_name)
                 self.queue_group.push_back(item, rgame.igame)
@@ -273,7 +290,7 @@ class DownloadsTab(QWidget):
 
     @pyqtSlot(UninstallOptionsModel)
     def __on_uninstall_dialog_closed(self, options: UninstallOptionsModel):
-        if options and options.uninstall:
+        if options and options.accepted:
             rgame = self.rcore.get_game(options.app_name)
             rgame.set_installed(False)
             worker = UninstallWorker(self.core, rgame, options)

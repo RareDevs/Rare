@@ -1,6 +1,7 @@
 import os
 import platform as pf
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import List, Optional, Callable, Dict, Tuple
 
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
@@ -56,26 +57,44 @@ class InstallDownloadModel:
     res: ConditionCheckResult
 
 
-@dataclass
 class InstallQueueItemModel:
-    options: Optional[InstallOptionsModel] = None
-    download: Optional[InstallDownloadModel] = None
+    def __init__(self, options: InstallOptionsModel,  download: InstallDownloadModel = None):
+        self.options: Optional[InstallOptionsModel] = options
+        # lk: internal attribute holders
+        self.__download: Optional[InstallDownloadModel] = None
+        self.__date: Optional[datetime] = None
+
+        self.download = download
+
+    @property
+    def download(self) -> Optional[InstallDownloadModel]:
+        return self.__download
+
+    @download.setter
+    def download(self, download: Optional[InstallDownloadModel]):
+        self.__download = download
+        if download is not None:
+            self.__date = datetime.now()
+
+    @property
+    def expired(self) -> bool:
+        return datetime.now() > (self.__date + timedelta(minutes=30))
 
     def __bool__(self):
-        return (self.download is not None) and (self.options is not None)
+        return (self.download is not None) and (self.options is not None) and (not self.expired)
 
 
 @dataclass
 class UninstallOptionsModel:
     app_name: str
-    uninstall: bool = None
+    accepted: bool = None
     keep_files: bool = None
     keep_config: bool = None
 
     def __bool__(self):
         return (
             bool(self.app_name)
-            and (self.uninstall is not None)
+            and (self.accepted is not None)
             and (self.keep_files is not None)
             and (self.keep_config is not None)
         )
@@ -86,9 +105,9 @@ class UninstallOptionsModel:
         This model's options
 
         :return:
-            Tuple of `uninstall` `keep_files` `keep_config`
+            Tuple of `accepted` `keep_files` `keep_config`
         """
-        return self.uninstall, self.keep_config, self.keep_files
+        return self.accepted, self.keep_config, self.keep_files
 
     @values.setter
     def values(self, values: Tuple[bool, bool, bool]):
@@ -96,9 +115,9 @@ class UninstallOptionsModel:
         Set this model's options
 
         :param values:
-            Tuple of `uninstall` `keep_files` `keep_config`
+            Tuple of `accepted` `keep_files` `keep_config`
         :return:
         """
-        self.uninstall = values[0]
+        self.accepted = values[0]
         self.keep_files = values[1]
         self.keep_config = values[2]

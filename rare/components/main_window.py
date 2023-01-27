@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
 
 from rare.components.tabs import TabWidget
 from rare.components.tray_icon import TrayIcon
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
+from rare.shared import RareCore
 from rare.utils.paths import lock_file
 
 logger = getLogger("MainWindow")
@@ -31,10 +31,9 @@ class MainWindow(QMainWindow):
         self._window_launched = False
         super(MainWindow, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
-        self.args = ArgumentsSingleton()
-
+        self.core = RareCore.instance().core()
+        self.signals = RareCore.instance().signals()
+        self.args = RareCore.instance().args()
         self.settings = QSettings()
 
         self.setWindowTitle("Rare - GUI for legendary")
@@ -67,17 +66,6 @@ class MainWindow(QMainWindow):
         self.tray_icon.exit_app.connect(self.on_exit_app)
         self.tray_icon.show_app.connect(self.show)
         self.tray_icon.activated.connect(lambda r: self.toggle() if r == self.tray_icon.DoubleClick else None)
-
-        self.signals.application.notify.connect(
-            lambda title: self.tray_icon.showMessage(
-                self.tr("Download finished"),
-                self.tr("Download finished. {} is playable now").format(title),
-                self.tray_icon.Information,
-                4000,
-            )
-            if self.settings.value("notification", True, bool)
-            else None
-        )
 
         # enable kinetic scrolling
         for scroll_area in self.findChildren(QScrollArea):

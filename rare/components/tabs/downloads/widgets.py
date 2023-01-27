@@ -105,7 +105,6 @@ class QueueWidget(QFrame):
     # InstallQueueItemModel
     force = pyqtSignal(InstallQueueItemModel)
 
-
     def __init__(self, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None):
         super(QueueWidget, self).__init__(parent=parent)
         self.ui = Ui_DownloadWidget()
@@ -113,15 +112,18 @@ class QueueWidget(QFrame):
         # lk: setObjectName has to be after `setupUi` because it is also set in that function
         self.setObjectName(widget_object_name(self, item.options.app_name))
 
-        self.threadpool = QThreadPool.globalInstance()
-
         if not item:
             self.ui.queue_buttons.setEnabled(False)
             worker = InstallInfoWorker(RareCore.instance().core(), item.options)
-            worker.signals.result.connect(self.add_info_widget)
-            worker.signals.failed.connect(self.__on_info_worker_failed)
-            worker.signals.finished.connect(self.__on_info_worker_finished)
-            self.threadpool.start(worker)
+            worker.signals.result.connect(self.__update_info)
+            worker.signals.failed.connect(
+                lambda m: logger.error(f"Failed to requeue download for {item.options.app_name} with error: {m}")
+            )
+            worker.signals.failed.connect(lambda m: self.remove.emit(item.options.app_name))
+            worker.signals.finished.connect(
+                lambda: logger.info(f"Download requeue worker finished for {item.options.app_name}")
+            )
+            QThreadPool.globalInstance().start(worker)
             self.info_widget = InfoWidget(None, None, None, old_igame, parent=self)
         else:
             self.info_widget = InfoWidget(
@@ -146,17 +148,8 @@ class QueueWidget(QFrame):
         self.ui.remove_button.clicked.connect(lambda: self.remove.emit(self.item.options.app_name))
         self.ui.force_button.clicked.connect(lambda: self.force.emit(self.item))
 
-    @pyqtSlot(str)
-    def __on_info_worker_failed(self, message: str):
-        logger.error(f"Failed to requeue download for {self.item.options.app_name} with error: {message}")
-        self.remove.emit(self.item.options.app_name)
-
-    @pyqtSlot()
-    def __on_info_worker_finished(self):
-        logger.info(f"Download requeue worker finished for {self.item.options.app_name}")
-
     @pyqtSlot(InstallDownloadModel)
-    def add_info_widget(self, download: InstallDownloadModel):
+    def __update_info(self, download: InstallDownloadModel):
         self.item.download = download
         if self.item:
             self.info_widget.update_information(download.game, download.igame, download.analysis, self.old_igame)
