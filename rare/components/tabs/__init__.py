@@ -39,9 +39,9 @@ class TabWidget(QTabWidget):
             self.store = Shop(self.core)
             self.addTab(self.store, self.tr("Store (Beta)"))
 
-        self.settings = SettingsTab(self)
+        self.settings_tab = SettingsTab(self)
         if self.args.debug:
-            self.settings.addTab(DebugSettings(), "Debug")
+            self.settings_tab.addTab(DebugSettings(), "Debug")
 
         # Space Tab
         self.addTab(QWidget(), "")
@@ -61,9 +61,9 @@ class TabWidget(QTabWidget):
             disabled_tab + 1, self.tabBar().RightSide, account_button
         )
 
-        self.addTab(self.settings, icon("fa.gear"), "")
+        self.addTab(self.settings_tab, icon("fa.gear"), "")
 
-        self.settings.about.update_available_ready.connect(
+        self.settings_tab.about.update_available_ready.connect(
             lambda: self.tabBar().setTabText(5, "(!)")
         )
         # Signals
@@ -75,10 +75,11 @@ class TabWidget(QTabWidget):
         self.setIconSize(QSize(24, 24))
 
         # shortcuts
-        QShortcut("Alt+1", self).activated.connect(lambda: self.setCurrentIndex(0))
-        QShortcut("Alt+2", self).activated.connect(lambda: self.setCurrentIndex(1))
-        QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(2))
-        QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(5))
+        QShortcut("Alt+1", self).activated.connect(lambda: self.setCurrentWidget(self.games_tab))
+        if not self.args.offline:
+            QShortcut("Alt+2", self).activated.connect(lambda: self.setCurrentWidget(self.downloads_tab))
+            QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentWidget(self.store))
+        QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentWidget(self.settings_tab))
 
     @pyqtSlot(int)
     def __on_downloads_update_title(self, num_downloads: int):
@@ -86,7 +87,7 @@ class TabWidget(QTabWidget):
 
     def mouse_clicked(self, tab_num):
         if tab_num == 0:
-            self.games_tab.layout().setCurrentIndex(0)
+            self.games_tab.setCurrentWidget(self.games_tab)
 
         if not self.args.offline and tab_num == 2:
             self.store.load()
