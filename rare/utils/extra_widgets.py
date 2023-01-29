@@ -1,6 +1,6 @@
 import os
 from logging import getLogger
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Optional
 
 from PyQt5.QtCore import (
     Qt,
@@ -262,14 +262,19 @@ class PathEdit(IndicatorLineEdit):
 
 
 class SideTabBar(QTabBar):
-    def __init__(self, parent=None):
+    def __init__(self, padding: int = -1, parent=None):
         super(SideTabBar, self).__init__(parent=parent)
         self.setObjectName("SideTabBar")
+        self.padding = padding
         self.fm = QFontMetrics(self.font())
 
     def tabSizeHint(self, index):
-        # width = QTabBar.tabSizeHint(self, index).width()
-        return QSize(200, self.fm.height() + 18)
+        width = QTabBar.tabSizeHint(self, index).height()
+        if self.padding < 0:
+            width += QTabBar.tabSizeHint(self, index).width()
+        else:
+            width += self.padding
+        return QSize(width, self.fm.height() + 18)
 
     def paintEvent(self, event):
         painter = QStylePainter(self)
@@ -328,9 +333,9 @@ class SideTabContainer(QWidget):
 class SideTabWidget(QTabWidget):
     back_clicked = pyqtSignal()
 
-    def __init__(self, show_back: bool = False, parent=None):
+    def __init__(self, show_back: bool = False, padding: int = -1, parent=None):
         super(SideTabWidget, self).__init__(parent=parent)
-        self.setTabBar(SideTabBar())
+        self.setTabBar(SideTabBar(padding=padding, parent=self))
         self.setDocumentMode(True)
         self.setTabPosition(QTabWidget.West)
         if show_back:
