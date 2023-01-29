@@ -11,16 +11,16 @@ class SettingsTab(SideTabWidget):
         super(SettingsTab, self).__init__(parent=parent)
         about_tab = 3
         self.rare_settings = RareSettings()
-        self.addTab(self.rare_settings, "Rare")
+        self.rare_index = self.addTab(self.rare_settings, "Rare")
 
-        self.addTab(LegendarySettings(), "Legendary")
+        self.legendary_index = self.addTab(LegendarySettings(), "Legendary")
 
-        self.addTab(DefaultGameSettings(True, self), self.tr("Default Settings"))
+        self.settings_index = self.addTab(DefaultGameSettings(True, self), self.tr("Default Settings"))
 
         self.about = About()
-        self.addTab(self.about, "About", "About")
+        self.about_index = self.addTab(self.about, "About", "About")
         self.about.update_available_ready.connect(
             lambda: self.tabBar().setTabText(about_tab, "About (!)")
         )
 
-        self.setCurrentIndex(0)
+        self.setCurrentIndex(self.rare_index)

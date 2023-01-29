@@ -21,23 +21,22 @@ class GameInfoTabs(SideTabWidget):
         self.args = ArgumentsSingleton()
 
         self.info_tab = GameInfo(self)
-        self.addTab(self.info_tab, self.tr("Information"))
+        self.info_index = self.addTab(self.info_tab, self.tr("Information"))
 
         self.settings_tab = GameSettings(self)
-        self.addTab(self.settings_tab, self.tr("Settings"))
+        self.settings_index = self.addTab(self.settings_tab, self.tr("Settings"))
 
         self.dlc_tab = GameDlc(self)
-        self.addTab(self.dlc_tab, self.tr("Downloadable Content"))
+        self.dlc_index = self.addTab(self.dlc_tab, self.tr("Downloadable Content"))
 
         # FIXME: Hiding didn't work, so don't add these tabs in normal mode. Fix this properly later
         if self.args.debug:
             self.game_meta_view = GameMetadataView(self)
-            self.addTab(self.game_meta_view, self.tr("Game Metadata"))
+            self.game_meta_index = self.addTab(self.game_meta_view, self.tr("Game Metadata"))
             self.igame_meta_view = GameMetadataView(self)
-            self.addTab(self.igame_meta_view, self.tr("InstalledGame Metadata"))
+            self.igame_meta_index = self.addTab(self.igame_meta_view, self.tr("InstalledGame Metadata"))
 
-        # self.setCurrentWidget(self.info_tab)
-        self.setCurrentIndex(1)
+        self.setCurrentIndex(self.info_index)
 
     def update_game(self, rgame: RareGame):
         self.info_tab.update_game(rgame)
@@ -52,8 +51,7 @@ class GameInfoTabs(SideTabWidget):
             self.game_meta_view.update_game(rgame, rgame.game)
             self.igame_meta_view.update_game(rgame, rgame.igame)
 
-        # self.setCurrentWidget(self.info_tab)
-        self.setCurrentIndex(1)
+        self.setCurrentIndex(self.info_index)
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Escape:
