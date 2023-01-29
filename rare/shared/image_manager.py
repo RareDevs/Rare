@@ -2,6 +2,7 @@ import hashlib
 import json
 import pickle
 import zlib
+from enum import Enum
 # from concurrent import futures
 from logging import getLogger
 from pathlib import Path
@@ -37,13 +38,22 @@ if TYPE_CHECKING:
 logger = getLogger("ImageManager")
 
 
+class Orientation(Enum):
+    Tall = 0
+    Wide = 1
+
+
 class ImageSize:
     class Preset:
-        def __init__(self, divisor: float, pixel_ratio: float):
-            self.__img_factor = 67
+        def __init__(self, divisor: float, pixel_ratio: float, orientation: Orientation = Orientation.Tall):
             self.__divisor = divisor
             self.__pixel_ratio = pixel_ratio
-            self.__size = QSize(self.__img_factor * 3, self.__img_factor * 4) * pixel_ratio / divisor
+            if orientation == Orientation.Tall:
+                self.__img_factor = 67
+                self.__size = QSize(self.__img_factor * 3, self.__img_factor * 4) * pixel_ratio / divisor
+            else:
+                self.__img_factor = 17
+                self.__size = QSize(self.__img_factor * 16, self.__img_factor * 9) * pixel_ratio / divisor
             # lk: for prettier images set this to true
             self.__smooth_transform: bool = False
             if divisor > 2:
@@ -70,6 +80,9 @@ class ImageSize:
 
     Display = Preset(1, 1)
     """! @brief Size and pixel ratio for displaying"""
+
+    Wide = Preset(1, 1, Orientation.Wide)
+    """! @brief Size and pixel ratio for wide 16/9 image display"""
 
     Normal = Display
     """! @brief Same as Display"""
