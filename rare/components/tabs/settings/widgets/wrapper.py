@@ -67,12 +67,12 @@ class WrapperWidget(QFrame):
 
 
 class WrapperSettings(QWidget, Ui_WrapperSettings):
-    wrappers: Dict[str, WrapperWidget] = dict()
-    app_name: str
-
     def __init__(self):
         super(WrapperSettings, self).__init__()
         self.setupUi(self)
+
+        self.wrappers: Dict[str, WrapperWidget] = {}
+        self.app_name: str
 
         self.wrapper_scroll = QScrollArea(self.widget_stack)
         self.wrapper_scroll.setWidgetResizable(True)
@@ -103,7 +103,9 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
 
     @pyqtSlot(int, int)
     def adjust_scrollarea(self, min: int, max: int):
-        wrapper_widget = self.scroll_content.findChildren(WrapperWidget)[0]
+        wrapper_widget = self.scroll_content.findChild(WrapperWidget)
+        if not wrapper_widget:
+             return
         # lk: when the scrollbar is not visible, min and max are 0
         if max > min:
             self.wrapper_scroll.setMaximumHeight(
