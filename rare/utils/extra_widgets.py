@@ -19,7 +19,7 @@ from rare.utils.qt_requests import QtRequestManager
 
 logger = getLogger("ExtraWidgets")
 
-
+# FIXME: move this?
 class WaitingSpinner(QLabel):
     def __init__(self, parent=None):
         super(WaitingSpinner, self).__init__(parent=parent)

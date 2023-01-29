@@ -3,13 +3,13 @@ from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from rare.components.tabs.shop.constants import (
+from rare.components.tabs.store.constants import (
     wishlist_query,
     search_query,
     add_to_wishlist_query,
     remove_from_wishlist_query,
 )
-from rare.components.tabs.shop.shop_models import BrowseModel
+from rare.components.tabs.store.shop_models import BrowseModel
 from rare.utils.qt_requests import QtRequestManager
 
 logger = getLogger("ShopAPICore")
@@ -173,8 +173,9 @@ class ShopApiCore(QObject):
         try:
             handle_func(data)
         except Exception as e:
+            raise e
             logger.error(str(e))
-            handle_func({})
+            # handle_func({})
 
     # needs a captcha
     def add_to_wishlist(self, namespace, offer_id, handle_func: callable):

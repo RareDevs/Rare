@@ -49,7 +49,7 @@ class QtRequestManager(QObject):
                 )
             )
 
-    def get(self, url: str, handle_func: Callable[[Union[dict, bytes]], None]):
+    def get(self, url: str, handle_func: Callable[[Union[dict, bytes]], None], payload: dict = None):
         if not self.request_active:
             request = QNetworkRequest(QUrl(url))
             request.setHeader(
@@ -62,7 +62,7 @@ class QtRequestManager(QObject):
             self.request.finished.connect(self.prepare_data)
         else:
             self.request_queue.append(
-                RequestQueueItem(method="get", url=url, handle_func=handle_func)
+                RequestQueueItem(method="get", url=url, handle_func=handle_func, payload=payload)
             )
 
     def prepare_data(self):

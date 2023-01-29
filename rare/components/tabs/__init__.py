@@ -8,7 +8,7 @@ from .downloads import DownloadsTab
 from .games import GamesTab
 from .settings import SettingsTab
 from .settings.debug import DebugSettings
-from .shop import Shop
+from .store import StoreTab
 from .tab_widgets import MainTabBar, TabButtonWidget
 
 
@@ -38,7 +38,7 @@ class MainTabWidget(QTabWidget):
             self.downloads_tab.update_queues_count()
             self.setTabEnabled(self.downloads_index, not self.args.offline)
 
-            self.store_tab = Shop(self.core)
+            self.store_tab = StoreTab(self.core, parent=self)
             self.store_index = self.addTab(self.store_tab, self.tr("Store (Beta)"))
             self.setTabEnabled(self.store_index, not self.args.offline)
 
