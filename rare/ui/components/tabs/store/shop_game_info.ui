@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>shop_info</class>
- <widget class="QWidget" name="shop_info">
+ <class>ShopGameInfo</class>
+ <widget class="QWidget" name="ShopGameInfo">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,34 +11,41 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">Form</string>
+   <string notr="true">ShopGameInfo</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="shop_game_info_layout">
    <item>
-    <widget class="QPushButton" name="back_button">
-     <property name="text">
-      <string>Back</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="image_info_layout">
      <item>
-      <widget class="QStackedWidget" name="image_stack">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="currentIndex">
-        <number>-1</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
+      <layout class="QGridLayout" name="info_layout">
+       <item row="6" column="1">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QLabel" name="tags">
+         <property name="text">
+          <string notr="true">tags</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QLabel" name="discount_price">
+         <property name="text">
+          <string notr="true">discount</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
         <widget class="QLabel" name="title">
          <property name="font">
           <font>
@@ -46,14 +53,35 @@
           </font>
          </property>
          <property name="text">
-          <string/>
+          <string notr="true">title</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="6" column="0">
+        <layout class="QVBoxLayout" name="button_layout">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetFixedSize</enum>
+         </property>
+         <item>
+          <widget class="QPushButton" name="open_store_button">
+           <property name="text">
+            <string>Buy in Epic Games Store</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="wishlist_button">
+           <property name="text">
+            <string>Add to wishlist</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0" colspan="2">
         <widget class="QLabel" name="dev">
          <property name="font">
           <font>
@@ -61,87 +89,48 @@
           </font>
          </property>
          <property name="text">
-          <string notr="true"/>
+          <string notr="true">dev</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="2" column="0" colspan="2">
         <widget class="QLabel" name="owned_label">
          <property name="text">
           <string>You already own this game</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="3" column="0" colspan="2">
         <widget class="QLabel" name="price">
          <property name="text">
-          <string notr="true"/>
+          <string notr="true">price</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="discount_price">
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="tags">
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="open_store_button">
+       <item row="7" column="0" colspan="2">
+        <widget class="QGroupBox" name="social_group">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="text">
-          <string>Buy Game in Epic Games Store</string>
+         <property name="title">
+          <string>Links</string>
          </property>
+         <layout class="QHBoxLayout" name="social_layout"/>
         </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="wishlist_button">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Add to wishlist</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="image_info_hspacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -156,23 +145,34 @@
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="req_group_box">
-     <property name="title">
-      <string>Requirements</string>
+    <widget class="QGroupBox" name="requirements_group">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2"/>
+     <property name="title">
+      <string>System requirements</string>
+     </property>
+     <layout class="QHBoxLayout" name="requirements_layout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="social_link_gb">
-     <property name="title">
-      <string>Social Links</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
+    <spacer name="shop_game_info_vspacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>

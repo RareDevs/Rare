@@ -173,8 +173,9 @@ class ShopApiCore(QObject):
         try:
             handle_func(data)
         except Exception as e:
+            raise e
             logger.error(str(e))
-            handle_func({})
+            # handle_func({})
 
     # needs a captcha
     def add_to_wishlist(self, namespace, offer_id, handle_func: callable):

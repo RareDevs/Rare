@@ -1,9 +1,8 @@
-from PyQt5.QtGui import QShowEvent, QHideEvent
-from PyQt5.QtWidgets import QStackedWidget, QTabWidget
 from legendary.core import LegendaryCore
 
-from rare.shared.rare_core import RareCore
+from rare.shared import RareCore
 from rare.utils.paths import cache_dir
+from rare.widgets.side_tab import SideTabWidget
 from .game_info import ShopGameInfo
 from .search_results import SearchResults
 from .shop_api_core import ShopApiCore
@@ -11,11 +10,12 @@ from .shop_widget import ShopWidget
 from .wishlist import WishlistWidget, Wishlist
 
 
-class Shop(QStackedWidget):
-    init = False
+class StoreTab(SideTabWidget):
 
-    def __init__(self, core: LegendaryCore):
-        super(Shop, self).__init__()
+    def __init__(self, core: LegendaryCore, parent=None):
+        super(StoreTab, self).__init__(parent=parent)
+        self.init = False
+
         self.core = core
         self.rcore = RareCore.instance()
         self.api_core = ShopApiCore(
@@ -24,32 +24,32 @@ class Shop(QStackedWidget):
             self.core.country_code,
         )
 
-        self.shop = ShopWidget(cache_dir(), self.core, self.api_core)
-        self.wishlist_widget = Wishlist(self.api_core)
+        self.shop = ShopWidget(cache_dir(), self.core, self.api_core, parent=self)
+        self.shop_index = self.addTab(self.shop, self.tr("Games"))
+        self.shop.show_game.connect(self.show_game)
+        self.shop.show_info.connect(self.show_search)
 
-        self.store_tabs = QTabWidget(parent=self)
-        self.store_tabs.addTab(self.shop, self.tr("Games"))
-        self.store_tabs.addTab(self.wishlist_widget, self.tr("Wishlist"))
+        self.search = SearchResults(self.api_core, parent=self)
+        self.search_index = self.addTab(self.search, self.tr("Search"))
+        self.search.show_info.connect(self.show_game)
+        # self.search.back_button.clicked.connect(lambda: self.setCurrentIndex(self.shop_index))
 
-        self.addWidget(self.store_tabs)
-
-        self.search_results = SearchResults(self.api_core)
-        self.addWidget(self.search_results)
-        self.search_results.show_info.connect(self.show_game_info)
         self.info = ShopGameInfo(
             [i.asset_infos["Windows"].namespace for i in self.rcore.game_list if bool(i.asset_infos)],
             self.api_core,
+            parent=self
         )
-        self.addWidget(self.info)
-        self.info.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
+        self.info_index = self.addTab(self.info, self.tr("Information"))
+        # self.info.back_button.clicked.connect(lambda: self.setCurrentIndex(self.previous_index))
 
-        self.search_results.back_button.clicked.connect(lambda: self.setCurrentIndex(0))
-        self.shop.show_info.connect(self.show_search_results)
+        self.wishlist = Wishlist(self.api_core, parent=self)
+        self.wishlist_index = self.addTab(self.wishlist, self.tr("Wishlist"))
+        self.wishlist.update_wishlist_signal.connect(self.update_wishlist)
+        self.wishlist.show_game_info.connect(self.show_game)
 
-        self.wishlist_widget.show_game_info.connect(self.show_game_info)
-        self.shop.show_game.connect(self.show_game_info)
         self.api_core.update_wishlist.connect(self.update_wishlist)
-        self.wishlist_widget.update_wishlist_signal.connect(self.update_wishlist)
+
+        self.previous_index = self.shop_index
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous() or self.init:
@@ -68,10 +68,11 @@ class Shop(QStackedWidget):
     def update_wishlist(self):
         self.shop.update_wishlist()
 
-    def show_game_info(self, data):
+    def show_game(self, data):
+        self.previous_index = self.currentIndex()
         self.info.update_game(data)
-        self.setCurrentIndex(2)
+        self.setCurrentIndex(self.info_index)
 
-    def show_search_results(self, text: str):
-        self.search_results.load_results(text)
-        self.setCurrentIndex(1)
+    def show_search(self, text: str):
+        self.search.load_results(text)
+        self.setCurrentIndex(self.search_index)

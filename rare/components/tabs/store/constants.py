@@ -44,74 +44,475 @@ class Constants(QObject):
         ]
 
 
-game_query = (
-    "query searchStoreQuery($allowCountries: String, $category: String, $count: Int, $country: String!, "
-    "$keywords: String, $locale: String, $namespace: String, $withMapping: Boolean = false, $itemNs: String, "
-    "$sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String, $withPrice: Boolean "
-    "= false, $withPromotions: Boolean = false, $priceRange: String, $freeGame: Boolean, $onSale: Boolean, "
-    "$effectiveDate: String) {\n  Catalog {\n    searchStore(\n      allowCountries: $allowCountries\n      "
-    "category: $category\n      count: $count\n      country: $country\n      keywords: $keywords\n      "
-    "locale: $locale\n      namespace: $namespace\n      itemNs: $itemNs\n      sortBy: $sortBy\n      "
-    "sortDir: $sortDir\n      releaseDate: $releaseDate\n      start: $start\n      tag: $tag\n      "
-    "priceRange: $priceRange\n      freeGame: $freeGame\n      onSale: $onSale\n      effectiveDate: "
-    "$effectiveDate\n    ) {\n      elements {\n        title\n        id\n        namespace\n        "
-    "description\n        effectiveDate\n        keyImages {\n          type\n          url\n        }\n     "
-    "   currentPrice\n        seller {\n          id\n          name\n        }\n        productSlug\n       "
-    " urlSlug\n        url\n        tags {\n          id\n        }\n        items {\n          id\n         "
-    " namespace\n        }\n        customAttributes {\n          key\n          value\n        }\n        "
-    "categories {\n          path\n        }\n        catalogNs @include(if: $withMapping) {\n          "
-    'mappings(pageType: "productHome") {\n            pageSlug\n            pageType\n          }\n        '
-    "}\n        offerMappings @include(if: $withMapping) {\n          pageSlug\n          pageType\n        "
-    "}\n        price(country: $country) @include(if: $withPrice) {\n          totalPrice {\n            "
-    "discountPrice\n            originalPrice\n            voucherDiscount\n            discount\n           "
-    " currencyCode\n            currencyInfo {\n              decimals\n            }\n            fmtPrice("
-    "locale: $locale) {\n              originalPrice\n              discountPrice\n              "
-    "intermediatePrice\n            }\n          }\n          lineOffers {\n            appliedRules {\n     "
-    "         id\n              endDate\n              discountSetting {\n                discountType\n     "
-    "         }\n            }\n          }\n        }\n        promotions(category: $category) @include(if: "
-    "$withPromotions) {\n          promotionalOffers {\n            promotionalOffers {\n              "
-    "startDate\n              endDate\n              discountSetting {\n                discountType\n       "
-    "         discountPercentage\n              }\n            }\n          }\n          "
-    "upcomingPromotionalOffers {\n            promotionalOffers {\n              startDate\n              "
-    "endDate\n              discountSetting {\n                discountType\n                "
-    "discountPercentage\n              }\n            }\n          }\n        }\n      }\n      paging {\n   "
-    "     count\n        total\n      }\n    }\n  }\n}\n "
-)
+game_query = """
+query searchStoreQuery($allowCountries: String, $category: String, $count: Int, $country: String!, $keywords: String, $locale: String, $namespace: String, $withMapping: Boolean = false, $itemNs: String, $sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String, $withPrice: Boolean = false, $withPromotions: Boolean = false, $priceRange: String, $freeGame: Boolean, $onSale: Boolean, $effectiveDate: String) {
+  Catalog {
+    searchStore(
+      allowCountries: $allowCountries
+      category: $category
+      count: $count
+      country: $country
+      keywords: $keywords
+      locale: $locale
+      namespace: $namespace
+      itemNs: $itemNs
+      sortBy: $sortBy
+      sortDir: $sortDir
+      releaseDate: $releaseDate
+      start: $start
+      tag: $tag
+      priceRange: $priceRange
+      freeGame: $freeGame
+      onSale: $onSale
+      effectiveDate: $effectiveDate
+    ) {
+      elements {
+        title
+        id
+        namespace
+        description
+        effectiveDate
+        keyImages {
+          type
+          url
+        }
+        currentPrice
+        seller {
+          id
+          name
+        }
+        productSlug
+        urlSlug
+        url
+        tags {
+          id
+        }
+        items {
+          id
+          namespace
+        }
+        customAttributes {
+          key
+          value
+        }
+        categories {
+          path
+        }
+        catalogNs @include(if: $withMapping) {
+          mappings(pageType: "productHome") {
+            pageSlug
+            pageType
+          }
+        }
+        offerMappings @include(if: $withMapping) {
+          pageSlug
+          pageType
+        }
+        price(country: $country) @include(if: $withPrice) {
+          totalPrice {
+            discountPrice
+            originalPrice
+            voucherDiscount
+            discount
+            currencyCode
+            currencyInfo {
+              decimals
+            }
+            fmtPrice(locale: $locale) {
+              originalPrice
+              discountPrice
+              intermediatePrice
+            }
+          }
+          lineOffers {
+            appliedRules {
+              id
+              endDate
+              discountSetting {
+                discountType
+              }
+            }
+          }
+        }
+        promotions(category: $category) @include(if: $withPromotions) {
+          promotionalOffers {
+            promotionalOffers {
+              startDate
+              endDate
+              discountSetting {
+                discountType
+                discountPercentage
+              }
+            }
+          }
+          upcomingPromotionalOffers {
+            promotionalOffers {
+              startDate
+              endDate
+              discountSetting {
+                discountType
+                discountPercentage
+              }
+            }
+          }
+        }
+      }
+      paging {
+        count
+        total
+      }
+    }
+  }
+}
+"""
 
-search_query = (
-    "query searchStoreQuery($allowCountries: String, $category: String, $count: Int, $country: String!, "
-    "$keywords: String, $locale: String, $namespace: String, $withMapping: Boolean = false, $itemNs: String, "
-    "$sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String, $withPrice: Boolean = "
-    "false, $withPromotions: Boolean = false, $priceRange: String, $freeGame: Boolean, $onSale: Boolean, "
-    "$effectiveDate: String) {\n  Catalog {\n    searchStore(\n      allowCountries: $allowCountries\n      "
-    "category: $category\n      count: $count\n      country: $country\n      keywords: $keywords\n      locale: "
-    "$locale\n      namespace: $namespace\n      itemNs: $itemNs\n      sortBy: $sortBy\n      sortDir: "
-    "$sortDir\n      releaseDate: $releaseDate\n      start: $start\n      tag: $tag\n      priceRange: "
-    "$priceRange\n      freeGame: $freeGame\n      onSale: $onSale\n      effectiveDate: $effectiveDate\n    ) {"
-    "\n      elements {\n        title\n        id\n        namespace\n        description\n        "
-    "effectiveDate\n        keyImages {\n          type\n          url\n        }\n        currentPrice\n        "
-    "seller {\n          id\n          name\n        }\n        productSlug\n        urlSlug\n        url\n       "
-    " tags {\n          id\n        }\n        items {\n          id\n          namespace\n        }\n        "
-    "customAttributes {\n          key\n          value\n        }\n        categories {\n          path\n        "
-    '}\n        catalogNs @include(if: $withMapping) {\n          mappings(pageType: "productHome") {\n         '
-    "   pageSlug\n            pageType\n          }\n        }\n        offerMappings @include(if: $withMapping) "
-    "{\n          pageSlug\n          pageType\n        }\n        price(country: $country) @include(if: "
-    "$withPrice) {\n          totalPrice {\n            discountPrice\n            originalPrice\n            "
-    "voucherDiscount\n            discount\n            currencyCode\n            currencyInfo {\n              "
-    "decimals\n            }\n            fmtPrice(locale: $locale) {\n              originalPrice\n              "
-    "discountPrice\n              intermediatePrice\n            }\n          }\n          lineOffers {\n         "
-    "   appliedRules {\n              id\n              endDate\n              discountSetting {\n                "
-    "discountType\n              }\n            }\n          }\n        }\n        promotions(category: "
-    "$category) @include(if: $withPromotions) {\n          promotionalOffers {\n            promotionalOffers {\n "
-    "             startDate\n              endDate\n              discountSetting {\n                "
-    "discountType\n                discountPercentage\n              }\n            }\n          }\n          "
-    "upcomingPromotionalOffers {\n            promotionalOffers {\n              startDate\n              "
-    "endDate\n              discountSetting {\n                discountType\n                discountPercentage\n "
-    "             }\n            }\n          }\n        }\n      }\n      paging {\n        count\n        "
-    "total\n      }\n    }\n  }\n}\n "
-)
+search_query = """
+query searchStoreQuery($allowCountries: String, $category: String, $count: Int, $country: String!, $keywords: String, $locale: String, $namespace: String, $itemNs: String, $sortBy: String, $sortDir: String, $start: Int, $tag: String, $releaseDate: String, $withPrice: Boolean = false, $withPromotions: Boolean = false, $priceRange: String, $freeGame: Boolean, $onSale: Boolean, $effectiveDate: String) {
+  Catalog {
+    searchStore(
+      allowCountries: $allowCountries
+      category: $category
+      count: $count
+      country: $country
+      keywords: $keywords
+      locale: $locale
+      namespace: $namespace
+      itemNs: $itemNs
+      sortBy: $sortBy
+      sortDir: $sortDir
+      releaseDate: $releaseDate
+      start: $start
+      tag: $tag
+      priceRange: $priceRange
+      freeGame: $freeGame
+      onSale: $onSale
+      effectiveDate: $effectiveDate
+    ) {
+      elements {
+        title
+        id
+        namespace
+        description
+        effectiveDate
+        keyImages {
+          type
+          url
+        }
+        currentPrice
+        seller {
+          id
+          name
+        }
+        productSlug
+        urlSlug
+        url
+        tags {
+          id
+        }
+        items {
+          id
+          namespace
+        }
+        customAttributes {
+          key
+          value
+        }
+        categories {
+          path
+        }
+        catalogNs {
+          mappings(pageType: "productHome") {
+            pageSlug
+            pageType
+          }
+        }
+        offerMappings {
+          pageSlug
+          pageType
+        }
+        price(country: $country) @include(if: $withPrice) {
+          totalPrice {
+            discountPrice
+            originalPrice
+            voucherDiscount
+            discount
+            currencyCode
+            currencyInfo {
+              decimals
+            }
+            fmtPrice(locale: $locale) {
+              originalPrice
+              discountPrice
+              intermediatePrice
+            }
+          }
+          lineOffers {
+            appliedRules {
+              id
+              endDate
+              discountSetting {
+                discountType
+              }
+            }
+          }
+        }
+        promotions(category: $category) @include(if: $withPromotions) {
+          promotionalOffers {
+            promotionalOffers {
+              startDate
+              endDate
+              discountSetting {
+                discountType
+                discountPercentage
+              }
+            }
+          }
+          upcomingPromotionalOffers {
+            promotionalOffers {
+              startDate
+              endDate
+              discountSetting {
+                discountType
+                discountPercentage
+              }
+            }
+          }
+        }
+      }
+      paging {
+        count
+        total
+      }
+    }
+  }
+}
+"""
 
-wishlist_query = '\n    query wishlistQuery($country:String!, $locale:String) {\n        Wishlist {\n            wishlistItems {\n                elements {\n                    id\n                    order\n                    created\n                    offerId\n                    updated\n                    namespace\n                    \n    offer {\n        productSlug\n        urlSlug\n        title\n        id\n        namespace\n        offerType\n        expiryDate\n        status\n        isCodeRedemptionOnly\n        description\n        effectiveDate\n        keyImages {\n            type\n            url\n        }\n        seller {\n            id\n            name\n        }\n        productSlug\n        urlSlug\n        items {\n            id\n            namespace\n        }\n        customAttributes {\n            key\n            value\n        }\n        catalogNs {\n            mappings(pageType: "productHome") {\n                pageSlug\n                pageType\n            }\n        }\n        offerMappings {\n            pageSlug\n            pageType\n        }\n        categories {\n            path\n        }\n        price(country: $country) {\n            totalPrice {\n                discountPrice\n                originalPrice\n                voucherDiscount\n                discount\n                fmtPrice(locale: $locale) {\n                    originalPrice\n                    discountPrice\n                    intermediatePrice\n                }\n                currencyCode\n                currencyInfo {\n                    decimals\n                    symbol\n                }\n            }\n            lineOffers {\n                appliedRules {\n                    id\n                    endDate\n                }\n            }\n        }\n    }\n\n                }\n            }\n        }\n    }\n'
-add_to_wishlist_query = "\n    mutation removeFromWishlistMutation($namespace: String!, $offerId: String!, $operation: RemoveOperation!) {\n        Wishlist {\n            removeFromWishlist(namespace: $namespace, offerId: $offerId, operation: $operation) {\n                success\n            }\n        }\n    }\n"
-remove_from_wishlist_query = "\n    mutation removeFromWishlistMutation($namespace: String!, $offerId: String!, $operation: RemoveOperation!) {\n        Wishlist {\n            removeFromWishlist(namespace: $namespace, offerId: $offerId, operation: $operation) {\n                success\n            }\n        }\n    }\n"
-coupon_query = "\n    query getCoupons($currencyCountry: String!, $identityId: String!, $locale: String) {\n        CodeRedemption {\n            coupons(currencyCountry: $currencyCountry, identityId: $identityId, includeSalesEventInfo: true) {\n                code\n                codeStatus\n                codeType\n                consumptionMetadata {\n                    amountDisplay {\n                      amount\n                      currency\n                      placement\n                      symbol\n                    }\n                    minSalesPriceDisplay {\n                      amount\n                      currency\n                      placement\n                      symbol\n                    }\n                }\n                endDate\n                namespace\n                salesEvent(locale: $locale) {\n                    eventName\n                    eventSlug\n                    voucherImages {\n                      type\n                      url\n                    }\n                    voucherLink\n                }\n                startDate\n            }\n        }\n    }\n"
+wishlist_query = """
+query wishlistQuery($country:String!, $locale:String) {
+  Wishlist {
+    wishlistItems {
+      elements {
+        id
+        order
+        created
+        offerId
+        updated
+        namespace
+        offer(locale: $locale) {
+          productSlug
+          urlSlug
+          title
+          id
+          namespace
+          offerType
+          expiryDate
+          status
+          isCodeRedemptionOnly
+          description
+          effectiveDate
+          keyImages {
+            type
+            url
+          }
+          seller {
+            id
+            name
+          }
+          productSlug
+          urlSlug
+          items {
+            id
+            namespace
+          }
+          customAttributes {
+            key
+            value
+          }
+          catalogNs {
+            mappings(pageType: "productHome") {
+              pageSlug
+              pageType
+            }
+          }
+          offerMappings {
+            pageSlug
+            pageType
+          }
+          categories {
+            path
+          }
+          price(country: $country) {
+            totalPrice {
+              discountPrice
+              originalPrice
+              voucherDiscount
+              discount
+              fmtPrice(locale: $locale) {
+                originalPrice
+                discountPrice
+                intermediatePrice
+              }
+              currencyCode
+              currencyInfo {
+                decimals
+                symbol
+              }
+            }
+            lineOffers {
+              appliedRules {
+                id
+                endDate
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+add_to_wishlist_query = """
+mutation addWishlistMutation($namespace: String!, $offerId: String!, $country:String!, $locale:String) {
+    Wishlist {
+        addToWishlist(namespace: $namespace, offerId: $offerId) {
+            wishlistItem {
+                id,
+                order,
+                created,
+                offerId,
+                updated,
+                namespace,
+                isFirstTime
+                offer {
+                    productSlug
+                    urlSlug
+                    title
+                    id
+                    namespace
+                    offerType
+                    expiryDate
+                    status
+                    isCodeRedemptionOnly
+                    description
+                    effectiveDate
+                    keyImages {
+                        type
+                        url
+                    }
+                    seller {
+                        id
+                        name
+                    }
+                    productSlug
+                    urlSlug
+                    items {
+                        id
+                        namespace
+                    }
+                    customAttributes {
+                        key
+                        value
+                    }
+                    catalogNs {
+                        mappings(pageType: "productHome") {
+                            pageSlug
+                            pageType
+                        }
+                    }
+                    offerMappings {
+                        pageSlug
+                        pageType
+                    }
+                    categories {
+                        path
+                    }
+                    price(country: $country) {
+                        totalPrice {
+                            discountPrice
+                            originalPrice
+                            voucherDiscount
+                            discount
+                            fmtPrice(locale: $locale) {
+                                originalPrice
+                                discountPrice
+                                intermediatePrice
+                            }
+                            currencyCode
+                            currencyInfo {
+                                decimals
+                                symbol
+                            }
+                        }
+                        lineOffers {
+                            appliedRules {
+                                id
+                                endDate
+                            }
+                        }
+                    }
+                }
+
+            }
+            success
+        }
+    }
+}
+"""
+
+remove_from_wishlist_query = """
+mutation removeFromWishlistMutation($namespace: String!, $offerId: String!, $operation: RemoveOperation!) {
+    Wishlist {
+        removeFromWishlist(namespace: $namespace, offerId: $offerId, operation: $operation) {
+            success
+        }
+    }
+}
+"""
+
+coupon_query = """
+query getCoupons($currencyCountry: String!, $identityId: String!, $locale: String) {
+    CodeRedemption {
+        coupons(currencyCountry: $currencyCountry, identityId: $identityId, includeSalesEventInfo: true) {
+            code
+            codeStatus
+            codeType
+            consumptionMetadata {
+                amountDisplay {
+                  amount
+                  currency
+                  placement
+                  symbol
+                }
+                minSalesPriceDisplay {
+                  amount
+                  currency
+                  placement
+                  symbol
+                }
+            }
+            endDate
+            namespace
+            salesEvent(locale: $locale) {
+                eventName
+                eventSlug
+                voucherImages {
+                  type
+                  url
+                }
+                voucherLink
+            }
+            startDate
+        }
+    }
+}
+"""
+
+
+# if __name__ == "__main__":
+#     from sgqlc import introspection, codegen
+#
+#     coupon = codegen.operation.parse_graphql(coupon_query)
+#     codegen.schema.
+#     print(coupon.)

@@ -1,23 +1,21 @@
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QStackedWidget, QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QWidget
 
-from rare.components.tabs.store import ShopApiCore
-from rare.components.tabs.store.game_widgets import WishlistWidget
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
-from rare.utils.extra_widgets import WaitingSpinner
-from rare.utils.misc import qta_icon as icon
+from rare.utils.misc import icon
+from .shop_api_core import ShopApiCore
+from .game_widgets import WishlistWidget
 
 
-class Wishlist(QStackedWidget, Ui_Wishlist):
+class Wishlist(QWidget, Ui_Wishlist):
     show_game_info = pyqtSignal(dict)
     update_wishlist_signal = pyqtSignal()
 
-    def __init__(self, api_core: ShopApiCore):
-        super(Wishlist, self).__init__()
+    def __init__(self, api_core: ShopApiCore, parent=None):
+        super(Wishlist, self).__init__(parent=parent)
         self.api_core = api_core
         self.setupUi(self)
-        self.addWidget(WaitingSpinner())
-        self.setCurrentIndex(1)
+        self.setEnabled(False)
         self.wishlist = []
         self.widgets = []
 
@@ -33,7 +31,7 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
         )
 
     def update_wishlist(self):
-        self.setCurrentIndex(1)
+        self.setEnabled(False)
         self.api_core.get_wishlist(self.set_wishlist)
 
     def delete_from_wishlist(self, game):
@@ -116,4 +114,4 @@ class Wishlist(QStackedWidget, Ui_Wishlist):
             self.list_layout.addWidget(w)
             w.open_game.connect(self.show_game_info.emit)
             w.delete_from_wishlist.connect(self.delete_from_wishlist)
-        self.setCurrentIndex(0)
+        self.setEnabled(True)

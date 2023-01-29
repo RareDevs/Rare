@@ -1,5 +1,6 @@
 import datetime
 from dataclasses import dataclass
+from typing import List, Dict
 
 
 class ImageUrlModel:
@@ -43,19 +44,21 @@ class ShopGame:
     def __init__(
         self,
         title: str = "",
+        id: str = "",
         image_urls: ImageUrlModel = None,
-        social_links: dict = None,
-        langs: list = None,
-        reqs: dict = None,
+        social_links: Dict = None,
+        langs: Dict = None,
+        reqs: Dict = None,
         publisher: str = "",
         developer: str = "",
         original_price: str = "",
         discount_price: str = "",
-        tags: list = None,
+        tags: List = None,
         namespace: str = "",
         offer_id: str = "",
     ):
         self.title = title
+        self.id = id
         self.image_urls = image_urls
         self.links = []
         if social_links:
@@ -66,13 +69,13 @@ class ShopGame:
                     )
         else:
             self.links = []
-        self.languages = langs
-        self.reqs = reqs
+        self.languages = langs if langs is not None else {}
+        self.reqs = reqs if reqs is not None else {}
         self.publisher = publisher
         self.developer = developer
         self.price = original_price
         self.discount_price = discount_price
-        self.tags = tags
+        self.tags = tags if tags is not None else []
         self.namespace = namespace
         self.offer_id = offer_id
 
@@ -89,46 +92,50 @@ class ShopGame:
                     api_data = page
                     break
         tmp = cls()
-        tmp.title = search_data.get("title", "Fail")
-        tmp.image_urls = ImageUrlModel.from_json(search_data["keyImages"])
-        links = api_data["data"]["socialLinks"]
-        tmp.links = []
-        for item in links:
-            if item.startswith("link"):
-                tmp.links.append(tuple((item.replace("link", ""), links[item])))
-        tmp.available_voice_langs = api_data["data"]["requirements"].get(
-            "languages", "Failed"
-        )
-        tmp.reqs = {}
-        for i, system in enumerate(api_data["data"]["requirements"].get("systems", [])):
-            try:
-                tmp.reqs[system["systemType"]] = {}
-            except KeyError:
-                continue
-            for req in system["details"]:
+        if search_data:
+            tmp.title = search_data.get("title", "Fail")
+            tmp.id = search_data.get("id")
+            tmp.image_urls = ImageUrlModel.from_json(search_data["keyImages"])
+            if not tmp.developer:
+                for i in search_data["customAttributes"]:
+                    if i["key"] == "developerName":
+                        tmp.developer = i["value"]
+            tmp.price = search_data["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
+            tmp.discount_price = search_data["price"]["totalPrice"]["fmtPrice"][
+                "discountPrice"
+            ]
+            tmp.namespace = search_data["namespace"]
+            tmp.offer_id = search_data["id"]
+
+        if api_data:
+            links = api_data["data"]["socialLinks"]
+            tmp.links = []
+            for item in links:
+                if item.startswith("link"):
+                    tmp.links.append(tuple((item.replace("link", ""), links[item])))
+            tmp.available_voice_langs = api_data["data"]["requirements"].get(
+                "languages", "Failed"
+            )
+            tmp.reqs = {}
+            for i, system in enumerate(api_data["data"]["requirements"].get("systems", [])):
                 try:
-                    tmp.reqs[system["systemType"]][req["title"]] = (
-                        req["minimum"],
-                        req["recommended"],
-                    )
+                    tmp.reqs[system["systemType"]] = {}
                 except KeyError:
-                    pass
-        tmp.publisher = api_data["data"]["meta"].get("publisher", "")
-        tmp.developer = api_data["data"]["meta"].get("developer", "")
-        if not tmp.developer:
-            for i in search_data["customAttributes"]:
-                if i["key"] == "developerName":
-                    tmp.developer = i["value"]
-        tmp.price = search_data["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
-        tmp.discount_price = search_data["price"]["totalPrice"]["fmtPrice"][
-            "discountPrice"
-        ]
-        tmp.tags = [
-            i.replace("_", " ").capitalize()
-            for i in api_data["data"]["meta"].get("tags", [])
-        ]
-        tmp.namespace = search_data["namespace"]
-        tmp.offer_id = search_data["id"]
+                    continue
+                for req in system["details"]:
+                    try:
+                        tmp.reqs[system["systemType"]][req["title"]] = (
+                            req["minimum"],
+                            req["recommended"],
+                        )
+                    except KeyError:
+                        pass
+            tmp.publisher = api_data["data"]["meta"].get("publisher", "")
+            tmp.developer = api_data["data"]["meta"].get("developer", "")
+            tmp.tags = [
+                i.replace("_", " ").capitalize()
+                for i in api_data["data"]["meta"].get("tags", [])
+            ]
 
         return tmp
 

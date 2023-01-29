@@ -1,15 +1,18 @@
 import logging
 
 from PyQt5 import QtGui
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtNetwork import QNetworkAccessManager
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSizePolicy
 
 from rare.components.tabs.store.shop_models import ImageUrlModel
+from rare.shared.image_manager import ImageSize
 from rare.ui.components.tabs.store.wishlist_widget import Ui_WishlistWidget
 from rare.utils.extra_widgets import ImageLabel
-from rare.utils.misc import qta_icon as icon
+from rare.utils.misc import qta_icon
+from rare.widgets.elide_label import ElideLabel
+from .image_widget import ShopImageWidget
 
 logger = logging.getLogger("GameWidgets")
 
@@ -17,17 +20,18 @@ logger = logging.getLogger("GameWidgets")
 class GameWidget(QWidget):
     show_info = pyqtSignal(dict)
 
-    def __init__(self, path, json_info=None, width=300):
+    def __init__(self, path, json_info=None):
         super(GameWidget, self).__init__()
         self.manager = QNetworkAccessManager()
-        self.width = width
         self.path = path
         if json_info:
             self.init_ui(json_info)
 
     def init_ui(self, json_info):
         self.layout = QVBoxLayout()
-        self.image = ImageLabel()
+        self.layout.setSizeConstraint(QVBoxLayout.SetFixedSize)
+        self.image = ShopImageWidget(self)
+        self.image.setFixedSize(ImageSize.Wide)
         self.layout.addWidget(self.image)
         mini_layout = QHBoxLayout()
         self.layout.addLayout(mini_layout)
@@ -37,10 +41,10 @@ class GameWidget(QWidget):
             self.setLayout(self.layout)
             return
 
-        self.title_label = QLabel(json_info.get("title"))
-        self.title_label.setWordWrap(True)
+        self.title_label = ElideLabel(json_info.get("title"), parent=self)
+        self.title_label.setWordWrap(False)
         mini_layout.addWidget(self.title_label)
-        mini_layout.addStretch(1)
+        # mini_layout.addStretch(1)
 
         price = json_info["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
         discount_price = json_info["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
@@ -49,14 +53,16 @@ class GameWidget(QWidget):
             font = QFont()
             font.setStrikeOut(True)
             price_label.setFont(font)
-            mini_layout.addWidget(
-                QLabel(discount_price if discount_price != "0" else self.tr("Free"))
-            )
-            mini_layout.addWidget(price_label)
+            free_label = QLabel(discount_price if discount_price != "0" else self.tr("Free"))
+            free_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            free_label.setAlignment(Qt.AlignRight)
+            mini_layout.addWidget(free_label)
         else:
             if price == "0":
                 price_label.setText(self.tr("Free"))
-            mini_layout.addWidget(price_label)
+        price_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        price_label.setAlignment(Qt.AlignRight)
+        mini_layout.addWidget(price_label)
 
         for c in r'<>?":|\/*':
             json_info["title"] = json_info["title"].replace(c, "")
@@ -74,18 +80,12 @@ class GameWidget(QWidget):
             ]:
                 if img["type"] == "VaultClosed" and self.title != "Mystery Game":
                     continue
-                self.image.update_image(
-                    img["url"],
-                    json_info["title"],
-                    (self.width, int(self.width * 9 / 16)),
-                )
+                self.image.fetchPixmap(img["url"], json_info["id"], json_info["title"])
                 break
         else:
             logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
 
         self.setLayout(self.layout)
-
-        self.setFixedSize(self.width + 10, self.width * 9 // 16 + 50)
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.show_info.emit(self.json_info)
