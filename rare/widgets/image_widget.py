@@ -58,7 +58,9 @@ class ImageWidget(QWidget):
                     1 / pixmap.devicePixelRatioF() / self._image_size.divisor,
                     1 / pixmap.devicePixelRatioF() / self._image_size.divisor,
                 )
-            self.update()
+        else:
+            self.paint_image = self.paint_image_empty
+        self.update()
 
     def setFixedSize(self, a0: ImageSize.Preset) -> None:
         self._squared_overlay = None
