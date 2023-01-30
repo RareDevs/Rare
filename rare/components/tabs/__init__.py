@@ -87,7 +87,7 @@ class TabWidget(QTabWidget):
 
     def mouse_clicked(self, tab_num):
         if tab_num == 0:
-            self.games_tab.setCurrentWidget(self.games_tab)
+            self.games_tab.setCurrentWidget(self.games_tab.games_page)
 
         if not self.args.offline and tab_num == 2:
             self.store.load()

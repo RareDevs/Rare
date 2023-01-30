@@ -1,3 +1,5 @@
+from typing import Optional
+
 from PyQt5.QtCore import (
     Qt,
     QRect,
@@ -8,6 +10,7 @@ from PyQt5.QtWidgets import (
     QLayout,
     QStyle,
     QSizePolicy,
+    QLayoutItem,
 )
 
 
@@ -23,8 +26,8 @@ class FlowLayout(QLayout):
     def __del__(self):
         del self._items[:]
 
-    def addItem(self, item):
-        self._items.append(item)
+    def addItem(self, a0: QLayoutItem) -> None:
+        self._items.append(a0)
 
     def horizontalSpacing(self):
         if self._hspacing >= 0:
@@ -38,34 +41,36 @@ class FlowLayout(QLayout):
         else:
             return self.smartSpacing(QStyle.PM_LayoutVerticalSpacing)
 
-    def count(self):
+    def count(self) -> int:
         return len(self._items)
 
-    def itemAt(self, index):
+    def itemAt(self, index: int) -> Optional[QLayoutItem]:
         if 0 <= index < len(self._items):
             return self._items[index]
+        return None
 
-    def takeAt(self, index):
+    def takeAt(self, index: int) -> Optional[QLayoutItem]:
         if 0 <= index < len(self._items):
             return self._items.pop(index)
+        return None
 
-    def expandingDirections(self):
-        return Qt.Orientations(0)
+    def expandingDirections(self) -> Qt.Orientations:
+        return Qt.Orientations(Qt.Orientation(0))
 
-    def hasHeightForWidth(self):
+    def hasHeightForWidth(self) -> bool:
         return True
 
-    def heightForWidth(self, width):
-        return self.doLayout(QRect(0, 0, width, 0), True)
+    def heightForWidth(self, a0: int) -> int:
+        return self.doLayout(QRect(0, 0, a0, 0), True)
 
-    def setGeometry(self, rect):
-        super(FlowLayout, self).setGeometry(rect)
-        self.doLayout(rect, False)
+    def setGeometry(self, a0: QRect) -> None:
+        super(FlowLayout, self).setGeometry(a0)
+        self.doLayout(a0, False)
 
-    def sizeHint(self):
+    def sizeHint(self) -> QSize:
         return self.minimumSize()
 
-    def minimumSize(self):
+    def minimumSize(self) -> QSize:
         size = QSize()
         for item in self._items:
             size = size.expandedTo(item.minimumSize())

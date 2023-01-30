@@ -44,23 +44,23 @@ class GamesTab(QStackedWidget):
         self.dlcs: Dict[str, List[Game]] = self.api_results.dlcs
         self.no_assets: List[Game] = self.api_results.no_asset_games
 
-        self.games = QWidget(parent=self)
-        self.games.setLayout(QVBoxLayout())
-        self.addWidget(self.games)
+        self.games_page = QWidget(parent=self)
+        self.games_page.setLayout(QVBoxLayout())
+        self.addWidget(self.games_page)
 
-        self.head_bar = GameListHeadBar(parent=self.games)
+        self.head_bar = GameListHeadBar(parent=self.games_page)
         self.head_bar.goto_import.connect(self.show_import)
         self.head_bar.goto_egl_sync.connect(self.show_egl_sync)
         self.head_bar.goto_eos_ubisoft.connect(self.show_eos_ubisoft)
-        self.games.layout().addWidget(self.head_bar)
+        self.games_page.layout().addWidget(self.head_bar)
 
-        self.game_info_tabs = GameInfoTabs(self)
-        self.game_info_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
-        self.addWidget(self.game_info_tabs)
+        self.game_info_page = GameInfoTabs(self)
+        self.game_info_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
+        self.addWidget(self.game_info_page)
 
-        self.integrations_tabs = IntegrationsTabs(self)
-        self.integrations_tabs.back_clicked.connect(lambda: self.setCurrentWidget(self.games))
-        self.addWidget(self.integrations_tabs)
+        self.integrations_page = IntegrationsTabs(self)
+        self.integrations_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
+        self.addWidget(self.integrations_page)
 
         self.no_asset_names = []
         if not self.args.offline:
@@ -69,7 +69,7 @@ class GamesTab(QStackedWidget):
         else:
             self.no_assets = []
 
-        self.view_stack = SlidingStackedWidget(self.games)
+        self.view_stack = SlidingStackedWidget(self.games_page)
         self.view_stack.setFrameStyle(QFrame.NoFrame)
         self.icon_view_scroll = QScrollArea(self.view_stack)
         self.icon_view_scroll.setWidgetResizable(True)
@@ -92,7 +92,7 @@ class GamesTab(QStackedWidget):
         self.list_view_scroll.setWidget(self.list_view)
         self.view_stack.addWidget(self.icon_view_scroll)
         self.view_stack.addWidget(self.list_view_scroll)
-        self.games.layout().addWidget(self.view_stack)
+        self.games_page.layout().addWidget(self.view_stack)
 
         if not self.settings.value("icon_view", True, bool):
             self.view_stack.setCurrentWidget(self.list_view_scroll)
@@ -134,23 +134,23 @@ class GamesTab(QStackedWidget):
 
     @pyqtSlot()
     def show_import(self):
-        self.setCurrentWidget(self.integrations_tabs)
-        self.integrations_tabs.show_import()
+        self.setCurrentWidget(self.integrations_page)
+        self.integrations_page.show_import()
 
     @pyqtSlot()
     def show_egl_sync(self):
-        self.setCurrentWidget(self.integrations_tabs)
-        self.integrations_tabs.show_egl_sync()
+        self.setCurrentWidget(self.integrations_page)
+        self.integrations_page.show_egl_sync()
 
     @pyqtSlot()
     def show_eos_ubisoft(self):
-        self.setCurrentWidget(self.integrations_tabs)
-        self.integrations_tabs.show_eos_ubisoft()
+        self.setCurrentWidget(self.integrations_page)
+        self.integrations_page.show_eos_ubisoft()
 
     @pyqtSlot(RareGame)
     def show_game_info(self, rgame):
-        self.setCurrentWidget(self.game_info_tabs)
-        self.game_info_tabs.update_game(rgame)
+        self.setCurrentWidget(self.game_info_page)
+        self.game_info_page.update_game(rgame)
 
     @pyqtSlot()
     def update_count_games_label(self):
