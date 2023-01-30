@@ -28,11 +28,12 @@ from rare.shared import (
 )
 from rare.shared.image_manager import ImageSize
 from rare.shared.workers.verify import VerifyWorker
+from rare.shared.workers.move import MoveWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.misc import get_size
 from rare.utils.steam_grades import SteamWorker
 from rare.widgets.image_widget import ImageWidget
-from .move_game import CopyGameInstallation, MoveGamePopUp, is_game_dir
+from .move_game import MoveGamePopUp, is_game_dir
 
 logger = getLogger("GameInfo")
 
@@ -157,12 +158,12 @@ class GameInfo(QWidget):
         verify_worker.signals.result.connect(self.__on_verify_result)
         verify_worker.signals.error.connect(self.__on_verify_error)
         self.ui.verify_progress.setValue(0)
-        self.rgame.active_worker = verify_worker
+        self.rgame.__worker = verify_worker
         self.verify_pool.start(verify_worker)
         self.ui.move_button.setEnabled(False)
 
     def verify_cleanup(self, rgame: RareGame):
-        rgame.active_worker = None
+        rgame.__worker = None
         self.ui.verify_stack.setCurrentWidget(self.ui.verify_button_page)
         self.ui.move_button.setEnabled(True)
         self.ui.verify_button.setEnabled(True)
@@ -257,7 +258,8 @@ class GameInfo(QWidget):
         self.ui.move_progress.setValue(progress_int)
 
     def start_copy_diff_drive(self):
-        copy_worker = CopyGameInstallation(
+        copy_worker = MoveWorker(
+            self.core,
             install_path=self.rgame.igame.install_path,
             dest_path=self.dest_path_with_suffix,
             is_existing_dir=self.existing_game_dir,
@@ -305,7 +307,7 @@ class GameInfo(QWidget):
             rgame = self.rcore.get_game(rgame)
 
         if self.rgame is not None:
-            if (worker := self.rgame.active_worker) is not None:
+            if (worker := self.rgame.__worker) is not None:
                 if isinstance(worker, VerifyWorker):
                     try:
                         worker.signals.progress.disconnect(self.__on_verify_progress)
@@ -316,7 +318,7 @@ class GameInfo(QWidget):
         self.rgame = rgame
         self.rgame.signals.game.installed.connect(self.update_game)
         self.rgame.signals.game.uninstalled.connect(self.update_game)
-        if (worker := self.rgame.active_worker) is not None:
+        if (worker := self.rgame.__worker) is not None:
             if isinstance(worker, VerifyWorker):
                 self.ui.verify_stack.setCurrentWidget(self.ui.verify_progress_page)
                 self.ui.verify_progress.setValue(self.rgame.progress)
@@ -381,7 +383,7 @@ class GameInfo(QWidget):
                 self.ui.move_stack.setCurrentWidget(self.ui.move_button_page)
 
         # If a game is verifying or moving, disable both verify and moving buttons.
-        if rgame.active_worker is not None:
+        if rgame.__worker is not None:
             self.ui.verify_button.setEnabled(False)
             self.ui.move_button.setEnabled(False)
         if self.is_moving:

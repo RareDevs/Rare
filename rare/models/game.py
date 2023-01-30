@@ -14,6 +14,8 @@ from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
+from rare.shared.workers.move import MoveWorker
+from rare.shared.workers.verify import VerifyWorker
 from rare.utils.misc import get_rare_executable
 from rare.utils.paths import data_dir
 
@@ -117,7 +119,7 @@ class RareGame(QObject):
             logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
 
         self.progress: int = 0
-        self.active_worker: Optional[QRunnable] = None
+        self.__worker: Optional[QRunnable] = None
 
         self.__state = RareGame.State.IDLE
 
@@ -129,6 +131,20 @@ class RareGame(QObject):
         # self.grant_date(True)
 
     @property
+    def worker(self) -> Optional[QRunnable]:
+        return self.__worker
+
+    @worker.setter
+    def worker(self, worker: Optional[QRunnable]):
+        if worker is None:
+            self.state = RareGame.State.IDLE
+        if isinstance(worker, VerifyWorker):
+            self.state = RareGame.State.VERIFYING
+        if isinstance(worker, MoveWorker):
+            self.state = RareGame.State.MOVING
+        self.__worker = worker
+
+    @property
     def state(self) -> 'RareGame.State':
         return self.__state
 
@@ -137,6 +153,10 @@ class RareGame(QObject):
         if state != self.__state:
             self.signals.widget.update.emit()
         self.__state = state
+
+    @property
+    def is_idle(self):
+        return self.state == RareGame.State.IDLE
 
     @pyqtSlot(int)
     def __game_launched(self, code: int):
