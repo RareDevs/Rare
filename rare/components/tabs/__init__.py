@@ -66,9 +66,6 @@ class TabWidget(QTabWidget):
         self.settings_tab.about.update_available_ready.connect(
             lambda: self.tabBar().setTabText(5, "(!)")
         )
-        # Signals
-        # set current index
-        # self.signals.set_main_tab_index.connect(self.setCurrentIndex)
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)

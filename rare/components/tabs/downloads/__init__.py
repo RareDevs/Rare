@@ -163,6 +163,10 @@ class DownloadsTab(QWidget):
         self.threadpool.start(worker)
 
     def __start_download(self, item: InstallQueueItemModel):
+        rgame = self.rcore.get_game(item.options.app_name)
+        if rgame.state != RareGame.State.IDLE:
+            self.__requeue_download(item)
+            return
         if item.expired:
             self.__refresh_download(item)
             return
