@@ -165,11 +165,13 @@ class DownloadsTab(QWidget):
     def __start_download(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
         if rgame.state != RareGame.State.IDLE:
+            logger.error(f"Can't start download {item.options.app_name} due to non-idle state {rgame.state}")
             self.__requeue_download(item)
             return
         if item.expired:
             self.__refresh_download(item)
             return
+        rgame.state = RareGame.State.DOWNLOADING
         thread = DlThread(item, self.rcore.get_game(item.options.app_name), self.core, self.args.debug)
         thread.result.connect(self.__on_download_result)
         thread.progress.connect(self.__on_download_progress)

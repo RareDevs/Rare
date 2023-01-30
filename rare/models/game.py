@@ -119,7 +119,7 @@ class RareGame(QObject):
         self.progress: int = 0
         self.active_worker: Optional[QRunnable] = None
 
-        self.state = RareGame.State.IDLE
+        self.__state = RareGame.State.IDLE
 
         self.game_process = GameProcess(self.game)
         self.game_process.launched.connect(self.__game_launched)
@@ -127,6 +127,16 @@ class RareGame(QObject):
         if self.is_installed and not self.is_dlc:
             self.game_process.connect_to_server(on_startup=True)
         # self.grant_date(True)
+
+    @property
+    def state(self) -> 'RareGame.State':
+        return self.__state
+
+    @state.setter
+    def state(self, state: 'RareGame.State'):
+        if state != self.__state:
+            self.signals.widget.update.emit()
+        self.__state = state
 
     @pyqtSlot(int)
     def __game_launched(self, code: int):
@@ -539,7 +549,17 @@ class RareEosOverlay(QObject):
         # None if origin or not installed
         self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
 
-        self.state = RareGame.State.IDLE
+        self.__state = RareGame.State.IDLE
+
+    @property
+    def state(self) -> 'RareGame.State':
+        return self.__state
+
+    @state.setter
+    def state(self, state: 'RareGame.State'):
+        if state != self.__state:
+            self.signals.widget.update.emit()
+        self.__state = state
 
     @property
     def app_name(self) -> str:
