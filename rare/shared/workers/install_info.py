@@ -1,8 +1,7 @@
 import os
-import sys
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSignal
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.downloading import ConditionCheckResult
 
@@ -12,26 +11,24 @@ from rare.lgndr.glue.arguments import LgndrInstallGameArgs
 from rare.lgndr.glue.exception import LgndrException
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.install import InstallDownloadModel, InstallOptionsModel
+from .worker import Worker
 
 logger = getLogger("InstallInfoWorker")
 
 
-class InstallInfoWorker(QRunnable):
+class InstallInfoWorker(Worker):
     class Signals(QObject):
         result = pyqtSignal(InstallDownloadModel)
         failed = pyqtSignal(str)
         finished = pyqtSignal()
 
     def __init__(self, core: LegendaryCore, options: InstallOptionsModel):
-        sys.excepthook = sys.__excepthook__
         super(InstallInfoWorker, self).__init__()
-        self.setAutoDelete(True)
         self.signals = InstallInfoWorker.Signals()
         self.core = core
         self.options = options
 
-    @pyqtSlot()
-    def run(self):
+    def run_real(self):
         try:
             if not self.options.overlay:
                 cli = LegendaryCLI(self.core)

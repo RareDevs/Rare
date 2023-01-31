@@ -2,22 +2,22 @@ import os
 import subprocess
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, QObject
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.pathspec import PathSpec
+from .worker import Worker
 
 logger = getLogger("WineResolver")
 
 
-class WineResolver(QRunnable):
+class WineResolver(Worker):
     class Signals(QObject):
         result_ready = pyqtSignal(str)
 
     def __init__(self, core: LegendaryCore, path: str, app_name: str):
         super(WineResolver, self).__init__()
         self.signals = WineResolver.Signals()
-        self.setAutoDelete(True)
         self.wine_env = os.environ.copy()
         self.wine_env.update(core.get_app_environment(app_name))
         self.wine_env["WINEDLLOVERRIDES"] = "winemenubuilder=d;mscoree=d;mshtml=d;"
@@ -31,8 +31,7 @@ class WineResolver(QRunnable):
         self.winepath_binary = os.path.join(os.path.dirname(self.wine_binary), "winepath")
         self.path = PathSpec(core, app_name).cook(path)
 
-    @pyqtSlot()
-    def run(self):
+    def run_real(self):
         if "WINEPREFIX" not in self.wine_env or not os.path.exists(self.wine_env["WINEPREFIX"]):
             # pylint: disable=E1136
             self.signals.result_ready[str].emit("")

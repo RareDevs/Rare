@@ -1,9 +1,8 @@
 import os
 import platform
-import sys
 from logging import getLogger
 
-from PyQt5.QtCore import QStandardPaths, QRunnable, QObject, pyqtSignal
+from PyQt5.QtCore import QStandardPaths, QObject, pyqtSignal
 from legendary.core import LegendaryCore
 
 from rare.lgndr.cli import LegendaryCLI
@@ -12,6 +11,7 @@ from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
 from rare.models.install import UninstallOptionsModel
 from rare.utils import config_helper
+from .worker import Worker
 
 logger = getLogger("UninstallWorker")
 
@@ -60,20 +60,18 @@ def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_co
     return status.success, status.message
 
 
-class UninstallWorker(QRunnable):
+class UninstallWorker(Worker):
     class Signals(QObject):
         result = pyqtSignal(RareGame, bool, str)
 
     def __init__(self, core: LegendaryCore, rgame: RareGame, options: UninstallOptionsModel):
-        sys.excepthook = sys.__excepthook__
         super(UninstallWorker, self).__init__()
         self.signals = UninstallWorker.Signals()
-        self.setAutoDelete(True)
         self.core = core
         self.rgame = rgame
         self.options = options
 
-    def run(self) -> None:
+    def run_real(self) -> None:
         self.rgame.state = RareGame.State.UNINSTALLING
         success, message = uninstall_game(
             self.core, self.rgame.app_name, self.options.keep_files, self.options.keep_config

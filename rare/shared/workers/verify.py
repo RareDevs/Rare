@@ -10,11 +10,12 @@ from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrVerifyGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
+from .worker import Worker
 
 logger = getLogger("VerifyWorker")
 
 
-class VerifyWorker(QRunnable):
+class VerifyWorker(Worker):
     class Signals(QObject):
         progress = pyqtSignal(RareGame, int, int, float, float)
         result = pyqtSignal(RareGame, bool, int, int)
@@ -24,10 +25,8 @@ class VerifyWorker(QRunnable):
     total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized
 
     def __init__(self, core: LegendaryCore, args: Namespace, rgame: RareGame):
-        sys.excepthook = sys.__excepthook__
         super(VerifyWorker, self).__init__()
         self.signals = VerifyWorker.Signals()
-        self.setAutoDelete(True)
         self.core = core
         self.args = args
         self.rgame = rgame
@@ -36,7 +35,7 @@ class VerifyWorker(QRunnable):
         self.rgame.signals.progress.update.emit(num * 100 // total)
         self.signals.progress.emit(self.rgame, num, total, percentage, speed)
 
-    def run(self):
+    def run_real(self):
         self.rgame.signals.progress.start.emit()
         cli = LegendaryCLI(self.core)
         status = LgndrIndirectStatus()

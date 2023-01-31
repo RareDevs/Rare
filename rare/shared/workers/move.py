@@ -6,9 +6,12 @@ from PyQt5.QtCore import pyqtSignal, QRunnable, QObject
 from legendary.lfs.utils import validate_files
 from legendary.models.game import VerifyResult, InstalledGame
 
+from rare.lgndr.core import LegendaryCore
+from .worker import Worker
+
 
 # noinspection PyUnresolvedReferences
-class MoveWorker(QRunnable):
+class MoveWorker(Worker):
     class Signals(QObject):
         progress = pyqtSignal(int)
         finished = pyqtSignal(str)
@@ -34,7 +37,7 @@ class MoveWorker(QRunnable):
         self.file_list = None
         self.total: int = 0
 
-    def run(self):
+    def run_real(self):
         root_directory = Path(self.install_path)
         self.source_size = sum(f.stat().st_size for f in root_directory.glob("**/*") if f.is_file())
 
