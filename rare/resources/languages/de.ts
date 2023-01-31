@@ -1120,12 +1120,12 @@ Willst du {} trotzdem starten</translation>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="206"/>
         <source>Verification failed, &lt;b&gt;{}&lt;/b&gt; file(s) corrupted, &lt;b&gt;{}&lt;/b&gt; file(s) are missing. Do you want to repair them?</source>
-        <translation type="unfinished"/>
+        <translation>Überprüfung fehlgeschlagen, &lt;b&gt;{}&lt;/b&gt; Datei(en) kaputt, &lt;b&gt;{}&lt;/b&gt; Datei(en) fehlen. Möchtest du diese reparieren?</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="295"/>
         <source>Out of space or unknown OS error occured.</source>
-        <translation type="unfinished"/>
+        <translation>Kein Speicher mehr oder unbekannter OS Fehler aufgetreten</translation>
     </message>
 </context>
 <context>
@@ -1201,12 +1201,12 @@ Willst du {} trotzdem starten</translation>
     <message>
         <location filename="../../components/tabs/games/head_bar.py" line="76"/>
         <source>Installed games</source>
-        <translation type="unfinished"/>
+        <translation>Installierte Spiele</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/head_bar.py" line="85"/>
         <source>Available games</source>
-        <translation type="unfinished"/>
+        <translation>Verfügbare Spiele</translation>
     </message>
 </context>
 <context>
@@ -1214,13 +1214,14 @@ Willst du {} trotzdem starten</translation>
     <message>
         <location filename="../../components/tabs/games/game_utils.py" line="64"/>
         <source>Connection to game process failed (Timeout)</source>
-        <translation type="unfinished"/>
+        <translation>Verbindung zum Spielprozess fehlgeschlagen (Timeout)</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_utils.py" line="92"/>
         <source>Error in game {}: 
 {}</source>
-        <translation type="unfinished"/>
+        <translation>Fehler im Spiel {}
+{}</translation>
     </message>
 </context>
 <context>
@@ -1341,7 +1342,7 @@ Willst du {} trotzdem starten</translation>
     <message>
         <location filename="../../components/tabs/games/game_utils.py" line="172"/>
         <source>Uninstall - {}</source>
-        <translation type="unfinished"/>
+        <translation>Deinstallieren - {}</translation>
     </message>
 </context>
 <context>
@@ -1382,64 +1383,66 @@ Willst du {} trotzdem starten</translation>
     <message>
         <location filename="../../ui/components/tabs/games/import_sync/import_group.py" line="73"/>
         <source>Import all folders</source>
-        <translation type="unfinished"/>
+        <translation>Alle Ordner importieren</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/games/import_sync/import_group.py" line="74"/>
         <source>Scan the installation path for game folders and import them</source>
-        <translation type="unfinished"/>
+        <translation>Im Ordner nach Spielen suchen und diese importieren</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/games/import_sync/import_group.py" line="75"/>
         <source>Import DLCs</source>
-        <translation type="unfinished"/>
+        <translation>DLCs importieren</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/games/import_sync/import_group.py" line="76"/>
         <source>If a game has DLCs, try to import them too</source>
-        <translation type="unfinished"/>
+        <translation>Wenn das Spiel DLCs hat, diese auch importieren</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="282"/>
         <source>Success: &lt;b&gt;{}&lt;/b&gt; imported</source>
-        <translation type="unfinished"/>
+        <translation>Erfolg: &lt;b&gt;{}&lt;/b&gt; importiert</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="286"/>
         <source>Failed: &lt;b&gt;{}&lt;/b&gt; - {}</source>
-        <translation type="unfinished"/>
+        <translation>Fehlgechlagen: &lt;b&gt;{}&lt;/b&gt; - {}</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="290"/>
         <source>Error: Could not find AppName for &lt;b&gt;{}&lt;/b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Konnte den Namen für &lt;b&gt;{}&lt;/b&gt; nicht ermitteln</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="297"/>
         <source>Import summary</source>
-        <translation type="unfinished"/>
+        <translation>Zusammenfassung</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="297"/>
         <source>Tried to import {} folders.
 
 Successfully imported {} games, failed to import {} games and {} errors occurred</source>
-        <translation type="unfinished"/>
+        <translation>{} Ordner versucht zu importieren
+
+{} Spiele wurden erfolgreich importiert, {} sind fehlgeschlagen und {} Fehler sind aufgetreten</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="310"/>
         <source>Success: {} imported</source>
-        <translation type="unfinished"/>
+        <translation>Erfolg: {} importiert</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="314"/>
         <source>Failed: {} - {}</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: {} - {}</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="318"/>
         <source>Error: Could not find AppName for {}</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Konnte nicht den Appnamen für {} finden</translation>
     </message>
 </context>
 <context>
@@ -1691,22 +1694,22 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="98"/>
         <source>Warning</source>
-        <translation type="unfinished"/>
+        <translation>Warnung</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog.py" line="243"/>
         <source>Max shared memory</source>
-        <translation type="unfinished"/>
+        <translation>Maximaler geteilter Speicher</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog.py" line="244"/>
         <source>MiB</source>
-        <translation type="unfinished"/>
+        <translation>MiB</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog.py" line="245"/>
         <source>Less is slower (0: Default)</source>
-        <translation type="unfinished"/>
+        <translation>Weniger ist langsamer (0: Standard)</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog.py" line="246"/>
@@ -1716,17 +1719,17 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="46"/>
         <source>Advanced options</source>
-        <translation type="unfinished"/>
+        <translation>Erweiterte Optionen</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="98"/>
         <source>You will not be able to run the game if you select &lt;b&gt;{}&lt;/b&gt; as platform</source>
-        <translation type="unfinished"/>
+        <translation>Es wird nicht möglich sein das Spiel zu starten, wenn du &lt;b&gt;{}&lt;/b&gt; als Plattform wählst</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="294"/>
         <source>Also install: {}</source>
-        <translation type="unfinished"/>
+        <translation>Ebenfalls installieren: {}</translation>
     </message>
 </context>
 <context>
@@ -1765,27 +1768,27 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="72"/>
         <source>Select login method</source>
-        <translation type="unfinished"/>
+        <translation>Wähle die Methode zum Einloggen</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="73"/>
         <source>Browser</source>
-        <translation type="unfinished"/>
+        <translation>Browser</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="74"/>
         <source>Login using a browser.</source>
-        <translation type="unfinished"/>
+        <translation>Im Browser anmelden</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="75"/>
         <source>Import</source>
-        <translation type="unfinished"/>
+        <translation>Importieren</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="76"/>
         <source>Import from Epic Games Launcher</source>
-        <translation type="unfinished"/>
+        <translation>Aus dem Epic Games Launcher importieren</translation>
     </message>
 </context>
 <context>
@@ -1916,7 +1919,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/tabs/settings/legendary.py" line="162"/>
         <source>Max Shared Memory</source>
-        <translation type="unfinished"/>
+        <translation>Maximaler geteilter Speicher</translation>
     </message>
 </context>
 <context>
@@ -1977,7 +1980,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/login/__init__.py" line="125"/>
         <source>Login error</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Einloggen</translation>
     </message>
 </context>
 <context>
@@ -2096,12 +2099,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/games/game_info/move_game.py" line="101"/>
         <source>Available space: {}GB</source>
-        <translation type="unfinished"/>
+        <translation>Verfügbarer Speicherplatz: {}GB</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/move_game.py" line="102"/>
         <source>Required space: {}GB</source>
-        <translation type="unfinished"/>
+        <translation>Benötigter Speicherplatz: {} GB</translation>
     </message>
 </context>
 <context>
@@ -2375,12 +2378,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/settings/rare.py" line="187"/>
         <source>Error</source>
-        <translation type="unfinished"/>
+        <translation>Fehler</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/rare.py" line="187"/>
         <source>Permission error, cannot remove {}</source>
-        <translation type="unfinished"/>
+        <translation>Berechtigungsfehler, kann {} nicht löschen</translation>
     </message>
 </context>
 <context>
@@ -2721,17 +2724,17 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/uninstall_dialog.py" line="23"/>
         <source>Do you really want to uninstall &lt;b&gt;{}&lt;/b&gt; ?</source>
-        <translation type="unfinished"/>
+        <translation>Möchtest du wirklich &lt;b&gt;{}&lt;/b&gt; deinstallieren</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/uninstall_dialog.py" line="27"/>
         <source>Keep game files?</source>
-        <translation type="unfinished"/>
+        <translation>Spieldateien behalten? </translation>
     </message>
     <message>
         <location filename="../../components/dialogs/uninstall_dialog.py" line="28"/>
         <source>Keep game configuation?</source>
-        <translation type="unfinished"/>
+        <translation>Konfiguration behalten? </translation>
     </message>
 </context>
 <context>
@@ -2739,12 +2742,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="59"/>
         <source>Game Info</source>
-        <translation type="unfinished"/>
+        <translation>Spielinfo</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="61"/>
         <source>Installation running</source>
-        <translation type="unfinished"/>
+        <translation>Installation läuft</translation>
     </message>
 </context>
 <context>
@@ -2778,7 +2781,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/games/game_widgets/uninstalled_list_widget.py" line="27"/>
         <source>Install</source>
-        <translation type="unfinished"/>
+        <translation>Instalieren</translation>
     </message>
 </context>
 <context>
@@ -2791,7 +2794,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/downloads/__init__.py" line="284"/>
         <source>Version: &lt;b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Version: &lt;b&gt;</translation>
     </message>
 </context>
 <context>

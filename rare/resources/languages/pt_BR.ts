@@ -57,27 +57,27 @@
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="19"/>
         <source>Account settings</source>
-        <translation type="unfinished"/>
+        <translation>Configurações da conta</translation>
     </message>
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="25"/>
         <source>Logout</source>
-        <translation type="unfinished"/>
+        <translation>Sair</translation>
     </message>
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="29"/>
         <source>Account</source>
-        <translation type="unfinished"/>
+        <translation>Conta</translation>
     </message>
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="30"/>
         <source>Logged in as &lt;b&gt;{}&lt;/b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Logado como &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="35"/>
         <source>Do you really want to logout</source>
-        <translation type="unfinished"/>
+        <translation>Quer mesmo sair da sessão?</translation>
     </message>
 </context>
 <context>
@@ -198,17 +198,17 @@
     <message>
         <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="41"/>
         <source>Launch offline</source>
-        <translation type="unfinished"/>
+        <translation>Abrir offline</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="47"/>
         <source>Game is only offline available</source>
-        <translation type="unfinished"/>
+        <translation>Jogo disponível apenas offline</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/base_installed_widget.py" line="193"/>
         <source>This game is probably not in your library and it cannot be launched offline</source>
-        <translation type="unfinished"/>
+        <translation>O jogo provavelmente não está na sua biblioteca e não pode ser iniciado offline</translation>
     </message>
 </context>
 <context>
@@ -307,7 +307,7 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../game_launch_helper/console.py" line="39"/>
         <source>Save output to file</source>
-        <translation type="unfinished"/>
+        <translation>Salvar saída para arquivo</translation>
     </message>
     <message>
         <location filename="../../game_launch_helper/console.py" line="43"/>
@@ -317,12 +317,12 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../game_launch_helper/console.py" line="49"/>
         <source>Terminate</source>
-        <translation type="unfinished"/>
+        <translation>Terminar</translation>
     </message>
     <message>
         <location filename="../../game_launch_helper/console.py" line="54"/>
         <source>Kill</source>
-        <translation type="unfinished"/>
+        <translation>Matar</translation>
     </message>
     <message>
         <location filename="../../game_launch_helper/console.py" line="76"/>
@@ -340,12 +340,12 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../ui/components/extra/console_env.py" line="55"/>
         <source>Variable</source>
-        <translation type="unfinished"/>
+        <translation>Variável</translation>
     </message>
     <message>
         <location filename="../../ui/components/extra/console_env.py" line="57"/>
         <source>Value</source>
-        <translation type="unfinished"/>
+        <translation>Valor</translation>
     </message>
 </context>
 <context>
@@ -547,7 +547,7 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/downloads/__init__.py" line="195"/>
         <source>Error</source>
-        <translation type="unfinished"/>
+        <translation>Erro</translation>
     </message>
 </context>
 <context>
@@ -635,12 +635,12 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/settings/widgets/dxvk.py" line="8"/>
         <source>Memory usage</source>
-        <translation type="unfinished"/>
+        <translation>Uso da memória</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/dxvk.py" line="8"/>
         <source>GPU usage</source>
-        <translation type="unfinished"/>
+        <translation>Uso da GPU</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/dxvk.py" line="8"/>
@@ -655,7 +655,7 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/settings/widgets/dxvk.py" line="8"/>
         <source>Scale</source>
-        <translation type="unfinished"/>
+        <translation>Escala</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/dxvk.py" line="25"/>
@@ -774,12 +774,12 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../ui/components/tabs/settings/widgets/env_vars.py" line="51"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>Chave</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/settings/widgets/env_vars.py" line="53"/>
         <source>Value</source>
-        <translation type="unfinished"/>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/env_vars.py" line="22"/>
@@ -1061,12 +1061,12 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="237"/>
         <source>Repair Installation</source>
-        <translation type="unfinished"/>
+        <translation>Reparar instalação</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="238"/>
         <source>Move Installation</source>
-        <translation type="unfinished"/>
+        <translation>Mover instalação</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="232"/>
@@ -1081,17 +1081,17 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="238"/>
         <source>Yes</source>
-        <translation type="unfinished"/>
+        <translation>Sim</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="239"/>
         <source>No</source>
-        <translation type="unfinished"/>
+        <translation>Não</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="180"/>
         <source>Error - {}</source>
-        <translation type="unfinished"/>
+        <translation>Erro - {}</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="132"/>
@@ -1111,7 +1111,7 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="206"/>
         <source>Summary - {}</source>
-        <translation type="unfinished"/>
+        <translation>Resumo - {}</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="198"/>
@@ -1197,17 +1197,17 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/games/head_bar.py" line="25"/>
         <source>All games</source>
-        <translation type="unfinished"/>
+        <translation>Todos os jogos</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/head_bar.py" line="76"/>
         <source>Installed games</source>
-        <translation type="unfinished"/>
+        <translation>Jogos instalados</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/head_bar.py" line="85"/>
         <source>Available games</source>
-        <translation type="unfinished"/>
+        <translation>Jogos disponíveis</translation>
     </message>
 </context>
 <context>
@@ -1215,13 +1215,14 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/games/game_utils.py" line="64"/>
         <source>Connection to game process failed (Timeout)</source>
-        <translation type="unfinished"/>
+        <translation>Erro no processo de conexão com o jogo (tempo esgotado)</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_utils.py" line="92"/>
         <source>Error in game {}: 
 {}</source>
-        <translation type="unfinished"/>
+        <translation>Erro no jogo {}: 
+{}</translation>
     </message>
 </context>
 <context>
@@ -1342,7 +1343,7 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/games/game_utils.py" line="172"/>
         <source>Uninstall - {}</source>
-        <translation type="unfinished"/>
+        <translation>Desinstalar - {}</translation>
     </message>
 </context>
 <context>
@@ -1403,7 +1404,7 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="282"/>
         <source>Success: &lt;b&gt;{}&lt;/b&gt; imported</source>
-        <translation type="unfinished"/>
+        <translation>Sucesso: &lt;b&gt;{}&lt;/b&gt; importado</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="286"/>
@@ -1418,7 +1419,7 @@ Você quer abrir {} mesmo assim?</translation>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="297"/>
         <source>Import summary</source>
-        <translation type="unfinished"/>
+        <translation>Importar resumo</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/import_sync/import_group.py" line="297"/>
@@ -1692,7 +1693,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="98"/>
         <source>Warning</source>
-        <translation type="unfinished"/>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog.py" line="243"/>
@@ -1717,7 +1718,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="46"/>
         <source>Advanced options</source>
-        <translation type="unfinished"/>
+        <translation>Opções avançadas</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="98"/>
@@ -1766,7 +1767,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="72"/>
         <source>Select login method</source>
-        <translation type="unfinished"/>
+        <translation>Selecione o método de login</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="73"/>
@@ -1776,7 +1777,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="74"/>
         <source>Login using a browser.</source>
-        <translation type="unfinished"/>
+        <translation>Faça login usando o navegador.</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="75"/>
@@ -1973,12 +1974,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/login/login_dialog.py" line="50"/>
         <source>Rare Login</source>
-        <translation type="unfinished"/>
+        <translation>Login do Rare</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/login/__init__.py" line="125"/>
         <source>Login error</source>
-        <translation type="unfinished"/>
+        <translation>Erro no login</translation>
     </message>
 </context>
 <context>
@@ -2087,7 +2088,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/games/game_info/move_game.py" line="30"/>
         <source>Move</source>
-        <translation type="unfinished"/>
+        <translation>Mover</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/move_game.py" line="143"/>
@@ -2182,7 +2183,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/tabs/settings/proton.py" line="48"/>
         <source>Don&apos;t use Proton</source>
-        <translation type="unfinished"/>
+        <translation>Não usar o Proton</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/settings/proton.py" line="49"/>
@@ -2722,7 +2723,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/uninstall_dialog.py" line="23"/>
         <source>Do you really want to uninstall &lt;b&gt;{}&lt;/b&gt; ?</source>
-        <translation type="unfinished"/>
+        <translation>Quer mesmo desinstalar &lt;b&gt;{}&lt;/b&gt; ?</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/uninstall_dialog.py" line="27"/>
@@ -2779,7 +2780,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/games/game_widgets/uninstalled_list_widget.py" line="27"/>
         <source>Install</source>
-        <translation type="unfinished"/>
+        <translation>Instalar</translation>
     </message>
 </context>
 <context>
@@ -2792,7 +2793,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/downloads/__init__.py" line="284"/>
         <source>Version: &lt;b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Versão: &lt;b&gt;</translation>
     </message>
 </context>
 <context>

@@ -57,27 +57,27 @@
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="19"/>
         <source>Account settings</source>
-        <translation type="unfinished"/>
+        <translation>帳戶設定</translation>
     </message>
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="25"/>
         <source>Logout</source>
-        <translation type="unfinished"/>
+        <translation>登出</translation>
     </message>
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="29"/>
         <source>Account</source>
-        <translation type="unfinished"/>
+        <translation>帳戶</translation>
     </message>
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="30"/>
         <source>Logged in as &lt;b&gt;{}&lt;/b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>以&lt;b&gt;{}&lt;/b&gt;身份登入</translation>
     </message>
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="35"/>
         <source>Do you really want to logout</source>
-        <translation type="unfinished"/>
+        <translation>確定要登出嗎</translation>
     </message>
 </context>
 <context>
@@ -547,7 +547,7 @@ Do you want to launch {} anyway?</source>
     <message>
         <location filename="../../components/tabs/downloads/__init__.py" line="195"/>
         <source>Error</source>
-        <translation type="unfinished"/>
+        <translation>錯誤</translation>
     </message>
 </context>
 <context>
@@ -660,7 +660,7 @@ Do you want to launch {} anyway?</source>
     <message>
         <location filename="../../components/tabs/settings/widgets/dxvk.py" line="25"/>
         <source>Custom options</source>
-        <translation type="unfinished"/>
+        <translation>自訂選項</translation>
     </message>
 </context>
 <context>
@@ -1081,17 +1081,17 @@ Do you want to launch {} anyway?</source>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="238"/>
         <source>Yes</source>
-        <translation type="unfinished"/>
+        <translation>是</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="239"/>
         <source>No</source>
-        <translation type="unfinished"/>
+        <translation>否</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="180"/>
         <source>Error - {}</source>
-        <translation type="unfinished"/>
+        <translation>錯誤 - {}</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_info.py" line="132"/>
@@ -1197,12 +1197,12 @@ Do you want to launch {} anyway?</source>
     <message>
         <location filename="../../components/tabs/games/head_bar.py" line="25"/>
         <source>All games</source>
-        <translation type="unfinished"/>
+        <translation>所有遊戲</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/head_bar.py" line="76"/>
         <source>Installed games</source>
-        <translation type="unfinished"/>
+        <translation>已安裝的遊戲</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/head_bar.py" line="85"/>
@@ -1342,7 +1342,7 @@ Do you want to launch {} anyway?</source>
     <message>
         <location filename="../../components/tabs/games/game_utils.py" line="172"/>
         <source>Uninstall - {}</source>
-        <translation type="unfinished"/>
+        <translation>解除安裝 - {}</translation>
     </message>
 </context>
 <context>
@@ -1393,7 +1393,7 @@ Do you want to launch {} anyway?</source>
     <message>
         <location filename="../../ui/components/tabs/games/import_sync/import_group.py" line="75"/>
         <source>Import DLCs</source>
-        <translation type="unfinished"/>
+        <translation>導入可下載內容</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/games/import_sync/import_group.py" line="76"/>
@@ -1559,7 +1559,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../utils/extra_widgets.py" line="51"/>
         <source>File does not exist</source>
-        <translation type="unfinished"/>
+        <translation>檔案不存在</translation>
     </message>
 </context>
 <context>
@@ -1677,7 +1677,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/install_dialog.py" line="230"/>
         <source>Create shortcut</source>
-        <translation type="unfinished"/>
+        <translation>建立捷徑</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="144"/>
@@ -1692,7 +1692,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="98"/>
         <source>Warning</source>
-        <translation type="unfinished"/>
+        <translation>警告</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog.py" line="243"/>
@@ -1707,7 +1707,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/install_dialog.py" line="245"/>
         <source>Less is slower (0: Default)</source>
-        <translation type="unfinished"/>
+        <translation>越少越慢。（0：預設）</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog.py" line="246"/>
@@ -1717,7 +1717,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="46"/>
         <source>Advanced options</source>
-        <translation type="unfinished"/>
+        <translation>進階選項</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="98"/>
@@ -1766,27 +1766,27 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="72"/>
         <source>Select login method</source>
-        <translation type="unfinished"/>
+        <translation>選擇登入方法</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="73"/>
         <source>Browser</source>
-        <translation type="unfinished"/>
+        <translation>瀏覽</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="74"/>
         <source>Login using a browser.</source>
-        <translation type="unfinished"/>
+        <translation>使用瀏覽器登入</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="75"/>
         <source>Import</source>
-        <translation type="unfinished"/>
+        <translation>導入</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="76"/>
         <source>Import from Epic Games Launcher</source>
-        <translation type="unfinished"/>
+        <translation>從 Epic Games Launcher 導入</translation>
     </message>
 </context>
 <context>
@@ -1978,7 +1978,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/login/__init__.py" line="125"/>
         <source>Login error</source>
-        <translation type="unfinished"/>
+        <translation>登入錯誤</translation>
     </message>
 </context>
 <context>
@@ -1991,7 +1991,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="50"/>
         <source>Custom options</source>
-        <translation type="unfinished"/>
+        <translation>自訂選項</translation>
     </message>
 </context>
 <context>
@@ -1999,7 +1999,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
         <source>FPS</source>
-        <translation type="unfinished"/>
+        <translation>幀率</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
@@ -2074,12 +2074,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
         <source>Font size</source>
-        <translation type="unfinished"/>
+        <translation>字體大小</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
         <source>Position</source>
-        <translation type="unfinished"/>
+        <translation>位置</translation>
     </message>
 </context>
 <context>
@@ -2110,17 +2110,17 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/tabs/settings/widgets/overlay.py" line="61"/>
         <source>Show HUD</source>
-        <translation type="unfinished"/>
+        <translation>顯示 HUD</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/settings/widgets/overlay.py" line="62"/>
         <source>System Default</source>
-        <translation type="unfinished"/>
+        <translation>系統預設設定</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/settings/widgets/overlay.py" line="63"/>
         <source>Hidden</source>
-        <translation type="unfinished"/>
+        <translation>隱藏</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/settings/widgets/overlay.py" line="64"/>
@@ -2172,7 +2172,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/tabs/settings/proton.py" line="46"/>
         <source>Proton Settings</source>
-        <translation type="unfinished"/>
+        <translation>Proton 設定</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/settings/proton.py" line="47"/>
@@ -2192,7 +2192,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/settings/widgets/proton.py" line="58"/>
         <source>Please select path for proton prefix</source>
-        <translation type="unfinished"/>
+        <translation>請為 Proton prefix 選擇路徑</translation>
     </message>
 </context>
 <context>
@@ -2376,7 +2376,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/settings/rare.py" line="187"/>
         <source>Error</source>
-        <translation type="unfinished"/>
+        <translation>錯誤</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/rare.py" line="187"/>
@@ -2402,7 +2402,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/settings/__init__.py" line="18"/>
         <source>Default Settings</source>
-        <translation type="unfinished"/>
+        <translation>預設設定</translation>
     </message>
 </context>
 <context>
@@ -2722,7 +2722,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/uninstall_dialog.py" line="23"/>
         <source>Do you really want to uninstall &lt;b&gt;{}&lt;/b&gt; ?</source>
-        <translation type="unfinished"/>
+        <translation>您是否要解除安裝 &lt;b&gt;{}&lt;/b&gt; ?</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/uninstall_dialog.py" line="27"/>
@@ -2740,12 +2740,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="59"/>
         <source>Game Info</source>
-        <translation type="unfinished"/>
+        <translation>遊戲訊息</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/uninstalled_icon_widget.py" line="61"/>
         <source>Installation running</source>
-        <translation type="unfinished"/>
+        <translation>正在安裝</translation>
     </message>
 </context>
 <context>
@@ -2779,7 +2779,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/games/game_widgets/uninstalled_list_widget.py" line="27"/>
         <source>Install</source>
-        <translation type="unfinished"/>
+        <translation>安裝</translation>
     </message>
 </context>
 <context>
@@ -2792,7 +2792,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/downloads/__init__.py" line="284"/>
         <source>Version: &lt;b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>版本：&lt;b&gt;</translation>
     </message>
 </context>
 <context>
