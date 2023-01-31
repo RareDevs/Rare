@@ -19,6 +19,8 @@ class GlobalSignals:
         overlay_installed = pyqtSignal()
         # none
         update_tray = pyqtSignal()
+        # none
+        update_statusbar = pyqtSignal()
 
     class GameSignals(QObject):
         # model

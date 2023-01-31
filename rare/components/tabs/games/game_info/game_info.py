@@ -27,8 +27,7 @@ from rare.shared import (
     ImageManagerSingleton,
 )
 from rare.shared.image_manager import ImageSize
-from rare.shared.workers.verify import VerifyWorker
-from rare.shared.workers.move import MoveWorker
+from rare.shared.workers import VerifyWorker, MoveWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.misc import get_size
 from rare.utils.steam_grades import SteamWorker
@@ -267,8 +266,8 @@ class GameInfo(QWidget):
         )
 
         copy_worker.signals.progress.connect(self.__on_move_progress)
-        copy_worker.signals.finished.connect(self.set_new_game)
-        copy_worker.signals.no_space_left.connect(self.warn_no_space_left)
+        copy_worker.signals.result.connect(self.set_new_game)
+        copy_worker.signals.error.connect(self.warn_no_space_left)
         QThreadPool.globalInstance().start(copy_worker)
 
     def move_helper_clean_up(self):
@@ -300,6 +299,10 @@ class GameInfo(QWidget):
     def show_menu_after_browse(self):
         self.ui.move_button.showMenu()
 
+    @pyqtSlot()
+    def __update_ui(self):
+        pass
+
     @pyqtSlot(str)
     @pyqtSlot(RareGame)
     def update_game(self, rgame: Union[RareGame, str]):
@@ -307,24 +310,39 @@ class GameInfo(QWidget):
             rgame = self.rcore.get_game(rgame)
 
         if self.rgame is not None:
-            if (worker := self.rgame.__worker) is not None:
+            if (worker := self.rgame.worker) is not None:
                 if isinstance(worker, VerifyWorker):
                     try:
                         worker.signals.progress.disconnect(self.__on_verify_progress)
                     except TypeError as e:
-                        logger.warning(f"{self.rgame.app_title} verify worker: {e}")
+                        logger.warning(f"{self.rgame.app_name} verify worker: {e}")
+                if isinstance(worker, MoveWorker):
+                    try:
+                        worker.signals.progress.disconnect(self.__on_move_progress)
+                    except TypeError as e:
+                        logger.warning(f"{self.rgame.app_name} move worker: {e}")
+            self.rgame.signals.widget.update.disconnect(self.__update_ui)
             self.rgame.signals.game.installed.disconnect(self.update_game)
             self.rgame.signals.game.uninstalled.disconnect(self.update_game)
+
         self.rgame = rgame
+
+        self.rgame.signals.widget.update.disconnect(self.__update_ui)
         self.rgame.signals.game.installed.connect(self.update_game)
         self.rgame.signals.game.uninstalled.connect(self.update_game)
-        if (worker := self.rgame.__worker) is not None:
+        if (worker := self.rgame.worker) is not None:
             if isinstance(worker, VerifyWorker):
                 self.ui.verify_stack.setCurrentWidget(self.ui.verify_progress_page)
                 self.ui.verify_progress.setValue(self.rgame.progress)
                 worker.signals.progress.connect(self.__on_verify_progress)
-        else:
-            self.ui.verify_stack.setCurrentWidget(self.ui.verify_button_page)
+            else:
+                self.ui.verify_stack.setCurrentWidget(self.ui.verify_button_page)
+            if isinstance(worker, MoveWorker):
+                self.ui.move_stack.setCurrentWidget(self.ui.move_progress_page)
+                self.ui.move_progress.setValue(self.rgame.progress)
+                worker.signals.progress.connect(self.__on_move_progress)
+            else:
+                self.ui.move_stack.setCurrentWidget(self.ui.move_button_page)
 
         self.title.setTitle(self.rgame.app_title)
         self.image.setPixmap(rgame.pixmap)
@@ -383,7 +401,7 @@ class GameInfo(QWidget):
                 self.ui.move_stack.setCurrentWidget(self.ui.move_button_page)
 
         # If a game is verifying or moving, disable both verify and moving buttons.
-        if rgame.__worker is not None:
+        if rgame.worker is not None:
             self.ui.verify_button.setEnabled(False)
             self.ui.move_button.setEnabled(False)
         if self.is_moving:

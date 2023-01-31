@@ -14,8 +14,6 @@ from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
-from rare.shared.workers.move import MoveWorker
-from rare.shared.workers.verify import VerifyWorker
 from rare.utils.misc import get_rare_executable
 from rare.utils.paths import data_dir
 
@@ -118,10 +116,11 @@ class RareGame(QObject):
         if self.has_update:
             logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
 
-        self.progress: int = 0
         self.__worker: Optional[QRunnable] = None
-
         self.__state = RareGame.State.IDLE
+        self.progress: int = 0
+        self.signals.progress.start.connect(lambda: self.__on_progress_update(0))
+        self.signals.progress.update.connect(self.__on_progress_update)
 
         self.game_process = GameProcess(self.game)
         self.game_process.launched.connect(self.__game_launched)
@@ -130,18 +129,15 @@ class RareGame(QObject):
             self.game_process.connect_to_server(on_startup=True)
         # self.grant_date(True)
 
+    def __on_progress_update(self, progress: int):
+        self.progress = progress
+
     @property
     def worker(self) -> Optional[QRunnable]:
         return self.__worker
 
     @worker.setter
     def worker(self, worker: Optional[QRunnable]):
-        if worker is None:
-            self.state = RareGame.State.IDLE
-        if isinstance(worker, VerifyWorker):
-            self.state = RareGame.State.VERIFYING
-        if isinstance(worker, MoveWorker):
-            self.state = RareGame.State.MOVING
         self.__worker = worker
 
     @property
@@ -497,21 +493,13 @@ class RareGame(QObject):
     def refresh_pixmap(self):
         self.image_manager.download_image(self.game, self.set_pixmap, 0, True)
 
-    def start_progress(self):
-        self.signals.progress.start.emit()
-
-    def update_progress(self, progress: int):
-        self.progress = progress
-        self.signals.progress.update.emit(progress)
-
-    def finish_progress(self, fail: bool, miss: int, app: str):
-        self.set_installed(True)
-        self.signals.progress.finish.emit(fail)
-
-    def install(self):
+    def install(self) -> bool:
+        if not self.is_idle:
+            return False
         self.signals.game.install.emit(
             InstallOptionsModel(app_name=self.app_name)
         )
+        return True
 
     def repair(self, repair_and_update):
         self.signals.game.install.emit(
@@ -520,10 +508,13 @@ class RareGame(QObject):
             )
         )
 
-    def uninstall(self):
+    def uninstall(self) -> bool:
+        if not self.is_idle:
+            return False
         self.signals.game.uninstall.emit(
             UninstallOptionsModel(app_name=self.app_name)
         )
+        return True
 
     def launch(
         self,
@@ -532,9 +523,9 @@ class RareGame(QObject):
         wine_bin: Optional[str] = None,
         wine_pfx: Optional[str] = None,
         ask_sync_saves: bool = False,
-    ):
+    ) -> bool:
         if not self.can_launch:
-            return
+            return False
 
         cmd_line = get_rare_executable()
         executable, args = cmd_line[0], cmd_line[1:]
@@ -554,6 +545,7 @@ class RareGame(QObject):
         QProcess.startDetached(executable, args)
         logger.info(f"Start new Process: ({executable} {' '.join(args)})")
         self.game_process.connect_to_server(on_startup=False)
+        return True
 
 
 class RareEosOverlay(QObject):

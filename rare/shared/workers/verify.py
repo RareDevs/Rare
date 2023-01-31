@@ -10,12 +10,12 @@ from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrVerifyGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
-from .worker import Worker
+from .worker import QueueWorker
 
 logger = getLogger("VerifyWorker")
 
 
-class VerifyWorker(Worker):
+class VerifyWorker(QueueWorker):
     class Signals(QObject):
         progress = pyqtSignal(RareGame, int, int, float, float)
         result = pyqtSignal(RareGame, bool, int, int)
@@ -34,6 +34,9 @@ class VerifyWorker(Worker):
     def status_callback(self, num: int, total: int, percentage: float, speed: float):
         self.rgame.signals.progress.update.emit(num * 100 // total)
         self.signals.progress.emit(self.rgame, num, total, percentage, speed)
+
+    def worker_info(self):
+        return None
 
     def run_real(self):
         self.rgame.signals.progress.start.emit()

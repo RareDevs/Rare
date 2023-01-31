@@ -3,9 +3,9 @@ import os
 from argparse import Namespace
 from itertools import chain
 from logging import getLogger
-from typing import Optional, Dict, Iterator, Callable
+from typing import Optional, Dict, Iterator, Callable, List
 
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, QThreadPool
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile
 
@@ -13,6 +13,7 @@ from rare.lgndr.core import LegendaryCore
 from rare.models.apiresults import ApiResults
 from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
+from .workers import QueueWorker, VerifyWorker, MoveWorker
 from .image_manager import ImageManager
 
 logger = getLogger("RareCore")
@@ -36,11 +37,29 @@ class RareCore(QObject):
         self.core(init=True)
         self.image_manager(init=True)
 
+        self.queue_workers: List[QueueWorker] = []
+        self.queue_threadpool = QThreadPool()
+        self.queue_threadpool.setMaxThreadCount(2)
+
         self.__games: Dict[str, RareGame] = {}
 
         self.__eos_overlay_rgame = RareEosOverlay(self.__core, self.__image_manager, EOSOverlayApp)
 
         RareCore._instance = self
+
+    def enqueue_worker(self, rgame: RareGame, worker: QueueWorker):
+        if isinstance(worker, VerifyWorker):
+            rgame.state = RareGame.State.VERIFYING
+        if isinstance(worker, MoveWorker):
+            rgame.state = RareGame.State.MOVING
+        rgame.worker = worker
+        worker.feedback.started.connect(self.__signals.application.update_statubar)
+        worker.feedback.finished.connect(lambda: self.queue_workers.remove(worker))
+        self.queue_workers.append(worker)
+        self.queue_threadpool.start(worker, 0)
+
+    def queue_info(self) -> List:
+        return [w.worker_info() for w in self.queue_workers]
 
     @staticmethod
     def instance() -> 'RareCore':

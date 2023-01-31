@@ -2,20 +2,20 @@ import os
 import shutil
 from pathlib import Path
 
-from PyQt5.QtCore import pyqtSignal, QRunnable, QObject
+from PyQt5.QtCore import pyqtSignal, QObject
 from legendary.lfs.utils import validate_files
 from legendary.models.game import VerifyResult, InstalledGame
 
 from rare.lgndr.core import LegendaryCore
-from .worker import Worker
+from .worker import QueueWorker
 
 
 # noinspection PyUnresolvedReferences
-class MoveWorker(Worker):
+class MoveWorker(QueueWorker):
     class Signals(QObject):
         progress = pyqtSignal(int)
-        finished = pyqtSignal(str)
-        no_space_left = pyqtSignal()
+        result = pyqtSignal(str)
+        error = pyqtSignal()
 
     def __init__(
             self,
@@ -36,6 +36,9 @@ class MoveWorker(Worker):
         self.igame = igame
         self.file_list = None
         self.total: int = 0
+
+    def worker_info(self):
+        return None
 
     def run_real(self):
         root_directory = Path(self.install_path)
