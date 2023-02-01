@@ -370,6 +370,10 @@ class RareCore(QObject):
         return self.__filter_games(lambda game: game.is_installed and not game.is_dlc)
 
     @property
+    def origin_games(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: game.is_origin and not game.is_dlc)
+
+    @property
     def game_list(self) -> Iterator[Game]:
         for game in self.games:
             yield game.game
@@ -398,7 +402,7 @@ class RareCore(QObject):
         return self.__filter_games(lambda game: game.is_mac)
 
     @property
-    def no_asset_games(self) -> Iterator[RareGame]:
+    def non_asset_games(self) -> Iterator[RareGame]:
         return self.__filter_games(lambda game: game.is_non_asset)
 
     @property

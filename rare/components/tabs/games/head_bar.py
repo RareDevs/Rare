@@ -46,7 +46,7 @@ class GameListHeadBar(QWidget):
             self.filter.addItem(self.tr("Mac games"))
             self.available_filters.append("mac")
 
-        if self.rcore.no_asset_games:
+        if self.rcore.origin_games:
             self.filter.addItem(self.tr("Exclude Origin"))
             self.available_filters.append("installable")
 

@@ -1,11 +1,16 @@
 import os
 import subprocess
+import time
+from configparser import ConfigParser
 from logging import getLogger
+from typing import Union, Iterator
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject, QRunnable
 
 from rare.lgndr.core import LegendaryCore
+from rare.models.game import RareGame
 from rare.models.pathspec import PathSpec
+from rare.utils.misc import read_registry
 from .worker import Worker
 
 logger = getLogger("WineResolver")
@@ -69,3 +74,43 @@ class WineResolver(Worker):
         # pylint: disable=E1136
         self.signals.result_ready[str].emit(real_path)
         return
+
+
+class OriginWineWorker(QRunnable):
+    def __init__(self, games: Union[Iterator[RareGame], RareGame], core: LegendaryCore):
+        super().__init__()
+        self.setAutoDelete(True)
+
+        self.__cache: dict[str, ConfigParser] = {}
+        if isinstance(games, RareGame):
+            games = [games]
+
+        self.games = games
+        self.core = core
+
+    def run(self) -> None:
+        t = time.time()
+        for rgame in self.games:
+            if not rgame.is_origin:
+                continue
+
+            reg_path: str = rgame.game.metadata \
+                .get("customAttributes", {}) \
+                .get("RegistryPath", {}).get("value", None)
+            if not reg_path:
+                continue
+
+            wine_prefix = self.core.lgd.config.get(rgame.app_name, "wine_prefix",
+                                                   fallback=os.path.expanduser("~/.wine"))
+            reg = self.__cache.get(wine_prefix) or read_registry("system.reg", wine_prefix)
+            self.__cache[wine_prefix] = reg
+
+            # TODO: find a better solution
+            reg_path = reg_path.replace("\\", "\\\\")\
+                .replace("SOFTWARE", "Software").replace("WOW6432Node", "Wow6432Node")
+
+            install_dir = reg.get(reg_path, '"Install Dir"', fallback=None)
+            if install_dir:
+                logger.debug(f"Found install path for {rgame.title}: {install_dir}")
+                rgame.set_origin_attributes(install_dir)
+        logger.info(f"Origin registry worker finished in {time.time() - t}s")
