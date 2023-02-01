@@ -19,11 +19,6 @@ from rare.shared.image_manager import ImageManager
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
 
-if platform.system() == "Windows":
-    # noinspection PyUnresolvedReferences
-    import winreg # pylint: disable=E0401
-    from legendary.lfs import windows_helpers
-
 logger = getLogger("RareGame")
 
 
@@ -201,6 +196,7 @@ class RareGame(RareGameSlim):
     def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
         super(RareGame, self).__init__(legendary_core, game)
         self.__origin_install_path: Optional[str] = None
+        self.__origin_install_size: Optional[int] = None
         self.__steam_grade: Optional[str] = None
 
         self.image_manager = image_manager
@@ -228,16 +224,6 @@ class RareGame(RareGameSlim):
         self.game_process.finished.connect(self.__game_finished)
         if self.is_installed and not self.is_dlc:
             self.game_process.connect_to_server(on_startup=True)
-
-        if platform.system() == "Windows" and self.is_origin:
-            reg_path: str = self.game.metadata \
-                .get("customAttributes", {}) \
-                .get("RegistryPath", {}).get("value", None)
-            if not reg_path:
-                return
-            install_dir = windows_helpers.query_registry_value(winreg.HKEY_LOCAL_MACHINE, reg_path, "Install Dir")
-            self.__origin_install_path = install_dir
-            self.set_origin_attributes(install_dir)
 
     def __on_progress_update(self, progress: int):
         self.progress = progress
@@ -328,6 +314,8 @@ class RareGame(RareGameSlim):
 
         @return int The size of the installation
         """
+        if self.is_origin:
+            return self.__origin_install_size if self.__origin_install_size is not None else 0
         return self.igame.install_size if self.igame is not None else 0
 
     @property
@@ -617,9 +605,10 @@ class RareGame(RareGameSlim):
         )
         return True
 
-    def set_origin_attributes(self, path: str) -> None:
+    def set_origin_attributes(self, path: str, size: int = 0) -> None:
         self.__origin_install_path = path
-        if self.install_path:
+        self.__origin_install_size = size
+        if self.install_path and self.install_size:
             self.signals.game.installed.emit(self.app_name)
         else:
             self.signals.game.uninstalled.emit(self.app_name)
