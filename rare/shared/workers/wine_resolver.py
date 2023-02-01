@@ -11,7 +11,7 @@ from PyQt5.QtCore import pyqtSignal, QObject, QRunnable
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.models.pathspec import PathSpec
-from rare.utils.misc import read_registry
+from rare.utils.misc import read_registry, path_size, format_size
 from .worker import Worker
 
 if platform.system() == "Windows":
@@ -115,12 +115,15 @@ class OriginWineWorker(QRunnable):
                 self.__cache[wine_prefix] = reg
 
                 # TODO: find a better solution
-                reg_path = reg_path.replace("\\", "\\\\")\
+                reg_path = reg_path.replace("\\", "\\\\") \
                     .replace("SOFTWARE", "Software").replace("WOW6432Node", "Wow6432Node")
 
                 install_dir = reg.get(reg_path, '"Install Dir"', fallback=None)
             if install_dir:
-                size = sum(os.path.getsize(f) for f in os.listdir(install_dir) if os.path.isfile(f))
-                logger.debug(f"Found install path for {rgame.title}: {install_dir}")
-                rgame.set_origin_attributes(install_dir, size)
+                if os.path.exists(install_dir):
+                    size = path_size(install_dir)
+                    rgame.set_origin_attributes(install_dir, size)
+                    logger.debug(f"Found Origin game {rgame.title} ({install_dir}, {format_size(size)})")
+                else:
+                    logger.warning(f"Found Origin game {rgame.title} ({install_dir} does not exist)")
         logger.info(f"Origin registry worker finished in {time.time() - t}s")

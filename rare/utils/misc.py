@@ -150,12 +150,20 @@ def get_translations():
 def get_latest_version():
     try:
         resp = requests.get(
-            "https://api.github.com/repos/Dummerle/Rare/releases/latest"
+            "https://api.github.com/repos/Dummerle/Rare/releases/latest", timeout=2,
         )
         tag = resp.json()["tag_name"]
         return tag
     except requests.exceptions.ConnectionError:
         return "0.0.0"
+
+
+def path_size(path: Union[str, os.PathLike]) -> int:
+    return sum(
+        os.stat(os.path.join(dp, f)).st_size
+        for dp, dn, filenames in os.walk(path)
+        for f in filenames
+    )
 
 
 def format_size(b: Union[int, float]) -> str:

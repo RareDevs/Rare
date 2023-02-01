@@ -245,10 +245,10 @@ class GameInfo(QWidget, SideTabContents):
             self.rgame.version if not self.rgame.is_non_asset else "N/A"
         )
 
-        self.ui.lbl_install_size.setEnabled(self.rgame.is_installed and not self.rgame.is_non_asset)
-        self.ui.install_size.setEnabled(self.rgame.is_installed and not self.rgame.is_non_asset)
+        self.ui.lbl_install_size.setEnabled(bool(self.rgame.install_size))
+        self.ui.install_size.setEnabled(bool(self.rgame.install_size))
         self.ui.install_size.setText(
-            format_size(self.rgame.igame.install_size) if self.rgame.is_installed and not self.rgame.is_non_asset else "N/A"
+            format_size(self.rgame.igame.install_size) if self.rgame.install_size else "N/A"
         )
 
         self.ui.lbl_install_path.setEnabled(bool(self.rgame.install_path))

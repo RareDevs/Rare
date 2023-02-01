@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLab
 
 from rare.models.game import RareGame
 from rare.shared import RareCore
-from rare.utils.misc import format_size
+from rare.utils.misc import path_size, format_size
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasons, IndicatorReasonsCommon
 
@@ -103,15 +103,9 @@ class MoveGamePopUp(QWidget):
 
         # Get free space on drive and size of game folder
         _, _, free_space = shutil.disk_usage(dst_path)
-        source_size = sum(
-            os.stat(os.path.join(dp, f)).st_size
-            for dp, dn, filenames in os.walk(src_path)
-            for f in filenames
-        )
+        source_size = path_size(src_path)
 
         # Calculate from bytes to gigabytes
-        # free_space = round(free_space / 1000 ** 3, 2)
-        # source_size = round(source_size / 1000 ** 3, 2)
         self.req_space.setText(format_size(source_size))
         self.avail_space.setText(format_size(free_space))
 
