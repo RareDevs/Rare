@@ -189,11 +189,14 @@ class RareGame(QObject):
 
     def __load_metadata(self):
         metadata: Dict = self.__load_metadata_json()
+        # pylint: disable=unsupported-membership-test
         if self.app_name in metadata:
+            # pylint: disable=unsubscriptable-object
             self.metadata = RareGame.Metadata.from_dict(metadata[self.app_name])
 
     def __save_metadata(self):
         metadata: Dict = self.__load_metadata_json()
+        # pylint: disable=unsupported-assignment-operation
         metadata[self.app_name] = self.metadata.as_dict()
         with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
             json.dump(metadata, metadata_json, indent=2)
