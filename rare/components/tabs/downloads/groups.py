@@ -127,6 +127,7 @@ class QueueGroup(QGroupBox):
         widget: QueueWidget = QueueWidget(item, old_igame, parent=self.__container)
         widget.toggle_arrows(self.__queue.index(item.options.app_name), len(self.__queue))
         widget.destroyed.connect(self.__update_group)
+        widget.destroyed.connect(self.__update_arrows)
         widget.remove.connect(self.remove)
         widget.force.connect(self.__on_force)
         widget.move_up.connect(self.__on_move_up)
@@ -184,7 +185,6 @@ class QueueGroup(QGroupBox):
         widget: QueueWidget = self.__find_widget(app_name)
         self.__container.layout().removeWidget(widget)
         widget.deleteLater()
-        self.__update_arrows()
 
     @pyqtSlot(str)
     def remove(self, app_name: str):
