@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QScroller,
     QComboBox,
-    QMessageBox,
+    QMessageBox, QLabel,
 )
 
 from rare.components.tabs import TabWidget
@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
         self._window_launched = False
         super(MainWindow, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
         self.signals = RareCore.instance().signals()
         self.args = RareCore.instance().args()
@@ -43,6 +44,14 @@ class MainWindow(QMainWindow):
 
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
+
+        self.signals.application.update_statusbar.connect(self.update_statusbar)
+        self.signals.application.update_statusbar.connect(self.update_statusbar)
+
+        # self.status_timer = QTimer(self)
+        # self.status_timer.timeout.connect(self.update_statusbar)
+        # self.status_timer.setInterval(5000)
+        # self.status_timer.start()
 
         width, height = 1280, 720
         if self.settings.value("save_size", False, bool):
@@ -112,6 +121,23 @@ class MainWindow(QMainWindow):
             self.show()
         else:
             self.hide()
+
+    @pyqtSlot()
+    def update_statusbar(self):
+        for label in self.status_bar.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
+            self.status_bar.layout().removeWidget(label)
+            label.deleteLater()
+        for info in self.rcore.queue_info():
+            label = QLabel(f"{info.worker_type}: {info.app_title}")
+            label.setStyleSheet(
+                """
+                QLabel {
+                    border-width: 1px;
+                    background-color: gray;
+                }
+                """
+            )
+            self.status_bar.addWidget(label)
 
     def timer_finished(self):
         file_path = lock_file()
