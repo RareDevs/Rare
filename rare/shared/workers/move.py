@@ -1,5 +1,6 @@
 import os
 import shutil
+from logging import getLogger
 from pathlib import Path
 
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -9,6 +10,7 @@ from legendary.models.game import VerifyResult, InstalledGame
 from rare.lgndr.core import LegendaryCore
 from .worker import QueueWorker, QueueWorkerInfo
 
+logger = getLogger("MoveWorker")
 
 # noinspection PyUnresolvedReferences
 class MoveWorker(QueueWorker):
