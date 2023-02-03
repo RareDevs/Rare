@@ -132,13 +132,13 @@ class RareGame(QObject):
     def __on_progress_update(self, progress: int):
         self.progress = progress
 
-    @property
     def worker(self) -> Optional[QRunnable]:
         return self.__worker
 
-    @worker.setter
-    def worker(self, worker: Optional[QRunnable]):
+    def set_worker(self, worker: Optional[QRunnable]):
         self.__worker = worker
+        if worker is None:
+            self.state = RareGame.State.IDLE
 
     @property
     def state(self) -> 'RareGame.State':

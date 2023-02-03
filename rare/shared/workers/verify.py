@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 from argparse import Namespace
 from logging import getLogger
 
@@ -10,7 +11,7 @@ from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrVerifyGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
-from .worker import QueueWorker
+from .worker import QueueWorker, QueueWorkerInfo
 
 logger = getLogger("VerifyWorker")
 
@@ -21,8 +22,8 @@ class VerifyWorker(QueueWorker):
         result = pyqtSignal(RareGame, bool, int, int)
         error = pyqtSignal(RareGame, str)
 
-    num: int = 0
-    total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized
+    # num: int = 0
+    # total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized
 
     def __init__(self, core: LegendaryCore, args: Namespace, rgame: RareGame):
         super(VerifyWorker, self).__init__()
@@ -35,8 +36,10 @@ class VerifyWorker(QueueWorker):
         self.rgame.signals.progress.update.emit(num * 100 // total)
         self.signals.progress.emit(self.rgame, num, total, percentage, speed)
 
-    def worker_info(self):
-        return None
+    def worker_info(self) -> QueueWorkerInfo:
+        return QueueWorkerInfo(
+            app_name=self.rgame.app_name, app_title=self.rgame.app_title, worker_type="Verify", state=self.state
+        )
 
     def run_real(self):
         self.rgame.signals.progress.start.emit()

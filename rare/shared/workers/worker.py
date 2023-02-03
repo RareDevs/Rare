@@ -1,5 +1,6 @@
 import sys
 from abc import abstractmethod
+from dataclasses import dataclass
 from enum import IntEnum
 from typing import Optional
 
@@ -42,6 +43,21 @@ class Worker(QRunnable):
         self.signals.deleteLater()
 
 
+class QueueWorkerState(IntEnum):
+    UNDEFINED = 0
+    QUEUED = 1
+    ACTIVE = 2
+
+
+@dataclass
+class QueueWorkerInfo:
+    app_name: str
+    app_title: str
+    worker_type: str
+    state: QueueWorkerState
+    progress: int = 0
+
+
 class QueueWorker(Worker):
     """
     Base queueable worker class
@@ -53,11 +69,6 @@ class QueueWorker(Worker):
     to the `QueueWorker.signals` attribute, implement `QueueWorker.run_real()` and `QueueWorker.worker_info()`
     """
 
-    class State(IntEnum):
-        UNDEFINED = 0
-        QUEUED = 1
-        ACTIVE = 2
-
     class Signals(QObject):
         started = pyqtSignal()
         finished = pyqtSignal()
@@ -65,16 +76,18 @@ class QueueWorker(Worker):
     def __init__(self):
         super(QueueWorker, self).__init__()
         self.feedback = QueueWorker.Signals()
-        self.state = QueueWorker.State.QUEUED
+        self.state = QueueWorkerState.QUEUED
 
     @pyqtSlot()
     def run(self):
-        self.state = QueueWorker.State.ACTIVE
+        self.state = QueueWorkerState.ACTIVE
         self.feedback.started.emit()
         super(QueueWorker, self).run()
         self.feedback.finished.emit()
         self.feedback.deleteLater()
 
     @abstractmethod
-    def worker_info(self):
+    def worker_info(self) -> QueueWorkerInfo:
         pass
+
+

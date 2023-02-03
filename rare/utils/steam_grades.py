@@ -8,22 +8,22 @@ from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, QCoreApplication
 
 from rare.lgndr.core import LegendaryCore
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
+from rare.shared.workers import Worker
 from rare.utils.paths import data_dir, cache_dir
 
 replace_chars = ",;.:-_ "
 url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 
 
-class SteamWorker(QRunnable):
+class SteamWorker(Worker):
     class Signals(QObject):
         rating = pyqtSignal(str)
 
-    app_name: str = ""
-
-    def __init__(self, core: LegendaryCore):
+    def __init__(self, core: LegendaryCore, app_name: str):
         super(SteamWorker, self).__init__()
         self.signals = SteamWorker.Signals()
         self.core = core
+        self.app_name = app_name
         _tr = QCoreApplication.translate
         self.ratings = {
             "platinum": _tr("SteamWorker", "Platinum"),
@@ -35,10 +35,7 @@ class SteamWorker(QRunnable):
             "pending": _tr("SteamWorker", "Could not get grade"),
         }
 
-    def set_app_name(self, app_name: str):
-        self.app_name = app_name
-
-    def run(self) -> None:
+    def run_real(self) -> None:
         self.signals.rating.emit(
             self.ratings.get(get_rating(self.app_name), self.ratings["fail"])
         )

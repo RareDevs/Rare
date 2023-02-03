@@ -15,6 +15,7 @@ from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
 from .workers import QueueWorker, VerifyWorker, MoveWorker
 from .image_manager import ImageManager
+from .workers.worker import QueueWorkerInfo
 
 logger = getLogger("RareCore")
 
@@ -52,13 +53,16 @@ class RareCore(QObject):
             rgame.state = RareGame.State.VERIFYING
         if isinstance(worker, MoveWorker):
             rgame.state = RareGame.State.MOVING
-        rgame.worker = worker
-        worker.feedback.started.connect(self.__signals.application.update_statubar)
+        rgame.set_worker(worker)
+        worker.feedback.started.connect(self.__signals.application.update_statusbar)
+        worker.feedback.finished.connect(lambda: rgame.set_worker(None))
         worker.feedback.finished.connect(lambda: self.queue_workers.remove(worker))
+        worker.feedback.finished.connect(self.__signals.application.update_statusbar)
         self.queue_workers.append(worker)
-        self.queue_threadpool.start(worker, 0)
+        self.queue_threadpool.start(worker, priority=0)
+        self.__signals.application.update_statusbar.emit()
 
-    def queue_info(self) -> List:
+    def queue_info(self) -> List[QueueWorkerInfo]:
         return [w.worker_info() for w in self.queue_workers]
 
     @staticmethod

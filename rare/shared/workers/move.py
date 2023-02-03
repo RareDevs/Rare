@@ -7,7 +7,7 @@ from legendary.lfs.utils import validate_files
 from legendary.models.game import VerifyResult, InstalledGame
 
 from rare.lgndr.core import LegendaryCore
-from .worker import QueueWorker
+from .worker import QueueWorker, QueueWorkerInfo
 
 
 # noinspection PyUnresolvedReferences
@@ -37,8 +37,10 @@ class MoveWorker(QueueWorker):
         self.file_list = None
         self.total: int = 0
 
-    def worker_info(self):
-        return None
+    def worker_info(self) -> QueueWorkerInfo:
+        return QueueWorkerInfo(
+            app_name=self.rgame.app_name, app_title=self.rgame.app_title, worker_type="Move", state=self.state
+        )
 
     def run_real(self):
         root_directory = Path(self.install_path)
