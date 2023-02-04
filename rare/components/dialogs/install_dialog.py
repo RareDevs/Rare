@@ -118,11 +118,11 @@ class InstallDialog(QDialog):
             if (self.ui.platform_combo.currentText() == "Mac" and pf.system() != "Darwin")
             else None
         )
-        self.ui.platform_combo.currentTextChanged.connect(self.setup_sdl_list)
 
         if pf.system() == "Darwin" and "Mac" in platforms:
             self.ui.platform_combo.setCurrentIndex(platforms.index("Mac"))
 
+        self.ui.platform_combo.currentTextChanged.connect(self.setup_sdl_list)
         self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
         self.advanced.ui.max_workers_spin.valueChanged.connect(self.option_changed)
 
