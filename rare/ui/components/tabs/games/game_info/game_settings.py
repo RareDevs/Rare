@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_GameSettings(object):
     def setupUi(self, GameSettings):
         GameSettings.setObjectName("GameSettings")
-        GameSettings.resize(263, 258)
+        GameSettings.resize(263, 261)
         self.game_settings_layout = QtWidgets.QVBoxLayout(GameSettings)
         self.game_settings_layout.setObjectName("game_settings_layout")
         self.launch_settings_group = QtWidgets.QGroupBox(GameSettings)
@@ -68,19 +68,6 @@ class Ui_GameSettings(object):
         self.override_exe_edit.setObjectName("override_exe_edit")
         self.launch_settings_layout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.override_exe_edit)
         self.game_settings_layout.addWidget(self.launch_settings_group)
-        self.cloud_group = QtWidgets.QGroupBox(GameSettings)
-        self.cloud_group.setObjectName("cloud_group")
-        self.cloud_layout = QtWidgets.QFormLayout(self.cloud_group)
-        self.cloud_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.cloud_layout.setObjectName("cloud_layout")
-        self.cloud_sync_label = QtWidgets.QLabel(self.cloud_group)
-        self.cloud_sync_label.setObjectName("cloud_sync_label")
-        self.cloud_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.cloud_sync_label)
-        self.cloud_sync = QtWidgets.QCheckBox(self.cloud_group)
-        self.cloud_sync.setText("")
-        self.cloud_sync.setObjectName("cloud_sync")
-        self.cloud_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.cloud_sync)
-        self.game_settings_layout.addWidget(self.cloud_group)
         self.proton_layout = QtWidgets.QVBoxLayout()
         self.proton_layout.setObjectName("proton_layout")
         self.game_settings_layout.addLayout(self.proton_layout)
@@ -109,8 +96,6 @@ class Ui_GameSettings(object):
         self.launch_params.setPlaceholderText(_translate("GameSettings", "parameters"))
         self.override_exe_label.setText(_translate("GameSettings", "Override Exe"))
         self.override_exe_edit.setPlaceholderText(_translate("GameSettings", "Relative path to launch executable"))
-        self.cloud_group.setTitle(_translate("GameSettings", "Cloud Saves"))
-        self.cloud_sync_label.setText(_translate("GameSettings", "Sync with cloud"))
 
 
 if __name__ == "__main__":

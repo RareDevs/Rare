@@ -31,6 +31,7 @@ class RareGameBase(QObject):
         VERIFYING = 3
         MOVING = 4
         UNINSTALLING = 5
+        SYNCING = 6
 
     class Signals:
         class Progress(QObject):
@@ -198,6 +199,7 @@ class RareGame(RareGameSlim):
         self.__origin_install_path: Optional[str] = None
         self.__origin_install_size: Optional[int] = None
         self.__steam_grade: Optional[str] = None
+        self.__latest_save: Optional[SaveGameFile] = None
 
         self.image_manager = image_manager
 
@@ -235,6 +237,21 @@ class RareGame(RareGameSlim):
         self.__worker = worker
         if worker is None:
             self.state = RareGame.State.IDLE
+
+    @property
+    def latest_save(self) -> Optional[SaveGameFile]:
+        if self.saves:
+            self.saves.sort(key=lambda s: s.datetime, reverse=True)
+            return self.saves[0]
+        return None
+
+    @latest_save.setter
+    def latest_save(self, save: SaveGameFile):
+        self.__latest_save = save
+
+    def upload_saves(self):
+        if not self.game.supports_cloud_saves:
+            return
 
     @pyqtSlot(int)
     def __game_launched(self, code: int):
@@ -543,8 +560,20 @@ class RareGame(RareGameSlim):
     @property
     def raw_save_path(self) -> str:
         if self.game.supports_cloud_saves:
-            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
+            return self.game.metadata['customAttributes'].get("CloudSaveFolder", {}).get("value")
         return ""
+
+    @property
+    def raw_save_path_mac(self) -> str:
+        if self.game.supports_mac_cloud_saves:
+            return self.game.metadata['customAttributes'].get('CloudSaveFolder_MAC', {}).get('value')
+        return ""
+
+    @property
+    def save_path(self) -> Optional[str]:
+        if self.igame is not None:
+            return self.igame.save_path
+        return None
 
     def steam_grade(self) -> str:
         if platform.system() == "Windows" or self.is_unreal:

@@ -11,6 +11,7 @@ from rare.widgets.side_tab import SideTabWidget, SideTabContents
 from .game_dlc import GameDlc
 from .game_info import GameInfo
 from .game_settings import GameSettings
+from .cloud_saves import CloudSaves
 
 
 class GameInfoTabs(SideTabWidget):
@@ -25,6 +26,9 @@ class GameInfoTabs(SideTabWidget):
 
         self.settings_tab = GameSettings(self)
         self.settings_index = self.addTab(self.settings_tab, self.tr("Settings"))
+
+        self.cloud_saves_tab = CloudSaves(self)
+        self.cloud_saves_index = self.addTab(self.cloud_saves_tab, self.tr("Cloud Saves"))
 
         self.dlc_tab = GameDlc(self)
         self.dlc_index = self.addTab(self.dlc_tab, self.tr("Downloadable Content"))
@@ -46,6 +50,9 @@ class GameInfoTabs(SideTabWidget):
 
         self.dlc_tab.update_dlcs(rgame)
         self.dlc_tab.setEnabled(rgame.is_installed and bool(rgame.owned_dlcs))
+
+        self.cloud_saves_tab.update_game(rgame)
+        # self.cloud_saves_tab.setEnabled(rgame.game.supports_cloud_saves or rgame.game.supports_mac_cloud_saves)
 
         if self.args.debug:
             self.game_meta_view.update_game(rgame, rgame.game)

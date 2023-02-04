@@ -432,12 +432,12 @@ class RareCore(QObject):
         """!
         SaveGameFiles across games
         """
-        return chain.from_iterable([game.saves for game in self.has_saves])
+        return chain.from_iterable([game.latest_save for game in self.has_saves])
 
     @property
     def has_saves(self) -> Iterator[RareGame]:
         """!
         RareGames that have SaveGameFiles associated with them
         """
-        return self.__filter_games(lambda game: bool(game.saves))
+        return self.__filter_games(lambda game: bool(game.latest_save))
 

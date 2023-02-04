@@ -188,7 +188,7 @@ def read_registry(registry: str, wine_pfx: str) -> ConfigParser:
 class CloudWorker(QRunnable):
     class Signals(QObject):
         # List[SaveGameFile]
-        result_ready = pyqtSignal(list)
+        result_ready = pyqtSignal(dict)
 
     def __init__(self, core: LegendaryCore):
         super(CloudWorker, self).__init__()
@@ -198,11 +198,23 @@ class CloudWorker(QRunnable):
 
     def run(self) -> None:
         try:
-            result = self.core.get_save_games()
+            saves = self.core.get_save_games()
         except HTTPError:
-            result = None
-        self.signals.result_ready.emit(result)
+            self.signals.result_ready.emit(None)
+            return
 
+        save_games = set()
+        for igame in self.core.get_installed_list():
+            game = self.core.get_game(igame.app_name)
+            if self.core.is_installed(igame.app_name) and game.supports_cloud_saves:
+                save_games.add(igame.app_name)
+
+        latest_saves = dict()
+        for s in sorted(saves, key=lambda a: a.datetime):
+            if s.app_name in save_games:
+                latest_saves[s.app_name] = s
+
+        self.signals.result_ready.emit(latest_saves)
 
 def get_raw_save_path(game: Game):
     if game.supports_cloud_saves:
