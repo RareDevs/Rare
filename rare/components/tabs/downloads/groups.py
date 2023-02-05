@@ -33,12 +33,13 @@ class UpdateGroup(QGroupBox):
 
         # lk: For findChildren to work, the upates's layout has to be in a widget
         self.__container = QWidget(self)
-        self.__container.setLayout(QVBoxLayout())
-        self.__container.layout().setContentsMargins(0, 0, 0, 0)
+        self.__container.setVisible(False)
+        container_layout = QVBoxLayout(self.__container)
+        container_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.setLayout(QVBoxLayout())
-        self.layout().addWidget(self.__text)
-        self.layout().addWidget(self.__container)
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.__text)
+        layout.addWidget(self.__container)
 
     def __find_widget(self, app_name: str) -> Optional[UpdateWidget]:
         return self.__container.findChild(UpdateWidget, name=widget_object_name(UpdateWidget, app_name))
@@ -95,13 +96,13 @@ class QueueGroup(QGroupBox):
 
         # lk: For findChildren to work, the queue's layout has to be in a widget
         self.__container = QWidget(self)
-        self.__container.setLayout(QVBoxLayout())
-        self.__container.layout().setContentsMargins(0, 0, 0, 0)
         self.__container.setVisible(False)
+        container_layout = QVBoxLayout(self.__container)
+        container_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.setLayout(QVBoxLayout())
-        self.layout().addWidget(self.__text)
-        self.layout().addWidget(self.__container)
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.__text)
+        layout.addWidget(self.__container)
 
         self.__queue: Deque[str] = deque()
 
