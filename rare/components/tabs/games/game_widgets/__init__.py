@@ -1,4 +1,4 @@
-from typing import Tuple, List, Union, Optional
+from typing import Tuple, List, Union
 
 from PyQt5.QtCore import QObject, pyqtSlot
 from PyQt5.QtWidgets import QWidget
@@ -21,6 +21,9 @@ class LibraryWidgetController(QObject):
         self.core: LegendaryCore = self.rcore.core()
         self.signals: GlobalSignals = self.rcore.signals()
         self.api_results: ApiResults = self.rcore.api_results()
+
+        self.signals.game.installed.connect(self.sort_list)
+        self.signals.game.uninstalled.connect(self.sort_list)
 
     def add_game(self, rgame: RareGame):
         return self.add_widgets(rgame)
