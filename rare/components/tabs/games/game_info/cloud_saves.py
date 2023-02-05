@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QSpacerItem,
 )
+from legendary.models.game import SaveGameStatus
 
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton
@@ -162,18 +163,22 @@ class CloudSaves(QWidget, SideTabContents):
         self.sync_ui.download_button.setDisabled(button_disabled)
         self.sync_ui.upload_button.setDisabled(button_disabled)
 
-        newer = "remote"
-        new_text = self.tr(" (newer)")
-        if newer == "remote":
-            self.sync_ui.cloud_gb.setTitle(self.sync_ui.cloud_gb.title() + new_text)
-        elif newer == "local":
-            self.sync_ui.local_gb.setTitle(self.sync_ui.local_gb.title() + new_text)
+        status, (dt_local, dt_remote) = rgame.save_state
+
+        if status == SaveGameStatus.LOCAL_NEWER:
+            self.sync_ui.local_new_label.setVisible(True)
+            self.sync_ui.cloud_new_label.setVisible(False)
+        elif status == SaveGameStatus.REMOTE_NEWER:
+            self.sync_ui.local_new_label.setVisible(False)
+            self.sync_ui.cloud_new_label.setVisible(True)
+        else:
+            self.sync_ui.local_new_label.setVisible(False)
+            self.sync_ui.cloud_new_label.setVisible(False)
 
         sync_cloud = self.settings.value(f"{self.rgame.app_name}/auto_sync_cloud", True, bool)
         self.cloud_ui.cloud_sync.setChecked(sync_cloud)
         if hasattr(self.rgame.igame, "save_path") and self.rgame.igame.save_path:
             self.cloud_save_path_edit.setText(self.rgame.igame.save_path)
-            status, (dt_local, dt_remote) = rgame.save_state
             self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X") if dt_local else "None")
             self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X") if dt_remote else "None")
         else:

@@ -292,6 +292,11 @@ class RareGame(RareGameSlim):
         worker = QRunnable.create(lambda: _download())
         QThreadPool.globalInstance().start(worker)
 
+    @property
+    def is_save_up_to_date(self):
+        status, (_, _) = self.save_state
+        return status == SaveGameStatus.SAME_AGE
+
     @pyqtSlot(int)
     def __game_launched(self, code: int):
         if code == GameProcess.Code.ON_STARTUP:
@@ -599,13 +604,13 @@ class RareGame(RareGameSlim):
     @property
     def raw_save_path(self) -> str:
         if self.game.supports_cloud_saves:
-            return self.game.metadata['customAttributes'].get("CloudSaveFolder", {}).get("value")
+            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
         return ""
 
     @property
     def raw_save_path_mac(self) -> str:
         if self.game.supports_mac_cloud_saves:
-            return self.game.metadata['customAttributes'].get('CloudSaveFolder_MAC', {}).get('value')
+            return self.game.metadata.get("customAttributes", {}).get('CloudSaveFolder_MAC', {}).get('value')
         return ""
 
     @property

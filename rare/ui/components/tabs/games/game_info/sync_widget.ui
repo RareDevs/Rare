@@ -61,6 +61,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="local_new_label">
+          <property name="text">
+           <string>Newer</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="upload_button">
           <property name="text">
            <string>Upload</string>
@@ -99,6 +106,13 @@
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="cloud_new_label">
+          <property name="text">
+           <string>Newer</string>
           </property>
          </widget>
         </item>
