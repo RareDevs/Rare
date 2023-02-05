@@ -10,7 +10,7 @@ from qtawesome import icon
 from rare.models.install import InstallQueueItemModel, InstallOptionsModel, InstallDownloadModel
 from rare.shared import RareCore, ImageManagerSingleton
 from rare.shared.workers.install_info import InstallInfoWorker
-from rare.ui.components.tabs.downloads.download_widget import Ui_DownloadWidget
+from rare.ui.components.tabs.downloads.base_widget import Ui_BaseWidget
 from rare.ui.components.tabs.downloads.info_widget import Ui_InfoWidget
 from rare.utils.misc import get_size, widget_object_name, elide_text
 from rare.widgets.image_widget import ImageWidget, ImageSize
@@ -65,7 +65,7 @@ class UpdateWidget(QFrame):
 
     def __init__(self, game: Game, igame: InstalledGame, parent=None):
         super(UpdateWidget, self).__init__(parent=parent)
-        self.ui = Ui_DownloadWidget()
+        self.ui = Ui_BaseWidget()
         self.ui.setupUi(self)
         # lk: setObjectName has to be after `setupUi` because it is also set in that function
         self.setObjectName(widget_object_name(self, game.app_name))
@@ -107,7 +107,7 @@ class QueueWidget(QFrame):
 
     def __init__(self, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None):
         super(QueueWidget, self).__init__(parent=parent)
-        self.ui = Ui_DownloadWidget()
+        self.ui = Ui_BaseWidget()
         self.ui.setupUi(self)
         # lk: setObjectName has to be after `setupUi` because it is also set in that function
         self.setObjectName(widget_object_name(self, item.options.app_name))
