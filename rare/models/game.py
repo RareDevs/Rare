@@ -10,7 +10,7 @@ from typing import List, Optional, Dict
 
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, pyqtSlot, QProcess, QThreadPool
 from PyQt5.QtGui import QPixmap
-from legendary.models.game import Game, InstalledGame, SaveGameFile
+from legendary.models.game import Game, InstalledGame, SaveGameFile, SaveGameStatus
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
@@ -199,7 +199,6 @@ class RareGame(RareGameSlim):
         self.__origin_install_path: Optional[str] = None
         self.__origin_install_size: Optional[int] = None
         self.__steam_grade: Optional[str] = None
-        self.__latest_save: Optional[SaveGameFile] = None
 
         self.image_manager = image_manager
 
@@ -245,13 +244,53 @@ class RareGame(RareGameSlim):
             return self.saves[0]
         return None
 
-    @latest_save.setter
-    def latest_save(self, save: SaveGameFile):
-        self.__latest_save = save
+    @property
+    def save_state(self) -> (SaveGameStatus, (datetime, datetime)):
+        if self.saves and self.save_path:
+            return self.core.check_savegame_state(self.save_path, self.latest_save)
+        return SaveGameStatus.NO_SAVE, (None, None)
 
     def upload_saves(self):
-        if not self.game.supports_cloud_saves:
+        status, (dt_local, dt_remote) = self.save_state
+        def _upload():
+            logger.info(f"Uploading save for {self.title}")
+            self.state = RareGame.State.SYNCING
+            self.core.upload_save(self.app_name, self.igame.save_path, dt_local)
+            self.saves = self.core.get_save_games(self.app_name)
+            self.state = RareGame.State.IDLE
+
+        if not self.game.supports_cloud_saves and not self.game.supports_mac_cloud_saves:
             return
+        if status == SaveGameStatus.NO_SAVE or not dt_local:
+            logger.warning("Can't upload non existing save")
+            return
+        if self.state == RareGame.State.SYNCING:
+            logger.error(f"{self.title} is already syncing")
+            return
+
+        worker = QRunnable.create(lambda: _upload())
+        QThreadPool.globalInstance().start(worker)
+
+    def download_saves(self):
+        status, (dt_local, dt_remote) = self.save_state
+        def _download():
+            logger.info(f"Downloading save for {self.title}")
+            self.state = RareGame.State.SYNCING
+            self.core.download_saves(self.app_name, self.latest_save.manifest_name, self.save_path)
+            self.saves = self.core.get_save_games(self.app_name)
+            self.state = RareGame.State.IDLE
+
+        if not self.game.supports_cloud_saves and not self.game.supports_mac_cloud_saves:
+            return
+        if status == SaveGameStatus.NO_SAVE or not dt_remote:
+            logger.error("Can't download non existing save")
+            return
+        if self.state == RareGame.State.SYNCING:
+            logger.error(f"{self.title} is already syncing")
+            return
+
+        worker = QRunnable.create(lambda: _download())
+        QThreadPool.globalInstance().start(worker)
 
     @pyqtSlot(int)
     def __game_launched(self, code: int):

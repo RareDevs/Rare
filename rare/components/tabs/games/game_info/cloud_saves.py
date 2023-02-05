@@ -52,8 +52,6 @@ class CloudSaves(QWidget, SideTabContents):
         self.cloud_ui = Ui_CloudWidget()
         self.cloud_ui.setupUi(self.cloud_widget)
 
-        self.sync_widget.layout().addWidget(self.cloud_widget)
-
         self.cloud_save_path_edit = PathEdit(
             "",
             file_type=QFileDialog.DirectoryOnly,
@@ -83,10 +81,14 @@ class CloudSaves(QWidget, SideTabContents):
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Fixed, QSizePolicy.Expanding))
 
     def upload(self):
-        pass
+        self.sync_ui.upload_button.setDisabled(True)
+        self.sync_ui.download_button.setDisabled(True)
+        self.rgame.upload_saves()
 
     def download(self):
-        pass
+        self.sync_ui.upload_button.setDisabled(True)
+        self.sync_ui.download_button.setDisabled(True)
+        self.rgame.download_saves()
 
     def compute_save_path(self):
         if self.rgame.is_installed and self.rgame.game.supports_cloud_saves:
@@ -145,6 +147,7 @@ class CloudSaves(QWidget, SideTabContents):
             self.core.lgd.set_installed_game(self.rgame.app_name, self.rgame.igame)
 
     def update_game(self, rgame: RareGame):
+        # TODO connect update widget signal to connect to sync state
         self.rgame = rgame
         self.set_title.emit(rgame.title)
         supports_saves = rgame.game.supports_cloud_saves or rgame.game.supports_mac_cloud_saves
@@ -154,6 +157,10 @@ class CloudSaves(QWidget, SideTabContents):
         if not supports_saves:
             return
         self.change = False
+
+        button_disabled = self.rgame.state == RareGame.State.SYNCING
+        self.sync_ui.download_button.setDisabled(button_disabled)
+        self.sync_ui.upload_button.setDisabled(button_disabled)
 
         newer = "remote"
         new_text = self.tr(" (newer)")
@@ -166,9 +173,7 @@ class CloudSaves(QWidget, SideTabContents):
         self.cloud_ui.cloud_sync.setChecked(sync_cloud)
         if hasattr(self.rgame.igame, "save_path") and self.rgame.igame.save_path:
             self.cloud_save_path_edit.setText(self.rgame.igame.save_path)
-            res, (dt_local, dt_remote) = self.core.check_savegame_state(
-                rgame.igame.save_path, self.rgame.latest_save
-            )
+            status, (dt_local, dt_remote) = rgame.save_state
             self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X") if dt_local else "None")
             self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X") if dt_remote else "None")
         else:

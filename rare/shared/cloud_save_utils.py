@@ -54,7 +54,9 @@ class SaveWorker(QRunnable):
                 )
             else:
                 self.core.upload_save(
-                    self.model.rgame.app_name, self.model.path, self.model.date_time
+                    self.model.rgame.app_name,
+                    self.model.path,
+                    self.model.date_time
                 )
         except Exception as e:
             self.signals.finished.emit(self.model.rgame, str(e))
@@ -158,7 +160,6 @@ class CloudSaveUtils(QObject):
             default = self.settings.value("auto_sync_cloud", True, bool)
             if not self.settings.value(f"{rgame.app_name}/auto_sync_cloud", default, bool):
                 return False
-
 
         if not rgame.igame.save_path:
             try:

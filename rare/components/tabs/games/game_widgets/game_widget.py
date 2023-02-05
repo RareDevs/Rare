@@ -86,6 +86,7 @@ class GameWidget(LibraryWidget):
             RareGame.State.VERIFYING: self.tr("Verifying..."),
             RareGame.State.MOVING: self.tr("Moving..."),
             RareGame.State.UNINSTALLING: self.tr("Uninstalling..."),
+            RareGame.State.SYNCING: self.tr("Syncing saves..."),
             "has_update": self.tr("Update available"),
             "needs_verification": self.tr("Needs verification"),
             "not_can_launch": self.tr("Can't launch"),

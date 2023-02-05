@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SyncWidget(object):
     def setupUi(self, SyncWidget):
         SyncWidget.setObjectName("SyncWidget")
-        SyncWidget.resize(400, 300)
+        SyncWidget.resize(208, 109)
         self.verticalLayout = QtWidgets.QVBoxLayout(SyncWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -67,9 +67,6 @@ class Ui_SyncWidget(object):
         self.cloud_layout.addWidget(self.download_button)
         self.horizontalLayout.addWidget(self.cloud_gb)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.path_layout = QtWidgets.QFormLayout()
-        self.path_layout.setObjectName("path_layout")
-        self.verticalLayout.addLayout(self.path_layout)
 
         self.retranslateUi(SyncWidget)
 
