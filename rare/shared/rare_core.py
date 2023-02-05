@@ -21,10 +21,10 @@ logger = getLogger("RareCore")
 
 
 class RareCore(QObject):
-    _instance: Optional['RareCore'] = None
+    __instance: Optional['RareCore'] = None
 
     def __init__(self, args: Namespace):
-        if self._instance is not None:
+        if self.__instance is not None:
             raise RuntimeError("RareCore already initialized")
         super(RareCore, self).__init__()
         self.__args: Optional[Namespace] = None
@@ -46,7 +46,7 @@ class RareCore(QObject):
 
         self.__eos_overlay_rgame = RareEosOverlay(self.__core, self.__image_manager, EOSOverlayApp)
 
-        RareCore._instance = self
+        RareCore.__instance = self
 
     def enqueue_worker(self, rgame: RareGame, worker: QueueWorker):
         if isinstance(worker, VerifyWorker):
@@ -67,9 +67,9 @@ class RareCore(QObject):
 
     @staticmethod
     def instance() -> 'RareCore':
-        if RareCore._instance is None:
+        if RareCore.__instance is None:
             raise RuntimeError("Uninitialized use of RareCore")
-        return RareCore._instance
+        return RareCore.__instance
 
     def signals(self, init: bool = False) -> GlobalSignals:
         if self.__signals is None and not init:
@@ -158,7 +158,7 @@ class RareCore(QObject):
         del self.__args
         self.__args = None
 
-        RareCore._instance = None
+        RareCore.__instance = None
 
         super(RareCore, self).deleteLater()
 
