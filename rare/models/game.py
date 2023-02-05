@@ -147,8 +147,8 @@ class RareGame(QObject):
     @state.setter
     def state(self, state: 'RareGame.State'):
         if state != self.__state:
+            self.__state = state
             self.signals.widget.update.emit()
-        self.__state = state
 
     @property
     def is_idle(self):
@@ -479,7 +479,7 @@ class RareGame(QObject):
         if self.is_installed:
             if self.is_origin:
                 return True
-            if not self.state == RareGame.State.IDLE or self.needs_verification:
+            if (not self.is_idle) or self.needs_verification:
                 return False
             if self.is_foreign and not self.can_run_offline:
                 return False
