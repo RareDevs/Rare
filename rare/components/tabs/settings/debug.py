@@ -4,8 +4,8 @@ from rare.shared import GlobalSignalsSingleton
 
 
 class DebugSettings(QWidget):
-    def __init__(self):
-        super(DebugSettings, self).__init__()
+    def __init__(self, parent=None):
+        super(DebugSettings, self).__init__(parent=parent)
         self.setLayout(QVBoxLayout())
 
         self.raise_runtime_exception_button = QPushButton("Raise Exception")

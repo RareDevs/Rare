@@ -5,19 +5,18 @@ from rare.utils.misc import icon
 
 
 class MainTabBar(QTabBar):
-    def __init__(self, expanded):
-        super(MainTabBar, self).__init__()
-        self._expanded = expanded
+    def __init__(self, parent=None):
+        super(MainTabBar, self).__init__(parent=parent)
         self.setObjectName("MainTabBar")
         font = self.font()
         font.setPointSize(font.pointSize() + 2)
         font.setBold(True)
         self.setFont(font)
-        # self.setContentsMargins(0,10,0,10)
+        self.expanded = -1
 
     def tabSizeHint(self, index):
         size = super(MainTabBar, self).tabSizeHint(index)
-        if index == self._expanded:
+        if index == self.expanded:
             offset = self.width()
             for index in range(self.count()):
                 offset -= super(MainTabBar, self).tabSizeHint(index).width()
@@ -26,8 +25,8 @@ class MainTabBar(QTabBar):
 
 
 class TabButtonWidget(QToolButton):
-    def __init__(self, button_icon: str, tool_tip: str, fallback_icon=None):
-        super(TabButtonWidget, self).__init__()
+    def __init__(self, button_icon: str, tool_tip: str, fallback_icon=None, parent=None):
+        super(TabButtonWidget, self).__init__(parent=parent)
         self.setText("Icon")
         self.setPopupMode(QToolButton.InstantPopup)
         self.setIcon(icon(button_icon, fallback_icon, scale_factor=1.25))

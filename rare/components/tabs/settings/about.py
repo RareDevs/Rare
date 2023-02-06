@@ -19,11 +19,10 @@ def versiontuple(v):
 
 
 class About(QWidget, Ui_About):
-    update_available = False
     update_available_ready = pyqtSignal()
 
-    def __init__(self):
-        super(About, self).__init__()
+    def __init__(self, parent=None):
+        super(About, self).__init__(parent=parent)
         self.setupUi(self)
 
         self.version.setText(f"{__version__}  {code_name}")
@@ -41,6 +40,8 @@ class About(QWidget, Ui_About):
         self.open_browser.clicked.connect(
             lambda: webbrowser.open("https://github.com/Dummerle/Rare/releases/latest")
         )
+
+        self.update_available = False
 
     def update_available_finished(self, data: dict):
         if latest_tag := data.get("tag_name"):

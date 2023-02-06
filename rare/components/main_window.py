@@ -10,10 +10,10 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QScroller,
     QComboBox,
-    QMessageBox, QLabel,
+    QMessageBox, QLabel, QSizePolicy,
 )
 
-from rare.components.tabs import TabWidget
+from rare.components.tabs import MainTabWidget
 from rare.components.tray_icon import TrayIcon
 from rare.shared import RareCore
 from rare.utils.paths import lock_file
@@ -26,8 +26,8 @@ class MainWindow(QMainWindow):
     exit_app: pyqtSignal = pyqtSignal(int)
 
     def __init__(self, parent=None):
-        self._exit_code = 0
-        self._accept_close = False
+        self.__exit_code = 0
+        self.__accept_close = False
         self._window_launched = False
         super(MainWindow, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
@@ -38,11 +38,11 @@ class MainWindow(QMainWindow):
         self.settings = QSettings()
 
         self.setWindowTitle("Rare - GUI for legendary")
-        self.tab_widget = TabWidget(self)
+        self.tab_widget = MainTabWidget(self)
         self.tab_widget.exit_app.connect(self.on_exit_app)
         self.setCentralWidget(self.tab_widget)
 
-        self.status_bar = QStatusBar()
+        self.status_bar = QStatusBar(self)
         self.setStatusBar(self.status_bar)
 
         self.signals.application.update_statusbar.connect(self.update_statusbar)
@@ -125,10 +125,11 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def update_statusbar(self):
         for label in self.status_bar.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
-            self.status_bar.layout().removeWidget(label)
+            self.status_bar.removeWidget(label)
             label.deleteLater()
         for info in self.rcore.queue_info():
             label = QLabel(f"{info.worker_type}: {info.app_title}")
+            label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
             label.setStyleSheet(
                 """
                 QLabel {
@@ -153,17 +154,17 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     @pyqtSlot(int)
     def on_exit_app(self, exit_code=0) -> None:
-        self._exit_code = exit_code
+        self.__exit_code = exit_code
         self.close()
 
     def close(self) -> bool:
-        self._accept_close = True
+        self.__accept_close = True
         return super(MainWindow, self).close()
 
     def closeEvent(self, e: QCloseEvent) -> None:
         # lk: `accept_close` is set to `True` by the `close()` method, overrides exiting to tray in `closeEvent()`
         # lk: ensures exiting instead of hiding when `close()` is called programmatically
-        if not self._accept_close:
+        if not self.__accept_close:
             if self.settings.value("sys_tray", False, bool):
                 self.hide()
                 e.ignore()
@@ -186,6 +187,6 @@ class MainWindow(QMainWindow):
         self.timer.stop()
         self.tray_icon.deleteLater()
         self.hide()
-        self.exit_app.emit(self._exit_code)
+        self.exit_app.emit(self.__exit_code)
         super(MainWindow, self).closeEvent(e)
 

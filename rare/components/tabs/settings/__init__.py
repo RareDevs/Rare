@@ -1,6 +1,8 @@
 from rare.components.tabs.settings.widgets.linux import LinuxSettings
+from rare.shared import ArgumentsSingleton
 from rare.utils.extra_widgets import SideTabWidget
 from .about import About
+from .debug import DebugSettings
 from .default_game_settings import DefaultGameSettings
 from .legendary import LegendarySettings
 from .rare import RareSettings
@@ -9,18 +11,19 @@ from .rare import RareSettings
 class SettingsTab(SideTabWidget):
     def __init__(self, parent=None):
         super(SettingsTab, self).__init__(parent=parent)
-        about_tab = 3
-        self.rare_settings = RareSettings()
-        self.rare_index = self.addTab(self.rare_settings, "Rare")
+        self.args = ArgumentsSingleton()
 
-        self.legendary_index = self.addTab(LegendarySettings(), "Legendary")
-
+        self.rare_index = self.addTab(RareSettings(self), "Rare")
+        self.legendary_index = self.addTab(LegendarySettings(self), "Legendary")
         self.settings_index = self.addTab(DefaultGameSettings(True, self), self.tr("Default Settings"))
 
-        self.about = About()
+        self.about = About(self)
         self.about_index = self.addTab(self.about, "About", "About")
         self.about.update_available_ready.connect(
-            lambda: self.tabBar().setTabText(about_tab, "About (!)")
+            lambda: self.tabBar().setTabText(self.about_index, "About (!)")
         )
+
+        if self.args.debug:
+            self.debug_index = self.addTab(DebugSettings(self), "Debug")
 
         self.setCurrentIndex(self.rare_index)

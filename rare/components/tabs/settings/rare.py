@@ -36,8 +36,8 @@ languages = [("en", "English"),
 
 
 class RareSettings(QWidget, Ui_RareSettings):
-    def __init__(self):
-        super(RareSettings, self).__init__()
+    def __init__(self, parent=None):
+        super(RareSettings, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()
         # (widget_name, option_name, default)
@@ -234,9 +234,6 @@ class RareSettings(QWidget, Ui_RareSettings):
     def save_window_size(self):
         self.settings.setValue("save_size", self.save_size.isChecked())
         self.settings.remove("window_size")
-
-    def save_path(self):
-        self.update_path()
 
     def update_lang(self, i: int):
         self.settings.setValue("language", languages[i][0])
