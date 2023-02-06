@@ -151,6 +151,12 @@ class ApiRequestWorker(LaunchWorker):
             result = [], {}
         self.signals.result.emit(result, "32bit")
 
+        try:
+            # FIXME: Add this to RareCore
+            self.core.lgd.entitlements = self.core.egs.get_user_entitlements()
+        except HTTPError:
+            logger.error("Failed to retrieve user entitlements")
+
 
 class LaunchDialog(QDialog):
     quit_app = pyqtSignal(int)
@@ -290,8 +296,6 @@ class LaunchDialog(QDialog):
         if self.completed >= 2:
             logger.info("App starting")
             ApiResultsSingleton(self.api_results)
-            # FIXME: Add this to RareCore
-            self.core.lgd.entitlements = self.core.egs.get_user_entitlements()
             self.completed += 1
             self.start_app.emit()
 
