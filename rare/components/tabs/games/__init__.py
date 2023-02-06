@@ -1,6 +1,5 @@
 import time
 from logging import getLogger
-from typing import Dict, List
 
 from PyQt5.QtCore import QSettings, Qt, pyqtSlot
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
@@ -40,19 +39,15 @@ class GamesTab(QStackedWidget):
 
         self.active_filter: int = 0
 
-        self.game_list: List[Game] = self.api_results.game_list
-        self.dlcs: Dict[str, List[Game]] = self.api_results.dlcs
-        self.no_assets: List[Game] = self.api_results.no_asset_games
-
         self.games_page = QWidget(parent=self)
-        self.games_page.setLayout(QVBoxLayout())
+        games_page_layout = QVBoxLayout(self.games_page)
         self.addWidget(self.games_page)
 
         self.head_bar = GameListHeadBar(parent=self.games_page)
         self.head_bar.goto_import.connect(self.show_import)
         self.head_bar.goto_egl_sync.connect(self.show_egl_sync)
         self.head_bar.goto_eos_ubisoft.connect(self.show_eos_ubisoft)
-        self.games_page.layout().addWidget(self.head_bar)
+        games_page_layout.addWidget(self.head_bar)
 
         self.game_info_page = GameInfoTabs(self)
         self.game_info_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
@@ -62,37 +57,35 @@ class GamesTab(QStackedWidget):
         self.integrations_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
         self.addWidget(self.integrations_page)
 
-        self.no_asset_names = []
-        if not self.args.offline:
-            for game in self.no_assets:
-                self.no_asset_names.append(game.app_name)
-        else:
-            self.no_assets = []
-
         self.view_stack = SlidingStackedWidget(self.games_page)
         self.view_stack.setFrameStyle(QFrame.NoFrame)
+
         self.icon_view_scroll = QScrollArea(self.view_stack)
         self.icon_view_scroll.setWidgetResizable(True)
         self.icon_view_scroll.setFrameShape(QFrame.StyledPanel)
         self.icon_view_scroll.horizontalScrollBar().setDisabled(True)
+
         self.list_view_scroll = QScrollArea(self.view_stack)
         self.list_view_scroll.setWidgetResizable(True)
         self.list_view_scroll.setFrameShape(QFrame.StyledPanel)
         self.list_view_scroll.horizontalScrollBar().setDisabled(True)
+
         self.icon_view = QWidget(self.icon_view_scroll)
-        self.icon_view.setLayout(LibraryLayout(self.icon_view))
-        self.icon_view.layout().setContentsMargins(0, 13, 0, 0)
-        self.icon_view.layout().setAlignment(Qt.AlignTop)
+        icon_view_layout = LibraryLayout(self.icon_view)
+        icon_view_layout.setContentsMargins(0, 13, 0, 0)
+        icon_view_layout.setAlignment(Qt.AlignTop)
+
         self.list_view = QWidget(self.list_view_scroll)
-        self.list_view.setLayout(QVBoxLayout(self.list_view))
-        self.list_view.layout().setContentsMargins(3, 3, 9, 3)
-        self.list_view.layout().setAlignment(Qt.AlignTop)
+        list_view_layout = QVBoxLayout(self.list_view)
+        list_view_layout.setContentsMargins(3, 3, 9, 3)
+        list_view_layout.setAlignment(Qt.AlignTop)
+
         self.library_controller = LibraryWidgetController(self.icon_view, self.list_view, self)
         self.icon_view_scroll.setWidget(self.icon_view)
         self.list_view_scroll.setWidget(self.list_view)
         self.view_stack.addWidget(self.icon_view_scroll)
         self.view_stack.addWidget(self.list_view_scroll)
-        self.games_page.layout().addWidget(self.view_stack)
+        games_page_layout.addWidget(self.view_stack)
 
         if not self.settings.value("icon_view", True, bool):
             self.view_stack.setCurrentWidget(self.list_view_scroll)
@@ -151,12 +144,16 @@ class GamesTab(QStackedWidget):
 
     @pyqtSlot()
     def update_count_games_label(self):
-        self.head_bar.set_games_count(len(self.core.get_installed_list()), len(self.game_list))
+        self.head_bar.set_games_count(
+            len(self.core.get_installed_list()), len(self.api_results.game_list + self.api_results.no_asset_games)
+        )
 
     # FIXME: Remove this when RareCore is in place
     def __create_game_with_dlcs(self, game: Game) -> RareGame:
         rgame = RareGame(self.core, self.image_manager, game)
-        if game_dlcs := self.dlcs[rgame.game.catalog_item_id]:
+        saves = [save for save in self.api_results.saves if save.app_name == game.app_name]
+        rgame.saves = saves
+        if game_dlcs := self.api_results.dlcs[rgame.game.catalog_item_id]:
             for dlc in game_dlcs:
                 rdlc = RareGame(self.core, self.image_manager, dlc)
                 self.rcore.add_game(rdlc)
@@ -170,7 +167,7 @@ class GamesTab(QStackedWidget):
 
     def setup_game_list(self):
         self.update_count_games_label()
-        for game in self.game_list + self.no_assets:
+        for game in self.api_results.game_list + self.api_results.no_asset_games:
             rgame = self.__create_game_with_dlcs(game)
             self.rcore.add_game(rgame)
             icon_widget, list_widget = self.add_library_widget(rgame)
