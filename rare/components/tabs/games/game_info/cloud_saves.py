@@ -157,6 +157,7 @@ class CloudSaves(QWidget, SideTabContents):
         self.info_label.setVisible(not supports_saves)
         if not supports_saves:
             return
+
         self.change = False
 
         button_disabled = self.rgame.state == RareGame.State.SYNCING

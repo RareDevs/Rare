@@ -212,7 +212,9 @@ class CloudWorker(QRunnable):
         latest_saves = dict()
         for s in sorted(saves, key=lambda a: a.datetime):
             if s.app_name in save_games:
-                latest_saves[s.app_name] = s
+                if not latest_saves.get(s.app_name):
+                    latest_saves[s.app_name] = []
+                latest_saves[s.app_name].append(s)
 
         self.signals.result_ready.emit(latest_saves)
 
