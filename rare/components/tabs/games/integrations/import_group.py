@@ -165,13 +165,11 @@ class ImportGroup(QGroupBox):
         self.api_results = RareCore.instance().api_results()
 
         #self.app_name_list = [rgame.app_name for rgame in self.rcore.games]
-        self.app_name_list = [game.app_name for game in self.api_results.game_list]
+        self.app_name_list = [game.app_name for game in self.api_results.games]
         #self.install_dir_list = [rgame.folder_name for rgame in self.rcore.games if not rgame.is_dlc]
         self.install_dir_list = [
-            game.metadata.get("customAttributes", {})
-            .get("FolderName", {})
-            .get("value", game.app_name)
-            for game in self.api_results.game_list
+            game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value", game.app_name)
+            for game in self.api_results.games
             if not game.is_dlc
         ]
 
@@ -188,8 +186,7 @@ class ImportGroup(QGroupBox):
             placeholder=self.tr("Use in case the app name was not found automatically"),
             completer=AppNameCompleter(
                 # app_names=[(rgame.app_name, rgame.app_title) for rgame in self.rcore.games]
-                app_names=[(i.app_name, i.app_title) for i in self.api_results.game_list]
-            ),
+                app_names = [(i.app_name, i.app_title) for i in self.api_results.games]),
             edit_func=self.app_name_edit_callback,
             parent=self,
         )

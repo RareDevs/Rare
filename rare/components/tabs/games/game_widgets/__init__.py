@@ -115,7 +115,7 @@ class LibraryWidgetController(QObject):
             list_widgets = self._list_container.findChildren(ListGameWidget)
             icon_app_names = set([iw.rgame.app_name for iw in icon_widgets])
             list_app_names = set([lw.rgame.app_name for lw in list_widgets])
-            games = self.api_results.game_list + self.api_results.no_asset_games
+            games = self.api_results.games + self.api_results.na_games
             game_app_names = set([g.app_name for g in games])
             new_icon_app_names = game_app_names.difference(icon_app_names)
             new_list_app_names = game_app_names.difference(list_app_names)

@@ -145,29 +145,28 @@ class GamesTab(QStackedWidget):
     @pyqtSlot()
     def update_count_games_label(self):
         self.head_bar.set_games_count(
-            len(self.core.get_installed_list()), len(self.api_results.game_list + self.api_results.no_asset_games)
+            len(self.core.get_installed_list()), len(self.api_results.games + self.api_results.na_games)
         )
 
     # FIXME: Remove this when RareCore is in place
     def __create_game_with_dlcs(self, game: Game) -> RareGame:
         rgame = RareGame(self.core, self.image_manager, game)
-        saves = [save for save in self.api_results.saves if save.app_name == game.app_name]
-        rgame.saves = saves
-        if game_dlcs := self.api_results.dlcs[rgame.game.catalog_item_id]:
-            for dlc in game_dlcs:
-                rdlc = RareGame(self.core, self.image_manager, dlc)
-                self.rcore.add_game(rdlc)
-                # lk: plug dlc progress signals to the game's
-                rdlc.signals.progress.start.connect(rgame.signals.progress.start)
-                rdlc.signals.progress.update.connect(rgame.signals.progress.update)
-                rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
-                rdlc.set_pixmap()
-                rgame.owned_dlcs.append(rdlc)
+        rgame.saves = [save for save in self.api_results.saves if save.app_name == game.app_name]
+        for dlc_dict in [self.api_results.dlcs, self.api_results.na_dlcs]:
+            if game_dlcs := dlc_dict.get(rgame.game.catalog_item_id, False):
+                for dlc in game_dlcs:
+                    rdlc = RareGame(self.core, self.image_manager, dlc)
+                    self.rcore.add_game(rdlc)
+                    # lk: plug dlc progress signals to the game's
+                    rdlc.signals.progress.start.connect(rgame.signals.progress.start)
+                    rdlc.signals.progress.update.connect(rgame.signals.progress.update)
+                    rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
+                    rdlc.set_pixmap()
+                    rgame.owned_dlcs.append(rdlc)
         return rgame
 
     def setup_game_list(self):
-        self.update_count_games_label()
-        for game in self.api_results.game_list + self.api_results.no_asset_games:
+        for game in self.api_results.games + self.api_results.na_games:
             rgame = self.__create_game_with_dlcs(game)
             self.rcore.add_game(rgame)
             icon_widget, list_widget = self.add_library_widget(rgame)
@@ -178,6 +177,7 @@ class GamesTab(QStackedWidget):
             self.list_view.layout().addWidget(list_widget)
             rgame.set_pixmap()
         self.filter_games(self.active_filter)
+        self.update_count_games_label()
 
     def add_library_widget(self, rgame: RareGame):
         try:

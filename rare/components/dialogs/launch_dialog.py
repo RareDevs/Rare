@@ -71,7 +71,7 @@ class ImageWorker(LaunchWorker):
         dlc_list = [dlc[0] for dlc in dlcs.values()]
 
         na_games, na_dlcs = self.core.get_non_asset_library_items(force_refresh=False, skip_ue=False)
-        self.signals.result.emit(na_games, "no_assets")
+        self.signals.result.emit((na_games, na_dlcs), "no_assets")
         na_dlc_list = [dlc[0] for dlc in na_dlcs.values()]
 
         game_list = games + dlc_list + na_games + na_dlc_list
@@ -246,10 +246,9 @@ class LaunchDialog(QDialog):
         else:
             self.completed = 2
             if self.core.lgd.assets:
-                (
-                    self.api_results.game_list,
-                    self.api_results.dlcs,
-                ) = self.core.get_game_and_dlc_list(False)
+                self.api_results.games, self.api_results.dlcs = self.core.get_game_and_dlc_list(
+                    update_assets=False, skip_ue=False
+                )
                 self.api_results.bit32_games = list(
                     map(lambda i: i.app_name, self.core.get_game_list(False, "Win32"))
                 )
@@ -258,28 +257,32 @@ class LaunchDialog(QDialog):
                 )
             else:
                 logger.warning("No assets found. Falling back to empty game lists")
-                self.api_results.game_list, self.api_results.dlcs = [], {}
-                self.api_results.mac_games = self.api_results.bit32_games = []
+                self.api_results.games, self.api_results.dlcs = [], {}
+                self.api_results.mac_games, self.api_results.bit32_games = [], []
+            self.api_results.na_games, self.api_results.na_dlcs = [], {}
+            self.api_results.saves = []
             self.finish()
 
     def handle_api_worker_result(self, result, text):
         logger.debug(f"Api Request got from {text}")
         if text == "gamelist":
             if result:
-                self.api_results.game_list, self.api_results.dlcs = result
+                self.api_results.games, self.api_results.dlcs = result
             else:
-                (
-                    self.api_results.game_list,
-                    self.api_results.dlcs,
-                ) = self.core.get_game_and_dlc_list(False)
+                self.api_results.games, self.api_results.dlcs = self.core.get_game_and_dlc_list(
+                    update_assets=False, skip_ue=False
+                )
         elif text == "no_assets":
-            self.api_results.no_asset_games = result if result else []
-
+            if result:
+                self.api_results.na_games, self.api_results.na_dlcs = result
+            else:
+                self.api_results.na_games, self.api_results.na_dlcs = self.core.get_non_asset_library_items(
+                    force_refresh=False, skip_ue=False
+                )
         elif text == "32bit":
             self.api_results.bit32_games = [i.app_name for i in result[0]] if result else []
         elif text == "mac":
             self.api_results.mac_games = [i.app_name for i in result[0]] if result else []
-
         elif text == "saves":
             self.api_results.saves = result
 
