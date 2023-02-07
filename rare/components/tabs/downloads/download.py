@@ -18,13 +18,6 @@ class DownloadWidget(ImageWidget):
         super(DownloadWidget, self).__init__(parent=parent)
         self.ui = Ui_DownloadWidget()
         self.ui.setupUi(self)
-        self.ui.progress_bar.setStyleSheet(
-            """
-            QProgressBar {
-                background-color : rgba(0, 0, 0, 0.25);
-            }
-            """
-        )
 
     """
     Painting overrides
@@ -68,7 +61,7 @@ class DownloadWidget(ImageWidget):
 
     def paint_image_cover(self, painter: QPainter, a0: QPaintEvent) -> None:
         painter.setOpacity(self._opacity)
-        color = self.palette().color(QPalette.Background)  # .darker(75)
+        color = self.palette().color(QPalette.Background).darker(75)
         painter.fillRect(self.rect(), color)
         brush = QBrush(self._pixmap)
         brush.setTransform(self._transform)

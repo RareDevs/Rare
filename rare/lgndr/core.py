@@ -54,7 +54,6 @@ class LegendaryCore(LegendaryCoreReal):
             disable_https=disable_https
         )
         # lk: monkeypatch run_real (the method that emits the stats) into DLManager
-
         # pylint: disable=E1111
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
         # lk: set the queue for reporting statistics back the UI
