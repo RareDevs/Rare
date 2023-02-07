@@ -459,6 +459,12 @@ class RareGame(QObject):
     def folder_name(self) -> str:
         return self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value")
 
+    @property
+    def raw_save_path(self) -> str:
+        if self.game.supports_cloud_saves:
+            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
+        return ""
+
     def grant_date(self, force=False) -> datetime:
         if self.metadata.grant_date is None or force:
             entitlements = self.core.lgd.entitlements
