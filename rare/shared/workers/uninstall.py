@@ -1,8 +1,6 @@
-import os
-import platform
 from logging import getLogger
 
-from PyQt5.QtCore import QStandardPaths, QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 from legendary.core import LegendaryCore
 
 from rare.lgndr.cli import LegendaryCLI
@@ -11,35 +9,23 @@ from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
 from rare.models.install import UninstallOptionsModel
 from rare.utils import config_helper
+from rare.utils.paths import desktop_links_supported, desktop_link_types, desktop_link_path
 from .worker import Worker
 
 logger = getLogger("UninstallWorker")
 
-
+# TODO: You can use RareGame directly here once this is called inside RareCore and skip metadata fetch
 def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_config=False):
-    igame = core.get_installed_game(app_name)
+    game = core.get_game(app_name)
 
     # remove shortcuts link
-    desktop = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
-    applications = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
-    if platform.system() == "Linux":
-        desktop_shortcut = os.path.join(desktop, f"{igame.title}.desktop")
-        if os.path.exists(desktop_shortcut):
-            os.remove(desktop_shortcut)
-
-        applications_shortcut = os.path.join(applications, f"{igame.title}.desktop")
-        if os.path.exists(applications_shortcut):
-            os.remove(applications_shortcut)
-
-    elif platform.system() == "Windows":
-        game_title = igame.title.split(":")[0]
-        desktop_shortcut = os.path.join(desktop, f"{game_title}.lnk")
-        if os.path.exists(desktop_shortcut):
-            os.remove(desktop_shortcut)
-
-        start_menu_shortcut = os.path.join(applications, "..", f"{game_title}.lnk")
-        if os.path.exists(start_menu_shortcut):
-            os.remove(start_menu_shortcut)
+    if desktop_links_supported():
+        for link_type in desktop_link_types():
+            link_path = desktop_link_path(
+                game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value"), link_type
+            )
+            if link_path.exists():
+                link_path.unlink(missing_ok=True)
 
     status = LgndrIndirectStatus()
     LegendaryCLI(core).uninstall_game(

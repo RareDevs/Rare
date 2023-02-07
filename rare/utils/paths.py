@@ -93,6 +93,10 @@ __link_type = {
 }
 
 
+def desktop_link_types() -> List:
+    return list(__link_type.keys())
+
+
 def desktop_link_path(link_name: str, link_type: str) -> Path:
     """
     Creates the path of a shortcut link
