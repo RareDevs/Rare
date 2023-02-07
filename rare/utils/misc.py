@@ -1,7 +1,5 @@
 import os
 import platform
-import shlex
-import sys
 from logging import getLogger
 from typing import List, Union, Type
 
@@ -12,23 +10,19 @@ from PyQt5.QtCore import (
     QObject,
     QRunnable,
     QSettings,
-    QStandardPaths,
     QFile,
-    QDir, Qt,
+    QDir,
+    Qt,
 )
-from PyQt5.QtGui import QPalette, QColor, QImage, QFontMetrics
-from PyQt5.QtWidgets import qApp, QStyleFactory, QWidget, QLabel
+from PyQt5.QtGui import QPalette, QColor, QFontMetrics
+from PyQt5.QtWidgets import qApp, QStyleFactory, QLabel
 from PyQt5.sip import wrappertype
 from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from requests.exceptions import HTTPError
 
 from rare.models.apiresults import ApiResults
-from rare.utils.paths import image_dir, resources_path
-
-if platform.system() == "Windows":
-    # noinspection PyUnresolvedReferences
-    from win32com.client import Dispatch  # pylint: disable=E0401
+from rare.utils.paths import resources_path
 
 logger = getLogger("Utils")
 settings = QSettings("Rare", "Rare")
@@ -154,152 +148,6 @@ def get_size(b: Union[int, float]) -> str:
         if b < 1024:
             return f"{b:.2f}{i}B"
         b /= 1024
-
-
-def get_rare_executable() -> List[str]:
-    # lk: detect if nuitka
-    if "__compiled__" in globals():
-        executable = [sys.executable]
-    elif platform.system() == "Linux" or platform.system() == "Darwin":
-        if p := os.environ.get("APPIMAGE"):
-            executable = [p]
-        else:
-            if sys.executable == os.path.abspath(sys.argv[0]):
-                executable = [sys.executable]
-            else:
-                executable = [sys.executable, os.path.abspath(sys.argv[0])]
-    elif platform.system() == "Windows":
-        executable = [sys.executable]
-
-        if sys.executable != os.path.abspath(sys.argv[0]):
-            executable.append(os.path.abspath(sys.argv[0]))
-
-        if executable[0].endswith("python.exe"):
-            # be sure to start consoleless then
-            executable[0] = executable[0].replace("python.exe", "pythonw.exe")
-            if executable[1].endswith("rare"):
-                executable[1] = executable[1] + ".exe"
-    else:
-        executable = [sys.executable]
-
-    executable[0] = os.path.abspath(executable[0])
-    return executable
-
-
-def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link="desktop",
-                        for_rare: bool = False) -> bool:
-    if not for_rare:
-        igame = core.get_installed_game(app_name)
-
-        icon = os.path.join(os.path.join(image_dir(), igame.app_name, "installed.png"))
-        icon = icon.replace(".png", "")
-
-    if platform.system() == "Linux":
-        if type_of_link == "desktop":
-            path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
-        elif type_of_link == "start_menu":
-            path = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
-        else:
-            return False
-        if not os.path.exists(path):
-            return False
-        executable = get_rare_executable()
-        executable = shlex.join(executable)
-
-        if for_rare:
-            with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
-                desktop_file.write(
-                    "[Desktop Entry]\n"
-                    f"Name=Rare\n"
-                    f"Type=Application\n"
-                    f"Categories=Game;\n"
-                    f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
-                    f"Exec={executable}\n"
-                    "Terminal=false\n"
-                    "StartupWMClass=Rare\n"
-                )
-        else:
-            with open(os.path.join(path, f"{igame.title}.desktop"), "w") as desktop_file:
-                desktop_file.write(
-                    "[Desktop Entry]\n"
-                    f"Name={igame.title}\n"
-                    f"Type=Application\n"
-                    f"Categories=Game;\n"
-                    f"Icon={icon}.png\n"
-                    f"Exec={executable} launch {app_name}\n"
-                    "Terminal=false\n"
-                    "StartupWMClass=Rare\n"
-                )
-            os.chmod(os.path.join(path, f"{igame.title}.desktop"), 0o755)
-
-        return True
-
-    elif platform.system() == "Windows":
-        # Target of shortcut
-        if type_of_link == "desktop":
-            target_folder = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
-        elif type_of_link == "start_menu":
-            target_folder = os.path.join(
-                QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation),
-                ".."
-            )
-        else:
-            logger.warning("No valid type of link")
-            return False
-        if not os.path.exists(target_folder):
-            return False
-
-        if for_rare:
-            linkName = "Rare.lnk"
-        else:
-            linkName = igame.title
-            # TODO: this conversion is not applied everywhere (see base_installed_widget), should it?
-            for c in r'<>?":|\/*':
-                linkName = linkName.replace(c, "")
-
-            linkName = f"{linkName.strip()}.lnk"
-
-        # Path to location of link file
-        pathLink = os.path.join(target_folder, linkName)
-
-        # Add shortcut
-        shell = Dispatch("WScript.Shell")
-        shortcut = shell.CreateShortCut(pathLink)
-
-        executable = get_rare_executable()
-        arguments = []
-
-        if len(executable) > 1:
-            arguments.extend(executable[1:])
-        executable = executable[0]
-
-        if not for_rare:
-            arguments.extend(["launch", app_name])
-
-        shortcut.Targetpath = executable
-        # Maybe there is a better solution, but windows does not accept single quotes (Windows is weird)
-        shortcut.Arguments = shlex.join(arguments).replace("'", '"')
-        if for_rare:
-            shortcut.WorkingDirectory = QStandardPaths.writableLocation(QStandardPaths.HomeLocation)
-
-        # Icon
-        if for_rare:
-            icon_location = os.path.join(resources_path, "images", "Rare.ico")
-        else:
-            if not os.path.exists(f"{icon}.ico"):
-                img = QImage()
-                img.load(f"{icon}.png")
-                img.save(f"{icon}.ico")
-                logger.info("Created ico file")
-            icon_location = f"{icon}.ico"
-        shortcut.IconLocation = os.path.abspath(icon_location)
-
-        shortcut.save()
-        return True
-
-    # mac OS is based on Darwin
-    elif platform.system() == "Darwin":
-        return False
 
 
 class CloudWorker(QRunnable):

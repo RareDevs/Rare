@@ -4,13 +4,12 @@ import subprocess
 import sys
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, QStandardPaths, Qt
+from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
-from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.settings.widgets.rpc import RPCSettings
+from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
-from rare.utils.paths import log_dir
 from rare.utils.misc import (
     get_translations,
     get_color_schemes,
@@ -18,8 +17,8 @@ from rare.utils.misc import (
     get_style_sheets,
     set_style_sheet,
     get_size,
-    create_desktop_link,
 )
+from rare.utils.paths import create_desktop_link, desktop_link_path, log_dir, desktop_links_supported
 
 logger = getLogger("RareSettings")
 
@@ -106,36 +105,28 @@ class RareSettings(QWidget, Ui_RareSettings):
             )
         )
         self.notification.stateChanged.connect(
-            lambda: self.settings.setValue(
-                "notification", self.notification.isChecked()
-            )
+            lambda: self.settings.setValue("notification", self.notification.isChecked())
         )
         self.save_size.stateChanged.connect(self.save_window_size)
         self.log_games.stateChanged.connect(
             lambda: self.settings.setValue("show_console", self.log_games.isChecked())
         )
 
-        desktop = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
-        applications = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
-        if platform.system() == "Linux":
-            self.desktop_file = os.path.join(desktop, "Rare.desktop")
-            self.start_menu_link = os.path.join(applications, "Rare.desktop")
-        elif platform.system() == "Windows":
-            self.desktop_file = os.path.join(desktop, "Rare.lnk")
-            self.start_menu_link = os.path.join(applications, "..", "Rare.lnk")
+        if desktop_links_supported():
+            self.desktop_link = desktop_link_path("Rare", "desktop")
+            self.start_menu_link = desktop_link_path("Rare", "start_menu")
         else:
-            self.desktop_link_btn.setText(self.tr("Not supported"))
+            self.desktop_link_btn.setToolTip(self.tr("Not supported"))
             self.desktop_link_btn.setDisabled(True)
-            self.startmenu_link_btn.setText(self.tr("Not supported"))
+            self.startmenu_link_btn.setToolTip(self.tr("Not supported"))
             self.startmenu_link_btn.setDisabled(True)
-
-            self.desktop_file = ""
+            self.desktop_link = ""
             self.start_menu_link = ""
 
-        if self.desktop_file and os.path.exists(self.desktop_file):
+        if self.desktop_link and self.desktop_link.exists():
             self.desktop_link_btn.setText(self.tr("Remove desktop link"))
 
-        if self.start_menu_link and os.path.exists(self.start_menu_link):
+        if self.start_menu_link and self.start_menu_link.exists():
             self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
 
         self.desktop_link_btn.clicked.connect(self.create_desktop_link)
@@ -171,7 +162,8 @@ class RareSettings(QWidget, Ui_RareSettings):
     def create_start_menu_link(self):
         try:
             if not os.path.exists(self.start_menu_link):
-                create_desktop_link(type_of_link="start_menu", for_rare=True)
+                if not create_desktop_link(app_name="rare_shortcut", link_type="start_menu"):
+                    return
                 self.startmenu_link_btn.setText(self.tr("Remove start menu link"))
             else:
                 os.remove(self.start_menu_link)
@@ -186,11 +178,12 @@ class RareSettings(QWidget, Ui_RareSettings):
 
     def create_desktop_link(self):
         try:
-            if not os.path.exists(self.desktop_file):
-                create_desktop_link(type_of_link="desktop", for_rare=True)
+            if not os.path.exists(self.desktop_link):
+                if not create_desktop_link(app_name="rare_shortcut", link_type="desktop"):
+                    return
                 self.desktop_link_btn.setText(self.tr("Remove Desktop link"))
             else:
-                os.remove(self.desktop_file)
+                os.remove(self.desktop_link)
                 self.desktop_link_btn.setText(self.tr("Create desktop link"))
         except PermissionError as e:
             logger.error(str(e))

@@ -65,13 +65,13 @@ def main():
     args = parser.parse_args()
 
     if args.desktop_shortcut or args.startmenu_shortcut:
-        from rare.utils.misc import create_desktop_link
+        from rare.utils.paths import create_desktop_link
 
         if args.desktop_shortcut:
-            create_desktop_link(type_of_link="desktop", for_rare=True)
+            create_desktop_link(app_name="rare_shortcut", link_type="desktop")
 
         if args.startmenu_shortcut:
-            create_desktop_link(type_of_link="start_menu", for_rare=True)
+            create_desktop_link(app_name="rare_shortcut", link_type="start_menu")
 
         print("Link created")
         return

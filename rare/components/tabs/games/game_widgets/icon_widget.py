@@ -17,15 +17,15 @@ from rare.widgets.elide_label import ElideLabel
 class IconWidget(object):
     def __init__(self):
         self._effect = None
-        self._animation = None
+        self._animation: QPropertyAnimation = None
 
-        self.status_label = None
-        self.mini_widget = None
-        self.mini_effect = None
-        self.title_label = None
-        self.tooltip_label = None
-        self.launch_btn = None
-        self.install_btn = None
+        self.status_label: ElideLabel = None
+        self.mini_widget: QWidget = None
+        self.mini_effect: QGraphicsOpacityEffect = None
+        self.title_label: QLabel = None
+        self.tooltip_label: ElideLabel = None
+        self.launch_btn: QPushButton = None
+        self.install_btn: QPushButton = None
 
     def setupUi(self, widget: QWidget):
         # information at top
@@ -34,6 +34,7 @@ class IconWidget(object):
         self.status_label.setStyleSheet(
             f"QLabel#{self.status_label.objectName()}"
             "{"
+            "font-weight: bold;"
             "color: white;"
             "background-color: rgba(0, 0, 0, 65%);"
             "border-radius: 5%;"
@@ -68,11 +69,12 @@ class IconWidget(object):
         self.title_label.setStyleSheet(
             f"QLabel#{self.title_label.objectName()}"
             "{"
+            "font-weight: bold;"
             "background-color: rgba(0, 0, 0, 0%); color: white;"
             "}"
         )
         self.title_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.title_label.setAlignment(Qt.AlignTop)
+        self.title_label.setAlignment(Qt.AlignVCenter)
         self.title_label.setAutoFillBackground(False)
         self.title_label.setWordWrap(True)
 
@@ -125,12 +127,6 @@ class IconWidget(object):
         self.install_btn.setFixedSize(QSize(widget.width() // 4, widget.width() // 4))
 
         # Create layouts
-        # layout for the whole widget, holds the image
-        layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSizeConstraint(QVBoxLayout.SetFixedSize)
-
         # layout for the image, holds the mini widget and a spacer item
         image_layout = QVBoxLayout()
         image_layout.setContentsMargins(2, 2, 2, 2)

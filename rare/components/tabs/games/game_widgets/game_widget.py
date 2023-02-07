@@ -1,9 +1,8 @@
-import os
 import platform
-from abc import abstractmethod
+from abc import ABCMeta
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QStandardPaths, Qt, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QMessageBox, QAction, QLabel, QPushButton
 
@@ -14,10 +13,17 @@ from rare.shared import (
     ArgumentsSingleton,
     ImageManagerSingleton,
 )
-from rare.utils.misc import create_desktop_link
+from rare.utils.paths import desktop_links_supported, desktop_link_path, create_desktop_link
 from .library_widget import LibraryWidget
 
 logger = getLogger("GameWidget")
+
+
+class GameWidgetUi(metaclass=ABCMeta):
+    status_label: QLabel
+    install_btn: QPushButton
+    launch_btn: QPushButton
+    tooltip_label: QLabel
 
 
 class GameWidget(LibraryWidget):
@@ -33,86 +39,41 @@ class GameWidget(LibraryWidget):
         self.rgame: RareGame = rgame
 
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
-        if self.rgame.is_installed or self.rgame.is_origin:
-            self.launch_action = QAction(self.tr("Launch"), self)
-            self.launch_action.triggered.connect(self._launch)
-            self.addAction(self.launch_action)
-        else:
-            self.install_action = QAction(self.tr("Install"), self)
-            self.install_action.triggered.connect(self._install)
-            self.addAction(self.install_action)
 
-        # if self.rgame.game.supports_cloud_saves:
-        #     sync = QAction(self.tr("Sync with cloud"), self)
-        #     sync.triggered.connect(self.sync_game)
-        #     self.addAction(sync)
+        self.launch_action = QAction(self.tr("Launch"), self)
+        self.launch_action.triggered.connect(self._launch)
 
-        desktop = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
-        if os.path.exists(
-                os.path.join(desktop, f"{self.rgame.app_title}.desktop")
-        ) or os.path.exists(os.path.join(desktop, f"{self.rgame.app_title}.lnk")):
-            self.create_desktop = QAction(self.tr("Remove Desktop link"))
-        else:
-            self.create_desktop = QAction(self.tr("Create Desktop link"))
-        if self.rgame.is_installed:
-            self.create_desktop.triggered.connect(
-                lambda: self.create_desktop_link("desktop")
-            )
-            self.addAction(self.create_desktop)
+        self.install_action = QAction(self.tr("Install"), self)
+        self.install_action.triggered.connect(self._install)
 
-        applications = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
-        if platform.system() == "Linux":
-            start_menu_file = os.path.join(applications, f"{self.rgame.app_title}.desktop")
-        elif platform.system() == "Windows":
-            start_menu_file = os.path.join(applications, "..", f"{self.rgame.app_title}.lnk")
-        else:
-            start_menu_file = ""
-        if platform.system() in ["Windows", "Linux"]:
-            if os.path.exists(start_menu_file):
-                self.create_start_menu = QAction(self.tr("Remove start menu link"))
-            else:
-                self.create_start_menu = QAction(self.tr("Create start menu link"))
-            if self.rgame.is_installed:
-                self.create_start_menu.triggered.connect(
-                    lambda: self.create_desktop_link("start_menu")
-                )
-                self.addAction(self.create_start_menu)
+        # self.sync_action = QAction(self.tr("Sync with cloud"), self)
+        # self.sync_action.triggered.connect(self.sync_saves)
 
-        reload_image = QAction(self.tr("Reload Image"), self)
-        reload_image.triggered.connect(self._on_reload_image)
-        self.addAction(reload_image)
+        self.desktop_link_action = QAction(self)
+        self.desktop_link_action.triggered.connect(
+            lambda: self._create_link(self.rgame.folder_name, "desktop")
+        )
 
-        if self.rgame.is_installed and not self.rgame.is_origin:
-            self.uninstall_action = QAction(self.tr("Uninstall"), self)
-            self.uninstall_action.triggered.connect(self._uninstall)
-            self.addAction(self.uninstall_action)
+        self.menu_link_action = QAction(self)
+        self.menu_link_action.triggered.connect(
+            lambda: self._create_link(self.rgame.folder_name, "start_menu")
+        )
 
-        self.texts = {
-            "hover": {
-                "update_available": self.tr("Start without version check"),
-                "launch": self.tr("Launch Game"),
-                "launch_origin": self.tr("Launch/Link"),
-                "running": self.tr("Game running"),
-                "launch_offline": self.tr("Launch offline"),
-                "no_launch": self.tr("Can't launch game")
-            },
-            "status": {
-                "needs_verification": self.tr("Please verify game before playing"),
-                "running": self.tr("Game running"),
-                "syncing": self.tr("Syncing cloud saves"),
-                "update_available": self.tr("Update available"),
-                "no_meta": self.tr("Game is only offline available"),
-                "no_launch": self.tr("Can't launch game"),
-            },
-        }
+        self.reload_action = QAction(self.tr("Reload Image"), self)
+        self.reload_action.triggered.connect(self._on_reload_image)
+
+        self.uninstall_action = QAction(self.tr("Uninstall"), self)
+        self.uninstall_action.triggered.connect(self._uninstall)
+
+        self.update_actions()
 
         # signals
-        self.rgame.signals.widget.update.connect(
-            lambda: self.setPixmap(self.rgame.pixmap)
-        )
-        self.rgame.signals.widget.update.connect(
-            self.update_widget
-        )
+        self.rgame.signals.widget.update.connect(lambda: self.setPixmap(self.rgame.pixmap))
+        self.rgame.signals.widget.update.connect(self.update_buttons)
+        self.rgame.signals.widget.update.connect(self.update_state)
+        self.rgame.signals.game.installed.connect(self.update_actions)
+        self.rgame.signals.game.uninstalled.connect(self.update_actions)
+
         self.rgame.signals.progress.start.connect(
             lambda: self.showProgress(
                 self.image_manager.get_pixmap(self.rgame.app_name, True),
@@ -125,67 +86,113 @@ class GameWidget(LibraryWidget):
         self.rgame.signals.progress.finish.connect(
             lambda e: self.hideProgress(e)
         )
-        self.rgame.signals.progress.finish.connect(self.set_status)
 
-    @abstractmethod
-    def set_status(self, label: QLabel):
-        if self.rgame.is_installed:
+        self.state_strings = {
+            RareGame.State.IDLE: "",
+            RareGame.State.RUNNING: self.tr("Running..."),
+            RareGame.State.DOWNLOADING: self.tr("Downloading..."),
+            RareGame.State.VERIFYING: self.tr("Verifying..."),
+            RareGame.State.MOVING: self.tr("Moving..."),
+            RareGame.State.UNINSTALLING: self.tr("Uninstalling..."),
+            "has_update": self.tr("Update available"),
+            "needs_verification": self.tr("Needs verification"),
+            "not_can_launch": self.tr("Can't launch"),
+        }
+
+        self.hover_strings = {
+            "info": self.tr("Show infromation"),
+            "install": self.tr("Install game"),
+            "can_launch": self.tr("Launch game"),
+            "is_foreign": self.tr("Launch offline"),
+            "has_update": self.tr("Launch without version check"),
+            "is_origin": self.tr("Launch/Link"),
+            "not_can_launch": self.tr("Can't launch"),
+        }
+
+        # lk: abstract class for typing, the `self.ui` attribute should be used
+        # lk: by the Ui class in the children. It must contain at least the same
+        # lk: attributes as `GameWidgetUi` class
+        self.ui = GameWidgetUi()
+
+    @pyqtSlot()
+    def update_state(self):
+        if self.rgame.is_idle:
             if self.rgame.has_update:
-                label.setText(self.texts["status"]["update_available"])
-                return
-            if self.rgame.needs_verification:
-                label.setText(self.texts["status"]["needs_verification"])
-                return
-        label.setText("")
-        label.setVisible(False)
-
-    @abstractmethod
-    def update_widget(self, install_btn: QPushButton, launch_btn: QPushButton):
-        install_btn.setVisible(not self.rgame.is_installed)
-        install_btn.setEnabled(not self.rgame.is_installed)
-        launch_btn.setVisible(self.rgame.is_installed)
-        launch_btn.setEnabled(self.rgame.can_launch)
-
-    @property
-    def enterEventText(self) -> str:
-        if self.rgame.is_installed:
-            if self.rgame.state == RareGame.State.RUNNING:
-                return self.texts["status"]["running"]
-            elif (not self.rgame.is_origin) and self.rgame.needs_verification:
-                return self.texts["status"]["needs_verification"]
-            elif self.rgame.is_foreign:
-                return self.texts["hover"]["launch_offline"]
-            elif self.rgame.has_update:
-                return self.texts["hover"]["update_available"]
+                self.ui.status_label.setText(self.state_strings["has_update"])
+            elif self.rgame.needs_verification:
+                self.ui.status_label.setText(self.state_strings["needs_verification"])
+            elif not self.rgame.can_launch and self.rgame.is_installed:
+                self.ui.status_label.setText(self.state_strings["not_can_launch"])
             else:
-                return self.tr("Game Info")
-                # return self.texts["hover"]["launch" if self.igame else "launch_origin"]
+                self.ui.status_label.setText(self.state_strings[self.rgame.state])
         else:
-            if not self.rgame.state == RareGame.State.DOWNLOADING:
-                return self.tr("Game Info")
-            else:
-                return self.tr("Installation running")
+            self.ui.status_label.setText(self.state_strings[self.rgame.state])
+        self.ui.status_label.setVisible(bool(self.ui.status_label.text()))
 
-    @property
-    def leaveEventText(self) -> str:
-        if self.rgame.is_installed:
-            if self.rgame.state == RareGame.State.RUNNING:
-                return self.texts["status"]["running"]
-            # elif self.syncing_cloud_saves:
-            #     return self.texts["status"]["syncing"]
-            elif self.rgame.is_foreign:
-                return self.texts["status"]["no_meta"]
-            elif self.rgame.has_update:
-                return self.texts["status"]["update_available"]
-            elif (not self.rgame.is_origin) and self.rgame.needs_verification:
-                return self.texts["status"]["needs_verification"]
-            else:
-                return ""
+    @pyqtSlot()
+    def update_buttons(self):
+        self.ui.install_btn.setVisible(not self.rgame.is_installed)
+        self.ui.install_btn.setEnabled(not self.rgame.is_installed)
+        self.ui.launch_btn.setVisible(self.rgame.is_installed)
+        self.ui.launch_btn.setEnabled(self.rgame.can_launch)
+
+    @pyqtSlot()
+    def update_actions(self):
+        for action in self.actions():
+            self.removeAction(action)
+
+        if self.rgame.is_installed or self.rgame.is_origin:
+            self.addAction(self.launch_action)
         else:
-            if self.rgame.state == RareGame.State.DOWNLOADING:
-                return "Installation..."
+            self.addAction(self.install_action)
+
+        # if self.rgame.game.supports_cloud_saves:
+        #     self.addAction(self.sync_action)
+
+        if desktop_links_supported() and self.rgame.is_installed:
+            if desktop_link_path(self.rgame.folder_name, "desktop").exists():
+                self.desktop_link_action.setText(self.tr("Remove Desktop link"))
             else:
-                return ""
+                self.desktop_link_action.setText(self.tr("Create Desktop link"))
+            self.addAction(self.desktop_link_action)
+            if desktop_link_path(self.rgame.folder_name, "start_menu").exists():
+                self.menu_link_action.setText(self.tr("Remove Menu link"))
+            else:
+                self.menu_link_action.setText(self.tr("Create Menu link"))
+            self.addAction(self.menu_link_action)
+
+        self.addAction(self.reload_action)
+        if self.rgame.is_installed and not self.rgame.is_origin:
+            self.addAction(self.uninstall_action)
+
+    def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
+        if a0 is self.ui.launch_btn:
+            if a1.type() == QEvent.Enter:
+                if not self.rgame.can_launch:
+                    self.ui.tooltip_label.setText(self.hover_strings["not_can_launch"])
+                elif self.rgame.is_origin:
+                    self.ui.tooltip_label.setText(self.hover_strings["is_origin"])
+                elif self.rgame.has_update:
+                    self.ui.tooltip_label.setText(self.hover_strings["has_update"])
+                elif self.rgame.is_foreign and self.rgame.can_run_offline:
+                    self.ui.tooltip_label.setText(self.hover_strings["is_foreign"])
+                elif self.rgame.can_launch:
+                    self.ui.tooltip_label.setText(self.hover_strings["can_launch"])
+                return True
+            if a1.type() == QEvent.Leave:
+                self.ui.tooltip_label.setText(self.hover_strings["info"])
+                # return True
+        if a0 is self.ui.install_btn:
+            if a1.type() == QEvent.Enter:
+                self.ui.tooltip_label.setText(self.hover_strings["install"])
+                return True
+            if a1.type() == QEvent.Leave:
+                self.ui.tooltip_label.setText(self.hover_strings["info"])
+                # return True
+        if a0 is self:
+            if a1.type() == QEvent.Enter:
+                self.ui.tooltip_label.setText(self.hover_strings["info"])
+        return super().eventFilter(a0, a1)
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
         # left button
@@ -220,46 +227,42 @@ class GameWidget(LibraryWidget):
     def _uninstall(self):
         self.show_info.emit(self.rgame)
 
-    def create_desktop_link(self, type_of_link):
-        if type_of_link == "desktop":
-            shortcut_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
-        elif type_of_link == "start_menu":
-            shortcut_path = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
-        else:
-            return
-
-        if platform.system() == "Windows":
-            shortcut_path = os.path.join(shortcut_path, f"{self.rgame.app_title}.lnk")
-        elif platform.system() == "Linux":
-            shortcut_path = os.path.join(shortcut_path, f"{self.rgame.app_title}.desktop")
-        else:
+    def _create_link(self, name, link_type):
+        if not desktop_links_supported():
             QMessageBox.warning(
                 self,
-                "Warning",
-                f"Create a Desktop link is currently not supported on {platform.system()}",
+                self.tr("Warning"),
+                self.tr("Creating shortcuts is currently unsupported on {}").format(platform.system()),
             )
             return
 
-        if not os.path.exists(shortcut_path):
-            try:
-                if not create_desktop_link(self.rgame.app_name, self.core, type_of_link):
-                    return
-            except PermissionError:
-                QMessageBox.warning(
-                    self, "Error", "Permission error. Cannot create Desktop Link"
-                )
-            if type_of_link == "desktop":
-                self.create_desktop.setText(self.tr("Remove Desktop link"))
-            elif type_of_link == "start_menu":
-                self.create_start_menu.setText(self.tr("Remove Start menu link"))
-        else:
-            if os.path.exists(shortcut_path):
-                os.remove(shortcut_path)
+        shortcut_path = desktop_link_path(name, link_type)
 
-            if type_of_link == "desktop":
-                self.create_desktop.setText(self.tr("Create Desktop link"))
-            elif type_of_link == "start_menu":
-                self.create_start_menu.setText(self.tr("Create Start menu link"))
+        if not shortcut_path.exists():
+            try:
+                if not create_desktop_link(
+                    app_name=self.rgame.app_name,
+                    app_title=self.rgame.app_title,
+                    link_name=self.rgame.folder_name,
+                    link_type=link_type,
+                ):
+                    raise PermissionError
+            except PermissionError:
+                QMessageBox.warning(self, "Error", "Could not create shortcut.")
+                return
+
+            if link_type == "desktop":
+                self.desktop_link_action.setText(self.tr("Remove Desktop link"))
+            elif link_type == "start_menu":
+                self.menu_link_action.setText(self.tr("Remove Start Menu link"))
+        else:
+            if shortcut_path.exists():
+                shortcut_path.unlink(missing_ok=True)
+
+            if link_type == "desktop":
+                self.desktop_link_action.setText(self.tr("Create Desktop link"))
+            elif link_type == "start_menu":
+                self.menu_link_action.setText(self.tr("Create Start Menu link"))
 
     # def sync_finished(self, app_name):
     #     self.syncing_cloud_saves = False

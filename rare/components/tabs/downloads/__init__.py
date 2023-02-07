@@ -1,4 +1,5 @@
 import datetime
+import platform
 from ctypes import c_uint64
 from logging import getLogger
 from typing import Union, Optional
@@ -18,7 +19,8 @@ from rare.models.install import InstallOptionsModel, InstallQueueItemModel, Unin
 from rare.shared import RareCore
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.shared.workers.uninstall import UninstallWorker
-from rare.utils.misc import get_size, create_desktop_link
+from rare.utils.misc import get_size
+from rare.utils.paths import create_desktop_link, desktop_links_supported
 from .download import DownloadWidget
 from .groups import UpdateGroup, QueueGroup
 from .thread import DlThread, DlResultModel, DlResultCode
@@ -220,15 +222,18 @@ class DownloadsTab(QWidget):
     @pyqtSlot(DlResultModel)
     def __on_download_result(self, result: DlResultModel):
         if result.code == DlResultCode.FINISHED:
-            if result.shortcuts:
-                if not create_desktop_link(result.options.app_name, self.core, "desktop"):
+            logger.info(f"Download finished: {result.options.app_name}")
+            if result.shortcut and desktop_links_supported():
+                if not create_desktop_link(
+                    app_name=result.options.app_name,
+                    app_title=result.shortcut_title,
+                    link_name=result.shortcut_name,
+                    link_type="desktop",
+                ):
                     # maybe add it to download summary, to show in finished downloads
-                    pass
+                    logger.error(f"Failed to create desktop link on {platform.system()}")
                 else:
-                    logger.info("Desktop shortcut written")
-            logger.info(
-                f"Download finished: {result.options.app_name}"
-            )
+                    logger.info(f"Created desktop link {result.shortcut_name} for {result.options.app_name}")
 
             if result.options.overlay:
                 self.signals.application.overlay_installed.emit()
@@ -239,8 +244,8 @@ class DownloadsTab(QWidget):
                 self.updates_group.set_widget_enabled(result.options.app_name, True)
 
         elif result.code == DlResultCode.ERROR:
-            QMessageBox.warning(self, self.tr("Error"), self.tr("Download error: {}").format(result.message))
             logger.error(f"Download error: {result.options.app_name} ({result.message})")
+            QMessageBox.warning(self, self.tr("Error"), self.tr("Download error: {}").format(result.message))
 
         elif result.code == DlResultCode.STOPPED:
             logger.info(f"Download stopped: {result.options.app_name}")

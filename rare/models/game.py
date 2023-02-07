@@ -14,8 +14,7 @@ from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
-from rare.utils.misc import get_rare_executable
-from rare.utils.paths import data_dir
+from rare.utils.paths import data_dir, get_rare_executable
 
 logger = getLogger("RareGame")
 

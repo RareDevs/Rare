@@ -29,10 +29,14 @@ class ListWidget(object):
     def setupUi(self, widget: QWidget):
         self.title_label = QLabel(parent=widget)
         self.title_label.setWordWrap(False)
+        self.title_label.setStyleSheet(
+            "font-weight: bold;"
+        )
 
         self.status_label = QLabel(parent=widget)
         self.status_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.status_label.setStyleSheet(
+            "font-weight: bold;"
             "background-color: rgba(0,0,0,75%);"
             "border: 1px solid black;"
             "border-radius: 5px;"

@@ -1,13 +1,15 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QEvent, QRect, pyqtSlot, pyqtSignal
+from PyQt5.QtCore import Qt, QEvent, QRect
 from PyQt5.QtGui import (
     QPalette,
     QBrush,
     QPaintEvent,
     QPainter,
     QLinearGradient,
-    QPixmap, QImage, QResizeEvent,
+    QPixmap,
+    QImage,
+    QResizeEvent,
 )
 
 from rare.models.game import RareGame
@@ -20,72 +22,45 @@ logger = getLogger("ListGameWidget")
 
 
 class ListGameWidget(GameWidget):
-
     def __init__(self, rgame: RareGame, parent=None):
-        super(ListGameWidget, self).__init__(rgame, parent)
+        super().__init__(rgame, parent)
         self.setObjectName(f"{rgame.app_name}")
         self.ui = ListWidget()
         self.ui.setupUi(self)
 
-        self.ui.title_label.setText(f"<h3>{self.rgame.app_title}</h3>")
-
-        self.ui.install_btn.setVisible(not self.rgame.is_installed)
+        self.ui.title_label.setText(self.rgame.app_title)
+        self.ui.launch_btn.clicked.connect(self._launch)
+        self.ui.launch_btn.setVisible(self.rgame.is_installed)
         self.ui.install_btn.clicked.connect(self._install)
+        self.ui.install_btn.setVisible(not self.rgame.is_installed)
+
+        self.ui.launch_btn.setEnabled(self.rgame.can_launch)
 
         self.ui.launch_btn.setText(
             self.tr("Launch") if not self.rgame.is_origin else self.tr("Link/Play")
         )
-        self.ui.launch_btn.clicked.connect(self._launch)
-        self.ui.launch_btn.setVisible(self.rgame.is_installed)
-
         self.ui.developer_text.setText(self.rgame.developer)
         # self.version_label.setVisible(self.is_installed)
         if self.rgame.igame:
             self.ui.version_text.setText(self.rgame.version)
-
         self.ui.size_text.setText(get_size(self.rgame.install_size) if self.rgame.install_size else "")
 
-        self.ui.launch_btn.setEnabled(self.rgame.can_launch)
+        self.update_state()
 
-        self.set_status()
-
-    @pyqtSlot()
-    def set_status(self):
-        super(ListGameWidget, self).set_status(self.ui.status_label)
-
-    @pyqtSlot()
-    def update_widget(self):
-        super(ListGameWidget, self).update_widget(self.ui.install_btn, self.ui.launch_btn)
-
-    def update_text(self, e=None):
-        if self.rgame.is_installed:
-            if self.rgame.has_update:
-                self.ui.status_label.setText(self.texts["status"]["update_available"])
-            elif self.rgame.is_foreign:
-                self.ui.status_label.setText(self.texts["status"]["no_meta"])
-            elif self.rgame.igame and self.rgame.needs_verification:
-                self.ui.status_label.setText(self.texts["status"]["needs_verification"])
-            # elif self.syncing_cloud_saves:
-            #     self.ui.status_label.setText(self.texts["status"]["syncing"])
-            else:
-                self.ui.status_label.setText("")
-                self.ui.status_label.setVisible(False)
-        else:
-            self.ui.status_label.setVisible(False)
+        # lk: "connect" the buttons' enter/leave events to this widget
+        self.installEventFilter(self)
+        self.ui.launch_btn.installEventFilter(self)
+        self.ui.install_btn.installEventFilter(self)
 
     def enterEvent(self, a0: QEvent = None) -> None:
         if a0 is not None:
             a0.accept()
-        status = self.enterEventText
-        self.ui.tooltip_label.setText(status)
-        self.ui.tooltip_label.setVisible(bool(status))
+        self.ui.tooltip_label.setVisible(True)
 
     def leaveEvent(self, a0: QEvent = None) -> None:
         if a0 is not None:
             a0.accept()
-        status = self.leaveEventText
-        self.ui.tooltip_label.setText(status)
-        self.ui.tooltip_label.setVisible(bool(status))
+        self.ui.tooltip_label.setVisible(False)
 
     # def game_started(self, app_name):
     #     if app_name == self.rgame.app_name:

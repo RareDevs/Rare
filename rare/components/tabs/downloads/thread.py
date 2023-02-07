@@ -34,7 +34,9 @@ class DlResultModel:
     dlcs: Optional[List[Dict]] = None
     sync_saves: bool = False
     tip_url: str = ""
-    shortcuts: bool = False
+    shortcut: bool = False
+    shortcut_name: str = ""
+    shortcut_title: str = ""
 
 
 class DlThread(QThread):
@@ -149,7 +151,9 @@ class DlThread(QThread):
             )
 
             if not self.item.options.update and self.item.options.create_shortcut:
-                result.shortcuts = True
+                result.shortcut = True
+                result.shortcut_name = self.rgame.folder_name
+                result.shortcut_title = self.rgame.app_title
 
         self.__result_emit(result)
 
