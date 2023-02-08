@@ -76,19 +76,21 @@ def applications_dir() -> Path:
 
 # fmt: off
 __link_suffix = {
-    "Windows": ".lnk",
-    "Linux": ".desktop",
+    "Windows": {
+        "link": "lnk",
+        "icon": "ico",
+    },
+    "Linux": {
+        "link": "desktop",
+        "icon": "png",
+    },
 }
+
 def desktop_links_supported() -> bool:
     return platform.system() in __link_suffix.keys()
 
-
-__icon_suffix = {
-    "Windows": "ico",
-    "Linux": "png",
-}
 def desktop_icon_suffix() -> str:
-    return __icon_suffix[platform.system()]
+    return __link_suffix[platform.system()]["icon"]
 
 
 __link_type = {
@@ -97,6 +99,7 @@ __link_type = {
     # lk: for start menu items. Mirror it here for backwards compatibility
     "start_menu": applications_dir().parent if platform.system() == "Windows" else applications_dir(),
 }
+
 def desktop_link_types() -> List:
     return list(__link_type.keys())
 # fmt: on
@@ -113,7 +116,7 @@ def desktop_link_path(link_name: str, link_type: str) -> Path:
     :return Path:
         shortcut path
     """
-    return __link_type[link_type].joinpath(f"{link_name}{__link_suffix[platform.system()]}")
+    return __link_type[link_type].joinpath(f"{link_name}.{__link_suffix[platform.system()]['link']}")
 
 
 def get_rare_executable() -> List[str]:
