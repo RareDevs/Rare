@@ -20,7 +20,7 @@ from rare.utils.paths import data_dir, get_rare_executable
 logger = getLogger("RareGame")
 
 
-class RareBase(QObject):
+class RareGameBase(QObject):
 
     class State(IntEnum):
         IDLE = 0
@@ -52,11 +52,11 @@ class RareBase(QObject):
             finished = pyqtSignal(str)
 
         def __init__(self):
-            super(RareBase.Signals, self).__init__()
-            self.progress = RareBase.Signals.Progress()
-            self.widget = RareBase.Signals.Widget()
-            self.download = RareBase.Signals.Download()
-            self.game = RareBase.Signals.Game()
+            super(RareGameBase.Signals, self).__init__()
+            self.progress = RareGameBase.Signals.Progress()
+            self.widget = RareGameBase.Signals.Widget()
+            self.download = RareGameBase.Signals.Download()
+            self.game = RareGameBase.Signals.Game()
 
         def __del__(self):
             self.progress.deleteLater()
@@ -66,30 +66,29 @@ class RareBase(QObject):
 
     __slots__ = "igame"
 
-    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
-        super(RareBase, self).__init__()
-        self.signals = RareBase.Signals()
+    def __init__(self, legendary_core: LegendaryCore, game: Game):
+        super(RareGameBase, self).__init__()
+        self.signals = RareGameBase.Signals()
         self.core = legendary_core
-        self.image_manager = image_manager
         self.game: Game = game
-        self._state = RareBase.State.IDLE
+        self._state = RareGameBase.State.IDLE
 
     def __del__(self):
         del self.signals
 
     @property
-    def state(self) -> 'RareBase.State':
+    def state(self) -> 'RareGameBase.State':
         return self._state
 
     @state.setter
-    def state(self, state: 'RareBase.State'):
+    def state(self, state: 'RareGameBase.State'):
         if state != self._state:
             self._state = state
             self.signals.widget.update.emit()
 
     @property
     def is_idle(self):
-        return self.state == RareBase.State.IDLE
+        return self.state == RareGameBase.State.IDLE
 
     @property
     def app_name(self) -> str:
@@ -123,7 +122,40 @@ class RareBase(QObject):
         pass
 
 
-class RareGame(RareBase):
+class RareGameSlim(RareGameBase):
+
+    def __init__(self, legendary_core: LegendaryCore, game: Game):
+        super(RareGameSlim, self).__init__(legendary_core, game)
+        # None if origin or not installed
+        self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
+        self.saves: List[SaveGameFile] = []
+
+    def is_installed(self) -> bool:
+        return True
+
+    def set_installed(self, installed: bool) -> None:
+        pass
+
+    @property
+    def is_mac(self) -> bool:
+        """!
+        @brief Property to report if Game has a mac version
+
+        @return bool
+        """
+        return "Mac" in self.game.asset_infos.keys()
+
+    @property
+    def is_win32(self) -> bool:
+        """!
+        @brief Property to report if Game is 32bit game
+
+        @return bool
+        """
+        return "Win32" in self.game.asset_infos.keys()
+
+
+class RareGame(RareGameSlim):
 
     @dataclass
     class Metadata:
@@ -159,9 +191,8 @@ class RareGame(RareBase):
             return self.queued or self.queue_pos is not None or self.last_played is not None
 
     def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
-        super(RareGame, self).__init__(legendary_core, image_manager, game)
-        # None if origin or not installed
-        self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
+        super(RareGame, self).__init__(legendary_core, game)
+        self.image_manager = image_manager
 
         # Update names for Unreal Engine
         if self.game.app_title == "Unreal Engine":
@@ -172,7 +203,6 @@ class RareGame(RareBase):
         self.__load_metadata()
 
         self.owned_dlcs: List[RareGame] = []
-        self.saves: List[SaveGameFile] = []
 
         if self.has_update:
             logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
@@ -435,24 +465,6 @@ class RareGame(RareBase):
         return self.game.is_dlc
 
     @property
-    def is_mac(self) -> bool:
-        """!
-        @brief Property to report if Game has a mac version
-
-        @return bool
-        """
-        return "Mac" in self.game.asset_infos.keys()
-
-    @property
-    def is_win32(self) -> bool:
-        """!
-        @brief Property to report if Game is 32bit game
-
-        @return bool
-        """
-        return "Win32" in self.game.asset_infos.keys()
-
-    @property
     def is_unreal(self) -> bool:
         """!
         @brief Property to report if a Game is an Unreal Engine bundle
@@ -591,9 +603,9 @@ class RareGame(RareBase):
         return True
 
 
-class RareEosOverlay(RareBase):
-    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
-        super(RareEosOverlay, self).__init__(legendary_core, image_manager, game)
+class RareEosOverlay(RareGameBase):
+    def __init__(self, legendary_core: LegendaryCore, game: Game):
+        super(RareEosOverlay, self).__init__(legendary_core, game)
         self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
 
     @property
