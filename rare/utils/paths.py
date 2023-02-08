@@ -74,15 +74,21 @@ def desktop_dir() -> Path:
 def applications_dir() -> Path:
     return Path(QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation))
 
-
+# fmt: off
 __link_suffix = {
     "Windows": ".lnk",
     "Linux": ".desktop",
 }
-
-
 def desktop_links_supported() -> bool:
     return platform.system() in __link_suffix.keys()
+
+
+__icon_suffix = {
+    "Windows": "ico",
+    "Linux": "png",
+}
+def desktop_icon_suffix() -> str:
+    return __icon_suffix[platform.system()]
 
 
 __link_type = {
@@ -91,10 +97,9 @@ __link_type = {
     # lk: for start menu items. Mirror it here for backwards compatibility
     "start_menu": applications_dir().parent if platform.system() == "Windows" else applications_dir(),
 }
-
-
 def desktop_link_types() -> List:
     return list(__link_type.keys())
+# fmt: on
 
 
 def desktop_link_path(link_name: str, link_type: str) -> Path:
@@ -170,20 +175,11 @@ def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "",
     for_rare = app_name == "rare_shortcut"
 
     if for_rare:
-        icon_path = resources_path.joinpath("images", "Rare.png")
-        if platform.system() == "Windows":
-            icon_path = resources_path.joinpath("images", "Rare.ico")
+        icon_path = resources_path.joinpath("images", f"Rare.{desktop_icon_suffix()}")
         app_title = "Rare"
         link_name = "Rare"
     else:
-        icon_path = image_dir().joinpath(app_name, "installed.png")
-        if platform.system() == "Windows":
-            icon_path = image_dir().joinpath(app_name, "installed.ico")
-            if not icon_path.exists():
-                img = QImage()
-                img.load(str(icon_path.with_suffix(".png")))
-                img.save(str(icon_path))
-                logger.info("Created ico file")
+        icon_path = image_dir().joinpath(app_name, f"icon.{desktop_icon_suffix()}")
         if not app_title or not link_name:
             logger.error("Missing app_title or link_name")
             return False

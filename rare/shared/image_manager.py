@@ -6,7 +6,7 @@ from enum import Enum
 # from concurrent import futures
 from logging import getLogger
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from typing import Tuple, Dict, Union, Type, List, Callable
 
 import requests
@@ -16,19 +16,19 @@ from PyQt5.QtCore import (
     QObject,
     QSize,
     QThreadPool,
-    QRunnable,
+    QRunnable, QRect, QRectF,
 )
 from PyQt5.QtGui import (
     QPixmap,
     QImage,
-    QPainter,
+    QPainter, QPainterPath, QColor, QBrush, QTransform, QPen,
 )
 from PyQt5.QtWidgets import QApplication
 from legendary.models.game import Game
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.signals import GlobalSignals
-from rare.utils.paths import image_dir, resources_path
+from rare.utils.paths import image_dir, resources_path, desktop_icon_suffix
 
 # from requests_futures.sessions import FuturesSession
 
@@ -119,6 +119,7 @@ class ImageManager(QObject):
 
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
         # lk: the ordering in __img_types matters for the order of fallbacks
+        # self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "DieselGameBox")
         self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo")
         self.__dl_retries = 1
         self.__worker_app_names: List[str] = []
@@ -151,6 +152,9 @@ class ImageManager(QObject):
     def __img_gray(self, app_name: str) -> Path:
         return self.__img_dir(app_name).joinpath("uninstalled.png")
 
+    def __img_desktop_icon(self, app_name: str) -> Path:
+        return self.__img_dir(app_name).joinpath(f"icon.{desktop_icon_suffix()}")
+
     def __prepare_download(self, game: Game, force: bool = False) -> Tuple[List, Dict]:
         if force and self.__img_dir(game.app_name).exists():
             self.__img_color(game.app_name).unlink(missing_ok=True)
@@ -182,13 +186,17 @@ class ImageManager(QObject):
         # lk: Find updates or initialize if images are missing.
         # lk: `updates` will be empty for games without images
         # lk: so everything below it is skipped
-        if not self.__img_color(game.app_name).is_file() or not self.__img_gray(game.app_name).is_file():
+        if not (
+            self.__img_color(game.app_name).is_file()
+            and self.__img_gray(game.app_name).is_file()
+            and self.__img_desktop_icon(game.app_name).is_file()
+        ):
             updates = [image for image in game.metadata["keyImages"] if image["type"] in self.__img_types]
         else:
             updates = list()
             for image in game.metadata["keyImages"]:
                 if image["type"] in self.__img_types:
-                    if json_data[image["type"]] != image["md5"]:
+                    if image["type"] not in json_data.keys() or json_data[image["type"]] != image["md5"]:
                         updates.append(image)
 
         return updates, json_data
@@ -204,11 +212,11 @@ class ImageManager(QObject):
         updates = [
             image
             for image in updates
-            if cache_data[image["type"]] is None or json_data[image["type"]] != image["md5"]
+            if cache_data.get(image["type"], None) is None or json_data[image["type"]] != image["md5"]
         ]
 
         # Download
-        # # lk: Keep this so I don't have to go looking for it again,
+        # # lk: Keep this here, so I don't have to go looking for it again,
         # # lk: it might be useful in the future.
         # if use_async and len(updates) > 1:
         #     session = FuturesSession(max_workers=len(self.__img_types))
@@ -252,6 +260,47 @@ class ImageManager(QObject):
 
         return bool(updates)
 
+    __icon_overlay: Optional[QPainterPath] = None
+
+    @staticmethod
+    def __generate_icon_overlay(rect: QRect) -> QPainterPath:
+        if ImageManager.__icon_overlay is not None:
+            return ImageManager.__icon_overlay
+        rounded_path = QPainterPath()
+        rounded_path.addRoundedRect(
+            QRectF(
+                rect.width() * 0.05,
+                rect.height() * 0.05,
+                rect.width() - (rect.width() * 0.1),
+                rect.height() - (rect.width() * 0.1)
+            ),
+            rect.height() * 0.2,
+            rect.height() * 0.2,
+        )
+        ImageManager.__icon_overlay = rounded_path
+        return ImageManager.__icon_overlay
+
+    @staticmethod
+    def __convert_icon(cover: QImage) -> QImage:
+        icon_size = QSize(128, 128)
+        icon = QImage(icon_size, QImage.Format_ARGB32_Premultiplied)
+        painter = QPainter(icon)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setCompositionMode(QPainter.CompositionMode_Source)
+        painter.fillRect(icon.rect(), Qt.transparent)
+        overlay = ImageManager.__generate_icon_overlay(icon.rect())
+        brush = QBrush(cover)
+        scale = max(icon.width()/cover.width(), icon.height()/cover.height())
+        transform = QTransform().scale(scale, scale)
+        brush.setTransform(transform)
+        painter.fillPath(overlay, brush)
+        pen = QPen(Qt.black, 2)
+        painter.setPen(pen)
+        painter.drawPath(overlay)
+        painter.end()
+        return icon
+
     def __convert(self, game, images, force=False) -> None:
         for image in [self.__img_color(game.app_name), self.__img_gray(game.app_name)]:
             if force and image.exists():
@@ -283,6 +332,8 @@ class ImageManager(QObject):
             painter.end()
 
         cover = cover.scaled(ImageSize.Image.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        icon = self.__convert_icon(cover)
+        icon.save(str(self.__img_desktop_icon(game.app_name)), format=desktop_icon_suffix().upper())
 
         # this is not required if we ever want to re-apply the alpha channel
         # cover = cover.convertToFormat(QImage.Format_Indexed8)
@@ -290,18 +341,12 @@ class ImageManager(QObject):
         # add the alpha channel back to the cover
         cover = cover.convertToFormat(QImage.Format_ARGB32_Premultiplied)
 
-        cover.save(
-            str(self.__img_color(game.app_name)),
-            format="PNG",
-        )
+        cover.save(str(self.__img_color(game.app_name)), format="PNG")
         # quick way to convert to grayscale
         cover = cover.convertToFormat(QImage.Format_Grayscale8)
         # add the alpha channel back to the grayscale cover
         cover = cover.convertToFormat(QImage.Format_ARGB32_Premultiplied)
-        cover.save(
-            str(self.__img_gray(game.app_name)),
-            format="PNG",
-        )
+        cover.save(str(self.__img_gray(game.app_name)), format="PNG")
 
     def __compress(self, game: Game, data: Dict) -> None:
         archive = open(self.__img_cache(game.app_name), "wb")
