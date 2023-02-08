@@ -59,6 +59,14 @@ class ImageSize:
             if divisor > 2:
                 self.__smooth_transform = False
 
+        def __eq__(self, other: 'ImageSize.Preset'):
+            return (
+                self.__size == other.size
+                and self.__divisor == other.divisor
+                and self.__smooth_transform == other.smooth
+                and self.__pixel_ratio == other.pixel_ratio
+            )
+
         @property
         def size(self) -> QSize:
             return self.__size
