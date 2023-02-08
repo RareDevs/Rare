@@ -199,6 +199,7 @@ class RareGame(RareGameSlim):
         self.__origin_install_path: Optional[str] = None
         self.__origin_install_size: Optional[int] = None
         self.__steam_grade: Optional[str] = None
+        self.__save_game_status: Optional[None] = None
 
         self.image_manager = image_manager
 
@@ -245,19 +246,19 @@ class RareGame(RareGameSlim):
         return None
 
     @property
-    def save_state(self) -> (SaveGameStatus, (datetime, datetime)):
-        if self.saves and self.save_path:
+    def save_game_state(self) -> (SaveGameStatus, (datetime, datetime)):
+        if self.saves and self.save_path :
             return self.core.check_savegame_state(self.save_path, self.latest_save)
         return SaveGameStatus.NO_SAVE, (None, None)
 
     def upload_saves(self):
-        status, (dt_local, dt_remote) = self.save_state
+        status, (dt_local, dt_remote) = self.save_game_state
         def _upload():
             logger.info(f"Uploading save for {self.title}")
             self.state = RareGame.State.SYNCING
             self.core.upload_save(self.app_name, self.igame.save_path, dt_local)
-            self.saves = self.core.get_save_games(self.app_name)
             self.state = RareGame.State.IDLE
+            self.update_saves()
 
         if not self.game.supports_cloud_saves and not self.game.supports_mac_cloud_saves:
             return
@@ -272,13 +273,13 @@ class RareGame(RareGameSlim):
         QThreadPool.globalInstance().start(worker)
 
     def download_saves(self):
-        status, (dt_local, dt_remote) = self.save_state
+        status, (dt_local, dt_remote) = self.save_game_state
         def _download():
             logger.info(f"Downloading save for {self.title}")
             self.state = RareGame.State.SYNCING
             self.core.download_saves(self.app_name, self.latest_save.manifest_name, self.save_path)
-            self.saves = self.core.get_save_games(self.app_name)
             self.state = RareGame.State.IDLE
+            self.update_saves()
 
         if not self.game.supports_cloud_saves and not self.game.supports_mac_cloud_saves:
             return
@@ -292,10 +293,15 @@ class RareGame(RareGameSlim):
         worker = QRunnable.create(lambda: _download())
         QThreadPool.globalInstance().start(worker)
 
+    def update_saves(self):
+        self.saves = self.core.get_save_games(self.app_name)
+        self.signals.widget.update.emit()
+
     @property
     def is_save_up_to_date(self):
-        status, (_, _) = self.save_state
-        return status == SaveGameStatus.SAME_AGE
+        status, (_, _) = self.save_game_state
+        return (status == SaveGameStatus.SAME_AGE) \
+            or (status == SaveGameStatus.NO_SAVE)
 
     @pyqtSlot(int)
     def __game_launched(self, code: int):
@@ -618,6 +624,14 @@ class RareGame(RareGameSlim):
         if self.igame is not None:
             return self.igame.save_path
         return None
+
+    @save_path.setter
+    def save_path(self, path: str) -> None:
+        if self.igame and (self.game.supports_cloud_saves or self.game.supports_mac_cloud_saves):
+            self.igame.save_path = path
+            self.store_igame()
+            self.update_igame()
+            self.signals.widget.update.emit()
 
     def steam_grade(self) -> str:
         if platform.system() == "Windows" or self.is_unreal:

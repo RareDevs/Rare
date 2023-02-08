@@ -35,8 +35,6 @@ class CloudSaves(QWidget, SideTabContents):
         self.sync_ui = Ui_SyncWidget()
         self.sync_ui.setupUi(self.sync_widget)
 
-        self.change = True
-
         self.info_label = QLabel(self.tr("<b>This game doesn't support cloud saves</b>"))
 
         self.core = LegendaryCoreSingleton()
@@ -143,28 +141,23 @@ class CloudSaves(QWidget, SideTabContents):
             self.core.lgd.set_installed_game(app_name, igame)
 
     def save_save_path(self, text):
-        if self.rgame.game.supports_cloud_saves and self.change:
-            self.rgame.igame.save_path = text
-            self.core.lgd.set_installed_game(self.rgame.app_name, self.rgame.igame)
+        self.rgame.save_path = text
 
-    def update_game(self, rgame: RareGame):
-        # TODO connect update widget signal to connect to sync state
-        self.rgame = rgame
-        self.set_title.emit(rgame.title)
-        supports_saves = rgame.game.supports_cloud_saves or rgame.game.supports_mac_cloud_saves
-        self.sync_widget.setEnabled(bool(supports_saves and rgame.save_path))
+    def __update_widget(self):
+        supports_saves = self.rgame.igame is not None and (
+                self.rgame.game.supports_cloud_saves or self.rgame.game.supports_mac_cloud_saves
+        )
+        self.sync_widget.setEnabled(bool(supports_saves and self.rgame.save_path )) # and not self.rgame.is_save_up_to_date))
         self.cloud_widget.setEnabled(supports_saves)
         self.info_label.setVisible(not supports_saves)
         if not supports_saves:
             return
 
-        self.change = False
-
-        button_disabled = self.rgame.state == RareGame.State.SYNCING
+        button_disabled = self.rgame.state in [RareGame.State.RUNNING, RareGame.State.SYNCING]
         self.sync_ui.download_button.setDisabled(button_disabled)
         self.sync_ui.upload_button.setDisabled(button_disabled)
 
-        status, (dt_local, dt_remote) = rgame.save_state
+        status, (dt_local, dt_remote) = self.rgame.save_game_state
 
         if status == SaveGameStatus.LOCAL_NEWER:
             self.sync_ui.local_new_label.setVisible(True)
@@ -178,11 +171,21 @@ class CloudSaves(QWidget, SideTabContents):
 
         sync_cloud = self.settings.value(f"{self.rgame.app_name}/auto_sync_cloud", True, bool)
         self.cloud_ui.cloud_sync.setChecked(sync_cloud)
-        if hasattr(self.rgame.igame, "save_path") and self.rgame.igame.save_path:
-            self.cloud_save_path_edit.setText(self.rgame.igame.save_path)
+        if self.rgame.save_path:
+            self.cloud_save_path_edit.setText(self.rgame.save_path)
             self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X") if dt_local else "None")
             self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X") if dt_remote else "None")
         else:
             self.cloud_save_path_edit.setText("")
 
-        self.change = True
+    def update_game(self, rgame: RareGame):
+        if self.rgame:
+            self.rgame.signals.widget.update.disconnect(self.__update_widget)
+
+        self.rgame = rgame
+
+        self.set_title.emit(rgame.title)
+        rgame.signals.widget.update.connect(self.__update_widget)
+
+        self.__update_widget()
+
