@@ -19,13 +19,6 @@ from .library_widget import LibraryWidget
 logger = getLogger("GameWidget")
 
 
-class GameWidgetUi(metaclass=ABCMeta):
-    status_label: QLabel
-    install_btn: QPushButton
-    launch_btn: QPushButton
-    tooltip_label: QLabel
-
-
 class GameWidget(LibraryWidget):
     show_info = pyqtSignal(RareGame)
 
@@ -109,10 +102,10 @@ class GameWidget(LibraryWidget):
             "not_can_launch": self.tr("Can't launch"),
         }
 
-        # lk: abstract class for typing, the `self.ui` attribute should be used
-        # lk: by the Ui class in the children. It must contain at least the same
-        # lk: attributes as `GameWidgetUi` class
-        self.ui = GameWidgetUi()
+    # lk: abstract class for typing, the `self.ui` attribute should be used
+    # lk: by the Ui class in the children. It must contain at least the same
+    # lk: attributes as `GameWidgetUi` class
+    __slots__ = "ui"
 
     @pyqtSlot()
     def update_state(self):
@@ -156,9 +149,9 @@ class GameWidget(LibraryWidget):
                 self.desktop_link_action.setText(self.tr("Create Desktop link"))
             self.addAction(self.desktop_link_action)
             if desktop_link_path(self.rgame.folder_name, "start_menu").exists():
-                self.menu_link_action.setText(self.tr("Remove Menu link"))
+                self.menu_link_action.setText(self.tr("Remove Start Menu link"))
             else:
-                self.menu_link_action.setText(self.tr("Create Menu link"))
+                self.menu_link_action.setText(self.tr("Create Start Menu link"))
             self.addAction(self.menu_link_action)
 
         self.addAction(self.reload_action)
