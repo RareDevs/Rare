@@ -11,7 +11,7 @@ from legendary.models.game import Game, SaveGameFile
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.apiresults import ApiResults
-from rare.models.game import RareGame, RareEosOverlay
+from rare.models.game import RareBase, RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
 from .workers import QueueWorker, VerifyWorker, MoveWorker
 from .image_manager import ImageManager
@@ -162,7 +162,7 @@ class RareCore(QObject):
 
         super(RareCore, self).deleteLater()
 
-    def get_game(self, app_name: str) -> RareGame:
+    def get_game(self, app_name: str) -> RareBase:
         if app_name == EOSOverlayApp.app_name:
             return self.__eos_overlay_rgame
         return self.__games[app_name]

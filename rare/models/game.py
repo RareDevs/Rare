@@ -1,5 +1,6 @@
 import json
 import os
+from abc import abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntEnum
@@ -19,7 +20,7 @@ from rare.utils.paths import data_dir, get_rare_executable
 logger = getLogger("RareGame")
 
 
-class RareGame(QObject):
+class RareBase(QObject):
 
     class State(IntEnum):
         IDLE = 0
@@ -28,6 +29,101 @@ class RareGame(QObject):
         VERIFYING = 3
         MOVING = 4
         UNINSTALLING = 5
+
+    class Signals:
+        class Progress(QObject):
+            start = pyqtSignal()
+            update = pyqtSignal(int)
+            finish = pyqtSignal(bool)
+
+        class Widget(QObject):
+            update = pyqtSignal()
+
+        class Download(QObject):
+            enqueue = pyqtSignal(str)
+            dequeue = pyqtSignal(str)
+
+        class Game(QObject):
+            install = pyqtSignal(InstallOptionsModel)
+            installed = pyqtSignal(str)
+            uninstall = pyqtSignal(UninstallOptionsModel)
+            uninstalled = pyqtSignal(str)
+            launched = pyqtSignal(str)
+            finished = pyqtSignal(str)
+
+        def __init__(self):
+            super(RareBase.Signals, self).__init__()
+            self.progress = RareBase.Signals.Progress()
+            self.widget = RareBase.Signals.Widget()
+            self.download = RareBase.Signals.Download()
+            self.game = RareBase.Signals.Game()
+
+        def __del__(self):
+            self.progress.deleteLater()
+            self.widget.deleteLater()
+            self.download.deleteLater()
+            self.game.deleteLater()
+
+    __slots__ = "igame"
+
+    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
+        super(RareBase, self).__init__()
+        self.signals = RareBase.Signals()
+        self.core = legendary_core
+        self.image_manager = image_manager
+        self.game: Game = game
+        self._state = RareBase.State.IDLE
+
+    def __del__(self):
+        del self.signals
+
+    @property
+    def state(self) -> 'RareBase.State':
+        return self._state
+
+    @state.setter
+    def state(self, state: 'RareBase.State'):
+        if state != self._state:
+            self._state = state
+            self.signals.widget.update.emit()
+
+    @property
+    def is_idle(self):
+        return self.state == RareBase.State.IDLE
+
+    @property
+    def app_name(self) -> str:
+        return self.igame.app_name if self.igame is not None else self.game.app_name
+
+    @property
+    def app_title(self) -> str:
+        return self.igame.title if self.igame is not None else self.game.app_title
+
+    @property
+    def title(self) -> str:
+        return self.app_title
+
+    @property
+    @abstractmethod
+    def is_installed(self) -> bool:
+        pass
+
+    @abstractmethod
+    def set_installed(self, installed: bool) -> None:
+        pass
+
+    @property
+    @abstractmethod
+    def is_mac(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def is_win32(self) -> bool:
+        pass
+
+
+class RareGame(RareBase):
 
     @dataclass
     class Metadata:
@@ -62,48 +158,14 @@ class RareGame(QObject):
         def __bool__(self):
             return self.queued or self.queue_pos is not None or self.last_played is not None
 
-    class Signals:
-        class Progress(QObject):
-            start = pyqtSignal()
-            update = pyqtSignal(int)
-            finish = pyqtSignal(bool)
-
-        class Widget(QObject):
-            update = pyqtSignal()
-
-        class Download(QObject):
-            enqueue = pyqtSignal(str)
-            dequeue = pyqtSignal(str)
-
-        class Game(QObject):
-            install = pyqtSignal(InstallOptionsModel)
-            installed = pyqtSignal(str)
-            uninstall = pyqtSignal(UninstallOptionsModel)
-            uninstalled = pyqtSignal(str)
-            launched = pyqtSignal(str)
-            finished = pyqtSignal(str)
-
-        def __init__(self):
-            super(RareGame.Signals, self).__init__()
-            self.progress = RareGame.Signals.Progress()
-            self.widget = RareGame.Signals.Widget()
-            self.download = RareGame.Signals.Download()
-            self.game = RareGame.Signals.Game()
-
     def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
-        super(RareGame, self).__init__()
-        self.signals = RareGame.Signals()
+        super(RareGame, self).__init__(legendary_core, image_manager, game)
+        # None if origin or not installed
+        self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
 
-        self.core = legendary_core
-        self.image_manager = image_manager
-
-        self.game: Game = game
         # Update names for Unreal Engine
         if self.game.app_title == "Unreal Engine":
             self.game.app_title += f" {self.game.app_name.split('_')[-1]}"
-
-        # None if origin or not installed
-        self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
 
         self.pixmap: QPixmap = QPixmap()
         self.metadata: RareGame.Metadata = RareGame.Metadata()
@@ -116,7 +178,6 @@ class RareGame(QObject):
             logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
 
         self.__worker: Optional[QRunnable] = None
-        self.__state = RareGame.State.IDLE
         self.progress: int = 0
         self.signals.progress.start.connect(lambda: self.__on_progress_update(0))
         self.signals.progress.update.connect(self.__on_progress_update)
@@ -138,20 +199,6 @@ class RareGame(QObject):
         self.__worker = worker
         if worker is None:
             self.state = RareGame.State.IDLE
-
-    @property
-    def state(self) -> 'RareGame.State':
-        return self.__state
-
-    @state.setter
-    def state(self, state: 'RareGame.State'):
-        if state != self.__state:
-            self.__state = state
-            self.signals.widget.update.emit()
-
-    @property
-    def is_idle(self):
-        return self.state == RareGame.State.IDLE
 
     @pyqtSlot(int)
     def __game_launched(self, code: int):
@@ -202,7 +249,7 @@ class RareGame(QObject):
 
     def update_game(self):
         self.game = self.core.get_game(
-            self.app_name, update_meta=True, platform=self.igame.platform if self.igame else "Windows"
+            self.app_name, update_meta=False, platform=self.igame.platform if self.igame else "Windows"
         )
 
     def update_igame(self):
@@ -211,18 +258,6 @@ class RareGame(QObject):
     def update_rgame(self):
         self.update_igame()
         self.update_game()
-
-    @property
-    def app_name(self) -> str:
-        return self.igame.app_name if self.igame is not None else self.game.app_name
-
-    @property
-    def app_title(self) -> str:
-        return self.igame.title if self.igame is not None else self.game.app_title
-
-    @property
-    def title(self) -> str:
-        return self.app_title
 
     @property
     def developer(self) -> str:
@@ -556,42 +591,10 @@ class RareGame(QObject):
         return True
 
 
-class RareEosOverlay(QObject):
+class RareEosOverlay(RareBase):
     def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
-        super(RareEosOverlay, self).__init__()
-        self.signals = RareGame.Signals()
-
-        self.core = legendary_core
-        self.image_manager = image_manager
-
-        self.game: Game = game
-
-        # None if origin or not installed
+        super(RareEosOverlay, self).__init__(legendary_core, image_manager, game)
         self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
-
-        self.__state = RareGame.State.IDLE
-
-    @property
-    def state(self) -> 'RareGame.State':
-        return self.__state
-
-    @state.setter
-    def state(self, state: 'RareGame.State'):
-        if state != self.__state:
-            self.signals.widget.update.emit()
-        self.__state = state
-
-    @property
-    def app_name(self) -> str:
-        return self.igame.app_name if self.igame is not None else self.game.app_name
-
-    @property
-    def app_title(self) -> str:
-        return self.igame.title if self.igame is not None else self.game.app_title
-
-    @property
-    def title(self) -> str:
-        return self.app_title
 
     @property
     def is_installed(self) -> bool:
