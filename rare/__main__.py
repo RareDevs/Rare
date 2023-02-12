@@ -49,6 +49,7 @@ def main():
     launch_minimal_parser = subparsers.add_parser("start", aliases=["launch"])
     launch_minimal_parser.add_argument("app_name", help="AppName of the game to launch",
                                        metavar="<App Name>", action="store")
+    launch_minimal_parser.add_argument("--dry-run", help="Print arguments and exit", action="store_true")
     launch_minimal_parser.add_argument("--offline", help="Launch game offline",
                                        action="store_true")
     launch_minimal_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',

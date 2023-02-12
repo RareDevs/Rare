@@ -20,6 +20,7 @@ from rare.widgets.rare_app import RareApp, RareAppException
 from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 
+
 logger = logging.getLogger("RareLauncher")
 
 DETACHED_APP_NAMES = [
@@ -101,6 +102,10 @@ class RareLauncher(RareApp):
         self.app_name = args.app_name
         self.logger = getLogger(self.app_name)
         self.core = LegendaryCore()
+        self.args = args
+
+        # game = self.core.get_game(self.app_name)
+        # self.rgame = RareGame(self.core, None, game)
 
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)
@@ -208,6 +213,15 @@ class RareLauncher(RareApp):
                 self.console.log("Launching game detached")
             self.stop()
             return
+        if self.args.dry_run:
+            logger.info("Dry run activated")
+            if self.console:
+                self.console.log(f"{args.executable} {' '.join(args.args)}")
+                self.console.log(f"Do not start {self.app_name}")
+                self.console.accept_close = True
+            print(args.executable, " ".join(args.args))
+
+            self.stop()
         self.game_process.start(args.executable, args.args)
 
     def error_occurred(self, error_str: str):

@@ -21,6 +21,7 @@ class GameArgsError(Exception):
 @dataclass
 class InitArgs:
     app_name: str
+    dry_run: bool = False
     debug: bool = False
     offline: bool = False
     skip_update_check: bool = False
@@ -29,7 +30,6 @@ class InitArgs:
 
     @classmethod
     def from_argparse(cls, args):
-        print(args.skip_update_check)
         return cls(
             app_name=args.app_name,
             debug=args.debug,
@@ -37,6 +37,7 @@ class InitArgs:
             skip_update_check=args.skip_update_check,
             wine_bin=args.wine_bin,
             wine_prefix=args.wine_pfx,
+            dry_run=args.dry_run
         )
 
 
