@@ -1,5 +1,6 @@
 import json
 import os
+import platform
 from abc import abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -7,7 +8,7 @@ from enum import IntEnum
 from logging import getLogger
 from typing import List, Optional, Dict
 
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, pyqtSlot, QProcess
+from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, pyqtSlot, QProcess, QThreadPool
 from PyQt5.QtGui import QPixmap
 from legendary.models.game import Game, InstalledGame, SaveGameFile
 
@@ -16,6 +17,7 @@ from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils.paths import data_dir, get_rare_executable
+from rare.utils.steam_grades import get_rating
 
 logger = getLogger("RareGame")
 
@@ -217,7 +219,8 @@ class RareGame(RareGameSlim):
         self.game_process.finished.connect(self.__game_finished)
         if self.is_installed and not self.is_dlc:
             self.game_process.connect_to_server(on_startup=True)
-        # self.grant_date(True)
+
+        self.__steam_grade: Optional[str] = None
 
     def __on_progress_update(self, progress: int):
         self.progress = progress
@@ -511,6 +514,21 @@ class RareGame(RareGameSlim):
         if self.game.supports_cloud_saves:
             return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
         return ""
+
+    def steam_grade(self) -> str:
+        if platform.system() == "Windows" or self.is_unreal:
+            return "na"
+        if self.__steam_grade is not None:
+            return self.__steam_grade
+        worker = QRunnable.create(
+            lambda: self.set_steam_grade(get_rating(self.core, self.app_name))
+        )
+        QThreadPool.globalInstance().start(worker)
+        return "pending"
+
+    def set_steam_grade(self, grade: str) -> None:
+        self.__steam_grade = grade
+        self.signals.widget.update.emit()
 
     def grant_date(self, force=False) -> datetime:
         if self.metadata.grant_date is None or force:
