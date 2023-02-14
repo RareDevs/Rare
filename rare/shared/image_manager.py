@@ -3,6 +3,7 @@ import json
 import pickle
 import zlib
 from enum import Enum
+
 # from concurrent import futures
 from logging import getLogger
 from pathlib import Path
@@ -16,12 +17,18 @@ from PyQt5.QtCore import (
     QObject,
     QSize,
     QThreadPool,
-    QRunnable, QRect, QRectF,
+    QRunnable,
+    QRect,
+    QRectF,
 )
 from PyQt5.QtGui import (
     QPixmap,
     QImage,
-    QPainter, QPainterPath, QColor, QBrush, QTransform, QPen,
+    QPainter,
+    QPainterPath,
+    QBrush,
+    QTransform,
+    QPen,
 )
 from PyQt5.QtWidgets import QApplication
 from legendary.models.game import Game
@@ -52,7 +59,7 @@ class ImageSize:
                 self.__img_factor = 67
                 self.__size = QSize(self.__img_factor * 3, self.__img_factor * 4) * pixel_ratio / divisor
             else:
-                self.__img_factor = 17
+                self.__img_factor = 23
                 self.__size = QSize(self.__img_factor * 16, self.__img_factor * 9) * pixel_ratio / divisor
             # lk: for prettier images set this to true
             self.__smooth_transform: bool = False
@@ -86,11 +93,16 @@ class ImageSize:
     Image = Preset(1, 2)
     """! @brief Size and pixel ratio of the image on disk"""
 
+    ImageWide = Preset(1, 2, Orientation.Wide)
+    """! @brief Size and pixel ratio for wide 16/9 image on disk"""
+
     Display = Preset(1, 1)
     """! @brief Size and pixel ratio for displaying"""
 
-    Wide = Preset(1, 1, Orientation.Wide)
+    DisplayWide = Preset(1, 1, Orientation.Wide)
     """! @brief Size and pixel ratio for wide 16/9 image display"""
+
+    Wide = DisplayWide
 
     Normal = Display
     """! @brief Same as Display"""
@@ -275,12 +287,13 @@ class ImageManager(QObject):
         if ImageManager.__icon_overlay is not None:
             return ImageManager.__icon_overlay
         rounded_path = QPainterPath()
+        margin = 0.1
         rounded_path.addRoundedRect(
             QRectF(
-                rect.width() * 0.05,
-                rect.height() * 0.05,
-                rect.width() - (rect.width() * 0.1),
-                rect.height() - (rect.width() * 0.1)
+                rect.width() * margin,
+                rect.height() * margin,
+                rect.width() - (rect.width() * margin * 2),
+                rect.height() - (rect.width() * margin * 2)
             ),
             rect.height() * 0.2,
             rect.height() * 0.2,
