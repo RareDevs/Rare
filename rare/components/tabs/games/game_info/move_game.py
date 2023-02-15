@@ -26,7 +26,7 @@ class MoveGamePopUp(QWidget):
         self.path_edit.path_select.clicked.connect(self.browse_done)
 
         self.button = QPushButton(self.tr("Move"))
-        self.button.setMinimumWidth(self.path_edit.path_select.sizeHint().width())
+        self.button.setFixedSize(self.path_edit.path_select.sizeHint())
         self.button.clicked.connect(lambda p: self.move_clicked.emit(self.path_edit.text()))
 
         self.warn_label = QLabel(self)
@@ -55,7 +55,7 @@ class MoveGamePopUp(QWidget):
 
     def path_edit_cb(self, path: str):
         self.button.setEnabled(True)
-        self.warn_label.setHidden(True)
+        self.warn_label.setHidden(False)
 
         def helper_func(reason: str) -> Tuple[bool, str, str]:
             self.button.setEnabled(False)
@@ -130,7 +130,7 @@ class MoveGamePopUp(QWidget):
         # FIXME: Make edit_func lighter instead of blocking signals
         self.path_edit.line_edit.blockSignals(False)
         self.warn_label.setText(
-            self.tr("<b>Moving<b> will overwrite <b>{}<b>").format(os.path.basename(self.rgame.install_path))
+            self.tr("Moving here will overwrite <b>{}</b>").format(os.path.basename(self.rgame.install_path))
         )
         self.refresh_indicator()
 
