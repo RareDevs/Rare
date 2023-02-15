@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLab
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton
 from rare.utils.extra_widgets import PathEdit
+from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("MoveGame")
 
@@ -29,7 +30,7 @@ class MoveGamePopUp(QWidget):
         self.button.setFixedSize(self.path_edit.path_select.sizeHint())
         self.button.clicked.connect(lambda p: self.move_clicked.emit(self.path_edit.text()))
 
-        self.warn_label = QLabel(self)
+        self.warn_label = ElideLabel("", parent=self)
 
         middle_layout = QHBoxLayout()
         middle_layout.setAlignment(Qt.AlignRight)
