@@ -4,40 +4,12 @@ import os
 from datetime import date
 
 import requests
-from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, QCoreApplication
 
 from rare.lgndr.core import LegendaryCore
 from rare.utils.paths import data_dir, cache_dir
 
 replace_chars = ",;.:-_ "
 url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
-
-
-class SteamWorker(QRunnable):
-    class Signals(QObject):
-        rating = pyqtSignal(str)
-
-    def __init__(self, core: LegendaryCore, app_name: str):
-        super(SteamWorker, self).__init__()
-        self.signals = SteamWorker.Signals()
-        self.core = core
-        self.app_name = app_name
-        _tr = QCoreApplication.translate
-        self.ratings = {
-            "platinum": _tr("SteamWorker", "Platinum"),
-            "gold": _tr("SteamWorker", "Gold"),
-            "silver": _tr("SteamWorker", "Silver"),
-            "bronze": _tr("SteamWorker", "Bronze"),
-            "fail": _tr("SteamWorker", "Could not get grade"),
-            "borked": _tr("SteamWorker", "Borked"),
-            "pending": _tr("SteamWorker", "Loading..."),
-        }
-
-    def run(self) -> None:
-        self.signals.rating.emit(
-            self.ratings.get(get_rating(self.core, self.app_name), self.ratings["fail"])
-        )
-        self.signals.deleteLater()
 
 
 __steam_ids_json = None

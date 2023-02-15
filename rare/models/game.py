@@ -280,6 +280,9 @@ class RareGame(RareGameSlim):
         with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
             json.dump(metadata, metadata_json, indent=2)
 
+    def store_igame(self):
+        self.core.lgd.set_installed_game(self.app_name, self.igame)
+
     def update_game(self):
         self.game = self.core.get_game(
             self.app_name, update_meta=False, platform=self.igame.platform if self.igame else "Windows"
@@ -428,6 +431,7 @@ class RareGame(RareGameSlim):
             ret = False
         return ret
 
+
     @property
     def needs_verification(self) -> bool:
         """!
@@ -444,7 +448,7 @@ class RareGame(RareGameSlim):
             return False
 
     @needs_verification.setter
-    def needs_verification(self, not_update: bool) -> None:
+    def needs_verification(self, needs: bool) -> None:
         """!
         @brief Sets the verification status of a game.
 
@@ -452,11 +456,12 @@ class RareGame(RareGameSlim):
         named like this. After the verification, set this to 'False'
         to update the InstalledGame in the widget.
 
-        @param not_update If the game requires verification
+        @param needs If the game requires verification
         @return None
         """
-        if not not_update:
-            self.igame = self.core.get_installed_game(self.game.app_name)
+        self.igame.needs_verification = needs
+        self.store_igame()
+        self.update_igame()
 
     @property
     def is_dlc(self) -> bool:
@@ -514,6 +519,16 @@ class RareGame(RareGameSlim):
         if self.game.supports_cloud_saves:
             return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
         return ""
+
+    @property
+    def install_path(self) -> str:
+        return self.igame.install_path
+
+    @install_path.setter
+    def install_path(self, path: str) -> None:
+        self.igame.install_path = path
+        self.store_igame()
+        self.update_igame()
 
     def steam_grade(self) -> str:
         if platform.system() == "Windows" or self.is_unreal:
