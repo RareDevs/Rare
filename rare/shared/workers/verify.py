@@ -1,10 +1,8 @@
 import os
-import sys
-import time
 from argparse import Namespace
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QObject, QRunnable
+from PyQt5.QtCore import pyqtSignal, QObject
 
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
