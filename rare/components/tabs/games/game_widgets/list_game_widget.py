@@ -39,11 +39,11 @@ class ListGameWidget(GameWidget):
         self.ui.launch_btn.setText(
             self.tr("Launch") if not self.rgame.is_origin else self.tr("Link/Play")
         )
-        self.ui.developer_text.setText(self.rgame.developer)
+        self.ui.developer_label.setText(self.rgame.developer)
         # self.version_label.setVisible(self.is_installed)
         if self.rgame.igame:
-            self.ui.version_text.setText(self.rgame.version)
-        self.ui.size_text.setText(get_size(self.rgame.install_size) if self.rgame.install_size else "")
+            self.ui.version_label.setText(self.rgame.version)
+        self.ui.size_label.setText(get_size(self.rgame.install_size) if self.rgame.install_size else "")
 
         self.update_state()
 
