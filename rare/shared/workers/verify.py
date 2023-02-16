@@ -41,6 +41,7 @@ class VerifyWorker(QueueWorker):
 
     def run_real(self):
         self.rgame.signals.progress.start.emit()
+
         cli = LegendaryCLI(self.core)
         status = LgndrIndirectStatus()
         args = LgndrVerifyGameArgs(

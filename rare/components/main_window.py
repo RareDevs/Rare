@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer, QSize, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor
+from PyQt5.QtGui import QCloseEvent, QCursor, QColor
 from PyQt5.QtWidgets import (
     QMainWindow,
     QApplication,
@@ -10,13 +10,18 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QScroller,
     QComboBox,
-    QMessageBox, QLabel, QSizePolicy,
+    QMessageBox,
+    QLabel,
+    QWidget,
+    QHBoxLayout,
 )
 
 from rare.components.tabs import MainTabWidget
 from rare.components.tray_icon import TrayIcon
 from rare.shared import RareCore
+from rare.shared.workers.worker import QueueWorkerState
 from rare.utils.paths import lock_file
+from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("MainWindow")
 
@@ -42,8 +47,43 @@ class MainWindow(QMainWindow):
         self.tab_widget.exit_app.connect(self.on_exit_app)
         self.setCentralWidget(self.tab_widget)
 
+        # Set up status bar stuff (jumping through a lot of hoops)
         self.status_bar = QStatusBar(self)
         self.setStatusBar(self.status_bar)
+
+        self.active_label = QLabel(self.tr("Active:"), self.status_bar)
+        # lk: set top and botton margins to accommodate border for scroll area labels
+        self.active_label.setContentsMargins(5, 1, 0, 1)
+        self.status_bar.addWidget(self.active_label)
+
+        self.active_container = QWidget(self.status_bar)
+        active_layout = QHBoxLayout(self.active_container)
+        active_layout.setContentsMargins(0, 0, 0, 0)
+        active_layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
+        self.status_bar.addWidget(self.active_container, stretch=0)
+
+        self.queued_label = QLabel(self.tr("Queued:"), self.status_bar)
+        # lk: set top and botton margins to accommodate border for scroll area labels
+        self.queued_label.setContentsMargins(5, 1, 0, 1)
+        self.status_bar.addPermanentWidget(self.queued_label)
+
+        self.queued_scroll = QScrollArea(self.status_bar)
+        self.queued_scroll.setFrameStyle(QScrollArea.NoFrame)
+        self.queued_scroll.setWidgetResizable(True)
+        self.queued_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.queued_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.queued_scroll.setFixedHeight(self.queued_label.sizeHint().height())
+        self.status_bar.addPermanentWidget(self.queued_scroll, stretch=1)
+
+        self.queued_container = QWidget(self.queued_scroll)
+        queued_layout = QHBoxLayout(self.queued_container)
+        queued_layout.setContentsMargins(0, 0, 0, 0)
+        queued_layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
+
+        self.active_label.setVisible(False)
+        self.active_container.setVisible(False)
+        self.queued_label.setVisible(False)
+        self.queued_scroll.setVisible(False)
 
         self.signals.application.update_statusbar.connect(self.update_statusbar)
         self.signals.application.update_statusbar.connect(self.update_statusbar)
@@ -124,21 +164,45 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def update_statusbar(self):
-        for label in self.status_bar.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
-            self.status_bar.removeWidget(label)
+        self.active_label.setVisible(False)
+        self.active_container.setVisible(False)
+        self.queued_label.setVisible(False)
+        self.queued_scroll.setVisible(False)
+        for label in self.active_container.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
+            self.active_container.layout().removeWidget(label)
             label.deleteLater()
+        for label in self.queued_container.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
+            self.queued_container.layout().removeWidget(label)
+            label.deleteLater()
+        stylesheet = """
+         QLabel#QueueWorkerLabel {{
+            border-radius: 3px;
+            border: 1px solid {br_color};
+            background-color: {bg_color};
+        }}
+        """
+        color = {
+            "Verify": QColor("#d6af57"),
+            "Move": QColor("#41cad9"),
+        }
         for info in self.rcore.queue_info():
-            label = QLabel(f"{info.worker_type}: {info.app_title}")
-            label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            label.setStyleSheet(
-                """
-                QLabel {
-                    border-width: 1px;
-                    background-color: gray;
-                }
-                """
-            )
-            self.status_bar.addWidget(label)
+            label = ElideLabel(info.app_title)
+            label.setObjectName("QueueWorkerLabel")
+            label.setToolTip(f"<b>{info.worker_type}</b>: {info.app_title}")
+            label.setFixedWidth(150)
+            label.setContentsMargins(3, 0, 3, 0)
+            label.setStyleSheet(stylesheet.format(
+                    br_color=color[info.worker_type].darker(200).name(),
+                    bg_color=color[info.worker_type].darker(400).name(),
+            ))
+            if info.state == QueueWorkerState.ACTIVE:
+                self.active_container.layout().addWidget(label)
+                self.active_label.setVisible(True)
+                self.active_container.setVisible(True)
+            elif info.state == QueueWorkerState.QUEUED:
+                self.queued_container.layout().addWidget(label)
+                self.queued_label.setVisible(True)
+                self.queued_scroll.setVisible(True)
 
     def timer_finished(self):
         file_path = lock_file()
@@ -169,17 +233,28 @@ class MainWindow(QMainWindow):
                 self.hide()
                 e.ignore()
                 return
-        # FIXME: Fix this with the download tab redesign
-        if not self.args.offline and self.tab_widget.downloads_tab.is_download_active:
+
+        print(self.rcore.queue_threadpool.activeThreadCount())
+        # FIXME: Move this to RareCore once the download manager is implemented
+        if not self.args.offline and (
+            self.tab_widget.downloads_tab.is_download_active or self.rcore.queue_threadpool.activeThreadCount()
+        ):
             reply = QMessageBox.question(
                 self,
                 self.tr("Quit {}?").format(QApplication.applicationName()),
-                self.tr("There are active downloads. Are you sure you want to quit?"),
+                self.tr("There are active operations. Are you sure you want to quit?"),
                 buttons=(QMessageBox.Yes | QMessageBox.No),
                 defaultButton=QMessageBox.No,
             )
             if reply == QMessageBox.Yes:
-                self.tab_widget.downloads_tab.stop_download(omit_queue=True)
+                if self.tab_widget.downloads_tab.is_download_active:
+                    self.tab_widget.downloads_tab.stop_download(omit_queue=True)
+                if self.rcore.queue_threadpool.activeThreadCount():
+                    self.rcore.queue_threadpool.clear()
+                    for qw in self.rcore.queued_workers():
+                        self.rcore.queue_workers.remove(qw)
+                        self.update_statusbar()
+                    self.rcore.queue_threadpool.waitForDone()
             else:
                 e.ignore()
                 return
