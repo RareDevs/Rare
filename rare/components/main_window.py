@@ -241,7 +241,8 @@ class MainWindow(QMainWindow):
                     self,
                     self.tr("Quit {}?").format(QApplication.applicationName()),
                     self.tr(
-                        "There are active operations. The application cannot exit until they are completed.\n"
+                        "There are currently running operations. "
+                        "Rare cannot exit until they are completed.\n\n"
                         "Do you want to clear the queue?"
                     ),
                     buttons=(QMessageBox.Yes | QMessageBox.No),
@@ -251,7 +252,7 @@ class MainWindow(QMainWindow):
                     self.rcore.queue_threadpool.clear()
                     for qw in self.rcore.queued_workers():
                         self.rcore.queue_workers.remove(qw)
-                        self.update_statusbar()
+                    self.update_statusbar()
                 e.ignore()
                 return
             elif self.tab_widget.downloads_tab.is_download_active:
@@ -259,7 +260,8 @@ class MainWindow(QMainWindow):
                     self,
                     self.tr("Quit {}?").format(QApplication.applicationName()),
                     self.tr(
-                        "There is an active download. Quitting will stop the download.\n"
+                        "There is an active download. "
+                        "Quitting Rare now will stop the download.\n\n"
                         "Are you sure you want to quit?"
                     ),
                     buttons=(QMessageBox.Yes | QMessageBox.No),
