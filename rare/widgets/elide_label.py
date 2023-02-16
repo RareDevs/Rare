@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFontMetrics, QPaintEvent
+from PyQt5.QtGui import QFontMetrics, QResizeEvent
 from PyQt5.QtWidgets import QLabel
 
 
@@ -17,9 +17,12 @@ class ElideLabel(QLabel):
 
     def __setElideText(self, a0: str):
         metrics = QFontMetrics(self.font())
-        elided_text = metrics.elidedText(a0, Qt.ElideRight, self.width())
+        elided_text = metrics.elidedText(
+            a0, Qt.ElideRight,
+            self.width() - self.contentsMargins().left() - self.contentsMargins().right()
+        )
         super(ElideLabel, self).setText(elided_text)
 
-    def paintEvent(self, a0: QPaintEvent) -> None:
+    def resizeEvent(self, a0: QResizeEvent) -> None:
         self.__setElideText(self.__text)
-        super(ElideLabel, self).paintEvent(a0)
+        super(ElideLabel, self).resizeEvent(a0)
