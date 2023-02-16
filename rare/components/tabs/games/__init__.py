@@ -1,4 +1,3 @@
-import time
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings, Qt, pyqtSlot
@@ -109,9 +108,7 @@ class GamesTab(QStackedWidget):
         self.signals.game.installed.connect(self.update_count_games_label)
         self.signals.game.uninstalled.connect(self.update_count_games_label)
 
-        start_t = time.time()
         self.setup_game_list()
-        print(f"Game list setup time: {time.time() - start_t}")
 
     @pyqtSlot()
     def scroll_to_top(self):
