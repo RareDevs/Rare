@@ -251,7 +251,7 @@ class MainWindow(QMainWindow):
                 if reply == QMessageBox.Yes:
                     self.rcore.queue_threadpool.clear()
                     for qw in self.rcore.queued_workers():
-                        self.rcore.queue_workers.remove(qw)
+                        self.rcore.dequeue_worker(qw)
                     self.update_statusbar()
                 e.ignore()
                 return

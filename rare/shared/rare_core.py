@@ -62,6 +62,12 @@ class RareCore(QObject):
         self.queue_threadpool.start(worker, priority=0)
         self.__signals.application.update_statusbar.emit()
 
+    def dequeue_worker(self, worker: QueueWorker):
+        rgame = self.__games[worker.worker_info().app_name]
+        rgame.set_worker(None)
+        self.queue_workers.remove(worker)
+        self.__signals.application.update_statusbar.emit()
+
     def active_workers(self) -> Iterator[QueueWorker]:
         return list(filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers))
 
