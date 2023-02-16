@@ -133,7 +133,7 @@ class MoveGamePopUp(QWidget):
         self.warn_label.setText(
             self.tr("Moving here will overwrite <b>{}</b>").format(os.path.basename(self.rgame.install_path))
         )
-        self.refresh_indicator()
+        # self.refresh_indicator()
 
     def update_game(self, rgame: RareGame):
         if self.rgame is not None:
