@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLab
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton
 from rare.utils.extra_widgets import PathEdit
+from rare.utils.misc import get_size
 from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("MoveGame")
@@ -37,11 +38,20 @@ class MoveGamePopUp(QWidget):
         middle_layout.addWidget(self.warn_label, stretch=1)
         middle_layout.addWidget(self.button)
 
-        bottom_layout = QVBoxLayout()
-        self.aval_space_label = QLabel(self)
-        self.req_space_label = QLabel(self)
-        bottom_layout.addWidget(self.aval_space_label)
+        font = self.font()
+        font.setBold(True)
+        self.req_space_label = QLabel(self.tr("Required:"), self)
+        self.req_space = QLabel(self)
+        self.req_space.setFont(font)
+        self.avail_space_label = QLabel(self.tr("Available:"), self)
+        self.avail_space = QLabel(self)
+        self.avail_space.setFont(font)
+
+        bottom_layout = QHBoxLayout()
         bottom_layout.addWidget(self.req_space_label)
+        bottom_layout.addWidget(self.req_space, stretch=1)
+        bottom_layout.addWidget(self.avail_space_label)
+        bottom_layout.addWidget(self.avail_space, stretch=1)
 
         layout: QVBoxLayout = QVBoxLayout(self)
         layout.addWidget(self.path_edit)
@@ -62,10 +72,10 @@ class MoveGamePopUp(QWidget):
             self.button.setEnabled(False)
             return False, path, self.tr(reason)
 
-        if not self.rgame.igame.install_path or not path:
+        if not self.rgame.install_path or not path:
             return helper_func("You need to provide a directory.")
 
-        src_path = os.path.realpath(self.rgame.igame.install_path)
+        src_path = os.path.realpath(self.rgame.install_path)
         dst_path = os.path.realpath(path)
         dst_install_path = os.path.realpath(os.path.join(dst_path, os.path.basename(src_path)))
 
@@ -81,12 +91,12 @@ class MoveGamePopUp(QWidget):
         )
 
         # Calculate from bytes to gigabytes
-        free_space = round(free_space / 1000 ** 3, 2)
-        source_size = round(source_size / 1000 ** 3, 2)
-        self.aval_space_label.setText(self.tr("Available space: {}GB".format(free_space)))
-        self.req_space_label.setText(self.tr("Required space: {}GB").format(source_size))
+        # free_space = round(free_space / 1000 ** 3, 2)
+        # source_size = round(source_size / 1000 ** 3, 2)
+        self.req_space.setText(get_size(source_size))
+        self.avail_space.setText(get_size(free_space))
 
-        if not os.access(path, os.W_OK) or not os.access(self.rgame.igame.install_path, os.W_OK):
+        if not os.access(path, os.W_OK) or not os.access(self.rgame.install_path, os.W_OK):
             return helper_func("No write permission on destination path/current install path.")
 
         if src_path == dst_path or src_path == dst_install_path:
@@ -127,13 +137,13 @@ class MoveGamePopUp(QWidget):
             return
         # FIXME: Make edit_func lighter instead of blocking signals
         self.path_edit.line_edit.blockSignals(True)
-        self.path_edit.setText(self.rgame.igame.install_path)
+        self.path_edit.setText(self.rgame.install_path)
         # FIXME: Make edit_func lighter instead of blocking signals
         self.path_edit.line_edit.blockSignals(False)
         self.warn_label.setText(
             self.tr("Moving here will overwrite <b>{}</b>").format(os.path.basename(self.rgame.install_path))
         )
-        # self.refresh_indicator()
+        self.refresh_indicator()
 
     def update_game(self, rgame: RareGame):
         if self.rgame is not None:
