@@ -144,9 +144,9 @@ def get_latest_version():
 
 
 def get_size(b: Union[int, float]) -> str:
-    for i in ["", "K", "M", "G", "T", "P", "E"]:
+    for s in ["", "K", "M", "G", "T", "P", "E"]:
         if b < 1024:
-            return f"{b:.2f}{i}B"
+            return f"{b:.2f} {s}iB"
         b /= 1024
 
 
