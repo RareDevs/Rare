@@ -462,6 +462,10 @@ class RareGame(RareGameSlim):
         self.igame.needs_verification = needs
         self.store_igame()
         self.update_igame()
+        # FIXME: This might not be right to do for DLCs with actual data
+        for dlc in self.owned_dlcs:
+            if dlc.is_installed:
+                dlc.needs_verification = needs
 
     @property
     def is_dlc(self) -> bool:

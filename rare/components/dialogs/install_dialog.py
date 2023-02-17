@@ -289,7 +289,7 @@ class InstallDialog(QDialog):
         download_size = download.analysis.dl_size
         install_size = download.analysis.install_size
         # install_size = self.dl_item.download.analysis.disk_space_delta
-        if download_size:
+        if download_size or (not download_size and download.game.is_dlc):
             self.ui.download_size_text.setText(get_size(download_size))
             self.ui.download_size_text.setStyleSheet("font-style: normal; font-weight: bold")
             self.ui.install_button.setEnabled(not self.options_changed)

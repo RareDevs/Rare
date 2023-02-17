@@ -188,10 +188,12 @@ class LegendaryCLI(LegendaryCLIReal):
                                                           disable_https=args.disable_https)
 
         # game is either up-to-date or hasn't changed, so we have nothing to do
-        if not analysis.dl_size:
+        if not analysis.dl_size and not game.is_dlc:
             logger.info('Download size is 0, the game is either already up to date or has not changed. Exiting...')
             self.install_game_cleanup(game, igame, args.repair_mode, repair_file)
             return
+            # Rare: Return what we know about the download to queue a 0 size DLC
+            # return dlm, analysis, igame, game, args.repair_mode, repair_file, ConditionCheckResult()
 
         res = self.core.check_installation_conditions(analysis=analysis, install=igame, game=game,
                                                       updating=self.core.is_installed(args.app_name),
