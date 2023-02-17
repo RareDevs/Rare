@@ -116,7 +116,7 @@ class IconWidget(object):
         self.install_btn.setObjectName(f"{type(self).__name__}InstallButton")
         self.install_btn.setStyleSheet(
             f"""
-            PushButton#{self.install_btn.objectName()} {{
+            QPushButton#{self.install_btn.objectName()} {{
                 border-radius: 10%;
                 background-color: rgba(0, 0, 0, 65%);
                 border-color: black; border-width: 1px;
