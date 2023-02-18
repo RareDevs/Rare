@@ -17,8 +17,8 @@ from rare.lgndr.glue.arguments import LgndrImportGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.shared import RareCore
 from rare.ui.components.tabs.games.integrations.import_group import Ui_ImportGroup
-from rare.utils.extra_widgets import IndicatorLineEdit, IndicatorReasonsCommon, PathEdit
 from rare.widgets.elide_label import ElideLabel
+from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon, PathEdit
 
 logger = getLogger("Import")
 

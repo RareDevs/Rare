@@ -15,7 +15,7 @@ from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
-from rare.utils.extra_widgets import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 logger = getLogger("EGLSync")
 

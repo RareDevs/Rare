@@ -9,8 +9,8 @@ from legendary.core import LegendaryCore
 from legendary.utils import webview_login
 
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
-from rare.utils.extra_widgets import IndicatorLineEdit, IndicatorReasonsCommon
 from rare.utils.misc import icon
+from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon
 
 logger = getLogger("BrowserLogin")
 

@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
-from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit, IndicatorReasonsCommon
 from rare.utils.misc import get_size
+from rare.widgets.indicator_edit import PathEdit, IndicatorLineEdit, IndicatorReasonsCommon
 
 logger = getLogger("LegendarySettings")
 

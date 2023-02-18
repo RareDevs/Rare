@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
 )
 
-from rare.utils.extra_widgets import PathEdit
+from rare.widgets.indicator_edit import PathEdit
 
 
 class PathInputDialog(QDialog):

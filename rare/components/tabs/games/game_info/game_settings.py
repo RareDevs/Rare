@@ -11,7 +11,7 @@ from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
 from rare.models.game import RareGame
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.utils import config_helper
-from rare.utils.extra_widgets import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 from rare.utils.misc import icon, get_raw_save_path
 
 logger = getLogger("GameSettings")

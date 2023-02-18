@@ -9,9 +9,9 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLab
 
 from rare.models.game import RareGame
 from rare.shared import RareCore
-from rare.utils.extra_widgets import PathEdit, IndicatorReasons, IndicatorReasonsCommon
 from rare.utils.misc import get_size
 from rare.widgets.elide_label import ElideLabel
+from rare.widgets.indicator_edit import PathEdit, IndicatorReasons, IndicatorReasonsCommon
 
 logger = getLogger("MoveGame")
 

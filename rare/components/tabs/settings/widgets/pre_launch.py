@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QHBoxLayout, QCheckBox, QFileDialog
 
 from rare.shared import LegendaryCoreSingleton
 from rare.utils import config_helper
-from rare.utils.extra_widgets import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 
 class PreLaunchSettings(QHBoxLayout):

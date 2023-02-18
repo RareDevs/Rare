@@ -15,9 +15,9 @@ from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
 from rare.utils import config_helper
-from rare.utils.extra_widgets import PathEdit, IndicatorReasonsCommon
 from rare.utils.misc import get_size
 from rare.widgets.collapsible_widget import CollapsibleFrame
+from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 
 class InstallDialogAdvanced(CollapsibleFrame):
