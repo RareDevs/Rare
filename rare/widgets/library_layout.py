@@ -7,7 +7,6 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtWidgets import (
     QSizePolicy,
-    QWidget,
 )
 
 from .flow_layout import FlowLayout

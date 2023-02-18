@@ -1,10 +1,9 @@
 import platform
-from abc import ABCMeta
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import QMessageBox, QAction, QLabel, QPushButton
+from PyQt5.QtWidgets import QMessageBox, QAction
 
 from rare.models.game import RareGame
 from rare.shared import (

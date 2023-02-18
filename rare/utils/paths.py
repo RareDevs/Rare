@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import List
 
 from PyQt5.QtCore import QStandardPaths
-from PyQt5.QtGui import QImage
 
 if platform.system() == "Windows":
     # noinspection PyUnresolvedReferences

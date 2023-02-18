@@ -1,7 +1,7 @@
 from collections import deque
 from enum import IntEnum
 from logging import getLogger
-from typing import Optional, Deque, Union
+from typing import Optional, Deque
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtWidgets import (

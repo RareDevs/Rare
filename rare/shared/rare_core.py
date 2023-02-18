@@ -3,7 +3,7 @@ import os
 from argparse import Namespace
 from itertools import chain
 from logging import getLogger
-from typing import Optional, Dict, Iterator, Callable, List
+from typing import Optional, Dict, Iterator, Callable, List, Union
 
 from PyQt5.QtCore import QObject, QThreadPool
 from legendary.lfs.eos import EOSOverlayApp
@@ -11,7 +11,7 @@ from legendary.models.game import Game, SaveGameFile
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.apiresults import ApiResults
-from rare.models.game import RareGameBase, RareGame, RareEosOverlay
+from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
 from .workers import QueueWorker, VerifyWorker, MoveWorker
 from .image_manager import ImageManager
@@ -174,7 +174,7 @@ class RareCore(QObject):
 
         super(RareCore, self).deleteLater()
 
-    def get_game(self, app_name: str) -> RareGameBase:
+    def get_game(self, app_name: str) -> Union[RareEosOverlay, RareGame]:
         if app_name == EOSOverlayApp.app_name:
             return self.__eos_overlay_rgame
         return self.__games[app_name]
