@@ -3,12 +3,12 @@ import re
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import Qt, QRunnable, QObject, pyqtSignal, QThreadPool, QSettings
+from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool, QSettings
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
-from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit
+from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit, IndicatorReasonsCommon
 from rare.utils.misc import get_size
 
 logger = getLogger("LegendarySettings")
@@ -102,18 +102,17 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod
-    def locale_edit_cb(text: str) -> Tuple[bool, str, str]:
+    def locale_edit_cb(text: str) -> Tuple[bool, str, int]:
         if text:
             if re.match("^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$", text):
                 language, country = text.replace("_", "-").split("-")
                 text = "-".join([language.lower(), country.upper()])
             if bool(re.match("^[a-z]{2,3}-[A-Z]{2,3}$", text)):
-                return True, text, ""
+                return True, text, IndicatorReasonsCommon.VALID
             else:
-                return False, text, IndicatorLineEdit.reasons.wrong_format
-
+                return False, text, IndicatorReasonsCommon.WRONG_FORMAT
         else:
-            return True, text, ""
+            return True, text, IndicatorReasonsCommon.VALID
 
     def locale_save_cb(self, text: str):
         if text:

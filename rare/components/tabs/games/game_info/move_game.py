@@ -1,5 +1,6 @@
 import os
 import shutil
+from enum import auto
 from logging import getLogger
 from typing import Tuple, Optional
 
@@ -7,12 +8,21 @@ from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFileDialog
 
 from rare.models.game import RareGame
-from rare.shared import LegendaryCoreSingleton
-from rare.utils.extra_widgets import PathEdit
+from rare.shared import RareCore
+from rare.utils.extra_widgets import PathEdit, IndicatorReasons, IndicatorReasonsCommon
 from rare.utils.misc import get_size
 from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("MoveGame")
+
+
+class MovePathEditReasons(IndicatorReasons):
+    DST_MISSING = auto()
+    NO_WRITE_PERM = auto()
+    SAME_DIR = auto()
+    DST_IN_SRC = auto()
+    NESTED_DIR = auto()
+    NO_SPACE = auto()
 
 
 class MoveGamePopUp(QWidget):
@@ -21,10 +31,19 @@ class MoveGamePopUp(QWidget):
 
     def __init__(self, parent=None):
         super(MoveGamePopUp, self).__init__(parent=parent)
-        self.core = LegendaryCoreSingleton()
+        self.rcore = RareCore.instance()
+        self.core = RareCore.instance().core()
         self.rgame: Optional[RareGame] = None
 
-        self.path_edit = PathEdit("", QFileDialog.Directory, edit_func=self.path_edit_cb)
+        self.path_edit = PathEdit("", QFileDialog.Directory, edit_func=self.path_edit_callback)
+        self.path_edit.extend_reasons({
+            MovePathEditReasons.DST_MISSING: self.tr("You need to provide a directory."),
+            MovePathEditReasons.NO_WRITE_PERM: self.tr("No write permission on destination."),
+            MovePathEditReasons.SAME_DIR: self.tr("Same directory or subdirectory selected."),
+            MovePathEditReasons.DST_IN_SRC: self.tr("Destination is inside source directory"),
+            MovePathEditReasons.NESTED_DIR: self.tr("Game install directories cannot be nested."),
+            MovePathEditReasons.NO_SPACE: self.tr("Not enough space available on drive."),
+        })
         self.path_edit.path_select.clicked.connect(self.browse_done)
 
         self.button = QPushButton(self.tr("Move"))
@@ -64,23 +83,23 @@ class MoveGamePopUp(QWidget):
         self.path_edit.setText(str())
         self.path_edit.setText(text)
 
-    def path_edit_cb(self, path: str):
+    def path_edit_callback(self, path: str) -> Tuple[bool, str, int]:
         self.button.setEnabled(True)
         self.warn_label.setHidden(False)
 
-        def helper_func(reason: str) -> Tuple[bool, str, str]:
+        def helper_func(reason: int) -> Tuple[bool, str, int]:
             self.button.setEnabled(False)
-            return False, path, self.tr(reason)
+            return False, path, reason
 
         if not self.rgame.install_path or not path:
-            return helper_func("You need to provide a directory.")
+            return helper_func(MovePathEditReasons.DST_MISSING)
 
         src_path = os.path.realpath(self.rgame.install_path)
         dst_path = os.path.realpath(path)
         dst_install_path = os.path.realpath(os.path.join(dst_path, os.path.basename(src_path)))
 
         if not os.path.isdir(dst_path):
-            return helper_func("Directory doesn't exist or file selected.")
+            return helper_func(IndicatorReasonsCommon.DIR_NOT_EXISTS)
 
         # Get free space on drive and size of game folder
         _, _, free_space = shutil.disk_usage(dst_path)
@@ -97,20 +116,20 @@ class MoveGamePopUp(QWidget):
         self.avail_space.setText(get_size(free_space))
 
         if not os.access(path, os.W_OK) or not os.access(self.rgame.install_path, os.W_OK):
-            return helper_func("No write permission on destination path/current install path.")
+            return helper_func(MovePathEditReasons.NO_WRITE_PERM)
 
         if src_path == dst_path or src_path == dst_install_path:
-            return helper_func("Same directory or parent directory selected.")
+            return helper_func(MovePathEditReasons.SAME_DIR)
 
         if str(src_path) in str(dst_path):
-            return helper_func("You can't select a directory that is inside the current install path.")
+            return helper_func(MovePathEditReasons.DST_IN_SRC)
 
         if str(dst_install_path) in str(src_path):
-            return helper_func("You can't select a directory which contains the game installation.")
+            return helper_func(MovePathEditReasons.DST_IN_SRC)
 
-        for game in self.core.get_installed_list():
-            if game.install_path in path:
-                return helper_func("Game installations cannot be nested due to unintended sideeffects.")
+        for rgame in self.rcore.installed_games:
+            if not rgame.is_non_asset and rgame.install_path in path:
+                return helper_func(MovePathEditReasons.NESTED_DIR)
 
         is_existing_dir = is_game_dir(src_path, dst_install_path)
 
@@ -123,16 +142,16 @@ class MoveGamePopUp(QWidget):
                     self.warn_label.setHidden(False)
 
         if free_space <= source_size and not is_existing_dir:
-            return helper_func("Not enough space available on drive.")
+            return helper_func(MovePathEditReasons.NO_SPACE)
 
         # Fallback
         self.button.setEnabled(True)
-        return True, path, str()
+        return True, path, IndicatorReasonsCommon.VALID
 
     @pyqtSlot()
     def __update_widget(self):
         """ React to state updates from RareGame """
-        if not self.rgame.is_installed and not self.rgame.is_non_asset:
+        if not self.rgame.is_installed or self.rgame.is_non_asset:
             self.setDisabled(True)
             return
         # FIXME: Make edit_func lighter instead of blocking signals

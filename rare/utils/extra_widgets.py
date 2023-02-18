@@ -1,6 +1,7 @@
 import os
+from enum import IntEnum
 from logging import getLogger
-from typing import Callable, Tuple, Optional
+from typing import Callable, Tuple, Optional, Dict
 
 from PyQt5.QtCore import (
     Qt,
@@ -10,6 +11,10 @@ from PyQt5.QtCore import (
     QPoint,
     pyqtSignal,
     QFileInfo,
+    QRunnable,
+    QObject,
+    QThreadPool,
+    pyqtSlot,
 )
 from PyQt5.QtGui import QMovie, QPixmap, QFontMetrics, QImage
 from PyQt5.QtWidgets import (
@@ -34,34 +39,94 @@ from PyQt5.QtWidgets import (
     QScrollArea,
 )
 
+from rare.utils.misc import icon as qta_icon
 from rare.utils.paths import tmp_dir
 from rare.utils.qt_requests import QtRequestManager
-from rare.utils.misc import icon as qta_icon
 
 logger = getLogger("ExtraWidgets")
 
 
-class IndicatorReasons:
-    dir_not_empty = QCoreApplication.translate("IndicatorReasons", "Directory is not empty")
-    wrong_format = QCoreApplication.translate("IndicatorReasons", "Given text has wrong format")
-    game_not_installed = QCoreApplication.translate(
-        "IndicatorReasons", "Game is not installed or does not exist"
-    )
-    dir_not_exist = QCoreApplication.translate("IndicatorReasons", "Directory does not exist")
-    file_not_exist = QCoreApplication.translate("IndicatorReasons", "File does not exist")
-    wrong_path = QCoreApplication.translate("IndicatorReasons", "Wrong Directory")
+class IndicatorReasons(IntEnum):
+    """
+    Empty enumeration with auto-generated enumeration values.
+    Extend this class per-case to implement dedicated message types.
+    Types should be assigned using `auto()` from enum
+
+    example:
+    MyReasons(IndicatorReasons):
+        MY_REASON = auto()
+    """
+    @staticmethod
+    def _generate_next_value_(name, start, count, last_values):
+        """generate consecutive automatic numbers starting from zero"""
+        start = len(IndicatorReasonsCommon)
+        return IntEnum._generate_next_value_(name, start, count, last_values)
+
+
+class IndicatorReasonsCommon(IndicatorReasons):
+    VALID = 0
+    UNDEFINED = 1
+    WRONG_FORMAT = 2
+    WRONG_PATH = 3
+    DIR_NOT_EMPTY = 4
+    DIR_NOT_EXISTS = 5
+    FILE_NOT_EXISTS = 6
+    NOT_INSTALLED = 7
+
+
+class IndicatorReasonsText(QObject):
+    def __init__(self, parent=None):
+        super(IndicatorReasonsText, self).__init__(parent=parent)
+        self.__text = {
+            IndicatorReasonsCommon.VALID: self.tr("Ok!"),
+            IndicatorReasonsCommon.UNDEFINED: self.tr("Unknown error occured"),
+            IndicatorReasonsCommon.WRONG_FORMAT: self.tr("Wrong format"),
+            IndicatorReasonsCommon.WRONG_PATH: self.tr("Wrong directory"),
+            IndicatorReasonsCommon.DIR_NOT_EMPTY: self.tr("Directory is not empty"),
+            IndicatorReasonsCommon.DIR_NOT_EXISTS: self.tr("Directory does not exist"),
+            IndicatorReasonsCommon.FILE_NOT_EXISTS: self.tr("File does not exist"),
+            IndicatorReasonsCommon.NOT_INSTALLED: self.tr("Game is not installed or does not exist"),
+        }
+
+    def __getitem__(self, item: int) -> str:
+        return self.__text[item]
+
+    def __setitem__(self, key: int, value: str):
+        self.__text[key] = value
+
+    def extend(self, reasons: Dict):
+        for k in self.__text.keys():
+            if k in reasons.keys():
+                raise RuntimeError(f"{reasons} contains existing values")
+        self.__text.update(reasons)
+
+
+class EditFuncRunnable(QRunnable):
+    class Signals(QObject):
+        result = pyqtSignal(bool, str, int)
+
+    def __init__(self, func: Callable[[str], Tuple[bool, str, int]], args: str):
+        super(EditFuncRunnable, self).__init__()
+        self.setAutoDelete(True)
+        self.signals = EditFuncRunnable.Signals()
+        self.func = func
+        self.args = args
+
+    def run(self):
+        o0, o1, o2 = self.func(self.args)
+        self.signals.result.emit(o0, o1, o2)
+        self.signals.deleteLater()
 
 
 class IndicatorLineEdit(QWidget):
     textChanged = pyqtSignal(str)
-    reasons = IndicatorReasons()
 
     def __init__(
         self,
         text: str = "",
         placeholder: str = "",
         completer: QCompleter = None,
-        edit_func: Callable[[str], Tuple[bool, str, str]] = None,
+        edit_func: Callable[[str], Tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
         horiz_policy: QSizePolicy.Policy = QSizePolicy.Expanding,
         parent=None,
@@ -99,6 +164,12 @@ class IndicatorLineEdit(QWidget):
             _translate = QCoreApplication.instance().translate
             self.line_edit.setPlaceholderText(_translate(self.__class__.__name__, "Default"))
 
+        self.__reasons = IndicatorReasonsText(self)
+
+        self.__threadpool = QThreadPool(self)
+        self.__threadpool.setMaxThreadCount(1)
+        self.__thread: Optional[EditFuncRunnable] = None
+
         self.is_valid = False
         self.edit_func = edit_func
         self.save_func = save_func
@@ -125,26 +196,37 @@ class IndicatorLineEdit(QWidget):
         self.hint_label.setFrameRect(self.line_edit.rect())
         self.hint_label.setText(text)
 
-    def __indicator(self, res, reason=None):
-        color = "green" if res else "red"
+    def extend_reasons(self, reasons: Dict):
+        self.__reasons.extend(reasons)
+
+    def __indicator(self, valid, reason: int = 0):
+        color = "green" if valid else "red"
         self.indicator_label.setPixmap(qta_icon("ei.info-circle", color=color).pixmap(16, 16))
-        if reason:
-            self.indicator_label.setToolTip(reason)
+        if not valid:
+            self.indicator_label.setToolTip(self.__reasons[reason])
         else:
-            self.indicator_label.setToolTip("")
+            self.indicator_label.setToolTip(self.__reasons[IndicatorReasonsCommon.VALID])
+
+    @pyqtSlot(bool, str, int)
+    def __edit_handler(self, is_valid: bool, text: str, reason: int):
+        self.__thread = None
+        self.line_edit.blockSignals(True)
+        if text != self.line_edit.text():
+            self.line_edit.setText(text)
+        self.line_edit.blockSignals(False)
+        self.__indicator(is_valid, reason)
+        if is_valid:
+            self.__save(text)
+        self.is_valid = is_valid
+        self.textChanged.emit(text)
 
     def __edit(self, text):
         if self.edit_func is not None:
-            self.line_edit.blockSignals(True)
-
-            self.is_valid, text, reason = self.edit_func(text)
-            if text != self.line_edit.text():
-                self.line_edit.setText(text)
-            self.line_edit.blockSignals(False)
-            self.__indicator(self.is_valid, reason)
-            if self.is_valid:
-                self.__save(text)
-            self.textChanged.emit(text)
+            if self.__thread is not None:
+                self.__thread.signals.result.disconnect(self.__edit_handler)
+            self.__thread = EditFuncRunnable(self.edit_func, text)
+            self.__thread.signals.result.connect(self.__edit_handler)
+            self.__threadpool.start(self.__thread)
 
     def __save(self, text):
         if self.save_func is not None:
@@ -166,8 +248,8 @@ class PathEditIconProvider(QFileIconProvider):
 
     def __init__(self):
         super(PathEditIconProvider, self).__init__()
-        self.icon_types = dict()
-        for idx, (icn, fallback) in enumerate(self.icons):
+        self.icon_types = {}
+        for idx, (icn, fallback) in enumerate(PathEditIconProvider.icons):
             self.icon_types.update({idx - 1: qta_icon(icn, fallback, color="#eeeeee")})
 
     def icon(self, info_type):
@@ -192,7 +274,7 @@ class PathEdit(IndicatorLineEdit):
         type_filter: str = "",
         name_filter: str = "",
         placeholder: str = "",
-        edit_func: Callable[[str], Tuple[bool, str, str]] = None,
+        edit_func: Callable[[str], Tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
         horiz_policy: QSizePolicy.Policy = QSizePolicy.Expanding,
         parent=None,
@@ -230,8 +312,7 @@ class PathEdit(IndicatorLineEdit):
         layout = self.layout()
         layout.addWidget(self.path_select)
 
-        _translate = QCoreApplication.instance().translate
-        self.path_select.setText(_translate("PathEdit", "Browse..."))
+        self.path_select.setText(self.tr("Browse..."))
 
         self.type_filter = type_filter
         self.name_filter = name_filter
@@ -254,11 +335,12 @@ class PathEdit(IndicatorLineEdit):
             self.line_edit.setText(names[0])
             self.compl_model.setRootPath(names[0])
 
-    def __wrap_edit_function(self, edit_function: Callable[[str], Tuple[bool, str, str]]):
-        if edit_function:
-            return lambda text: edit_function(os.path.expanduser(text) if text.startswith("~") else text)
+    @staticmethod
+    def __wrap_edit_function(func: Callable[[str], Tuple[bool, str, int]]):
+        if func:
+            return lambda text: func(os.path.expanduser(text) if text.startswith("~") else text)
         else:
-            return edit_function
+            return func
 
 
 class SideTabBar(QTabBar):

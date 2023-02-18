@@ -17,7 +17,7 @@ from rare.lgndr.glue.arguments import LgndrImportGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.shared import RareCore
 from rare.ui.components.tabs.games.integrations.import_group import Ui_ImportGroup
-from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
+from rare.utils.extra_widgets import IndicatorLineEdit, IndicatorReasonsCommon, PathEdit
 from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("Import")
@@ -212,15 +212,15 @@ class ImportGroup(QGroupBox):
 
         self.threadpool = QThreadPool.globalInstance()
 
-    def path_edit_callback(self, path) -> Tuple[bool, str, str]:
+    def path_edit_callback(self, path) -> Tuple[bool, str, int]:
         if os.path.exists(path):
             if os.path.exists(os.path.join(path, ".egstore")):
-                return True, path, ""
+                return True, path, IndicatorReasonsCommon.VALID
             elif os.path.basename(path) in self.install_dir_list:
-                return True, path, ""
+                return True, path, IndicatorReasonsCommon.VALID
         else:
-            return False, path, PathEdit.reasons.dir_not_exist
-        return False, path, ""
+            return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
+        return False, path, IndicatorReasonsCommon.UNDEFINED
 
     @pyqtSlot(str)
     def path_changed(self, path: str):
@@ -231,13 +231,13 @@ class ImportGroup(QGroupBox):
         else:
             self.app_name_edit.setText("")
 
-    def app_name_edit_callback(self, text) -> Tuple[bool, str, str]:
+    def app_name_edit_callback(self, text) -> Tuple[bool, str, int]:
         if not text:
-            return False, text, ""
+            return False, text, IndicatorReasonsCommon.UNDEFINED
         if text in self.app_name_list:
-            return True, text, ""
+            return True, text, IndicatorReasonsCommon.VALID
         else:
-            return False, text, IndicatorLineEdit.reasons.game_not_installed
+            return False, text, IndicatorReasonsCommon.NOT_INSTALLED
 
     @pyqtSlot(str)
     def app_name_changed(self, app_name: str):

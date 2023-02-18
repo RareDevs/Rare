@@ -9,7 +9,7 @@ from rare.components.tabs.settings.widgets.mangohud import MangoHudSettings
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 
 from rare.ui.components.tabs.settings.linux import Ui_LinuxSettings
-from rare.utils.extra_widgets import PathEdit
+from rare.utils.extra_widgets import PathEdit, IndicatorReasonsCommon
 
 logger = getLogger("LinuxSettings")
 
@@ -28,7 +28,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         self.wine_prefix = PathEdit(
             self.load_prefix(),
             file_type=QFileDialog.DirectoryOnly,
-            edit_func=lambda path: (os.path.isdir(path) or not path, path, PathEdit.reasons.dir_not_exist),
+            edit_func=lambda path: (os.path.isdir(path) or not path, path, IndicatorReasonsCommon.DIR_NOT_EXISTS),
             save_func=self.save_prefix,
         )
         self.prefix_layout.addWidget(self.wine_prefix)
@@ -38,7 +38,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
             self.load_setting(self.name, "wine_executable"),
             file_type=QFileDialog.ExistingFile,
             name_filter="Wine executable (wine wine64)",
-            edit_func=lambda text: (os.path.exists(text) or not text, text, PathEdit.reasons.dir_not_exist),
+            edit_func=lambda text: (os.path.exists(text) or not text, text, IndicatorReasonsCommon.DIR_NOT_EXISTS),
             save_func=lambda text: self.save_setting(
                 text, section=self.name, setting="wine_executable"
             ),

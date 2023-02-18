@@ -9,7 +9,7 @@ from rare.components.tabs.settings import LinuxSettings
 from .wrapper import WrapperSettings
 from rare.ui.components.tabs.settings.proton import Ui_ProtonSettings
 from rare.utils import config_helper
-from rare.utils.extra_widgets import PathEdit
+from rare.utils.extra_widgets import PathEdit, IndicatorReasonsCommon
 from rare.shared import LegendaryCoreSingleton
 
 logger = getLogger("Proton")
@@ -103,12 +103,12 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
 
         config_helper.save_config()
 
-    def proton_prefix_edit(self, text: str) -> Tuple[bool, str, str]:
+    def proton_prefix_edit(self, text: str) -> Tuple[bool, str, int]:
         if not text:
             text = os.path.expanduser("~/.proton")
-            return True, text, ""
+            return True, text, IndicatorReasonsCommon.VALID
         parent_dir = os.path.dirname(text)
-        return os.path.exists(parent_dir), text, PathEdit.reasons.dir_not_exist
+        return os.path.exists(parent_dir), text, IndicatorReasonsCommon.DIR_NOT_EXISTS
 
     def proton_prefix_save(self, text: str):
         if not self.changeable:

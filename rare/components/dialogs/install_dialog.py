@@ -15,7 +15,7 @@ from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
 from rare.utils import config_helper
-from rare.utils.extra_widgets import PathEdit
+from rare.utils.extra_widgets import PathEdit, IndicatorReasonsCommon
 from rare.utils.misc import get_size
 from rare.widgets.collapsible_widget import CollapsibleFrame
 
@@ -253,11 +253,11 @@ class InstallDialog(QDialog):
         self.get_options()
         self.get_download_info()
 
-    def option_changed(self, path) -> Tuple[bool, str, str]:
+    def option_changed(self, path) -> Tuple[bool, str, int]:
         self.options_changed = True
         self.ui.install_button.setEnabled(False)
         self.ui.verify_button.setEnabled(not self.worker_running)
-        return True, path, ""
+        return True, path, IndicatorReasonsCommon.VALID
 
     def non_reload_option_changed(self, option: str):
         if option == "download_only":

@@ -15,7 +15,7 @@ from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
-from rare.utils.extra_widgets import PathEdit
+from rare.utils.extra_widgets import PathEdit, IndicatorReasonsCommon
 
 logger = getLogger("EGLSync")
 
@@ -92,9 +92,9 @@ class EGLSyncGroup(QGroupBox):
             self.egl_path_edit.setText(path)
 
     @staticmethod
-    def egl_path_edit_edit_cb(path) -> Tuple[bool, str, str]:
+    def egl_path_edit_edit_cb(path) -> Tuple[bool, str, int]:
         if not path:
-            return True, path, ""
+            return True, path, IndicatorReasonsCommon.VALID
         if os.path.exists(os.path.join(path, "system.reg")) and os.path.exists(
                 os.path.join(path, "dosdevices/c:")
         ):
@@ -108,10 +108,10 @@ class EGLSyncGroup(QGroupBox):
                 "ProgramData/Epic/EpicGamesLauncher/Data/Manifests"
         ):
             # lower() might or might not be needed in the check
-            return False, path, PathEdit.reasons.wrong_path
+            return False, path, IndicatorReasonsCommon.WRONG_FORMAT
         if os.path.exists(path):
-            return True, path, ""
-        return False, path, PathEdit.reasons.dir_not_exist
+            return True, path, IndicatorReasonsCommon.VALID
+        return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
 
     def egl_path_edit_save_cb(self, path):
         if not path or not os.path.exists(path):

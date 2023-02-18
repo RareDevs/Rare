@@ -11,7 +11,7 @@ from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
 from rare.models.game import RareGame
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.utils import config_helper
-from rare.utils.extra_widgets import PathEdit
+from rare.utils.extra_widgets import PathEdit, IndicatorReasonsCommon
 from rare.utils.misc import icon, get_raw_save_path
 
 logger = getLogger("GameSettings")
@@ -32,9 +32,9 @@ class GameSettings(DefaultGameSettings):
             "",
             file_type=QFileDialog.DirectoryOnly,
             placeholder=self.tr("Cloud save path"),
-            edit_func=lambda text: (True, text, None)
+            edit_func=lambda text: (True, text, IndicatorReasonsCommon.VALID)
             if os.path.exists(text)
-            else (False, text, PathEdit.reasons.dir_not_exist),
+            else (False, text, IndicatorReasonsCommon.DIR_NOT_EXISTS),
             save_func=self.save_save_path,
         )
         self.cloud_layout.addRow(QLabel(self.tr("Save path")), self.cloud_save_path_edit)
