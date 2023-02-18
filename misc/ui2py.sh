@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ ! -z "${1}" ]; then
+if [ -n "${1}" ]; then
     echo "Generating python file for ${1}"
     pyuic5 "${1}" -x -o "${1%.ui}.py"
     exit 0
