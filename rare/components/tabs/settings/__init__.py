@@ -1,6 +1,6 @@
 from rare.components.tabs.settings.widgets.linux import LinuxSettings
 from rare.shared import ArgumentsSingleton
-from rare.utils.extra_widgets import SideTabWidget
+from rare.widgets.side_tab import SideTabWidget
 from .about import About
 from .debug import DebugSettings
 from .default_game_settings import DefaultGameSettings

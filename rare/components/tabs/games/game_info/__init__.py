@@ -6,8 +6,8 @@ from PyQt5.QtWidgets import QTreeView
 
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.utils.extra_widgets import SideTabWidget
 from rare.utils.json_formatter import QJsonModel
+from rare.widgets.side_tab import SideTabWidget
 from .game_dlc import GameDlc
 from .game_info import GameInfo
 from .game_settings import GameSettings

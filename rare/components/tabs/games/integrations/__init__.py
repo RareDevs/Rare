@@ -3,10 +3,10 @@ from typing import Optional
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QSpacerItem, QSizePolicy
 
-from rare.utils.extra_widgets import SideTabWidget
+from rare.widgets.side_tab import SideTabWidget
 from .egl_sync_group import EGLSyncGroup
-from .import_group import ImportGroup
 from .eos_group import EOSGroup
+from .import_group import ImportGroup
 from .ubisoft_group import UbisoftGroup
 
 
