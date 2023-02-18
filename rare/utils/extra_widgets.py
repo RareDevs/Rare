@@ -24,13 +24,11 @@ logger = getLogger("ExtraWidgets")
 
 
 class WaitingSpinner(QLabel):
-    def __init__(self):
-        super(WaitingSpinner, self).__init__()
+    def __init__(self, parent=None):
+        super(WaitingSpinner, self).__init__(parent=parent)
+        self.setObjectName(type(self).__name__)
         self.setStyleSheet(
-            """
-            margin-left: auto;
-            margin-right: auto;
-        """
+            f"QLabel#{self.objectName()} {{margin - left: auto; margin-right: auto;}}"
         )
         self.movie = QMovie(":/images/loader.gif")
         self.setMovie(self.movie)
@@ -40,12 +38,19 @@ class WaitingSpinner(QLabel):
 class SelectViewWidget(QWidget):
     toggled = pyqtSignal()
 
-    def __init__(self, icon_view: bool):
-        super(SelectViewWidget, self).__init__()
+    def __init__(self, icon_view: bool, parent=None):
+        super(SelectViewWidget, self).__init__(parent=parent)
         self.icon_view = icon_view
-        self.setStyleSheet("""QPushButton{border: none; background-color: transparent}""")
-        self.icon_button = QPushButton()
-        self.list_button = QPushButton()
+        self.icon_button = QPushButton(self)
+        self.icon_button.setObjectName(f"{type(self).__name__}Button")
+        self.icon_button.setStyleSheet(
+            f"QPushButton#{self.icon_button.objectName()} {{border: none; background-color: transparent}}"
+        )
+        self.list_button = QPushButton(self)
+        self.list_button.setObjectName(f"{type(self).__name__}Button")
+        self.list_button.setStyleSheet(
+            f"QPushButton#{self.list_button.objectName()} {{border: none; background-color: transparent}}"
+        )
         if icon_view:
             self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
             self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list"))
@@ -84,8 +89,8 @@ class ImageLabel(QLabel):
     img_size = None
     name = ""
 
-    def __init__(self):
-        super(ImageLabel, self).__init__()
+    def __init__(self, parent=None):
+        super(ImageLabel, self).__init__(parent=parent)
         self.path = tmp_dir()
         self.manager = QtRequestManager("bytes")
 
@@ -136,31 +141,37 @@ class ButtonLineEdit(QLineEdit):
     buttonClicked = pyqtSignal()
 
     def __init__(self, icon_name, placeholder_text: str, parent=None):
-        super(ButtonLineEdit, self).__init__(parent)
+        super(ButtonLineEdit, self).__init__(parent=parent)
+        self.setObjectName(type(self).__name__)
 
         self.button = QToolButton(self)
+        self.button.setObjectName(f"{type(self).__name__}Button")
         self.button.setIcon(qta_icon(icon_name, color="white"))
-        self.button.setStyleSheet("border: 0px; padding: 0px;")
+        self.button.setStyleSheet(
+            f"QToolButton#{self.button.objectName()} {{border: 0px; padding: 0px;}}"
+        )
         self.button.setCursor(Qt.ArrowCursor)
         self.button.clicked.connect(self.buttonClicked.emit)
         self.setPlaceholderText(placeholder_text)
-        frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
-        buttonSize = self.button.sizeHint()
+        frame_width = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
+        button_size = self.button.sizeHint()
 
-        self.setStyleSheet("QLineEdit {padding-right: %dpx; }" % (buttonSize.width() + frameWidth + 1))
+        self.setStyleSheet(
+            f"QLineEdit#{self.objectName()} {{padding-right: {(button_size.width() + frame_width + 1)}px; }}"
+        )
         self.setMinimumSize(
-            max(self.minimumSizeHint().width(), buttonSize.width() + frameWidth * 2 + 2),
+            max(self.minimumSizeHint().width(), button_size.width() + frame_width * 2 + 2),
             max(
                 self.minimumSizeHint().height(),
-                buttonSize.height() + frameWidth * 2 + 2,
+                button_size.height() + frame_width * 2 + 2,
             ),
         )
 
     def resizeEvent(self, event):
-        buttonSize = self.button.sizeHint()
-        frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
+        frame_width = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
+        button_size = self.button.sizeHint()
         self.button.move(
-            self.rect().right() - frameWidth - buttonSize.width(),
-            (self.rect().bottom() - buttonSize.height() + 1) // 2,
+            self.rect().right() - frame_width - button_size.width(),
+            (self.rect().bottom() - button_size.height() + 1) // 2,
         )
         super(ButtonLineEdit, self).resizeEvent(event)
