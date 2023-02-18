@@ -2,10 +2,10 @@ import os
 import platform as pf
 from typing import Tuple, List, Union, Optional
 
-from PyQt5.QtCore import Qt, QThreadPool, QSettings
+from PyQt5.QtCore import Qt, QThreadPool, QSettings, QCoreApplication
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent
-from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout, QWidget, QVBoxLayout, QApplication
+from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout, QWidget, QVBoxLayout
 from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.models.game import RareGame
@@ -68,7 +68,7 @@ class InstallDialog(QDialog):
         else:
             header = self.tr("Install")
         self.ui.install_dialog_label.setText(f'<h3>{header} "{self.rgame.app_title}"</h3>')
-        self.setWindowTitle(f'{QApplication.instance().applicationName()} - {header} "{self.rgame.app_title}"')
+        self.setWindowTitle(f'{header} "{self.rgame.app_title}" - {QCoreApplication.instance().applicationName()}')
 
         if not self.options.base_path:
             self.options.base_path = self.core.lgd.config.get(

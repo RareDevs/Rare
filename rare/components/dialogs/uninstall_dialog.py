@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QCoreApplication
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import (
     QDialog,
@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QHBoxLayout,
     QPushButton,
-    QApplication,
 )
 from legendary.utils.selective_dl import get_sdl_appname
 
@@ -23,7 +22,8 @@ class UninstallDialog(QDialog):
         super(UninstallDialog, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
-        self.setWindowTitle(f'{QApplication.instance().applicationName()} - Uninstall "{rgame.app_title}"')
+        header = self.tr("Uninstall")
+        self.setWindowTitle(f'{header} "{rgame.app_title}" - {QCoreApplication.instance().applicationName()}')
         self.info_text = QLabel(
             self.tr("Do you really want to uninstall <b>{}</b>?").format(rgame.app_title)
         )
