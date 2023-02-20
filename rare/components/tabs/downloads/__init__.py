@@ -158,7 +158,7 @@ class DownloadsTab(QWidget):
         """
         self.__thread.kill()
         self.download_widget.ui.kill_button.setEnabled(False)
-        # lk: if we are exitin Rare, waif for thread to finish
+        # lk: if we are exiting Rare, wait for thread to finish
         # `self.on_exit` control whether we try to add the download
         # back in the queue. If we are on exit we wait for the thread
         # to finish, we do not care about handling the result really
