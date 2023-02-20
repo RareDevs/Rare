@@ -42,19 +42,19 @@ class CollapsibleBase(object):
 
     @abstractmethod
     def isChecked(self) -> bool:
-        ...
+        pass
 
     @abstractmethod
     def click(self) -> None:
-        ...
+        pass
 
     @abstractmethod
     def addToLayout(self, widget: QWidget) -> None:
-        ...
+        pass
 
     @abstractmethod
     def sizeHint(self) -> QSize:
-        ...
+        pass
 
     def animationStart(self, checked):
         direction = QAbstractAnimation.Forward if checked else QAbstractAnimation.Backward

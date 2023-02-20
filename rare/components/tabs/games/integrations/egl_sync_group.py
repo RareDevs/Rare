@@ -189,8 +189,8 @@ class EGLSyncListItem(QListWidgetItem):
         return self.checkState() == Qt.Checked
 
     @abstractmethod
-    def action(self) -> Union[str,bool]:
-        ...
+    def action(self) -> Union[str, bool]:
+        pass
 
     @property
     def app_name(self):
@@ -199,7 +199,7 @@ class EGLSyncListItem(QListWidgetItem):
     @property
     @abstractmethod
     def app_title(self) -> str:
-        ...
+        pass
 
 
 class EGLSyncExportItem(EGLSyncListItem):
@@ -279,12 +279,12 @@ class EGLSyncListGroup(QGroupBox):
 
     @abstractmethod
     def action(self):
-        ...
+        pass
 
     @pyqtSlot(list)
     @abstractmethod
     def show_errors(self, errors: List):
-        ...
+        pass
 
     @property
     def items(self) -> Iterable[EGLSyncListItem]:

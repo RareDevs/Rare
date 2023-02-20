@@ -431,7 +431,6 @@ class RareGame(RareGameSlim):
             ret = False
         return ret
 
-
     @property
     def needs_verification(self) -> bool:
         """!
@@ -633,7 +632,6 @@ class RareGame(RareGameSlim):
         if ask_sync_saves:
             args.extend("--ask-sync-saves")
 
-        # kill me, if I don't change it before commit
         QProcess.startDetached(executable, args)
         logger.info(f"Start new Process: ({executable} {' '.join(args)})")
         self.game_process.connect_to_server(on_startup=False)

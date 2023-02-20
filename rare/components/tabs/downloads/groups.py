@@ -143,7 +143,7 @@ class QueueGroup(QGroupBox):
         self.__container.layout().insertWidget(0, widget)
         if self.count() > 1:
             app_name = self.__queue[1]
-            other: QueueWidget =  self.__find_widget(app_name)
+            other: QueueWidget = self.__find_widget(app_name)
             other.toggle_arrows(1, len(self.__queue))
 
     def push_back(self, item: InstallQueueItemModel, old_igame: InstalledGame):
@@ -154,7 +154,7 @@ class QueueGroup(QGroupBox):
         self.__container.layout().addWidget(widget)
         if self.count() > 1:
             app_name = self.__queue[-2]
-            other: QueueWidget =  self.__find_widget(app_name)
+            other: QueueWidget = self.__find_widget(app_name)
             other.toggle_arrows(len(self.__queue) - 2, len(self.__queue))
 
     def pop_front(self) -> InstallQueueItemModel:
@@ -173,12 +173,12 @@ class QueueGroup(QGroupBox):
         for idx in [0, 1]:
             if self.count() > idx:
                 app_name = self.__queue[idx]
-                widget: QueueWidget =  self.__find_widget(app_name)
+                widget: QueueWidget = self.__find_widget(app_name)
                 widget.toggle_arrows(idx, len(self.__queue))
         for idx in [1, 2]:
             if self.count() > idx:
                 app_name = self.__queue[-idx]
-                widget: QueueWidget =  self.__find_widget(app_name)
+                widget: QueueWidget = self.__find_widget(app_name)
                 widget.toggle_arrows(len(self.__queue) - idx, len(self.__queue))
 
     def __remove(self, app_name: str):

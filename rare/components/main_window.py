@@ -175,7 +175,7 @@ class MainWindow(QMainWindow):
             self.queued_container.layout().removeWidget(label)
             label.deleteLater()
         stylesheet = """
-         QLabel#QueueWorkerLabel {{
+        QLabel#QueueWorkerLabel {{
             border-radius: 3px;
             border: 1px solid {br_color};
             background-color: {bg_color};
