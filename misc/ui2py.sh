@@ -3,6 +3,7 @@
 if [ -n "${1}" ]; then
     echo "Generating python file for ${1}"
     pyuic5 "${1}" -x -o "${1%.ui}.py"
+    sed '/QtCore.QMetaObject.connectSlotsByName/d' -i "${1%.ui}.py"
     exit 0
 fi
 
