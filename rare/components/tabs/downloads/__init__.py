@@ -271,10 +271,10 @@ class DownloadsTab(QWidget):
         self.download_widget.ui.kill_button.setDisabled(True)
         self.download_widget.ui.dl_name.setText(self.tr("No active download"))
         self.download_widget.ui.progress_bar.setValue(0)
-        self.download_widget.ui.dl_speed.setText("n/a")
-        self.download_widget.ui.time_left.setText("n/a")
-        self.download_widget.ui.cache_used.setText("n/a")
-        self.download_widget.ui.downloaded.setText("n/a")
+        self.download_widget.ui.dl_speed.setText("...")
+        self.download_widget.ui.time_left.setText("...")
+        self.download_widget.ui.cache_used.setText("...")
+        self.download_widget.ui.downloaded.setText("...")
         self.__thread = None
 
     @pyqtSlot(InstallOptionsModel)
