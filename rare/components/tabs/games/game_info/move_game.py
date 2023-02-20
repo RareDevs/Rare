@@ -37,7 +37,7 @@ class MoveGamePopUp(QWidget):
 
         self.path_edit = PathEdit("", QFileDialog.Directory, edit_func=self.path_edit_callback)
         self.path_edit.extend_reasons({
-            MovePathEditReasons.DST_MISSING: self.tr("You need to provide a directory."),
+            MovePathEditReasons.DST_MISSING: self.tr("You need to provide the destination directory."),
             MovePathEditReasons.NO_WRITE_PERM: self.tr("No write permission on destination."),
             MovePathEditReasons.SAME_DIR: self.tr("Same directory or subdirectory selected."),
             MovePathEditReasons.DST_IN_SRC: self.tr("Destination is inside source directory"),
