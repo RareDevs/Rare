@@ -5,7 +5,7 @@ from logging import getLogger
 from typing import Tuple, Iterable, List, Union
 
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
-from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame
+from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame, QLabel
 from legendary.models.egl import EGLManifest
 from legendary.models.game import InstalledGame
 
@@ -16,6 +16,7 @@ from rare.shared.workers.wine_resolver import WineResolver
 from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("EGLSync")
 
@@ -26,14 +27,19 @@ class EGLSyncGroup(QGroupBox):
         self.ui = Ui_EGLSyncGroup()
         self.ui.setupUi(self)
         self.core = RareCore.instance().core()
-        self.ui.egl_path_info.setProperty("infoLabel", 1)
 
-        self.thread_pool = QThreadPool.globalInstance()
+        self.egl_path_info_label = QLabel(self.tr("Estimated path"), self)
+        self.egl_path_info = ElideLabel("", parent=self)
+        self.egl_path_info.setProperty("infoLabel", 1)
+        self.ui.egl_sync_layout.insertRow(
+            self.ui.egl_sync_layout.indexOf(self.ui.egl_path_edit_label) + 1,
+            self.egl_path_info_label, self.egl_path_info
+        )
 
         if platform.system() == "Windows":
             self.ui.egl_path_edit_label.setVisible(False)
-            self.ui.egl_path_info_label.setVisible(False)
-            self.ui.egl_path_info.setVisible(False)
+            self.egl_path_info_label.setVisible(False)
+            self.egl_path_info.setVisible(False)
         else:
             self.egl_path_edit = PathEdit(
                 path=self.core.egl.programdata_path,
@@ -49,15 +55,15 @@ class EGLSyncGroup(QGroupBox):
             self.ui.egl_path_edit_layout.addWidget(self.egl_path_edit)
 
             if not self.core.egl.programdata_path:
-                self.ui.egl_path_info.setText(self.tr("Updating..."))
+                self.egl_path_info.setText(self.tr("Updating..."))
                 wine_resolver = WineResolver(
                     self.core, PathSpec.egl_programdata, "default"
                 )
                 wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
-                self.thread_pool.start(wine_resolver)
+                QThreadPool.globalInstance().start(wine_resolver)
             else:
-                self.ui.egl_path_info_label.setVisible(False)
-                self.ui.egl_path_info.setVisible(False)
+                self.egl_path_info_label.setVisible(False)
+                self.egl_path_info.setVisible(False)
 
         self.ui.egl_sync_check.setChecked(self.core.egl_sync_enabled)
         self.ui.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
@@ -73,16 +79,16 @@ class EGLSyncGroup(QGroupBox):
         self.update_lists()
 
     def wine_resolver_cb(self, path):
-        self.ui.egl_path_info.setText(path)
+        self.egl_path_info.setText(path)
         if not path:
-            self.ui.egl_path_info.setText(
+            self.egl_path_info.setText(
                 self.tr(
                     "Default Wine prefix is unset, or path does not exist. "
                     "Create it or configure it in Settings -> Linux."
                 )
             )
         elif not os.path.exists(path):
-            self.ui.egl_path_info.setText(
+            self.egl_path_info.setText(
                 self.tr(
                     "Default Wine prefix is set but EGL manifests path does not exist. "
                     "Your configured default Wine prefix might not be where EGL is installed."
@@ -148,7 +154,7 @@ class EGLSyncGroup(QGroupBox):
             self.import_list.mark(Qt.Checked)
             self.export_list.mark(Qt.Checked)
             sync_worker = EGLSyncWorker(self.import_list, self.export_list)
-            self.thread_pool.start(sync_worker)
+            QThreadPool.globalInstance().start(sync_worker)
             self.import_list.setEnabled(False)
             self.export_list.setEnabled(False)
             # self.update_lists()
@@ -364,6 +370,7 @@ class EGLSyncImportGroup(EGLSyncListGroup):
         self.populate(True)
         if errors:
             self.action_errors.emit(errors)
+
 
 class EGLSyncWorker(QRunnable):
     def __init__(self, import_list: EGLSyncListGroup, export_list: EGLSyncListGroup):
