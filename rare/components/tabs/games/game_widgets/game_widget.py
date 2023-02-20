@@ -92,7 +92,7 @@ class GameWidget(LibraryWidget):
         }
 
         self.hover_strings = {
-            "info": self.tr("Show infromation"),
+            "info": self.tr("Show information"),
             "install": self.tr("Install game"),
             "can_launch": self.tr("Launch game"),
             "is_foreign": self.tr("Launch offline"),
