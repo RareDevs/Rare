@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InfoWidget</class>
- <widget class="QWidget" name="InfoWidget">
+ <class>QueueInfoWidget</class>
+ <widget class="QWidget" name="QueueInfoWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,9 +17,9 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string notr="true">InfoWidget</string>
+   <string notr="true">QueueInfoWidget</string>
   </property>
-  <layout class="QGridLayout" name="info_widget_layout" columnstretch="0,0,0,0,0,0">
+  <layout class="QGridLayout" name="queue_info_layout" columnstretch="0,0,0,0,0,0">
    <property name="leftMargin">
     <number>0</number>
    </property>

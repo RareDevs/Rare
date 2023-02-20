@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>BaseWidget</class>
- <widget class="QFrame" name="BaseWidget">
+ <class>QueueBaseWidget</class>
+ <widget class="QFrame" name="QueueBaseWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>332</width>
-    <height>70</height>
+    <width>354</width>
+    <height>72</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">BaseWidget</string>
+   <string notr="true">QueueBaseWidget</string>
   </property>
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
   </property>
-  <layout class="QHBoxLayout" name="download_widget_layout" stretch="1,0,0,0">
+  <layout class="QHBoxLayout" name="queue_base_layout" stretch="1,0,0,0">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -100,7 +100,7 @@
       <item>
        <widget class="QPushButton" name="force_button">
         <property name="text">
-         <string>Update now</string>
+         <string>Download now</string>
         </property>
        </widget>
       </item>

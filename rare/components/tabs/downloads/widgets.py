@@ -10,15 +10,15 @@ from qtawesome import icon
 from rare.models.install import InstallQueueItemModel, InstallOptionsModel, InstallDownloadModel
 from rare.shared import RareCore, ImageManagerSingleton
 from rare.shared.workers.install_info import InstallInfoWorker
-from rare.ui.components.tabs.downloads.base_widget import Ui_BaseWidget
-from rare.ui.components.tabs.downloads.info_widget import Ui_InfoWidget
+from rare.ui.components.tabs.downloads.queue_base_widget import Ui_QueueBaseWidget
+from rare.ui.components.tabs.downloads.queue_info_widget import Ui_QueueInfoWidget
 from rare.utils.misc import get_size, widget_object_name, elide_text
 from rare.widgets.image_widget import ImageWidget, ImageSize
 
 logger = getLogger("DownloadWidgets")
 
 
-class InfoWidget(QWidget):
+class QueueInfoWidget(QWidget):
     def __init__(
         self,
         game: Optional[Game],
@@ -27,8 +27,8 @@ class InfoWidget(QWidget):
         old_igame: Optional[InstalledGame] = None,
         parent=None,
     ):
-        super(InfoWidget, self).__init__(parent=parent)
-        self.ui = Ui_InfoWidget()
+        super(QueueInfoWidget, self).__init__(parent=parent)
+        self.ui = Ui_QueueInfoWidget()
         self.ui.setupUi(self)
 
         self.image_manager = ImageManagerSingleton()
@@ -37,7 +37,7 @@ class InfoWidget(QWidget):
         self.image.setFixedSize(ImageSize.Icon)
         self.ui.image_layout.addWidget(self.image)
 
-        self.ui.info_widget_layout.setAlignment(Qt.AlignTop)
+        self.ui.queue_info_layout.setAlignment(Qt.AlignTop)
 
         if game and igame:
             self.update_information(game, igame, analysis, old_igame)
@@ -65,7 +65,7 @@ class UpdateWidget(QFrame):
 
     def __init__(self, game: Game, igame: InstalledGame, parent=None):
         super(UpdateWidget, self).__init__(parent=parent)
-        self.ui = Ui_BaseWidget()
+        self.ui = Ui_QueueBaseWidget()
         self.ui.setupUi(self)
         # lk: setObjectName has to be after `setupUi` because it is also set in that function
         self.setObjectName(widget_object_name(self, game.app_name))
@@ -76,7 +76,7 @@ class UpdateWidget(QFrame):
         self.ui.queue_buttons.setVisible(False)
         self.ui.move_buttons.setVisible(False)
 
-        self.info_widget = InfoWidget(game, igame, parent=self)
+        self.info_widget = QueueInfoWidget(game, igame, parent=self)
         self.ui.info_layout.addWidget(self.info_widget)
 
         self.ui.update_button.clicked.connect(lambda: self.update_game(True))
@@ -107,7 +107,7 @@ class QueueWidget(QFrame):
 
     def __init__(self, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None):
         super(QueueWidget, self).__init__(parent=parent)
-        self.ui = Ui_BaseWidget()
+        self.ui = Ui_QueueBaseWidget()
         self.ui.setupUi(self)
         # lk: setObjectName has to be after `setupUi` because it is also set in that function
         self.setObjectName(widget_object_name(self, item.options.app_name))
@@ -124,9 +124,9 @@ class QueueWidget(QFrame):
                 lambda: logger.info(f"Download requeue worker finished for {item.options.app_name}")
             )
             QThreadPool.globalInstance().start(worker)
-            self.info_widget = InfoWidget(None, None, None, old_igame, parent=self)
+            self.info_widget = QueueInfoWidget(None, None, None, old_igame, parent=self)
         else:
-            self.info_widget = InfoWidget(
+            self.info_widget = QueueInfoWidget(
                 item.download.game, item.download.igame, item.download.analysis, old_igame, parent=self
             )
         self.ui.info_layout.addWidget(self.info_widget)
