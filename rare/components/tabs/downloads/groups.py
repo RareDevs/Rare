@@ -31,7 +31,7 @@ class UpdateGroup(QGroupBox):
         self.__text = QLabel(self.tr("No updates available"))
         self.__text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
-        # lk: For findChildren to work, the upates's layout has to be in a widget
+        # lk: For findChildren to work, the update's layout has to be in a widget
         self.__container = QWidget(self)
         self.__container.setVisible(False)
         container_layout = QVBoxLayout(self.__container)
