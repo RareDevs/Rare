@@ -181,7 +181,7 @@ class LaunchDialog(QDialog):
 
         self.progress_info = ElideLabel(parent=self)
         self.progress_info.setFixedHeight(False)
-        self.ui.launch_dialog_layout.addWidget(self.progress_info)
+        self.ui.launch_layout.addWidget(self.progress_info)
 
         self.core = LegendaryCoreSingleton()
         self.args = ArgumentsSingleton()
