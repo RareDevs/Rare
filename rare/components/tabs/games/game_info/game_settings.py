@@ -12,12 +12,13 @@ from rare.models.game import RareGame
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.utils import config_helper
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.side_tab import SideTabContents
 from rare.utils.misc import icon, get_raw_save_path
 
 logger = getLogger("GameSettings")
 
 
-class GameSettings(DefaultGameSettings):
+class GameSettings(DefaultGameSettings, SideTabContents):
     game: Game
     igame: InstalledGame
 
@@ -165,7 +166,7 @@ class GameSettings(DefaultGameSettings):
         else:
             self.skip_update.setCurrentIndex(0)
 
-        self.title.setTitle(self.game.app_title)
+        self.set_title.emit(self.game.app_title)
         if platform.system() != "Windows":
             if self.igame and self.igame.platform == "Mac":
                 self.linux_settings_widget.setVisible(False)

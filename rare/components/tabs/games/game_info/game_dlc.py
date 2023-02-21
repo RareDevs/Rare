@@ -9,6 +9,7 @@ from rare.shared.image_manager import ImageSize
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
 from rare.widgets.image_widget import ImageWidget
+from rare.widgets.side_tab import SideTabContents
 from rare.utils.misc import widget_object_name
 
 
@@ -71,7 +72,7 @@ class AvailableGameDlcWidget(GameDlcWidget):
         self.rdlc.install()
 
 
-class GameDlc(QToolBox):
+class GameDlc(QToolBox, SideTabContents):
 
     def __init__(self, parent=None):
         super(GameDlc, self).__init__(parent=parent)
@@ -147,7 +148,7 @@ class GameDlc(QToolBox):
 
     def update_dlcs(self, rgame: RareGame):
         self.rgame = rgame
-        self.title.setTitle(self.rgame.app_title)
+        self.set_title.emit(self.rgame.app_title)
 
         for i_widget in self.list_installed():
             self.ui.installed_dlc_container.layout().removeWidget(i_widget)

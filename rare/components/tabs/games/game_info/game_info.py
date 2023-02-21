@@ -23,12 +23,13 @@ from rare.shared.workers import VerifyWorker, MoveWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.misc import get_size
 from rare.widgets.image_widget import ImageWidget
+from rare.widgets.side_tab import SideTabContents
 from .move_game import MoveGamePopUp, is_game_dir
 
 logger = getLogger("GameInfo")
 
 
-class GameInfo(QWidget):
+class GameInfo(QWidget, SideTabContents):
     def __init__(self, parent=None):
         super(GameInfo, self).__init__(parent=parent)
         self.ui = Ui_GameInfo()
@@ -332,7 +333,7 @@ class GameInfo(QWidget):
             if isinstance(worker, MoveWorker):
                 worker.signals.progress.connect(self.__on_move_progress)
 
-        self.title.setTitle(rgame.app_title)
+        self.set_title.emit(rgame.app_title)
         self.ui.app_name.setText(rgame.app_name)
         self.ui.dev.setText(rgame.developer)
 

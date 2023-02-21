@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QTreeView
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils.json_formatter import QJsonModel
-from rare.widgets.side_tab import SideTabWidget
+from rare.widgets.side_tab import SideTabWidget, SideTabContents
 from .game_dlc import GameDlc
 from .game_info import GameInfo
 from .game_settings import GameSettings
@@ -58,7 +58,7 @@ class GameInfoTabs(SideTabWidget):
             self.back_clicked.emit()
 
 
-class GameMetadataView(QTreeView):
+class GameMetadataView(QTreeView, SideTabContents):
     def __init__(self, parent=None):
         super(GameMetadataView, self).__init__(parent=parent)
         self.setColumnWidth(0, 300)
@@ -69,7 +69,7 @@ class GameMetadataView(QTreeView):
 
     def update_game(self, rgame: RareGame, view):
         self.rgame = rgame
-        self.title.setTitle(self.rgame.app_title)
+        self.set_title.emit(self.rgame.app_title)
         self.model.clear()
         try:
             self.model.load(view.__dict__)

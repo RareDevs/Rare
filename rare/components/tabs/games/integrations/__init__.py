@@ -53,14 +53,13 @@ class IntegrationsWidget(QWidget):
         super(IntegrationsWidget, self).__init__(parent=parent)
         self.info = QLabel(f"<b>{info}</b>")
 
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
         if widget is not None:
             layout.addWidget(widget)
         layout.addWidget(self.info)
         layout.addItem(
             QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         )
-        self.setLayout(layout)
 
     def addWidget(self, widget: QWidget, stretch: int = 0, alignment: Qt.AlignmentFlag = Qt.Alignment()):
         self.layout().insertWidget(self.layout().count() - 2, widget, stretch, alignment)
