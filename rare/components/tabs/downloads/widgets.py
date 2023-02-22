@@ -41,12 +41,15 @@ class QueueInfoWidget(QWidget):
 
         if game and igame:
             self.update_information(game, igame, analysis, old_igame)
-        elif old_igame:
-            self.ui.title.setText(old_igame.title)
+        else:
+            self.ui.title.setText("...")
             self.ui.remote_version.setText("...")
             self.ui.local_version.setText("...")
             self.ui.dl_size.setText("...")
             self.ui.install_size.setText("...")
+
+        if old_igame:
+            self.ui.title.setText(old_igame.title)
             self.image.setPixmap(self.image_manager.get_pixmap(old_igame.app_name, color=True))
 
     def update_information(self, game, igame, analysis, old_igame):
