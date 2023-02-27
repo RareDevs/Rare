@@ -27,6 +27,7 @@ from .workers import (
 )
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
+from rare.models.base_game import RareGameBase
 
 logger = getLogger("RareCore")
 
