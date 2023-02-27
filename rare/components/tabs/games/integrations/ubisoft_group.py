@@ -2,28 +2,28 @@ import time
 import webbrowser
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSize
+from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSize
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QSizePolicy, QPushButton, QGroupBox, QVBoxLayout
-
 from legendary.models.game import Game
+
 from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
+from rare.shared.workers.worker import Worker
 from rare.utils.misc import icon
 
 logger = getLogger("Ubisoft")
 
 
-class UbiGetInfoSignals(QObject):
-    worker_finished = pyqtSignal(set, set, str)
+class UbiGetInfoWorker(Worker):
+    class Signals(QObject):
+        worker_finished = pyqtSignal(set, set, str)
 
-
-class UbiGetInfoWorker(QRunnable):
     def __init__(self):
         super(UbiGetInfoWorker, self).__init__()
-        self.signals = UbiGetInfoSignals()
+        self.signals = UbiGetInfoWorker.Signals()
         self.setAutoDelete(True)
         self.core = LegendaryCoreSingleton()
 
-    def run(self) -> None:
+    def run_real(self) -> None:
         try:
             external_auths = self.core.egs.get_external_auths()
             for ext_auth in external_auths:
@@ -47,20 +47,19 @@ class UbiGetInfoWorker(QRunnable):
             self.signals.worker_finished.emit(set(), set(), "error")
 
 
-class UbiConnectSignals(QObject):
-    linked = pyqtSignal(str)
+class UbiConnectWorker(Worker):
+    class Signals(QObject):
+        linked = pyqtSignal(str)
 
-
-class UbiConnectWorker(QRunnable):
     def __init__(self, ubi_account_id, partner_link_id):
         super(UbiConnectWorker, self).__init__()
-        self.signals = UbiConnectSignals()
+        self.signals = UbiConnectWorker.Signals()
         self.setAutoDelete(True)
         self.core = LegendaryCoreSingleton()
         self.ubi_account_id = ubi_account_id
         self.partner_link_id = partner_link_id
 
-    def run(self) -> None:
+    def run_real(self) -> None:
         if not self.ubi_account_id:  # debug
             time.sleep(2)
             self.signals.linked.emit("")

@@ -3,10 +3,11 @@ import re
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool, QSettings
+from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
+from rare.shared.workers.worker import Worker
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.misc import get_size
 from rare.widgets.indicator_edit import PathEdit, IndicatorLineEdit, IndicatorReasonsCommon
@@ -14,21 +15,17 @@ from rare.widgets.indicator_edit import PathEdit, IndicatorLineEdit, IndicatorRe
 logger = getLogger("LegendarySettings")
 
 
-class RefreshGameMetaSignals(QObject):
-    finished = pyqtSignal()
+class RefreshGameMetaWorker(Worker):
+    class Signals(QObject):
+        finished = pyqtSignal()
 
-    def __init__(self):
-        super(RefreshGameMetaSignals, self).__init__()
-
-
-class RefreshGameMetaWorker(QRunnable):
     def __init__(self):
         super(RefreshGameMetaWorker, self).__init__()
-        self.signals = RefreshGameMetaSignals()
+        self.signals = RefreshGameMetaWorker.Signals()
         self.setAutoDelete(True)
         self.core = LegendaryCoreSingleton()
 
-    def run(self) -> None:
+    def run_real(self) -> None:
         self.core.get_game_and_dlc_list(True, force_refresh=True)
         self.signals.finished.emit()
 
