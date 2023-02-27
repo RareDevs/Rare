@@ -14,12 +14,7 @@ from requests import HTTPError
 
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
-from rare.shared import (
-    LegendaryCoreSingleton,
-    GlobalSignalsSingleton,
-    ArgumentsSingleton,
-)
-from rare.shared.rare_core import RareCore
+from rare.shared import RareCore
 from rare.utils import config_helper, paths
 from rare.widgets.rare_app import RareApp
 
@@ -31,7 +26,7 @@ def excepthook(exc_type, exc_value, exc_tb):
     print("Error")
     if exc_tb == HTTPError:
         try:
-            if LegendaryCoreSingleton().login():
+            if RareCore.instance().core().login():
                 return
             else:
                 raise ValueError
@@ -49,10 +44,10 @@ class App(RareApp):
     def __init__(self, args: Namespace):
         log_file = "Rare_{0}.log"
         super(App, self).__init__(args, log_file)
-        self.rare_core = RareCore(args=args)
-        self.args = ArgumentsSingleton()
-        self.signals = GlobalSignalsSingleton()
-        self.core = LegendaryCoreSingleton()
+        self.rcore = RareCore(args=args)
+        self.args = RareCore.instance().args()
+        self.signals = RareCore.instance().signals()
+        self.core = RareCore.instance().core()
 
         config_helper.init_config_handler(self.core)
 
@@ -114,8 +109,8 @@ class App(RareApp):
             self.timer.stop()
             self.timer.deleteLater()
             self.timer = None
-        self.rare_core.deleteLater()
-        del self.rare_core
+        self.rcore.deleteLater()
+        del self.rcore
         self.processEvents()
         shutil.rmtree(paths.tmp_dir())
         os.makedirs(paths.tmp_dir())
