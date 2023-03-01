@@ -31,6 +31,7 @@ class IconWidget(object):
         # information at top
         self.status_label = ElideLabel(parent=widget)
         self.status_label.setObjectName(f"{type(self).__name__}StatusLabel")
+        self.status_label.setFixedHeight(False)
         self.status_label.setStyleSheet(
             f"""
             QLabel#{self.status_label.objectName()} {{

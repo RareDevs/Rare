@@ -184,7 +184,7 @@ class GameWidget(LibraryWidget):
         if a0 is self:
             if a1.type() == QEvent.Enter:
                 self.ui.tooltip_label.setText(self.hover_strings["info"])
-        return super().eventFilter(a0, a1)
+        return super(GameWidget, self).eventFilter(a0, a1)
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
         # left button

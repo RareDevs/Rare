@@ -86,7 +86,6 @@ class MainWindow(QMainWindow):
         self.queued_scroll.setVisible(False)
 
         self.signals.application.update_statusbar.connect(self.update_statusbar)
-        self.signals.application.update_statusbar.connect(self.update_statusbar)
 
         # self.status_timer = QTimer(self)
         # self.status_timer.timeout.connect(self.update_statusbar)

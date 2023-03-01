@@ -278,7 +278,7 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.verify_button.setEnabled(
             self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle
         )
-        self.ui.verify_progress.setValue(self.rgame.progress if self.rgame.State == RareGame.State.VERIFYING else 0)
+        self.ui.verify_progress.setValue(self.rgame.progress if self.rgame.state == RareGame.State.VERIFYING else 0)
         if self.rgame.state == RareGame.State.VERIFYING:
             self.ui.verify_stack.setCurrentWidget(self.ui.verify_progress_page)
         else:
