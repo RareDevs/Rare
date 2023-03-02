@@ -20,6 +20,7 @@ from rare.widgets.rare_app import RareApp, RareAppException
 from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 from ..models.base_game import RareGameSlim
+from rare.components.dialogs.cloud_save_dialog import CloudSaveDialog
 
 logger = logging.getLogger("RareLauncher")
 
@@ -35,14 +36,24 @@ class PreLaunchThread(QRunnable):
         pre_launch_command_finished = pyqtSignal(int)  # exit_code
         error_occurred = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, args: InitArgs):
+    def __init__(self, core: LegendaryCore, args: InitArgs, rgame: RareGameSlim, sync_action=None):
         super(PreLaunchThread, self).__init__()
         self.core = core
         self.app_name = args.app_name
         self.signals = self.Signals()
         self.args = args
+        self.rgame = rgame
+        self.sync_action = sync_action
 
     def run(self) -> None:
+        logger.info(f"Sync action: {self.sync_action}")
+        if self.sync_action == CloudSaveDialog.UPLOAD:
+            self.rgame.upload_saves(False)
+        elif self.sync_action == CloudSaveDialog.DOWNLOAD:
+            self.rgame.download_saves(False)
+        else:
+            logger.info("No sync action")
+
         args = self.prepare_launch(self.args)
         if not args:
             return
@@ -65,6 +76,26 @@ class PreLaunchThread(QRunnable):
             if args.pre_launch_wait:
                 proc.waitForFinished(-1)
         return args
+
+
+class SyncCheckWorker(QRunnable):
+    class Signals(QObject):
+        sync_state_ready = pyqtSignal()
+        error_occurred = pyqtSignal(str)
+
+    def __init__(self, core: LegendaryCore, rgame: RareGameSlim):
+        super().__init__()
+        self.signals = self.Signals()
+        self.core = core
+        self.rgame = rgame
+
+    def run(self) -> None:
+        try:
+            self.rgame.update_saves()
+        except Exception as e:
+            self.signals.error_occurred.emit(str(e))
+            return
+        self.signals.sync_state_ready.emit()
 
 
 class RareLauncherException(RareAppException):
@@ -93,7 +124,7 @@ class RareLauncher(RareApp):
     console: Optional[Console] = None
     success: bool = True
 
-    def __init__(self, args: Namespace):
+    def __init__(self, args: InitArgs):
         log_file = f"Rare_Launcher_{args.app_name}" + "_{0}.log"
         super(RareLauncher, self).__init__(args, log_file)
         self._hook.deleteLater()
@@ -233,6 +264,26 @@ class RareLauncher(RareApp):
         )
         self.stop()
 
+    def start_prepare(self, sync_action=None):
+        worker = PreLaunchThread(self.core, self.args, self.rgame, sync_action)
+        worker.signals.ready_to_launch.connect(self.launch_game)
+        worker.signals.error_occurred.connect(self.error_occurred)
+        # worker.signals.started_pre_launch_command(None)
+
+        QThreadPool.globalInstance().start(worker)
+
+    def sync_ready(self):
+        if self.rgame.is_save_up_to_date:
+            if self.console:
+                self.console.log("Sync worker ready. Sync not required")
+            self.start_prepare()
+            return
+
+        _, (dt_local, dt_remote) = self.rgame.save_game_state
+        dlg = CloudSaveDialog(self.rgame.igame, dt_local, dt_remote)
+        action = dlg.get_action()
+        self.start_prepare(action)
+
     def start(self, args: InitArgs):
         if not args.offline:
             try:
@@ -243,12 +294,15 @@ class RareLauncher(RareApp):
                 self.logger.error("Not logged in. Try to launch game offline")
                 args.offline = True
 
-        worker = PreLaunchThread(self.core, args)
-        worker.signals.ready_to_launch.connect(self.launch_game)
-        worker.signals.error_occurred.connect(self.error_occurred)
-        # worker.signals.started_pre_launch_command(None)
-
-        QThreadPool.globalInstance().start(worker)
+        if not args.offline and self.rgame.game.supports_cloud_saves:
+            logger.info("Start sync worker")
+            worker = SyncCheckWorker(self.core, self.rgame)
+            worker.signals.error_occurred.connect(self.error_occurred)
+            worker.signals.sync_state_ready.connect(self.sync_ready)
+            QThreadPool.globalInstance().start(worker)
+            return
+        else:
+            self.start_prepare()
 
     def stop(self):
         self.logger.info("Stopping server")

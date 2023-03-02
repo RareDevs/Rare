@@ -168,7 +168,7 @@ class RareGameSlim(RareGameBase):
             return self.core.check_savegame_state(self.save_path, self.latest_save)
         return SaveGameStatus.NO_SAVE, (None, None)
 
-    def upload_saves(self):
+    def upload_saves(self, thread=True):
         status, (dt_local, dt_remote) = self.save_game_state
         def _upload():
             logger.info(f"Uploading save for {self.title}")
@@ -186,10 +186,13 @@ class RareGameSlim(RareGameBase):
             logger.error(f"{self.title} is already syncing")
             return
 
-        worker = QRunnable.create(lambda: _upload())
-        QThreadPool.globalInstance().start(worker)
+        if thread:
+            worker = QRunnable.create(lambda: _upload())
+            QThreadPool.globalInstance().start(worker)
+        else:
+            _upload()
 
-    def download_saves(self):
+    def download_saves(self, thread=True):
         status, (dt_local, dt_remote) = self.save_game_state
         def _download():
             logger.info(f"Downloading save for {self.title}")
@@ -207,8 +210,11 @@ class RareGameSlim(RareGameBase):
             logger.error(f"{self.title} is already syncing")
             return
 
-        worker = QRunnable.create(lambda: _download())
-        QThreadPool.globalInstance().start(worker)
+        if thread:
+            worker = QRunnable.create(lambda: _download())
+            QThreadPool.globalInstance().start(worker)
+        else:
+            _download()
 
     def update_saves(self):
         self.saves = self.core.get_save_games(self.app_name)

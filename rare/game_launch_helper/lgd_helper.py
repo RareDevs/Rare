@@ -1,6 +1,7 @@
 import os
 import platform
 import shutil
+from argparse import Namespace
 from dataclasses import dataclass
 from logging import getLogger
 from typing import List
@@ -18,8 +19,7 @@ class GameArgsError(Exception):
     pass
 
 
-@dataclass
-class InitArgs:
+class InitArgs(Namespace):
     app_name: str
     dry_run: bool = False
     debug: bool = False

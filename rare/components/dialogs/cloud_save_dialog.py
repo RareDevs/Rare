@@ -24,7 +24,6 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
         igame: InstalledGame,
         dt_local: datetime.datetime,
         dt_remote: datetime.datetime,
-        newer: str,
     ):
         super(CloudSaveDialog, self).__init__()
         self.setupUi(self)
@@ -46,6 +45,14 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
         self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X"))
 
         new_text = self.tr(" (newer)")
+        newer = ""
+        if dt_remote and dt_local:
+            newer = "remote" if dt_remote > dt_local else "local"
+        elif dt_remote and not dt_local:
+            self.status = self.DOWNLOAD
+        else:
+            self.status = self.UPLOAD
+
         if newer == "remote":
             self.sync_ui.cloud_gb.setTitle(self.sync_ui.cloud_gb.title() + new_text)
         elif newer == "local":
@@ -62,7 +69,9 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
     def get_action(self):
-        self.exec_()
+        if self.status:
+            return self.status
+        self.show()
         return self.status
 
     def btn_clicked(self, status):
