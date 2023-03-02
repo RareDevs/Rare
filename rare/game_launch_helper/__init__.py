@@ -294,7 +294,7 @@ class RareLauncher(RareApp):
                 self.logger.error("Not logged in. Try to launch game offline")
                 args.offline = True
 
-        if not args.offline and self.rgame.game.supports_cloud_saves:
+        if not args.offline and self.rgame.auto_sync_saves:
             logger.info("Start sync worker")
             worker = SyncCheckWorker(self.core, self.rgame)
             worker.signals.error_occurred.connect(self.error_occurred)

@@ -4,7 +4,7 @@ from enum import IntEnum
 from logging import getLogger
 from typing import Optional, List
 
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool
+from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSettings
 from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
 
 from rare.lgndr.core import LegendaryCore
@@ -148,6 +148,12 @@ class RareGameSlim(RareGameBase):
         @return bool
         """
         return "Win32" in self.game.asset_infos.keys()
+
+    @property
+    def auto_sync_saves(self):
+        return (
+            self.game.supports_cloud_saves or self.game.supports_mac_cloud_saves
+        ) and QSettings().value(f"{self.app_name}/auto_sync_cloud", True, bool)
 
     @property
     def save_path(self) -> Optional[str]:
