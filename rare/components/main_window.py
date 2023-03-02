@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer, QSize, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QColor
+from PyQt5.QtGui import QCloseEvent, QCursor
 from PyQt5.QtWidgets import (
     QMainWindow,
     QApplication,
@@ -173,27 +173,13 @@ class MainWindow(QMainWindow):
         for label in self.queued_container.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
             self.queued_container.layout().removeWidget(label)
             label.deleteLater()
-        stylesheet = """
-        QLabel#QueueWorkerLabel {{
-            border-radius: 3px;
-            border: 1px solid {br_color};
-            background-color: {bg_color};
-        }}
-        """
-        color = {
-            "Verify": QColor("#d6af57"),
-            "Move": QColor("#41cad9"),
-        }
         for info in self.rcore.queue_info():
             label = ElideLabel(info.app_title)
             label.setObjectName("QueueWorkerLabel")
             label.setToolTip(f"<b>{info.worker_type}</b>: {info.app_title}")
+            label.setProperty("workerType", info.worker_type)
             label.setFixedWidth(150)
             label.setContentsMargins(3, 0, 3, 0)
-            label.setStyleSheet(stylesheet.format(
-                    br_color=color[info.worker_type].darker(200).name(),
-                    bg_color=color[info.worker_type].darker(400).name(),
-            ))
             if info.state == QueueWorkerState.ACTIVE:
                 self.active_container.layout().addWidget(label)
                 self.active_label.setVisible(True)

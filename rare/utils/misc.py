@@ -103,16 +103,23 @@ def get_color_schemes() -> List[str]:
 
 
 def set_style_sheet(style_sheet: str):
+    file = QFile(":/static_css/stylesheet.qss")
+    file.open(QFile.ReadOnly)
+    static = file.readAll().data().decode("utf-8")
+    file.close()
+
     if not style_sheet:
         qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
-        qApp.setStyleSheet("")
+        qApp.setStyleSheet(static)
         return
+
     qApp.setStyle(QStyleFactory.create("Fusion"))
     file = QFile(f":/stylesheets/{style_sheet}/stylesheet.qss")
     file.open(QFile.ReadOnly)
     stylesheet = file.readAll().data().decode("utf-8")
+    file.close()
+    qApp.setStyleSheet(stylesheet + static)
 
-    qApp.setStyleSheet(stylesheet)
     icon_color = qApp.palette().color(QPalette.Text).name()
     qtawesome.set_defaults(color="#eeeeee")
 

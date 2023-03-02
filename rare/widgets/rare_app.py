@@ -91,9 +91,14 @@ class RareApp(QApplication):
         if color_scheme := self.settings.value("color_scheme", False):
             self.settings.setValue("style_sheet", "")
             set_color_pallete(color_scheme)
+            # lk: set the static stylesheet
+            set_style_sheet("")
         elif style_sheet := self.settings.value("style_sheet", False):
             self.settings.setValue("color_scheme", "")
             set_style_sheet(style_sheet)
+        else:
+            # lk: set the static stylesheet
+            set_style_sheet("")
         self.setWindowIcon(QIcon(":/images/Rare.png"))
 
     def load_translator(self, lang: str):

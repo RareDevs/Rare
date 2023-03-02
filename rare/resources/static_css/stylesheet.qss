@@ -1,0 +1,103 @@
+
+/* This file is auto-generated from "stylesheet.py". DO NOT EDIT!!! */
+
+QPushButton#InstallButton {
+    border-color: #00b400;
+    background-color: #007800;
+}
+QPushButton#InstallButton:hover {
+    border-color: #008700;
+    background-color: #005a00;
+}
+QPushButton#InstallButton:disabled {
+    border-color: #003c00;
+    background-color: #002800;
+}
+QPushButton#UninstallButton {
+    border-color: #b40000;
+    background-color: #780000;
+}
+QPushButton#UninstallButton:hover {
+    border-color: #870000;
+    background-color: #5a0000;
+}
+QPushButton#UninstallButton:disabled {
+    border-color: #3c0000;
+    background-color: #280000;
+}
+QLabel#QueueWorkerLabel {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 3px;
+}
+QLabel#QueueWorkerLabel[workerType="Verify"] {
+    border-color: #6b572c;
+    background-color: #352c16;
+}
+QLabel#QueueWorkerLabel[workerType="Move"] {
+    border-color: #20656c;
+    background-color: #103236;
+}
+QLabel#IconWidgetStatusLabel {
+    font-weight: bold;
+    color: white;
+    background-color: rgba(0, 0, 0, 65%);
+    border-radius: 5%;
+    border-top-left-radius: 11%;
+    border-top-right-radius: 11%;
+}
+QWidget#IconWidgetMiniWidget {
+    color: rgb(238, 238, 238);
+    background-color: rgba(0, 0, 0, 65%);
+    border-radius: 5%;
+    border-bottom-left-radius: 9%;
+    border-bottom-right-radius: 9%;
+}
+QLabel#IconWidgetTitleLabel {
+    font-weight: bold;
+    color: white;
+    background-color: rgba(0, 0, 0, 0%);
+}
+QLabel#IconWidgetTooltipLabel {
+    color: white;
+    background-color: rgba(0, 0, 0, 0%);
+}
+QPushButton#IconWidgetLaunchButton {
+    border: 1px solid black;
+    border-radius: 10%;
+    background-color: rgba(0, 0, 0, 65%);
+}
+QPushButton#IconWidgetLaunchButton:hover {
+    border-color: gray;
+}
+QPushButton#IconWidgetInstallButton {
+    border: 1px solid black;
+    border-radius: 10%;
+    background-color: rgba(0, 0, 0, 65%);
+}
+QPushButton#IconWidgetInstallButton:hover {
+    border-color: gray;
+}
+QLabel#ListWidgetTitleLabel {
+    font-weight: bold;
+}
+QLabel#ListWidgetStatusLabel {
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 75%);
+    border: 1px solid black;
+    border-radius: 5px;
+}
+QLabel#ListWidgetTooltipLabel {
+    background-color: rgba(0, 0, 0, 75%);
+    border: 1px solid black;
+    border-radius: 5px;
+}
+QLabel#ListWidgetDeveloperLabel {
+    color: #999;
+}
+QLabel#ListWidgetVersionLabel {
+    color: #999;
+}
+QLabel#ListWidgetSizeLabel {
+    color: #999;
+}

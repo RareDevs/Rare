@@ -29,36 +29,14 @@ class ListWidget(object):
         self.title_label = QLabel(parent=widget)
         self.title_label.setObjectName(f"{type(self).__name__}TitleLabel")
         self.title_label.setWordWrap(False)
-        self.title_label.setStyleSheet(
-            f"QLabel#{self.title_label.objectName()} {{font-weight: bold;}}"
-        )
 
         self.status_label = QLabel(parent=widget)
         self.status_label.setObjectName(f"{type(self).__name__}StatusLabel")
         self.status_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.status_label.setStyleSheet(
-            f"""
-            QLabel#{self.status_label.objectName()} {{
-                font-weight: bold;
-                background-color: rgba(0,0,0,75%);
-                border: 1px solid black;
-                border-radius: 5px;
-            }}
-            """
-        )
 
         self.tooltip_label = QLabel(parent=widget)
         self.tooltip_label.setObjectName(f"{type(self).__name__}TooltipLabel")
         self.tooltip_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.tooltip_label.setStyleSheet(
-            f"""
-            QLabel#{self.tooltip_label.objectName()} {{
-                background-color: rgba(0,0,0,75%);
-                border: 1px solid black;
-                border-radius: 5px;
-            }}
-            """
-        )
 
         self.install_btn = QPushButton(parent=widget)
         self.install_btn.setIcon(icon("ri.install-fill"))
@@ -75,24 +53,15 @@ class ListWidget(object):
         self.developer_label = ElideLabel(parent=widget)
         self.developer_label.setObjectName(f"{type(self).__name__}DeveloperLabel")
         self.developer_label.setFixedWidth(120)
-        self.developer_label.setStyleSheet(
-            f"QLabel#{self.developer_label.objectName()} {{color: #999;}}"
-        )
 
         self.version_label = ElideLabel(parent=widget)
         self.version_label.setObjectName(f"{type(self).__name__}VersionLabel")
         self.version_label.setFixedWidth(120)
-        self.version_label.setStyleSheet(
-            f"QLabel#{self.version_label.objectName()} {{color: #999;}}"
-        )
 
         self.size_label = ElideLabel(parent=widget)
         self.size_label.setObjectName(f"{type(self).__name__}SizeLabel")
         self.size_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.size_label.setFixedWidth(60)
-        self.size_label.setStyleSheet(
-            f"QLabel#{self.size_label.objectName()} {{color: #999;}}"
-        )
 
         # Create layouts
         top_layout = QHBoxLayout()

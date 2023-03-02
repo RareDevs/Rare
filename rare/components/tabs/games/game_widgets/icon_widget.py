@@ -32,35 +32,12 @@ class IconWidget(object):
         self.status_label = ElideLabel(parent=widget)
         self.status_label.setObjectName(f"{type(self).__name__}StatusLabel")
         self.status_label.setFixedHeight(False)
-        self.status_label.setStyleSheet(
-            f"""
-            QLabel#{self.status_label.objectName()} {{
-                font-weight: bold;
-                color: white;
-                background-color: rgba(0, 0, 0, 65%);
-                border-radius: 5%;
-                border-top-left-radius: 11%;
-                border-top-right-radius: 11%;
-            }}
-            """
-        )
         self.status_label.setContentsMargins(6, 6, 6, 6)
         self.status_label.setAutoFillBackground(False)
 
         # on-hover popup
         self.mini_widget = QWidget(parent=widget)
         self.mini_widget.setObjectName(f"{type(self).__name__}MiniWidget")
-        self.mini_widget.setStyleSheet(
-            f"""
-            QWidget#{self.mini_widget.objectName()} {{
-                color: rgb(238, 238, 238);
-                background-color: rgba(0, 0, 0, 65%);
-                border-radius: 5%;
-                border-bottom-left-radius: 9%;
-                border-bottom-right-radius: 9%;
-            }}
-            """
-        )
         self.mini_widget.setFixedHeight(widget.height() // 3)
 
         self.mini_effect = QGraphicsOpacityEffect(self.mini_widget)
@@ -69,14 +46,6 @@ class IconWidget(object):
         # game title
         self.title_label = QLabel(parent=self.mini_widget)
         self.title_label.setObjectName(f"{type(self).__name__}TitleLabel")
-        self.title_label.setStyleSheet(
-            f"""
-            QLabel#{self.title_label.objectName()} {{
-                font-weight: bold;
-                background-color: rgba(0, 0, 0, 0%); color: white;
-            }}
-            """
-        )
         self.title_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.title_label.setAlignment(Qt.AlignVCenter)
         self.title_label.setAutoFillBackground(False)
@@ -85,48 +54,17 @@ class IconWidget(object):
         # information below title
         self.tooltip_label = ElideLabel(parent=self.mini_widget)
         self.tooltip_label.setObjectName(f"{type(self).__name__}TooltipLabel")
-        self.tooltip_label.setStyleSheet(
-            f"""
-            QLabel#{self.tooltip_label.objectName()} {{
-                background-color: rgba(0, 0, 0, 0%); color: white;
-            }}
-            """
-        )
         self.tooltip_label.setAutoFillBackground(False)
 
         # play button
         self.launch_btn = QPushButton(parent=self.mini_widget)
         self.launch_btn.setObjectName(f"{type(self).__name__}LaunchButton")
-        self.launch_btn.setStyleSheet(
-            f"""
-            QPushButton#{self.launch_btn.objectName()} {{
-                border-radius: 10%;
-                background-color: rgba(0, 0, 0, 65%);
-                border-color: black; border-width: 1px;
-            }}
-            QPushButton#{self.launch_btn.objectName()}::hover {{
-                border-color: gray;
-            }}
-            """
-        )
         self.launch_btn.setIcon(icon("ei.play-alt", color="white"))
         self.launch_btn.setIconSize(QSize(20, 20))
         self.launch_btn.setFixedSize(QSize(widget.width() // 4, widget.width() // 4))
 
         self.install_btn = QPushButton(parent=self.mini_widget)
         self.install_btn.setObjectName(f"{type(self).__name__}InstallButton")
-        self.install_btn.setStyleSheet(
-            f"""
-            QPushButton#{self.install_btn.objectName()} {{
-                border-radius: 10%;
-                background-color: rgba(0, 0, 0, 65%);
-                border-color: black; border-width: 1px;
-            }}
-            QPushButton#{self.install_btn.objectName()}::hover {{
-                border-color: gray;
-            }}
-            """
-        )
         self.install_btn.setIcon(icon("ri.install-fill", color="white"))
         self.install_btn.setIconSize(QSize(20, 20))
         self.install_btn.setFixedSize(QSize(widget.width() // 4, widget.width() // 4))

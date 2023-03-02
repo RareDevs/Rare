@@ -320,24 +320,6 @@ QPushButton::menu-indicator {
     left: -2px;
     border-style: none;
 }
-QPushButton#InstallButton {
-    background-color: #F9A7FF;
-}
-QPushButton#InstallButton:hover {
-    background-color: #BB7DBF;
-}
-QPushButton#InstallButton:disabled {
-    background-color: #7D5380;
-}
-QPushButton#UninstallButton {
-    background-color: #FFB085;
-}
-QPushButton#UninstallButton:hover {
-    background-color: #BF8464;
-}
-QPushButton#UninstallButton:disabled {
-    background-color: #805843;
-}
 
 QGroupBox,
 QCheckBox,
