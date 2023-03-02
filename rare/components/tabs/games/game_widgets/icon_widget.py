@@ -69,6 +69,13 @@ class IconWidget(object):
         self.install_btn.setIconSize(QSize(20, 20))
         self.install_btn.setFixedSize(QSize(widget.width() // 4, widget.width() // 4))
 
+        # lk: do not focus on button
+        # When the button gets clicked on, it receives keyboard focus. Disabling the button
+        # afterwards leads to `focusNextChild` getting called. This makes the scrollarea
+        # trying to ensure that `nextChild` is visible, essentially scrolling to a random widget
+        self.launch_btn.setFocusPolicy(Qt.NoFocus)
+        self.install_btn.setFocusPolicy(Qt.NoFocus)
+
         # Create layouts
         # layout on top of the image, holds the status label, a spacer item and the mini widget
         image_layout = QVBoxLayout()

@@ -50,6 +50,13 @@ class ListWidget(object):
         self.launch_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.launch_btn.setFixedWidth(120)
 
+        # lk: do not focus on button
+        # When the button gets clicked on, it receives keyboard focus. Disabling the button
+        # afterwards leads to `focusNextChild` getting called. This makes the scrollarea
+        # trying to ensure that `nextChild` is visible, essentially scrolling to a random widget
+        self.launch_btn.setFocusPolicy(Qt.NoFocus)
+        self.install_btn.setFocusPolicy(Qt.NoFocus)
+
         self.developer_label = ElideLabel(parent=widget)
         self.developer_label.setObjectName(f"{type(self).__name__}DeveloperLabel")
         self.developer_label.setFixedWidth(120)
