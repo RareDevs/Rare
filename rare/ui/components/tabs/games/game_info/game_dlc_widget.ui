@@ -191,9 +191,6 @@
        <height>0</height>
       </size>
      </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="text">
       <string notr="true">Action</string>
      </property>

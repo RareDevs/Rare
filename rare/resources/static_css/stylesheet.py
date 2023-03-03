@@ -1,10 +1,14 @@
 import os
 import sys
+from typing import Union, Type
 
 import qstylizer.style
-from PyQt5.QtCore import QDir
+from PyQt5.QtCore import QDir, QObject
 from PyQt5.QtGui import QColor
 from PyQt5.pyrcc import RCCResourceLibrary, CONSTANT_COMPRESSLEVEL_DEFAULT, CONSTANT_COMPRESSTHRESHOLD_DEFAULT
+from PyQt5.sip import wrappertype
+
+from rare.utils.misc import widget_object_name
 
 verbose = True
 compressLevel = 6
@@ -51,6 +55,10 @@ def processResourceFile(filenamesIn, filenameOut, listFiles):
         return True
 
     return library.output(filenameOut)
+
+
+def css_name(widget: Union[wrappertype,QObject,Type]):
+    return f"#{widget_object_name(widget, '')}"
 
 
 css = qstylizer.style.StyleSheet()
@@ -166,6 +174,22 @@ list_info_label_color = "#999"
 css.QLabel[list_name("DeveloperLabel")].color.setValue(list_info_label_color)
 css.QLabel[list_name("VersionLabel")].color.setValue(list_info_label_color)
 css.QLabel[list_name("SizeLabel")].color.setValue(list_info_label_color)
+
+
+# WaitingSpinner
+from rare.utils.extra_widgets import WaitingSpinner
+css.QLabel[css_name(WaitingSpinner)].setValues(
+    marginLeft="auto",
+    marginRight="auto",
+)
+
+
+# SelectViewWidget
+from rare.utils.extra_widgets import SelectViewWidget
+css.QPushButton[f"{css_name(SelectViewWidget)}Button"].setValues(
+    border="none",
+    backgroundColor="transparent",
+)
 
 
 if __name__ == "__main__":

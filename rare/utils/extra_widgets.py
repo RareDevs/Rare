@@ -27,9 +27,6 @@ class WaitingSpinner(QLabel):
     def __init__(self, parent=None):
         super(WaitingSpinner, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
-        self.setStyleSheet(
-            f"QLabel#{self.objectName()} {{margin - left: auto; margin-right: auto;}}"
-        )
         self.movie = QMovie(":/images/loader.gif")
         self.setMovie(self.movie)
         self.movie.start()
@@ -43,14 +40,9 @@ class SelectViewWidget(QWidget):
         self.icon_view = icon_view
         self.icon_button = QPushButton(self)
         self.icon_button.setObjectName(f"{type(self).__name__}Button")
-        self.icon_button.setStyleSheet(
-            f"QPushButton#{self.icon_button.objectName()} {{border: none; background-color: transparent}}"
-        )
         self.list_button = QPushButton(self)
         self.list_button.setObjectName(f"{type(self).__name__}Button")
-        self.list_button.setStyleSheet(
-            f"QPushButton#{self.list_button.objectName()} {{border: none; background-color: transparent}}"
-        )
+
         if icon_view:
             self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
             self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list"))

@@ -353,9 +353,6 @@
          </item>
          <item>
           <widget class="QPushButton" name="uninstall_button">
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
            <property name="text">
             <string>Uninstall Game</string>
            </property>
@@ -382,13 +379,16 @@
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
           </spacer>
          </item>
          <item>
           <widget class="QPushButton" name="install_button">
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
            <property name="text">
             <string>Install Game</string>
            </property>

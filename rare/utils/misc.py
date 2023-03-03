@@ -209,10 +209,11 @@ def icon(icn_str: str, fallback: str = None, **kwargs):
 
 
 def widget_object_name(widget: Union[wrappertype,QObject,Type], suffix: str) -> str:
+    suffix = f"_{suffix}" if suffix else ""
     if isinstance(widget, QObject):
-        return f"{type(widget).__name__}_{suffix}"
+        return f"{type(widget).__name__}{suffix}"
     elif isinstance(widget, wrappertype):
-        return f"{widget.__name__}_{suffix}"
+        return f"{widget.__name__}{suffix}"
     else:
         raise RuntimeError(f"Argument {widget} not a QObject or type of QObject")
 
