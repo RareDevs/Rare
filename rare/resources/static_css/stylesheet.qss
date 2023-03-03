@@ -38,6 +38,12 @@ QLabel#QueueWorkerLabel[workerType="Move"] {
     border-color: #20656c;
     background-color: #103236;
 }
+QLabel#ProgressLabel {
+    border-width: 1px;
+    border-radius: 5%;
+    font-weight: bold;
+    font-size: 16pt;
+}
 QLabel#IconWidgetStatusLabel {
     font-weight: bold;
     color: white;
@@ -62,20 +68,12 @@ QLabel#IconWidgetTooltipLabel {
     color: white;
     background-color: rgba(0, 0, 0, 0%);
 }
-QPushButton#IconWidgetLaunchButton {
+QPushButton#IconWidgetButton {
     border: 1px solid black;
     border-radius: 10%;
     background-color: rgba(0, 0, 0, 65%);
 }
-QPushButton#IconWidgetLaunchButton:hover {
-    border-color: gray;
-}
-QPushButton#IconWidgetInstallButton {
-    border: 1px solid black;
-    border-radius: 10%;
-    background-color: rgba(0, 0, 0, 65%);
-}
-QPushButton#IconWidgetInstallButton:hover {
+QPushButton#IconWidgetButton:hover {
     border-color: gray;
 }
 QLabel#ListWidgetTitleLabel {
@@ -83,22 +81,21 @@ QLabel#ListWidgetTitleLabel {
 }
 QLabel#ListWidgetStatusLabel {
     font-weight: bold;
+    color: white;
     background-color: rgba(0, 0, 0, 75%);
     border: 1px solid black;
     border-radius: 5px;
 }
 QLabel#ListWidgetTooltipLabel {
+    color: white;
     background-color: rgba(0, 0, 0, 75%);
     border: 1px solid black;
     border-radius: 5px;
 }
-QLabel#ListWidgetDeveloperLabel {
-    color: #999;
+QPushButton#ListWidgetButton {
+    text-align: left;
 }
-QLabel#ListWidgetVersionLabel {
-    color: #999;
-}
-QLabel#ListWidgetSizeLabel {
+QLabel#ListWidgetInfoLabel {
     color: #999;
 }
 QLabel#WaitingSpinner {

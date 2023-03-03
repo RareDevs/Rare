@@ -193,8 +193,8 @@ class RareSettings(QWidget, Ui_RareSettings):
                 self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
             )
 
-    def on_color_select_changed(self, color):
-        if color:
+    def on_color_select_changed(self, scheme):
+        if scheme:
             self.style_select.setCurrentIndex(0)
             self.style_select.setDisabled(True)
             self.settings.setValue("color_scheme", self.color_select.currentText())

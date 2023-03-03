@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
 )
 
-from rare.utils.misc import icon
+from rare.utils.misc import icon, widget_object_name
 from rare.widgets.elide_label import ElideLabel
 
 
@@ -58,13 +58,13 @@ class IconWidget(object):
 
         # play button
         self.launch_btn = QPushButton(parent=self.mini_widget)
-        self.launch_btn.setObjectName(f"{type(self).__name__}LaunchButton")
+        self.launch_btn.setObjectName(f"{type(self).__name__}Button")
         self.launch_btn.setIcon(icon("ei.play-alt", color="white"))
         self.launch_btn.setIconSize(QSize(20, 20))
         self.launch_btn.setFixedSize(QSize(widget.width() // 4, widget.width() // 4))
 
         self.install_btn = QPushButton(parent=self.mini_widget)
-        self.install_btn.setObjectName(f"{type(self).__name__}InstallButton")
+        self.install_btn.setObjectName(f"{type(self).__name__}Button")
         self.install_btn.setIcon(icon("ri.install-fill", color="white"))
         self.install_btn.setIconSize(QSize(20, 20))
         self.install_btn.setFixedSize(QSize(widget.width() // 4, widget.width() // 4))

@@ -40,11 +40,7 @@ class ProgressLabel(QLabel):
             f"QLabel#{type(self).__name__} {{"
             f"background-color: rgba({bg.red()}, {bg.green()}, {bg.blue()}, 65%);"
             f"color: rgb({fg.red()}, {fg.green()}, {fg.blue()});"
-            f"border-width: 1px;"
-            f"border-radius: 5%;"
             f"border-color: rgb({brd.red()}, {brd.green()}, {brd.blue()});"
-            f"font-weight: bold;"
-            f"font-size: 16pt;"
             f"}}"
         )
         self.setStyleSheet(sheet)

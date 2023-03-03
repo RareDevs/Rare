@@ -57,8 +57,8 @@ def processResourceFile(filenamesIn, filenameOut, listFiles):
     return library.output(filenameOut)
 
 
-def css_name(widget: Union[wrappertype,QObject,Type]):
-    return f"#{widget_object_name(widget, '')}"
+def css_name(widget: Union[wrappertype,QObject,Type], subwidget: str = ""):
+    return f"#{widget_object_name(widget, '')}{subwidget}"
 
 
 css = qstylizer.style.StyleSheet()
@@ -109,12 +109,22 @@ css.QLabel["#QueueWorkerLabel"]['[workerType="Move"]'].setValues(
 )
 
 
+# ProgressLabel
+from rare.components.tabs.games.game_widgets.library_widget import ProgressLabel
+css.QLabel[css_name(ProgressLabel)].setValues(
+    borderWidth="1px",
+    borderRadius="5%",
+    fontWeight="bold",
+    fontSize="16pt",
+)
+
+
 # IconGameWidget
-icon_name = lambda x: f"#IconWidget{x}"
+from rare.components.tabs.games.game_widgets.icon_widget import IconWidget
 icon_background_props = {
-    "backgroundColor":"rgba(0, 0, 0, 65%)",
+    "backgroundColor": "rgba(0, 0, 0, 65%)",
 }
-css.QLabel[icon_name("StatusLabel")].setValues(
+css.QLabel[css_name(IconWidget, "StatusLabel")].setValues(
     fontWeight="bold",
     color="white",
     **icon_background_props,
@@ -122,7 +132,7 @@ css.QLabel[icon_name("StatusLabel")].setValues(
     borderTopLeftRadius="11%",
     borderTopRightRadius="11%",
 )
-css.QWidget[icon_name("MiniWidget")].setValues(
+css.QWidget[css_name(IconWidget, "MiniWidget")].setValues(
     color="rgb(238, 238, 238)",
     **icon_background_props,
     borderRadius="5%",
@@ -133,11 +143,11 @@ icon_bottom_label_props = {
     "color": "white",
     "backgroundColor": "rgba(0, 0, 0, 0%)",
 }
-css.QLabel[icon_name("TitleLabel")].setValues(
+css.QLabel[css_name(IconWidget, "TitleLabel")].setValues(
     fontWeight="bold",
     **icon_bottom_label_props,
 )
-css.QLabel[icon_name("TooltipLabel")].setValues(
+css.QLabel[css_name(IconWidget, "TooltipLabel")].setValues(
     **icon_bottom_label_props,
 )
 icon_square_button_props = {
@@ -145,35 +155,30 @@ icon_square_button_props = {
     "borderRadius": "10%",
 }
 icon_square_button_props.update(icon_background_props)
-css.QPushButton[icon_name("LaunchButton")].setValues(
+css.QPushButton[css_name(IconWidget, "Button")].setValues(
     **icon_square_button_props
 )
-css.QPushButton[icon_name("LaunchButton")].hover.borderColor.setValue("gray")
-css.QPushButton[icon_name("InstallButton")].setValues(
-    **icon_square_button_props
-)
-css.QPushButton[icon_name("InstallButton")].hover.borderColor.setValue("gray")
+css.QPushButton[css_name(IconWidget, "Button")].hover.borderColor.setValue("gray")
 
 
 # ListGameWidget
-list_name = lambda x: f"#ListWidget{x}"
-css.QLabel[list_name("TitleLabel")].fontWeight.setValue("bold")
+from rare.components.tabs.games.game_widgets.list_widget import ListWidget
+css.QLabel[css_name(ListWidget,"TitleLabel")].fontWeight.setValue("bold")
 list_status_label_props = {
+    "color": "white",
     "backgroundColor": "rgba(0, 0, 0, 75%)",
     "border": "1px solid black",
     "borderRadius": "5px",
 }
-css.QLabel[list_name("StatusLabel")].setValues(
+css.QLabel[css_name(ListWidget, "StatusLabel")].setValues(
     fontWeight="bold",
     **list_status_label_props,
 )
-css.QLabel[list_name("TooltipLabel")].setValues(
+css.QLabel[css_name(ListWidget, "TooltipLabel")].setValues(
     **list_status_label_props,
 )
-list_info_label_color = "#999"
-css.QLabel[list_name("DeveloperLabel")].color.setValue(list_info_label_color)
-css.QLabel[list_name("VersionLabel")].color.setValue(list_info_label_color)
-css.QLabel[list_name("SizeLabel")].color.setValue(list_info_label_color)
+css.QPushButton[css_name(ListWidget, "Button")].textAlign.setValue("left")
+css.QLabel[css_name(ListWidget, "InfoLabel")].color.setValue("#999")
 
 
 # WaitingSpinner
@@ -186,7 +191,7 @@ css.QLabel[css_name(WaitingSpinner)].setValues(
 
 # SelectViewWidget
 from rare.utils.extra_widgets import SelectViewWidget
-css.QPushButton[f"{css_name(SelectViewWidget)}Button"].setValues(
+css.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
     border="none",
     backgroundColor="transparent",
 )

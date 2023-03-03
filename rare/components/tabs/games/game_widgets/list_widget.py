@@ -39,14 +39,14 @@ class ListWidget(object):
         self.tooltip_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.install_btn = QPushButton(parent=widget)
+        self.install_btn.setObjectName(f"{type(self).__name__}Button")
         self.install_btn.setIcon(icon("ri.install-fill"))
-        self.install_btn.setStyleSheet("text-align:left")
         self.install_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.install_btn.setFixedWidth(120)
 
         self.launch_btn = QPushButton(parent=widget)
+        self.launch_btn.setObjectName(f"{type(self).__name__}Button")
         self.launch_btn.setIcon(icon("ei.play-alt"))
-        self.launch_btn.setStyleSheet("text-align:left")
         self.launch_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.launch_btn.setFixedWidth(120)
 
@@ -58,15 +58,15 @@ class ListWidget(object):
         self.install_btn.setFocusPolicy(Qt.NoFocus)
 
         self.developer_label = ElideLabel(parent=widget)
-        self.developer_label.setObjectName(f"{type(self).__name__}DeveloperLabel")
+        self.developer_label.setObjectName(f"{type(self).__name__}InfoLabel")
         self.developer_label.setFixedWidth(120)
 
         self.version_label = ElideLabel(parent=widget)
-        self.version_label.setObjectName(f"{type(self).__name__}VersionLabel")
+        self.version_label.setObjectName(f"{type(self).__name__}InfoLabel")
         self.version_label.setFixedWidth(120)
 
         self.size_label = ElideLabel(parent=widget)
-        self.size_label.setObjectName(f"{type(self).__name__}SizeLabel")
+        self.size_label.setObjectName(f"{type(self).__name__}InfoLabel")
         self.size_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.size_label.setFixedWidth(60)
 

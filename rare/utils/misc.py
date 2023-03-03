@@ -81,16 +81,28 @@ def load_color_scheme(path: str) -> QPalette:
     return palette
 
 
-def set_color_pallete(color_scheme: str):
+def get_static_style() -> str:
+    file = QFile(":/static_css/stylesheet.qss")
+    file.open(QFile.ReadOnly)
+    static = file.readAll().data().decode("utf-8")
+    file.close()
+    return static
+
+
+def set_color_pallete(color_scheme: str) -> None:
+    static = get_static_style()
+
     if not color_scheme:
         qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
-        qApp.setStyleSheet("")
         qApp.setPalette(qApp.style().standardPalette())
+        qApp.setStyleSheet(static)
         return
+
     qApp.setStyle(QStyleFactory.create("Fusion"))
     custom_palette = load_color_scheme(f":/schemes/{color_scheme}")
     if custom_palette is not None:
         qApp.setPalette(custom_palette)
+        qApp.setStyleSheet(static)
         icon_color = qApp.palette().color(QPalette.Foreground).name()
         qtawesome.set_defaults(color=icon_color)
 
@@ -102,11 +114,8 @@ def get_color_schemes() -> List[str]:
     return colors
 
 
-def set_style_sheet(style_sheet: str):
-    file = QFile(":/static_css/stylesheet.qss")
-    file.open(QFile.ReadOnly)
-    static = file.readAll().data().decode("utf-8")
-    file.close()
+def set_style_sheet(style_sheet: str) -> None:
+    static = get_static_style()
 
     if not style_sheet:
         qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
@@ -208,11 +217,11 @@ def icon(icn_str: str, fallback: str = None, **kwargs):
     return qtawesome.icon("ei.error", **kwargs)
 
 
-def widget_object_name(widget: Union[wrappertype,QObject,Type], suffix: str) -> str:
+def widget_object_name(widget: Union[QObject,wrappertype,Type], suffix: str) -> str:
     suffix = f"_{suffix}" if suffix else ""
     if isinstance(widget, QObject):
         return f"{type(widget).__name__}{suffix}"
-    elif isinstance(widget, wrappertype):
+    elif isinstance(widget, wrappertype) or isinstance(widget, type):
         return f"{widget.__name__}{suffix}"
     else:
         raise RuntimeError(f"Argument {widget} not a QObject or type of QObject")
