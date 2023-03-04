@@ -27,6 +27,7 @@ class WaitingSpinner(QLabel):
     def __init__(self, parent=None):
         super(WaitingSpinner, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
+        self.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.movie = QMovie(":/images/loader.gif")
         self.setMovie(self.movie)
         self.movie.start()
