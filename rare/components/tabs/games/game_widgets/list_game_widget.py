@@ -13,7 +13,7 @@ from PyQt5.QtGui import (
 )
 
 from rare.models.game import RareGame
-from rare.utils.misc import get_size
+from rare.utils.misc import format_size
 from rare.widgets.image_widget import ImageWidget
 from .game_widget import GameWidget
 from .list_widget import ListWidget
@@ -43,7 +43,7 @@ class ListGameWidget(GameWidget):
         # self.version_label.setVisible(self.is_installed)
         if self.rgame.igame:
             self.ui.version_label.setText(self.rgame.version)
-        self.ui.size_label.setText(get_size(self.rgame.install_size) if self.rgame.install_size else "")
+        self.ui.size_label.setText(format_size(self.rgame.install_size) if self.rgame.install_size else "")
 
         self.update_state()
 

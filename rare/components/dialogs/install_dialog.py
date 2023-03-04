@@ -15,7 +15,7 @@ from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
 from rare.utils import config_helper
-from rare.utils.misc import get_size
+from rare.utils.misc import format_size
 from rare.widgets.collapsible_widget import CollapsibleFrame
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
@@ -290,13 +290,13 @@ class InstallDialog(QDialog):
         install_size = download.analysis.install_size
         # install_size = self.dl_item.download.analysis.disk_space_delta
         if download_size or (not download_size and download.game.is_dlc):
-            self.ui.download_size_text.setText(get_size(download_size))
+            self.ui.download_size_text.setText(format_size(download_size))
             self.ui.download_size_text.setStyleSheet("font-style: normal; font-weight: bold")
             self.ui.install_button.setEnabled(not self.options_changed)
         else:
             self.ui.install_size_text.setText(self.tr("Game already installed"))
             self.ui.install_size_text.setStyleSheet("font-style: italics; font-weight: normal")
-        self.ui.install_size_text.setText(get_size(install_size))
+        self.ui.install_size_text.setText(format_size(install_size))
         self.ui.install_size_text.setStyleSheet("font-style: normal; font-weight: bold")
         self.ui.verify_button.setEnabled(self.options_changed)
         self.ui.cancel_button.setEnabled(True)

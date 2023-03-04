@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 from rare.shared import LegendaryCoreSingleton
 from rare.shared.workers.worker import Worker
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
-from rare.utils.misc import get_size
+from rare.utils.misc import format_size
 from rare.widgets.indicator_edit import PathEdit, IndicatorLineEdit, IndicatorReasonsCommon
 
 logger = getLogger("LegendarySettings")
@@ -183,7 +183,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
                 self,
                 "Cleanup",
                 self.tr("Cleanup complete! Successfully removed {}").format(
-                    get_size(before - after)
+                    format_size(before - after)
                 ),
             )
         else:

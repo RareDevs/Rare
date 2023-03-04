@@ -21,7 +21,7 @@ from rare.shared import RareCore
 from rare.shared.image_manager import ImageSize
 from rare.shared.workers import VerifyWorker, MoveWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
-from rare.utils.misc import get_size
+from rare.utils.misc import format_size
 from rare.widgets.image_widget import ImageWidget
 from rare.widgets.side_tab import SideTabContents
 from .move_game import MoveGamePopUp, is_game_dir
@@ -248,7 +248,7 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.lbl_install_size.setEnabled(self.rgame.is_installed and not self.rgame.is_non_asset)
         self.ui.install_size.setEnabled(self.rgame.is_installed and not self.rgame.is_non_asset)
         self.ui.install_size.setText(
-            get_size(self.rgame.igame.install_size) if self.rgame.is_installed and not self.rgame.is_non_asset else "N/A"
+            format_size(self.rgame.igame.install_size) if self.rgame.is_installed and not self.rgame.is_non_asset else "N/A"
         )
 
         self.ui.lbl_install_path.setEnabled(self.rgame.is_installed and not self.rgame.is_non_asset)

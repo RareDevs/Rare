@@ -12,7 +12,7 @@ from rare.shared import RareCore, ImageManagerSingleton
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.tabs.downloads.queue_base_widget import Ui_QueueBaseWidget
 from rare.ui.components.tabs.downloads.queue_info_widget import Ui_QueueInfoWidget
-from rare.utils.misc import get_size, widget_object_name, elide_text
+from rare.utils.misc import format_size, widget_object_name, elide_text
 from rare.widgets.image_widget import ImageWidget, ImageSize
 
 logger = getLogger("DownloadWidgets")
@@ -58,8 +58,8 @@ class QueueInfoWidget(QWidget):
             elide_text(self.ui.remote_version, old_igame.version if old_igame else game.app_version(igame.platform))
         )
         self.ui.local_version.setText(elide_text(self.ui.local_version, igame.version))
-        self.ui.dl_size.setText(get_size(analysis.dl_size) if analysis else "")
-        self.ui.install_size.setText(get_size(analysis.install_size) if analysis else "")
+        self.ui.dl_size.setText(format_size(analysis.dl_size) if analysis else "")
+        self.ui.install_size.setText(format_size(analysis.install_size) if analysis else "")
         self.image.setPixmap(self.image_manager.get_pixmap(game.app_name, color=True))
 
 

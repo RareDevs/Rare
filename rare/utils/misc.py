@@ -159,7 +159,7 @@ def get_latest_version():
         return "0.0.0"
 
 
-def get_size(b: Union[int, float]) -> str:
+def format_size(b: Union[int, float]) -> str:
     for s in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"]:
         if b < 1024:
             return f"{b:.2f} {s}B"

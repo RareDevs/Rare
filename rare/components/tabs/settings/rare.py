@@ -16,7 +16,7 @@ from rare.utils.misc import (
     set_color_pallete,
     get_style_sheets,
     set_style_sheet,
-    get_size,
+    format_size,
 )
 from rare.utils.paths import create_desktop_link, desktop_link_path, log_dir, desktop_links_supported
 
@@ -141,7 +141,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             for f in log_dir().iterdir()
             if log_dir().joinpath(f).is_file()
         )
-        self.log_dir_size_label.setText(get_size(size))
+        self.log_dir_size_label.setText(format_size(size))
         # self.log_dir_clean_button.setVisible(False)
         # self.log_dir_size_label.setVisible(False)
 
@@ -157,7 +157,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             for f in log_dir().iterdir()
             if log_dir().joinpath(f).is_file()
         )
-        self.log_dir_size_label.setText(get_size(size))
+        self.log_dir_size_label.setText(format_size(size))
 
     def create_start_menu_link(self):
         try:

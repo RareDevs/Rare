@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLab
 
 from rare.models.game import RareGame
 from rare.shared import RareCore
-from rare.utils.misc import get_size
+from rare.utils.misc import format_size
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasons, IndicatorReasonsCommon
 
@@ -112,8 +112,8 @@ class MoveGamePopUp(QWidget):
         # Calculate from bytes to gigabytes
         # free_space = round(free_space / 1000 ** 3, 2)
         # source_size = round(source_size / 1000 ** 3, 2)
-        self.req_space.setText(get_size(source_size))
-        self.avail_space.setText(get_size(free_space))
+        self.req_space.setText(format_size(source_size))
+        self.avail_space.setText(format_size(free_space))
 
         if not os.access(path, os.W_OK) or not os.access(self.rgame.install_path, os.W_OK):
             return helper_func(MovePathEditReasons.NO_WRITE_PERM)

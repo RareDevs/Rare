@@ -19,7 +19,7 @@ from rare.models.install import InstallOptionsModel, InstallQueueItemModel, Unin
 from rare.shared import RareCore
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.shared.workers.uninstall import UninstallWorker
-from rare.utils.misc import get_size
+from rare.utils.misc import format_size
 from rare.utils.paths import create_desktop_link, desktop_links_supported
 from .download import DownloadWidget
 from .groups import UpdateGroup, QueueGroup
@@ -205,12 +205,12 @@ class DownloadsTab(QWidget):
     @pyqtSlot(UIUpdate, c_uint64)
     def __on_download_progress(self, ui_update: UIUpdate, dl_size: c_uint64):
         self.download_widget.ui.progress_bar.setValue(int(ui_update.progress))
-        self.download_widget.ui.dl_speed.setText(f"{get_size(ui_update.download_compressed_speed)}/s")
+        self.download_widget.ui.dl_speed.setText(f"{format_size(ui_update.download_compressed_speed)}/s")
         self.download_widget.ui.cache_used.setText(
-            f"{get_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}"
+            f"{format_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}"
         )
         self.download_widget.ui.downloaded.setText(
-            f"{get_size(ui_update.total_downloaded)} / {get_size(dl_size.value)}"
+            f"{format_size(ui_update.total_downloaded)} / {format_size(dl_size.value)}"
         )
         self.download_widget.ui.time_left.setText(get_time(ui_update.estimated_time_left))
 
