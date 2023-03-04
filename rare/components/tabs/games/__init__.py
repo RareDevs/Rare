@@ -2,14 +2,12 @@ from logging import getLogger
 
 from PyQt5.QtCore import QSettings, Qt, pyqtSlot
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
-from legendary.models.game import Game
 
 from rare.models.game import RareGame
 from rare.shared import (
     LegendaryCoreSingleton,
     GlobalSignalsSingleton,
     ArgumentsSingleton,
-    ApiResultsSingleton,
     ImageManagerSingleton,
 )
 from rare.shared import RareCore
@@ -32,7 +30,6 @@ class GamesTab(QStackedWidget):
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
-        self.api_results = ApiResultsSingleton()
         self.image_manager = ImageManagerSingleton()
         self.settings = QSettings()
 
@@ -142,37 +139,18 @@ class GamesTab(QStackedWidget):
     @pyqtSlot()
     def update_count_games_label(self):
         self.head_bar.set_games_count(
-            len(self.core.get_installed_list()), len(self.api_results.games + self.api_results.na_games)
+            len([game for game in self.rcore.games if game.is_installed]),
+            len([game for game in self.rcore.games])
         )
 
-    # FIXME: Remove this when RareCore is in place
-    def __create_game_with_dlcs(self, game: Game) -> RareGame:
-        rgame = RareGame(self.core, self.image_manager, game)
-        rgame.saves = [save for save in self.api_results.saves if save.app_name == game.app_name]
-        for dlc_dict in [self.api_results.dlcs, self.api_results.na_dlcs]:
-            if game_dlcs := dlc_dict.get(rgame.game.catalog_item_id, False):
-                for dlc in game_dlcs:
-                    rdlc = RareGame(self.core, self.image_manager, dlc)
-                    self.rcore.add_game(rdlc)
-                    # lk: plug dlc progress signals to the game's
-                    rdlc.signals.progress.start.connect(rgame.signals.progress.start)
-                    rdlc.signals.progress.update.connect(rgame.signals.progress.update)
-                    rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
-                    rdlc.set_pixmap()
-                    rgame.owned_dlcs.append(rdlc)
-        return rgame
-
     def setup_game_list(self):
-        for game in self.api_results.games + self.api_results.na_games:
-            rgame = self.__create_game_with_dlcs(game)
-            self.rcore.add_game(rgame)
+        for rgame in self.rcore.games:
             icon_widget, list_widget = self.add_library_widget(rgame)
             if not icon_widget or not list_widget:
                 logger.warning(f"Excluding {rgame.app_name} from the game list")
                 continue
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
-            rgame.set_pixmap()
         self.filter_games(self.active_filter)
         self.update_count_games_label()
 

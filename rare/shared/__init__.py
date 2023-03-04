@@ -10,7 +10,6 @@ from argparse import Namespace
 from typing import Optional
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.apiresults import ApiResults
 from rare.models.signals import GlobalSignals
 from .image_manager import ImageManager
 from .rare_core import RareCore
@@ -32,7 +31,3 @@ def LegendaryCoreSingleton() -> LegendaryCore:
 
 def ImageManagerSingleton() -> ImageManager:
     return RareCore.instance().image_manager()
-
-
-def ApiResultsSingleton(res: ApiResults = None) -> Optional[ApiResults]:
-    return RareCore.instance().api_results(res)

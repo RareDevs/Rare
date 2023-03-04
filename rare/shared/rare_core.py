@@ -1,26 +1,43 @@
 import configparser
 import os
+import platform
+import time
 from argparse import Namespace
 from itertools import chain
 from logging import getLogger
-from typing import Optional, Dict, Iterator, Callable, List, Union
+from typing import Dict, Iterator, Callable, Tuple, Optional, List, Union
 
-from PyQt5.QtCore import QObject, QThreadPool
+from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.apiresults import ApiResults
 from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
-from .workers import QueueWorker, VerifyWorker, MoveWorker
 from .image_manager import ImageManager
+from .workers import (
+    QueueWorker,
+    VerifyWorker,
+    MoveWorker,
+    SavesWorker,
+    GamesWorker,
+    NonAssetWorker,
+    EntitlementsWorker,
+    Win32Worker,
+    MacOSWorker,
+    FetchWorker,
+)
+from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
 
 logger = getLogger("RareCore")
 
 
 class RareCore(QObject):
+    progress = pyqtSignal(int, str)
+    completed = pyqtSignal()
+
+    # lk: special case class attribute, this has to be here
     __instance: Optional['RareCore'] = None
 
     def __init__(self, args: Namespace):
@@ -31,12 +48,20 @@ class RareCore(QObject):
         self.__signals: Optional[GlobalSignals] = None
         self.__core: Optional[LegendaryCore] = None
         self.__image_manager: Optional[ImageManager] = None
-        self.__api_results: Optional[ApiResults] = None
+
+        self.__games_fetched: bool = False
+        self.__non_asset_fetched: bool = False
+        self.__win32_fetched: bool = False
+        self.__macos_fetched: bool = False
+        self.__saves_fetched: bool = False
+        self.__entitlements_fetched: bool = False
 
         self.args(args)
         self.signals(init=True)
         self.core(init=True)
         self.image_manager(init=True)
+
+        self.settings = QSettings()
 
         self.queue_workers: List[QueueWorker] = []
         self.queue_threadpool = QThreadPool()
@@ -142,19 +167,7 @@ class RareCore(QObject):
             self.__image_manager = ImageManager(self.signals(), self.core())
         return self.__image_manager
 
-    def api_results(self, res: ApiResults = None) -> Optional[ApiResults]:
-        if self.__api_results is None and res is None:
-            raise RuntimeError("Uninitialized use of ApiResultsSingleton")
-        if self.__api_results is not None and res is not None:
-            raise RuntimeError("ApiResults already initialized")
-        if res is not None:
-            self.__api_results = res
-        return self.__api_results
-
     def deleteLater(self) -> None:
-        del self.__api_results
-        self.__api_results = None
-
         self.__image_manager.deleteLater()
         del self.__image_manager
         self.__image_manager = None
@@ -174,12 +187,51 @@ class RareCore(QObject):
 
         super(RareCore, self).deleteLater()
 
+    def __validate_installed(self):
+        filter_lambda = lambda rg: rg.is_installed and not (rg.is_dlc or rg.is_non_asset)
+        length = len(list(self.__filter_games(filter_lambda)))
+        for i, rgame in enumerate(self.__filter_games(filter_lambda)):
+            self.progress.emit(
+                int(i / length * 25) + 75,
+                self.tr("Validating install for <b>{}</b>").format(rgame.app_title)
+            )
+            if not os.path.exists(rgame.igame.install_path):
+                # lk: since install_path is lost anyway, set keep_files to True
+                # lk: to avoid spamming the log with "file not found" errors
+                for dlc in rgame.owned_dlcs:
+                    if dlc.is_installed:
+                        logger.info(f'Uninstalling DLC "{dlc.app_name}" ({dlc.app_title})...')
+                        uninstall_game(self.__core, dlc.app_name, keep_files=True)
+                        dlc.igame = None
+                logger.info(
+                    f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...'
+                )
+                uninstall_game(self.__core, rgame.app_name, keep_files=True)
+                logger.info(f"Uninstalled {rgame.app_title}, because no game files exist")
+                rgame.igame = None
+                continue
+            # lk: games that don't have an override and can't find their executable due to case sensitivity
+            # lk: will still erroneously require verification. This might need to be removed completely
+            # lk: or be decoupled from the verification requirement
+            if override_exe := self.__core.lgd.config.get(rgame.app_name, "override_exe", fallback=""):
+                igame_executable = override_exe
+            else:
+                igame_executable = rgame.igame.executable
+            # lk: Case-insensitive search for the game's executable (example: Brothers - A Tale of two Sons)
+            executable_path = os.path.join(rgame.igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))
+            file_list = map(str.lower, os.listdir(os.path.dirname(executable_path)))
+            if not os.path.basename(executable_path).lower() in file_list:
+                rgame.igame.needs_verification = True
+                self.__core.lgd.set_installed_game(rgame.app_name, rgame.igame)
+                rgame.update_igame()
+                logger.info(f"{rgame.app_title} needs verification")
+
     def get_game(self, app_name: str) -> Union[RareEosOverlay, RareGame]:
         if app_name == EOSOverlayApp.app_name:
             return self.__eos_overlay_rgame
         return self.__games[app_name]
 
-    def add_game(self, rgame: RareGame) -> None:
+    def __add_game(self, rgame: RareGame) -> None:
         rgame.signals.download.enqueue.connect(self.__signals.download.enqueue)
         rgame.signals.download.dequeue.connect(self.__signals.download.dequeue)
         rgame.signals.game.install.connect(self.__signals.game.install)
@@ -192,6 +244,146 @@ class RareCore(QObject):
 
     def __filter_games(self, condition: Callable[[RareGame], bool]) -> Iterator[RareGame]:
         return filter(condition, self.__games.values())
+
+    def __create_or_update_rgame(self, game: Game) -> RareGame:
+        if rgame := self.__games.get(game.app_name, False):
+            logger.warning(f"{rgame.app_name} already present in {type(self).__name__}")
+            logger.info(f"Updating Game for {rgame.app_name}")
+            rgame.update_rgame()
+        else:
+            rgame = RareGame(self.__core, self.__image_manager, game)
+        return rgame
+
+    def __add_games_and_dlcs(self, games: List[Game], dlcs_dict: Dict[str, List]) -> None:
+        for game in games:
+            rgame = self.__create_or_update_rgame(game)
+            if game_dlcs := dlcs_dict.get(rgame.game.catalog_item_id, False):
+                for dlc in game_dlcs:
+                    rdlc = self.__create_or_update_rgame(dlc)
+                    # lk: plug dlc progress signals to the game's
+                    rdlc.signals.progress.start.connect(rgame.signals.progress.start)
+                    rdlc.signals.progress.update.connect(rgame.signals.progress.update)
+                    rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
+                    rgame.owned_dlcs.append(rdlc)
+                    self.__add_game(rdlc)
+            self.__add_game(rgame)
+
+    @pyqtSlot(object, int)
+    def handle_result(self, result: Tuple, res_type: int):
+        status = ""
+        if res_type == FetchWorker.Result.GAMES:
+            games, dlc_dict = result
+            self.__add_games_and_dlcs(games, dlc_dict)
+            self.__games_fetched = True
+            status = "Loaded games for Windows"
+        if res_type == FetchWorker.Result.NON_ASSET:
+            games, dlc_dict = result
+            self.__add_games_and_dlcs(games, dlc_dict)
+            self.__non_asset_fetched = True
+            status = "Loaded games without assets"
+        if res_type == FetchWorker.Result.WIN32:
+            self.__win32_fetched = True
+            status = "Loaded games for Windows (32bit)"
+        if res_type == FetchWorker.Result.MACOS:
+            self.__macos_fetched = True
+            status = "Loaded games for MacOS"
+        if res_type == FetchWorker.Result.SAVES:
+            saves, _ = result
+            for save in saves:
+                self.__games[save.app_name].saves.append(save)
+            self.__saves_fetched = True
+            status = "Loaded save games"
+        if res_type == FetchWorker.Result.ENTITLEMENTS:
+            self.__core.lgd.entitlements = result
+            self.__entitlements_fetched = True
+            status = "Loaded game entitlements"
+        logger.debug(f"Got API results for {FetchWorker.Result(res_type).name}")
+
+        fetched = [
+            self.__games_fetched,
+            self.__non_asset_fetched,
+            self.__win32_fetched,
+            self.__macos_fetched,
+            self.__saves_fetched,
+            self.__entitlements_fetched,
+        ]
+
+        self.progress.emit(sum(fetched) * 10, status)
+
+        if all(fetched):
+            self.progress.emit(75, self.tr("Validating game installations"))
+            self.__validate_installed()
+            self.progress.emit(100, self.tr("Launching Rare"))
+            logger.debug(f"Fetch time {time.time() - self.start_time} seconds")
+            self.completed.emit()
+
+    def fetch(self):
+        self.__games_fetched: bool = False
+        self.__non_asset_fetched: bool = False
+        self.__win32_fetched: bool = False
+        self.__macos_fetched: bool = False
+        self.__saves_fetched: bool = False
+        self.__entitlements_fetched: bool = False
+
+        self.start_time = time.time()
+        games_worker = GamesWorker(self.__core, self.__args)
+        games_worker.signals.result.connect(self.handle_result)
+        games_worker.signals.finished.connect(self.fetch_saves)
+        games_worker.signals.finished.connect(self.fetch_extra)
+        QThreadPool.globalInstance().start(games_worker)
+
+    def fetch_saves(self):
+        if not self.__args.offline:
+            saves_worker = SavesWorker(self.__core, self.__args)
+            saves_worker.signals.result.connect(self.handle_result)
+            QThreadPool.globalInstance().start(saves_worker)
+        else:
+            self.__saves_fetched = True
+
+    def fetch_extra(self):
+        non_asset_worker = NonAssetWorker(self.__core, self.__args)
+        non_asset_worker.signals.result.connect(self.handle_result)
+        QThreadPool.globalInstance().start(non_asset_worker)
+
+        entitlements_worker = EntitlementsWorker(self.__core, self.__args)
+        entitlements_worker.signals.result.connect(self.handle_result)
+        QThreadPool.globalInstance().start(entitlements_worker)
+
+        if self.settings.value("win32_meta", False, bool) and not self.__win32_fetched:
+            win32_worker = Win32Worker(self.__core, self.__args)
+            win32_worker.signals.result.connect(self.handle_result)
+            QThreadPool.globalInstance().start(win32_worker)
+        else:
+            self.__win32_fetched = True
+
+        if self.settings.value("mac_meta", platform.system() == "Darwin", bool) and not self.__macos_fetched:
+            macos_worker = MacOSWorker(self.__core, self.__args)
+            macos_worker.signals.result.connect(self.handle_result)
+            QThreadPool.globalInstance().start(macos_worker)
+        else:
+            self.__macos_fetched = True
+
+    def load_pixmaps(self) -> None:
+        """
+        Load pixmaps for all games
+
+        This exists here solely to fight signal and possibly threading issues.
+        The initial image loading at startup should not be done in the RareGame class
+        for two reasons. It will delay startup due to widget updates and the image
+        might become availabe before the UI is brought up. In case of the second, we
+        will get both a long queue of signals to be serviced and some of them might
+        be not connected yet so the widget won't be updated. So do the loading here
+        by calling this after the MainWindow has finished initializing.
+
+        @return: None
+        """
+        QThreadPool.globalInstance().start(self.__load_pixmaps)
+
+    def __load_pixmaps(self) -> None:
+        # time.sleep(0.1)
+        for rgame in self.__games.values():
+            rgame.set_pixmap()
+            # time.sleep(0.0001)
 
     @property
     def games_and_dlcs(self) -> Iterator[RareGame]:

@@ -1,10 +1,9 @@
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Optional
 
 from PyQt5.QtCore import QObject, pyqtSlot
 from PyQt5.QtWidgets import QWidget
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.apiresults import ApiResults
 from rare.models.game import RareGame
 from rare.models.signals import GlobalSignals
 from rare.shared import RareCore
@@ -20,7 +19,6 @@ class LibraryWidgetController(QObject):
         self.rcore = RareCore.instance()
         self.core: LegendaryCore = self.rcore.core()
         self.signals: GlobalSignals = self.rcore.signals()
-        self.api_results: ApiResults = self.rcore.api_results()
 
         self.signals.game.installed.connect(self.sort_list)
         self.signals.game.uninstalled.connect(self.sort_list)
@@ -115,7 +113,7 @@ class LibraryWidgetController(QObject):
             list_widgets = self._list_container.findChildren(ListGameWidget)
             icon_app_names = set([iw.rgame.app_name for iw in icon_widgets])
             list_app_names = set([lw.rgame.app_name for lw in list_widgets])
-            games = self.api_results.games + self.api_results.na_games
+            games = list(self.rcore.games)
             game_app_names = set([g.app_name for g in games])
             new_icon_app_names = game_app_names.difference(icon_app_names)
             new_list_app_names = game_app_names.difference(list_app_names)

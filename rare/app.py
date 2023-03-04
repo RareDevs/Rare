@@ -130,5 +130,3 @@ def start(args):
         del app
         if exit_code != -133742:
             break
-
-

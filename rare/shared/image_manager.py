@@ -387,11 +387,11 @@ class ImageManager(QObject):
         return data
 
     def download_image(
-        self, game: Game, load_callback: Callable[[Game], None], priority: int, force: bool = False
+        self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False
     ) -> None:
         updates, json_data = self.__prepare_download(game, force)
         if not updates:
-            load_callback(game)
+            load_callback()
             return
         if updates and game.app_name not in self.__worker_app_names:
             image_worker = ImageManager.Worker(self.__download, updates, json_data, game)

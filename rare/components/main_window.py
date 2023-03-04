@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer, QSize, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor
+from PyQt5.QtGui import QCloseEvent, QCursor, QShowEvent
 from PyQt5.QtWidgets import (
     QMainWindow,
     QApplication,
@@ -107,8 +107,9 @@ class MainWindow(QMainWindow):
                 logger.warning("Discord RPC module not found")
 
         self.timer = QTimer()
+        self.timer.setInterval(1000)
         self.timer.timeout.connect(self.timer_finished)
-        self.timer.start(1000)
+        self.timer.start()
 
         self.tray_icon: TrayIcon = TrayIcon(self)
         self.tray_icon.exit_app.connect(self.on_exit_app)
@@ -141,6 +142,15 @@ class MainWindow(QMainWindow):
 
         self.resize(window_size)
         self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
+
+    # lk: For the gritty details see `RareCore.load_pixmaps()` method
+    # Just before the window is shown, fire a timer to load game icons
+    # This is by nature a little iffy because we don't really know if the
+    # has been shown, and it might make the window delay as widgets being are updated.
+    # Still better than showing a hanged window frame for a few seconds.
+    def showEvent(self, a0: QShowEvent) -> None:
+        if not self._window_launched:
+            QTimer.singleShot(100, self.rcore.load_pixmaps)
 
     @pyqtSlot()
     def show(self) -> None:
@@ -198,7 +208,7 @@ class MainWindow(QMainWindow):
             if action.startswith("show"):
                 self.show()
             os.remove(file_path)
-        self.timer.start(1000)
+        self.timer.start()
 
     @pyqtSlot()
     @pyqtSlot(int)

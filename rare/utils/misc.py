@@ -21,7 +21,6 @@ from legendary.core import LegendaryCore
 from legendary.models.game import Game
 from requests.exceptions import HTTPError
 
-from rare.models.apiresults import ApiResults
 from rare.utils.paths import resources_path
 
 logger = getLogger("Utils")
@@ -192,13 +191,6 @@ def get_raw_save_path(game: Game):
                 .get("CloudSaveFolder", {})
                 .get("value")
         )
-
-
-def get_default_platform(app_name, api_results: ApiResults):
-    if platform.system() != "Darwin" or app_name not in api_results.mac_games:
-        return "Windows"
-    else:
-        return "Mac"
 
 
 def icon(icn_str: str, fallback: str = None, **kwargs):
