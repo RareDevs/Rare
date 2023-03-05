@@ -3,23 +3,49 @@ import os
 import platform
 import sys
 import time
+import traceback
 from argparse import Namespace
 
 import legendary
-from PyQt5.QtCore import QSettings, QTranslator, QT_VERSION_STR, PYQT_VERSION_STR
+from PyQt5.QtCore import QSettings, QTranslator, QT_VERSION_STR, PYQT_VERSION_STR, QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
 
 import rare.resources.resources
 from rare.utils import paths
 from rare.utils.misc import set_color_pallete, set_style_sheet, get_static_style
 
 
-class RareApp(QApplication):
-    logger = logging.getLogger("RareApp")
+class RareAppException(QObject):
+    exception = pyqtSignal(object, object, object)
 
+    def __init__(self, parent=None):
+        self.logger = logging.getLogger(type(self).__name__)
+        super(RareAppException, self).__init__(parent=parent)
+        sys.excepthook = self._excepthook
+        self.exception.connect(self._on_exception)
+
+    def _excepthook(self, exc_type: object, exc_value: object, exc_tb: object):
+        self.exception.emit(exc_type, exc_value, exc_tb)
+
+    def _handler(self, exc_type, exc_value, exc_tb) -> bool:
+        return False
+
+    @pyqtSlot(object, object, object)
+    def _on_exception(self, exc_type, exc_value, exc_tb):
+        message = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+        if self._handler(exc_type, exc_value, exc_tb):
+            return
+        self.logger.fatal(message)
+        QMessageBox.warning(None, exc_type.__name__, message)
+        QApplication.exit(1)
+
+
+class RareApp(QApplication):
     def __init__(self, args: Namespace, log_file: str):
+        self.logger = logging.getLogger(type(self).__name__)
         super(RareApp, self).__init__(sys.argv)
+        self._hook = RareAppException(self)
         self.setQuitOnLastWindowClosed(False)
 
         self.setApplicationName("Rare")

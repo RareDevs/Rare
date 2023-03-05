@@ -16,34 +16,35 @@ from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.shared import RareCore
 from rare.utils import config_helper, paths
-from rare.widgets.rare_app import RareApp
+from rare.widgets.rare_app import RareApp, RareAppException
 
 logger = logging.getLogger("Rare")
 
 
-def excepthook(exc_type, exc_value, exc_tb):
-    tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-    print("Error")
-    if exc_tb == HTTPError:
-        try:
-            if RareCore.instance().core().login():
-                return
-            else:
+class RareException(RareAppException):
+    def __init__(self, parent=None):
+        super(RareException, self).__init__(parent=parent)
+
+    def _handler(self, exc_type, exc_value, exc_tb) -> bool:
+        if exc_type == HTTPError:
+            try:
+                if RareCore.instance() is not None:
+                    if RareCore.instance().core().login():
+                        return True
                 raise ValueError
-        except Exception as e:
-            logger.fatal(str(e))
-            QMessageBox.warning(None, "Error", QApplication.tr("Failed to login"))
-            QApplication.exit(1)
-            return
-    logger.fatal(tb)
-    QMessageBox.warning(None, "Error", tb)
-    QApplication.exit(1)
+            except Exception as e:
+                logger.fatal(str(e))
+                QMessageBox.warning(None, "Error", self.tr("Failed to login"))
+                QApplication.exit(1)
+        return False
 
 
-class App(RareApp):
+class Rare(RareApp):
     def __init__(self, args: Namespace):
         log_file = "Rare_{0}.log"
-        super(App, self).__init__(args, log_file)
+        super(Rare, self).__init__(args, log_file)
+        self._hook.deleteLater()
+        self._hook = RareException(self)
         self.rcore = RareCore(args=args)
         self.args = RareCore.instance().args()
         self.signals = RareCore.instance().signals()
@@ -119,13 +120,10 @@ class App(RareApp):
 
 
 def start(args):
-    # set excepthook to show dialog with exception
-    sys.excepthook = excepthook
-
     while True:
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-        app = App(args)
+        app = Rare(args)
         exit_code = app.exec_()
         # if not restart
         # restart app

@@ -18,7 +18,6 @@ class Worker(QRunnable):
     """
 
     def __init__(self):
-        sys.excepthook = sys.__excepthook__
         super(Worker, self).__init__()
         self.setAutoDelete(True)
         self.__signals: Optional[QObject] = None
@@ -40,7 +39,7 @@ class Worker(QRunnable):
     @pyqtSlot()
     def run(self):
         self.run_real()
-        self.signals.deleteLater()
+        self.__signals.deleteLater()
 
 
 class QueueWorkerState(IntEnum):

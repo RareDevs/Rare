@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import QApplication
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
-from rare.widgets.rare_app import RareApp
+from rare.widgets.rare_app import RareApp, RareAppException
 from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 
@@ -66,7 +66,25 @@ class PreLaunchThread(QRunnable):
         return args
 
 
-class GameProcessApp(RareApp):
+class RareLauncherException(RareAppException):
+    def __init__(self, app: 'RareLauncher', args: Namespace, parent=None):
+        super(RareLauncherException, self).__init__(parent=parent)
+        self.__app = app
+        self.__args = args
+
+    def _handler(self, exc_type, exc_value, exc_tb) -> bool:
+        try:
+            self.__app.send_message(ErrorModel(
+                app_name=self.__args.app_name,
+                action=Actions.error,
+                error_string="".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+            ))
+        except RuntimeError:
+            pass
+        return False
+
+
+class RareLauncher(RareApp):
     game_process: QProcess
     server: QLocalServer
     socket: Optional[QLocalSocket] = None
@@ -76,7 +94,9 @@ class GameProcessApp(RareApp):
 
     def __init__(self, args: Namespace):
         log_file = f"Rare_Launcher_{args.app_name}" + "_{0}.log"
-        super(GameProcessApp, self).__init__(args, log_file)
+        super(RareLauncher, self).__init__(args, log_file)
+        self._hook.deleteLater()
+        self._hook = RareLauncherException(self, args, self)
         self.game_process = QProcess()
         self.app_name = args.app_name
         self.logger = getLogger(self.app_name)
@@ -237,23 +257,9 @@ def start_game(args: Namespace):
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
-    app = GameProcessApp(args)
+    app = RareLauncher(args)
     app.setQuitOnLastWindowClosed(True)
 
-    def excepthook(exc_type, exc_value, exc_tb):
-        tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-        app.logger.fatal(tb)
-        try:
-            app.send_message(ErrorModel(
-                app_name=args.app_name,
-                action=Actions.error,
-                error_string=tb
-            ))
-        except RuntimeError:
-            pass
-        app.stop()
-
-    sys.excepthook = excepthook
     if not app.success:
         return
     app.start(args)
