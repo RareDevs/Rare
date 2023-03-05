@@ -123,6 +123,12 @@ class Console(QDialog):
         )
         self.accept_close = True
 
+    def reject(self) -> None:
+        self.close()
+
+    def accept(self) -> None:
+        self.close()
+
     def closeEvent(self, a0: QCloseEvent) -> None:
         if self.accept_close:
             super(Console, self).closeEvent(a0)
