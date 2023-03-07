@@ -248,7 +248,7 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.lbl_install_size.setEnabled(bool(self.rgame.install_size))
         self.ui.install_size.setEnabled(bool(self.rgame.install_size))
         self.ui.install_size.setText(
-            format_size(self.rgame.igame.install_size) if self.rgame.install_size else "N/A"
+            format_size(self.rgame.install_size) if self.rgame.install_size else "N/A"
         )
 
         self.ui.lbl_install_path.setEnabled(bool(self.rgame.install_path))

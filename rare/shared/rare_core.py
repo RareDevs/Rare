@@ -21,6 +21,7 @@ from .workers import (
     FetchWorker,
     GamesWorker,
     NonAssetWorker,
+    OriginWineWorker,
     SavesWorker,
     EntitlementsWorker,
 )
@@ -48,6 +49,7 @@ class RareCore(QObject):
 
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
+        self.__origin_resolved: bool = False
         self.__saves_fetched: bool = False
         self.__entitlements_fetched: bool = False
 
@@ -276,6 +278,9 @@ class RareCore(QObject):
             self.__add_games_and_dlcs(games, dlc_dict)
             self.__non_asset_fetched = True
             status = "Loaded games without assets"
+        if res_type == FetchWorker.Result.ORIGIN:
+            self.__origin_resolved = True
+            status = "Resolved Origin installation status"
         if res_type == FetchWorker.Result.SAVES:
             saves, _ = result
             for save in saves:
@@ -291,6 +296,7 @@ class RareCore(QObject):
         fetched = [
             self.__games_fetched,
             self.__non_asset_fetched,
+            self.__origin_resolved,
             self.__saves_fetched,
             self.__entitlements_fetched,
         ]
@@ -307,6 +313,7 @@ class RareCore(QObject):
     def fetch(self):
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
+        self.__origin_resolved: bool = False
         self.__saves_fetched: bool = False
         self.__entitlements_fetched: bool = False
 
@@ -325,9 +332,16 @@ class RareCore(QObject):
         else:
             self.__saves_fetched = True
 
+    def resolve_origin(self):
+        origin_worker = OriginWineWorker(self.__core, self.__args, self.origin_games)
+        origin_worker.signals.result.connect(self.handle_result)
+        QThreadPool.globalInstance().start(origin_worker)
+
+
     def fetch_extra(self):
         non_asset_worker = NonAssetWorker(self.__core, self.__args)
         non_asset_worker.signals.result.connect(self.handle_result)
+        non_asset_worker.signals.finished.connect(self.resolve_origin)
         QThreadPool.globalInstance().start(non_asset_worker)
 
         entitlements_worker = EntitlementsWorker(self.__core, self.__args)

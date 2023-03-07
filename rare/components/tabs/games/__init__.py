@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, Qt, pyqtSlot, QThreadPool
+from PyQt5.QtCore import QSettings, Qt, pyqtSlot
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
 
 from rare.models.game import RareGame
@@ -11,7 +11,6 @@ from rare.shared import (
     ImageManagerSingleton,
 )
 from rare.shared import RareCore
-from rare.shared.workers.wine_resolver import OriginWineWorker
 from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .game_info import GameInfoTabs
@@ -154,9 +153,6 @@ class GamesTab(QStackedWidget):
             self.list_view.layout().addWidget(list_widget)
         self.filter_games(self.active_filter)
         self.update_count_games_label()
-
-        worker = OriginWineWorker(self.core, self.rcore.origin_games)
-        QThreadPool.globalInstance().start(worker)
 
     def add_library_widget(self, rgame: RareGame):
         try:
