@@ -1,6 +1,5 @@
 import configparser
 import os
-import platform
 import time
 from argparse import Namespace
 from itertools import chain
@@ -19,13 +18,11 @@ from .workers import (
     QueueWorker,
     VerifyWorker,
     MoveWorker,
-    SavesWorker,
+    FetchWorker,
     GamesWorker,
     NonAssetWorker,
+    SavesWorker,
     EntitlementsWorker,
-    Win32Worker,
-    MacOSWorker,
-    FetchWorker,
 )
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
@@ -51,8 +48,6 @@ class RareCore(QObject):
 
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
-        self.__win32_fetched: bool = False
-        self.__macos_fetched: bool = False
         self.__saves_fetched: bool = False
         self.__entitlements_fetched: bool = False
 
@@ -281,12 +276,6 @@ class RareCore(QObject):
             self.__add_games_and_dlcs(games, dlc_dict)
             self.__non_asset_fetched = True
             status = "Loaded games without assets"
-        if res_type == FetchWorker.Result.WIN32:
-            self.__win32_fetched = True
-            status = "Loaded games for Windows (32bit)"
-        if res_type == FetchWorker.Result.MACOS:
-            self.__macos_fetched = True
-            status = "Loaded games for MacOS"
         if res_type == FetchWorker.Result.SAVES:
             saves, _ = result
             for save in saves:
@@ -302,8 +291,6 @@ class RareCore(QObject):
         fetched = [
             self.__games_fetched,
             self.__non_asset_fetched,
-            self.__win32_fetched,
-            self.__macos_fetched,
             self.__saves_fetched,
             self.__entitlements_fetched,
         ]
@@ -320,8 +307,6 @@ class RareCore(QObject):
     def fetch(self):
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
-        self.__win32_fetched: bool = False
-        self.__macos_fetched: bool = False
         self.__saves_fetched: bool = False
         self.__entitlements_fetched: bool = False
 
@@ -348,20 +333,6 @@ class RareCore(QObject):
         entitlements_worker = EntitlementsWorker(self.__core, self.__args)
         entitlements_worker.signals.result.connect(self.handle_result)
         QThreadPool.globalInstance().start(entitlements_worker)
-
-        if self.settings.value("win32_meta", False, bool) and not self.__win32_fetched:
-            win32_worker = Win32Worker(self.__core, self.__args)
-            win32_worker.signals.result.connect(self.handle_result)
-            QThreadPool.globalInstance().start(win32_worker)
-        else:
-            self.__win32_fetched = True
-
-        if self.settings.value("mac_meta", platform.system() == "Darwin", bool) and not self.__macos_fetched:
-            macos_worker = MacOSWorker(self.__core, self.__args)
-            macos_worker.signals.result.connect(self.handle_result)
-            QThreadPool.globalInstance().start(macos_worker)
-        else:
-            self.__macos_fetched = True
 
     def load_pixmaps(self) -> None:
         """

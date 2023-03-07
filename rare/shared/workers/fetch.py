@@ -16,8 +16,6 @@ class FetchWorker(Worker):
     class Result(IntEnum):
         GAMES = 1
         NON_ASSET = 2
-        WIN32 = 3
-        MACOS = 4
         SAVES = 5
         ENTITLEMENTS = 6
 
@@ -67,26 +65,6 @@ class EntitlementsWorker(FetchWorker):
         self.signals.result.emit(entitlements, FetchWorker.Result.ENTITLEMENTS)
         logger.debug(f"Entitlements: {len(list(entitlements))}")
         logger.debug(f"Request Entitlements: {time.time() - start_time} seconds")
-        self.signals.finished.emit()
-
-
-class Win32Worker(FetchWorker):
-    def run_real(self):
-        start_time = time.time()
-        result = self.core.get_game_and_dlc_list(update_assets=False, platform="Win32")
-        self.signals.result.emit(([], {}), FetchWorker.Result.WIN32)
-        logger.debug(f"Win32: {len(result[0])}, DLCs {len(result[1])}")
-        logger.debug(f"Request Win32: {time.time() - start_time} seconds")
-        self.signals.finished.emit()
-
-
-class MacOSWorker(FetchWorker):
-    def run_real(self):
-        start_time = time.time()
-        result = self.core.get_game_and_dlc_list(update_assets=False, platform="Mac")
-        self.signals.result.emit(([], {}), FetchWorker.Result.MACOS)
-        logger.debug(f"MacOS: {len(result[0])}, DLCs {len(result[1])}")
-        logger.debug(f"Request MacOS: {time.time() - start_time} seconds")
         self.signals.finished.emit()
 
 

@@ -107,7 +107,7 @@ class GameListHeadBar(QWidget):
 
         self.refresh_list = QPushButton()
         self.refresh_list.setIcon(icon("fa.refresh"))  # Reload icon
-        self.refresh_list.clicked.connect(self.rcore.fetch)
+        self.refresh_list.clicked.connect(self.refresh_clicked)
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 5, 0, 5)
