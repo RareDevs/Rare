@@ -564,9 +564,9 @@ class RareGame(RareGameSlim):
 
     @property
     def can_launch(self) -> bool:
+        if self.is_idle and self.is_origin:
+            return True
         if self.is_installed:
-            if self.is_origin:
-                return True
             if (not self.is_idle) or self.needs_verification:
                 return False
             if self.is_foreign and not self.can_run_offline:
