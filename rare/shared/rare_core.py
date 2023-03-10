@@ -8,9 +8,10 @@ from typing import Dict, Iterator, Callable, Tuple, Optional, List, Union
 
 from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool, QRunnable
 from legendary.lfs.eos import EOSOverlayApp
-from legendary.models.game import Game, SaveGameFile
+from legendary.models.game import Game
 
 from rare.lgndr.core import LegendaryCore
+from rare.models.base_game import RareSaveGame
 from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
 from .image_manager import ImageManager
@@ -27,7 +28,6 @@ from .workers import (
 )
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
-from rare.models.base_game import RareSaveGame
 
 logger = getLogger("RareCore")
 
@@ -267,7 +267,7 @@ class RareCore(QObject):
             self.__add_game(rgame)
 
     @pyqtSlot(object, int)
-    def handle_result(self, result: Tuple, res_type: int):
+    def handle_result(self, result: object, res_type: int):
         status = ""
         if res_type == FetchWorker.Result.GAMES:
             games, dlc_dict = result
@@ -283,6 +283,9 @@ class RareCore(QObject):
             self.__non_asset_fetched = True
             status = "Loaded games without assets"
         if res_type == FetchWorker.Result.ORIGIN:
+            attrs, _ = result
+            for app_name, (install_dir, install_size) in attrs.items():
+                self.__games[app_name].set_origin_attributes(install_dir, install_size)
             self.__origin_resolved = True
             status = "Resolved Origin installation status"
         if res_type == FetchWorker.Result.SAVES:
@@ -295,7 +298,7 @@ class RareCore(QObject):
             self.__core.lgd.entitlements = result
             self.__entitlements_fetched = True
             status = "Loaded game entitlements"
-        logger.debug(f"Got API results for {FetchWorker.Result(res_type).name}")
+        logger.info(f"Got API results for {FetchWorker.Result(res_type).name}")
 
         fetched = [
             self.__games_fetched,
@@ -366,13 +369,16 @@ class RareCore(QObject):
 
         @return: None
         """
-        QThreadPool.globalInstance().start(self.__load_pixmaps)
+        def __load_pixmaps() -> None:
+            # time.sleep(0.1)
+            for rgame in self.__games.values():
+                # self.__image_manager.download_image(rgame.game, rgame.set_pixmap, 0, False)
+                rgame.load_pixmap()
+                # lk: perception delay
+                time.sleep(0.001)
 
-    def __load_pixmaps(self) -> None:
-        # time.sleep(0.1)
-        for rgame in self.__games.values():
-            rgame.load_pixmap()
-            # time.sleep(0.0001)
+        worker = QRunnable.create(__load_pixmaps)
+        QThreadPool.globalInstance().start(worker)
 
     @property
     def games_and_dlcs(self) -> Iterator[RareGame]:

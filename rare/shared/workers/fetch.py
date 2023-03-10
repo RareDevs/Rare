@@ -62,7 +62,7 @@ class EntitlementsWorker(FetchWorker):
         except (HTTPError, ConnectionError) as e:
             logger.error(f"Failed to retrieve user entitlements from EGS: {e}")
             entitlements = {}
-        self.signals.result.emit(entitlements, FetchWorker.Result.ENTITLEMENTS)
+        self.signals.result.emit((entitlements, None), FetchWorker.Result.ENTITLEMENTS)
         logger.debug(f"Entitlements: {len(list(entitlements))}")
         logger.debug(f"Request Entitlements: {time.time() - start_time} seconds")
 
@@ -81,6 +81,6 @@ class SavesWorker(FetchWorker):
         except (HTTPError, ConnectionError) as e:
             logger.warning(f"Exception while fetching saves from EGS: {e}")
             result = {}
-        self.signals.result.emit((result, {}), FetchWorker.Result.SAVES)
+        self.signals.result.emit((result, None), FetchWorker.Result.SAVES)
         logger.debug(f"Saves: {len(result)}")
         logger.debug(f"Request saves: {time.time() - start_time} seconds")

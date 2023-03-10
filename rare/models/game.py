@@ -459,6 +459,7 @@ class RareGame(RareGameSlim):
             self.signals.widget.update.emit()
 
     def load_pixmap(self):
+        """ Do not call this function, call set_pixmap instead. This is only used for startup image loading """
         if self.pixmap.isNull():
             self.image_manager.download_image(self.game, self.set_pixmap, 0, False)
 
@@ -480,8 +481,6 @@ class RareGame(RareGameSlim):
             self.signals.game.installed.emit(self.app_name)
         else:
             self.signals.game.uninstalled.emit(self.app_name)
-        self.set_pixmap()
-        self.signals.widget.update.emit()
 
     def repair(self, repair_and_update):
         self.signals.game.install.emit(

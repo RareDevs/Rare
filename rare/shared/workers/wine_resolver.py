@@ -4,7 +4,7 @@ import time
 from argparse import Namespace
 from configparser import ConfigParser
 from logging import getLogger
-from typing import Union, Iterator
+from typing import Union, Iterator, Dict, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
@@ -62,6 +62,8 @@ class OriginWineWorker(FetchWorker):
 
     def run_real(self) -> None:
         t = time.time()
+
+        result: Dict[str, Tuple[str, int]] = {}
         for rgame in self.games:
             if not rgame.is_origin:
                 continue
@@ -101,10 +103,11 @@ class OriginWineWorker(FetchWorker):
 
             if install_dir:
                 if os.path.isdir(install_dir):
-                    size = path_size(install_dir)
-                    rgame.set_origin_attributes(install_dir, size)
-                    logger.debug(f"Found Origin game {rgame.title} ({install_dir}, {format_size(size)})")
+                    install_size = path_size(install_dir)
+                    result.update({rgame.app_name: (install_dir, install_size)})
+                    logger.debug(f"Found Origin game {rgame.title} ({install_dir}, {format_size(install_size)})")
                 else:
                     logger.warning(f"Found Origin game {rgame.title} ({install_dir} does not exist)")
-        self.signals.result.emit((), FetchWorker.Result.ORIGIN)
+
+        self.signals.result.emit((result, None), FetchWorker.Result.ORIGIN)
         logger.info(f"Origin registry worker finished in {time.time() - t}s")
