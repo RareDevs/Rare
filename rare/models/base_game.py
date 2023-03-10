@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
@@ -11,6 +12,14 @@ from rare.lgndr.core import LegendaryCore
 from rare.models.install import UninstallOptionsModel, InstallOptionsModel
 
 logger = getLogger("RareGameBase")
+
+
+@dataclass
+class RareSaveGame:
+    file: SaveGameFile
+    status: SaveGameStatus = SaveGameStatus.NO_SAVE
+    dt_local: Optional[datetime] = None
+    dt_remote: datetime = None
 
 
 class RareGameBase(QObject):
@@ -122,7 +131,7 @@ class RareGameSlim(RareGameBase):
         super(RareGameSlim, self).__init__(legendary_core, game)
         # None if origin or not installed
         self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
-        self.saves: List[SaveGameFile] = []
+        self.saves: List[RareSaveGame] = []
 
     @property
     def is_installed(self) -> bool:
@@ -162,16 +171,18 @@ class RareGameSlim(RareGameBase):
         return None
 
     @property
-    def latest_save(self) -> Optional[SaveGameFile]:
+    def latest_save(self) -> Optional[RareSaveGame]:
         if self.saves:
-            self.saves.sort(key=lambda s: s.datetime, reverse=True)
-            return self.saves[0]
+            saves = sorted(self.saves, key=lambda s: s.file.datetime, reverse=True)
+            return saves[0]
         return None
 
     @property
     def save_game_state(self) -> (SaveGameStatus, (datetime, datetime)):
-        if self.saves and self.save_path :
-            return self.core.check_savegame_state(self.save_path, self.latest_save)
+        if self.saves and self.save_path:
+            latest = self.latest_save
+            return latest.status, (latest.dt_local, latest.dt_remote)
+            # return self.core.check_savegame_state(self.save_path, self.latest_save.save)
         return SaveGameStatus.NO_SAVE, (None, None)
 
     def upload_saves(self, thread=True):
@@ -203,7 +214,7 @@ class RareGameSlim(RareGameBase):
         def _download():
             logger.info(f"Downloading save for {self.title}")
             self.state = RareGameSlim.State.SYNCING
-            self.core.download_saves(self.app_name, self.latest_save.manifest_name, self.save_path)
+            self.core.download_saves(self.app_name, self.latest_save.file.manifest_name, self.save_path)
             self.state = RareGameSlim.State.IDLE
             self.update_saves()
 
@@ -222,8 +233,21 @@ class RareGameSlim(RareGameBase):
         else:
             _download()
 
+    def load_saves(self, saves: List[SaveGameFile]):
+        """ Use only in a thread """
+        self.saves.clear()
+        for save in saves:
+            if self.save_path:
+                status, (dt_local, dt_remote) = self.core.check_savegame_state(self.save_path, save)
+                rsave = RareSaveGame(save, status, dt_local, dt_remote)
+            else:
+                rsave = RareSaveGame(save, SaveGameStatus.SAME_AGE, dt_local=None, dt_remote=save.datetime)
+            self.saves.append(rsave)
+
     def update_saves(self):
-        self.saves = self.core.get_save_games(self.app_name)
+        """ Use only in a thread """
+        saves = self.core.get_save_games(self.app_name)
+        self.load_saves(saves)
         self.signals.widget.update.emit()
 
     @property
@@ -231,3 +255,15 @@ class RareGameSlim(RareGameBase):
         status, (_, _) = self.save_game_state
         return (status == SaveGameStatus.SAME_AGE) \
             or (status == SaveGameStatus.NO_SAVE)
+
+    @property
+    def raw_save_path(self) -> str:
+        if self.game.supports_cloud_saves:
+            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
+        return ""
+
+    @property
+    def raw_save_path_mac(self) -> str:
+        if self.game.supports_mac_cloud_saves:
+            return self.game.metadata.get("customAttributes", {}).get('CloudSaveFolder_MAC', {}).get('value')
+        return ""

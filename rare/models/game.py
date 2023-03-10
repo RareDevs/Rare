@@ -402,18 +402,6 @@ class RareGame(RareGameSlim):
         return self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value")
 
     @property
-    def raw_save_path(self) -> str:
-        if self.game.supports_cloud_saves:
-            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
-        return ""
-
-    @property
-    def raw_save_path_mac(self) -> str:
-        if self.game.supports_mac_cloud_saves:
-            return self.game.metadata.get("customAttributes", {}).get('CloudSaveFolder_MAC', {}).get('value')
-        return ""
-
-    @property
     def save_path(self) -> Optional[str]:
         return super(RareGame, self).save_path
 

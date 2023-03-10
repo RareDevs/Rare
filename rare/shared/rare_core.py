@@ -6,7 +6,7 @@ from itertools import chain
 from logging import getLogger
 from typing import Dict, Iterator, Callable, Tuple, Optional, List, Union
 
-from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool
+from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool, QRunnable
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile
 
@@ -27,7 +27,7 @@ from .workers import (
 )
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
-from rare.models.base_game import RareGameBase
+from rare.models.base_game import RareSaveGame
 
 logger = getLogger("RareCore")
 
@@ -272,11 +272,14 @@ class RareCore(QObject):
         if res_type == FetchWorker.Result.GAMES:
             games, dlc_dict = result
             self.__add_games_and_dlcs(games, dlc_dict)
+            self.fetch_extra()
             self.__games_fetched = True
             status = "Loaded games for Windows"
         if res_type == FetchWorker.Result.NON_ASSET:
             games, dlc_dict = result
             self.__add_games_and_dlcs(games, dlc_dict)
+            self.fetch_saves()
+            self.resolve_origin()
             self.__non_asset_fetched = True
             status = "Loaded games without assets"
         if res_type == FetchWorker.Result.ORIGIN:
@@ -284,8 +287,8 @@ class RareCore(QObject):
             status = "Resolved Origin installation status"
         if res_type == FetchWorker.Result.SAVES:
             saves, _ = result
-            for save in saves:
-                self.__games[save.app_name].saves.append(save)
+            for app_name, saves in saves.items():
+                self.__games[app_name].load_saves(saves)
             self.__saves_fetched = True
             status = "Loaded save games"
         if res_type == FetchWorker.Result.ENTITLEMENTS:
@@ -321,8 +324,7 @@ class RareCore(QObject):
         self.start_time = time.time()
         games_worker = GamesWorker(self.__core, self.__args)
         games_worker.signals.result.connect(self.handle_result)
-        games_worker.signals.finished.connect(self.fetch_saves)
-        games_worker.signals.finished.connect(self.fetch_extra)
+
         QThreadPool.globalInstance().start(games_worker)
 
     def fetch_saves(self):
@@ -341,12 +343,14 @@ class RareCore(QObject):
     def fetch_extra(self):
         non_asset_worker = NonAssetWorker(self.__core, self.__args)
         non_asset_worker.signals.result.connect(self.handle_result)
-        non_asset_worker.signals.finished.connect(self.resolve_origin)
         QThreadPool.globalInstance().start(non_asset_worker)
 
-        entitlements_worker = EntitlementsWorker(self.__core, self.__args)
-        entitlements_worker.signals.result.connect(self.handle_result)
-        QThreadPool.globalInstance().start(entitlements_worker)
+        if not self.__args.offline:
+            entitlements_worker = EntitlementsWorker(self.__core, self.__args)
+            entitlements_worker.signals.result.connect(self.handle_result)
+            QThreadPool.globalInstance().start(entitlements_worker)
+        else:
+            self.__entitlements_fetched = True
 
     def load_pixmaps(self) -> None:
         """
@@ -428,7 +432,7 @@ class RareCore(QObject):
         return self.__filter_games(lambda game: game.has_update)
 
     @property
-    def saves(self) -> Iterator[SaveGameFile]:
+    def saves(self) -> Iterator[RareSaveGame]:
         """!
         SaveGameFiles across games
         """

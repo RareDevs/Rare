@@ -160,7 +160,7 @@ def path_size(path: Union[str, os.PathLike]) -> int:
     return sum(
         os.stat(os.path.join(dp, f)).st_size
         for dp, dn, filenames in os.walk(path)
-        for f in filenames if os.path.isfile(f)
+        for f in filenames if os.path.isfile(os.path.join(dp,f ))
     )
 
 

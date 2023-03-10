@@ -2,8 +2,10 @@ import time
 from argparse import Namespace
 from enum import IntEnum
 from logging import getLogger
+from typing import Dict, List
 
 from PyQt5.QtCore import QObject, pyqtSignal
+from legendary.models.game import SaveGameFile
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.lgndr.core import LegendaryCore
@@ -22,7 +24,6 @@ class FetchWorker(Worker):
 
     class Signals(QObject):
         result = pyqtSignal(object, int)
-        finished = pyqtSignal()
 
     def __init__(self, core: LegendaryCore, args: Namespace):
         super(Worker, self).__init__()
@@ -38,7 +39,6 @@ class GamesWorker(FetchWorker):
         self.signals.result.emit(result, FetchWorker.Result.GAMES)
         logger.debug(f"Games: {len(result[0])}, DLCs {len(result[1])}")
         logger.debug(f"Request Games: {time.time() - start_time} seconds")
-        self.signals.finished.emit()
 
 
 class NonAssetWorker(FetchWorker):
@@ -52,7 +52,6 @@ class NonAssetWorker(FetchWorker):
         self.signals.result.emit(result, FetchWorker.Result.NON_ASSET)
         logger.debug(f"Non asset: {len(result[0])}, DLCs {len(result[1])}")
         logger.debug(f"Request Non Asset: {time.time() - start_time} seconds")
-        self.signals.finished.emit()
 
 
 class EntitlementsWorker(FetchWorker):
@@ -66,18 +65,22 @@ class EntitlementsWorker(FetchWorker):
         self.signals.result.emit(entitlements, FetchWorker.Result.ENTITLEMENTS)
         logger.debug(f"Entitlements: {len(list(entitlements))}")
         logger.debug(f"Request Entitlements: {time.time() - start_time} seconds")
-        self.signals.finished.emit()
 
 
 class SavesWorker(FetchWorker):
     def run_real(self):
         start_time = time.time()
+        result: Dict[str, List[SaveGameFile]] = {}
         try:
-            result = self.core.get_save_games()
+            saves = self.core.get_save_games()
+            for save in saves:
+                if not save.app_name in result.keys():
+                    result[save.app_name] = [save]
+                else:
+                    result[save.app_name].append(save)
         except (HTTPError, ConnectionError) as e:
-            logger.warning(f"Exception while fetching saves fromt EGS: {e}")
-            result = list()
+            logger.warning(f"Exception while fetching saves from EGS: {e}")
+            result = {}
         self.signals.result.emit((result, {}), FetchWorker.Result.SAVES)
         logger.debug(f"Saves: {len(result)}")
         logger.debug(f"Request saves: {time.time() - start_time} seconds")
-        self.signals.finished.emit()
