@@ -267,3 +267,7 @@ class RareGameSlim(RareGameBase):
         if self.game.supports_mac_cloud_saves:
             return self.game.metadata.get("customAttributes", {}).get('CloudSaveFolder_MAC', {}).get('value')
         return ""
+
+    @property
+    def supports_cloud_saves(self):
+        return self.game.supports_cloud_saves or self.game.supports_mac_cloud_saves

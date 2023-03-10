@@ -111,6 +111,8 @@ class RareGame(RareGameSlim):
     def __game_finished(self, exit_code: int):
         if exit_code == GameProcess.Code.ON_STARTUP:
             return
+        if self.supports_cloud_saves:
+            self.update_saves()
         self.state = RareGame.State.IDLE
         self.signals.game.finished.emit(self.app_name)
 
