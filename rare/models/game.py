@@ -467,10 +467,12 @@ class RareGame(RareGameSlim):
 
     def set_pixmap(self):
         self.pixmap = self.image_manager.get_pixmap(self.app_name, self.is_installed)
+        if not self.pixmap.isNull():
+            self.signals.widget.update.emit()
+
+    def load_pixmap(self):
         if self.pixmap.isNull():
             self.image_manager.download_image(self.game, self.set_pixmap, 0, False)
-        else:
-            self.signals.widget.update.emit()
 
     def refresh_pixmap(self):
         self.image_manager.download_image(self.game, self.set_pixmap, 0, True)

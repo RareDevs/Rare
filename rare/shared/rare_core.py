@@ -338,7 +338,6 @@ class RareCore(QObject):
         origin_worker.signals.result.connect(self.handle_result)
         QThreadPool.globalInstance().start(origin_worker)
 
-
     def fetch_extra(self):
         non_asset_worker = NonAssetWorker(self.__core, self.__args)
         non_asset_worker.signals.result.connect(self.handle_result)
@@ -368,7 +367,7 @@ class RareCore(QObject):
     def __load_pixmaps(self) -> None:
         # time.sleep(0.1)
         for rgame in self.__games.values():
-            rgame.set_pixmap()
+            rgame.load_pixmap()
             # time.sleep(0.0001)
 
     @property

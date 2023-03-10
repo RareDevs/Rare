@@ -139,8 +139,8 @@ class ImageManager(QObject):
 
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
         # lk: the ordering in __img_types matters for the order of fallbacks
-        # self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "DieselGameBox")
-        self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo")
+        # self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "DieselGameBox", "OfferImageTall")
+        self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "OfferImageTall")
         self.__dl_retries = 1
         self.__worker_app_names: List[str] = []
         super(QObject, self).__init__()
@@ -178,7 +178,8 @@ class ImageManager(QObject):
     def __prepare_download(self, game: Game, force: bool = False) -> Tuple[List, Dict]:
         if force and self.__img_dir(game.app_name).exists():
             self.__img_color(game.app_name).unlink(missing_ok=True)
-            self.__img_color(game.app_name).unlink(missing_ok=True)
+            self.__img_gray(game.app_name).unlink(missing_ok=True)
+            self.__img_desktop_icon(game.app_name).unlink(missing_ok=True)
         if not self.__img_dir(game.app_name).is_dir():
             self.__img_dir(game.app_name).mkdir()
 
