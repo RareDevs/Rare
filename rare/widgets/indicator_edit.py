@@ -126,7 +126,7 @@ class IndicatorLineEdit(QWidget):
         # Add line_edit
         self.line_edit = QLineEdit(self)
         self.line_edit.setObjectName(f"{type(self).__name__}Edit")
-        self.line_edit.setPlaceholderText(placeholder)
+        self.line_edit.setPlaceholderText(placeholder if placeholder else self.tr("Default"))
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
         # Add hint_label to line_edit
         self.line_edit.setLayout(QHBoxLayout())
@@ -146,10 +146,6 @@ class IndicatorLineEdit(QWidget):
             self.indicator_label.setPixmap(qta_icon("ei.info-circle", color="gray").pixmap(16, 16))
             self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
             layout.addWidget(self.indicator_label)
-
-        if not placeholder:
-            _translate = QCoreApplication.instance().translate
-            self.line_edit.setPlaceholderText(_translate(self.__class__.__name__, "Default"))
 
         self.__reasons = IndicatorReasonsStrings(self)
 
