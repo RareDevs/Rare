@@ -18,7 +18,6 @@ class FetchWorker(Worker):
     class Result(IntEnum):
         GAMES = 1
         NON_ASSET = 2
-        ORIGIN = 3
         SAVES = 5
         ENTITLEMENTS = 6
 

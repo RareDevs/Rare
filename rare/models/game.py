@@ -483,6 +483,7 @@ class RareGame(RareGameSlim):
             self.signals.game.installed.emit(self.app_name)
         else:
             self.signals.game.uninstalled.emit(self.app_name)
+        self.set_pixmap()
 
     def repair(self, repair_and_update):
         self.signals.game.install.emit(

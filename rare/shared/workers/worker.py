@@ -25,7 +25,7 @@ class Worker(QRunnable):
     @property
     def signals(self) -> QObject:
         if self.__signals is None:
-            raise NotImplementedError
+            raise RuntimeError(f"Subclasses must implement '{type(self).__name__}.signals' QObject attribute")
         return self.__signals
 
     @signals.setter
@@ -39,7 +39,7 @@ class Worker(QRunnable):
     @pyqtSlot()
     def run(self):
         self.run_real()
-        self.__signals.deleteLater()
+        self.signals.deleteLater()
 
 
 class QueueWorkerState(IntEnum):
@@ -76,6 +76,7 @@ class QueueWorker(Worker):
         super(QueueWorker, self).__init__()
         self.feedback = QueueWorker.Signals()
         self.state = QueueWorkerState.QUEUED
+        self._kill = False
 
     @pyqtSlot()
     def run(self):
@@ -89,4 +90,7 @@ class QueueWorker(Worker):
     def worker_info(self) -> QueueWorkerInfo:
         pass
 
+    def kill(self):
+        raise NotImplementedError
+        self._kill = True
 

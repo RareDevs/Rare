@@ -214,7 +214,7 @@ class ImageManager(QObject):
         ):
             updates = [image for image in game.metadata["keyImages"] if image["type"] in self.__img_types]
         else:
-            updates = list()
+            updates = []
             for image in game.metadata["keyImages"]:
                 if image["type"] in self.__img_types:
                     if image["type"] not in json_data.keys() or json_data[image["type"]] != image["md5"]:

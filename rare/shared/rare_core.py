@@ -50,7 +50,6 @@ class RareCore(QObject):
 
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
-        self.__origin_resolved: bool = False
         self.__saves_fetched: bool = False
         self.__entitlements_fetched: bool = False
 
@@ -279,15 +278,8 @@ class RareCore(QObject):
             games, dlc_dict = result
             self.__add_games_and_dlcs(games, dlc_dict)
             self.fetch_saves()
-            self.resolve_origin()
             self.__non_asset_fetched = True
             status = "Loaded games without assets"
-        if res_type == FetchWorker.Result.ORIGIN:
-            attrs, _ = result
-            for app_name, (install_dir, install_size) in attrs.items():
-                self.__games[app_name].set_origin_attributes(install_dir, install_size)
-            self.__origin_resolved = True
-            status = "Resolved Origin installation status"
         if res_type == FetchWorker.Result.SAVES:
             saves, _ = result
             for app_name, saves in saves.items():
@@ -303,12 +295,11 @@ class RareCore(QObject):
         fetched = [
             self.__games_fetched,
             self.__non_asset_fetched,
-            self.__origin_resolved,
             self.__saves_fetched,
             self.__entitlements_fetched,
         ]
 
-        self.progress.emit(sum(fetched) * 10, status)
+        self.progress.emit(sum(fetched) * 20, status)
 
         if all(fetched):
             self.progress.emit(75, self.tr("Validating game installations"))
@@ -320,7 +311,6 @@ class RareCore(QObject):
     def fetch(self):
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
-        self.__origin_resolved: bool = False
         self.__saves_fetched: bool = False
         self.__entitlements_fetched: bool = False
 
@@ -337,11 +327,6 @@ class RareCore(QObject):
             QThreadPool.globalInstance().start(saves_worker)
         else:
             self.__saves_fetched = True
-
-    def resolve_origin(self):
-        origin_worker = OriginWineWorker(self.__core, self.__args, self.origin_games)
-        origin_worker.signals.result.connect(self.handle_result)
-        QThreadPool.globalInstance().start(origin_worker)
 
     def fetch_extra(self):
         non_asset_worker = NonAssetWorker(self.__core, self.__args)
@@ -369,16 +354,19 @@ class RareCore(QObject):
 
         @return: None
         """
+        origin_worker = OriginWineWorker(self.__core, list(self.origin_games))
+        QThreadPool.globalInstance().start(origin_worker)
+
         def __load_pixmaps() -> None:
             # time.sleep(0.1)
             for rgame in self.__games.values():
                 # self.__image_manager.download_image(rgame.game, rgame.set_pixmap, 0, False)
                 rgame.load_pixmap()
-                # lk: perception delay
-                time.sleep(0.001)
+                # lk: activity perception delay
+                time.sleep(0.0003)
 
-        worker = QRunnable.create(__load_pixmaps)
-        QThreadPool.globalInstance().start(worker)
+        pixmap_worker = QRunnable.create(__load_pixmaps)
+        QThreadPool.globalInstance().start(pixmap_worker)
 
     @property
     def games_and_dlcs(self) -> Iterator[RareGame]:

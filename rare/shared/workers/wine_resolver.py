@@ -1,19 +1,17 @@
 import os
 import platform
 import time
-from argparse import Namespace
 from configparser import ConfigParser
 from logging import getLogger
-from typing import Union, Iterator, Dict, Tuple
+from typing import Union, Iterator
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject, QRunnable
 
 import rare.utils.wine as wine
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.models.pathspec import PathSpec
 from rare.utils.misc import path_size, format_size
-from .fetch import FetchWorker
 from .worker import Worker
 
 if platform.system() == "Windows":
@@ -52,21 +50,19 @@ class WineResolver(Worker):
         return
 
 
-class OriginWineWorker(FetchWorker):
-    def __init__(self, core: LegendaryCore, args: Namespace, games: Union[Iterator[RareGame], RareGame]):
-        super(OriginWineWorker, self).__init__(core, args)
+class OriginWineWorker(QRunnable):
+    def __init__(self, core: LegendaryCore, games: Union[Iterator[RareGame], RareGame]):
+        super(OriginWineWorker, self).__init__()
         self.__cache: dict[str, ConfigParser] = {}
+        self.core = core
         if isinstance(games, RareGame):
             games = [games]
         self.games = games
 
-    def run_real(self) -> None:
+    def run(self) -> None:
         t = time.time()
 
-        result: Dict[str, Tuple[str, int]] = {}
         for rgame in self.games:
-            if not rgame.is_origin:
-                continue
 
             reg_path: str = rgame.game.metadata \
                 .get("customAttributes", {}) \
@@ -77,6 +73,8 @@ class OriginWineWorker(FetchWorker):
             reg_key: str = rgame.game.metadata \
                 .get("customAttributes", {}) \
                 .get("RegistryKey", {}).get("value", None)
+            if not reg_key:
+                continue
 
             if platform.system() == "Windows":
                 install_dir = windows_helpers.query_registry_value(winreg.HKEY_LOCAL_MACHINE, reg_path, reg_key)
@@ -104,10 +102,8 @@ class OriginWineWorker(FetchWorker):
             if install_dir:
                 if os.path.isdir(install_dir):
                     install_size = path_size(install_dir)
-                    result.update({rgame.app_name: (install_dir, install_size)})
+                    rgame.set_origin_attributes(install_dir, install_size)
                     logger.debug(f"Found Origin game {rgame.title} ({install_dir}, {format_size(install_size)})")
                 else:
                     logger.warning(f"Found Origin game {rgame.title} ({install_dir} does not exist)")
-
-        self.signals.result.emit((result, None), FetchWorker.Result.ORIGIN)
         logger.info(f"Origin registry worker finished in {time.time() - t}s")
