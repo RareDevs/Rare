@@ -54,7 +54,7 @@ class CloudSaves(QWidget, SideTabContents):
         self.cloud_save_path_edit = PathEdit(
             "",
             file_type=QFileDialog.DirectoryOnly,
-            placeholder=self.tr("Cloud save path"),
+            placeholder=self.tr('Use "Calculate path" or "Browse" ...'),
             edit_func=lambda text: (True, text, None)
             if os.path.exists(text)
             else (False, text, IndicatorReasonsCommon.DIR_NOT_EXISTS),
@@ -62,7 +62,7 @@ class CloudSaves(QWidget, SideTabContents):
         )
         self.cloud_ui.cloud_layout.addRow(QLabel(self.tr("Save path")), self.cloud_save_path_edit)
 
-        self.compute_save_path_button = QPushButton(icon("fa.magic"), self.tr("Auto compute save path"))
+        self.compute_save_path_button = QPushButton(icon("fa.magic"), self.tr("Calculate path"))
         self.compute_save_path_button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         self.compute_save_path_button.clicked.connect(self.compute_save_path)
         self.cloud_ui.cloud_layout.addRow(None, self.compute_save_path_button)
@@ -151,6 +151,10 @@ class CloudSaves(QWidget, SideTabContents):
         self.cloud_widget.setEnabled(supports_saves)
         self.info_label.setVisible(not supports_saves)
         if not supports_saves:
+            self.sync_ui.date_info_local.setText("None")
+            self.sync_ui.date_info_remote.setText("None")
+            self.cloud_ui.cloud_sync.setChecked(False)
+            self.cloud_save_path_edit.setText("")
             return
 
         button_disabled = self.rgame.state in [RareGame.State.RUNNING, RareGame.State.SYNCING]
@@ -159,18 +163,17 @@ class CloudSaves(QWidget, SideTabContents):
 
         status, (dt_local, dt_remote) = self.rgame.save_game_state
 
-        if status == SaveGameStatus.LOCAL_NEWER:
-            self.sync_ui.local_new_label.setVisible(True)
-            self.sync_ui.cloud_new_label.setVisible(False)
-        elif status == SaveGameStatus.REMOTE_NEWER:
-            self.sync_ui.local_new_label.setVisible(False)
-            self.sync_ui.cloud_new_label.setVisible(True)
-        else:
-            self.sync_ui.local_new_label.setVisible(False)
-            self.sync_ui.cloud_new_label.setVisible(False)
+        newer = self.tr("Newer")
+        self.sync_ui.age_label_local.setText(
+            f"<b>{newer}</b>" if status == SaveGameStatus.LOCAL_NEWER else " "
+        )
+        self.sync_ui.age_label_remote.setText(
+            f"<b>{newer}</b>" if status == SaveGameStatus.REMOTE_NEWER else " "
+        )
 
-        sync_cloud = self.settings.value(f"{self.rgame.app_name}/auto_sync_cloud", True, bool)
-        self.cloud_ui.cloud_sync.setChecked(sync_cloud)
+        self.cloud_ui.cloud_sync.setChecked(
+            self.settings.value(f"{self.rgame.app_name}/auto_sync_cloud", False, bool)
+        )
         if self.rgame.save_path:
             self.cloud_save_path_edit.setText(self.rgame.save_path)
             self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X") if dt_local else "None")

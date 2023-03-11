@@ -6,12 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>510</width>
-    <height>183</height>
+    <width>422</width>
+    <height>127</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true">SyncWidget</string>
   </property>
   <layout class="QHBoxLayout" name="sync_layout">
    <property name="leftMargin">
@@ -59,9 +65,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="local_new_label">
+       <widget class="QLabel" name="age_label_local">
         <property name="text">
-         <string>Newer</string>
+         <string>local_age_error</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -72,7 +78,7 @@
        <widget class="QPushButton" name="upload_button">
         <property name="minimumSize">
          <size>
-          <width>128</width>
+          <width>192</width>
           <height>0</height>
          </size>
         </property>
@@ -117,9 +123,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="cloud_new_label">
+       <widget class="QLabel" name="age_label_remote">
         <property name="text">
-         <string>Newer</string>
+         <string notr="true">remote_age_error</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -130,7 +136,7 @@
        <widget class="QPushButton" name="download_button">
         <property name="minimumSize">
          <size>
-          <width>128</width>
+          <width>192</width>
           <height>0</height>
          </size>
         </property>

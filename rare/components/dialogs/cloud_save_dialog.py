@@ -5,7 +5,7 @@ from logging import getLogger
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QSizePolicy, QLayout, QApplication, QWidget
 from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame
+from legendary.models.game import InstalledGame, SaveGameStatus
 
 from rare.ui.components.dialogs.sync_save_dialog import Ui_SyncSaveDialog
 from rare.ui.components.tabs.games.game_info.sync_widget import Ui_SyncWidget
@@ -39,24 +39,23 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
 
         self.status = self.CANCEL
 
-        self.title_label.setText(self.title_label.text() + igame.title)
+        self.title_label.setText(f"{self.title_label.text()} <b>{igame.title}</b>")
 
-        self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X"))
-        self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X"))
-
-        new_text = self.tr(" (newer)")
-        newer = ""
+        newer = self.tr("Newer")
         if dt_remote and dt_local:
-            newer = "remote" if dt_remote > dt_local else "local"
+            self.sync_ui.age_label_local.setText(
+                f"<b>{newer}</b>" if dt_remote > dt_local else " "
+            )
+            self.sync_ui.age_label_remote.setText(
+                f"<b>{newer}</b>" if dt_remote < dt_local else " "
+            )
         elif dt_remote and not dt_local:
             self.status = self.DOWNLOAD
         else:
             self.status = self.UPLOAD
 
-        if newer == "remote":
-            self.sync_ui.cloud_gb.setTitle(self.sync_ui.cloud_gb.title() + new_text)
-        elif newer == "local":
-            self.sync_ui.local_gb.setTitle(self.sync_ui.local_gb.title() + new_text)
+        self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X"))
+        self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X"))
 
         self.sync_ui.icon_local.setPixmap(icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
         self.sync_ui.icon_remote.setPixmap(icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))
@@ -71,7 +70,7 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
     def get_action(self):
         if self.status:
             return self.status
-        self.show()
+        self.exec_()
         return self.status
 
     def btn_clicked(self, status):
@@ -83,7 +82,7 @@ def test_dialog():
     app = QApplication(sys.argv)
     core = LegendaryCore()
     dlg = CloudSaveDialog(core.get_installed_list()[0], datetime.datetime.now(),
-                          datetime.datetime.strptime("2021,1", "%Y,%M"), "local")
+                          datetime.datetime.strptime("2021,1", "%Y,%M"))
     print(dlg.get_action())
 
 
