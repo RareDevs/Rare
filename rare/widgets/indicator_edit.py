@@ -66,7 +66,7 @@ class IndicatorReasonsStrings(QObject):
         super(IndicatorReasonsStrings, self).__init__(parent=parent)
         self.__text = {
             IndicatorReasonsCommon.VALID: self.tr("Ok!"),
-            IndicatorReasonsCommon.UNDEFINED: self.tr("Unknown error occured"),
+            IndicatorReasonsCommon.UNDEFINED: self.tr("Unknown error occurred"),
             IndicatorReasonsCommon.WRONG_FORMAT: self.tr("Wrong format"),
             IndicatorReasonsCommon.WRONG_PATH: self.tr("Wrong directory"),
             IndicatorReasonsCommon.DIR_NOT_EMPTY: self.tr("Directory is not empty"),

@@ -1,5 +1,7 @@
 import os
+import platform
 from logging import getLogger
+from typing import Tuple
 
 from PyQt5.QtCore import QThreadPool, QSettings
 from PyQt5.QtWidgets import (
@@ -16,7 +18,7 @@ from PyQt5.QtWidgets import (
 from legendary.models.game import SaveGameStatus
 
 from rare.models.game import RareGame
-from rare.shared import LegendaryCoreSingleton
+from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.ui.components.tabs.games.game_info.cloud_widget import Ui_CloudWidget
 from rare.ui.components.tabs.games.game_info.sync_widget import Ui_SyncWidget
@@ -37,7 +39,8 @@ class CloudSaves(QWidget, SideTabContents):
 
         self.info_label = QLabel(self.tr("<b>This game doesn't support cloud saves</b>"))
 
-        self.core = LegendaryCoreSingleton()
+        self.rcore = RareCore.instance()
+        self.core = RareCore.instance().core()
         self.settings = QSettings()
 
         self.sync_ui.icon_local.setPixmap(icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
@@ -55,9 +58,7 @@ class CloudSaves(QWidget, SideTabContents):
             "",
             file_type=QFileDialog.DirectoryOnly,
             placeholder=self.tr('Use "Calculate path" or "Browse" ...'),
-            edit_func=lambda text: (True, text, None)
-            if os.path.exists(text)
-            else (False, text, IndicatorReasonsCommon.DIR_NOT_EXISTS),
+            edit_func=self.edit_save_path,
             save_func=self.save_save_path,
         )
         self.cloud_ui.cloud_layout.addRow(QLabel(self.tr("Save path")), self.cloud_save_path_edit)
@@ -79,6 +80,17 @@ class CloudSaves(QWidget, SideTabContents):
         layout.addWidget(self.info_label)
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Fixed, QSizePolicy.Expanding))
 
+    def edit_save_path(self, text: str) -> Tuple[bool, str, int]:
+        if platform.system() != "Windows":
+            if os.path.exists(text):
+                return True, text, IndicatorReasonsCommon.VALID
+            else:
+                return False, text, IndicatorReasonsCommon.DIR_NOT_EXISTS
+        return True, text, IndicatorReasonsCommon.VALID
+
+    def save_save_path(self, text: str):
+        self.rgame.save_path = text
+
     def upload(self):
         self.sync_ui.upload_button.setDisabled(True)
         self.sync_ui.download_button.setDisabled(True)
@@ -93,7 +105,7 @@ class CloudSaves(QWidget, SideTabContents):
         if self.rgame.is_installed and self.rgame.game.supports_cloud_saves:
             try:
                 new_path = self.core.get_save_path(self.rgame.app_name)
-                if not os.path.exists(new_path):
+                if platform.system() != "Windows" and not os.path.exists(new_path):
                     raise ValueError(f'Path "{new_path}" does not exist.')
             except Exception as e:
                 logger.warning(str(e))
@@ -102,11 +114,11 @@ class CloudSaves(QWidget, SideTabContents):
                     self.cloud_save_path_edit.setText("")
                     QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")
                     return
-                self.cloud_save_path_edit.setText(self.tr("Loading"))
+                self.cloud_save_path_edit.setText(self.tr("Loading..."))
                 self.cloud_save_path_edit.setDisabled(True)
                 self.compute_save_path_button.setDisabled(True)
 
-                app_name = self.rgame.app_name[:]
+                app_name = self.rgame.app_name
                 resolver.signals.result_ready.connect(lambda x: self.wine_resolver_finished(x, app_name))
                 QThreadPool.globalInstance().start(resolver)
                 return
@@ -136,18 +148,13 @@ class CloudSaves(QWidget, SideTabContents):
                 return
             self.cloud_save_path_edit.setText(path)
         elif path:
-            igame = self.core.get_installed_game(app_name)
-            igame.save_path = path
-            self.core.lgd.set_installed_game(app_name, igame)
-
-    def save_save_path(self, text):
-        self.rgame.save_path = text
+            self.rcore.get_game(app_name).save_path = path
 
     def __update_widget(self):
         supports_saves = self.rgame.igame is not None and (
                 self.rgame.game.supports_cloud_saves or self.rgame.game.supports_mac_cloud_saves
         )
-        self.sync_widget.setEnabled(bool(supports_saves and self.rgame.save_path )) # and not self.rgame.is_save_up_to_date))
+        self.sync_widget.setEnabled(bool(supports_saves and self.rgame.save_path)) # and not self.rgame.is_save_up_to_date))
         self.cloud_widget.setEnabled(supports_saves)
         self.info_label.setVisible(not supports_saves)
         if not supports_saves:
@@ -191,4 +198,3 @@ class CloudSaves(QWidget, SideTabContents):
         rgame.signals.widget.update.connect(self.__update_widget)
 
         self.__update_widget()
-
