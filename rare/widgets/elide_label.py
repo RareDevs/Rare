@@ -11,6 +11,7 @@ class ElideLabel(QLabel):
         super(ElideLabel, self).__init__(parent=parent)
         self.__text = text
         self.__fm = QFontMetrics(self.font())
+        self.__tooltip = ""
         self.setFixedHeight(True)
         self.setWordWrap(True)
         self.setText(text)
@@ -24,8 +25,12 @@ class ElideLabel(QLabel):
             a0, Qt.ElideRight,
             self.width() - (self.contentsMargins().left() + self.contentsMargins().right())
         )
-        self.setToolTip(self.__text if elided_text != self.__text else "")
+        self.setToolTip(self.__text if elided_text != self.__text and not self.__tooltip else self.__tooltip)
         super(ElideLabel, self).setText(elided_text)
+
+    def setToolTip(self, a0: str) -> None:
+        self.__tooltip = a0
+        super(ElideLabel, self).setToolTip(a0)
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         self.__setElideText(self.__text)
