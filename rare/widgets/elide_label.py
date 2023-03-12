@@ -25,7 +25,11 @@ class ElideLabel(QLabel):
             a0, Qt.ElideRight,
             self.width() - (self.contentsMargins().left() + self.contentsMargins().right())
         )
-        self.setToolTip(self.__text if elided_text != self.__text and not self.__tooltip else self.__tooltip)
+        if not self.__tooltip:
+            if self.__fm.boundingRect(elided_text).width() < self.__fm.boundingRect(self.__text).width():
+                super(ElideLabel, self).setToolTip(self.__text)
+            else:
+                super(ElideLabel, self).setToolTip("")
         super(ElideLabel, self).setText(elided_text)
 
     def setToolTip(self, a0: str) -> None:
