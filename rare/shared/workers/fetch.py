@@ -53,19 +53,6 @@ class NonAssetWorker(FetchWorker):
         logger.debug(f"Request Non Asset: {time.time() - start_time} seconds")
 
 
-class EntitlementsWorker(FetchWorker):
-    def run_real(self):
-        start_time = time.time()
-        try:
-            entitlements = self.core.egs.get_user_entitlements()
-        except (HTTPError, ConnectionError) as e:
-            logger.error(f"Failed to retrieve user entitlements from EGS: {e}")
-            entitlements = {}
-        self.signals.result.emit((entitlements, None), FetchWorker.Result.ENTITLEMENTS)
-        logger.debug(f"Entitlements: {len(list(entitlements))}")
-        logger.debug(f"Request Entitlements: {time.time() - start_time} seconds")
-
-
 class SavesWorker(FetchWorker):
     def run_real(self):
         start_time = time.time()
