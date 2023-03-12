@@ -136,11 +136,11 @@ class CloudSaves(QWidget, SideTabContents):
                 except PermissionError:
                     self.cloud_save_path_edit.setText("")
                     QMessageBox.warning(
-                        None,
-                        "Error",
-                        self.tr("Error while launching {}. No permission to create {}").format(
-                            self.rgame.title, path
-                        ),
+                        self,
+                        self.tr("Error - {}").format(self.rgame.title),
+                        self.tr(
+                            "Error while calculating path for <b>{}</b>. Insufficient permisions to create <b>{}</b>"
+                        ).format(self.rgame.title, path),
                     )
                     return
             if not path:
@@ -166,11 +166,14 @@ class CloudSaves(QWidget, SideTabContents):
             self.cloud_save_path_edit.setText("")
             return
 
-        button_disabled = self.rgame.state in [RareGame.State.RUNNING, RareGame.State.SYNCING]
-        self.sync_ui.download_button.setDisabled(button_disabled)
-        self.sync_ui.upload_button.setDisabled(button_disabled)
-
         status, (dt_local, dt_remote) = self.rgame.save_game_state
+
+        self.sync_ui.date_info_local.setText(
+            dt_local.strftime("%A, %d. %B %Y %X") if dt_local and self.rgame.save_path else "None"
+        )
+        self.sync_ui.date_info_remote.setText(
+            dt_remote.strftime("%A, %d. %B %Y %X") if dt_remote and self.rgame.save_path else "None"
+        )
 
         newer = self.tr("Newer")
         self.sync_ui.age_label_local.setText(
@@ -180,15 +183,14 @@ class CloudSaves(QWidget, SideTabContents):
             f"<b>{newer}</b>" if status == SaveGameStatus.REMOTE_NEWER else " "
         )
 
+        button_disabled = self.rgame.state in [RareGame.State.RUNNING, RareGame.State.SYNCING]
+        self.sync_ui.download_button.setDisabled(button_disabled)
+        self.sync_ui.upload_button.setDisabled(button_disabled)
+
         self.cloud_ui.cloud_sync.setChecked(
             self.settings.value(f"{self.rgame.app_name}/auto_sync_cloud", False, bool)
         )
-        if self.rgame.save_path:
-            self.cloud_save_path_edit.setText(self.rgame.save_path)
-            self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X") if dt_local else "None")
-            self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X") if dt_remote else "None")
-        else:
-            self.cloud_save_path_edit.setText("")
+        self.cloud_save_path_edit.setText(self.rgame.save_path if self.rgame.save_path else "")
 
     def update_game(self, rgame: RareGame):
         if self.rgame:
