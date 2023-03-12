@@ -29,6 +29,8 @@ class RareGame(RareGameSlim):
         queue_pos: Optional[int] = None
         last_played: Optional[datetime] = None
         grant_date: Optional[datetime] = None
+        steam_grade: Optional[str] = None
+        steam_date: Optional[datetime] = None
         tags: List[str] = field(default_factory=list)
 
         @classmethod
@@ -39,6 +41,8 @@ class RareGame(RareGameSlim):
                 queue_pos=data.get("queue_pos", None),
                 last_played=datetime.fromisoformat(data["last_played"]) if data.get("last_played", None) else None,
                 grant_date=datetime.fromisoformat(data["grant_date"]) if data.get("grant_date", None) else None,
+                steam_grade=data.get("steam_grade", None),
+                steam_date=datetime.fromisoformat(data["steam_date"]) if data.get("steam_date", None) else None,
                 tags=data.get("tags", []),
             )
 
@@ -49,6 +53,8 @@ class RareGame(RareGameSlim):
                 queue_pos=self.queue_pos,
                 last_played=self.last_played.isoformat() if self.last_played else None,
                 grant_date=self.grant_date.isoformat() if self.grant_date else None,
+                steam_grade=self.steam_grade,
+                steam_date=self.steam_date.isoformat() if self.steam_date else None,
                 tags=self.tags,
             )
 
@@ -431,6 +437,7 @@ class RareGame(RareGameSlim):
 
     def grant_date(self, force=False) -> datetime:
         if self.metadata.grant_date is None or force:
+            logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
             entitlements = self.core.lgd.entitlements
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
             entitlement = next(matching, None)

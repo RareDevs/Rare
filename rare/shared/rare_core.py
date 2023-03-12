@@ -339,6 +339,8 @@ class RareCore(QObject):
             try:
                 entitlements = self.__core.egs.get_user_entitlements()
                 self.__core.lgd.entitlements = entitlements
+                for game in self.__library.values():
+                    game.grant_date()
             except (HTTPError, ConnectionError) as e:
                 logger.error(f"Failed to retrieve user entitlements from EGS: {e}")
                 return
