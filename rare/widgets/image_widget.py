@@ -139,6 +139,8 @@ class ImageWidget(QWidget):
 
     def paintEvent(self, a0: QPaintEvent) -> None:
         painter = QPainter(self)
+        if not painter.paintEngine().isActive():
+            return
         # helps with better image quality
         painter.setRenderHint(QPainter.SmoothPixmapTransform, self._smooth_transform)
         self.paint_image(painter, a0)
