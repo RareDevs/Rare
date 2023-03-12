@@ -129,7 +129,7 @@ def get_rare_executable() -> List[str]:
             if sys.executable == os.path.abspath(sys.argv[0]):
                 executable = [sys.executable]
             else:
-                executable = [sys.executable, os.path.abspath(sys.argv[0])]
+                executable = [os.path.abspath(sys.argv[0])]
     elif platform.system() == "Windows":
         executable = [sys.executable]
 
