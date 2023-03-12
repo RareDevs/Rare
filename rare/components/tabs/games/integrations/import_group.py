@@ -8,8 +8,17 @@ from typing import List, Tuple, Optional
 
 from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, QMessageBox, QStackedWidget, \
-    QProgressBar, QSizePolicy
+from PyQt5.QtWidgets import (
+    QFileDialog,
+    QGroupBox,
+    QCompleter,
+    QTreeView,
+    QHeaderView,
+    QMessageBox,
+    QStackedWidget,
+    QProgressBar,
+    QSizePolicy,
+)
 
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
@@ -196,9 +205,12 @@ class ImportGroup(QGroupBox):
         )
 
         self.button_info_stack = QStackedWidget(self)
-        self.button_info_stack.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        self.info_label = ElideLabel(text="", parent=self)
-        self.info_progress = QProgressBar(self)
+        self.button_info_stack.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.button_info_stack.setFixedHeight(self.ui.import_button.sizeHint().height())
+        self.info_label = ElideLabel(text="", parent=self.button_info_stack)
+        self.info_label.setFixedHeight(False)
+        self.info_label.setAlignment(Qt.AlignVCenter)
+        self.info_progress = QProgressBar(self.button_info_stack)
         self.button_info_stack.addWidget(self.info_label)
         self.button_info_stack.addWidget(self.info_progress)
         self.ui.button_info_layout.addWidget(self.button_info_stack)
