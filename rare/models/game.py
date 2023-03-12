@@ -287,7 +287,6 @@ class RareGame(RareGameSlim):
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
         self.set_pixmap()
-        self.signals.widget.update.emit()
 
     @property
     def can_run_offline(self) -> bool:
