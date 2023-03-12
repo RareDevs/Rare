@@ -184,45 +184,38 @@ class RareCore(QObject):
 
         super(RareCore, self).deleteLater()
 
-    def __validate_installed(self):
+    def __validate_installed(self, rgame: RareGame):
         # TODO: investigate if this could also go into async loading
-        filter_lambda = lambda rg: rg.is_installed and not (rg.is_dlc or rg.is_non_asset)
-        length = len(list(self.__filter_games(filter_lambda)))
-        for i, rgame in enumerate(self.__filter_games(filter_lambda)):
-            self.progress.emit(
-                int(i / length * 25) + 75,
-                self.tr("Validating install for <b>{}</b>").format(rgame.app_title)
+        if not os.path.exists(rgame.igame.install_path):
+            # lk: since install_path is lost anyway, set keep_files to True
+            # lk: to avoid spamming the log with "file not found" errors
+            for dlc in rgame.owned_dlcs:
+                if dlc.is_installed:
+                    logger.info(f'Uninstalling DLC "{dlc.app_name}" ({dlc.app_title})...')
+                    uninstall_game(self.__core, dlc.app_name, keep_files=True)
+                    dlc.igame = None
+            logger.info(
+                f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...'
             )
-            if not os.path.exists(rgame.igame.install_path):
-                # lk: since install_path is lost anyway, set keep_files to True
-                # lk: to avoid spamming the log with "file not found" errors
-                for dlc in rgame.owned_dlcs:
-                    if dlc.is_installed:
-                        logger.info(f'Uninstalling DLC "{dlc.app_name}" ({dlc.app_title})...')
-                        uninstall_game(self.__core, dlc.app_name, keep_files=True)
-                        dlc.igame = None
-                logger.info(
-                    f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...'
-                )
-                uninstall_game(self.__core, rgame.app_name, keep_files=True)
-                logger.info(f"Uninstalled {rgame.app_title}, because no game files exist")
-                rgame.igame = None
-                continue
-            # lk: games that don't have an override and can't find their executable due to case sensitivity
-            # lk: will still erroneously require verification. This might need to be removed completely
-            # lk: or be decoupled from the verification requirement
-            if override_exe := self.__core.lgd.config.get(rgame.app_name, "override_exe", fallback=""):
-                igame_executable = override_exe
-            else:
-                igame_executable = rgame.igame.executable
-            # lk: Case-insensitive search for the game's executable (example: Brothers - A Tale of two Sons)
-            executable_path = os.path.join(rgame.igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))
-            file_list = map(str.lower, os.listdir(os.path.dirname(executable_path)))
-            if not os.path.basename(executable_path).lower() in file_list:
-                rgame.igame.needs_verification = True
-                self.__core.lgd.set_installed_game(rgame.app_name, rgame.igame)
-                rgame.update_igame()
-                logger.info(f"{rgame.app_title} needs verification")
+            uninstall_game(self.__core, rgame.app_name, keep_files=True)
+            logger.info(f"Uninstalled {rgame.app_title}, because no game files exist")
+            rgame.igame = None
+            return
+        # lk: games that don't have an override and can't find their executable due to case sensitivity
+        # lk: will still erroneously require verification. This might need to be removed completely
+        # lk: or be decoupled from the verification requirement
+        if override_exe := self.__core.lgd.config.get(rgame.app_name, "override_exe", fallback=""):
+            igame_executable = override_exe
+        else:
+            igame_executable = rgame.igame.executable
+        # lk: Case-insensitive search for the game's executable (example: Brothers - A Tale of two Sons)
+        executable_path = os.path.join(rgame.igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))
+        file_list = map(str.lower, os.listdir(os.path.dirname(executable_path)))
+        if not os.path.basename(executable_path).lower() in file_list:
+            rgame.igame.needs_verification = True
+            self.__core.lgd.set_installed_game(rgame.app_name, rgame.igame)
+            rgame.update_igame()
+            logger.info(f"{rgame.app_title} needs verification")
 
     def get_game(self, app_name: str) -> Union[RareEosOverlay, RareGame]:
         if app_name == EOSOverlayApp.app_name:
@@ -287,11 +280,9 @@ class RareCore(QObject):
             self.__non_asset_fetched,
         ]
 
-        self.progress.emit(sum(fetched) * 20, status)
+        self.progress.emit(sum(fetched) * 45, status)
 
         if all(fetched):
-            self.progress.emit(75, self.tr("Validating game installations"))
-            self.__validate_installed()
             self.progress.emit(100, self.tr("Launching Rare"))
             logger.debug(f"Fetch time {time.time() - self.start_time} seconds")
             QTimer.singleShot(100, self.__post_init)
@@ -376,6 +367,10 @@ class RareCore(QObject):
         def __load_pixmaps() -> None:
             # time.sleep(0.1)
             for rgame in self.__library.values():
+                # lk: since loading has to know about game state,
+                # validate installation just before loading each image
+                if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
+                    self.__validate_installed(rgame)
                 # self.__image_manager.download_image(rgame.game, rgame.set_pixmap, 0, False)
                 rgame.load_pixmap()
                 # lk: activity perception delay

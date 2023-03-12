@@ -3,7 +3,7 @@ import platform
 import time
 from configparser import ConfigParser
 from logging import getLogger
-from typing import Union, Iterator
+from typing import Union, Iterable
 
 from PyQt5.QtCore import pyqtSignal, QObject, QRunnable
 
@@ -51,7 +51,7 @@ class WineResolver(Worker):
 
 
 class OriginWineWorker(QRunnable):
-    def __init__(self, core: LegendaryCore, games: Union[Iterator[RareGame], RareGame]):
+    def __init__(self, core: LegendaryCore, games: Union[Iterable[RareGame], RareGame]):
         super(OriginWineWorker, self).__init__()
         self.__cache: dict[str, ConfigParser] = {}
         self.core = core
