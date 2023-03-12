@@ -159,7 +159,9 @@ class CloudSaves(QWidget, SideTabContents):
         self.info_label.setVisible(not supports_saves)
         if not supports_saves:
             self.sync_ui.date_info_local.setText("None")
+            self.sync_ui.age_label_local.setText("None")
             self.sync_ui.date_info_remote.setText("None")
+            self.sync_ui.age_label_remote.setText("None")
             self.cloud_ui.cloud_sync.setChecked(False)
             self.cloud_save_path_edit.setText("")
             return
