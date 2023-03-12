@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
 
 from rare.shared.image_manager import ImageSize
 from rare.widgets.flow_layout import FlowLayout
-from widgets.elide_label import ElideLabel
+from rare.widgets.elide_label import ElideLabel
 from .image_widget import ShopImageWidget
 
 

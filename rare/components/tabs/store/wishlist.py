@@ -3,11 +3,12 @@ from PyQt5.QtWidgets import QMessageBox, QWidget
 
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
 from rare.utils.misc import icon
+from rare.widgets.side_tab import SideTabContents
 from .shop_api_core import ShopApiCore
 from .game_widgets import WishlistWidget
 
 
-class Wishlist(QWidget, Ui_Wishlist):
+class Wishlist(QWidget, Ui_Wishlist, SideTabContents):
     show_game_info = pyqtSignal(dict)
     update_wishlist_signal = pyqtSignal()
 
@@ -32,6 +33,7 @@ class Wishlist(QWidget, Ui_Wishlist):
 
     def update_wishlist(self):
         self.setEnabled(False)
+        self.set_title.emit("Wishlist")
         self.api_core.get_wishlist(self.set_wishlist)
 
     def delete_from_wishlist(self, game):

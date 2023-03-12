@@ -1,7 +1,7 @@
 import logging
 
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QFont, QDesktopServices
+from PyQt5.QtGui import QFont, QDesktopServices, QFontMetrics
 from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
@@ -15,13 +15,14 @@ from rare.shared import LegendaryCoreSingleton
 from rare.shared.image_manager import ImageSize
 from rare.ui.components.tabs.store.shop_game_info import Ui_ShopGameInfo
 from rare.utils.misc import icon
-from rare.widgets.side_tab import SideTabWidget
+from rare.widgets.side_tab import SideTabWidget, SideTabContents
+from rare.widgets.elide_label import ElideLabel
 from .image_widget import ShopImageWidget
 
 logger = logging.getLogger("ShopInfo")
 
 
-class ShopGameInfo(QWidget, Ui_ShopGameInfo):
+class ShopGameInfo(QWidget, Ui_ShopGameInfo, SideTabContents):
 
     # TODO Design
     def __init__(self, installed_titles: list, api_core, parent=None):
@@ -61,6 +62,7 @@ class ShopGameInfo(QWidget, Ui_ShopGameInfo):
             self.wishlist_button.setVisible(False)
 
     def update_game(self, data: dict):
+        self.set_title.emit(data["title"])
         self.title.setText(data["title"])
         self.title_str = data["title"]
         self.id_str = data["id"]
@@ -144,7 +146,7 @@ class ShopGameInfo(QWidget, Ui_ShopGameInfo):
             self.tags.setText("")
             self.dev.setText(self.data.get("seller", {}).get("name", ""))
             return
-        self.title.setText(self.game.title)
+        # self.title.setText(self.game.title)
 
         self.price.setFont(QFont())
         if self.game.price == "0" or self.game.price == 0:
@@ -167,11 +169,11 @@ class ShopGameInfo(QWidget, Ui_ShopGameInfo):
         bold_font = QFont()
         bold_font.setBold(True)
 
+        fm = QFontMetrics(self.font())
         if self.game.reqs:
             for system in self.game.reqs:
                 req_widget = QWidget(self.requirements_tabs)
                 req_layout = QGridLayout(req_widget)
-                req_layout.setSizeConstraint(QGridLayout.SetFixedSize)
                 req_widget.layout().setAlignment(Qt.AlignTop)
                 req_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
                 min_label = QLabel(self.tr("Minimum"), parent=req_widget)
@@ -180,13 +182,13 @@ class ShopGameInfo(QWidget, Ui_ShopGameInfo):
                 rec_label.setFont(bold_font)
                 req_layout.addWidget(min_label, 0, 1)
                 req_layout.addWidget(rec_label, 0, 2)
+                req_layout.setColumnStretch(1, 2)
+                req_layout.setColumnStretch(2, 2)
                 for i, (key, value) in enumerate(self.game.reqs.get(system, {}).items()):
                     req_layout.addWidget(QLabel(key, parent=req_widget), i + 1, 0)
-                    min_label = QLabel(value[0], parent=req_widget)
-                    min_label.setWordWrap(False)
+                    min_label = ElideLabel(value[0], parent=req_widget)
                     req_layout.addWidget(min_label, i + 1, 1)
-                    rec_label = QLabel(value[1], parent=req_widget)
-                    rec_label.setWordWrap(False)
+                    rec_label = ElideLabel(value[1], parent=req_widget)
                     req_layout.addWidget(rec_label, i + 1, 2)
                 self.requirements_tabs.addTab(req_widget, system)
             # self.req_group_box.layout().addWidget(req_tabs)
