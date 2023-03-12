@@ -30,7 +30,7 @@ class GameProcess(QObject):
         self.on_startup = False
         self.tried_connections = 0
 
-        self.timer = QTimer()
+        self.timer = QTimer(self)
         self.timer.timeout.connect(self.__connect)
         self.socket = QLocalSocket()
         self.socket_name = f"rare_{self.game.app_name}"

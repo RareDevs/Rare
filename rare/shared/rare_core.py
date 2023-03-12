@@ -51,6 +51,9 @@ class RareCore(QObject):
         self.__core: Optional[LegendaryCore] = None
         self.__image_manager: Optional[ImageManager] = None
 
+        self.__fetched_games: List = []
+        self.__fetched_dlcs: Dict = {}
+
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
 
@@ -184,8 +187,7 @@ class RareCore(QObject):
 
         super(RareCore, self).deleteLater()
 
-    def __validate_installed(self, rgame: RareGame):
-        # TODO: investigate if this could also go into async loading
+    def __validate_install(self, rgame: RareGame):
         if not os.path.exists(rgame.igame.install_path):
             # lk: since install_path is lost anyway, set keep_files to True
             # lk: to avoid spamming the log with "file not found" errors
@@ -246,7 +248,8 @@ class RareCore(QObject):
         return rgame
 
     def __add_games_and_dlcs(self, games: List[Game], dlcs_dict: Dict[str, List]) -> None:
-        for game in games:
+        length = len(games)
+        for idx, game in enumerate(games):
             rgame = self.__create_or_update_rgame(game)
             if game_dlcs := dlcs_dict.get(rgame.game.catalog_item_id, False):
                 for dlc in game_dlcs:
@@ -257,6 +260,8 @@ class RareCore(QObject):
                     rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
                     rgame.owned_dlcs.append(rdlc)
                     self.__add_game(rdlc)
+            time.sleep(0.005)
+            self.progress.emit(int(idx/length * 80) + 20, f"Loaded <b>{rgame.app_title}</b>")
             self.__add_game(rgame)
 
     @pyqtSlot(object, int)
@@ -264,15 +269,17 @@ class RareCore(QObject):
         status = ""
         if res_type == FetchWorker.Result.GAMES:
             games, dlc_dict = result
-            self.__add_games_and_dlcs(games, dlc_dict)
+            self.__fetched_games+= games
+            self.__fetched_dlcs.update(dlc_dict)
             self.fetch_non_asset()
             self.__games_fetched = True
-            status = "Loaded games for Windows"
+            status = "Prepared games"
         if res_type == FetchWorker.Result.NON_ASSET:
             games, dlc_dict = result
-            self.__add_games_and_dlcs(games, dlc_dict)
+            self.__fetched_games+= games
+            self.__fetched_dlcs.update(dlc_dict)
             self.__non_asset_fetched = True
-            status = "Loaded games without assets"
+            status = "Prepared games without assets"
         logger.info(f"Got API results for {FetchWorker.Result(res_type).name}")
 
         fetched = [
@@ -280,19 +287,20 @@ class RareCore(QObject):
             self.__non_asset_fetched,
         ]
 
-        self.progress.emit(sum(fetched) * 45, status)
+        self.progress.emit(sum(fetched) * 10, status)
 
         if all(fetched):
+            self.__add_games_and_dlcs(self.__fetched_games, self.__fetched_dlcs)
             self.progress.emit(100, self.tr("Launching Rare"))
-            logger.debug(f"Fetch time {time.time() - self.start_time} seconds")
+            logger.debug(f"Fetch time {time.time() - self.__start_time} seconds")
             QTimer.singleShot(100, self.__post_init)
             self.completed.emit()
 
     def fetch(self):
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
+        self.__start_time = time.time()
 
-        self.start_time = time.time()
         games_worker = GamesWorker(self.__core, self.__args)
         games_worker.signals.result.connect(self.handle_result)
         QThreadPool.globalInstance().start(games_worker)
@@ -370,7 +378,7 @@ class RareCore(QObject):
                 # lk: since loading has to know about game state,
                 # validate installation just before loading each image
                 if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
-                    self.__validate_installed(rgame)
+                    self.__validate_install(rgame)
                 # self.__image_manager.download_image(rgame.game, rgame.set_pixmap, 0, False)
                 rgame.load_pixmap()
                 # lk: activity perception delay
