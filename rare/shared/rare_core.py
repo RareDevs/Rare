@@ -34,6 +34,10 @@ logger = getLogger("RareCore")
 class RareCore(QObject):
     progress = pyqtSignal(int, str)
     completed = pyqtSignal()
+    # lk: these are unused but remain if case they are become relevant
+    # completed_saves = pyqtSignal()
+    # completed_origin = pyqtSignal()
+    # completed_entitlements = pyqtSignal()
 
     # lk: special case class attribute, this has to be here
     __instance: Optional['RareCore'] = None
@@ -181,6 +185,7 @@ class RareCore(QObject):
         super(RareCore, self).deleteLater()
 
     def __validate_installed(self):
+        # TODO: investigate if this could also go into async loading
         filter_lambda = lambda rg: rg.is_installed and not (rg.is_dlc or rg.is_non_asset)
         length = len(list(self.__filter_games(filter_lambda)))
         for i, rgame in enumerate(self.__filter_games(filter_lambda)):

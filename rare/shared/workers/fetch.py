@@ -16,8 +16,6 @@ class FetchWorker(Worker):
     class Result(IntEnum):
         GAMES = 1
         NON_ASSET = 2
-        SAVES = 5
-        ENTITLEMENTS = 6
 
     class Signals(QObject):
         result = pyqtSignal(object, int)

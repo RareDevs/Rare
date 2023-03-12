@@ -25,7 +25,7 @@ class Worker(QRunnable):
     @property
     def signals(self) -> QObject:
         if self.__signals is None:
-            raise RuntimeError(f"Subclasses must implement '{type(self).__name__}.signals' QObject attribute")
+            raise RuntimeError(f"Subclasses must assign '{type(self).__name__}.signals' QObject attribute")
         return self.__signals
 
     @signals.setter
