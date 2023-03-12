@@ -8,7 +8,7 @@ from typing import Dict, Iterator, Callable, Optional, List, Union
 
 from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool, QRunnable, QTimer
 from legendary.lfs.eos import EOSOverlayApp
-from legendary.models.game import Game
+from legendary.models.game import Game, SaveGameFile
 from requests import HTTPError
 
 from rare.lgndr.core import LegendaryCore
@@ -24,7 +24,6 @@ from .workers import (
     GamesWorker,
     NonAssetWorker,
     OriginWineWorker,
-    SavesWorker,
 )
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
@@ -50,7 +49,6 @@ class RareCore(QObject):
 
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
-        self.__saves_fetched: bool = False
 
         self.args(args)
         self.signals(init=True)
@@ -275,21 +273,13 @@ class RareCore(QObject):
         if res_type == FetchWorker.Result.NON_ASSET:
             games, dlc_dict = result
             self.__add_games_and_dlcs(games, dlc_dict)
-            self.fetch_saves()
             self.__non_asset_fetched = True
             status = "Loaded games without assets"
-        if res_type == FetchWorker.Result.SAVES:
-            saves, _ = result
-            for app_name, saves in saves.items():
-                self.__library[app_name].load_saves(saves)
-            self.__saves_fetched = True
-            status = "Loaded save games"
         logger.info(f"Got API results for {FetchWorker.Result(res_type).name}")
 
         fetched = [
             self.__games_fetched,
             self.__non_asset_fetched,
-            self.__saves_fetched,
         ]
 
         self.progress.emit(sum(fetched) * 20, status)
@@ -305,25 +295,38 @@ class RareCore(QObject):
     def fetch(self):
         self.__games_fetched: bool = False
         self.__non_asset_fetched: bool = False
-        self.__saves_fetched: bool = False
 
         self.start_time = time.time()
         games_worker = GamesWorker(self.__core, self.__args)
         games_worker.signals.result.connect(self.handle_result)
         QThreadPool.globalInstance().start(games_worker)
 
-    def fetch_saves(self):
-        if not self.__args.offline:
-            saves_worker = SavesWorker(self.__core, self.__args)
-            saves_worker.signals.result.connect(self.handle_result)
-            QThreadPool.globalInstance().start(saves_worker)
-        else:
-            self.__saves_fetched = True
-
     def fetch_non_asset(self):
         non_asset_worker = NonAssetWorker(self.__core, self.__args)
         non_asset_worker.signals.result.connect(self.handle_result)
         QThreadPool.globalInstance().start(non_asset_worker)
+
+    def fetch_saves(self):
+        def __fetch_saves() -> None:
+            start_time = time.time()
+            saves_dict: Dict[str, List[SaveGameFile]] = {}
+            try:
+                saves_list = self.__core.get_save_games()
+                for s in saves_list:
+                    if not s.app_name in saves_dict.keys():
+                        saves_dict[s.app_name] = [s]
+                    else:
+                        saves_dict[s.app_name].append(s)
+                for app_name, saves in saves_dict.items():
+                    self.__library[app_name].load_saves(saves)
+            except (HTTPError, ConnectionError) as e:
+                logger.error(f"Exception while fetching saves from EGS: {e}")
+                return
+            logger.debug(f"Saves: {len(saves_dict)}")
+            logger.debug(f"Request saves: {time.time() - start_time} seconds")
+
+        saves_worker = QRunnable.create(__fetch_saves)
+        QThreadPool.globalInstance().start(saves_worker)
 
     def fetch_entitlements(self) -> None:
         def __fetch_entitlements() -> None:
@@ -345,8 +348,9 @@ class RareCore(QObject):
         QThreadPool.globalInstance().start(origin_worker)
 
     def __post_init(self) -> None:
-        self.resolve_origin()
+        self.fetch_saves()
         self.fetch_entitlements()
+        self.resolve_origin()
 
     def load_pixmaps(self) -> None:
         """
