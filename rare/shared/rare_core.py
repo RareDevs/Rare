@@ -64,9 +64,8 @@ class RareCore(QObject):
         self.queue_threadpool = QThreadPool()
         self.queue_threadpool.setMaxThreadCount(2)
 
-        self.__games: Dict[str, RareGame] = {}
-
-        self.__eos_overlay_rgame = RareEosOverlay(self.__core, EOSOverlayApp)
+        self.__library: Dict[str, RareGame] = {}
+        self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp)
 
         RareCore.__instance = self
 
@@ -85,7 +84,7 @@ class RareCore(QObject):
         self.__signals.application.update_statusbar.emit()
 
     def dequeue_worker(self, worker: QueueWorker):
-        rgame = self.__games[worker.worker_info().app_name]
+        rgame = self.__library[worker.worker_info().app_name]
         rgame.set_worker(None)
         self.queue_workers.remove(worker)
         self.__signals.application.update_statusbar.emit()
@@ -225,8 +224,8 @@ class RareCore(QObject):
 
     def get_game(self, app_name: str) -> Union[RareEosOverlay, RareGame]:
         if app_name == EOSOverlayApp.app_name:
-            return self.__eos_overlay_rgame
-        return self.__games[app_name]
+            return self.__eos_overlay
+        return self.__library[app_name]
 
     def __add_game(self, rgame: RareGame) -> None:
         rgame.signals.download.enqueue.connect(self.__signals.download.enqueue)
@@ -237,13 +236,13 @@ class RareCore(QObject):
         rgame.signals.game.uninstalled.connect(self.__signals.game.uninstalled)
         rgame.signals.game.finished.connect(self.__signals.application.update_tray)
         rgame.signals.game.finished.connect(lambda: self.__signals.discord_rpc.set_title.emit(""))
-        self.__games[rgame.app_name] = rgame
+        self.__library[rgame.app_name] = rgame
 
     def __filter_games(self, condition: Callable[[RareGame], bool]) -> Iterator[RareGame]:
-        return filter(condition, self.__games.values())
+        return filter(condition, self.__library.values())
 
     def __create_or_update_rgame(self, game: Game) -> RareGame:
-        if rgame := self.__games.get(game.app_name, False):
+        if rgame := self.__library.get(game.app_name, False):
             logger.warning(f"{rgame.app_name} already present in {type(self).__name__}")
             logger.info(f"Updating Game for {rgame.app_name}")
             rgame.update_rgame()
@@ -283,7 +282,7 @@ class RareCore(QObject):
         if res_type == FetchWorker.Result.SAVES:
             saves, _ = result
             for app_name, saves in saves.items():
-                self.__games[app_name].load_saves(saves)
+                self.__library[app_name].load_saves(saves)
             self.__saves_fetched = True
             status = "Loaded save games"
         if res_type == FetchWorker.Result.ENTITLEMENTS:
@@ -359,7 +358,7 @@ class RareCore(QObject):
 
         def __load_pixmaps() -> None:
             # time.sleep(0.1)
-            for rgame in self.__games.values():
+            for rgame in self.__library.values():
                 # self.__image_manager.download_image(rgame.game, rgame.set_pixmap, 0, False)
                 rgame.load_pixmap()
                 # lk: activity perception delay
@@ -370,8 +369,8 @@ class RareCore(QObject):
 
     @property
     def games_and_dlcs(self) -> Iterator[RareGame]:
-        for app_name in self.__games:
-            yield self.__games[app_name]
+        for app_name in self.__library:
+            yield self.__library[app_name]
 
     @property
     def games(self) -> Iterator[RareGame]:
