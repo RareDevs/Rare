@@ -194,12 +194,12 @@ class RareCore(QObject):
             for dlc in rgame.owned_dlcs:
                 if dlc.is_installed:
                     logger.info(f'Uninstalling DLC "{dlc.app_name}" ({dlc.app_title})...')
-                    uninstall_game(self.__core, dlc.app_name, keep_files=True)
+                    uninstall_game(self.__core, dlc.app_name, keep_files=True, keep_config=True)
                     dlc.igame = None
             logger.info(
                 f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...'
             )
-            uninstall_game(self.__core, rgame.app_name, keep_files=True)
+            uninstall_game(self.__core, rgame.app_name, keep_files=True, keep_config=True)
             logger.info(f"Uninstalled {rgame.app_title}, because no game files exist")
             rgame.igame = None
             return
@@ -247,6 +247,7 @@ class RareCore(QObject):
             rgame = RareGame(self.__core, self.__image_manager, game)
         return rgame
 
+
     def __add_games_and_dlcs(self, games: List[Game], dlcs_dict: Dict[str, List]) -> None:
         length = len(games)
         for idx, game in enumerate(games):
@@ -265,9 +266,9 @@ class RareCore(QObject):
                     rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
                     rgame.owned_dlcs.append(rdlc)
                     self.__add_game(rdlc)
-            time.sleep(0.005)
-            self.progress.emit(int(idx/length * 80) + 20, f"Loaded <b>{rgame.app_title}</b>")
             self.__add_game(rgame)
+            self.progress.emit(int(idx/length * 80) + 20, f"Loaded <b>{rgame.app_title}</b>")
+            time.sleep(0.005)
 
     @pyqtSlot(object, int)
     def handle_result(self, result: object, res_type: int):
@@ -316,7 +317,7 @@ class RareCore(QObject):
         QThreadPool.globalInstance().start(non_asset_worker)
 
     def fetch_saves(self):
-        def __fetch_saves() -> None:
+        def __fetch() -> None:
             start_time = time.time()
             saves_dict: Dict[str, List[SaveGameFile]] = {}
             try:
@@ -334,11 +335,11 @@ class RareCore(QObject):
             logger.debug(f"Saves: {len(saves_dict)}")
             logger.debug(f"Request saves: {time.time() - start_time} seconds")
 
-        saves_worker = QRunnable.create(__fetch_saves)
+        saves_worker = QRunnable.create(__fetch)
         QThreadPool.globalInstance().start(saves_worker)
 
     def fetch_entitlements(self) -> None:
-        def __fetch_entitlements() -> None:
+        def __fetch() -> None:
             start_time = time.time()
             try:
                 entitlements = self.__core.egs.get_user_entitlements()
@@ -351,7 +352,7 @@ class RareCore(QObject):
             logger.debug(f"Entitlements: {len(list(entitlements))}")
             logger.debug(f"Request Entitlements: {time.time() - start_time} seconds")
 
-        entitlements_worker = QRunnable.create(__fetch_entitlements)
+        entitlements_worker = QRunnable.create(__fetch)
         QThreadPool.globalInstance().start(entitlements_worker)
 
     def resolve_origin(self) -> None:
