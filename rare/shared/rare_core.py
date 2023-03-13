@@ -251,6 +251,11 @@ class RareCore(QObject):
         length = len(games)
         for idx, game in enumerate(games):
             rgame = self.__create_or_update_rgame(game)
+            # lk: since loading has to know about game state,
+            # validate installation just adding each RareGame
+            # TODO: this should probably be moved into RareGame
+            if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
+                self.__validate_install(rgame)
             if game_dlcs := dlcs_dict.get(rgame.game.catalog_item_id, False):
                 for dlc in game_dlcs:
                     rdlc = self.__create_or_update_rgame(dlc)
@@ -375,10 +380,6 @@ class RareCore(QObject):
         def __load_pixmaps() -> None:
             # time.sleep(0.1)
             for rgame in self.__library.values():
-                # lk: since loading has to know about game state,
-                # validate installation just before loading each image
-                if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
-                    self.__validate_install(rgame)
                 # self.__image_manager.download_image(rgame.game, rgame.set_pixmap, 0, False)
                 rgame.load_pixmap()
                 # lk: activity perception delay
