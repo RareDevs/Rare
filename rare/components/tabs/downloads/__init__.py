@@ -196,7 +196,6 @@ class DownloadsTab(QWidget):
         thread.finished.connect(thread.deleteLater)
         thread.start()
         self.__thread = thread
-        self.update_queues_count()
         self.download_widget.ui.kill_button.setDisabled(False)
         self.download_widget.ui.dl_name.setText(item.download.game.app_title)
         self.download_widget.setPixmap(
@@ -277,7 +276,6 @@ class DownloadsTab(QWidget):
         self.download_widget.ui.cache_used.setText("...")
         self.download_widget.ui.downloaded.setText("...")
         self.__thread = None
-        self.update_queues_count()
 
     @pyqtSlot(InstallOptionsModel)
     def __get_install_options(self, options: InstallOptionsModel):
@@ -291,6 +289,9 @@ class DownloadsTab(QWidget):
 
     @pyqtSlot(InstallQueueItemModel)
     def __on_install_dialog_closed(self, item: InstallQueueItemModel):
+        if item and not item.download.analysis.dl_size:
+            self.rcore.get_game(item.download.game.app_name).set_installed(True)
+            return
         if item:
             # lk: start update only if there is no other active thread and there is no queue
             if self.__thread is None and not self.queue_group.count():

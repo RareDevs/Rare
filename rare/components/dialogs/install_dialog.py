@@ -269,7 +269,7 @@ class InstallDialog(QDialog):
             self.options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
 
     def cancel_clicked(self):
-        if self.config_tags:
+        if self.config_tags is not None:
             config_helper.add_option(self.rgame.app_name, 'install_tags', ','.join(self.config_tags))
         else:
             # lk: this is purely for cleaning any install tags we might have added erroneously to the config
@@ -289,7 +289,7 @@ class InstallDialog(QDialog):
         download_size = download.analysis.dl_size
         install_size = download.analysis.install_size
         # install_size = self.dl_item.download.analysis.disk_space_delta
-        if download_size or (not download_size and download.game.is_dlc):
+        if download_size or (not download_size and (download.game.is_dlc or download.repair)):
             self.ui.download_size_text.setText(format_size(download_size))
             self.ui.download_size_text.setStyleSheet("font-style: normal; font-weight: bold")
             self.ui.install_button.setEnabled(not self.options_changed)
