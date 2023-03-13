@@ -201,7 +201,7 @@ class ImportGroup(QGroupBox):
 
         self.ui.import_button.setEnabled(False)
         self.ui.import_button.clicked.connect(
-            lambda: self.import_pressed(self.path_edit.text())
+            lambda: self.__import(self.path_edit.text())
         )
 
         self.button_info_stack = QStackedWidget(self)
@@ -272,7 +272,7 @@ class ImportGroup(QGroupBox):
         self.ui.import_button.setEnabled(self.ui.import_folder_check.isChecked() or self.app_name_edit.is_valid)
 
     @pyqtSlot(str)
-    def import_pressed(self, path: Optional[str] = None):
+    def __import(self, path: Optional[str] = None):
         if not path:
             path = self.path_edit.text()
         worker = ImportWorker(
