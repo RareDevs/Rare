@@ -167,7 +167,7 @@ class GameInfo(QWidget, SideTabContents):
                 self,
                 self.tr("Summary - {}").format(rgame.title),
                 self.tr(
-                    "Verification failed, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. "
+                    "<b>{}</b> failed verification, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. "
                     "Do you want to repair them?"
                 ).format(failed, missing),
                 QMessageBox.Yes | QMessageBox.No,
@@ -286,7 +286,7 @@ class GameInfo(QWidget, SideTabContents):
 
         self.ui.repair_button.setEnabled(
             self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle
-            and os.path.exists(os.path.join(self.core.lgd.get_tmp_path(), f"{self.rgame.app_name}.repair"))
+            and self.rgame.needs_repair
             and not self.args.offline
         )
 

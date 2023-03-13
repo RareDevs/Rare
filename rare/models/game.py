@@ -160,14 +160,17 @@ class RareGame(RareGameSlim):
 
     def update_igame(self):
         self.igame = self.core.get_installed_game(self.app_name)
+        if self.igame is not None:
+            self.core.egl_uninstall(self.igame)
+            self.core.egl_export(self.igame.app_name)
 
     def store_igame(self):
         self.core.lgd.set_installed_game(self.app_name, self.igame)
         self.update_igame()
 
     def update_rgame(self):
-        self.update_igame()
         self.update_game()
+        self.update_igame()
 
     @property
     def developer(self) -> str:
@@ -357,6 +360,19 @@ class RareGame(RareGameSlim):
         for dlc in self.owned_dlcs:
             if dlc.is_installed:
                 dlc.needs_verification = needs
+
+    @property
+    def repair_file(self) -> str:
+        return os.path.join(self.core.lgd.get_tmp_path(), f"{self.app_name}.repair")
+
+    @property
+    def needs_repair(self) -> bool:
+        return os.path.exists(self.repair_file)
+
+    @needs_repair.setter
+    def needs_repair(self, needs: bool) -> None:
+        if not needs and os.path.exists(self.repair_file):
+            os.unlink(self.repair_file)
 
     @property
     def is_dlc(self) -> bool:
