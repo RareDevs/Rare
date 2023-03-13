@@ -90,7 +90,7 @@ class DownloadsTab(QWidget):
     @pyqtSlot()
     @pyqtSlot(int)
     def update_queues_count(self):
-        count = self.updates_group.count() + self.queue_group.count()
+        count = self.updates_group.count() + self.queue_group.count() +  (1 if self.is_download_active else 0)
         self.update_title.emit(count)
 
     @property
@@ -196,6 +196,7 @@ class DownloadsTab(QWidget):
         thread.finished.connect(thread.deleteLater)
         thread.start()
         self.__thread = thread
+        self.update_queues_count()
         self.download_widget.ui.kill_button.setDisabled(False)
         self.download_widget.ui.dl_name.setText(item.download.game.app_title)
         self.download_widget.setPixmap(
@@ -276,6 +277,7 @@ class DownloadsTab(QWidget):
         self.download_widget.ui.cache_used.setText("...")
         self.download_widget.ui.downloaded.setText("...")
         self.__thread = None
+        self.update_queues_count()
 
     @pyqtSlot(InstallOptionsModel)
     def __get_install_options(self, options: InstallOptionsModel):

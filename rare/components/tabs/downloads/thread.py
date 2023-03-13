@@ -52,7 +52,7 @@ class DlThread(QThread):
         self.rgame = rgame
         self.debug = debug
 
-    def __result_emit(self, result):
+    def __finish(self, result):
         if result.code == DlResultCode.FINISHED:
             self.rgame.set_installed(True)
         self.rgame.state = RareGame.State.IDLE
@@ -92,14 +92,14 @@ class DlThread(QThread):
             logger.warning(f"The following exception occurred while waiting for the downloader to finish: {e!r}.")
             result.code = DlResultCode.ERROR
             result.message = f"{e!r}"
-            self.__result_emit(result)
+            self.__finish(result)
             return
         else:
             end_t = time.time()
             if self.dlm_signals.kill is True:
                 logger.info(f"Download stopped after {end_t - start_t:.02f} seconds.")
                 result.code = DlResultCode.STOPPED
-                self.__result_emit(result)
+                self.__finish(result)
                 return
             logger.info(f"Download finished in {end_t - start_t:.02f} seconds.")
 
@@ -107,7 +107,7 @@ class DlThread(QThread):
 
             if self.item.options.overlay:
                 self.core.finish_overlay_install(self.item.download.igame)
-                self.__result_emit(result)
+                self.__finish(result)
                 return
 
             if not self.item.options.no_install:
@@ -155,7 +155,7 @@ class DlThread(QThread):
                 result.shortcut_name = self.rgame.folder_name
                 result.shortcut_title = self.rgame.app_title
 
-        self.__result_emit(result)
+        self.__finish(result)
 
     def _handle_postinstall(self, postinstall, igame):
         logger.info("This game lists the following prerequisites to be installed:")
