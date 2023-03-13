@@ -169,7 +169,7 @@ class GameInfo(QWidget, SideTabContents):
                 self.tr(
                     "<b>{}</b> failed verification, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. "
                     "Do you want to repair them?"
-                ).format(failed, missing),
+                ).format(rgame.title, failed, missing),
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.Yes,
             )
