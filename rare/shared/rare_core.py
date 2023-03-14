@@ -268,7 +268,6 @@ class RareCore(QObject):
                     self.__add_game(rdlc)
             self.__add_game(rgame)
             self.progress.emit(int(idx/length * 80) + 20, f"Loaded <b>{rgame.app_title}</b>")
-            time.sleep(0.005)
 
     @pyqtSlot(object, int)
     def handle_result(self, result: object, res_type: int):

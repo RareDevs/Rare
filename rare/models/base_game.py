@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSettings
 from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
@@ -19,7 +19,8 @@ class RareSaveGame:
     file: SaveGameFile
     status: SaveGameStatus = SaveGameStatus.NO_SAVE
     dt_local: Optional[datetime] = None
-    dt_remote: datetime = None
+    dt_remote: Optional[datetime] = None
+    description: Optional[str] = ""
 
 
 class RareGameBase(QObject):
@@ -178,11 +179,16 @@ class RareGameSlim(RareGameBase):
         return None
 
     @property
-    def save_game_state(self) -> (SaveGameStatus, (datetime, datetime)):
+    def save_game_state(self) -> Tuple[SaveGameStatus, Tuple[Optional[datetime], Optional[datetime]]]:
         if self.saves and self.save_path:
             latest = self.latest_save
+            # lk: if the save path wasn't known at startup, dt_local will be None
+            # In that case resolve the save again before returning
+            if latest.dt_local is None:
+                latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
+                    self.save_path, latest.file
+                )
             return latest.status, (latest.dt_local, latest.dt_remote)
-            # return self.core.check_savegame_state(self.save_path, self.latest_save.save)
         return SaveGameStatus.NO_SAVE, (None, None)
 
     def upload_saves(self, thread=True):
