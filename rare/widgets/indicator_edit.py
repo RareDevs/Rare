@@ -36,12 +36,13 @@ logger = getLogger("IndicatorEdit")
 class IndicatorReasonsCommon(IntEnum):
     VALID = 0
     UNDEFINED = 1
-    WRONG_FORMAT = 2
-    WRONG_PATH = 3
-    DIR_NOT_EMPTY = 4
-    DIR_NOT_EXISTS = 5
-    FILE_NOT_EXISTS = 6
-    NOT_INSTALLED = 7
+    EMPTY = 2
+    WRONG_FORMAT = 3
+    WRONG_PATH = 4
+    DIR_NOT_EMPTY = 5
+    DIR_NOT_EXISTS = 6
+    FILE_NOT_EXISTS = 7
+    NOT_INSTALLED = 8
 
 
 class IndicatorReasons(IntEnum):
@@ -67,6 +68,7 @@ class IndicatorReasonsStrings(QObject):
         self.__text = {
             IndicatorReasonsCommon.VALID: self.tr("Ok!"),
             IndicatorReasonsCommon.UNDEFINED: self.tr("Unknown error occurred"),
+            IndicatorReasonsCommon.EMPTY: self.tr("Value can not be empty"),
             IndicatorReasonsCommon.WRONG_FORMAT: self.tr("Wrong format"),
             IndicatorReasonsCommon.WRONG_PATH: self.tr("Wrong directory"),
             IndicatorReasonsCommon.DIR_NOT_EMPTY: self.tr("Directory is not empty"),
