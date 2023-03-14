@@ -1,0 +1,10 @@
+requests<3.0
+PySide6-Essentials
+QtAwesome
+setuptools
+legendary-gl>=0.20.34; platform_system != "Windows" or platform_system != "Darwin"
+legendary-gl @ https://github.com/derrod/legendary/archive/96e07ff453910b8cae89af044e317001ce33ac8b.zip ; platform_system == "Windows" or platform_system == "Darwin"
+orjson
+vdf
+pywin32; platform_system == "Windows"
+
