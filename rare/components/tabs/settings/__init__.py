@@ -3,7 +3,7 @@ from rare.shared import ArgumentsSingleton
 from rare.widgets.side_tab import SideTabWidget
 from .about import About
 from .debug import DebugSettings
-from .default_game_settings import DefaultGameSettings
+from .game_settings import DefaultGameSettings
 from .legendary import LegendarySettings
 from .rare import RareSettings
 
