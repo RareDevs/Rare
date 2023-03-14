@@ -39,21 +39,22 @@ def find_proton_combos():
     return possible_proton_combos
 
 
-class ProtonSettings(QGroupBox, Ui_ProtonSettings):
+class ProtonSettings(QGroupBox):
 
     app_name: str
     changeable = True
 
     def __init__(self, linux_settings: LinuxSettings, wrapper_settings: WrapperSettings):
         super(ProtonSettings, self).__init__()
-        self.setupUi(self)
+        self.ui = Ui_ProtonSettings()
+        self.ui.setupUi(self)
         self._linux_settings = linux_settings
         self._wrapper_settings = wrapper_settings
         self.core = LegendaryCoreSingleton()
         self.possible_proton_combos = find_proton_combos()
 
-        self.proton_combo.addItems(self.possible_proton_combos)
-        self.proton_combo.currentIndexChanged.connect(self.change_proton)
+        self.ui.proton_combo.addItems(self.possible_proton_combos)
+        self.ui.proton_combo.currentIndexChanged.connect(self.change_proton)
 
         self.proton_prefix = PathEdit(
             file_type=QFileDialog.DirectoryOnly,
@@ -61,7 +62,7 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
             save_func=self.proton_prefix_save,
             placeholder=self.tr("Please select path for proton prefix")
         )
-        self.prefix_layout.addWidget(self.proton_prefix)
+        self.ui.prefix_layout.addWidget(self.proton_prefix)
 
     def change_proton(self, i):
         if not self.changeable:
@@ -74,8 +75,7 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
             config_helper.remove_option(f"{self.app_name}.env", "STEAM_COMPAT_CLIENT_INSTALL_PATH")
 
             self.proton_prefix.setEnabled(False)
-            # lk: TODO: This has to be fixed properly.
-            # lk: It happens because of the widget update. Mask it for now behind disabling the save button
+            self.proton_prefix.setText("")
 
             self._linux_settings.wine_groupbox.setEnabled(True)
         else:
@@ -86,15 +86,9 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
             config_helper.add_option(self.app_name, "no_wine", "true")
             config_helper.add_option(
                 f"{self.app_name}.env",
-                "STEAM_COMPAT_DATA_PATH",
-                os.path.expanduser("~/.proton"),
-            )
-            config_helper.add_option(
-                f"{self.app_name}.env",
                 "STEAM_COMPAT_CLIENT_INSTALL_PATH",
                 str(Path.home().joinpath(".steam", "steam"))
             )
-
             self.proton_prefix.setText(os.path.expanduser("~/.proton"))
 
             # Don't use Wine
@@ -105,13 +99,12 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
 
     def proton_prefix_edit(self, text: str) -> Tuple[bool, str, int]:
         if not text:
-            text = os.path.expanduser("~/.proton")
-            return True, text, IndicatorReasonsCommon.VALID
+            return False, text, IndicatorReasonsCommon.EMPTY
         parent_dir = os.path.dirname(text)
         return os.path.exists(parent_dir), text, IndicatorReasonsCommon.DIR_NOT_EXISTS
 
     def proton_prefix_save(self, text: str):
-        if not self.changeable:
+        if not text:
             return
         config_helper.add_option(
             f"{self.app_name}.env", "STEAM_COMPAT_DATA_PATH", text
@@ -125,17 +118,16 @@ class ProtonSettings(QGroupBox, Ui_ProtonSettings):
         self.proton_prefix.setEnabled(bool(proton))
         if proton:
             print(proton)
-            self.proton_combo.setCurrentText(
+            self.ui.proton_combo.setCurrentText(
                 f'"{proton.replace(" run", "")}" run'
             )
-
         else:
-            self.proton_combo.setCurrentIndex(0)
+            self.ui.proton_combo.setCurrentIndex(0)
 
         proton_prefix = self.core.lgd.config.get(
             f"{app_name}.env",
             "STEAM_COMPAT_DATA_PATH",
-            fallback=str(Path.home().joinpath(".proton")),
+            fallback="",
         )
         self.proton_prefix.setText(proton_prefix)
         self.changeable = True
