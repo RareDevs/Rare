@@ -262,10 +262,10 @@ class GameInfo(QWidget, SideTabContents):
         )
 
         self.ui.lbl_grade.setDisabled(
-            self.rgame.is_unreal and platform.system() == "Windows"
+            self.rgame.is_unreal or platform.system() == "Windows"
         )
         self.ui.grade.setDisabled(
-            self.rgame.is_unreal and platform.system() == "Windows"
+            self.rgame.is_unreal or platform.system() == "Windows"
         )
         self.ui.grade.setText(self.steam_grade_ratings[self.rgame.steam_grade()])
 
