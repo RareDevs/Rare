@@ -1,11 +1,16 @@
+import json
+import os
 from multiprocessing import Queue
+from uuid import uuid4
 
 # On Windows the monkeypatching of `run_real` below doesn't work like on Linux
 # This has the side effect of emitting the UIUpdate in DownloadThread complaining with a TypeError
 # So import `legendary.core` and monkeypatch its imported DLManager
 import legendary.core
 from legendary.core import LegendaryCore as LegendaryCoreReal
+from legendary.lfs.utils import delete_folder
 from legendary.models.downloading import AnalysisResult
+from legendary.models.egl import EGLManifest
 from legendary.models.game import Game, InstalledGame
 from legendary.models.manifest import ManifestMeta
 
@@ -78,6 +83,43 @@ class LegendaryCore(LegendaryCoreReal):
             raise ret
         finally:
             pass
+
+    def egstore_write(self, app_name):
+        self.log.debug(f'Exporting ".egstore" for "{app_name}"')
+        # load igame/game
+        lgd_game = self.get_game(app_name)
+        lgd_igame = self._get_installed_game(app_name)
+        manifest_data, _ = self.get_installed_manifest(app_name)
+        if not manifest_data:
+            self.log.error(f'Game Manifest for "{app_name}" not found, cannot export!')
+            return
+
+        # create guid if it's not set already
+        if not lgd_igame.egl_guid:
+            lgd_igame.egl_guid = str(uuid4()).replace('-', '').upper()
+            _ = self._install_game(lgd_igame)
+        # convert to egl manifest
+        egl_game = EGLManifest.from_lgd_game(lgd_game, lgd_igame)
+
+        # make sure .egstore folder exists
+        egstore_folder = os.path.join(lgd_igame.install_path, '.egstore')
+        if not os.path.exists(egstore_folder):
+            os.makedirs(egstore_folder)
+
+        # copy manifest and create mancpn file in .egstore folder
+        with open(os.path.join(egstore_folder, f'{egl_game.installation_guid}.manifest', ), 'wb') as mf:
+            mf.write(manifest_data)
+
+        mancpn = dict(FormatVersion=0, AppName=app_name,
+                      CatalogItemId=lgd_game.catalog_item_id,
+                      CatalogNamespace=lgd_game.namespace)
+        with open(os.path.join(egstore_folder, f'{egl_game.installation_guid}.mancpn', ), 'w') as mcpnf:
+            json.dump(mancpn, mcpnf, indent=4, sort_keys=True)
+
+    def egstore_delete(self, igame: InstalledGame, delete_files=True):
+        self.log.debug(f'Removing ".egstore" for "{igame.app_name}"')
+        if delete_files:
+            delete_folder(os.path.join(igame.install_path, '.egstore'))
 
     def egl_export(self, app_name):
         try:

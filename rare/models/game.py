@@ -161,8 +161,8 @@ class RareGame(RareGameSlim):
     def update_igame(self):
         self.igame = self.core.get_installed_game(self.app_name)
         if self.igame is not None:
-            self.core.egl_uninstall(self.igame)
-            self.core.egl_export(self.igame.app_name)
+            self.core.egstore_delete(self.igame)
+            self.core.egstore_write(self.igame.app_name)
 
     def store_igame(self):
         self.core.lgd.set_installed_game(self.app_name, self.igame)
