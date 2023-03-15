@@ -26,7 +26,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         # Wine prefix
         self.wine_prefix = PathEdit(
             self.load_prefix(),
-            file_type=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.DirectoryOnly,
             edit_func=lambda path: (os.path.isdir(path) or not path, path, IndicatorReasonsCommon.DIR_NOT_EXISTS),
             save_func=self.save_prefix,
         )
@@ -35,8 +35,8 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         # Wine executable
         self.wine_exec = PathEdit(
             self.load_setting(self.name, "wine_executable"),
-            file_type=QFileDialog.ExistingFile,
-            name_filter="Wine executable (wine wine64)",
+            file_mode=QFileDialog.ExistingFile,
+            name_filters=["wine", "wine64"],
             edit_func=lambda text: (os.path.exists(text) or not text, text, IndicatorReasonsCommon.DIR_NOT_EXISTS),
             save_func=lambda text: self.save_setting(
                 text, section=self.name, setting="wine_executable"

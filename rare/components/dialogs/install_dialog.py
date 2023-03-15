@@ -77,7 +77,7 @@ class InstallDialog(QDialog):
 
         self.install_dir_edit = PathEdit(
             path=self.options.base_path,
-            file_type=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.DirectoryOnly,
             edit_func=self.option_changed,
             parent=self,
         )

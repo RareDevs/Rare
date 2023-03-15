@@ -18,7 +18,7 @@ class PreLaunchSettings(QHBoxLayout):
         self.edit = PathEdit(
             path="",
             placeholder=self.tr("Path to script"),
-            file_type=QFileDialog.ExistingFile,
+            file_mode=QFileDialog.ExistingFile,
             edit_func=self.edit_command,
             save_func=self.save_pre_launch_command,
         )

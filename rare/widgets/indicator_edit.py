@@ -1,11 +1,10 @@
 import os
 from enum import IntEnum
 from logging import getLogger
-from typing import Callable, Tuple, Optional, Dict
+from typing import Callable, Tuple, Optional, Dict, List
 
 from PyQt5.QtCore import (
     Qt,
-    QCoreApplication,
     QSize,
     pyqtSignal,
     QFileInfo,
@@ -13,6 +12,7 @@ from PyQt5.QtCore import (
     QObject,
     QThreadPool,
     pyqtSlot,
+    QDir,
 )
 from PyQt5.QtWidgets import (
     QSizePolicy,
@@ -70,7 +70,7 @@ class IndicatorReasonsStrings(QObject):
             IndicatorReasonsCommon.UNDEFINED: self.tr("Unknown error occurred"),
             IndicatorReasonsCommon.EMPTY: self.tr("Value can not be empty"),
             IndicatorReasonsCommon.WRONG_FORMAT: self.tr("Wrong format"),
-            IndicatorReasonsCommon.WRONG_PATH: self.tr("Wrong directory"),
+            IndicatorReasonsCommon.WRONG_PATH: self.tr("Wrong file or directory"),
             IndicatorReasonsCommon.DIR_NOT_EMPTY: self.tr("Directory is not empty"),
             IndicatorReasonsCommon.DIR_NOT_EXISTS: self.tr("Directory does not exist"),
             IndicatorReasonsCommon.FILE_NOT_EXISTS: self.tr("File does not exist"),
@@ -267,34 +267,38 @@ class PathEdit(IndicatorLineEdit):
     def __init__(
         self,
         path: str = "",
-        file_type: QFileDialog.FileType = QFileDialog.AnyFile,
-        type_filter: str = "",
-        name_filter: str = "",
+        file_mode: QFileDialog.FileMode = QFileDialog.AnyFile,
+        file_filter: QDir.Filters = 0,
+        name_filters: List[str] = None,
         placeholder: str = "",
         edit_func: Callable[[str], Tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
         horiz_policy: QSizePolicy.Policy = QSizePolicy.Expanding,
         parent=None,
     ):
-        self.completer = QCompleter()
-        self.compl_model = QFileSystemModel()
-
+        self.__root_path = path if path else os.path.expanduser("~/")
+        self.__completer = QCompleter()
+        self.__completer_model = QFileSystemModel(self.__completer)
         try:
-            self.compl_model.setOptions(
+            self.__completer_model.setOptions(
                 QFileSystemModel.DontWatchForChanges
                 | QFileSystemModel.DontResolveSymlinks
                 | QFileSystemModel.DontUseCustomDirectoryIcons
             )
         except AttributeError as e:  # Error on Ubuntu
             logger.warning(e)
-        self.compl_model.setIconProvider(PathEditIconProvider())
-        self.compl_model.setRootPath(path)
-        self.completer.setModel(self.compl_model)
+        self.__completer_model.setIconProvider(PathEditIconProvider())
+        self.__completer_model.setRootPath(path)
+        if file_filter:
+            self.__completer_model.setFilter(file_filter)
+        if name_filters:
+            self.__completer_model.setNameFilters(name_filters)
+        self.__completer.setModel(self.__completer_model)
 
         super(PathEdit, self).__init__(
             text=path,
             placeholder=placeholder,
-            completer=self.completer,
+            completer=self.__completer,
             edit_func=edit_func,
             save_func=save_func,
             horiz_policy=horiz_policy,
@@ -309,23 +313,31 @@ class PathEdit(IndicatorLineEdit):
 
         self.path_select.setText(self.tr("Browse..."))
 
-        self.type_filter = type_filter
-        self.name_filter = name_filter
-        self.file_type = file_type
+        self.__file_mode = file_mode
+        self.__file_filter = file_filter
+        self.__name_filter = name_filters
 
         self.path_select.clicked.connect(self.__set_path)
+
+    def set_root(self, path: str):
+        self.__root_path = path
+        self.__completer_model.setRootPath(path)
 
     def __set_path(self):
         dlg_path = self.line_edit.text()
         if not dlg_path:
-            dlg_path = os.path.expanduser("~/")
+            dlg_path = self.__root_path
         dlg = QFileDialog(self, self.tr("Choose path"), dlg_path)
-        dlg.setFileMode(self.file_type)
-        if self.type_filter:
-            dlg.setFilter([self.type_filter])
-        if self.name_filter:
-            dlg.setNameFilter(self.name_filter)
+        dlg.setOption(QFileDialog.DontUseCustomDirectoryIcons)
+        dlg.setIconProvider(PathEditIconProvider())
+        dlg.setFileMode(self.__file_mode)
+        if self.__file_mode == QFileDialog.Directory:
+            dlg.setOption(QFileDialog.ShowDirsOnly, True)
+        if self.__file_filter:
+            dlg.setFilter(self.__file_filter)
+        if self.__name_filter:
+            dlg.setNameFilter(" ".join(self.__name_filter))
         if dlg.exec_():
             names = dlg.selectedFiles()
             self.line_edit.setText(names[0])
-            self.compl_model.setRootPath(names[0])
+            self.__completer_model.setRootPath(names[0])

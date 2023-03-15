@@ -41,7 +41,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         # Default installation directory
         self.install_dir = PathEdit(
             self.core.get_default_install_dir(),
-            file_type=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.DirectoryOnly,
             save_func=self.path_save,
         )
         self.install_dir_layout.addWidget(self.install_dir)

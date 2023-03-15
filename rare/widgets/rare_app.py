@@ -7,7 +7,7 @@ import traceback
 from argparse import Namespace
 
 import legendary
-from PyQt5.QtCore import QSettings, QTranslator, QT_VERSION_STR, PYQT_VERSION_STR, QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QSettings, QTranslator, QT_VERSION_STR, PYQT_VERSION_STR, QObject, pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
@@ -47,6 +47,7 @@ class RareApp(QApplication):
         super(RareApp, self).__init__(sys.argv)
         self._hook = RareAppException(self)
         self.setQuitOnLastWindowClosed(False)
+        self.setAttribute(Qt.AA_DontUseNativeDialogs, True)
 
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")

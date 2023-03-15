@@ -56,7 +56,7 @@ class CloudSaves(QWidget, SideTabContents):
 
         self.cloud_save_path_edit = PathEdit(
             "",
-            file_type=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.DirectoryOnly,
             placeholder=self.tr('Use "Calculate path" or "Browse" ...'),
             edit_func=self.edit_save_path,
             save_func=self.save_save_path,

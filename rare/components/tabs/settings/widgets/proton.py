@@ -57,7 +57,7 @@ class ProtonSettings(QGroupBox):
         self.ui.proton_combo.currentIndexChanged.connect(self.change_proton)
 
         self.proton_prefix = PathEdit(
-            file_type=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.DirectoryOnly,
             edit_func=self.proton_prefix_edit,
             save_func=self.proton_prefix_save,
             placeholder=self.tr("Please select path for proton prefix")
