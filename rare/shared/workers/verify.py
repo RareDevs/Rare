@@ -79,6 +79,7 @@ class VerifyWorker(QueueWorker):
             cli.install_game_cleanup(
                 game=self.rgame.game, igame=self.rgame.igame, repair_mode=True, repair_file=repair_file
             )
+            self.rgame.needs_verification = False
             self.rgame.update_rgame()
 
         self.rgame.signals.progress.finish.emit(False)

@@ -247,7 +247,6 @@ class RareCore(QObject):
             rgame = RareGame(self.__core, self.__image_manager, game)
         return rgame
 
-
     def __add_games_and_dlcs(self, games: List[Game], dlcs_dict: Dict[str, List]) -> None:
         length = len(games)
         for idx, game in enumerate(games):
