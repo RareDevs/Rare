@@ -86,6 +86,8 @@ class MoveGamePopUp(QWidget):
     def path_edit_callback(self, path: str) -> Tuple[bool, str, int]:
         self.button.setEnabled(True)
         self.warn_label.setHidden(False)
+        self.req_space.setText("...")
+        self.avail_space.setText("...")
 
         def helper_func(reason: int) -> Tuple[bool, str, int]:
             self.button.setEnabled(False)

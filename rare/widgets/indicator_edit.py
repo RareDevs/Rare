@@ -98,13 +98,20 @@ class EditFuncRunnable(QRunnable):
         super(EditFuncRunnable, self).__init__()
         self.setAutoDelete(True)
         self.signals = EditFuncRunnable.Signals()
-        self.func = func
+        self.func = self.__wrap_edit_function(func)
         self.args = args
 
     def run(self):
         o0, o1, o2 = self.func(self.args)
         self.signals.result.emit(o0, o1, o2)
         self.signals.deleteLater()
+
+    @staticmethod
+    def __wrap_edit_function(func: Callable[[str], Tuple[bool, str, int]]):
+        if func:
+            return lambda text: func(os.path.expanduser(text) if text.startswith("~") else text)
+        else:
+            return func
 
 
 class IndicatorLineEdit(QWidget):
@@ -170,6 +177,11 @@ class IndicatorLineEdit(QWidget):
         # lk: it is also going to trigger this widget's textChanged signal but that gets lost
         if text:
             self.line_edit.setText(text)
+
+    def deleteLater(self) -> None:
+        if self.__thread is not None:
+            self.__thread.signals.result.disconnect()
+        super(IndicatorLineEdit, self).deleteLater()
 
     def text(self) -> str:
         return self.line_edit.text()
@@ -279,8 +291,6 @@ class PathEdit(IndicatorLineEdit):
         self.compl_model.setRootPath(path)
         self.completer.setModel(self.compl_model)
 
-        edit_func = self.__wrap_edit_function(edit_func)
-
         super(PathEdit, self).__init__(
             text=path,
             placeholder=placeholder,
@@ -319,10 +329,3 @@ class PathEdit(IndicatorLineEdit):
             names = dlg.selectedFiles()
             self.line_edit.setText(names[0])
             self.compl_model.setRootPath(names[0])
-
-    @staticmethod
-    def __wrap_edit_function(func: Callable[[str], Tuple[bool, str, int]]):
-        if func:
-            return lambda text: func(os.path.expanduser(text) if text.startswith("~") else text)
-        else:
-            return func
