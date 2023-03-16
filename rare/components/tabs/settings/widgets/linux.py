@@ -13,10 +13,11 @@ from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 logger = getLogger("LinuxSettings")
 
 
-class LinuxSettings(QWidget, Ui_LinuxSettings):
-    def __init__(self, name=None):
-        super(LinuxSettings, self).__init__()
-        self.setupUi(self)
+class LinuxSettings(QWidget):
+    def __init__(self, name=None, parent=None):
+        super(LinuxSettings, self).__init__(parent=parent)
+        self.ui = Ui_LinuxSettings()
+        self.ui.setupUi(self)
 
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
@@ -30,7 +31,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
             edit_func=lambda path: (os.path.isdir(path) or not path, path, IndicatorReasonsCommon.DIR_NOT_EXISTS),
             save_func=self.save_prefix,
         )
-        self.prefix_layout.addWidget(self.wine_prefix)
+        self.ui.prefix_layout.addWidget(self.wine_prefix)
 
         # Wine executable
         self.wine_exec = PathEdit(
@@ -42,15 +43,15 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
                 text, section=self.name, setting="wine_executable"
             ),
         )
-        self.exec_layout.addWidget(self.wine_exec)
+        self.ui.exec_layout.addWidget(self.wine_exec)
 
         # dxvk
         self.dxvk = DxvkSettings()
-        self.overlay_layout.addWidget(self.dxvk)
+        self.ui.linux_layout.addWidget(self.dxvk)
         self.dxvk.load_settings(self.name)
 
         self.mangohud = MangoHudSettings()
-        self.overlay_layout.addWidget(self.mangohud)
+        self.ui.linux_layout.addWidget(self.mangohud)
         self.mangohud.load_settings(self.name)
 
         if not shutil.which("mangohud"):
@@ -69,7 +70,7 @@ class LinuxSettings(QWidget, Ui_LinuxSettings):
         self.save_setting(text, self.name, "wine_prefix")
         self.signals.application.prefix_updated.emit()
 
-    def load_setting(self, section: str, setting: str, fallback: str = str()):
+    def load_setting(self, section: str, setting: str, fallback: str = ""):
         return self.core.lgd.config.get(section, setting, fallback=fallback)
 
     def save_setting(self, text: str, section: str, setting: str):
