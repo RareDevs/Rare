@@ -53,7 +53,6 @@ class LaunchDialog(QDialog):
             if self.args.offline:
                 pass
             else:
-                QApplication.instance().processEvents()
                 # Force an update check and notice in case there are API changes
                 self.core.check_for_updates(force=True)
                 self.core.force_show_update = True

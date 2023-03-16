@@ -193,6 +193,7 @@ class RareGameSlim(RareGameBase):
 
     def upload_saves(self, thread=True):
         status, (dt_local, dt_remote) = self.save_game_state
+
         def _upload():
             logger.info(f"Uploading save for {self.title}")
             self.state = RareGameSlim.State.SYNCING
@@ -217,6 +218,7 @@ class RareGameSlim(RareGameBase):
 
     def download_saves(self, thread=True):
         status, (dt_local, dt_remote) = self.save_game_state
+
         def _download():
             logger.info(f"Downloading save for {self.title}")
             self.state = RareGameSlim.State.SYNCING

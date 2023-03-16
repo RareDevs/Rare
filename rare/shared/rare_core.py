@@ -273,14 +273,14 @@ class RareCore(QObject):
         status = ""
         if res_type == FetchWorker.Result.GAMES:
             games, dlc_dict = result
-            self.__fetched_games+= games
+            self.__fetched_games += games
             self.__fetched_dlcs.update(dlc_dict)
             self.fetch_non_asset()
             self.__games_fetched = True
             status = self.tr("Prepared games")
         if res_type == FetchWorker.Result.NON_ASSET:
             games, dlc_dict = result
-            self.__fetched_games+= games
+            self.__fetched_games += games
             self.__fetched_dlcs.update(dlc_dict)
             self.__non_asset_fetched = True
             status = self.tr("Prepared games without assets")
@@ -321,11 +321,13 @@ class RareCore(QObject):
             try:
                 saves_list = self.__core.get_save_games()
                 for s in saves_list:
-                    if not s.app_name in saves_dict.keys():
+                    if s.app_name not in saves_dict.keys():
                         saves_dict[s.app_name] = [s]
                     else:
                         saves_dict[s.app_name].append(s)
                 for app_name, saves in saves_dict.items():
+                    if app_name not in self.__library.keys():
+                        continue
                     self.__library[app_name].load_saves(saves)
             except (HTTPError, ConnectionError) as e:
                 logger.error(f"Exception while fetching saves from EGS: {e}")
