@@ -43,20 +43,3 @@ class IconGameWidget(GameWidget):
         if a0 is not None:
             a0.accept()
         self.ui.leaveAnimation(self)
-
-    # def sync_finished(self, app_name):
-    #     if not app_name == self.rgame.app_name:
-    #         return
-    #     super().sync_finished(app_name)
-    #     self.leaveEvent(None)
-
-    # def game_finished(self, app_name, error):
-    #     if app_name != self.rgame.app_name:
-    #         return
-    #     self.game_running = False
-    #     self.leaveEvent(None)
-    #
-    # def game_started(self, app_name):
-    #     if app_name == self.rgame.app_name:
-    #         self.game_running = True
-    #         self.leaveEvent(None)

@@ -89,7 +89,8 @@ class CloudSaves(QWidget, SideTabContents):
         return True, text, IndicatorReasonsCommon.VALID
 
     def save_save_path(self, text: str):
-        self.rgame.save_path = text
+        if text != self.rgame.save_path:
+            self.rgame.save_path = text
 
     def upload(self):
         self.sync_ui.upload_button.setDisabled(True)

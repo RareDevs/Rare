@@ -266,7 +266,7 @@ class RareCore(QObject):
                     rgame.owned_dlcs.append(rdlc)
                     self.__add_game(rdlc)
             self.__add_game(rgame)
-            self.progress.emit(int(idx/length * 80) + 20, f"Loaded <b>{rgame.app_title}</b>")
+            self.progress.emit(int(idx/length * 80) + 20, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
 
     @pyqtSlot(object, int)
     def handle_result(self, result: object, res_type: int):
@@ -277,13 +277,13 @@ class RareCore(QObject):
             self.__fetched_dlcs.update(dlc_dict)
             self.fetch_non_asset()
             self.__games_fetched = True
-            status = "Prepared games"
+            status = self.tr("Prepared games")
         if res_type == FetchWorker.Result.NON_ASSET:
             games, dlc_dict = result
             self.__fetched_games+= games
             self.__fetched_dlcs.update(dlc_dict)
             self.__non_asset_fetched = True
-            status = "Prepared games without assets"
+            status = self.tr("Prepared games without assets")
         logger.info(f"Got API results for {FetchWorker.Result(res_type).name}")
 
         fetched = [
@@ -382,7 +382,7 @@ class RareCore(QObject):
                 # self.__image_manager.download_image(rgame.game, rgame.set_pixmap, 0, False)
                 rgame.load_pixmap()
                 # lk: activity perception delay
-                time.sleep(0.0003)
+                time.sleep(0.0005)
 
         pixmap_worker = QRunnable.create(__load_pixmaps)
         QThreadPool.globalInstance().start(pixmap_worker)

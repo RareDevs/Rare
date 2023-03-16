@@ -20,9 +20,9 @@ resources_path = Path(__file__).absolute().parent.parent.joinpath("resources")
 # lk: delete old Rare directories
 for old_dir in [
     Path(QStandardPaths.writableLocation(QStandardPaths.CacheLocation), "rare").joinpath("tmp"),
-    Path(QStandardPaths.writableLocation(QStandardPaths.DataLocation), "rare").joinpath("images"),
+    Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation), "rare").joinpath("images"),
     Path(QStandardPaths.writableLocation(QStandardPaths.CacheLocation), "rare"),
-    Path(QStandardPaths.writableLocation(QStandardPaths.DataLocation), "rare"),
+    Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation), "rare"),
 ]:
     if old_dir.exists():
         # lk: case-sensitive matching on Winblows
@@ -37,7 +37,7 @@ def lock_file() -> Path:
 
 
 def data_dir() -> Path:
-    return Path(QStandardPaths.writableLocation(QStandardPaths.DataLocation))
+    return Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation))
 
 
 def cache_dir() -> Path:

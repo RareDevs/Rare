@@ -62,19 +62,6 @@ class ListGameWidget(GameWidget):
             a0.accept()
         self.ui.tooltip_label.setVisible(False)
 
-    # def game_started(self, app_name):
-    #     if app_name == self.rgame.app_name:
-    #         self.game_running = True
-    #         # self.update_text()
-    #         self.ui.launch_btn.setDisabled(True)
-
-    # def game_finished(self, app_name, error):
-    #     if app_name != self.rgame.app_name:
-    #         return
-    #     super().game_finished(app_name, error)
-    #     # self.update_text(None)
-    #     self.ui.launch_btn.setDisabled(False)
-
     """
     Painting and progress overrides.
     Let them live here until a better alternative is divised.
