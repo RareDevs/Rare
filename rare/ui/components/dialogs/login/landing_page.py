@@ -60,7 +60,6 @@ class Ui_LandingPage(object):
         self.landing_layout.setRowStretch(2, 1)
 
         self.retranslateUi(LandingPage)
-        QtCore.QMetaObject.connectSlotsByName(LandingPage)
 
     def retranslateUi(self, LandingPage):
         _translate = QtCore.QCoreApplication.translate

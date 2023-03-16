@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QCoreApplication
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QPushButton,
@@ -8,15 +8,15 @@ from PyQt5.QtWidgets import (
     QFileDialog,
 )
 
-from rare.utils.extra_widgets import PathEdit
+from rare.widgets.indicator_edit import PathEdit
 
 
 class PathInputDialog(QDialog):
-    def __init__(self, title_text, text, path="Select Directory"):
-        super().__init__()
+    def __init__(self, title_text, text, path="Select Directory", parent=None):
+        super(PathInputDialog, self).__init__(parent=parent)
         self.path = ""
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowTitle(title_text)
+        self.setWindowTitle(f'{title_text} - {QCoreApplication.instance().applicationName()}')
         self.info_label = QLabel(text)
         self.info_label.setWordWrap(True)
 

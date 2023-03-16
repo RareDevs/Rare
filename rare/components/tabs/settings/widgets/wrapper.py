@@ -3,17 +3,26 @@ import shutil
 from logging import getLogger
 from typing import Dict, List
 
-from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData, pyqtSlot, QCoreApplication
 from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QInputDialog, QFrame, QMessageBox, QSizePolicy, \
-    QWidget, QScrollArea
+from PyQt5.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QInputDialog,
+    QFrame,
+    QMessageBox,
+    QSizePolicy,
+    QWidget,
+    QScrollArea,
+)
 
-from rare import shared
+from rare.shared import RareCore
 from rare.ui.components.tabs.settings.widgets.wrapper import Ui_WrapperSettings
 from rare.utils import config_helper
 from rare.utils.misc import icon
 
-logger = getLogger("Wrapper Settings")
+logger = getLogger("WrapperSettings")
 
 extra_wrapper_regex = {
     "proton": "\".*proton\" run",  # proton
@@ -67,12 +76,12 @@ class WrapperWidget(QFrame):
 
 
 class WrapperSettings(QWidget, Ui_WrapperSettings):
-    wrappers: Dict[str, WrapperWidget] = dict()
-    app_name: str
-
     def __init__(self):
         super(WrapperSettings, self).__init__()
         self.setupUi(self)
+
+        self.wrappers: Dict[str, WrapperWidget] = {}
+        self.app_name: str
 
         self.wrapper_scroll = QScrollArea(self.widget_stack)
         self.wrapper_scroll.setWidgetResizable(True)
@@ -85,7 +94,7 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
         self.wrapper_scroll.setWidget(self.scroll_content)
         self.widget_stack.insertWidget(0, self.wrapper_scroll)
 
-        self.core = shared.LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
 
         self.add_button.clicked.connect(self.add_button_pressed)
         self.settings = QSettings()
@@ -103,7 +112,9 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
 
     @pyqtSlot(int, int)
     def adjust_scrollarea(self, min: int, max: int):
-        wrapper_widget = self.scroll_content.findChildren(WrapperWidget)[0]
+        wrapper_widget = self.scroll_content.findChild(WrapperWidget)
+        if not wrapper_widget:
+             return
         # lk: when the scrollbar is not visible, min and max are 0
         if max > min:
             self.wrapper_scroll.setMaximumHeight(
@@ -134,7 +145,10 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
         return data
 
     def add_button_pressed(self):
-        wrapper, done = QInputDialog.getText(self, "Input Dialog", self.tr("Insert name of wrapper"))
+        header = self.tr("Add wrapper")
+        wrapper, done = QInputDialog.getText(
+            self, f"{header} - {QCoreApplication.instance().applicationName()}", self.tr("Insert wrapper executable")
+        )
         if not done:
             return
         self.add_wrapper(wrapper)

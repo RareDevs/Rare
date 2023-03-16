@@ -320,50 +320,6 @@ QPushButton::menu-indicator {
     left: -2px;
     border-style: none;
 }
-QPushButton#menu {
-    padding: 0px;
-    margin: 0px;
-    border-style: none;
-}
-QPushButton#menu_button {
-    border-width: 0px;
-    background-color: #A3DAAA;
-    width: 18px;
-    height: 18px;
-}
-QPushButton#menu_button:hover {
-    background-color: #DADDDE;
-}
-QPushButton[install="1"],
-QPushButton#install_button {
-    background-color: #F9A7FF;
-}
-QPushButton[install="1"]:hover,
-QPushButton#install_button:hover {
-    background-color: #BB7DBF;
-}
-QPushButton[install="1"]:disabled,
-QPushButton#install_button:disabled {
-    background-color: #7D5380;
-}
-QPushButton[uninstall="1"],
-QPushButton#uninstall_button {
-    background-color: #FFB085;
-}
-QPushButton[uninstall="1"]:hover,
-QPushButton#uninstall_button:hover {
-    background-color: #BF8464;
-}
-QPushButton[uninstall="1"]:disabled,
-QPushButton#uninstall_button:disabled {
-    background-color: #805843;
-}
-QPushButton#success{
-    background-color: lime;
-}
-QPushButton#installed_menu_button:hover {
-    background-color: green;
-}
 
 QGroupBox,
 QCheckBox,
@@ -391,7 +347,7 @@ QTableView::indicator {
     height: 11px;
 }
 QGroupBox::indicator {
-    padding: 1px;
+    padding: 0px;
 }
 QGroupBox::indicator:disabled,
 QCheckBox::indicator:disabled,
@@ -449,20 +405,19 @@ QRadioButton::indicator:checked:disabled {
     image: url(":/stylesheets/ChildOfMetropolis/circle-disabled.svg");
 }
 
-QGroupBox,
-QGroupBox#group,
-QGroupBox#settings_widget {
+QGroupBox {
     font-weight: bold;
-    margin-top: 0.5em;
     /* margin-left: 0.5em; /* Offset to the left */
     border-width: 1px;
     border-style: solid;
     border-radius: 4px;
     padding-top: 1.2em;
 }
-QGroupBox#game_widget_icon {
-    margin: 2px;
-    border-width: 0px;
+QGroupBox[checkable="true"] {
+    margin-top: 0.5em;
+}
+QToolBox {
+    font-weight: bold;
     padding: 0px;
 }
 QToolBox::tab,
@@ -496,11 +451,7 @@ QSizeGrip {
     height: 4px;
 }
 
-#list_widget {
-    border-top-width: 2px;
-}
-
-#search_bar {
+QLineEdit#SearchBar {
     padding: 3px;
     border-radius: 5px;
     background-color: #DADDDE;

@@ -188,10 +188,15 @@ class LegendaryCLI(LegendaryCLIReal):
                                                           disable_https=args.disable_https)
 
         # game is either up-to-date or hasn't changed, so we have nothing to do
-        if not analysis.dl_size:
+        if not analysis.dl_size and not game.is_dlc:
             logger.info('Download size is 0, the game is either already up to date or has not changed. Exiting...')
             self.install_game_cleanup(game, igame, args.repair_mode, repair_file)
-            return
+            # return
+            # Rare: Return what we know about the download to queue a 0 size DLC
+            res = self.core.check_installation_conditions(analysis=analysis, install=igame, game=game,
+                                                          updating=self.core.is_installed(args.app_name),
+                                                          ignore_space_req=args.ignore_space)
+            return dlm, analysis, igame, game, args.repair_mode, repair_file, res
 
         res = self.core.check_installation_conditions(analysis=analysis, install=igame, game=game,
                                                       updating=self.core.is_installed(args.app_name),
@@ -300,6 +305,10 @@ class LegendaryCLI(LegendaryCLIReal):
             logger.info('Deleting now untagged files.')
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
+
+        if old_igame.install_tags:
+            self.core.lgd.config.set(game.app_name, 'install_tags', ','.join(old_igame.install_tags))
+            self.core.lgd.save_config()
 
     def _handle_postinstall(self, postinstall, igame, skip_prereqs=False, choice=True):
         # Override logger for the local context to use message as part of the indirect return value
@@ -414,7 +423,7 @@ class LegendaryCLI(LegendaryCLIReal):
                        key=lambda a: a.filename.lower())
 
         # build list of hashes
-        if config_tags := self.core.lgd.config.get(args.app_name, 'install_tags', fallback=None):
+        if (config_tags := self.core.lgd.config.get(args.app_name, 'install_tags', fallback=None)) is not None:
             install_tags = set(i.strip() for i in config_tags.split(','))
             file_list = [
                 (f.filename, f.sha_hash.hex())

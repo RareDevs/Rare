@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QHBoxLayout, QCheckBox, QFileDialog
 
 from rare.shared import LegendaryCoreSingleton
 from rare.utils import config_helper
-from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
+from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 
 class PreLaunchSettings(QHBoxLayout):
@@ -18,7 +18,7 @@ class PreLaunchSettings(QHBoxLayout):
         self.edit = PathEdit(
             path="",
             placeholder=self.tr("Path to script"),
-            file_type=QFileDialog.ExistingFile,
+            file_mode=QFileDialog.ExistingFile,
             edit_func=self.edit_command,
             save_func=self.save_pre_launch_command,
         )
@@ -28,14 +28,14 @@ class PreLaunchSettings(QHBoxLayout):
         self.layout().addWidget(self.wait_check)
         self.wait_check.stateChanged.connect(self.save_wait_finish)
 
-    def edit_command(self, text: str) -> Tuple[bool, str, str]:
+    def edit_command(self, text: str) -> Tuple[bool, str, int]:
         if not text.strip():
-            return True, text, ""
+            return True, text, IndicatorReasonsCommon.VALID
 
         if not os.path.isfile(text.split()[0]) and not shutil.which(text.split()[0]):
-            return False, text, IndicatorLineEdit.reasons.file_not_exist
+            return False, text, IndicatorReasonsCommon.FILE_NOT_EXISTS
         else:
-            return True, text, ""
+            return True, text, IndicatorReasonsCommon.VALID
 
     def save_pre_launch_command(self, text):
         if text:

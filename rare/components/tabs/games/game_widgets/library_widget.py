@@ -8,7 +8,7 @@ from rare.widgets.image_widget import ImageWidget
 
 
 class ProgressLabel(QLabel):
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         super(ProgressLabel, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         self.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
@@ -37,30 +37,25 @@ class ProgressLabel(QLabel):
 
     def setStyleSheetColors(self, bg: QColor, fg: QColor, brd: QColor):
         sheet = (
+            f"QLabel#{type(self).__name__} {{"
             f"background-color: rgba({bg.red()}, {bg.green()}, {bg.blue()}, 65%);"
             f"color: rgb({fg.red()}, {fg.green()}, {fg.blue()});"
-            f"border-width: 1px;"
-            f"border-radius: 5%;"
             f"border-color: rgb({brd.red()}, {brd.green()}, {brd.blue()});"
-            f"font-weight: bold;"
-            f"font-size: 16pt;"
+            f"}}"
         )
         self.setStyleSheet(sheet)
 
 
 class LibraryWidget(ImageWidget):
-    _color_pixmap: Optional[QPixmap] = None
-    _gray_pixmap: Optional[QPixmap] = None
-    # lk: keep percentage to not over-generate the image
-    _progress: int = -1
-
-    def __init__(
-        self,
-        parent=None,
-    ) -> None:
+    def __init__(self, parent=None) -> None:
         super(LibraryWidget, self).__init__(parent)
         self.progress_label = ProgressLabel(self)
         self.progress_label.setVisible(False)
+
+        self._color_pixmap: Optional[QPixmap] = None
+        self._gray_pixmap: Optional[QPixmap] = None
+        # lk: keep percentage to not over-generate the image
+        self._progress: int = -1
 
     def event(self, e: QEvent) -> bool:
         if e.type() == QEvent.LayoutRequest:

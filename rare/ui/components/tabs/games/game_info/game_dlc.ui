@@ -1,184 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>GameDlc</class>
- <widget class="QWidget" name="GameDlc">
+ <widget class="QToolBox" name="GameDlc">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>287</width>
-    <height>354</height>
+    <width>271</width>
+    <height>139</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GameDlc</string>
+   <string notr="true">GameDlc</string>
   </property>
-  <layout class="QVBoxLayout" name="game_dlc_layout">
-   <item>
-    <widget class="QGroupBox" name="installed_dlc_group">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title">
-      <string>Installed DLCs</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-     </property>
-     <layout class="QVBoxLayout" name="installed_dlc_group_layout">
-      <item>
-       <widget class="QLabel" name="installed_dlc_label">
-        <property name="text">
-         <string>No Downloadable Content has been installed.</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QScrollArea" name="installed_dlc_scroll">
-        <property name="focusPolicy">
-         <enum>Qt::WheelFocus</enum>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
-        </property>
-        <property name="widgetResizable">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-        <widget class="QWidget" name="installed_dlc_contents">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>255</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <layout class="QVBoxLayout" name="installed_dlc_contents_layout">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>9</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="available_dlc_group">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title">
-      <string>Available DLCs</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-     </property>
-     <layout class="QVBoxLayout" name="available_dlc_group_layout">
-      <item>
-       <widget class="QLabel" name="available_dlc_label">
-        <property name="text">
-         <string>No Downloadable Content is available</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QScrollArea" name="available_dlc_scroll">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
-        </property>
-        <property name="widgetResizable">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-        <widget class="QWidget" name="available_dlc_contents">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>255</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <layout class="QVBoxLayout" name="available_dlc_contents_layout">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>9</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <spacer name="vspacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-  </layout>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Sunken</enum>
+  </property>
+  <property name="lineWidth">
+   <number>0</number>
+  </property>
+  <widget class="QWidget" name="installed_dlc_page">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>267</width>
+     <height>79</height>
+    </rect>
+   </property>
+   <attribute name="label">
+    <string>Installed DLCs</string>
+   </attribute>
+   <layout class="QVBoxLayout" name="installed_dlc_page_layout" stretch="0,1">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item alignment="Qt::AlignTop">
+     <widget class="QLabel" name="installed_dlc_label">
+      <property name="text">
+       <string>No Downloadable Content has been installed.</string>
+      </property>
+     </widget>
+    </item>
+    <item alignment="Qt::AlignTop">
+     <widget class="QWidget" name="installed_dlc_container" native="true">
+      <layout class="QVBoxLayout" name="installed_dlc_container_layout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="available_dlc_page">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>267</width>
+     <height>79</height>
+    </rect>
+   </property>
+   <attribute name="label">
+    <string>Available DLCs</string>
+   </attribute>
+   <layout class="QVBoxLayout" name="available_dlc_page_layou" stretch="0,1">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item alignment="Qt::AlignTop">
+     <widget class="QLabel" name="available_dlc_label">
+      <property name="text">
+       <string>No Downloadable Content is available</string>
+      </property>
+     </widget>
+    </item>
+    <item alignment="Qt::AlignTop">
+     <widget class="QWidget" name="available_dlc_container" native="true">
+      <layout class="QVBoxLayout" name="available_dlc_container_layout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <resources/>
  <connections/>

@@ -54,7 +54,6 @@ class Ui_OverlaySettings(object):
         self.dxvk_layout.addWidget(self.gb_options, 2, 0, 1, 3)
 
         self.retranslateUi(OverlaySettings)
-        QtCore.QMetaObject.connectSlotsByName(OverlaySettings)
 
     def retranslateUi(self, OverlaySettings):
         _translate = QtCore.QCoreApplication.translate

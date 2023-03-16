@@ -46,6 +46,10 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
     def __init__(self, parent=None):
         super(EOSGroup, self).__init__(parent=parent)
         self.setupUi(self)
+        # lk: set object names for CSS properties
+        self.install_button.setObjectName("InstallButton")
+        self.uninstall_button.setObjectName("UninstallButton")
+
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
 
@@ -57,8 +61,8 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
         self.update_button.setVisible(False)
         self.overlay = self.core.lgd.get_overlay_install_info()
 
-        self.signals.overlay_installation_finished.connect(self.overlay_installation_finished)
-        self.signals.wine_prefix_updated.connect(self.update_prefixes)
+        self.signals.application.overlay_installed.connect(self.overlay_installation_finished)
+        self.signals.application.prefix_updated.connect(self.update_prefixes)
 
         self.update_check_button.clicked.connect(self.check_for_update)
         self.install_button.clicked.connect(self.install_overlay)
@@ -209,7 +213,9 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
         self.enabled_cb.setChecked(enabled)
 
     def install_overlay(self, update=False):
-        base_path = os.path.expanduser("~/legendary/.overlay")
+        base_path = os.path.join(
+            self.core.lgd.config.get("Legendary", "install_dir", fallback=os.path.expanduser("~/legendary")),".overlay"
+        )
         if update:
             if not self.overlay:
                 self.overlay_stack.setCurrentIndex(1)
@@ -218,10 +224,11 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
                 return
             base_path = self.overlay.install_path
 
-        options = InstallOptionsModel(app_name="", base_path=base_path,
-                                      platform="Windows", overlay=True)
+        options = InstallOptionsModel(
+            app_name=eos.EOSOverlayApp.app_name, base_path=base_path, platform="Windows", overlay=True
+        )
 
-        self.signals.install_game.emit(options)
+        self.signals.game.install.emit(options)
 
     def uninstall_overlay(self):
         if not self.core.is_overlay_installed():

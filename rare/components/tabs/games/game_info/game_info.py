@@ -2,397 +2,347 @@ import os
 import platform
 import shutil
 from logging import getLogger
-from pathlib import Path
+from typing import Optional
 
 from PyQt5.QtCore import (
     Qt,
-    pyqtSignal,
-    QThreadPool,
     pyqtSlot,
 )
 from PyQt5.QtWidgets import (
-    QHBoxLayout,
     QMenu,
-    QProgressBar,
-    QPushButton,
     QWidget,
     QMessageBox,
     QWidgetAction,
 )
-from legendary.models.game import Game, InstalledGame
 
-from rare.models.install import InstallOptionsModel
-from rare.shared import (
-    LegendaryCoreSingleton,
-    GlobalSignalsSingleton,
-    ArgumentsSingleton,
-)
-from rare.shared import ImageManagerSingleton
+from rare.models.game import RareGame
+from rare.shared import RareCore
 from rare.shared.image_manager import ImageSize
+from rare.shared.workers import VerifyWorker, MoveWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
-from rare.utils.legendary_utils import VerifyWorker
-from rare.utils.misc import get_size
-from rare.utils.steam_grades import SteamWorker
+from rare.utils.misc import format_size
 from rare.widgets.image_widget import ImageWidget
-from .move_game import CopyGameInstallation, MoveGamePopUp, is_game_dir
+from rare.widgets.side_tab import SideTabContents
+from .move_game import MoveGamePopUp, is_game_dir
 
 logger = getLogger("GameInfo")
 
 
-class GameInfo(QWidget, Ui_GameInfo):
-    igame: InstalledGame
-    game: Game = None
-    verify_threads = dict()
-    verification_finished = pyqtSignal(InstalledGame)
-    uninstalled = pyqtSignal(str)
-
-    def __init__(self, parent, game_utils):
+class GameInfo(QWidget, SideTabContents):
+    def __init__(self, parent=None):
         super(GameInfo, self).__init__(parent=parent)
-        self.setupUi(self)
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
-        self.args = ArgumentsSingleton()
-        self.image_manager = ImageManagerSingleton()
-        self.game_utils = game_utils
+        self.ui = Ui_GameInfo()
+        self.ui.setupUi(self)
+        # lk: set object names for CSS properties
+        self.ui.install_button.setObjectName("InstallButton")
+        self.ui.uninstall_button.setObjectName("UninstallButton")
+
+        self.rcore = RareCore.instance()
+        self.core = RareCore.instance().core()
+        self.args = RareCore.instance().args()
+        # self.image_manager = RareCore.instance().image_manager()
+
+        self.rgame: Optional[RareGame] = None
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.Display)
-        self.layout_game_info.insertWidget(0, self.image, alignment=Qt.AlignTop)
+        self.ui.layout_game_info.insertWidget(0, self.image, alignment=Qt.AlignTop)
 
-        if platform.system() == "Windows":
-            self.lbl_grade.setVisible(False)
-            self.grade.setVisible(False)
-        else:
-            self.steam_worker: SteamWorker = SteamWorker(self.core)
-            self.steam_worker.signals.rating.connect(self.grade.setText)
-            self.steam_worker.setAutoDelete(False)
+        self.ui.install_button.clicked.connect(self.__on_install)
+        self.ui.verify_button.clicked.connect(self.__on_verify)
+        self.ui.repair_button.clicked.connect(self.__on_repair)
+        self.ui.uninstall_button.clicked.connect(self.__on_uninstall)
 
-        self.game_actions_stack.setCurrentIndex(0)
-        self.install_button.setText(self.tr("Link to Origin/Launch"))
-        self.game_actions_stack.resize(self.game_actions_stack.minimumSize())
+        self.move_game_pop_up = MoveGamePopUp(self)
+        move_action = QWidgetAction(self)
+        move_action.setDefaultWidget(self.move_game_pop_up)
+        self.ui.move_button.setMenu(QMenu(self.ui.move_button))
+        self.ui.move_button.menu().addAction(move_action)
 
-        self.uninstall_button.clicked.connect(self.uninstall)
-        self.verify_button.clicked.connect(self.verify)
+        self.move_game_pop_up.browse_done.connect(self.ui.move_button.showMenu)
+        self.move_game_pop_up.move_clicked.connect(self.ui.move_button.menu().close)
+        self.move_game_pop_up.move_clicked.connect(self.__on_move)
 
-        self.verify_pool = QThreadPool()
-        self.verify_pool.setMaxThreadCount(2)
-        if self.args.offline:
-            self.repair_button.setDisabled(True)
-        else:
-            self.repair_button.clicked.connect(self.repair)
-
-        self.install_button.clicked.connect(lambda: self.game_utils.launch_game(self.game.app_name))
-
-        self.move_game_pop_up = MoveGamePopUp()
-        self.move_action = QWidgetAction(self)
-        self.move_action.setDefaultWidget(self.move_game_pop_up)
-        self.move_button.setMenu(QMenu())
-        self.move_button.menu().addAction(self.move_action)
-
-        self.progress_of_moving = QProgressBar()
-        self.existing_game_dir = False
-        self.is_moving = False
-        self.game_moving = None
-        self.dest_path_with_suffix = None
-
-        self.widget_container = QWidget()
-        box_layout = QHBoxLayout()
-        box_layout.setContentsMargins(0, 0, 0, 0)
-        box_layout.addWidget(self.move_button)
-        self.widget_container.setLayout(box_layout)
-        index = self.move_stack.addWidget(self.widget_container)
-        self.move_stack.setCurrentIndex(index)
-        self.move_game_pop_up.move_clicked.connect(self.move_button.menu().close)
-        self.move_game_pop_up.move_clicked.connect(self.move_game)
-        self.move_game_pop_up.browse_done.connect(self.show_menu_after_browse)
-
-    def uninstall(self):
-        if self.game_utils.uninstall_game(self.game.app_name):
-            self.game_utils.update_list.emit(self.game.app_name)
-            self.uninstalled.emit(self.game.app_name)
+        self.steam_grade_ratings = {
+            "platinum": self.tr("Platinum"),
+            "gold": self.tr("Gold"),
+            "silver": self.tr("Silver"),
+            "bronze": self.tr("Bronze"),
+            "borked": self.tr("Borked"),
+            "fail": self.tr("Failed to get rating"),
+            "pending": self.tr("Loading..."),
+            "na": self.tr("Not applicable"),
+        }
 
     @pyqtSlot()
-    def repair(self):
-        """ This function is to be called from the button only """
-        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.igame.app_name}.repair")
+    def __on_install(self):
+        if self.rgame.is_non_asset:
+            self.rgame.launch()
+        else:
+            self.rgame.install()
+
+    # FIXME: Move to RareGame
+    @pyqtSlot()
+    def __on_uninstall(self):
+        """ This method is to be called from the button only """
+        self.rgame.uninstall()
+
+    @pyqtSlot()
+    def __on_repair(self):
+        """ This method is to be called from the button only """
+        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.rgame.app_name}.repair")
         if not os.path.exists(repair_file):
             QMessageBox.warning(
                 self,
-                self.tr("Error - {}").format(self.igame.title),
+                self.tr("Error - {}").format(self.rgame.title),
                 self.tr(
                     "Repair file does not exist or game does not need a repair. Please verify game first"
                 ),
             )
             return
-        self.repair_game(self.igame)
+        self.repair_game(self.rgame)
 
-    def repair_game(self, igame: InstalledGame):
-        game = self.core.get_game(igame.app_name)
+    def repair_game(self, rgame: RareGame):
+        rgame.update_game()
         ans = False
-        if igame.version != game.app_version(igame.platform):
+        if rgame.has_update:
             ans = QMessageBox.question(
                 self,
-                self.tr("Repair and update?"),
+                self.tr("Repair and update? - {}").format(self.rgame.title),
                 self.tr(
                     "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. "
                     "Do you want to update the game while repairing it?"
-                ).format(igame.title, igame.version, game.app_version(igame.platform)),
+                ).format(rgame.title, rgame.version, rgame.remote_version),
             ) == QMessageBox.Yes
-        self.signals.install_game.emit(
-            InstallOptionsModel(
-                app_name=igame.app_name, repair_mode=True, repair_and_update=ans, update=True
-            )
-        )
+        rgame.repair(repair_and_update=ans)
 
-    @pyqtSlot()
-    def verify(self):
-        """ This function is to be called from the button only """
-        if not os.path.exists(self.igame.install_path):
-            logger.error(f"Installation path {self.igame.install_path} for {self.igame.title} does not exist")
-            QMessageBox.warning(
-                self,
-                self.tr("Error - {}").format(self.igame.title),
-                self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.igame.title),
-            )
-            return
-        self.verify_game(self.igame)
-
-    def verify_game(self, igame: InstalledGame):
-        self.verify_widget.setCurrentIndex(1)
-        verify_worker = VerifyWorker(igame.app_name)
-        verify_worker.signals.status.connect(self.verify_status)
-        verify_worker.signals.result.connect(self.verify_result)
-        verify_worker.signals.error.connect(self.verify_error)
-        self.verify_progress.setValue(0)
-        self.verify_threads[igame.app_name] = verify_worker
-        self.verify_pool.start(verify_worker)
-        self.move_button.setEnabled(False)
-
-    def verify_cleanup(self, app_name: str):
-        self.verify_widget.setCurrentIndex(0)
-        self.verify_threads.pop(app_name)
-        self.move_button.setEnabled(True)
-        self.verify_button.setEnabled(True)
-
-    @pyqtSlot(str, str)
-    def verify_error(self, app_name, message):
-        self.verify_cleanup(app_name)
-        igame = self.core.get_installed_game(app_name)
+    @pyqtSlot(RareGame, str)
+    def __on_worker_error(self, rgame: RareGame, message: str):
         QMessageBox.warning(
             self,
-            self.tr("Error - {}").format(igame.title),
+            self.tr("Error - {}").format(rgame.title),
             message
         )
 
-    @pyqtSlot(str, int, int, float, float)
-    def verify_status(self, app_name, num, total, percentage, speed):
-        # checked, max, app_name
-        if app_name == self.game.app_name:
-            self.verify_progress.setValue(num * 100 // total)
+    @pyqtSlot()
+    def __on_verify(self):
+        """ This method is to be called from the button only """
+        if not os.path.exists(self.rgame.igame.install_path):
+            logger.error(f"Installation path {self.rgame.igame.install_path} for {self.rgame.title} does not exist")
+            QMessageBox.warning(
+                self,
+                self.tr("Error - {}").format(self.rgame.title),
+                self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.rgame.title),
+            )
+            return
+        self.verify_game(self.rgame)
 
-    @pyqtSlot(str, bool, int, int)
-    def verify_result(self, app_name, success, failed, missing):
-        self.verify_cleanup(app_name)
-        self.repair_button.setDisabled(success)
-        igame = self.core.get_installed_game(app_name)
+    def verify_game(self, rgame: RareGame):
+        worker = VerifyWorker(self.core, self.args, rgame)
+        worker.signals.progress.connect(self.__on_verify_progress)
+        worker.signals.result.connect(self.__on_verify_result)
+        worker.signals.error.connect(self.__on_worker_error)
+        self.rcore.enqueue_worker(rgame, worker)
+
+    @pyqtSlot(RareGame, int, int, float, float)
+    def __on_verify_progress(self, rgame: RareGame, num, total, percentage, speed):
+        # lk: the check is NOT REQUIRED because signals are disconnected but protect against it anyway
+        if rgame is not self.rgame:
+            return
+        self.ui.verify_progress.setValue(num * 100 // total)
+
+    @pyqtSlot(RareGame, bool, int, int)
+    def __on_verify_result(self, rgame: RareGame, success, failed, missing):
+        self.ui.repair_button.setDisabled(success)
         if success:
             QMessageBox.information(
                 self,
-                self.tr("Summary - {}").format(igame.title),
+                self.tr("Summary - {}").format(rgame.title),
                 self.tr("<b>{}</b> has been verified successfully. "
-                        "No missing or corrupt files found").format(igame.title),
+                        "No missing or corrupt files found").format(rgame.title),
             )
-            self.verification_finished.emit(igame)
         else:
             ans = QMessageBox.question(
                 self,
-                self.tr("Summary - {}").format(igame.title),
+                self.tr("Summary - {}").format(rgame.title),
                 self.tr(
-                    "Verification failed, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. "
+                    "<b>{}</b> failed verification, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. "
                     "Do you want to repair them?"
-                ).format(failed, missing),
+                ).format(rgame.title, failed, missing),
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.Yes,
             )
             if ans == QMessageBox.Yes:
-                self.repair_game(igame)
+                self.repair_game(rgame)
 
     @pyqtSlot(str)
-    def move_game(self, dest_path):
-        dest_path = Path(dest_path)
-        install_path = Path(self.igame.install_path)
-        self.dest_path_with_suffix = dest_path.joinpath(install_path.stem)
+    def __on_move(self, dst_path: str):
+        """ This method is to be called from the button only """
+        new_install_path = os.path.join(dst_path, os.path.basename(self.rgame.install_path))
 
-        if self.dest_path_with_suffix.is_dir():
-            self.existing_game_dir = is_game_dir(install_path, self.dest_path_with_suffix)
+        dir_exists = False
+        if os.path.isdir(new_install_path):
+            dir_exists = is_game_dir(self.rgame.install_path, new_install_path)
 
-        if not self.existing_game_dir:
-            for i in dest_path.iterdir():
-                if install_path.stem in i.stem:
-                    warn_msg = QMessageBox()
-                    warn_msg.setText(self.tr("Destination file/directory exists."))
-                    warn_msg.setInformativeText(
-                        self.tr("Do you really want to overwrite it? This will delete {}").format(
-                            self.dest_path_with_suffix
-                        )
+        if not dir_exists:
+            for item in os.listdir(dst_path):
+                if os.path.basename(self.rgame.install_path) in os.path.basename(item):
+                    ans = QMessageBox.question(
+                        self,
+                        self.tr("Move game? - {}").format(self.rgame.title),
+                        self.tr(
+                            "Destination <b>{}</b> already exists. "
+                            "Are you sure you want to overwrite it?"
+                        ).format(new_install_path),
+                        QMessageBox.Yes | QMessageBox.No,
+                        QMessageBox.Yes,
                     )
-                    warn_msg.addButton(QPushButton(self.tr("Yes")), QMessageBox.YesRole)
-                    warn_msg.addButton(QPushButton(self.tr("No")), QMessageBox.NoRole)
 
-                    response = warn_msg.exec()
-
-                    if response == 0:
-                        # Not using pathlib, since we can't delete not-empty folders. With shutil we can.
-                        if self.dest_path_with_suffix.is_dir():
-                            shutil.rmtree(self.dest_path_with_suffix)
+                    if ans == QMessageBox.Yes:
+                        if os.path.isdir(new_install_path):
+                            shutil.rmtree(new_install_path)
                         else:
-                            self.dest_path_with_suffix.unlink()
+                            os.remove(new_install_path)
                     else:
                         return
 
-        self.move_stack.addWidget(self.progress_of_moving)
-        self.move_stack.setCurrentWidget(self.progress_of_moving)
+        self.move_game(self.rgame, new_install_path, dir_exists)
 
-        self.game_moving = self.igame.app_name
-        self.is_moving = True
+    def move_game(self, rgame: RareGame, dst_path, dst_exists):
+        worker = MoveWorker(
+            self.core, rgame=rgame, dst_path=dst_path, dst_exists=dst_exists
+        )
+        worker.signals.progress.connect(self.__on_move_progress)
+        worker.signals.result.connect(self.__on_move_result)
+        worker.signals.error.connect(self.__on_worker_error)
+        self.rcore.enqueue_worker(self.rgame, worker)
 
-        self.verify_button.setEnabled(False)
+    @pyqtSlot(RareGame, int, object, object)
+    def __on_move_progress(self, rgame: RareGame, progress: int, total_size: int, copied_size: int):
+        # lk: the check is NOT REQUIRED because signals are disconnected but protect against it anyway
+        if rgame is not self.rgame:
+            return
+        self.ui.move_progress.setValue(progress)
 
-        if self.move_game_pop_up.is_different_drive(str(dest_path), str(install_path)):
-            # Destination dir on different drive
-            self.start_copy_diff_drive()
-        else:
-            # Destination dir on same drive
-            shutil.move(self.igame.install_path, dest_path)
-            self.set_new_game(self.dest_path_with_suffix)
-
-    def update_progressbar(self, progress_int):
-        self.progress_of_moving.setValue(progress_int)
-
-    def start_copy_diff_drive(self):
-        copy_worker = CopyGameInstallation(
-            install_path=self.igame.install_path,
-            dest_path=self.dest_path_with_suffix,
-            is_existing_dir=self.existing_game_dir,
-            igame=self.igame,
+    @pyqtSlot(RareGame, str)
+    def __on_move_result(self, rgame: RareGame, dst_path: str):
+        QMessageBox.information(
+            self,
+            self.tr("Summary - {}").format(rgame.title),
+            self.tr("<b>{}</b> successfully moved to <b>{}<b>.").format(rgame.title, dst_path),
         )
 
-        copy_worker.signals.progress.connect(self.update_progressbar)
-        copy_worker.signals.finished.connect(self.set_new_game)
-        copy_worker.signals.no_space_left.connect(self.warn_no_space_left)
-        QThreadPool.globalInstance().start(copy_worker)
+    @pyqtSlot()
+    def __update_widget(self):
+        """ React to state updates from RareGame """
+        # self.image.setPixmap(self.image_manager.get_pixmap(self.rgame.app_name, True))
+        self.image.setPixmap(self.rgame.pixmap)
 
-    def move_helper_clean_up(self):
-        self.move_stack.setCurrentWidget(self.move_button)
-        self.move_game_pop_up.refresh_indicator()
-        self.is_moving = False
-        self.game_moving = None
-        self.verify_button.setEnabled(True)
-        self.move_button.setEnabled(True)
+        self.ui.lbl_version.setDisabled(self.rgame.is_non_asset)
+        self.ui.version.setDisabled(self.rgame.is_non_asset)
+        self.ui.version.setText(
+            self.rgame.version if not self.rgame.is_non_asset else "N/A"
+        )
 
-    # This func does the needed UI changes, e.g. changing back to the initial move tool button and other stuff
-    def warn_no_space_left(self):
-        err_msg = QMessageBox()
-        err_msg.setText(self.tr("Out of space or unknown OS error occured."))
-        err_msg.exec()
-        self.move_helper_clean_up()
+        self.ui.lbl_install_size.setEnabled(bool(self.rgame.install_size))
+        self.ui.install_size.setEnabled(bool(self.rgame.install_size))
+        self.ui.install_size.setText(
+            format_size(self.rgame.install_size) if self.rgame.install_size else "N/A"
+        )
 
-    # Sets all needed variables to the new path.
-    def set_new_game(self, dest_path_with_suffix):
-        self.install_path.setText(str(dest_path_with_suffix))
-        self.igame.install_path = str(dest_path_with_suffix)
-        self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
-        self.move_game_pop_up.install_path = self.igame.install_path
+        self.ui.lbl_install_path.setEnabled(bool(self.rgame.install_path))
+        self.ui.install_path.setEnabled(bool(self.rgame.install_path))
+        self.ui.install_path.setText(
+            self.rgame.install_path if self.rgame.install_path else "N/A"
+        )
 
-        self.move_helper_clean_up()
+        self.ui.platform.setText(
+            self.rgame.igame.platform if self.rgame.is_installed and not self.rgame.is_non_asset else "Windows"
+        )
 
-    # We need to re-show the menu, as after clicking on browse, the whole menu gets closed.
-    # Otherwise, the user would need to click on the move button again to open it again.
-    def show_menu_after_browse(self):
-        self.move_button.showMenu()
+        self.ui.lbl_grade.setDisabled(
+            self.rgame.is_unreal or platform.system() == "Windows"
+        )
+        self.ui.grade.setDisabled(
+            self.rgame.is_unreal or platform.system() == "Windows"
+        )
+        self.ui.grade.setText(self.steam_grade_ratings[self.rgame.steam_grade()])
 
-    def update_game(self, app_name: str):
-        self.game = self.core.get_game(app_name)
-        self.igame = self.core.get_installed_game(self.game.app_name)
-        self.title.setTitle(self.game.app_title)
+        self.ui.install_button.setEnabled(
+            (not self.rgame.is_installed or self.rgame.is_non_asset) and self.rgame.is_idle
+        )
 
-        self.image.setPixmap(self.image_manager.get_pixmap(self.game.app_name, color=True))
+        self.ui.import_button.setEnabled(False)
 
-        self.app_name.setText(self.game.app_name)
-        if self.igame:
-            self.version.setText(self.igame.version)
+        self.ui.verify_button.setEnabled(
+            self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle
+        )
+        self.ui.verify_progress.setValue(self.rgame.progress if self.rgame.state == RareGame.State.VERIFYING else 0)
+        if self.rgame.state == RareGame.State.VERIFYING:
+            self.ui.verify_stack.setCurrentWidget(self.ui.verify_progress_page)
         else:
-            self.version.setText(self.game.app_version(self.igame.platform if self.igame else "Windows"))
-        self.dev.setText(self.game.metadata["developer"])
+            self.ui.verify_stack.setCurrentWidget(self.ui.verify_button_page)
 
-        if self.igame:
-            self.install_size.setText(get_size(self.igame.install_size))
-            self.install_path.setText(self.igame.install_path)
-            self.install_size.setVisible(True)
-            self.install_path.setVisible(True)
-            self.platform.setText(self.igame.platform)
+        self.ui.repair_button.setEnabled(
+            self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle
+            and self.rgame.needs_repair
+            and not self.args.offline
+        )
+
+        self.ui.move_button.setEnabled(
+            self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle
+        )
+        self.ui.move_progress.setValue(self.rgame.progress if self.rgame.state == RareGame.State.MOVING else 0)
+        if self.rgame.state == RareGame.State.MOVING:
+            self.ui.move_stack.setCurrentWidget(self.ui.move_progress_page)
         else:
-            self.install_size.setVisible(False)
-            self.install_path.setVisible(False)
-            self.platform.setText("Windows")
+            self.ui.move_stack.setCurrentWidget(self.ui.move_button_page)
 
-        if not self.igame:
-            # origin game
-            self.uninstall_button.setDisabled(True)
-            self.verify_button.setDisabled(True)
-            self.repair_button.setDisabled(True)
-            self.game_actions_stack.setCurrentIndex(1)
+        self.ui.uninstall_button.setEnabled(
+            self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle
+        )
+
+        if self.rgame.is_installed and not self.rgame.is_non_asset:
+            self.ui.game_actions_stack.setCurrentWidget(self.ui.installed_page)
         else:
-            self.uninstall_button.setDisabled(False)
-            self.verify_button.setDisabled(False)
-            if not self.args.offline:
-                self.repair_button.setDisabled(
-                    not os.path.exists(os.path.join(self.core.lgd.get_tmp_path(), f"{self.igame.app_name}.repair"))
-                )
-            self.game_actions_stack.setCurrentIndex(0)
+            self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
 
-        try:
-            is_ue = self.core.get_asset(app_name).namespace == "ue"
-        except ValueError:
-            is_ue = False
-        grade_visible = not is_ue and platform.system() != "Windows"
-        self.grade.setVisible(grade_visible)
-        self.lbl_grade.setVisible(grade_visible)
+    @pyqtSlot(RareGame)
+    def update_game(self, rgame: RareGame):
+        if self.rgame is not None:
+            if (worker := self.rgame.worker()) is not None:
+                if isinstance(worker, VerifyWorker):
+                    try:
+                        worker.signals.progress.disconnect(self.__on_verify_progress)
+                    except TypeError as e:
+                        logger.warning(f"{self.rgame.app_name} verify worker: {e}")
+                if isinstance(worker, MoveWorker):
+                    try:
+                        worker.signals.progress.disconnect(self.__on_move_progress)
+                    except TypeError as e:
+                        logger.warning(f"{self.rgame.app_name} move worker: {e}")
+            self.rgame.signals.widget.update.disconnect(self.__update_widget)
 
-        if platform.system() != "Windows" and not is_ue:
-            self.grade.setText(self.tr("Loading"))
-            self.steam_worker.set_app_name(self.game.app_name)
-            QThreadPool.globalInstance().start(self.steam_worker)
+        self.rgame = None
 
-        if len(self.verify_threads.keys()) == 0 or not self.verify_threads.get(self.game.app_name):
-            self.verify_widget.setCurrentIndex(0)
-        elif self.verify_threads.get(self.game.app_name):
-            self.verify_widget.setCurrentIndex(1)
-            self.verify_progress.setValue(
-                int(
-                    self.verify_threads[self.game.app_name].num
-                    / self.verify_threads[self.game.app_name].total
-                    * 100
-                )
-            )
+        rgame.signals.widget.update.connect(self.__update_widget)
+        if (worker := rgame.worker()) is not None:
+            if isinstance(worker, VerifyWorker):
+                worker.signals.progress.connect(self.__on_verify_progress)
+            if isinstance(worker, MoveWorker):
+                worker.signals.progress.connect(self.__on_move_progress)
 
-        # If the game that is currently moving matches with the current app_name, we show the progressbar.
-        # Otherwhise, we show the move tool button.
-        if self.igame is not None:
-            if self.game_moving == self.igame.app_name:
-                index = self.move_stack.addWidget(self.progress_of_moving)
-                self.move_stack.setCurrentIndex(index)
-            else:
-                index = self.move_stack.addWidget(self.move_button)
-                self.move_stack.setCurrentIndex(index)
+        self.set_title.emit(rgame.app_title)
+        self.ui.app_name.setText(rgame.app_name)
+        self.ui.dev.setText(rgame.developer)
 
-        # If a game is verifying or moving, disable both verify and moving buttons.
-        if len(self.verify_threads):
-            self.verify_button.setEnabled(False)
-            self.move_button.setEnabled(False)
-        if self.is_moving:
-            self.move_button.setEnabled(False)
-            self.verify_button.setEnabled(False)
+        if rgame.is_non_asset:
+            self.ui.install_button.setText(self.tr("Link/Launch"))
+            self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
+        else:
+            self.ui.install_button.setText(self.tr("Install Game"))
 
-        self.move_game_pop_up.update_game(app_name)
+        self.move_game_pop_up.update_game(rgame)
 
+        self.rgame = rgame
+        self.__update_widget()

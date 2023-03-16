@@ -8,15 +8,26 @@ from typing import List, Tuple, Optional
 
 from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QFileDialog, QGroupBox, QCompleter, QTreeView, QHeaderView, QMessageBox
+from PyQt5.QtWidgets import (
+    QFileDialog,
+    QGroupBox,
+    QCompleter,
+    QTreeView,
+    QHeaderView,
+    QMessageBox,
+    QStackedWidget,
+    QProgressBar,
+    QSizePolicy,
+)
 
 from rare.lgndr.cli import LegendaryCLI
+from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrImportGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ApiResultsSingleton
+from rare.shared import RareCore
 from rare.ui.components.tabs.games.integrations.import_group import Ui_ImportGroup
-from rare.utils.extra_widgets import IndicatorLineEdit, PathEdit
 from rare.widgets.elide_label import ElideLabel
+from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon, PathEdit
 
 logger = getLogger("Import")
 
@@ -55,13 +66,13 @@ class ImportedGame:
 
 class ImportWorker(QRunnable):
     class Signals(QObject):
-        finished = pyqtSignal(list)
-        progress = pyqtSignal(int)
+        progress = pyqtSignal(ImportedGame, int)
+        result = pyqtSignal(list)
 
-    def __init__(self, path: str, app_name: str = None, import_folder: bool = False, import_dlcs: bool = False):
+    def __init__(self, core: LegendaryCore, path: str, app_name: str = None, import_folder: bool = False, import_dlcs: bool = False):
         super(ImportWorker, self).__init__()
-        self.signals = self.Signals()
-        self.core = LegendaryCoreSingleton()
+        self.signals = ImportWorker.Signals()
+        self.core = core
 
         self.path = Path(path)
         self.app_name = app_name
@@ -78,11 +89,12 @@ class ImportWorker(QRunnable):
                     continue
                 result = self.__try_import(child, None)
                 result_list.append(result)
-                self.signals.progress.emit(int(100 * i // number_of_folders))
+                self.signals.progress.emit(result, int(100 * i // number_of_folders))
         else:
             result = self.__try_import(self.path, self.app_name)
             result_list.append(result)
-        self.signals.finished.emit(result_list)
+            self.signals.progress.emit(result, 100)
+        self.signals.result.emit(result_list)
 
     def __try_import(self, path: Path, app_name: str = None) -> ImportedGame:
         result = ImportedGame(ImportResult.ERROR)
@@ -157,18 +169,11 @@ class ImportGroup(QGroupBox):
         super(ImportGroup, self).__init__(parent=parent)
         self.ui = Ui_ImportGroup()
         self.ui.setupUi(self)
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
-        self.api_results = ApiResultsSingleton()
+        self.rcore = RareCore.instance()
+        self.core = RareCore.instance().core()
 
-        self.app_name_list = [game.app_name for game in self.api_results.game_list]
-        self.install_dir_list = [
-            game.metadata.get("customAttributes", {})
-            .get("FolderName", {})
-            .get("value", game.app_name)
-            for game in self.api_results.game_list
-            if not game.is_dlc
-        ]
+        self.app_name_list = [rgame.app_name for rgame in self.rcore.games]
+        self.install_dir_list = [rgame.folder_name for rgame in self.rcore.games if not rgame.is_dlc]
 
         self.path_edit = PathEdit(
             self.core.get_default_install_dir(),
@@ -182,7 +187,7 @@ class ImportGroup(QGroupBox):
         self.app_name_edit = IndicatorLineEdit(
             placeholder=self.tr("Use in case the app name was not found automatically"),
             completer=AppNameCompleter(
-                app_names=[(i.app_name, i.app_title) for i in self.api_results.game_list]
+                app_names=[(rgame.app_name, rgame.app_title) for rgame in self.rcore.games],
             ),
             edit_func=self.app_name_edit_callback,
             parent=self,
@@ -196,23 +201,31 @@ class ImportGroup(QGroupBox):
 
         self.ui.import_button.setEnabled(False)
         self.ui.import_button.clicked.connect(
-            lambda: self.import_pressed(self.path_edit.text())
+            lambda: self.__import(self.path_edit.text())
         )
 
-        self.info_label = ElideLabel(text="", parent=self)
-        self.ui.button_info_layout.addWidget(self.info_label)
+        self.button_info_stack = QStackedWidget(self)
+        self.button_info_stack.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.button_info_stack.setFixedHeight(self.ui.import_button.sizeHint().height())
+        self.info_label = ElideLabel(text="", parent=self.button_info_stack)
+        self.info_label.setFixedHeight(False)
+        self.info_label.setAlignment(Qt.AlignVCenter)
+        self.info_progress = QProgressBar(self.button_info_stack)
+        self.button_info_stack.addWidget(self.info_label)
+        self.button_info_stack.addWidget(self.info_progress)
+        self.ui.button_info_layout.addWidget(self.button_info_stack)
 
         self.threadpool = QThreadPool.globalInstance()
 
-    def path_edit_callback(self, path) -> Tuple[bool, str, str]:
+    def path_edit_callback(self, path) -> Tuple[bool, str, int]:
         if os.path.exists(path):
             if os.path.exists(os.path.join(path, ".egstore")):
-                return True, path, ""
+                return True, path, IndicatorReasonsCommon.VALID
             elif os.path.basename(path) in self.install_dir_list:
-                return True, path, ""
+                return True, path, IndicatorReasonsCommon.VALID
         else:
-            return False, path, PathEdit.reasons.dir_not_exist
-        return False, path, ""
+            return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
+        return False, path, IndicatorReasonsCommon.UNDEFINED
 
     @pyqtSlot(str)
     def path_changed(self, path: str):
@@ -223,13 +236,13 @@ class ImportGroup(QGroupBox):
         else:
             self.app_name_edit.setText("")
 
-    def app_name_edit_callback(self, text) -> Tuple[bool, str, str]:
+    def app_name_edit_callback(self, text) -> Tuple[bool, str, int]:
         if not text:
-            return False, text, ""
+            return False, text, IndicatorReasonsCommon.UNDEFINED
         if text in self.app_name_list:
-            return True, text, ""
+            return True, text, IndicatorReasonsCommon.VALID
         else:
-            return False, text, IndicatorLineEdit.reasons.game_not_installed
+            return False, text, IndicatorReasonsCommon.NOT_INSTALLED
 
     @pyqtSlot(str)
     def app_name_changed(self, app_name: str):
@@ -258,35 +271,37 @@ class ImportGroup(QGroupBox):
     def import_dlcs_changed(self, state: Qt.CheckState):
         self.ui.import_button.setEnabled(self.ui.import_folder_check.isChecked() or self.app_name_edit.is_valid)
 
-    def import_pressed(self, path=None):
+    @pyqtSlot(str)
+    def __import(self, path: Optional[str] = None):
         if not path:
             path = self.path_edit.text()
         worker = ImportWorker(
+            self.core,
             path,
             self.app_name_edit.text(),
             self.ui.import_folder_check.isChecked(),
             self.ui.import_dlcs_check.isChecked(),
         )
-        worker.signals.finished.connect(self.import_finished)
-        worker.signals.progress.connect(self.import_progress)
+        worker.signals.result.connect(self.__on_import_result)
+        worker.signals.progress.connect(self.__on_import_progress)
         self.threadpool.start(worker)
+        self.button_info_stack.setCurrentWidget(self.info_progress)
         self.info_label.setText(self.tr("Importing games"))
         self.ui.import_button.setDisabled(True)
 
+    @pyqtSlot(ImportedGame, int)
+    def __on_import_progress(self, imported: ImportedGame, progress: int):
+        self.info_progress.setValue(progress)
+        if imported.result == ImportResult.SUCCESS or imported.result == ImportResult.FAILED:
+            self.rcore.get_game(imported.app_name).set_installed(True)
+        status = "error" if not imported.result else (
+            "failed" if imported.result == ImportResult.FAILED else "successful"
+        )
+        logger.info(f"Import {status}: {imported.app_title}: {imported.path} ({imported.message})")
+
     @pyqtSlot(list)
-    def import_finished(self, result: List):
-        logger.info(f"Import finished: {result}")
-        self.info_label.setText("")
-
-        self.signals.update_gamelist.emit([r.app_name for r in result if r.result == ImportResult.SUCCESS])
-
-        for failed in (f for f in result if f.result == ImportResult.FAILED):
-            igame = self.core.get_installed_game(failed.app_name)
-            if igame and igame.version != self.core.get_asset(igame.app_name, igame.platform, False).build_version:
-                # update available
-                self.signals.add_download.emit(igame.app_name)
-                self.signals.update_download_tab_text.emit()
-
+    def __on_import_result(self, result: List[ImportedGame]):
+        self.button_info_stack.setCurrentWidget(self.info_label)
         if len(result) == 1:
             res = result[0]
             if res.result == ImportResult.SUCCESS:
@@ -302,6 +317,7 @@ class ImportGroup(QGroupBox):
                     self.tr("Error: Could not find AppName for <b>{}</b>").format(res.path)
                 )
         else:
+            self.info_label.setText("")
             success = [r for r in result if r.result == ImportResult.SUCCESS]
             failure = [r for r in result if r.result == ImportResult.FAILED]
             errored = [r for r in result if r.result == ImportResult.ERROR]
@@ -332,6 +348,3 @@ class ImportGroup(QGroupBox):
                 )
             messagebox.setDetailedText("\n".join(details))
             messagebox.show()
-
-    def import_progress(self, progress: int):
-        pass

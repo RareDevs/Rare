@@ -9,8 +9,8 @@ from legendary.core import LegendaryCore
 from legendary.utils import webview_login
 
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
-from rare.utils.extra_widgets import IndicatorLineEdit
 from rare.utils.misc import icon
+from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon
 
 logger = getLogger("BrowserLogin")
 
@@ -49,19 +49,19 @@ class BrowserLogin(QFrame):
         return self.sid_edit.is_valid
 
     @staticmethod
-    def text_changed(text) -> Tuple[bool, str, str]:
+    def text_changed(text) -> Tuple[bool, str, int]:
         if text:
             text = text.strip()
             if text.startswith("{") and text.endswith("}"):
                 try:
                     text = json.loads(text).get("authorizationCode")
                 except json.JSONDecodeError:
-                    return False, text, IndicatorLineEdit.reasons.wrong_format
+                    return False, text, IndicatorReasonsCommon.WRONG_FORMAT
             elif '"' in text:
                 text = text.strip('"')
-            return len(text) == 32, text, IndicatorLineEdit.reasons.wrong_format
+            return len(text) == 32, text, IndicatorReasonsCommon.WRONG_FORMAT
         else:
-            return False, text, ""
+            return False, text, IndicatorReasonsCommon.VALID
 
     def do_login(self):
         self.ui.status_label.setText(self.tr("Logging in..."))

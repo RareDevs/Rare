@@ -7,7 +7,6 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtWidgets import (
     QSizePolicy,
-    QWidget,
 )
 
 from .flow_layout import FlowLayout
@@ -22,12 +21,12 @@ class LibraryLayout(FlowLayout):
     #         self.doLayout(self.parent().rect(), False)
     #         e.accept()
 
-    def expandingDirections(self):
+    def expandingDirections(self) -> Qt.Orientations:
         return Qt.Orientations(Qt.Horizontal | Qt.Vertical)
 
-    def setGeometry(self, rect):
-        super(FlowLayout, self).setGeometry(rect)
-        self.doLayout(rect, False)
+    def setGeometry(self, a0: QRect) -> None:
+        super(FlowLayout, self).setGeometry(a0)
+        self.doLayout(a0, False)
 
     def doLayout(self, rect, testonly):
         """!
@@ -131,17 +130,17 @@ class LibraryLayout(FlowLayout):
             lineheight = max(lineheight, item.sizeHint().height())
         return y + lineheight - rect.y() + bottom
 
-    def sort(self, key: Callable):
-        self._items.sort(key=key)
+    def sort(self, key: Callable, reverse=False) -> None:
+        self._items.sort(key=key, reverse=reverse)
         self.setGeometry(self.parent().rect())
 
     # These are used to pop and insert the installing widget, remove them when no longer needed
-    def remove(self, name: str) -> QWidget:
-        widget = next(filter(lambda x: x.widget().objectName() == name, self._items), None)
-        self._items.remove(widget)
-        self.setGeometry(self.parent().rect())
-        return widget
-
-    def insert(self, index: int, widget: QWidget):
-        self._items.insert(index, widget)
-        self.setGeometry(self.parent().rect())
+    # def remove(self, name: str) -> QWidget:
+    #     widget = next(filter(lambda x: x.widget().objectName() == name, self._items), None)
+    #     self._items.remove(widget)
+    #     self.setGeometry(self.parent().rect())
+    #     return widget
+    #
+    # def insert(self, index: int, widget: QWidget):
+    #     self._items.insert(index, widget)
+    #     self.setGeometry(self.parent().rect())

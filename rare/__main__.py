@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import multiprocessing
 import os
 import pathlib
@@ -49,6 +50,7 @@ def main():
     launch_minimal_parser = subparsers.add_parser("start", aliases=["launch"])
     launch_minimal_parser.add_argument("app_name", help="AppName of the game to launch",
                                        metavar="<App Name>", action="store")
+    launch_minimal_parser.add_argument("--dry-run", help="Print arguments and exit", action="store_true")
     launch_minimal_parser.add_argument("--offline", help="Launch game offline",
                                        action="store_true")
     launch_minimal_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
@@ -57,7 +59,7 @@ def main():
     launch_minimal_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
                                        default=os.environ.get('LGDRY_WINE_PREFIX', None),
                                        help='Set WINE prefix to use')
-    launch_minimal_parser.add_argument("--ask-alyways-sync", help="Ask for cloud saves",
+    launch_minimal_parser.add_argument("--ask-sync-saves", help="Ask to sync cloud saves",
                                        action="store_true")
     launch_minimal_parser.add_argument("--skip-update-check", help="Do not check for updates",
                                        action="store_true")
@@ -65,13 +67,13 @@ def main():
     args = parser.parse_args()
 
     if args.desktop_shortcut or args.startmenu_shortcut:
-        from rare.utils.misc import create_desktop_link
+        from rare.utils.paths import create_desktop_link
 
         if args.desktop_shortcut:
-            create_desktop_link(type_of_link="desktop", for_rare=True)
+            create_desktop_link(app_name="rare_shortcut", link_type="desktop")
 
         if args.startmenu_shortcut:
-            create_desktop_link(type_of_link="start_menu", for_rare=True)
+            create_desktop_link(app_name="rare_shortcut", link_type="start_menu")
 
         print("Link created")
         return

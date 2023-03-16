@@ -143,7 +143,6 @@ class Ui_RareSettings(object):
         self.rare_layout.addLayout(self.right_layout)
 
         self.retranslateUi(RareSettings)
-        QtCore.QMetaObject.connectSlotsByName(RareSettings)
 
     def retranslateUi(self, RareSettings):
         _translate = QtCore.QCoreApplication.translate

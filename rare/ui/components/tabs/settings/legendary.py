@@ -145,7 +145,6 @@ class Ui_LegendarySettings(object):
         self.legendary_layout.addLayout(self.right_layout)
 
         self.retranslateUi(LegendarySettings)
-        QtCore.QMetaObject.connectSlotsByName(LegendarySettings)
 
     def retranslateUi(self, LegendarySettings):
         _translate = QtCore.QCoreApplication.translate

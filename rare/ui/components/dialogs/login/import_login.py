@@ -60,7 +60,6 @@ class Ui_ImportLogin(object):
         self.import_layout.addItem(spacerItem, 3, 0, 1, 3)
 
         self.retranslateUi(ImportLogin)
-        QtCore.QMetaObject.connectSlotsByName(ImportLogin)
 
     def retranslateUi(self, ImportLogin):
         _translate = QtCore.QCoreApplication.translate

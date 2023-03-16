@@ -43,7 +43,6 @@ class Ui_RPCSettings(object):
         self.layout.addWidget(self.show_time, 3, 0, 1, 2)
 
         self.retranslateUi(RPCSettings)
-        QtCore.QMetaObject.connectSlotsByName(RPCSettings)
 
     def retranslateUi(self, RPCSettings):
         _translate = QtCore.QCoreApplication.translate

@@ -33,12 +33,16 @@ jobs:
           python-version: '3.9'
       - name: Install Test Dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pylint
+          python3 -m pip install --upgrade pip
+          pip3 install astroid
+          pip3 install pylint
       - name: Install Target Dependencies
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
+      - name: Install Development Dependencies
+        run: |
+          pip3 install qstylizer
       - name: Analysis with pylint
         run: |
-          pylint -E rare --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5
+          python3 -m pylint -E rare --jobs=3 --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5 --generated-members=PyQt5.*

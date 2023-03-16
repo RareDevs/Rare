@@ -25,8 +25,8 @@ class DiscordRPC(QObject):
             self.state = 2
             self.set_discord_rpc()
 
-        self.signals.set_discord_rpc.connect(self.update_presence)
-        self.signals.rpc_settings_updated.connect(self.changed_settings)
+        self.signals.discord_rpc.set_title.connect(self.update_presence)
+        self.signals.discord_rpc.apply_settings.connect(self.changed_settings)
 
     def update_presence(self, app_name):
         self.set_discord_rpc(app_name)

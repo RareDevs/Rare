@@ -63,7 +63,6 @@ class Ui_ImportGroup(object):
         self.import_layout.setLayout(4, QtWidgets.QFormLayout.FieldRole, self.button_info_layout)
 
         self.retranslateUi(ImportGroup)
-        QtCore.QMetaObject.connectSlotsByName(ImportGroup)
 
     def retranslateUi(self, ImportGroup):
         _translate = QtCore.QCoreApplication.translate

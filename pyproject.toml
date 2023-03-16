@@ -1,5 +1,5 @@
 [tool.black]
-line-length = 110
+line-length = 120
 target-version = ['py39', 'py310', 'py311']
 include = '\.py$'
 force-exclude = '''

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>720</width>
-    <height>561</height>
+    <width>592</width>
+    <height>200</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,6 +23,15 @@
    <string>Environment variables</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QTableWidget" name="env_vars_table">
      <property name="sizePolicy">
@@ -30,6 +39,9 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="verticalScrollBarPolicy">
       <enum>Qt::ScrollBarAsNeeded</enum>

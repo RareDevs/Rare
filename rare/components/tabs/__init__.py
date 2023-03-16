@@ -1,58 +1,54 @@
 from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
 
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.components.tabs.account import AccountWidget
-from rare.components.tabs.downloads import DownloadsTab
-from rare.components.tabs.games import GamesTab
-from rare.components.tabs.settings import SettingsTab
-from rare.components.tabs.settings.debug import DebugSettings
-from rare.components.tabs.shop import Shop
-from rare.components.tabs.tab_utils import MainTabBar, TabButtonWidget
+from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils.misc import icon
+from .account import AccountWidget
+from .downloads import DownloadsTab
+from .games import GamesTab
+from .settings import SettingsTab
+from .settings.debug import DebugSettings
+from .shop import Shop
+from .tab_widgets import MainTabBar, TabButtonWidget
 
 
-class TabWidget(QTabWidget):
+class MainTabWidget(QTabWidget):
     # int: exit code
     exit_app: pyqtSignal = pyqtSignal(int)
 
     def __init__(self, parent):
-        super(TabWidget, self).__init__(parent=parent)
+        super(MainTabWidget, self).__init__(parent=parent)
+        self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
-        disabled_tab = 3 if not self.args.offline else 1
-        self.setTabBar(MainTabBar(disabled_tab))
+
+        self.tab_bar = MainTabBar(parent=self)
+        self.setTabBar(self.tab_bar)
 
         # Generate Tabs
-        self.games_tab = GamesTab()
-        self.addTab(self.games_tab, self.tr("Games"))
+        self.games_tab = GamesTab(self)
+        self.games_index = self.addTab(self.games_tab, self.tr("Games"))
 
+        # Downloads Tab after Games Tab to use populated RareCore games list
         if not self.args.offline:
-            # updates = self.games_tab.default_widget.game_list.updates
-            self.downloads_tab = DownloadsTab(self.games_tab.updates)
-            self.addTab(
-                self.downloads_tab,
-                "Downloads"
-                + (
-                    " (" + str(len(self.games_tab.updates)) + ")"
-                    if len(self.games_tab.updates) != 0
-                    else ""
-                ),
-            )
-            self.store = Shop(self.core)
-            self.addTab(self.store, self.tr("Store (Beta)"))
+            self.downloads_tab = DownloadsTab(self)
+            self.downloads_index = self.addTab(self.downloads_tab, "")
+            self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
+            self.downloads_tab.update_queues_count()
+            self.setTabEnabled(self.downloads_index, not self.args.offline)
 
-        self.settings = SettingsTab(self)
-        if self.args.debug:
-            self.settings.addTab(DebugSettings(), "Debug")
+            self.store_tab = Shop(self.core)
+            self.store_index = self.addTab(self.store_tab, self.tr("Store (Beta)"))
+            self.setTabEnabled(self.store_index, not self.args.offline)
 
         # Space Tab
-        self.addTab(QWidget(), "")
-        self.setTabEnabled(disabled_tab, False)
+        space_index = self.addTab(QWidget(self), "")
+        self.setTabEnabled(space_index, False)
+        self.tab_bar.expanded = space_index
         # Button
-        self.addTab(QWidget(), "")
-        self.setTabEnabled(disabled_tab + 1, False)
+        button_index = self.addTab(QWidget(self), "")
+        self.setTabEnabled(button_index, False)
 
         self.account_widget = AccountWidget(self)
         self.account_widget.logout.connect(self.logout)
@@ -61,55 +57,41 @@ class TabWidget(QTabWidget):
         account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")
         account_button.setMenu(QMenu())
         account_button.menu().addAction(account_action)
-        self.tabBar().setTabButton(
-            disabled_tab + 1, self.tabBar().RightSide, account_button
+        self.tab_bar.setTabButton(
+            button_index, MainTabBar.RightSide, account_button
         )
 
-        self.addTab(self.settings, icon("fa.gear"), "")
-
-        self.settings.about.update_available_ready.connect(
-            lambda: self.tabBar().setTabText(5, "(!)")
+        self.settings_tab = SettingsTab(self)
+        self.settings_index = self.addTab(self.settings_tab, icon("fa.gear"), "")
+        self.settings_tab.about.update_available_ready.connect(
+            lambda: self.tab_bar.setTabText(self.settings_index, "(!)")
         )
-        # Signals
-        # set current index
-        self.signals.set_main_tab_index.connect(self.setCurrentIndex)
-
-        # update dl tab text
-        self.signals.update_download_tab_text.connect(self.update_dl_tab_text)
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
-        self.setIconSize(QSize(25, 25))
+        self.setIconSize(QSize(24, 24))
 
         # shortcuts
-        QShortcut("Alt+1", self).activated.connect(lambda: self.setCurrentIndex(0))
-        QShortcut("Alt+2", self).activated.connect(lambda: self.setCurrentIndex(1))
-        QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(2))
-        QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(5))
+        QShortcut("Alt+1", self).activated.connect(lambda: self.setCurrentIndex(self.games_index))
+        if not self.args.offline:
+            QShortcut("Alt+2", self).activated.connect(lambda: self.setCurrentIndex(self.downloads_index))
+            QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(self.store_index))
+        QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
 
-    def update_dl_tab_text(self):
-        num_downloads = len(
-            set(
-                [i.options.app_name for i in self.downloads_tab.dl_queue]
-                + [i for i in self.downloads_tab.update_widgets.keys()]
-            )
-        )
+    @pyqtSlot(int)
+    def __on_downloads_update_title(self, num_downloads: int):
+        self.setTabText(self.indexOf(self.downloads_tab), self.tr("Downloads ({})").format(num_downloads))
 
-        if num_downloads != 0:
-            self.setTabText(1, f"Downloads ({num_downloads})")
-        else:
-            self.setTabText(1, "Downloads")
+    def mouse_clicked(self, index):
+        if index == self.games_index:
+            self.games_tab.setCurrentWidget(self.games_tab.games_page)
 
-    def mouse_clicked(self, tab_num):
-        if tab_num == 0:
-            self.games_tab.layout().setCurrentIndex(0)
-
-        if not self.args.offline and tab_num == 2:
-            self.store.load()
+        if not self.args.offline and index == self.store_index:
+            self.store_tab.load()
 
     def resizeEvent(self, event):
-        self.tabBar().setMinimumWidth(self.width())
-        super(TabWidget, self).resizeEvent(event)
+        self.tab_bar.setMinimumWidth(self.width())
+        super(MainTabWidget, self).resizeEvent(event)
 
     @pyqtSlot()
     def logout(self):

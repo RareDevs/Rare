@@ -28,7 +28,6 @@ class Ui_PathEdit(object):
         self.layout_pathedit.addWidget(self.path_select)
 
         self.retranslateUi(PathEdit)
-        QtCore.QMetaObject.connectSlotsByName(PathEdit)
 
     def retranslateUi(self, PathEdit):
         _translate = QtCore.QCoreApplication.translate

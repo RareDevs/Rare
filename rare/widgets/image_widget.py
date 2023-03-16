@@ -58,7 +58,9 @@ class ImageWidget(QWidget):
                     1 / pixmap.devicePixelRatioF() / self._image_size.divisor,
                     1 / pixmap.devicePixelRatioF() / self._image_size.divisor,
                 )
-            self.update()
+        else:
+            self.paint_image = self.paint_image_empty
+        self.update()
 
     def setFixedSize(self, a0: ImageSize.Preset) -> None:
         self._squared_overlay = None
@@ -137,6 +139,8 @@ class ImageWidget(QWidget):
 
     def paintEvent(self, a0: QPaintEvent) -> None:
         painter = QPainter(self)
+        if not painter.paintEngine().isActive():
+            return
         # helps with better image quality
         painter.setRenderHint(QPainter.SmoothPixmapTransform, self._smooth_transform)
         self.paint_image(painter, a0)

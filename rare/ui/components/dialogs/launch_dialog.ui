@@ -31,7 +31,7 @@
   <property name="windowTitle">
    <string>Launching Rare</string>
   </property>
-  <layout class="QVBoxLayout" name="launch_dialog_layout">
+  <layout class="QVBoxLayout" name="launch_layout">
    <item>
     <widget class="QLabel" name="title_label">
      <property name="text">

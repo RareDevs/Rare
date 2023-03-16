@@ -3,32 +3,29 @@ import re
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import Qt, QRunnable, QObject, pyqtSignal, QThreadPool, QSettings
+from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
+from rare.shared.workers.worker import Worker
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
-from rare.utils.extra_widgets import PathEdit, IndicatorLineEdit
-from rare.utils.misc import get_size
+from rare.utils.misc import format_size
+from rare.widgets.indicator_edit import PathEdit, IndicatorLineEdit, IndicatorReasonsCommon
 
 logger = getLogger("LegendarySettings")
 
 
-class RefreshGameMetaSignals(QObject):
-    finished = pyqtSignal()
+class RefreshGameMetaWorker(Worker):
+    class Signals(QObject):
+        finished = pyqtSignal()
 
-    def __init__(self):
-        super(RefreshGameMetaSignals, self).__init__()
-
-
-class RefreshGameMetaWorker(QRunnable):
     def __init__(self):
         super(RefreshGameMetaWorker, self).__init__()
-        self.signals = RefreshGameMetaSignals()
+        self.signals = RefreshGameMetaWorker.Signals()
         self.setAutoDelete(True)
         self.core = LegendaryCoreSingleton()
 
-    def run(self) -> None:
+    def run_real(self) -> None:
         self.core.get_game_and_dlc_list(True, force_refresh=True)
         self.signals.finished.emit()
 
@@ -44,7 +41,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         # Default installation directory
         self.install_dir = PathEdit(
             self.core.get_default_install_dir(),
-            file_type=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.DirectoryOnly,
             save_func=self.path_save,
         )
         self.install_dir_layout.addWidget(self.install_dir)
@@ -102,18 +99,17 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod
-    def locale_edit_cb(text: str) -> Tuple[bool, str, str]:
+    def locale_edit_cb(text: str) -> Tuple[bool, str, int]:
         if text:
             if re.match("^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$", text):
                 language, country = text.replace("_", "-").split("-")
                 text = "-".join([language.lower(), country.upper()])
             if bool(re.match("^[a-z]{2,3}-[A-Z]{2,3}$", text)):
-                return True, text, ""
+                return True, text, IndicatorReasonsCommon.VALID
             else:
-                return False, text, IndicatorLineEdit.reasons.wrong_format
-
+                return False, text, IndicatorReasonsCommon.WRONG_FORMAT
         else:
-            return True, text, ""
+            return True, text, IndicatorReasonsCommon.VALID
 
     def locale_save_cb(self, text: str):
         if text:
@@ -187,7 +183,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
                 self,
                 "Cleanup",
                 self.tr("Cleanup complete! Successfully removed {}").format(
-                    get_size(before - after)
+                    format_size(before - after)
                 ),
             )
         else:

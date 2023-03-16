@@ -4,53 +4,19 @@ import os
 from datetime import date
 
 import requests
-from PyQt5.QtCore import pyqtSignal, QRunnable, QObject, QCoreApplication
 
 from rare.lgndr.core import LegendaryCore
-from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
 from rare.utils.paths import data_dir, cache_dir
 
 replace_chars = ",;.:-_ "
 url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 
 
-class SteamWorker(QRunnable):
-    class Signals(QObject):
-        rating = pyqtSignal(str)
-
-    app_name: str = ""
-
-    def __init__(self, core: LegendaryCore):
-        super(SteamWorker, self).__init__()
-        self.signals = SteamWorker.Signals()
-        self.core = core
-        _tr = QCoreApplication.translate
-        self.ratings = {
-            "platinum": _tr("SteamWorker", "Platinum"),
-            "gold": _tr("SteamWorker", "Gold"),
-            "silver": _tr("SteamWorker", "Silver"),
-            "bronze": _tr("SteamWorker", "Bronze"),
-            "fail": _tr("SteamWorker", "Could not get grade"),
-            "borked": _tr("SteamWorker", "unplayable"),
-            "pending": _tr("SteamWorker", "Could not get grade"),
-        }
-
-    def set_app_name(self, app_name: str):
-        self.app_name = app_name
-
-    def run(self) -> None:
-        self.signals.rating.emit(
-            self.ratings.get(get_rating(self.app_name), self.ratings["fail"])
-        )
-
-
 __steam_ids_json = None
 __grades_json = None
 
 
-def get_rating(app_name: str):
-    core = LegendaryCoreSingleton()
-    args = ArgumentsSingleton()
+def get_rating(core: LegendaryCore, app_name: str):
     global __grades_json
     if __grades_json is None:
         if os.path.exists(p := os.path.join(data_dir(), "steam_ids.json")):
@@ -63,12 +29,12 @@ def get_rating(app_name: str):
         grades = __grades_json
 
     if not grades.get(app_name):
-        if args.offline:
-            return "pending"
         game = core.get_game(app_name)
-
-        steam_id = get_steam_id(game.app_title)
-        grade = get_grade(steam_id)
+        try:
+            steam_id = get_steam_id(game.app_title)
+            grade = get_grade(steam_id)
+        except:
+            return "fail"
         grades[app_name] = {"steam_id": steam_id, "grade": grade}
         with open(os.path.join(data_dir(), "steam_ids.json"), "w") as f:
             f.write(json.dumps(grades))

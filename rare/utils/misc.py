@@ -1,42 +1,25 @@
 import os
-import platform
-import shlex
-import subprocess
-import sys
 from logging import getLogger
-from typing import List, Union
+from typing import List, Union, Type
 
 import qtawesome
 import requests
 from PyQt5.QtCore import (
     pyqtSignal,
-    pyqtSlot,
     QObject,
     QRunnable,
     QSettings,
-    QStandardPaths,
     QFile,
     QDir,
+    Qt,
 )
-from PyQt5.QtGui import QPalette, QColor, QImage
-from PyQt5.QtWidgets import qApp, QStyleFactory
-from legendary.models.game import Game
+from PyQt5.QtGui import QPalette, QColor, QFontMetrics
+from PyQt5.QtWidgets import qApp, QStyleFactory, QLabel
+from PyQt5.sip import wrappertype
+from legendary.core import LegendaryCore
 from requests.exceptions import HTTPError
 
-from .models import PathSpec
-
-# Windows
-
-if platform.system() == "Windows":
-    # noinspection PyUnresolvedReferences
-    from win32com.client import Dispatch  # pylint: disable=E0401
-
-from rare.shared import LegendaryCoreSingleton, ApiResultsSingleton
-from rare.utils.paths import image_dir, resources_path
-
-# Mac not supported
-
-from legendary.core import LegendaryCore
+from rare.utils.paths import resources_path
 
 logger = getLogger("Utils")
 settings = QSettings("Rare", "Rare")
@@ -95,16 +78,28 @@ def load_color_scheme(path: str) -> QPalette:
     return palette
 
 
-def set_color_pallete(color_scheme: str):
+def get_static_style() -> str:
+    file = QFile(":/static_css/stylesheet.qss")
+    file.open(QFile.ReadOnly)
+    static = file.readAll().data().decode("utf-8")
+    file.close()
+    return static
+
+
+def set_color_pallete(color_scheme: str) -> None:
+    static = get_static_style()
+
     if not color_scheme:
         qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
-        qApp.setStyleSheet("")
         qApp.setPalette(qApp.style().standardPalette())
+        qApp.setStyleSheet(static)
         return
+
     qApp.setStyle(QStyleFactory.create("Fusion"))
     custom_palette = load_color_scheme(f":/schemes/{color_scheme}")
     if custom_palette is not None:
         qApp.setPalette(custom_palette)
+        qApp.setStyleSheet(static)
         icon_color = qApp.palette().color(QPalette.Foreground).name()
         qtawesome.set_defaults(color=icon_color)
 
@@ -116,17 +111,21 @@ def get_color_schemes() -> List[str]:
     return colors
 
 
-def set_style_sheet(style_sheet: str):
+def set_style_sheet(style_sheet: str) -> None:
+    static = get_static_style()
+
     if not style_sheet:
         qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
-        qApp.setStyleSheet("")
+        qApp.setStyleSheet(static)
         return
+
     qApp.setStyle(QStyleFactory.create("Fusion"))
     file = QFile(f":/stylesheets/{style_sheet}/stylesheet.qss")
     file.open(QFile.ReadOnly)
     stylesheet = file.readAll().data().decode("utf-8")
+    file.close()
+    qApp.setStyleSheet(stylesheet + static)
 
-    qApp.setStyleSheet(stylesheet)
     icon_color = qApp.palette().color(QPalette.Text).name()
     qtawesome.set_defaults(color="#eeeeee")
 
@@ -149,7 +148,7 @@ def get_translations():
 def get_latest_version():
     try:
         resp = requests.get(
-            "https://api.github.com/repos/Dummerle/Rare/releases/latest"
+            "https://api.github.com/repos/Dummerle/Rare/releases/latest", timeout=2,
         )
         tag = resp.json()["tag_name"]
         return tag
@@ -157,263 +156,53 @@ def get_latest_version():
         return "0.0.0"
 
 
-def get_size(b: Union[int, float]) -> str:
-    for i in ["", "K", "M", "G", "T", "P", "E"]:
+def path_size(path: Union[str, os.PathLike]) -> int:
+    return sum(
+        os.stat(os.path.join(dp, f)).st_size
+        for dp, dn, filenames in os.walk(path)
+        for f in filenames if os.path.isfile(os.path.join(dp,f ))
+    )
+
+
+def format_size(b: Union[int, float]) -> str:
+    for s in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"]:
         if b < 1024:
-            return f"{b:.2f}{i}B"
+            return f"{b:.2f} {s}B"
         b /= 1024
 
 
-def get_rare_executable() -> List[str]:
-    # lk: detect if nuitka
-    if "__compiled__" in globals():
-        executable = [sys.executable]
-    elif platform.system() == "Linux" or platform.system() == "Darwin":
-        if p := os.environ.get("APPIMAGE"):
-            executable = [p]
-        else:
-            if sys.executable == os.path.abspath(sys.argv[0]):
-                executable = [sys.executable]
-            else:
-                executable = [sys.executable, os.path.abspath(sys.argv[0])]
-    elif platform.system() == "Windows":
-        executable = [sys.executable]
-
-        if sys.executable != os.path.abspath(sys.argv[0]):
-            executable.append(os.path.abspath(sys.argv[0]))
-
-        if executable[0].endswith("python.exe"):
-            # be sure to start consoleless then
-            executable[0] = executable[0].replace("python.exe", "pythonw.exe")
-            if executable[1].endswith("rare"):
-                executable[1] = executable[1] + ".exe"
-    else:
-        executable = [sys.executable]
-
-    executable[0] = os.path.abspath(executable[0])
-    return executable
-
-
-def create_desktop_link(app_name=None, core: LegendaryCore = None, type_of_link="desktop",
-                        for_rare: bool = False) -> bool:
-    if not for_rare:
-        igame = core.get_installed_game(app_name)
-
-        icon = os.path.join(os.path.join(image_dir(), igame.app_name, "installed.png"))
-        icon = icon.replace(".png", "")
-
-    if platform.system() == "Linux":
-        if type_of_link == "desktop":
-            path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
-        elif type_of_link == "start_menu":
-            path = QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation)
-        else:
-            return False
-        if not os.path.exists(path):
-            return False
-        executable = get_rare_executable()
-        executable = shlex.join(executable)
-
-        if for_rare:
-            with open(os.path.join(path, "Rare.desktop"), "w") as desktop_file:
-                desktop_file.write(
-                    "[Desktop Entry]\n"
-                    f"Name=Rare\n"
-                    f"Type=Application\n"
-                    f"Categories=Game;\n"
-                    f"Icon={os.path.join(resources_path, 'images', 'Rare.png')}\n"
-                    f"Exec={executable}\n"
-                    "Terminal=false\n"
-                    "StartupWMClass=Rare\n"
-                )
-        else:
-            with open(os.path.join(path, f"{igame.title}.desktop"), "w") as desktop_file:
-                desktop_file.write(
-                    "[Desktop Entry]\n"
-                    f"Name={igame.title}\n"
-                    f"Type=Application\n"
-                    f"Categories=Game;\n"
-                    f"Icon={icon}.png\n"
-                    f"Exec={executable} launch {app_name}\n"
-                    "Terminal=false\n"
-                    "StartupWMClass=Rare\n"
-                )
-            os.chmod(os.path.join(path, f"{igame.title}.desktop"), 0o755)
-
-        return True
-
-    elif platform.system() == "Windows":
-        # Target of shortcut
-        if type_of_link == "desktop":
-            target_folder = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
-        elif type_of_link == "start_menu":
-            target_folder = os.path.join(
-                QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation),
-                ".."
-            )
-        else:
-            logger.warning("No valid type of link")
-            return False
-        if not os.path.exists(target_folder):
-            return False
-
-        if for_rare:
-            linkName = "Rare.lnk"
-        else:
-            linkName = igame.title
-            # TODO: this conversion is not applied everywhere (see base_installed_widget), should it?
-            for c in r'<>?":|\/*':
-                linkName = linkName.replace(c, "")
-
-            linkName = f"{linkName.strip()}.lnk"
-
-        # Path to location of link file
-        pathLink = os.path.join(target_folder, linkName)
-
-        # Add shortcut
-        shell = Dispatch("WScript.Shell")
-        shortcut = shell.CreateShortCut(pathLink)
-
-        executable = get_rare_executable()
-        arguments = []
-
-        if len(executable) > 1:
-            arguments.extend(executable[1:])
-        executable = executable[0]
-
-        if not for_rare:
-            arguments.extend(["launch", app_name])
-
-        shortcut.Targetpath = executable
-        # Maybe there is a better solution, but windows does not accept single quotes (Windows is weird)
-        shortcut.Arguments = shlex.join(arguments).replace("'", '"')
-        if for_rare:
-            shortcut.WorkingDirectory = QStandardPaths.writableLocation(QStandardPaths.HomeLocation)
-
-        # Icon
-        if for_rare:
-            icon_location = os.path.join(resources_path, "images", "Rare.ico")
-        else:
-            if not os.path.exists(f"{icon}.ico"):
-                img = QImage()
-                img.load(f"{icon}.png")
-                img.save(f"{icon}.ico")
-                logger.info("Created ico file")
-            icon_location = f"{icon}.ico"
-        shortcut.IconLocation = os.path.abspath(icon_location)
-
-        shortcut.save()
-        return True
-
-    # mac OS is based on Darwin
-    elif platform.system() == "Darwin":
-        return False
-
-
-class WineResolverSignals(QObject):
-    result_ready = pyqtSignal(str)
-
-
-class WineResolver(QRunnable):
-    def __init__(self, path: str, app_name: str):
-        super(WineResolver, self).__init__()
-        self.signals = WineResolverSignals()
-        self.setAutoDelete(True)
-        self.wine_env = os.environ.copy()
-        core = LegendaryCoreSingleton()
-        self.wine_env.update(core.get_app_environment(app_name))
-        self.wine_env["WINEDLLOVERRIDES"] = "winemenubuilder=d;mscoree=d;mshtml=d;"
-        self.wine_env["DISPLAY"] = ""
-
-        self.wine_binary = core.lgd.config.get(
-            app_name,
-            "wine_executable",
-            fallback=core.lgd.config.get("default", "wine_executable", fallback="wine"),
-        )
-        self.winepath_binary = os.path.join(
-            os.path.dirname(self.wine_binary), "winepath"
-        )
-        self.path = PathSpec(core, app_name).cook(path)
-
-    @pyqtSlot()
-    def run(self):
-        if "WINEPREFIX" not in self.wine_env or not os.path.exists(
-                self.wine_env["WINEPREFIX"]
-        ):
-            # pylint: disable=E1136
-            self.signals.result_ready[str].emit(str())
-            return
-        if not os.path.exists(self.wine_binary) or not os.path.exists(
-                self.winepath_binary
-        ):
-            # pylint: disable=E1136
-            self.signals.result_ready[str].emit(str())
-            return
-        path = self.path.strip().replace("/", "\\")
-        # lk: if path does not exist form
-        cmd = [self.wine_binary, "cmd", "/c", "echo", path]
-        # lk: if path exists and needs a case sensitive interpretation form
-        # cmd = [self.wine_binary, 'cmd', '/c', f'cd {path} & cd']
-        proc = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=self.wine_env,
-            shell=False,
-            text=True,
-        )
-        out, err = proc.communicate()
-        # Clean wine output
-        out = out.strip().strip('"')
-        proc = subprocess.Popen(
-            [self.winepath_binary, "-u", out],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=self.wine_env,
-            shell=False,
-            text=True,
-        )
-        out, err = proc.communicate()
-        real_path = os.path.realpath(out.strip())
-        # pylint: disable=E1136
-        self.signals.result_ready[str].emit(real_path)
-        return
-
-
-class CloudSignals(QObject):
-    result_ready = pyqtSignal(list)  # List[SaveGameFile]
-
-
 class CloudWorker(QRunnable):
-    def __init__(self):
+    class Signals(QObject):
+        # List[SaveGameFile]
+        result_ready = pyqtSignal(dict)
+
+    def __init__(self, core: LegendaryCore):
         super(CloudWorker, self).__init__()
-        self.signals = CloudSignals()
+        self.core = core
+        self.signals = CloudWorker.Signals()
         self.setAutoDelete(True)
-        self.core = LegendaryCoreSingleton()
 
     def run(self) -> None:
         try:
-            result = self.core.get_save_games()
+            saves = self.core.get_save_games()
         except HTTPError:
-            result = None
-        self.signals.result_ready.emit(result)
+            self.signals.result_ready.emit(None)
+            return
 
+        save_games = set()
+        for igame in self.core.get_installed_list():
+            game = self.core.get_game(igame.app_name)
+            if self.core.is_installed(igame.app_name) and game.supports_cloud_saves:
+                save_games.add(igame.app_name)
 
-def get_raw_save_path(game: Game):
-    if game.supports_cloud_saves:
-        return (
-            game.metadata.get("customAttributes", {})
-                .get("CloudSaveFolder", {})
-                .get("value")
-        )
+        latest_saves = dict()
+        for s in sorted(saves, key=lambda a: a.datetime):
+            if s.app_name in save_games:
+                if not latest_saves.get(s.app_name):
+                    latest_saves[s.app_name] = []
+                latest_saves[s.app_name].append(s)
 
-
-def get_default_platform(app_name):
-    api_results = ApiResultsSingleton()
-    if platform.system() != "Darwin" or app_name not in api_results.mac_games:
-        return "Windows"
-    else:
-        return "Mac"
+        self.signals.result_ready.emit(latest_saves)
 
 
 def icon(icn_str: str, fallback: str = None, **kwargs):
@@ -430,3 +219,18 @@ def icon(icn_str: str, fallback: str = None, **kwargs):
     if kwargs.get("color"):
         kwargs["color"] = "red"
     return qtawesome.icon("ei.error", **kwargs)
+
+
+def widget_object_name(widget: Union[QObject,wrappertype,Type], suffix: str) -> str:
+    suffix = f"_{suffix}" if suffix else ""
+    if isinstance(widget, QObject):
+        return f"{type(widget).__name__}{suffix}"
+    elif isinstance(widget, wrappertype) or isinstance(widget, type):
+        return f"{widget.__name__}{suffix}"
+    else:
+        raise RuntimeError(f"Argument {widget} not a QObject or type of QObject")
+
+
+def elide_text(label: QLabel, text: str) -> str:
+    metrics = QFontMetrics(label.font())
+    return metrics.elidedText(text, Qt.ElideRight, label.sizeHint().width())

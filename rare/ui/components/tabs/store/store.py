@@ -140,7 +140,6 @@ class Ui_ShopWidget(object):
         self.verticalLayout_7.addLayout(self.horizontalLayout_2)
 
         self.retranslateUi(ShopWidget)
-        QtCore.QMetaObject.connectSlotsByName(ShopWidget)
 
     def retranslateUi(self, ShopWidget):
         _translate = QtCore.QCoreApplication.translate
