@@ -288,7 +288,7 @@ class DownloadsTab(QWidget):
 
     @pyqtSlot(InstallQueueItemModel)
     def __on_install_dialog_closed(self, item: InstallQueueItemModel):
-        if item and not item.download.analysis.dl_size:
+        if item and not item.download.game.is_dlc and not item.download.analysis.dl_size:
             self.rcore.get_game(item.download.game.app_name).set_installed(True)
             return
         if item:

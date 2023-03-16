@@ -160,10 +160,6 @@ class RareGame(RareGameSlim):
 
     def update_igame(self):
         self.igame = self.core.get_installed_game(self.app_name)
-        if self.igame is not None:
-            if not self.is_dlc:
-                self.core.egstore_delete(self.igame)
-            self.core.egstore_write(self.igame.app_name)
 
     def store_igame(self):
         self.core.lgd.set_installed_game(self.app_name, self.igame)
@@ -282,6 +278,9 @@ class RareGame(RareGameSlim):
         """
         if installed:
             self.update_igame()
+            if not self.is_dlc:
+                self.core.egstore_delete(self.igame)
+                self.core.egstore_write(self.igame.app_name)
             self.signals.game.installed.emit(self.app_name)
             if self.has_update:
                 self.signals.download.enqueue.emit(self.app_name)
@@ -361,6 +360,10 @@ class RareGame(RareGameSlim):
         for dlc in self.owned_dlcs:
             if dlc.is_installed:
                 dlc.needs_verification = needs
+        if not needs:
+            if not self.is_dlc:
+                self.core.egstore_delete(self.igame)
+            self.core.egstore_write(self.igame.app_name)
 
     @property
     def repair_file(self) -> str:
