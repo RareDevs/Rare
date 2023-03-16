@@ -1,6 +1,5 @@
 import os
 import shutil
-from ctypes import c_uint64
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -13,10 +12,11 @@ from .worker import QueueWorker, QueueWorkerInfo
 
 logger = getLogger("MoveWorker")
 
+
 class MoveWorker(QueueWorker):
     class Signals(QObject):
-        # int: percentage, c_uint64: source size, c_uint64: dest size
-        progress = pyqtSignal(RareGame, int, c_uint64, c_uint64)
+        # int: percentage, object: source size, object: dest size
+        progress = pyqtSignal(RareGame, int, object, object)
         # str: destination path
         result = pyqtSignal(RareGame, str)
         # str: error message
@@ -38,7 +38,7 @@ class MoveWorker(QueueWorker):
     def progress(self, src_size, dst_size):
         progress = dst_size * 100 // src_size
         self.rgame.signals.progress.update.emit(progress)
-        self.signals.progress.emit(self.rgame, progress, c_uint64(src_size), c_uint64(dst_size))
+        self.signals.progress.emit(self.rgame, progress, src_size, dst_size)
 
     def run_real(self):
         self.rgame.signals.progress.start.emit()

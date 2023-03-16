@@ -1,6 +1,5 @@
 import datetime
 import platform
-from ctypes import c_uint64
 from logging import getLogger
 from typing import Union, Optional
 
@@ -202,15 +201,15 @@ class DownloadsTab(QWidget):
             RareCore.instance().image_manager().get_pixmap(rgame.app_name, True)
         )
 
-    @pyqtSlot(UIUpdate, c_uint64)
-    def __on_download_progress(self, ui_update: UIUpdate, dl_size: c_uint64):
+    @pyqtSlot(UIUpdate, object)
+    def __on_download_progress(self, ui_update: UIUpdate, dl_size: int):
         self.download_widget.ui.progress_bar.setValue(int(ui_update.progress))
         self.download_widget.ui.dl_speed.setText(f"{format_size(ui_update.download_compressed_speed)}/s")
         self.download_widget.ui.cache_used.setText(
             f"{format_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}"
         )
         self.download_widget.ui.downloaded.setText(
-            f"{format_size(ui_update.total_downloaded)} / {format_size(dl_size.value)}"
+            f"{format_size(ui_update.total_downloaded)} / {format_size(dl_size)}"
         )
         self.download_widget.ui.time_left.setText(get_time(ui_update.estimated_time_left))
 

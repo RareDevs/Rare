@@ -2,7 +2,6 @@ import os
 import platform
 import queue
 import time
-from ctypes import c_uint64
 from dataclasses import dataclass
 from enum import IntEnum
 from logging import getLogger
@@ -41,14 +40,14 @@ class DlResultModel:
 
 class DlThread(QThread):
     result = pyqtSignal(DlResultModel)
-    progress = pyqtSignal(UIUpdate, c_uint64)
+    progress = pyqtSignal(UIUpdate, object)
 
     def __init__(self, item: InstallQueueItemModel, rgame: RareGame, core: LegendaryCore, debug: bool = False):
         super(DlThread, self).__init__()
         self.dlm_signals: DLManagerSignals = DLManagerSignals()
         self.core: LegendaryCore = core
         self.item: InstallQueueItemModel = item
-        self.dl_size = c_uint64(item.download.analysis.dl_size)
+        self.dl_size = item.download.analysis.dl_size
         self.rgame = rgame
         self.debug = debug
 

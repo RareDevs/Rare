@@ -1,7 +1,6 @@
 import os
 import platform
 import shutil
-from ctypes import c_uint64
 from logging import getLogger
 from typing import Optional
 
@@ -218,8 +217,8 @@ class GameInfo(QWidget, SideTabContents):
         worker.signals.error.connect(self.__on_worker_error)
         self.rcore.enqueue_worker(self.rgame, worker)
 
-    @pyqtSlot(RareGame, int, c_uint64, c_uint64)
-    def __on_move_progress(self, rgame: RareGame, progress: int, total_size: c_uint64, copied_size: c_uint64):
+    @pyqtSlot(RareGame, int, object, object)
+    def __on_move_progress(self, rgame: RareGame, progress: int, total_size: int, copied_size: int):
         # lk: the check is NOT REQUIRED because signals are disconnected but protect against it anyway
         if rgame is not self.rgame:
             return
