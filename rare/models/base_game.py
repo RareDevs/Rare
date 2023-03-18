@@ -184,10 +184,9 @@ class RareGameSlim(RareGameBase):
             latest = self.latest_save
             # lk: if the save path wasn't known at startup, dt_local will be None
             # In that case resolve the save again before returning
-            if latest.dt_local is None:
-                latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
-                    self.save_path, latest.file
-                )
+            latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
+                self.save_path, latest.file
+            )
             return latest.status, (latest.dt_local, latest.dt_remote)
         return SaveGameStatus.NO_SAVE, (None, None)
 

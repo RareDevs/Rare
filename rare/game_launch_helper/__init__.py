@@ -13,6 +13,7 @@ from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThread
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 from PyQt5.QtWidgets import QApplication
+from legendary.models.game import SaveGameStatus
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
@@ -196,10 +197,36 @@ class RareLauncher(RareApp):
         else:
             self.logger.error("Can't send message")
 
+    def check_saves_finished(self, exit_code: int):
+        self.rgame.signals.widget.update.connect(lambda: self.on_exit(exit_code))
+
+        state, (dt_local, dt_remote) = self.rgame.save_game_state
+        if state == SaveGameStatus.LOCAL_NEWER:
+            action = CloudSaveDialog.UPLOAD
+        else:
+            action = CloudSaveDialog(self.rgame.igame, dt_local, dt_remote).get_action()
+        if not action:
+            self.on_exit(exit_code)
+            return
+        if self.console:
+            self.console.log("Syncing saves...")
+        if action == CloudSaveDialog.UPLOAD:
+            self.rgame.upload_saves()
+        elif action == CloudSaveDialog.DOWNLOAD:
+            self.rgame.download_saves()
+
     def game_finished(self, exit_code):
-        self.logger.info("game finished")
+        self.logger.info("Game finished")
+
+        if self.rgame.supports_cloud_saves:
+            self.check_saves_finished(exit_code)
+        else:
+            self.on_exit(exit_code)
+
+    def on_exit(self, exit_code: int):
         if self.console:
             self.console.on_process_exit(self.core.get_game(self.app_name).app_title, exit_code)
+
         self.send_message(
             FinishedModel(
                 action=Actions.finished,
@@ -282,6 +309,11 @@ class RareLauncher(RareApp):
         _, (dt_local, dt_remote) = self.rgame.save_game_state
         dlg = CloudSaveDialog(self.rgame.igame, dt_local, dt_remote)
         action = dlg.get_action()
+        if self.console:
+            if action == CloudSaveDialog.DOWNLOAD:
+                self.console.log("Downloading saves")
+            elif action == CloudSaveDialog.UPLOAD:
+                self.console.log("Uloading saves")
         self.start_prepare(action)
 
     def start(self, args: InitArgs):

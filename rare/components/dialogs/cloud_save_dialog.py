@@ -5,7 +5,7 @@ from logging import getLogger
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QSizePolicy, QLayout, QApplication, QWidget
 from legendary.core import LegendaryCore
-from legendary.models.game import InstalledGame, SaveGameStatus
+from legendary.models.game import InstalledGame
 
 from rare.ui.components.dialogs.sync_save_dialog import Ui_SyncSaveDialog
 from rare.ui.components.tabs.games.game_info.sync_widget import Ui_SyncWidget
@@ -44,10 +44,10 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
         newer = self.tr("Newer")
         if dt_remote and dt_local:
             self.sync_ui.age_label_local.setText(
-                f"<b>{newer}</b>" if dt_remote > dt_local else " "
+                f"<b>{newer}</b>" if dt_remote < dt_local else " "
             )
             self.sync_ui.age_label_remote.setText(
-                f"<b>{newer}</b>" if dt_remote < dt_local else " "
+                f"<b>{newer}</b>" if dt_remote > dt_local else " "
             )
         elif dt_remote and not dt_local:
             self.status = self.DOWNLOAD
