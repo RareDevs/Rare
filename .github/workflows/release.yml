@@ -99,7 +99,39 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
 
+  win-zip:
+    runs-on: "windows-latest"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: "release"
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          architecture: x64
+      - name: Install build dependencies
+        run: pip3 install cx_freeze
+      - name: Install target dependencies
+        run: |
+          pip3 install -r requirements.txt
+          pip3 install -r requirements-presence.txt
+      - name: Build
+        run: cxfreeze -c rare/__main__.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
+      - name: Compress
+        run: |
+          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"
+
+      - name: Upload to Releases
+        uses: svenstaro/upload-release-action@2.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Rare-Windows.zip
+          asset_name: Rare-Windows-${{ github.event.release.tag_name }}.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+
   nuitka:
+    if: ${{ false }}
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
