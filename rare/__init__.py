@@ -1,3 +1,3 @@
-__version__ = "1.9.90-99"
+__version__ = "1.9.90"
 
 code_name = "Magnolia Catnip"
