@@ -161,9 +161,11 @@ class RareGameSlim(RareGameBase):
 
     @property
     def auto_sync_saves(self):
-        return (
-            self.game.supports_cloud_saves or self.game.supports_mac_cloud_saves
-        ) and QSettings().value(f"{self.app_name}/auto_sync_cloud", True, bool)
+        return self.supports_cloud_saves and QSettings().value(
+            f"{self.app_name}/auto_sync_cloud",
+            QSettings().value("auto_sync_cloud", False, bool),
+            bool
+        )
 
     @property
     def save_path(self) -> Optional[str]:
@@ -200,7 +202,7 @@ class RareGameSlim(RareGameBase):
             self.state = RareGameSlim.State.IDLE
             self.update_saves()
 
-        if not self.game.supports_cloud_saves and not self.game.supports_mac_cloud_saves:
+        if not self.supports_cloud_saves:
             return
         if status == SaveGameStatus.NO_SAVE or not dt_local:
             logger.warning("Can't upload non existing save")
@@ -225,7 +227,7 @@ class RareGameSlim(RareGameBase):
             self.state = RareGameSlim.State.IDLE
             self.update_saves()
 
-        if not self.game.supports_cloud_saves and not self.game.supports_mac_cloud_saves:
+        if not self.supports_cloud_saves:
             return
         if status == SaveGameStatus.NO_SAVE or not dt_remote:
             logger.error("Can't download non existing save")

@@ -188,9 +188,9 @@ class CloudSaves(QWidget, SideTabContents):
         self.sync_ui.download_button.setDisabled(button_disabled)
         self.sync_ui.upload_button.setDisabled(button_disabled)
 
-        self.cloud_ui.cloud_sync.setChecked(
-            self.settings.value(f"{self.rgame.app_name}/auto_sync_cloud", False, bool)
-        )
+        self.cloud_ui.cloud_sync.blockSignals(True)
+        self.cloud_ui.cloud_sync.setChecked(self.rgame.auto_sync_saves)
+        self.cloud_ui.cloud_sync.blockSignals(False)
         self.cloud_save_path_edit.setText(self.rgame.save_path if self.rgame.save_path else "")
 
     def update_game(self, rgame: RareGame):

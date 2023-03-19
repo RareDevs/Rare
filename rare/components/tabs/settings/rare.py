@@ -44,7 +44,7 @@ class RareSettings(QWidget, Ui_RareSettings):
             (self.sys_tray, "sys_tray", True),
             (self.auto_update, "auto_update", False),
             (self.confirm_start, "confirm_start", False),
-            (self.auto_sync_cloud, "auto_sync_cloud", True),
+            (self.auto_sync_cloud, "auto_sync_cloud", False),
             (self.notification, "notification", True),
             (self.save_size, "save_size", False),
             (self.log_games, "show_console", False),

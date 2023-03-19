@@ -218,7 +218,7 @@ class RareLauncher(RareApp):
     def game_finished(self, exit_code):
         self.logger.info("Game finished")
 
-        if self.rgame.supports_cloud_saves:
+        if self.rgame.auto_sync_saves:
             self.check_saves_finished(exit_code)
         else:
             self.on_exit(exit_code)
