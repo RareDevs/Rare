@@ -22,7 +22,7 @@ jobs:
         id: version
         shell: bash
         run: |
-          tag_abbrev=$(git tag | sort -h | grep -oE "(^[0-9]+\.[0-9]+(.[0-9])?)$" | tail -1)
+          tag_abbrev=$(git tag | sort -h | grep -oE "(^[0-9]+\.[0-9]+(.[0-9]+)?)$" | tail -1)
           echo "::set-output name=tag_abbrev::$tag_abbrev"
           echo "::set-output name=tag_offset::$(git rev-list $tag_abbrev..HEAD --count)"
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
