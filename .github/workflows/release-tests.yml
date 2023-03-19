@@ -166,6 +166,7 @@ jobs:
           path: dist/*.msi
 
   win-zip:
+    needs: version
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
@@ -187,14 +188,11 @@ jobs:
         run: |
           python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v3
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare-Windows.zip
-          asset_name: Rare-Windows-${{ github.event.release.tag_name }}.zip
-          tag: ${{ github.ref }}
-          overwrite: true
+          name: Rare-Windows-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.zip
+          path: Rare-Windows.zip
 
   mac_os:
     needs: version
