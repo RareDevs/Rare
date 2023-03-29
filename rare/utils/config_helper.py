@@ -32,13 +32,14 @@ def remove_option(app_name, option):
     if _config.has_option(app_name, option):
         _config.remove_option(app_name, option)
 
-    if _config.has_section(app_name) and not _config[app_name]:
-        _config.remove_section(app_name)
+    # if _config.has_section(app_name) and not _config[app_name]:
+    #     _config.remove_section(app_name)
 
     save_config()
 
 
 def remove_section(app_name):
+    return
     if _config.has_section(app_name):
         _config.remove_section(app_name)
         save_config()
