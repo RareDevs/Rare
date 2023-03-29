@@ -42,7 +42,7 @@ class RareGame(RareGameSlim):
                 last_played=datetime.fromisoformat(data["last_played"]) if data.get("last_played", None) else None,
                 grant_date=datetime.fromisoformat(data["grant_date"]) if data.get("grant_date", None) else None,
                 steam_grade=data.get("steam_grade", None),
-                steam_date=datetime.fromisoformat(data["steam_date"]) if data.get("steam_date", None) else None,
+                steam_date=datetime.fromisoformat(data["steam_date"]) if data.get("steam_date", None) else datetime.min,
                 tags=data.get("tags", []),
             )
 
@@ -54,7 +54,7 @@ class RareGame(RareGameSlim):
                 last_played=self.last_played.isoformat() if self.last_played else None,
                 grant_date=self.grant_date.isoformat() if self.grant_date else None,
                 steam_grade=self.steam_grade,
-                steam_date=self.steam_date.isoformat() if self.steam_date else None,
+                steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min,
                 tags=self.tags,
             )
 
@@ -65,7 +65,6 @@ class RareGame(RareGameSlim):
         super(RareGame, self).__init__(legendary_core, game)
         self.__origin_install_path: Optional[str] = None
         self.__origin_install_size: Optional[int] = None
-        self.__steam_grade: Optional[str] = None
 
         self.image_manager = image_manager
 
@@ -448,8 +447,9 @@ class RareGame(RareGameSlim):
     def steam_grade(self) -> str:
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
-        if self.__steam_grade is not None:
-            return self.__steam_grade
+        elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
+        if self.metadata.steam_grade is not None and elapsed_time.days < 3:
+            return self.metadata.steam_grade
         worker = QRunnable.create(
             lambda: self.set_steam_grade(get_rating(self.core, self.app_name))
         )
@@ -457,7 +457,9 @@ class RareGame(RareGameSlim):
         return "pending"
 
     def set_steam_grade(self, grade: str) -> None:
-        self.__steam_grade = grade
+        self.metadata.steam_grade = grade
+        self.metadata.steam_date = datetime.utcnow()
+        self.__save_metadata()
         self.signals.widget.update.emit()
 
     def grant_date(self, force=False) -> datetime:
