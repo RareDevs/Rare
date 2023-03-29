@@ -77,10 +77,10 @@ class ProtonSettings(QGroupBox):
             self.proton_prefix.setEnabled(False)
             self.proton_prefix.setText("")
 
-            self._linux_settings.wine_groupbox.setEnabled(True)
+            self._linux_settings.ui.wine_groupbox.setEnabled(True)
         else:
             self.proton_prefix.setEnabled(True)
-            self._linux_settings.wine_groupbox.setEnabled(False)
+            self._linux_settings.ui.wine_groupbox.setEnabled(False)
             wrapper = self.possible_proton_combos[i - 1]
             self._wrapper_settings.add_wrapper(wrapper)
             config_helper.add_option(self.app_name, "no_wine", "true")
