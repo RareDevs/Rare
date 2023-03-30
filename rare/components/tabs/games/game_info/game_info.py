@@ -46,7 +46,7 @@ class GameInfo(QWidget, SideTabContents):
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.Display)
-        self.ui.layout_game_info.insertWidget(0, self.image, alignment=Qt.AlignTop)
+        self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
 
         self.ui.install_button.clicked.connect(self.__on_install)
         self.ui.verify_button.clicked.connect(self.__on_verify)
@@ -73,6 +73,9 @@ class GameInfo(QWidget, SideTabContents):
             "pending": self.tr("Loading..."),
             "na": self.tr("Not applicable"),
         }
+
+        # lk: requirements is unused so hide it
+        self.ui.requirements_group.setVisible(False)
 
     @pyqtSlot()
     def __on_install(self):
