@@ -8,27 +8,28 @@ from .shop_api_core import ShopApiCore
 from .game_widgets import WishlistWidget
 
 
-class Wishlist(QWidget, Ui_Wishlist, SideTabContents):
+class Wishlist(QWidget, SideTabContents):
     show_game_info = pyqtSignal(dict)
     update_wishlist_signal = pyqtSignal()
 
     def __init__(self, api_core: ShopApiCore, parent=None):
         super(Wishlist, self).__init__(parent=parent)
         self.api_core = api_core
-        self.setupUi(self)
+        self.ui = Ui_Wishlist()
+        self.ui.setupUi(self)
         self.setEnabled(False)
         self.wishlist = []
         self.widgets = []
 
-        self.sort_cb.currentIndexChanged.connect(
+        self.ui.sort_cb.currentIndexChanged.connect(
             lambda i: self.set_wishlist(self.wishlist, i)
         )
-        self.filter_cb.currentIndexChanged.connect(self.set_filter)
-        self.reload_button.clicked.connect(self.update_wishlist)
-        self.reload_button.setIcon(icon("fa.refresh", color="white"))
+        self.ui.filter_cb.currentIndexChanged.connect(self.set_filter)
+        self.ui.reload_button.clicked.connect(self.update_wishlist)
+        self.ui.reload_button.setIcon(icon("fa.refresh", color="white"))
 
-        self.reverse.stateChanged.connect(
-            lambda: self.set_wishlist(sort=self.sort_cb.currentIndex())
+        self.ui.reverse.stateChanged.connect(
+            lambda: self.set_wishlist(sort=self.ui.sort_cb.currentIndex())
         )
 
     def update_wishlist(self):
@@ -61,9 +62,9 @@ class Wishlist(QWidget, Ui_Wishlist, SideTabContents):
                 w.setVisible(True)
 
         if count == 0:
-            self.no_games_label.setVisible(True)
+            self.ui.no_games_label.setVisible(True)
         else:
-            self.no_games_label.setVisible(False)
+            self.ui.no_games_label.setVisible(False)
 
     def set_wishlist(self, wishlist=None, sort=0):
         if wishlist and wishlist[0] == "error":
@@ -103,17 +104,17 @@ class Wishlist(QWidget, Ui_Wishlist, SideTabContents):
         self.widgets.clear()
 
         if len(sorted_list) == 0:
-            self.no_games_label.setVisible(True)
+            self.ui.no_games_label.setVisible(True)
         else:
-            self.no_games_label.setVisible(False)
+            self.ui.no_games_label.setVisible(False)
 
-        if self.reverse.isChecked():
+        if self.ui.reverse.isChecked():
             sorted_list.reverse()
 
         for game in sorted_list:
             w = WishlistWidget(game["offer"])
             self.widgets.append(w)
-            self.list_layout.addWidget(w)
+            self.ui.list_layout.addWidget(w)
             w.open_game.connect(self.show_game_info.emit)
             w.delete_from_wishlist.connect(self.delete_from_wishlist)
         self.setEnabled(True)
