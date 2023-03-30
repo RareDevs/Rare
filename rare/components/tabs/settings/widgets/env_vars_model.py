@@ -1,14 +1,12 @@
 import re
 import sys
 from collections import ChainMap
-from pprint import pprint
 from typing import Any, Union
 
 from rare.utils.misc import icon
 from PyQt5.QtCore import Qt, QModelIndex, QAbstractTableModel, pyqtSlot
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QTableView, QHeaderView, QApplication, QDialog, QVBoxLayout
-from legendary.core import LegendaryCore
+from rare.lgndr.core import LegendaryCore
 
 
 class EnvVarsTableModel(QAbstractTableModel):
@@ -127,12 +125,14 @@ class EnvVarsTableModel(QAbstractTableModel):
                 return self.__title(section)
         if role == Qt.DecorationRole:
             if orientation == Qt.Vertical:
-                if section < self.__data_length() and not self.__is_readonly(section):
+                if section < self.__data_length():
+                    if self.__is_readonly(section) or not self.__is_local(section):
+                        return icon("mdi.lock", "ei.lock")
                     if self.__is_global(section) and self.__is_local(section):
-                        return icon("mdi.refresh-circle", "ei.refresh")
+                        return icon("mdi.refresh", "ei.refresh")
                     if self.__is_local(section):
                         return icon("mdi.delete", "ei.remove-sign")
-                return icon("mdi.lock", "ei.lock")
+                return icon("mdi.plus", "ei.plus-sign")
         if role == Qt.TextAlignmentRole:
             return Qt.AlignVCenter + Qt.AlignHCenter
         return None
@@ -241,28 +241,37 @@ class EnvVarsTableModel(QAbstractTableModel):
         return True
 
 
-class MainDialog(QDialog):
-    def __init__(self):
-        super().__init__()
-
-        self.table = QTableView()
-        self.model = EnvVarsTableModel(LegendaryCore())
-        self.model.load("Tamarind")
-
-        self.table.setModel(self.model)
-        self.table.verticalHeader().sectionPressed.disconnect()
-        self.table.horizontalHeader().sectionPressed.disconnect()
-        self.table.verticalHeader().sectionClicked.connect(self.model.removeRow)
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setStretchLastSection(True)
-        self.table.setCornerButtonEnabled(False)
-
-        self.setLayout(QVBoxLayout(self))
-        self.layout().addWidget(self.table)
-
-
 if __name__ == "__main__":
+    from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QTableView, QHeaderView
+
+    from rare.resources import static_css
+    from rare.resources.stylesheets import RareStyle
+    from rare.utils.misc import set_style_sheet
+    from legendary.core import LegendaryCore
+
+    class MainDialog(QDialog):
+        def __init__(self):
+            super().__init__()
+
+            self.table = QTableView()
+            self.model = EnvVarsTableModel(LegendaryCore())
+            self.model.load("Tamarind")
+
+            self.table.setModel(self.model)
+            self.table.verticalHeader().sectionPressed.disconnect()
+            self.table.horizontalHeader().sectionPressed.disconnect()
+            self.table.verticalHeader().sectionClicked.connect(self.model.removeRow)
+            self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+            self.table.horizontalHeader().setStretchLastSection(True)
+            self.table.setCornerButtonEnabled(False)
+
+            self.setLayout(QVBoxLayout(self))
+            self.layout().addWidget(self.table)
+
     app = QApplication(sys.argv)
+
+    set_style_sheet("RareStyle")
+
     window = MainDialog()
     window.setFixedSize(800, 600)
     window.show()
