@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>784</width>
-    <height>525</height>
+    <width>750</width>
+    <height>588</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string notr="true">Store</string>
   </property>
-  <layout class="QHBoxLayout" name="shop_layout" stretch="0,0">
+  <layout class="QHBoxLayout" name="shop_layout" stretch="1,0">
    <item>
     <layout class="QVBoxLayout" name="left_layout">
      <item>
@@ -35,8 +35,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>611</width>
-          <height>511</height>
+          <width>583</width>
+          <height>574</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="games_container_layout">
@@ -53,7 +53,13 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QScrollArea" name="free_games_scrollarea">
+          <widget class="QScrollArea" name="free_scrollarea">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
            </property>
@@ -66,15 +72,29 @@
            <property name="widgetResizable">
             <bool>true</bool>
            </property>
-           <widget class="QWidget" name="free_games_container">
+           <widget class="QWidget" name="free_container">
             <property name="geometry">
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>608</width>
-              <height>166</height>
+              <width>580</width>
+              <height>83</height>
              </rect>
             </property>
+            <layout class="QHBoxLayout" name="free_container_layout">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>3</number>
+             </property>
+            </layout>
            </widget>
           </widget>
          </item>
@@ -149,8 +169,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>151</width>
-          <height>479</height>
+          <width>145</width>
+          <height>542</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="filter_container_layout">
@@ -161,7 +181,7 @@
           <number>0</number>
          </property>
          <property name="rightMargin">
-          <number>0</number>
+          <number>3</number>
          </property>
          <property name="bottomMargin">
           <number>0</number>

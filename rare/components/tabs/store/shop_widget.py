@@ -39,12 +39,8 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.tags = []
         self.types = []
         self.update_games_allowed = True
-        free_games_container_layout = QHBoxLayout(self.free_games_container)
-        free_games_container_layout.setContentsMargins(0, 0, 0, 0)
-        self.free_games_container.setContentsMargins(0, 0, 0, 3)
-        self.free_games_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.free_games_scrollarea.setDisabled(True)
-        self.free_games_scrollarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
+        self.free_scrollarea.setDisabled(True)
 
         self.free_game_widgets = []
         self.active_search_request = False
@@ -125,35 +121,35 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.discount_widget.layout().update()
 
     def add_free_games(self, free_games: list):
-        for w in self.free_games_container.layout().findChildren(QGroupBox, options=Qt.FindDirectChildrenOnly):
-            self.free_games_container.layout().removeWidget(w)
+        for w in self.free_container.layout().findChildren(QGroupBox, options=Qt.FindDirectChildrenOnly):
+            self.free_container.layout().removeWidget(w)
             w.deleteLater()
 
         if free_games and free_games[0] == "error":
-            self.free_games_container.layout().addWidget(
+            self.free_container.layout().addWidget(
                 QLabel(self.tr("Failed to fetch free games: {}").format(free_games[1]))
             )
             btn = QPushButton(self.tr("Reload"))
-            self.free_games_container.layout().addWidget(btn)
+            self.free_container.layout().addWidget(btn)
             btn.clicked.connect(
                 lambda: self.api_core.get_free_games(self.add_free_games)
             )
-            self.free_games_container.setEnabled(True)
+            self.free_container.setEnabled(True)
             return
 
-        self.free_games_now = QGroupBox(self.tr("Free now"), parent=self.free_games_container)
+        self.free_games_now = QGroupBox(self.tr("Free now"), parent=self.free_container)
         free_games_now_layout = QHBoxLayout(self.free_games_now)
         # free_games_now_layout.setContentsMargins(0, 0, 0, 0)
         self.free_games_now.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.free_games_now.setLayout(free_games_now_layout)
-        self.free_games_container.layout().addWidget(self.free_games_now)
+        self.free_container.layout().addWidget(self.free_games_now)
 
-        self.free_games_next = QGroupBox(self.tr("Free next week"), parent=self.free_games_container)
+        self.free_games_next = QGroupBox(self.tr("Free next week"), parent=self.free_container)
         free_games_next_layout = QHBoxLayout(self.free_games_next)
         # free_games_next_layout.setContentsMargins(0, 0, 0, 0)
         self.free_games_next.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.free_games_next.setLayout(free_games_next_layout)
-        self.free_games_container.layout().addWidget(self.free_games_next)
+        self.free_container.layout().addWidget(self.free_games_next)
 
         date = datetime.datetime.now()
         free_games_now = []
@@ -222,13 +218,13 @@ class ShopWidget(QWidget, Ui_ShopWidget):
             self.free_games_next.layout().addWidget(w)
         # self.coming_free_games.setFixedWidth(int(40 + len(coming_free_games) * 300))
 
-        self.free_games_scrollarea.setMinimumHeight(
+        self.free_scrollarea.setMinimumHeight(
             self.free_games_now.sizeHint().height()
-            + self.free_games_container.contentsMargins().top()
-            + self.free_games_container.contentsMargins().bottom()
-            + self.free_games_scrollarea.horizontalScrollBar().sizeHint().height()
+            + self.free_container.layout().contentsMargins().top()
+            + self.free_container.layout().contentsMargins().bottom()
+            + self.free_scrollarea.horizontalScrollBar().sizeHint().height()
         )
-        self.free_games_scrollarea.setEnabled(True)
+        self.free_scrollarea.setEnabled(True)
 
     def show_search_results(self):
         if self.search_bar.text():
@@ -287,7 +283,8 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.reset_button.clicked.connect(self.reset_filters)
         self.filter_scrollarea.setMinimumWidth(
             self.filter_container.sizeHint().width()
-            + self.filter_container_layout.spacing()
+            + self.filter_container.layout().contentsMargins().left()
+            + self.filter_container.layout().contentsMargins().right()
             + self.filter_scrollarea.verticalScrollBar().sizeHint().width()
         )
 
@@ -327,10 +324,10 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         if removed_type and removed_type in self.types:
             self.types.remove(removed_type)
         if (self.types or self.price) or self.tags or self.on_discount.isChecked():
-            self.free_games_scrollarea.setVisible(False)
+            self.free_scrollarea.setVisible(False)
             self.discounts_group.setVisible(False)
         else:
-            self.free_games_scrollarea.setVisible(True)
+            self.free_scrollarea.setVisible(True)
             if len(self.discounts_group.layout().children()) > 0:
                 self.discounts_group.setVisible(True)
 
