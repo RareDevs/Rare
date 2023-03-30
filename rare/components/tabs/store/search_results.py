@@ -1,18 +1,16 @@
-from PyQt5 import QtGui
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import (
+    QFrame,
     QWidget,
     QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QFrame,
     QSizePolicy,
+    QLabel,
 )
 
 from rare.shared.image_manager import ImageSize
 from rare.widgets.flow_layout import FlowLayout
-from rare.widgets.elide_label import ElideLabel
 from .image_widget import ShopImageWidget
 
 
@@ -26,8 +24,8 @@ class SearchResults(QWidget):
         self.results_frame = QFrame(self)
         self.results_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.results_frame.setFrameStyle(QFrame.StyledPanel)
-        self.resutls_layout = FlowLayout(self.results_frame)
-        self.results_frame.setLayout(self.resutls_layout)
+        self.results_layout = FlowLayout(self.results_frame)
+        self.results_frame.setLayout(self.results_layout)
 
         self.main_layout = QVBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
@@ -43,70 +41,51 @@ class SearchResults(QWidget):
 
     def show_results(self, results: dict):
         for w in self.results_frame.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
-            self.results_frame.layout().removeWidget(w)
+            self.results_layout.removeWidget(w)
             w.deleteLater()
-        for w in self.results_frame.findChildren(_SearchResultItem, options=Qt.FindDirectChildrenOnly):
-            self.results_frame.layout().removeWidget(w)
+        for w in self.results_frame.findChildren(SearchResultItem, options=Qt.FindDirectChildrenOnly):
+            self.results_layout.removeWidget(w)
             w.deleteLater()
 
         if not results:
-            self.results_frame.layout().addWidget(QLabel(self.tr("No results found")))
+            self.results_layout.addWidget(QLabel(self.tr("No results found")))
         else:
             for res in results:
-                w = _SearchResultItem(res, parent=self.results_frame)
+                w = SearchResultItem(res, parent=self.results_frame)
                 w.show_info.connect(self.show_info.emit)
-                self.results_frame.layout().addWidget(w)
+                self.results_layout.addWidget(w)
         self.setEnabled(True)
 
 
-class _SearchResultItem(QFrame):
-    res: dict
+class SearchResultItem(ShopImageWidget):
     show_info = pyqtSignal(dict)
 
     def __init__(self, result: dict, parent=None):
-        super(_SearchResultItem, self).__init__(parent=parent)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.widget_layout = QVBoxLayout()
-        self.widget_layout.setSizeConstraint(QVBoxLayout.SetFixedSize)
-        self.image = ShopImageWidget(parent=self)
-        self.image.setFixedSize(ImageSize.Normal)
+        super(SearchResultItem, self).__init__(parent=parent)
+        self.setFixedSize(ImageSize.Normal)
+        self.ui.setupUi(self)
         for img in result["keyImages"]:
             if img["type"] in ["DieselStoreFrontTall", "OfferImageTall", "Thumbnail", "ProductLogo"]:
-                self.image.fetchPixmap(img["url"], result["id"], result["title"])
+                self.fetchPixmap(img["url"], result["id"], result["title"])
                 break
         else:
             print("No image found")
-        self.widget_layout.addWidget(self.image)
 
-        self.res = result
-        self.title = ElideLabel(self.res["title"], parent=self)
-        title_font = QFont()
-        title_font.setPixelSize(15)
-        self.title.setFont(title_font)
-        self.title.setWordWrap(False)
-        self.widget_layout.addWidget(self.title)
+        self.ui.title_label.setText(result["title"])
         price = result["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
         discount_price = result["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
-        price_layout = QHBoxLayout()
-        price_layout.addStretch(1)
-        price_label = QLabel(price if price != "0" else self.tr("Free"), parent=self)
-        price_label.setAlignment(Qt.AlignRight)
-        price_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        price_layout.addWidget(price_label)
-
+        self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
         if price != discount_price:
-            font = QFont()
+            font = self.ui.price_label.font()
             font.setStrikeOut(True)
-            price_label.setFont(font)
-            discount_label = QLabel(discount_price if discount_price != "0" else self.tr("Free"), parent=self)
-            discount_label.setAlignment(Qt.AlignRight)
-            discount_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            price_layout.addWidget(discount_label)
-        # self.discount_price = QLabel(f"{self.tr('Discount price: ')}{discount_price}")
-        self.widget_layout.addLayout(price_layout)
+            self.ui.price_label.setFont(font)
+            self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
+        else:
+            self.ui.discount_label.setVisible(False)
 
-        self.setLayout(self.widget_layout)
+        self.res = result
 
-    def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
-        if a0.button() == 1:
+    def mousePressEvent(self, a0: QMouseEvent) -> None:
+        if a0.button() == Qt.LeftButton:
+            a0.accept()
             self.show_info.emit(self.res)
