@@ -15,10 +15,10 @@ class QtRequestManager(QObject):
     request = None
     request_active = None
 
-    def __init__(self, type: str = "json", authorization_token: str = None):
+    def __init__(self, doc_type: str = "json", authorization_token: str = None):
         super(QtRequestManager, self).__init__()
         self.manager = QNetworkAccessManager()
-        self.type = type
+        self.doc_type = doc_type
         self.authorization_token = authorization_token
         self.request_queue = []
 
@@ -67,11 +67,11 @@ class QtRequestManager(QObject):
 
     def prepare_data(self):
         # self.request_active = False
-        data = {} if self.type == "json" else b""
+        data = {} if self.doc_type == "json" else b""
         if self.request:
             try:
                 if self.request.error() == QNetworkReply.NoError:
-                    if self.type == "json":
+                    if self.doc_type == "json":
                         error = QJsonParseError()
                         json_data = QJsonDocument.fromJson(
                             self.request.readAll().data(), error
