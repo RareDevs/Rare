@@ -40,8 +40,8 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.types = []
         self.update_games_allowed = True
         free_games_container_layout = QHBoxLayout(self.free_games_container)
-        free_games_container_layout.setContentsMargins(0, 0, 0, 3)
-        self.free_games_container.setLayout(free_games_container_layout)
+        free_games_container_layout.setContentsMargins(0, 0, 0, 0)
+        self.free_games_container.setContentsMargins(0, 0, 0, 3)
         self.free_games_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.free_games_scrollarea.setDisabled(True)
         self.free_games_scrollarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -51,18 +51,18 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.next_search = ""
         self.wishlist: List = []
 
-        self.discount_widget.setLayout(FlowLayout())
-        self.discount_stack.addWidget(WaitingSpinner())
+        self.discount_widget.setLayout(FlowLayout(self.discount_widget))
+        self.discount_stack.addWidget(WaitingSpinner(self.discount_stack))
         self.discount_stack.setCurrentIndex(1)
 
-        self.game_widget.setLayout(FlowLayout())
-        self.game_stack.addWidget(WaitingSpinner())
+        self.game_widget.setLayout(FlowLayout(self.game_widget))
+        self.game_stack.addWidget(WaitingSpinner(self.game_stack))
         self.game_stack.setCurrentIndex(1)
 
         self.search_bar = ButtonLineEdit(
             "fa.search", placeholder_text=self.tr("Search Games")
         )
-        self.games_container_layout.insertWidget(0, self.search_bar)
+        self.left_layout.insertWidget(0, self.search_bar)
 
         # self.search_bar.textChanged.connect(self.search_games)
 
@@ -143,14 +143,14 @@ class ShopWidget(QWidget, Ui_ShopWidget):
 
         self.free_games_now = QGroupBox(self.tr("Free now"), parent=self.free_games_container)
         free_games_now_layout = QHBoxLayout(self.free_games_now)
-        free_games_now_layout.setContentsMargins(0, 0, 0, 0)
+        # free_games_now_layout.setContentsMargins(0, 0, 0, 0)
         self.free_games_now.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.free_games_now.setLayout(free_games_now_layout)
         self.free_games_container.layout().addWidget(self.free_games_now)
 
         self.free_games_next = QGroupBox(self.tr("Free next week"), parent=self.free_games_container)
         free_games_next_layout = QHBoxLayout(self.free_games_next)
-        free_games_next_layout.setContentsMargins(0, 0, 0, 0)
+        # free_games_next_layout.setContentsMargins(0, 0, 0, 0)
         self.free_games_next.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.free_games_next.setLayout(free_games_next_layout)
         self.free_games_container.layout().addWidget(self.free_games_next)
@@ -223,9 +223,11 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         # self.coming_free_games.setFixedWidth(int(40 + len(coming_free_games) * 300))
 
         self.free_games_scrollarea.setMinimumHeight(
-            self.free_games_now.sizeHint().height() + self.free_games_scrollarea.horizontalScrollBar().sizeHint().height()
+            self.free_games_now.sizeHint().height()
+            + self.free_games_container.contentsMargins().top()
+            + self.free_games_container.contentsMargins().bottom()
+            + self.free_games_scrollarea.horizontalScrollBar().sizeHint().height()
         )
-        self.free_games_scrollarea.update()
         self.free_games_scrollarea.setEnabled(True)
 
     def show_search_results(self):
@@ -283,6 +285,11 @@ class ShopWidget(QWidget, Ui_ShopWidget):
                 groupbox.layout().addWidget(checkbox)
                 self.checkboxes.append(checkbox)
         self.reset_button.clicked.connect(self.reset_filters)
+        self.filter_scrollarea.setMinimumWidth(
+            self.filter_container.sizeHint().width()
+            + self.filter_container_layout.spacing()
+            + self.filter_scrollarea.verticalScrollBar().sizeHint().width()
+        )
 
     def reset_filters(self):
         self.update_games_allowed = False
@@ -350,7 +357,7 @@ class ShopWidget(QWidget, Ui_ShopWidget):
             item.widget().deleteLater()
         if data:
             for game in data:
-                w = GameWidget(self.path, game, 275)
+                w = GameWidget(self.path, game)
                 self.game_widget.layout().addWidget(w)
                 w.show_info.connect(self.show_game.emit)
 
