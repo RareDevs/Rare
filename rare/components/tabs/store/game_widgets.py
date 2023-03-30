@@ -2,93 +2,64 @@ import logging
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtNetwork import QNetworkAccessManager
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSizePolicy
+from PyQt5.QtGui import QFont, QMouseEvent
+from PyQt5.QtWidgets import QWidget
 
 from rare.components.tabs.store.shop_models import ImageUrlModel
 from rare.shared.image_manager import ImageSize
 from rare.ui.components.tabs.store.wishlist_widget import Ui_WishlistWidget
 from rare.utils.extra_widgets import ImageLabel
 from rare.utils.misc import icon
-from rare.widgets.elide_label import ElideLabel
 from .image_widget import ShopImageWidget
 
 logger = logging.getLogger("GameWidgets")
 
 
-class GameWidget(QWidget):
+class GameWidget(ShopImageWidget):
     show_info = pyqtSignal(dict)
 
-    def __init__(self, path, json_info=None):
-        super(GameWidget, self).__init__()
-        self.manager = QNetworkAccessManager()
+    def __init__(self, path, json_info=None, parent=None):
+        super(GameWidget, self).__init__(parent=parent)
+        self.setFixedSize(ImageSize.Wide)
+        self.ui.setupUi(self)
         self.path = path
+        self.json_info = json_info
         if json_info:
             self.init_ui(json_info)
 
     def init_ui(self, json_info):
-        self.layout = QVBoxLayout()
-        self.layout.setSizeConstraint(QVBoxLayout.SetFixedSize)
-        self.image = ShopImageWidget(self)
-        self.image.setFixedSize(ImageSize.Wide)
-        self.layout.addWidget(self.image)
-        mini_layout = QHBoxLayout()
-        self.layout.addLayout(mini_layout)
-
         if not json_info:
-            self.layout.addWidget(QLabel("An error occurred"))
-            self.setLayout(self.layout)
+            self.ui.title_label.setText(self.tr("An error occurred"))
             return
 
-        self.title_label = ElideLabel(json_info.get("title"), parent=self)
-        self.title_label.setWordWrap(False)
-        mini_layout.addWidget(self.title_label)
-        # mini_layout.addStretch(1)
-
+        self.ui.title_label.setText(json_info.get("title"))
         price = json_info["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
         discount_price = json_info["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
-        price_label = QLabel(price)
+        self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
         if price != discount_price:
-            font = QFont()
+            font = self.ui.price_label.font()
             font.setStrikeOut(True)
-            price_label.setFont(font)
-            free_label = QLabel(discount_price if discount_price != "0" else self.tr("Free"))
-            free_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-            free_label.setAlignment(Qt.AlignRight)
-            mini_layout.addWidget(free_label)
+            self.ui.price_label.setFont(font)
+            self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
         else:
-            if price == "0":
-                price_label.setText(self.tr("Free"))
-        price_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        price_label.setAlignment(Qt.AlignRight)
-        mini_layout.addWidget(price_label)
+            self.ui.discount_label.setVisible(False)
 
         for c in r'<>?":|\/*':
             json_info["title"] = json_info["title"].replace(c, "")
 
-        self.json_info = json_info
-        self.slug = json_info["productSlug"]
-
-        self.title = json_info["title"]
         for img in json_info["keyImages"]:
-            if img["type"] in [
-                "DieselStoreFrontWide",
-                "OfferImageWide",
-                "VaultClosed",
-                "ProductLogo",
-            ]:
-                if img["type"] == "VaultClosed" and self.title != "Mystery Game":
+            if img["type"] in ["DieselStoreFrontWide", "OfferImageWide", "VaultClosed", "ProductLogo",]:
+                if img["type"] == "VaultClosed" and json_info["title"] != "Mystery Game":
                     continue
-                self.image.fetchPixmap(img["url"], json_info["id"], json_info["title"])
+                self.fetchPixmap(img["url"], json_info["id"], json_info["title"])
                 break
         else:
             logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
 
-        self.setLayout(self.layout)
-
-    def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
-        self.show_info.emit(self.json_info)
+    def mousePressEvent(self, a0: QMouseEvent) -> None:
+        if a0.button() == Qt.LeftButton:
+            a0.accept()
+            self.show_info.emit(self.json_info)
 
 
 class WishlistWidget(QWidget, Ui_WishlistWidget):

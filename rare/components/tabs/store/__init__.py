@@ -17,7 +17,7 @@ class StoreTab(SideTabWidget):
         self.init = False
 
         self.core = core
-        self.rcore = RareCore.instance()
+        # self.rcore = RareCore.instance()
         self.api_core = ShopApiCore(
             self.core.egs.session.headers["Authorization"],
             self.core.language_code,
@@ -35,7 +35,8 @@ class StoreTab(SideTabWidget):
         # self.search.back_button.clicked.connect(lambda: self.setCurrentIndex(self.shop_index))
 
         self.info = ShopGameInfo(
-            [i.asset_infos["Windows"].namespace for i in self.rcore.game_list if bool(i.asset_infos)],
+            # [i.asset_infos["Windows"].namespace for i in self.rcore.game_list if bool(i.asset_infos)],
+            [],
             self.api_core,
             parent=self
         )
