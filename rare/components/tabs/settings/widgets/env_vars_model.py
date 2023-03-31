@@ -170,7 +170,7 @@ class EnvVarsTableModel(QAbstractTableModel):
         # TODO: restrict spaces in variable names
 
         if index.column() == 0:
-            if not self.__is_key_valid(value):
+            if (not self.__is_key_valid(value)) or value in self.__readonly:
                 return False
             # Do not accept existing variable names
             if value in self.__data_map.keys():

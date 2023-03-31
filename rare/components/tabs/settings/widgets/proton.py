@@ -3,6 +3,7 @@ from logging import getLogger
 from pathlib import Path
 from typing import Tuple
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QGroupBox, QFileDialog
 
 from rare.components.tabs.settings import LinuxSettings
@@ -40,7 +41,8 @@ def find_proton_combos():
 
 
 class ProtonSettings(QGroupBox):
-
+    # str: option key
+    environ_changed = pyqtSignal(str)
     app_name: str
     changeable = True
 
@@ -72,7 +74,9 @@ class ProtonSettings(QGroupBox):
             self._wrapper_settings.delete_wrapper("proton")
             config_helper.remove_option(self.app_name, "no_wine")
             config_helper.remove_option(f"{self.app_name}.env", "STEAM_COMPAT_DATA_PATH")
+            self.environ_changed.emit("STEAM_COMPAT_DATA_PATH")
             config_helper.remove_option(f"{self.app_name}.env", "STEAM_COMPAT_CLIENT_INSTALL_PATH")
+            self.environ_changed.emit("STEAM_COMPAT_CLIENT_INSTALL_PATH")
 
             self.proton_prefix.setEnabled(False)
             self.proton_prefix.setText("")
@@ -89,6 +93,8 @@ class ProtonSettings(QGroupBox):
                 "STEAM_COMPAT_CLIENT_INSTALL_PATH",
                 str(Path.home().joinpath(".steam", "steam"))
             )
+            self.environ_changed.emit("STEAM_COMPAT_CLIENT_INSTALL_PATH")
+
             self.proton_prefix.setText(os.path.expanduser("~/.proton"))
 
             # Don't use Wine
@@ -109,6 +115,7 @@ class ProtonSettings(QGroupBox):
         config_helper.add_option(
             f"{self.app_name}.env", "STEAM_COMPAT_DATA_PATH", text
         )
+        self.environ_changed.emit("STEAM_COMPAT_DATA_PATH")
         config_helper.save_config()
 
     def load_settings(self, app_name: str, proton: str):

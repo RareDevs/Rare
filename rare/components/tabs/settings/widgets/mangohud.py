@@ -93,7 +93,9 @@ class MangoHudSettings(OverlaySettings):
                         cfg = f"{var_name}=0"
             if cfg:
                 config_helper.add_option(f"{self.name}.env", "MANGOHUD_CONFIG", cfg)
+                self.environ_changed.emit(self.config_env_var_name)
             else:
                 config_helper.remove_option(f"{self.name}.env", "MANGOHUD_CONFIG")
+                self.environ_changed.emit(self.config_env_var_name)
 
             self.set_wrapper_activated.emit(True)

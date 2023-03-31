@@ -35,8 +35,8 @@ class EnvVars(QGroupBox):
         # We use this function to keep an eye on the config.
         # When the user uses for example the wineprefix settings, we need to update the table.
         # With this function, when the config file changes, we update the table.
-        self.config_file_watcher = QFileSystemWatcher([str(self.core.lgd.config_path)], self)
-        self.config_file_watcher.fileChanged.connect(self.table_model.reset)
+        # self.config_file_watcher = QFileSystemWatcher([str(self.core.lgd.config_path)], self)
+        # self.config_file_watcher.fileChanged.connect(self.table_model.reset)
 
         row_height = self.table_view.rowHeight(0)
         self.table_view.setMinimumHeight(row_height * 7)
@@ -56,6 +56,9 @@ class EnvVars(QGroupBox):
                     self.table_view.model().setData(idx, "", Qt.EditRole)
         elif e.key() == Qt.Key_Escape:
             e.ignore()
+
+    def reset_model(self):
+        self.table_model.reset()
 
     def update_game(self, app_name):
         self.table_model.load(app_name)

@@ -58,6 +58,8 @@ class DefaultGameSettings(QWidget):
             self.ui.linux_settings_widget.setVisible(False)
 
         self.env_vars = EnvVars(self)
+        self.linux_settings.environ_changed.connect(self.env_vars.reset_model)
+        self.proton_settings.environ_changed.connect(self.env_vars.reset_model)
         self.ui.game_settings_layout.addWidget(self.env_vars)
 
         if is_default:
