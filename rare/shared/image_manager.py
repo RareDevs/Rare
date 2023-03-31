@@ -59,7 +59,7 @@ class ImageSize:
                 self.__img_factor = 67
                 self.__size = QSize(self.__img_factor * 3, self.__img_factor * 4) * pixel_ratio / divisor
             else:
-                self.__img_factor = 23
+                self.__img_factor = 21
                 self.__size = QSize(self.__img_factor * 16, self.__img_factor * 9) * pixel_ratio / divisor
             # lk: for prettier images set this to true
             self.__smooth_transform: bool = False
@@ -110,7 +110,13 @@ class ImageSize:
     Small = Preset(3, 1)
     """! @brief Small image size for displaying"""
 
+    SmallWide = Preset(3, 1, Orientation.Wide)
+    """! @brief Small image size for displaying"""
+
     Smaller = Preset(4, 1)
+    """! @brief Smaller image size for displaying"""
+
+    SmallerWide = Preset(4, 1, Orientation.Wide)
     """! @brief Smaller image size for displaying"""
 
     Icon = Preset(5, 1)
