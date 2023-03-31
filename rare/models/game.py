@@ -4,6 +4,7 @@ import platform
 from dataclasses import dataclass, field
 from datetime import datetime
 from logging import getLogger
+from threading import Lock
 from typing import List, Optional, Dict
 
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
@@ -27,10 +28,10 @@ class RareGame(RareGameSlim):
         auto_update: bool = False
         queued: bool = False
         queue_pos: Optional[int] = None
-        last_played: Optional[datetime] = None
+        last_played: datetime = datetime.min
         grant_date: Optional[datetime] = None
         steam_grade: Optional[str] = None
-        steam_date: Optional[datetime] = None
+        steam_date: datetime = datetime.min
         tags: List[str] = field(default_factory=list)
 
         @classmethod
@@ -39,7 +40,7 @@ class RareGame(RareGameSlim):
                 auto_update=data.get("auto_update", False),
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
-                last_played=datetime.fromisoformat(data["last_played"]) if data.get("last_played", None) else None,
+                last_played=datetime.fromisoformat(data["last_played"]) if data.get("last_played", None) else datetime.min,
                 grant_date=datetime.fromisoformat(data["grant_date"]) if data.get("grant_date", None) else None,
                 steam_grade=data.get("steam_grade", None),
                 steam_date=datetime.fromisoformat(data["steam_date"]) if data.get("steam_date", None) else datetime.min,
@@ -51,7 +52,7 @@ class RareGame(RareGameSlim):
                 auto_update=self.auto_update,
                 queued=self.queued,
                 queue_pos=self.queue_pos,
-                last_played=self.last_played.isoformat() if self.last_played else None,
+                last_played=self.last_played.isoformat() if self.last_played else datetime.min,
                 grant_date=self.grant_date.isoformat() if self.grant_date else None,
                 steam_grade=self.steam_grade,
                 steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min,
@@ -122,6 +123,7 @@ class RareGame(RareGameSlim):
         self.signals.game.finished.emit(self.app_name)
 
     __metadata_json: Optional[Dict] = None
+    __metadata_lock: Lock = Lock()
 
     @staticmethod
     def __load_metadata_json() -> Dict:
@@ -139,18 +141,20 @@ class RareGame(RareGameSlim):
         return RareGame.__metadata_json
 
     def __load_metadata(self):
-        metadata: Dict = self.__load_metadata_json()
-        # pylint: disable=unsupported-membership-test
-        if self.app_name in metadata:
-            # pylint: disable=unsubscriptable-object
-            self.metadata = RareGame.Metadata.from_dict(metadata[self.app_name])
+        with RareGame.__metadata_lock:
+            metadata: Dict = self.__load_metadata_json()
+            # pylint: disable=unsupported-membership-test
+            if self.app_name in metadata:
+                # pylint: disable=unsubscriptable-object
+                self.metadata = RareGame.Metadata.from_dict(metadata[self.app_name])
 
     def __save_metadata(self):
-        metadata: Dict = self.__load_metadata_json()
-        # pylint: disable=unsupported-assignment-operation
-        metadata[self.app_name] = self.metadata.as_dict()
-        with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
-            json.dump(metadata, metadata_json, indent=2)
+        with RareGame.__metadata_lock:
+            metadata: Dict = self.__load_metadata_json()
+            # pylint: disable=unsupported-assignment-operation
+            metadata[self.app_name] = self.metadata.as_dict()
+            with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
+                json.dump(metadata, metadata_json, indent=2)
 
     def update_game(self):
         self.game = self.core.get_game(
