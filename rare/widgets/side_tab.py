@@ -67,9 +67,12 @@ class SideTabBar(QTabBar):
 class SideTabContents(object):
     # str: title
     set_title = pyqtSignal(str)
+    implements_scrollarea: bool = False
 
 
 class SideTabContentsProtocol(Protocol):
+    implements_scrollarea: bool
+
     def layout(self) -> QLayout:
         pass
 
@@ -86,24 +89,28 @@ class SideTabContainer(QWidget):
         self.title = QLabel(self)
         self.setTitle(title)
 
-        self.scrollarea = QScrollArea(self)
-        self.scrollarea.setWidgetResizable(True)
-        self.scrollarea.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
-        self.scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scrollarea.setFrameStyle(QScrollArea.NoFrame)
         if widget.layout():
             widget.layout().setAlignment(Qt.AlignTop)
             widget.layout().setContentsMargins(0, 0, 3, 0)
         if hasattr(widget, "set_title"):
             widget.set_title.connect(self.setTitle)
-        self.scrollarea.setMinimumWidth(
-            widget.sizeHint().width() + self.scrollarea.verticalScrollBar().sizeHint().width()
-        )
-        self.scrollarea.setWidget(widget)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.title)
-        layout.addWidget(self.scrollarea)
+
+        if not hasattr(widget, "implements_scrollarea") or not widget.implements_scrollarea:
+            self.scrollarea = QScrollArea(self)
+            self.scrollarea.setWidgetResizable(True)
+            self.scrollarea.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
+            self.scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.scrollarea.setFrameStyle(QScrollArea.NoFrame)
+            self.scrollarea.setMinimumWidth(
+                widget.sizeHint().width() + self.scrollarea.verticalScrollBar().sizeHint().width()
+            )
+            self.scrollarea.setWidget(widget)
+            layout.addWidget(self.scrollarea)
+        else:
+            layout.addWidget(widget)
 
     def setTitle(self, text: str) -> None:
         self.title.setText(f"<h2>{text}</h2>")

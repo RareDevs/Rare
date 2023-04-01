@@ -28,7 +28,6 @@ class FlowLayout(QLayout):
 
     def addItem(self, a0: QLayoutItem) -> None:
         self._items.append(a0)
-        self.invalidate()
 
     def horizontalSpacing(self):
         if self._hspacing >= 0:
@@ -56,7 +55,7 @@ class FlowLayout(QLayout):
         return None
 
     def expandingDirections(self) -> Qt.Orientations:
-        return Qt.Orientations(Qt.Horizontal | Qt.Vertical)
+        return Qt.Horizontal | Qt.Vertical
 
     def hasHeightForWidth(self) -> bool:
         return True
@@ -88,7 +87,11 @@ class FlowLayout(QLayout):
         x = effective.x()
         y = effective.y()
         lineheight = 0
+        if not self._items:
+            return y + lineheight - rect.y() + bottom
         for item in self._items:
+            if item.isEmpty():
+                continue
             widget = item.widget()
             if not widget.isVisible():
                 continue

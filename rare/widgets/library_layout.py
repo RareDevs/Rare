@@ -17,7 +17,7 @@ class LibraryLayout(FlowLayout):
         super(LibraryLayout, self).__init__(parent=parent, margin=margin, hspacing=spacing, vspacing=spacing)
 
     def expandingDirections(self) -> Qt.Orientations:
-        return Qt.Orientations(Qt.Horizontal | Qt.Vertical)
+        return Qt.Horizontal | Qt.Vertical
 
     def setGeometry(self, a0: QRect) -> None:
         super(FlowLayout, self).setGeometry(a0)
