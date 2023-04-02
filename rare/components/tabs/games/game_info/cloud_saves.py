@@ -24,6 +24,7 @@ from rare.ui.components.tabs.games.game_info.cloud_widget import Ui_CloudWidget
 from rare.ui.components.tabs.games.game_info.sync_widget import Ui_SyncWidget
 from rare.utils.misc import icon
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.loading_widget import LoadingWidget
 from rare.widgets.side_tab import SideTabContents
 
 logger = getLogger("CloudWidget")
@@ -48,6 +49,11 @@ class CloudSaves(QWidget, SideTabContents):
 
         self.sync_ui.upload_button.clicked.connect(self.upload)
         self.sync_ui.download_button.clicked.connect(self.download)
+
+        self.loading_widget = LoadingWidget(self.sync_widget)
+        self.loading_widget.setGeometry(self.sync_widget.width() + 64, self.sync_widget.height() // 2, 128, 128)
+        self.loading_widget.setVisible(False)
+
         self.rgame: RareGame = None
 
         self.cloud_widget = QGroupBox(self)
@@ -93,13 +99,13 @@ class CloudSaves(QWidget, SideTabContents):
             self.rgame.save_path = text
 
     def upload(self):
-        self.sync_ui.upload_button.setDisabled(True)
-        self.sync_ui.download_button.setDisabled(True)
+        self.sync_widget.setEnabled(False)
+        self.loading_widget.setVisible(True)
         self.rgame.upload_saves()
 
     def download(self):
-        self.sync_ui.upload_button.setDisabled(True)
-        self.sync_ui.download_button.setDisabled(True)
+        self.sync_widget.setEnabled(False)
+        self.loading_widget.setVisible(True)
         self.rgame.download_saves()
 
     def compute_save_path(self):
@@ -155,7 +161,10 @@ class CloudSaves(QWidget, SideTabContents):
         supports_saves = self.rgame.igame is not None and (
                 self.rgame.game.supports_cloud_saves or self.rgame.game.supports_mac_cloud_saves
         )
-        self.sync_widget.setEnabled(bool(supports_saves and self.rgame.save_path)) # and not self.rgame.is_save_up_to_date))
+
+        self.sync_widget.setEnabled(
+            bool(supports_saves and self.rgame.save_path))  # and not self.rgame.is_save_up_to_date))
+
         self.cloud_widget.setEnabled(supports_saves)
         self.info_label.setVisible(not supports_saves)
         if not supports_saves:
@@ -185,8 +194,11 @@ class CloudSaves(QWidget, SideTabContents):
         )
 
         button_disabled = self.rgame.state in [RareGame.State.RUNNING, RareGame.State.SYNCING]
-        self.sync_ui.download_button.setDisabled(button_disabled)
-        self.sync_ui.upload_button.setDisabled(button_disabled)
+        self.sync_widget.setDisabled(button_disabled)
+        self.loading_widget.setVisible(button_disabled)
+
+        self.sync_ui.upload_button.setDisabled(not dt_local)
+        self.sync_ui.download_button.setDisabled(not dt_remote)
 
         self.cloud_ui.cloud_sync.blockSignals(True)
         self.cloud_ui.cloud_sync.setChecked(self.rgame.auto_sync_saves)
