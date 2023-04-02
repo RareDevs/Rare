@@ -6,8 +6,8 @@ from rare.utils.misc import icon
 
 
 class LoadingWidget(qtawesome.IconWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self.setIconSize(QSize(128, 128))
         spin_icon = icon('mdi.loading',
                          animation=qtawesome.Spin(self, interval=5))
