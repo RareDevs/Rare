@@ -54,8 +54,8 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
         else:
             self.status = self.UPLOAD
 
-        self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X"))
-        self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X"))
+        self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X") if dt_local else "None")
+        self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X") if dt_remote else "None")
 
         self.sync_ui.icon_local.setPixmap(icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
         self.sync_ui.icon_remote.setPixmap(icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))

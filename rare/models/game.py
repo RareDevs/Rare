@@ -407,7 +407,7 @@ class RareGame(RareGameSlim):
 
         @return bool If the game doesn't have assets
         """
-        return not self.game.asset_infos
+        return not self.game.asset_infos or not next(iter(self.game.asset_infos.values())).app_name
 
     @property
     def is_origin(self) -> bool:
