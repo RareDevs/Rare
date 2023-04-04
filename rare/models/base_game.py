@@ -198,7 +198,6 @@ class RareGameSlim(RareGameBase):
         def _upload():
             logger.info(f"Uploading save for {self.title}")
             self.state = RareGameSlim.State.SYNCING
-            self.signals.widget.update.emit()
             self.core.upload_save(self.app_name, self.igame.save_path, dt_local)
             self.state = RareGameSlim.State.IDLE
             self.update_saves()
@@ -224,7 +223,6 @@ class RareGameSlim(RareGameBase):
         def _download():
             logger.info(f"Downloading save for {self.title}")
             self.state = RareGameSlim.State.SYNCING
-            self.signals.widget.update.emit()
             self.core.download_saves(self.app_name, self.latest_save.file.manifest_name, self.save_path)
             self.state = RareGameSlim.State.IDLE
             self.update_saves()
