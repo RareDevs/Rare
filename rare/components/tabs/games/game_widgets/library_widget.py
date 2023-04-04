@@ -1,7 +1,7 @@
 from typing import Optional, Tuple, List
 
-from PyQt5.QtCore import Qt, QRect, QEvent
-from PyQt5.QtGui import QPainter, QPixmap, QResizeEvent, QFontMetrics, QImage, QBrush, QColor
+from PyQt5.QtCore import Qt, QEvent, QObject
+from PyQt5.QtGui import QPainter, QPixmap, QFontMetrics, QImage, QBrush, QColor, QShowEvent
 from PyQt5.QtWidgets import QLabel
 
 from rare.widgets.image_widget import ImageWidget
@@ -10,15 +10,35 @@ from rare.widgets.image_widget import ImageWidget
 class ProgressLabel(QLabel):
     def __init__(self, parent=None):
         super(ProgressLabel, self).__init__(parent=parent)
+        if self.parent() is not None:
+            self.parent().installEventFilter(self)
         self.setObjectName(type(self).__name__)
         self.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         self.setFrameStyle(QLabel.StyledPanel)
 
-    def setGeometry(self, a0: QRect) -> None:
+    def __center_on_parent(self):
         fm = QFontMetrics(self.font())
         rect = fm.boundingRect(f"  {self.text()}  ")
-        rect.moveCenter(a0.center())
-        super(ProgressLabel, self).setGeometry(rect)
+        rect.moveCenter(self.parent().contentsRect().center())
+        self.setGeometry(rect)
+
+    def event(self, e: QEvent) -> bool:
+        if e.type() == QEvent.ParentAboutToChange:
+            if self.parent() is not None:
+                self.parent().removeEventFilter(self)
+        if e.type() == QEvent.ParentChange:
+            if self.parent() is not None:
+                self.parent().installEventFilter(self)
+        return super().event(e)
+
+    def showEvent(self, a0: QShowEvent) -> None:
+        self.__center_on_parent()
+
+    def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
+        if a0 is self.parent() and a1.type() == QEvent.Resize:
+            self.__center_on_parent()
+            return a0.event(a1)
+        return False
 
     @staticmethod
     def calculateColors(image: QImage) -> Tuple[QColor, QColor]:
@@ -57,16 +77,6 @@ class LibraryWidget(ImageWidget):
         # lk: keep percentage to not over-generate the image
         self._progress: int = -1
 
-    def event(self, e: QEvent) -> bool:
-        if e.type() == QEvent.LayoutRequest:
-            self.progress_label.setGeometry(self.rect())
-        return super(LibraryWidget, self).event(e)
-
-    def resizeEvent(self, a0: QResizeEvent) -> None:
-        if self.progress_label.isVisible():
-            self.progress_label.setGeometry(self.rect())
-        super(LibraryWidget, self).resizeEvent(a0)
-
     def progressPixmap(self, color: QPixmap, gray: QPixmap, progress: int) -> QPixmap:
         """
         Paints the color image over the gray images based on progress percentage
@@ -103,7 +113,6 @@ class LibraryWidget(ImageWidget):
         bg_color, fg_color = self.progress_label.calculateColors(color_pm.toImage())
         self.progress_label.setStyleSheetColors(bg_color, fg_color, fg_color)
         self.progress_label.setVisible(True)
-        self.progress_label.update()
         self.updateProgress(0)
 
     def updateProgress(self, progress: int):
