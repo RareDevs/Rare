@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
-    <height>588</height>
+    <width>679</width>
+    <height>329</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,8 +35,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>583</width>
-          <height>574</height>
+          <width>515</width>
+          <height>315</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="games_container_layout">
@@ -77,9 +77,15 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>580</width>
-              <height>83</height>
+              <width>16</width>
+              <height>16</height>
              </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
             <layout class="QHBoxLayout" name="free_container_layout">
              <property name="leftMargin">
@@ -103,13 +109,6 @@
            <property name="title">
             <string>Discounts from your wishlist</string>
            </property>
-           <layout class="QVBoxLayout" name="discounts_layout">
-            <item>
-             <widget class="QStackedWidget" name="discount_stack">
-              <widget class="QWidget" name="discount_widget"/>
-             </widget>
-            </item>
-           </layout>
           </widget>
          </item>
          <item>
@@ -117,13 +116,6 @@
            <property name="title">
             <string>Games</string>
            </property>
-           <layout class="QVBoxLayout" name="games_layout">
-            <item>
-             <widget class="QStackedWidget" name="game_stack">
-              <widget class="QWidget" name="game_widget"/>
-             </widget>
-            </item>
-           </layout>
           </widget>
          </item>
         </layout>
@@ -169,9 +161,15 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>145</width>
-          <height>542</height>
+          <width>142</width>
+          <height>390</height>
          </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <layout class="QVBoxLayout" name="filter_container_layout">
          <property name="leftMargin">

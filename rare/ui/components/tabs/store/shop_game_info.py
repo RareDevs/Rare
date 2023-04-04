@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ShopInfo(object):
     def setupUi(self, ShopInfo):
         ShopInfo.setObjectName("ShopInfo")
-        ShopInfo.resize(434, 250)
+        ShopInfo.resize(747, 442)
         ShopInfo.setWindowTitle("ShopGameInfo")
         self.main_layout = QtWidgets.QHBoxLayout(ShopInfo)
         self.main_layout.setObjectName("main_layout")
