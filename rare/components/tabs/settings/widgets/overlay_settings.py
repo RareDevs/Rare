@@ -170,9 +170,12 @@ class OverlaySettings(QGroupBox, Ui_OverlaySettings):
                 try:
                     if "=" in option:
                         var_name, value = option.split("=")
-                        self.values.get(var_name).set_value(value)
+                        if var_name in self.checkboxes.keys():
+                            self.checkboxes[var_name].setChecked(False)
+                        else:
+                            self.values[var_name].set_value(value)
                     else:
-                        self.checkboxes.get(option).setChecked(True)
+                        self.checkboxes[option].setChecked(True)
                 except Exception as e:
                     logger.warning(e)
 
