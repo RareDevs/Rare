@@ -252,12 +252,12 @@ class RareGameSlim(RareGameBase):
             else:
                 rsave = RareSaveGame(save, SaveGameStatus.SAME_AGE, dt_local=None, dt_remote=save.datetime)
             self.saves.append(rsave)
+        self.signals.widget.update.emit()
 
     def update_saves(self):
         """ Use only in a thread """
         saves = self.core.get_save_games(self.app_name)
         self.load_saves(saves)
-        self.signals.widget.update.emit()
 
     @property
     def is_save_up_to_date(self):
