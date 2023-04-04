@@ -50,8 +50,7 @@ class CloudSaves(QWidget, SideTabContents):
         self.sync_ui.upload_button.clicked.connect(self.upload)
         self.sync_ui.download_button.clicked.connect(self.download)
 
-        self.loading_widget = LoadingWidget(self.sync_widget)
-        self.loading_widget.setGeometry(self.sync_widget.width() + 64, self.sync_widget.height() // 2, 128, 128)
+        self.loading_widget = LoadingWidget(parent=self.sync_widget)
         self.loading_widget.setVisible(False)
 
         self.rgame: RareGame = None
@@ -195,7 +194,10 @@ class CloudSaves(QWidget, SideTabContents):
 
         button_disabled = self.rgame.state in [RareGame.State.RUNNING, RareGame.State.SYNCING]
         self.sync_widget.setDisabled(button_disabled)
-        self.loading_widget.setVisible(button_disabled)
+        if self.rgame.state == RareGame.State.SYNCING:
+            self.loading_widget.start()
+        else:
+            self.loading_widget.stop()
 
         self.sync_ui.upload_button.setDisabled(not dt_local)
         self.sync_ui.download_button.setDisabled(not dt_remote)

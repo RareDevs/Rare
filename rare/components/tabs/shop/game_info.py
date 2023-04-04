@@ -16,8 +16,9 @@ from PyQt5.QtWidgets import (
 from rare.shared import LegendaryCoreSingleton
 from rare.components.tabs.shop.shop_models import ShopGame
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
-from rare.utils.extra_widgets import WaitingSpinner, ImageLabel
+from rare.utils.extra_widgets import ImageLabel
 from rare.utils.misc import icon
+from rare.widgets.loading_widget import LoadingWidget
 
 logger = logging.getLogger("ShopInfo")
 
@@ -36,7 +37,7 @@ class ShopGameInfo(QWidget, Ui_shop_info):
         self.open_store_button.clicked.connect(self.button_clicked)
         self.image = ImageLabel()
         self.image_stack.addWidget(self.image)
-        self.image_stack.addWidget(WaitingSpinner())
+        self.image_stack.addWidget(LoadingWidget())
         warn_label = QLabel()
         warn_label.setPixmap(
             icon("fa.warning").pixmap(160, 160).scaled(240, 320, Qt.IgnoreAspectRatio)

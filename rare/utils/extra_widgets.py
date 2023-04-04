@@ -1,11 +1,8 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import (
-    Qt,
-    pyqtSignal,
-)
-from PyQt5.QtGui import QMovie, QPixmap, QImage
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QPixmap, QImage, QMovie
 from PyQt5.QtWidgets import (
     QStyle,
     QLabel,
