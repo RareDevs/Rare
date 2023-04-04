@@ -9,15 +9,17 @@ from PyQt5.QtWidgets import (
     QLabel,
     QPushButton,
     QHBoxLayout,
-    QWidget, QSizePolicy,
+    QWidget, QSizePolicy, QStackedLayout,
 )
 
 from legendary.core import LegendaryCore
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
-from rare.utils.extra_widgets import WaitingSpinner, ButtonLineEdit
+from rare.utils.extra_widgets import ButtonLineEdit
 from rare.widgets.flow_layout import FlowLayout
+from rare.widgets.side_tab import SideTabContents
 from .constants import Constants
 from .game_widgets import GameWidget
+from .image_widget import WaitingSpinner
 from .shop_api_core import ShopApiCore
 from .shop_models import BrowseModel
 
@@ -25,14 +27,16 @@ logger = logging.getLogger("Shop")
 
 
 # noinspection PyAttributeOutsideInit,PyBroadException
-class ShopWidget(QWidget, Ui_ShopWidget):
+class ShopWidget(QWidget, SideTabContents):
     show_info = pyqtSignal(str)
     show_game = pyqtSignal(dict)
 
-    def __init__(self, path, core: LegendaryCore, shop_api: ShopApiCore, parent=None):
+    def __init__(self, cache_dir, core: LegendaryCore, shop_api: ShopApiCore, parent=None):
         super(ShopWidget, self).__init__(parent=parent)
-        self.setupUi(self)
-        self.path = path
+        self.implements_scrollarea = True
+        self.ui = Ui_ShopWidget()
+        self.ui.setupUi(self)
+        self.cache_dir = cache_dir
         self.core = core
         self.api_core = shop_api
         self.price = ""
@@ -40,25 +44,39 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.types = []
         self.update_games_allowed = True
 
-        self.free_scrollarea.setDisabled(True)
+        self.ui.free_scrollarea.setDisabled(True)
 
         self.free_game_widgets = []
         self.active_search_request = False
         self.next_search = ""
         self.wishlist: List = []
 
-        self.discount_widget.setLayout(FlowLayout(self.discount_widget))
-        self.discount_stack.addWidget(WaitingSpinner(self.discount_stack))
-        self.discount_stack.setCurrentIndex(1)
+        self.discounts_layout = QStackedLayout(self.ui.discounts_group)
+        self.discounts_spinner = WaitingSpinner(self.ui.discounts_group)
+        self.discounts_flow = QWidget(self.ui.discounts_group)
+        self.discounts_flow.setLayout(FlowLayout(self.discounts_flow))
+        self.discounts_flow.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.discounts_layout.addWidget(self.discounts_spinner)
+        self.discounts_layout.addWidget(self.discounts_flow)
 
-        self.game_widget.setLayout(FlowLayout(self.game_widget))
-        self.game_stack.addWidget(WaitingSpinner(self.game_stack))
-        self.game_stack.setCurrentIndex(1)
+        self.discounts_spinner.start()
+        self.discounts_layout.setCurrentWidget(self.discounts_spinner)
+
+        self.games_layout = QStackedLayout(self.ui.games_group)
+        self.games_spinner = WaitingSpinner(self.ui.games_group)
+        self.games_flow = QWidget(self.ui.games_group)
+        self.games_flow.setLayout(FlowLayout(self.games_flow))
+        self.games_flow.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.games_layout.addWidget(self.games_spinner)
+        self.games_layout.addWidget(self.games_flow)
+
+        self.games_spinner.start()
+        self.games_layout.setCurrentWidget(self.games_spinner)
 
         self.search_bar = ButtonLineEdit(
             "fa.search", placeholder_text=self.tr("Search Games")
         )
-        self.left_layout.insertWidget(0, self.search_bar)
+        self.ui.left_layout.insertWidget(0, self.search_bar)
 
         # self.search_bar.textChanged.connect(self.search_games)
 
@@ -81,22 +99,21 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.api_core.get_wishlist(self.add_wishlist_items)
 
     def add_wishlist_items(self, wishlist):
-        for i in range(self.discount_widget.layout().count()):
-            item = self.discount_widget.layout().itemAt(i)
-            if item:
-                item.widget().deleteLater()
+        for w in self.discounts_flow.findChildren(QGroupBox, options=Qt.FindDirectChildrenOnly):
+            self.discounts_flow.layout().removeWidget(w)
+            w.deleteLater()
 
-        if wishlist and wishlist[0] == "error":
-            self.discount_widget.layout().addWidget(
-                QLabel(self.tr("Failed to get wishlist: {}").format(wishlist[1]))
-            )
-            btn = QPushButton(self.tr("Reload"))
-            self.discount_widget.layout().addWidget(btn)
-            btn.clicked.connect(
-                lambda: self.api_core.get_wishlist(self.add_wishlist_items)
-            )
-            self.discount_stack.setCurrentIndex(0)
-            return
+        # if wishlist and wishlist[0] == "error":
+        #     self.discounts_group.layout().addWidget(
+        #         QLabel(self.tr("Failed to get wishlist: {}").format(wishlist[1]))
+        #     )
+        #     btn = QPushButton(self.tr("Reload"))
+        #     self.discount_widget.layout().addWidget(btn)
+        #     btn.clicked.connect(
+        #         lambda: self.api_core.get_wishlist(self.add_wishlist_items)
+        #     )
+        #     self.discount_stack.setCurrentIndex(0)
+        #     return
 
         discounts = 0
         for game in wishlist:
@@ -104,48 +121,48 @@ class ShopWidget(QWidget, Ui_ShopWidget):
                 continue
             try:
                 if game["offer"]["price"]["totalPrice"]["discount"] > 0:
-                    w = GameWidget(self.path, game["offer"])
+                    w = GameWidget(self.api_core.cached_manager, game["offer"])
                     w.show_info.connect(self.show_game)
-                    self.discount_widget.layout().addWidget(w)
+                    self.discounts_flow.layout().addWidget(w)
                     discounts += 1
             except Exception as e:
                 logger.warning(f"{game} {e}")
                 continue
-        self.discounts_group.setVisible(discounts > 0)
-        self.discount_stack.setCurrentIndex(0)
-        # fix widget overlay
-        self.discount_widget.layout().update()
+        self.ui.discounts_group.setVisible(discounts > 0)
+        self.discounts_layout.setCurrentWidget(self.discounts_flow)
+        # FIXME: FlowLayout doesn't update on adding widget
+        self.discounts_flow.layout().update()
 
     def add_free_games(self, free_games: list):
-        for w in self.free_container.layout().findChildren(QGroupBox, options=Qt.FindDirectChildrenOnly):
-            self.free_container.layout().removeWidget(w)
+        for w in self.ui.free_container.layout().findChildren(QGroupBox, options=Qt.FindDirectChildrenOnly):
+            self.ui.free_container.layout().removeWidget(w)
             w.deleteLater()
 
         if free_games and free_games[0] == "error":
-            self.free_container.layout().addWidget(
+            self.ui.free_container.layout().addWidget(
                 QLabel(self.tr("Failed to fetch free games: {}").format(free_games[1]))
             )
             btn = QPushButton(self.tr("Reload"))
-            self.free_container.layout().addWidget(btn)
+            self.ui.free_container.layout().addWidget(btn)
             btn.clicked.connect(
                 lambda: self.api_core.get_free_games(self.add_free_games)
             )
-            self.free_container.setEnabled(True)
+            self.ui.free_container.setEnabled(True)
             return
 
-        self.free_games_now = QGroupBox(self.tr("Free now"), parent=self.free_container)
+        self.free_games_now = QGroupBox(self.tr("Free now"), parent=self.ui.free_container)
         free_games_now_layout = QHBoxLayout(self.free_games_now)
         # free_games_now_layout.setContentsMargins(0, 0, 0, 0)
-        self.free_games_now.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.free_games_now.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.free_games_now.setLayout(free_games_now_layout)
-        self.free_container.layout().addWidget(self.free_games_now)
+        self.ui.free_container.layout().addWidget(self.free_games_now)
 
-        self.free_games_next = QGroupBox(self.tr("Free next week"), parent=self.free_container)
+        self.free_games_next = QGroupBox(self.tr("Free next week"), parent=self.ui.free_container)
         free_games_next_layout = QHBoxLayout(self.free_games_next)
         # free_games_next_layout.setContentsMargins(0, 0, 0, 0)
-        self.free_games_next.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.free_games_next.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.free_games_next.setLayout(free_games_next_layout)
-        self.free_container.layout().addWidget(self.free_games_next)
+        self.ui.free_container.layout().addWidget(self.free_games_next)
 
         date = datetime.datetime.now()
         free_games_now = []
@@ -196,7 +213,7 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         # free games now
         now_free = 0
         for free_game in free_games_now:
-            w = GameWidget(self.path, free_game)
+            w = GameWidget(self.api_core.cached_manager, free_game)
             w.show_info.connect(self.show_game)
             self.free_games_now.layout().addWidget(w)
             self.free_game_widgets.append(w)
@@ -208,64 +225,64 @@ class ShopWidget(QWidget, Ui_ShopWidget):
 
         # free games next week
         for free_game in coming_free_games:
-            w = GameWidget(self.path, free_game)
+            w = GameWidget(self.api_core.cached_manager, free_game)
             if free_game["title"] != "Mystery Game":
                 w.show_info.connect(self.show_game)
             self.free_games_next.layout().addWidget(w)
         # self.coming_free_games.setFixedWidth(int(40 + len(coming_free_games) * 300))
 
-        self.free_scrollarea.setMinimumHeight(
+        self.ui.free_scrollarea.setMinimumHeight(
             self.free_games_now.sizeHint().height()
-            + self.free_container.layout().contentsMargins().top()
-            + self.free_container.layout().contentsMargins().bottom()
-            + self.free_scrollarea.horizontalScrollBar().sizeHint().height()
+            + self.ui.free_container.layout().contentsMargins().top()
+            + self.ui.free_container.layout().contentsMargins().bottom()
+            + self.ui.free_scrollarea.horizontalScrollBar().sizeHint().height()
         )
-        self.free_scrollarea.setEnabled(True)
+        self.ui.free_scrollarea.setEnabled(True)
 
     def show_search_results(self):
         if self.search_bar.text():
             self.show_info.emit(self.search_bar.text())
 
     def init_filter(self):
-        self.none_price.toggled.connect(
-            lambda: self.prepare_request("") if self.none_price.isChecked() else None
+        self.ui.none_price.toggled.connect(
+            lambda: self.prepare_request("") if self.ui.none_price.isChecked() else None
         )
-        self.free_button.toggled.connect(
+        self.ui.free_button.toggled.connect(
             lambda: self.prepare_request("free")
-            if self.free_button.isChecked()
+            if self.ui.free_button.isChecked()
             else None
         )
-        self.under10.toggled.connect(
+        self.ui.under10.toggled.connect(
             lambda: self.prepare_request("<price>[0, 1000)")
-            if self.under10.isChecked()
+            if self.ui.under10.isChecked()
             else None
         )
-        self.under20.toggled.connect(
+        self.ui.under20.toggled.connect(
             lambda: self.prepare_request("<price>[0, 2000)")
-            if self.under20.isChecked()
+            if self.ui.under20.isChecked()
             else None
         )
-        self.under30.toggled.connect(
+        self.ui.under30.toggled.connect(
             lambda: self.prepare_request("<price>[0, 3000)")
-            if self.under30.isChecked()
+            if self.ui.under30.isChecked()
             else None
         )
-        self.above.toggled.connect(
+        self.ui.above.toggled.connect(
             lambda: self.prepare_request("<price>[1499,]")
-            if self.above.isChecked()
+            if self.ui.above.isChecked()
             else None
         )
         # self.on_discount.toggled.connect(lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None)
-        self.on_discount.toggled.connect(lambda: self.prepare_request())
+        self.ui.on_discount.toggled.connect(lambda: self.prepare_request())
         constants = Constants()
 
         self.checkboxes = []
 
         for groupbox, variables in [
-            (self.genre_group, constants.categories),
-            (self.platform_group, constants.platforms),
-            (self.others_group, constants.others),
-            (self.type_group, constants.types),
+            (self.ui.genre_group, constants.categories),
+            (self.ui.platform_group, constants.platforms),
+            (self.ui.others_group, constants.others),
+            (self.ui.type_group, constants.types),
         ]:
 
             for text, tag in variables:
@@ -276,26 +293,26 @@ class ShopWidget(QWidget, Ui_ShopWidget):
                 )
                 groupbox.layout().addWidget(checkbox)
                 self.checkboxes.append(checkbox)
-        self.reset_button.clicked.connect(self.reset_filters)
-        self.filter_scrollarea.setMinimumWidth(
-            self.filter_container.sizeHint().width()
-            + self.filter_container.layout().contentsMargins().left()
-            + self.filter_container.layout().contentsMargins().right()
-            + self.filter_scrollarea.verticalScrollBar().sizeHint().width()
+        self.ui.reset_button.clicked.connect(self.reset_filters)
+        self.ui.filter_scrollarea.setMinimumWidth(
+            self.ui.filter_container.sizeHint().width()
+            + self.ui.filter_container.layout().contentsMargins().left()
+            + self.ui.filter_container.layout().contentsMargins().right()
+            + self.ui.filter_scrollarea.verticalScrollBar().sizeHint().width()
         )
 
     def reset_filters(self):
         self.update_games_allowed = False
         for cb in self.checkboxes:
             cb.setChecked(False)
-        self.none_price.setChecked(True)
+        self.ui.none_price.setChecked(True)
 
         self.tags = []
         self.types = []
         self.update_games_allowed = True
         self.prepare_request("")
 
-        self.on_discount.setChecked(False)
+        self.ui.on_discount.setChecked(False)
 
     def prepare_request(
         self,
@@ -319,22 +336,22 @@ class ShopWidget(QWidget, Ui_ShopWidget):
             self.types.append(added_type)
         if removed_type and removed_type in self.types:
             self.types.remove(removed_type)
-        if (self.types or self.price) or self.tags or self.on_discount.isChecked():
-            self.free_scrollarea.setVisible(False)
-            self.discounts_group.setVisible(False)
+        if (self.types or self.price) or self.tags or self.ui.on_discount.isChecked():
+            self.ui.free_scrollarea.setVisible(False)
+            self.ui.discounts_group.setVisible(False)
         else:
-            self.free_scrollarea.setVisible(True)
-            if len(self.discounts_group.layout().children()) > 0:
-                self.discounts_group.setVisible(True)
+            self.ui.free_scrollarea.setVisible(True)
+            if len(self.ui.discounts_group.layout().children()) > 0:
+                self.ui.discounts_group.setVisible(True)
 
-        self.game_stack.setCurrentIndex(1)
+        self.games_layout.setCurrentWidget(self.games_spinner)
 
         browse_model = BrowseModel(
             language_code=self.core.language_code,
             country_code=self.core.country_code,
             count=20,
             price=self.price,
-            onSale=self.on_discount.isChecked(),
+            onSale=self.ui.on_discount.isChecked(),
         )
         browse_model.tag = "|".join(self.tags)
 
@@ -343,24 +360,22 @@ class ShopWidget(QWidget, Ui_ShopWidget):
         self.api_core.browse_games(browse_model, self.show_games)
 
     def show_games(self, data):
-        for item in (
-            self.game_widget.layout().itemAt(i)
-            for i in range(self.game_widget.layout().count())
-        ):
-            item.widget().deleteLater()
+        for w in self.games_flow.layout().findChildren(GameWidget, options=Qt.FindDirectChildrenOnly):
+            self.games_flow.layout().removeWidget(w)
+            w.deleteLater()
+
         if data:
             for game in data:
-                w = GameWidget(self.path, game)
-                self.game_widget.layout().addWidget(w)
+                w = GameWidget(self.api_core.cached_manager, game)
                 w.show_info.connect(self.show_game.emit)
-
+                self.games_flow.layout().addWidget(w)
         else:
-            self.game_widget.layout().addWidget(
+            self.games_flow.layout().addWidget(
                 QLabel(self.tr("Could not get games matching the filter"))
             )
-        self.game_stack.setCurrentIndex(0)
-
-        self.game_widget.layout().update()
+        self.games_layout.setCurrentWidget(self.games_flow)
+        # FIXME: FlowLayout doesn't update on adding widget
+        self.games_flow.layout().update()
 
 
 class CheckBox(QCheckBox):

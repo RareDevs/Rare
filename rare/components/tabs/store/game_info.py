@@ -33,7 +33,7 @@ class ShopGameInfo(QWidget, SideTabContents):
         self.api_core = api_core
         self.installed = installed_titles
         self.ui.open_store_button.clicked.connect(self.button_clicked)
-        self.image = ShopImageWidget(self)
+        self.image = ShopImageWidget(api_core.cached_manager, self)
         self.image.setFixedSize(ImageSize.Normal)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
 
@@ -139,7 +139,7 @@ class ShopGameInfo(QWidget, SideTabContents):
                     "VaultClosed",
                     "ProductLogo",
                 ]:
-                    self.image.fetchPixmap(img["url"], self.id_str, self.title_str)
+                    self.image.fetchPixmap(img["url"])
                     break
             self.price.setText("")
             self.discount_price.setText("")
@@ -207,7 +207,7 @@ class ShopGameInfo(QWidget, SideTabContents):
             img_url = self.game.image_urls.product_logo
         else:
             img_url = ""
-        self.image.fetchPixmap(img_url, self.game.id, self.game.title)
+        self.image.fetchPixmap(img_url)
 
         # self.image_stack.setCurrentIndex(0)
         try:

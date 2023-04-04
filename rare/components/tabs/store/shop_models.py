@@ -1,6 +1,7 @@
 import datetime
 from dataclasses import dataclass
 from typing import List, Dict
+import epicstore_api.queries as egs_query
 
 
 class ImageUrlModel:
@@ -158,22 +159,26 @@ class BrowseModel:
     price: str = ""
     onSale: bool = False
 
+    def __post_init__(self):
+        self.locale = f"{self.language_code}-{self.country_code}"
+
     @property
     def __dict__(self):
         payload = {
-            "allowCountries": self.country_code,
-            "category": self.category,
             "count": self.count,
-            "country": self.country_code,
-            "keywords": self.keywords,
-            "locale": self.language_code,
-            "priceRange": self.price,
-            "releaseDate": self.date,
+            "category": self.category,
+            "allowCountries": self.country_code,
+            "namespace": "",
             "sortBy": "releaseDate",
             "sortDir": self.sortDir,
             "start": self.start,
+            "keywords": self.keywords,
             "tag": self.tag,
+            "priceRange": self.price,
+            "releaseDate": self.date,
             "withPrice": self.withPrice,
+            "locale": self.locale,
+            "country": self.country_code,
         }
         if self.price == "free":
             payload["freeGame"] = True
@@ -187,5 +192,4 @@ class BrowseModel:
             payload["effectiveDate"] = self.date
         else:
             payload.pop("priceRange")
-
         return payload

@@ -1,4 +1,3 @@
-import urllib.parse
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -10,31 +9,37 @@ from rare.components.tabs.store.constants import (
     remove_from_wishlist_query,
 )
 from rare.components.tabs.store.shop_models import BrowseModel
+from rare.utils.paths import cache_dir
 from rare.utils.qt_requests import QtRequestManager
 
 logger = getLogger("ShopAPICore")
-graphql_url = "https://www.epicgames.com/graphql"
+graphql_url = "https://graphql.epicgames.com/graphql"
 
 
 class ShopApiCore(QObject):
     update_wishlist = pyqtSignal()
 
-    def __init__(self, auth_token, lc: str, cc: str):
+    def __init__(self, token, language: str, country: str):
         super(ShopApiCore, self).__init__()
-        self.token = auth_token
-        self.language_code: str = lc
-        self.country_code: str = cc
+        self.token = token
+        self.language_code: str = language
+        self.country_code: str = country
         self.locale = f"{self.language_code}-{self.country_code}"
-        self.manager = QtRequestManager()
-        self.auth_manager = QtRequestManager(authorization_token=auth_token)
+        self.manager = QtRequestManager(parent=self)
+        self.authed_manager = QtRequestManager(token=token, parent=self)
+        self.cached_manager = QtRequestManager(cache=str(cache_dir().joinpath("store")), parent=self)
 
         self.browse_active = False
         self.next_browse_request = tuple(())
 
     def get_free_games(self, handle_func: callable):
-        url = f"https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale={self.language_code}&country={self.country_code}&allowCountries={self.country_code}"
-
-        self.manager.get(url, lambda data: self._handle_free_games(data, handle_func))
+        url = "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions"
+        params = {
+            "locale": self.locale,
+            "country": self.country_code,
+            "allowCountries": self.country_code,
+        }
+        self.manager.get(url, lambda data: self._handle_free_games(data, handle_func), params=params)
 
     def _handle_free_games(self, data, handle_func):
         try:
@@ -50,16 +55,16 @@ class ShopApiCore(QObject):
         handle_func(results)
 
     def get_wishlist(self, handle_func):
-        self.auth_manager.post(
+        self.authed_manager.post(
             graphql_url,
+            lambda data: self._handle_wishlist(data, handle_func),
             {
                 "query": wishlist_query,
                 "variables": {
                     "country": self.country_code,
-                    "locale": f"{self.language_code}-{self.country_code}",
+                    "locale": self.locale,
                 },
             },
-            lambda data: self._handle_wishlist(data, handle_func),
         )
 
     def _handle_wishlist(self, data, handle_func):
@@ -94,9 +99,7 @@ class ShopApiCore(QObject):
             },
         }
 
-        self.manager.post(
-            graphql_url, payload, lambda data: self._handle_search(data, handle_func)
-        )
+        self.manager.post(graphql_url, lambda data: self._handle_search(data, handle_func), payload)
 
     def _handle_search(self, data, handle_func):
         try:
@@ -114,37 +117,11 @@ class ShopApiCore(QObject):
             self.next_browse_request = (browse_model, handle_func)
             return
         self.browse_active = True
-        url = "https://www.epicgames.com/graphql?operationName=searchStoreQuery&variables={}&extensions={}"
-        variables = urllib.parse.quote_plus(str(
-            dict(browse_model.__dict__))
-        )
-        extensions = urllib.parse.quote_plus(str(
-            dict(
-                persistedQuery=dict(
-                    version=1,
-                    sha256Hash="6e7c4dd0177150eb9a47d624be221929582df8648e7ec271c821838ff4ee148e"
-                )
-            )
-        )
-        )
-
-        for old, new in [
-            ("%26", "&"),
-            ("%27", "%22"),
-            ("+", ""),
-            ("%3A", ":"),
-            ("%2C", ","),
-            ("%5B", "["),
-            ("%5D", "]"),
-            ("True", "true"),
-        ]:
-            variables = variables.replace(old, new)
-            extensions = extensions.replace(old, new)
-
-        url = url.format(variables, extensions)
-        self.auth_manager.get(
-            url, lambda data: self._handle_browse_games(data, handle_func)
-        )
+        payload = {
+            "query": search_query,
+            "variables": browse_model.__dict__
+        }
+        self.manager.post(graphql_url, lambda data: self._handle_browse_games(data, handle_func), payload)
 
     def _handle_browse_games(self, data, handle_func):
         self.browse_active = False
@@ -188,11 +165,7 @@ class ShopApiCore(QObject):
             },
             "query": add_to_wishlist_query,
         }
-        self.auth_manager.post(
-            graphql_url,
-            payload,
-            lambda data: self._handle_add_to_wishlist(data, handle_func),
-        )
+        self.authed_manager.post(graphql_url, lambda data: self._handle_add_to_wishlist(data, handle_func), payload)
 
     def _handle_add_to_wishlist(self, data, handle_func):
         try:
@@ -215,11 +188,8 @@ class ShopApiCore(QObject):
             },
             "query": remove_from_wishlist_query,
         }
-        self.auth_manager.post(
-            graphql_url,
-            payload,
-            lambda data: self._handle_remove_from_wishlist(data, handle_func),
-        )
+        self.authed_manager.post(graphql_url, lambda data: self._handle_remove_from_wishlist(data, handle_func),
+                                 payload)
 
     def _handle_remove_from_wishlist(self, data, handle_func):
         try:

@@ -25,12 +25,12 @@ class StoreTab(SideTabWidget):
         )
 
         self.shop = ShopWidget(cache_dir(), self.core, self.api_core, parent=self)
-        self.shop_index = self.addTab(self.shop, self.tr("Games"))
+        self.shop_index = self.addTab(self.shop, self.tr("Store"))
         self.shop.show_game.connect(self.show_game)
         self.shop.show_info.connect(self.show_search)
 
         self.search = SearchResults(self.api_core, parent=self)
-        self.search_index = self.addTab(self.search, self.tr("Search"))
+        self.search_index = self.addTab(self.search, self.tr("Search"), self.tr("Results"))
         self.search.show_info.connect(self.show_game)
         # self.search.back_button.clicked.connect(lambda: self.setCurrentIndex(self.shop_index))
 
@@ -40,11 +40,11 @@ class StoreTab(SideTabWidget):
             self.api_core,
             parent=self
         )
-        self.info_index = self.addTab(self.info, self.tr("Information"))
+        self.info_index = self.addTab(self.info, self.tr("Information"), self.tr("Information"))
         # self.info.back_button.clicked.connect(lambda: self.setCurrentIndex(self.previous_index))
 
         self.wishlist = Wishlist(self.api_core, parent=self)
-        self.wishlist_index = self.addTab(self.wishlist, self.tr("Wishlist"))
+        self.wishlist_index = self.addTab(self.wishlist, self.tr("Wishlist"), self.tr("Wishlist"))
         self.wishlist.update_wishlist_signal.connect(self.update_wishlist)
         self.wishlist.show_game_info.connect(self.show_game)
 

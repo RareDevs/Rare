@@ -33,7 +33,7 @@ class About(QWidget, Ui_About):
         self.open_browser.setVisible(False)
         self.open_browser.setEnabled(False)
 
-        self.manager = QtRequestManager("json")
+        self.manager = QtRequestManager()
         self.manager.get(
             "https://api.github.com/repos/RareDevs/Rare/releases/latest",
             self.update_available_finished,

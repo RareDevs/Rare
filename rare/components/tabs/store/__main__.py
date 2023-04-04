@@ -27,9 +27,12 @@ if __name__ == "__main__":
     import rare.resources.stylesheets.RareStyle
 
     app = QApplication(sys.argv)
+    app.setApplicationName("Rare")
+    app.setOrganizationName("Rare")
 
     set_style_sheet("RareStyle")
     window = StoreWindow()
+    window.setWindowTitle(f"{app.applicationName()} - Store")
     window.resize(QSize(1280, 800))
     window.show()
     app.exec()

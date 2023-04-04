@@ -2,36 +2,36 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import (
-    QFrame,
     QWidget,
-    QVBoxLayout,
     QSizePolicy,
-    QLabel,
+    QLabel, QScrollArea,
 )
 
 from rare.shared.image_manager import ImageSize
+from rare.utils.qt_requests import QtRequestManager
 from rare.widgets.flow_layout import FlowLayout
+from rare.widgets.side_tab import SideTabContents
 from .image_widget import ShopImageWidget
 
 
-class SearchResults(QWidget):
+class SearchResults(QScrollArea, SideTabContents):
     show_info = pyqtSignal(dict)
 
     def __init__(self, api_core, parent=None):
         super(SearchResults, self).__init__(parent=parent)
+        self.implements_scrollarea = True
         self.api_core = api_core
 
-        self.results_frame = QFrame(self)
-        self.results_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.results_frame.setFrameStyle(QFrame.StyledPanel)
-        self.results_layout = FlowLayout(self.results_frame)
-        self.results_frame.setLayout(self.results_layout)
+        self.results_container = QWidget(self)
+        self.results_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.results_layout = FlowLayout(self.results_container)
+        self.setWidget(self.results_container)
+        self.setWidgetResizable(True)
 
-        self.main_layout = QVBoxLayout()
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.addWidget(self.results_frame)
+        # self.main_layout = QVBoxLayout(self)
+        # self.main_layout.setContentsMargins(0, 0, 0, 0)
+        # self.main_layout.addWidget(self.results_scrollarea)
 
-        self.setLayout(self.main_layout)
         self.setEnabled(False)
 
     def load_results(self, text: str):
@@ -40,10 +40,10 @@ class SearchResults(QWidget):
             self.api_core.search_game(text, self.show_results)
 
     def show_results(self, results: dict):
-        for w in self.results_frame.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
+        for w in self.results_container.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
             self.results_layout.removeWidget(w)
             w.deleteLater()
-        for w in self.results_frame.findChildren(SearchResultItem, options=Qt.FindDirectChildrenOnly):
+        for w in self.results_container.findChildren(SearchResultItem, options=Qt.FindDirectChildrenOnly):
             self.results_layout.removeWidget(w)
             w.deleteLater()
 
@@ -51,22 +51,23 @@ class SearchResults(QWidget):
             self.results_layout.addWidget(QLabel(self.tr("No results found")))
         else:
             for res in results:
-                w = SearchResultItem(res, parent=self.results_frame)
+                w = SearchResultItem(self.api_core.cached_manager, res, parent=self.results_container)
                 w.show_info.connect(self.show_info.emit)
                 self.results_layout.addWidget(w)
+        self.results_layout.update()
         self.setEnabled(True)
 
 
 class SearchResultItem(ShopImageWidget):
     show_info = pyqtSignal(dict)
 
-    def __init__(self, result: dict, parent=None):
-        super(SearchResultItem, self).__init__(parent=parent)
+    def __init__(self, manager: QtRequestManager, result: dict, parent=None):
+        super(SearchResultItem, self).__init__(manager, parent=parent)
         self.setFixedSize(ImageSize.Normal)
         self.ui.setupUi(self)
         for img in result["keyImages"]:
             if img["type"] in ["DieselStoreFrontTall", "OfferImageTall", "Thumbnail", "ProductLogo"]:
-                self.fetchPixmap(img["url"], result["id"], result["title"])
+                self.fetchPixmap(img["url"])
                 break
         else:
             print("No image found")
