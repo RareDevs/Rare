@@ -407,6 +407,8 @@ class RareGame(RareGameSlim):
 
         @return bool If the game doesn't have assets
         """
+
+        # Asset infos are usually None, but there was a bug, that it was an empty GameAsset class
         return not self.game.asset_infos or not next(iter(self.game.asset_infos.values())).app_name
 
     @property
