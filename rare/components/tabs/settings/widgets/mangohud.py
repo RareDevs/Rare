@@ -1,6 +1,8 @@
+import shutil
 from enum import Enum
 
 from PyQt5.QtCore import QCoreApplication, pyqtSignal
+from PyQt5.QtWidgets import QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
 from .overlay_settings import OverlaySettings, CustomOption, ActivationStates
@@ -77,6 +79,11 @@ class MangoHudSettings(OverlaySettings):
             self.gb_options.setDisabled(True)
 
         elif state == ActivationStates.ACTIVATED:
+            if not shutil.which("mangohud"):
+                self.show_overlay_combo.setCurrentIndex(0)
+                QMessageBox.warning(self, "Error", self.tr("Mangohud is not installed or not in path"))
+                return
+
             cfg = self.core.lgd.config.get(f"{self.name}.env", "MANGOHUD_CONFIG", fallback="")
 
             split_config = cfg.split(",")

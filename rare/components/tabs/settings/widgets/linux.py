@@ -54,9 +54,6 @@ class LinuxSettings(QWidget):
         self.ui.linux_layout.addWidget(self.mangohud)
         self.mangohud.load_settings(self.name)
 
-        if not shutil.which("mangohud"):
-            self.mangohud.setDisabled(True)
-            self.mangohud.setToolTip(self.tr("Mangohud is not installed or not in path"))
 
     def load_prefix(self) -> str:
         return self.load_setting(
