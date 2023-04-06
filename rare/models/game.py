@@ -106,10 +106,10 @@ class RareGame(RareGameSlim):
 
     @pyqtSlot(int)
     def __game_launched(self, code: int):
-        if code == GameProcess.Code.ON_STARTUP:
-            return
         self.state = RareGame.State.RUNNING
         self.metadata.last_played = datetime.now()
+        if code == GameProcess.Code.ON_STARTUP:
+            return
         self.__save_metadata()
         self.signals.game.launched.emit(self.app_name)
 
