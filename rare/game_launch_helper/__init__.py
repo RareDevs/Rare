@@ -159,18 +159,15 @@ class RareLauncher(RareApp):
             return
         self.server.newConnection.connect(self.new_server_connection)
         self.game_process.finished.connect(self.game_finished)
+
         self.game_process.errorOccurred.connect(
-            lambda err: self.error_occurred(self.game_process.errorString()))
+            self.on_proc_err)
         if self.console:
             self.game_process.readyReadStandardOutput.connect(
-                lambda: self.console.log(
-                    self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
-                )
+                self.on_log
             )
             self.game_process.readyReadStandardError.connect(
-                lambda: self.console.error(
-                    self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
-                )
+                self.on_err_log
             )
             self.console.term.connect(lambda: self.game_process.terminate())
             self.console.kill.connect(lambda: self.game_process.kill())
@@ -220,7 +217,6 @@ class RareLauncher(RareApp):
             self.rgame.download_saves()
         else:
             self.on_exit(exit_code)
-
 
     def game_finished(self, exit_code):
         self.logger.info("Game finished")
@@ -345,7 +341,29 @@ class RareLauncher(RareApp):
         else:
             self.start_prepare()
 
+    def on_log(self):
+        self.console.log(
+            self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
+        )
+
+    def on_err_log(self):
+        self.console.error(
+            self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
+        )
+
+    def on_proc_err(self):
+        self.error_occurred(self.game_process.errorString())
+
     def stop(self):
+        if self.console:
+            self.game_process.readyReadStandardOutput.disconnect(
+                self.on_log
+            )
+            self.game_process.readyReadStandardError.disconnect(
+                self.on_err_log
+            )
+        self.game_process.finished.disconnect(self.game_finished)
+        self.game_process.errorOccurred.disconnect(self.on_proc_err)
         self.logger.info("Stopping server")
         try:
             self.server.close()
@@ -374,6 +392,7 @@ def start_game(args: Namespace):
         logger.info(f"{strsignal(s)} received. Stopping")
         app.stop()
         app.exit(1)
+
     signal(SIGINT, sighandler)
     signal(SIGTERM, sighandler)
 
