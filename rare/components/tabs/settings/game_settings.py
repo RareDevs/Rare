@@ -35,6 +35,9 @@ class DefaultGameSettings(QWidget):
             QLabel("Wrapper"), self.wrapper_settings
         )
 
+        self.env_vars = EnvVars(self)
+        self.ui.game_settings_layout.addWidget(self.env_vars)
+
         if platform.system() != "Windows":
             self.linux_settings = LinuxAppSettings()
             self.proton_settings = ProtonSettings(self.linux_settings, self.wrapper_settings)
@@ -58,9 +61,6 @@ class DefaultGameSettings(QWidget):
 
         else:
             self.ui.linux_settings_widget.setVisible(False)
-
-        self.env_vars = EnvVars(self)
-        self.ui.game_settings_layout.addWidget(self.env_vars)
 
         if is_default:
             self.ui.launch_settings_layout.removeRow(self.ui.skip_update)
