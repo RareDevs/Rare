@@ -7,6 +7,7 @@ import time
 import traceback
 from argparse import Namespace
 from logging import getLogger
+from signal import signal, SIGINT, SIGTERM, strsignal
 from typing import Union, Optional
 
 from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings, Qt
@@ -366,6 +367,15 @@ def start_game(args: Namespace):
 
     app = RareLauncher(args)
     app.setQuitOnLastWindowClosed(True)
+
+    # This prevents ghost QLocalSockets, which block the name, which makes it unable to start
+    # No handling for SIGKILL
+    def sighandler(s, frame):
+        logger.info(f"{strsignal(s)} received. Stopping")
+        app.stop()
+        app.exit(1)
+    signal(SIGINT, sighandler)
+    signal(SIGTERM, sighandler)
 
     if not app.success:
         return
