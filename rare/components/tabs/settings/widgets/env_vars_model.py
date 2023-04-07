@@ -14,6 +14,9 @@ class EnvVarsTableModel(QAbstractTableModel):
         super(EnvVarsTableModel, self).__init__(parent=parent)
         self.core = core
 
+        # lk: validator matches anything starting with a letter or underscore
+        # lk: and containing letters, numbers or underscores.
+        # lk: Empty strings are considered invalid.
         self.__validator = re.compile(r"(^[A-Za-z_][A-Za-z0-9_]*)")
         self.__data_map: ChainMap = ChainMap()
 
@@ -163,52 +166,56 @@ class EnvVarsTableModel(QAbstractTableModel):
     def setData(self, index: QModelIndex, value: Any, role: int = Qt.DisplayRole) -> bool:
         if role != Qt.EditRole:
             return False
-        # Do not accept unchanged contents
-        if index.row() < self.__data_length() and (value == self.__key(index) or value == self.__value(index)):
-            return False
-
-        # TODO: restrict spaces in variable names
 
         if index.column() == 0:
+            # lk: for what is considered valid input, look at `__validator`
             if (not self.__is_key_valid(value)) or value in self.__readonly:
                 return False
-            # Do not accept existing variable names
+            # Do not accept existing variable names (this also protects against unchanged contents)
             if value in self.__data_map.keys():
                 return False
+
+            if index.row() == self.__data_length():
+                self.beginInsertRows(QModelIndex(), self.rowCount(index), self.rowCount(index))
+                self.endInsertRows()
+                self.__data_map[value] = ""
+                self.core.lgd.save_config()
+                self.dataChanged.emit(index, index, [])
+                self.headerDataChanged.emit(Qt.Vertical, index.row(), index.row())
+                # if we are on the last row, add a new last row to the table when setting the variable name
             else:
-                if index.row() == self.__data_length():
-                    self.beginInsertRows(QModelIndex(), self.rowCount(index), self.rowCount(index))
+                # if we are not in the last row, we have to update an existing variable name
+                old_key = self.__key(index)
+                self.__data_map[value] = self.__data_map[old_key]
+                self.core.lgd.save_config()
+                # since we delete and add a new key, the new key will be moved at the end
+                # deleting a local key can have the following effects
+                # unique local key:
+                #   old key deleted, new key added -> update range from index to end
+                # old local key masking global key:
+                #   old key remains, new key added -> insert row for new key, update from index to end
+                # new key masking global key:
+                #   can't happen because we do not accept existing keys
+                if old_key in self.__data_map.maps[0].keys():
+                    # delete the old key if it is a local one, replacing a local key
+                    del self.__data_map[old_key]
+                    self.core.lgd.save_config()
+                if old_key in self.__data_map.maps[1].keys():
+                    self.beginInsertRows(QModelIndex(), self.__data_length(), self.__data_length())
                     self.endInsertRows()
-                    self.__data_map[value] = ""
-                    self.core.lgd.save_config()
-                    self.dataChanged.emit(index, index, [])
-                    self.headerDataChanged.emit(Qt.Vertical, index.row(), index.row())
-                    # if we are on the last row, add a new last row to the table when setting the variable name
-                else:
-                    # if we are not in the last row, we have to update an existing variable name
-                    old_key = self.__key(index)
-                    self.__data_map[value] = self.__data_map[old_key]
-                    self.core.lgd.save_config()
-                    # since we delete and add a new key, the new key will be moved at the end
-                    # deleting a local key can have the following effects
-                    # unique local key:
-                    #   old key deleted, new key added -> update range from index to end
-                    # old local key masking global key:
-                    #   old key remains, new key added -> insert row for new key, update from index to end
-                    # new key masking global key:
-                    #   can't happen because we do not accept existing keys
-                    if old_key in self.__data_map.maps[0].keys():
-                        # delete the old key if it is a local one, replacing a local key
-                        del self.__data_map[old_key]
-                        self.core.lgd.save_config()
-                    if old_key in self.__data_map.maps[1].keys():
-                        self.beginInsertRows(QModelIndex(), self.__data_length(), self.__data_length())
-                        self.endInsertRows()
-                    self.dataChanged.emit(index, self.index(index.row(), 1), [])
-                    self.dataChanged.emit(self.index(self.__data_length() - 1, 0), self.index(self.__data_length() - 1, 1), [])
-                    self.headerDataChanged.emit(Qt.Vertical, index.row(), index.row())
-                    self.headerDataChanged.emit(Qt.Vertical, self.__data_length() - 1, self.__data_length() - 1)
+                self.dataChanged.emit(index, self.index(index.row(), 1), [])
+                self.dataChanged.emit(self.index(self.__data_length() - 1, 0), self.index(self.__data_length() - 1, 1), [])
+                self.headerDataChanged.emit(Qt.Vertical, index.row(), index.row())
+                self.headerDataChanged.emit(Qt.Vertical, self.__data_length() - 1, self.__data_length() - 1)
+
         else:
+            # lk: the check for key existance before assigning a value is ommitted
+            # lk: The `Value` field of the table is disabled if the `Name`/key field is empty
+            # lk: making is "impossible" to assign a value to an empty key
+            # Do not accept unchanged contents
+            if value == self.__value(index):
+                return False
+
             self.__data_map[self.__key(index)] = value
             self.core.lgd.save_config()
             self.dataChanged.emit(self.index(index.row(), 0), index, [])
