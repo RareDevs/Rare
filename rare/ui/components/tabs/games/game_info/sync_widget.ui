@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>422</width>
-    <height>127</height>
+    <width>438</width>
+    <height>137</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -67,7 +67,7 @@
       <item>
        <widget class="QLabel" name="age_label_local">
         <property name="text">
-         <string>local_age_error</string>
+         <string/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -125,7 +125,7 @@
       <item>
        <widget class="QLabel" name="age_label_remote">
         <property name="text">
-         <string notr="true">remote_age_error</string>
+         <string notr="true"/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>

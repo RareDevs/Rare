@@ -546,7 +546,6 @@ class RareGame(RareGameSlim):
         skip_update_check: bool = False,
         wine_bin: Optional[str] = None,
         wine_pfx: Optional[str] = None,
-        ask_sync_saves: bool = False,
     ) -> bool:
         if not self.can_launch:
             return False
@@ -562,8 +561,6 @@ class RareGame(RareGameSlim):
             args.extend(["--wine-bin", wine_bin])
         if wine_pfx:
             args.extend(["--wine-prefix", wine_pfx])
-        if ask_sync_saves:
-            args.extend("--ask-sync-saves")
 
         QProcess.startDetached(executable, args)
         logger.info(f"Start new Process: ({executable} {' '.join(args)})")

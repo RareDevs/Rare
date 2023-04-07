@@ -136,6 +136,8 @@ class RareLauncher(RareApp):
         self.core = LegendaryCore()
         self.args = args
 
+        self.no_sync_on_exit = False
+
         game = self.core.get_game(self.app_name)
         self.rgame = RareGameSlim(self.core, game)
 
@@ -201,19 +203,23 @@ class RareLauncher(RareApp):
         self.rgame.signals.widget.update.connect(lambda: self.on_exit(exit_code))
 
         state, (dt_local, dt_remote) = self.rgame.save_game_state
-        if state == SaveGameStatus.LOCAL_NEWER:
+
+        if state == SaveGameStatus.LOCAL_NEWER and not self.no_sync_on_exit:
             action = CloudSaveDialog.UPLOAD
         else:
             action = CloudSaveDialog(self.rgame.igame, dt_local, dt_remote).get_action()
-        if not action:
-            self.on_exit(exit_code)
-            return
-        if self.console:
-            self.console.log("Syncing saves...")
+
         if action == CloudSaveDialog.UPLOAD:
+            if self.console:
+                self.console.log("upload saves...")
             self.rgame.upload_saves()
         elif action == CloudSaveDialog.DOWNLOAD:
+            if self.console:
+                self.console.log("Download saves...")
             self.rgame.download_saves()
+        else:
+            self.on_exit(exit_code)
+
 
     def game_finished(self, exit_code):
         self.logger.info("Game finished")
@@ -309,6 +315,8 @@ class RareLauncher(RareApp):
         _, (dt_local, dt_remote) = self.rgame.save_game_state
         dlg = CloudSaveDialog(self.rgame.igame, dt_local, dt_remote)
         action = dlg.get_action()
+        if action == CloudSaveDialog.CANCEL:
+            self.no_sync_on_exit = True
         if self.console:
             if action == CloudSaveDialog.DOWNLOAD:
                 self.console.log("Downloading saves")

@@ -18,6 +18,7 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
     DOWNLOAD = 2
     UPLOAD = 1
     CANCEL = 0
+    SKIP = 3
 
     def __init__(
         self,
@@ -49,10 +50,13 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
             self.sync_ui.age_label_remote.setText(
                 f"<b>{newer}</b>" if dt_remote > dt_local else " "
             )
+        # Set status, if one of them is None
         elif dt_remote and not dt_local:
             self.status = self.DOWNLOAD
-        else:
+        elif not dt_remote and dt_local:
             self.status = self.UPLOAD
+        else:
+            self.status = self.SKIP
 
         self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X") if dt_local else "None")
         self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X") if dt_remote else "None")
@@ -68,8 +72,8 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
     def get_action(self):
-        if self.status:
-            return self.status
+        if self.status == self.SKIP:
+            return self.SKIP
         self.exec_()
         return self.status
 

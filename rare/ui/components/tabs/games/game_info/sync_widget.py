@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SyncWidget(object):
     def setupUi(self, SyncWidget):
         SyncWidget.setObjectName("SyncWidget")
-        SyncWidget.resize(422, 127)
+        SyncWidget.resize(438, 137)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -44,6 +44,7 @@ class Ui_SyncWidget(object):
         self.icon_local.setObjectName("icon_local")
         self.local_layout.addWidget(self.icon_local)
         self.age_label_local = QtWidgets.QLabel(self.local_gb)
+        self.age_label_local.setText("")
         self.age_label_local.setAlignment(QtCore.Qt.AlignCenter)
         self.age_label_local.setObjectName("age_label_local")
         self.local_layout.addWidget(self.age_label_local)
@@ -72,7 +73,7 @@ class Ui_SyncWidget(object):
         self.icon_remote.setObjectName("icon_remote")
         self.cloud_layout.addWidget(self.icon_remote)
         self.age_label_remote = QtWidgets.QLabel(self.cloud_gb)
-        self.age_label_remote.setText("remote_age_error")
+        self.age_label_remote.setText("")
         self.age_label_remote.setAlignment(QtCore.Qt.AlignCenter)
         self.age_label_remote.setObjectName("age_label_remote")
         self.cloud_layout.addWidget(self.age_label_remote)
@@ -87,7 +88,6 @@ class Ui_SyncWidget(object):
     def retranslateUi(self, SyncWidget):
         _translate = QtCore.QCoreApplication.translate
         self.local_gb.setTitle(_translate("SyncWidget", "Local"))
-        self.age_label_local.setText(_translate("SyncWidget", "local_age_error"))
         self.upload_button.setText(_translate("SyncWidget", "Upload"))
         self.cloud_gb.setTitle(_translate("SyncWidget", "Cloud"))
         self.download_button.setText(_translate("SyncWidget", "Download"))
