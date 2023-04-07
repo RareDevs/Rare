@@ -53,13 +53,13 @@ class DefaultGameSettings(QWidget):
             self.linux_settings.mangohud.set_wrapper_activated.connect(
                 lambda active: self.wrapper_settings.add_wrapper("mangohud")
                 if active else self.wrapper_settings.delete_wrapper("mangohud"))
+            self.linux_settings.environ_changed.connect(self.env_vars.reset_model)
+            self.proton_settings.environ_changed.connect(self.env_vars.reset_model)
 
         else:
             self.ui.linux_settings_widget.setVisible(False)
 
         self.env_vars = EnvVars(self)
-        self.linux_settings.environ_changed.connect(self.env_vars.reset_model)
-        self.proton_settings.environ_changed.connect(self.env_vars.reset_model)
         self.ui.game_settings_layout.addWidget(self.env_vars)
 
         if is_default:
