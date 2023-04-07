@@ -42,7 +42,7 @@ jobs:
           sudo apt install makedeb
       - name: Prepare source directory
         run: |
-          git clone https://mpr.hunterwittenborn.com/rare.git build
+          git clone https://mpr.makedeb.org/rare build
           sed -i "s/pkgver=.*/pkgver=${{ github.event.release.tag_name }}/g" build/PKGBUILD
 
       - name: build deb
