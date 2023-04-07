@@ -16,13 +16,8 @@ class LibraryLayout(FlowLayout):
     def __init__(self, parent=None, margin=6, spacing=11):
         super(LibraryLayout, self).__init__(parent=parent, margin=margin, hspacing=spacing, vspacing=spacing)
 
-    # def event(self, e: QEvent) -> None:
-    #     if e.type() == QEvent.ShowToParent or e.type() == QEvent.HideToParent:
-    #         self.doLayout(self.parent().rect(), False)
-    #         e.accept()
-
     def expandingDirections(self) -> Qt.Orientations:
-        return Qt.Orientations(Qt.Horizontal | Qt.Vertical)
+        return Qt.Horizontal | Qt.Vertical
 
     def setGeometry(self, a0: QRect) -> None:
         super(FlowLayout, self).setGeometry(a0)
@@ -132,15 +127,4 @@ class LibraryLayout(FlowLayout):
 
     def sort(self, key: Callable, reverse=False) -> None:
         self._items.sort(key=key, reverse=reverse)
-        self.setGeometry(self.parent().rect())
-
-    # These are used to pop and insert the installing widget, remove them when no longer needed
-    # def remove(self, name: str) -> QWidget:
-    #     widget = next(filter(lambda x: x.widget().objectName() == name, self._items), None)
-    #     self._items.remove(widget)
-    #     self.setGeometry(self.parent().rect())
-    #     return widget
-    #
-    # def insert(self, index: int, widget: QWidget):
-    #     self._items.insert(index, widget)
-    #     self.setGeometry(self.parent().rect())
+        self.setGeometry(self.parent().contentsRect())

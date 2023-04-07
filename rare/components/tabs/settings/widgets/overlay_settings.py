@@ -2,6 +2,7 @@ from enum import Enum
 from logging import getLogger
 from typing import List, Dict, Tuple, Any, Callable
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
 from PyQt5.QtWidgets import QGroupBox, QCheckBox, QWidget, QLineEdit, QLabel, QComboBox
 
@@ -74,6 +75,8 @@ class ActivationStates(Enum):
 
 
 class OverlaySettings(QGroupBox, Ui_OverlaySettings):
+    # str: option key
+    environ_changed = pyqtSignal(str)
     name: str = "default"
     settings_updatable = True
 
@@ -113,6 +116,7 @@ class OverlaySettings(QGroupBox, Ui_OverlaySettings):
         if self.show_overlay_combo.currentIndex() == 0:
             # System default
             config_helper.remove_option(f"{self.name}.env", self.config_env_var_name)
+            self.environ_changed.emit(self.config_env_var_name)
             self.gb_options.setDisabled(True)
             self.set_activation_state(ActivationStates.DEFAULT)
             return
@@ -120,6 +124,7 @@ class OverlaySettings(QGroupBox, Ui_OverlaySettings):
         elif self.show_overlay_combo.currentIndex() == 1:
             # hidden
             config_helper.add_option(f"{self.name}.env", self.config_env_var_name, self.no_display_value)
+            self.environ_changed.emit(self.config_env_var_name)
             self.gb_options.setDisabled(True)
             self.set_activation_state(ActivationStates.HIDDEN)
             return
@@ -141,6 +146,7 @@ class OverlaySettings(QGroupBox, Ui_OverlaySettings):
                 var_names.append(list(self.checkboxes.keys())[0])
 
             config_helper.add_option(f"{self.name}.env", self.config_env_var_name, ",".join(var_names))
+            self.environ_changed.emit(self.config_env_var_name)
             self.set_activation_state(ActivationStates.ACTIVATED)
 
     def load_settings(self, name: str):

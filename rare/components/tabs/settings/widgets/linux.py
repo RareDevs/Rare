@@ -2,6 +2,7 @@ import os
 import shutil
 from logging import getLogger
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QFileDialog, QWidget
 
 from rare.components.tabs.settings.widgets.dxvk import DxvkSettings
@@ -9,11 +10,15 @@ from rare.components.tabs.settings.widgets.mangohud import MangoHudSettings
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.ui.components.tabs.settings.linux import Ui_LinuxSettings
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.utils import config_helper
 
 logger = getLogger("LinuxSettings")
 
 
 class LinuxSettings(QWidget):
+    # str: option key
+    environ_changed = pyqtSignal(str)
+
     def __init__(self, name=None, parent=None):
         super(LinuxSettings, self).__init__(parent=parent)
         self.ui = Ui_LinuxSettings()
@@ -47,10 +52,12 @@ class LinuxSettings(QWidget):
 
         # dxvk
         self.dxvk = DxvkSettings()
+        self.dxvk.environ_changed.connect(self.environ_changed)
         self.ui.linux_layout.addWidget(self.dxvk)
         self.dxvk.load_settings(self.name)
 
         self.mangohud = MangoHudSettings()
+        self.mangohud.environ_changed.connect(self.environ_changed)
         self.ui.linux_layout.addWidget(self.mangohud)
         self.mangohud.load_settings(self.name)
 
@@ -64,6 +71,7 @@ class LinuxSettings(QWidget):
 
     def save_prefix(self, text: str):
         self.save_setting(text, f"{self.name}.env", "WINEPREFIX")
+        self.environ_changed.emit("WINEPREFIX")
         self.save_setting(text, self.name, "wine_prefix")
         self.signals.application.prefix_updated.emit()
 
@@ -72,20 +80,9 @@ class LinuxSettings(QWidget):
 
     def save_setting(self, text: str, section: str, setting: str):
         if text:
-            if section not in self.core.lgd.config.sections():
-                self.core.lgd.config.add_section(section)
-                logger.debug(f"Added {f'[{section}]'} configuration section")
-            self.core.lgd.config.set(section, setting, text)
+            config_helper.add_option(section, setting, text)
             logger.debug(f"Set {setting} in {f'[{section}]'} to {text}")
-
         else:
-            if self.core.lgd.config.has_section(
-                section
-            ) and self.core.lgd.config.has_option(section, setting):
-                self.core.lgd.config.remove_option(section, setting)
-                logger.debug(f"Unset {setting} from {f'[{section}]'}")
-                if not self.core.lgd.config[section]:
-                    self.core.lgd.config.remove_section(section)
-                    logger.debug(f"Removed {f'[{section}]'} configuration section")
-
-        self.core.lgd.save_config()
+            config_helper.remove_option(section, setting)
+            logger.debug(f"Unset {setting} from {f'[{section}]'}")
+        config_helper.save_config()

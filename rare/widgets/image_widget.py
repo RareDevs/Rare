@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Tuple, Optional, Union
 
-from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtCore import Qt, QRectF, QSize
 from PyQt5.QtGui import (
     QPaintEvent,
     QPainter,
@@ -61,6 +61,12 @@ class ImageWidget(QWidget):
         else:
             self.paint_image = self.paint_image_empty
         self.update()
+
+    def sizeHint(self) -> QSize:
+        return self._image_size.size if self._image_size else super(ImageWidget, self).sizeHint()
+
+    def minimumSizeHint(self) -> QSize:
+        return self._image_size.size if self._image_size else super(ImageWidget, self).minimumSizeHint()
 
     def setFixedSize(self, a0: ImageSize.Preset) -> None:
         self._squared_overlay = None

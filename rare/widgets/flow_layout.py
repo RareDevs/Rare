@@ -55,7 +55,7 @@ class FlowLayout(QLayout):
         return None
 
     def expandingDirections(self) -> Qt.Orientations:
-        return Qt.Orientations(Qt.Orientation(0))
+        return Qt.Horizontal | Qt.Vertical
 
     def hasHeightForWidth(self) -> bool:
         return True
@@ -68,7 +68,10 @@ class FlowLayout(QLayout):
         self.doLayout(a0, False)
 
     def sizeHint(self) -> QSize:
-        return self.minimumSize()
+        return QSize(
+            self.parent().contentsRect().size().width(),
+            self.minimumSize().height()
+        )
 
     def minimumSize(self) -> QSize:
         size = QSize()
@@ -84,7 +87,11 @@ class FlowLayout(QLayout):
         x = effective.x()
         y = effective.y()
         lineheight = 0
+        if not self._items:
+            return y + lineheight - rect.y() + bottom
         for item in self._items:
+            if item.isEmpty():
+                continue
             widget = item.widget()
             if not widget.isVisible():
                 continue

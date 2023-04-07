@@ -55,7 +55,7 @@ class GameSettings(DefaultGameSettings, SideTabContents):
         self.igame: InstalledGame = None
 
     def override_exe_edit_callback(self, path: str) -> Tuple[bool, str, int]:
-        if not path:
+        if not path or self.igame is None:
             return True, path, IndicatorReasonsCommon.VALID
         if not os.path.isabs(path):
             path = os.path.join(self.igame.install_path, path)
