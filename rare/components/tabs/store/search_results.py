@@ -13,9 +13,12 @@ from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from .image_widget import ShopImageWidget
 
+from .api.debug import DebugDialog
+from .api.models.response import CatalogOfferModel
+
 
 class SearchResults(QScrollArea, SideTabContents):
-    show_info = pyqtSignal(dict)
+    show_info = pyqtSignal(CatalogOfferModel)
 
     def __init__(self, api_core, parent=None):
         super(SearchResults, self).__init__(parent=parent)
@@ -59,22 +62,20 @@ class SearchResults(QScrollArea, SideTabContents):
 
 
 class SearchResultItem(ShopImageWidget):
-    show_info = pyqtSignal(dict)
+    show_info = pyqtSignal(CatalogOfferModel)
 
-    def __init__(self, manager: QtRequestManager, result: dict, parent=None):
+    def __init__(self, manager: QtRequestManager, catalog_game: CatalogOfferModel, parent=None):
         super(SearchResultItem, self).__init__(manager, parent=parent)
         self.setFixedSize(ImageSize.Normal)
         self.ui.setupUi(self)
-        for img in result["keyImages"]:
-            if img["type"] in ["DieselStoreFrontTall", "OfferImageTall", "Thumbnail", "ProductLogo"]:
-                self.fetchPixmap(img["url"])
-                break
-        else:
-            print("No image found")
 
-        self.ui.title_label.setText(result["title"])
-        price = result["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
-        discount_price = result["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
+        key_images = catalog_game.key_images
+        self.fetchPixmap(key_images.for_dimensions(self.width(), self.height()).url)
+
+        self.ui.title_label.setText(catalog_game.title)
+
+        price = catalog_game.price.total_price["fmtPrice"]["originalPrice"]
+        discount_price = catalog_game.price.total_price["fmtPrice"]["discountPrice"]
         self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
         if price != discount_price:
             font = self.ui.price_label.font()
@@ -84,9 +85,14 @@ class SearchResultItem(ShopImageWidget):
         else:
             self.ui.discount_label.setVisible(False)
 
-        self.res = result
+        self.catalog_game = catalog_game
 
     def mousePressEvent(self, a0: QMouseEvent) -> None:
         if a0.button() == Qt.LeftButton:
             a0.accept()
-            self.show_info.emit(self.res)
+            self.show_info.emit(self.catalog_game)
+        if a0.button() == Qt.RightButton:
+            a0.accept()
+            dialog = DebugDialog(self.catalog_game.__dict__, self)
+            dialog.show()
+

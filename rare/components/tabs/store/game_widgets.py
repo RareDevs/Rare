@@ -3,42 +3,44 @@ import logging
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QPushButton
+from orjson import orjson
 
-from rare.components.tabs.store.shop_models import ImageUrlModel
+from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.shared.image_manager import ImageSize
 from rare.utils.misc import qta_icon
 from rare.utils.qt_requests import QtRequestManager
+from .api.debug import DebugDialog
 from .image_widget import ShopImageWidget
 
 logger = logging.getLogger("GameWidgets")
 
 
 class GameWidget(ShopImageWidget):
-    show_info = pyqtSignal(dict)
+    show_info = pyqtSignal(CatalogOfferModel)
 
-    def __init__(self, manager: QtRequestManager, json_info=None, parent=None):
+    def __init__(self, manager: QtRequestManager, catalog_game: CatalogOfferModel = None, parent=None):
         super(GameWidget, self).__init__(manager, parent=parent)
         self.setFixedSize(ImageSize.Wide)
         self.ui.setupUi(self)
-        self.json_info = json_info
-        if json_info:
-            self.init_ui(json_info)
+        self.catalog_game = catalog_game
+        if catalog_game:
+            self.init_ui(catalog_game)
 
-    def init_ui(self, json_info):
-        if not json_info:
+    def init_ui(self, game: CatalogOfferModel):
+        if not game:
             self.ui.title_label.setText(self.tr("An error occurred"))
             return
 
-        self.ui.title_label.setText(json_info.get("title"))
-        for attr in json_info["customAttributes"]:
+        self.ui.title_label.setText(game.title)
+        for attr in game.custom_attributes:
             if attr["key"] == "developerName":
                 developer = attr["value"]
                 break
         else:
-            developer = json_info["seller"]["name"]
+            developer = game.seller["name"]
         self.ui.developer_label.setText(developer)
-        price = json_info["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
-        discount_price = json_info["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
+        price = game.price.total_price["fmtPrice"]["originalPrice"]
+        discount_price = game.price.total_price["fmtPrice"]["discountPrice"]
         self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
         if price != discount_price:
             font = self.ui.price_label.font()
@@ -48,43 +50,48 @@ class GameWidget(ShopImageWidget):
         else:
             self.ui.discount_label.setVisible(False)
 
-        for c in r'<>?":|\/*':
-            json_info["title"] = json_info["title"].replace(c, "")
+        key_images = game.key_images
+        self.fetchPixmap(key_images.for_dimensions(self.width(), self.height()).url)
 
-        for img in json_info["keyImages"]:
-            if img["type"] in ["DieselStoreFrontWide", "OfferImageWide", "VaultClosed", "ProductLogo",]:
-                if img["type"] == "VaultClosed" and json_info["title"] != "Mystery Game":
-                    continue
-                self.fetchPixmap(img["url"])
-                break
-        else:
-            logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
+        # for img in json_info["keyImages"]:
+        #     if img["type"] in ["DieselStoreFrontWide", "OfferImageWide", "VaultClosed", "ProductLogo"]:
+        #         if img["type"] == "VaultClosed" and json_info["title"] != "Mystery Game":
+        #             continue
+        #         self.fetchPixmap(img["url"])
+        #         break
+        # else:
+        #     logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
 
     def mousePressEvent(self, a0: QMouseEvent) -> None:
         if a0.button() == Qt.LeftButton:
             a0.accept()
-            self.show_info.emit(self.json_info)
+            self.show_info.emit(self.catalog_game)
+        if a0.button() == Qt.RightButton:
+            a0.accept()
+            print(self.catalog_game.__dict__)
+            dialog = DebugDialog(self.catalog_game.__dict__, self)
+            dialog.show()
 
 
 class WishlistWidget(ShopImageWidget):
-    open_game = pyqtSignal(dict)
-    delete_from_wishlist = pyqtSignal(dict)
+    open_game = pyqtSignal(CatalogOfferModel)
+    delete_from_wishlist = pyqtSignal(CatalogOfferModel)
 
-    def __init__(self, manager: QtRequestManager, game: dict, parent=None):
+    def __init__(self, manager: QtRequestManager, catalog_game: CatalogOfferModel, parent=None):
         super(WishlistWidget, self).__init__(manager, parent=parent)
         self.setFixedSize(ImageSize.Wide)
         self.ui.setupUi(self)
-        self.game = game
-        for attr in game["customAttributes"]:
+        self.game = catalog_game
+        for attr in catalog_game.custom_attributes:
             if attr["key"] == "developerName":
                 developer = attr["value"]
                 break
         else:
-            developer = game["seller"]["name"]
-        original_price = game["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
-        discount_price = game["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
+            developer = catalog_game.seller["name"]
+        original_price = catalog_game.price.total_price["fmtPrice"]["originalPrice"]
+        discount_price = catalog_game.price.total_price["fmtPrice"]["discountPrice"]
 
-        self.ui.title_label.setText(game.get("title"))
+        self.ui.title_label.setText(catalog_game.title)
         self.ui.developer_label.setText(developer)
         self.ui.price_label.setText(f'{original_price if original_price != "0" else self.tr("Free")}')
         if original_price != discount_price:
@@ -94,11 +101,10 @@ class WishlistWidget(ShopImageWidget):
             self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
         else:
             self.ui.discount_label.setVisible(False)
-        image_model = ImageUrlModel.from_json(game["keyImages"])
-        url = image_model.front_wide
-        if not url:
-            url = image_model.offer_image_wide
-        self.fetchPixmap(url)
+        key_images = catalog_game.key_images
+        self.fetchPixmap(
+            key_images.for_dimensions(self.width(), self.height()).url
+        )
 
         self.delete_button = QPushButton(self)
         self.delete_button.setIcon(icon("mdi.delete", color="white"))
@@ -113,5 +119,7 @@ class WishlistWidget(ShopImageWidget):
             a0.accept()
             self.open_game.emit(self.game)
         # right
-        elif a0.button() == Qt.RightButton:
-            pass  # self.showMenu(e)
+        if a0.button() == Qt.RightButton:
+            a0.accept()
+            dialog = DebugDialog(self.game.__dict__, self)
+            dialog.show()

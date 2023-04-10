@@ -7,3 +7,4 @@ nuitka
 ordered-set
 PyQt5-stubs
 qstylizer
+

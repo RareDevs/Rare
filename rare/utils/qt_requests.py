@@ -66,7 +66,7 @@ class QtRequests(QObject):
 
     def __post(self, item: RequestQueueItem):
         request = self.__prepare_request(item)
-        payload = orjson.dumps(item.payload)  # pylint: disable=maybe-no-member
+        payload = orjson.dumps(item.payload)
         reply = self.manager.post(request, payload)
         reply.errorOccurred.connect(self.__on_error)
         self.__active_requests[reply] = item

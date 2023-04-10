@@ -6,6 +6,7 @@ from rare.widgets.side_tab import SideTabWidget
 from .game_info import ShopGameInfo
 from .search_results import SearchResults
 from .shop_api_core import ShopApiCore
+from .api.models.response import CatalogOfferModel
 from .shop_widget import ShopWidget
 from .wishlist import WishlistWidget, Wishlist
 
@@ -69,7 +70,7 @@ class StoreTab(SideTabWidget):
     def update_wishlist(self):
         self.shop.update_wishlist()
 
-    def show_game(self, data):
+    def show_game(self, data: CatalogOfferModel):
         self.previous_index = self.currentIndex()
         self.info.update_game(data)
         self.setCurrentIndex(self.info_index)

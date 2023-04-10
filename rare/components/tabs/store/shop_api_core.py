@@ -1,19 +1,31 @@
 from logging import getLogger
+from typing import List, Callable
 
 from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QApplication
 
+from rare.components.tabs.store.api.debug import DebugDialog
 from rare.components.tabs.store.constants import (
     wishlist_query,
     search_query,
-    add_to_wishlist_query,
-    remove_from_wishlist_query,
+    wishlist_add_query,
+    wishlist_remove_query,
 )
 from rare.components.tabs.store.shop_models import BrowseModel
 from rare.utils.paths import cache_dir
 from rare.utils.qt_requests import QtRequests
+from .api.models.query import SearchStoreQuery
+from .api.models.response import (
+    DieselProduct,
+    ResponseModel,
+    CatalogOfferModel,
+)
 
 logger = getLogger("ShopAPICore")
 graphql_url = "https://graphql.epicgames.com/graphql"
+
+
+DEBUG: Callable[[], bool] = lambda: "--debug" in QApplication.arguments()
 
 
 class ShopApiCore(QObject):
@@ -25,6 +37,7 @@ class ShopApiCore(QObject):
         self.language_code: str = language
         self.country_code: str = country
         self.locale = f"{self.language_code}-{self.country_code}"
+        self.locale = "en-US"
         self.manager = QtRequests(parent=self)
         self.authed_manager = QtRequests(token=token, parent=self)
         self.cached_manager = QtRequests(cache=str(cache_dir().joinpath("store")), parent=self)
@@ -39,54 +52,67 @@ class ShopApiCore(QObject):
             "country": self.country_code,
             "allowCountries": self.country_code,
         }
-        self.manager.get(url, lambda data: self._handle_free_games(data, handle_func), params=params)
+        self.manager.get(url, lambda data: self.__handle_free_games(data, handle_func), params=params)
 
-    def _handle_free_games(self, data, handle_func):
+    @staticmethod
+    def __handle_free_games(data, handle_func):
         try:
-            results: dict = data["data"]["Catalog"]["searchStore"]["elements"]
-        except KeyError:
+            response = ResponseModel.from_dict(data)
+            results: List[CatalogOfferModel] = response.data.catalog.search_store.elements
+            handle_func(results)
+        except KeyError as e:
+            if DEBUG():
+                raise e
             logger.error("Free games Api request failed")
             handle_func(["error", "Key error"])
             return
         except Exception as e:
+            if DEBUG():
+                raise e
             logger.error(f"Free games Api request failed: {e}")
             handle_func(["error", e])
             return
-        handle_func(results)
 
     def get_wishlist(self, handle_func):
         self.authed_manager.post(
             graphql_url,
-            lambda data: self._handle_wishlist(data, handle_func),
+            lambda data: self.__handle_wishlist(data, handle_func),
             {
                 "query": wishlist_query,
                 "variables": {
                     "country": self.country_code,
                     "locale": self.locale,
+                    "withPrice": True,
                 },
             },
         )
 
-    def _handle_wishlist(self, data, handle_func):
+    @staticmethod
+    def __handle_wishlist(data, handle_func):
         try:
-            results: list = data["data"]["Wishlist"]["wishlistItems"]["elements"]
-        except KeyError:
+            response = ResponseModel.from_dict(data)
+            if response.errors:
+                logger.error(response.errors)
+            handle_func(response.data.wishlist.wishlist_items.elements)
+        except KeyError as e:
+            if DEBUG():
+                raise e
             logger.error("Free games Api request failed")
             handle_func(["error", "Key error"])
             return
         except Exception as e:
+            if DEBUG():
+                raise e
             logger.error(f"Free games Api request failed: {e}")
             handle_func(["error", e])
             return
 
-        handle_func(results)
-
-    def search_game(self, name, handle_func):
+    def search_game(self, name, handler):
         payload = {
             "query": search_query,
             "variables": {
                 "category": "games/edition/base|bundles/games|editors|software/edition/base",
-                "count": 10,
+                "count": 20,
                 "country": self.country_code,
                 "keywords": name,
                 "locale": self.locale,
@@ -99,42 +125,56 @@ class ShopApiCore(QObject):
             },
         }
 
-        self.manager.post(graphql_url, lambda data: self._handle_search(data, handle_func), payload)
+        self.manager.post(graphql_url, lambda data: self.__handle_search(data, handler), payload)
 
-    def _handle_search(self, data, handle_func):
+    @staticmethod
+    def __handle_search(data, handler):
         try:
-            handle_func(data["data"]["Catalog"]["searchStore"]["elements"])
+            response = ResponseModel.from_dict(data)
+            handler(response.data.catalog.search_store.elements)
         except KeyError as e:
             logger.error(str(e))
-            handle_func([])
+            if DEBUG():
+                raise e
+            handler([])
         except Exception as e:
             logger.error(f"Search Api request failed: {e}")
-            handle_func([])
+            if DEBUG():
+                raise e
+            handler([])
             return
 
-    def browse_games(self, browse_model: BrowseModel, handle_func):
+    def browse_games(self, browse_model: SearchStoreQuery, handle_func):
         if self.browse_active:
             self.next_browse_request = (browse_model, handle_func)
             return
         self.browse_active = True
         payload = {
             "query": search_query,
-            "variables": browse_model.__dict__
+            "variables": browse_model.to_dict()
         }
-        self.manager.post(graphql_url, lambda data: self._handle_browse_games(data, handle_func), payload)
+        debug = DebugDialog(payload["variables"], None)
+        debug.exec()
+        self.manager.post(graphql_url, lambda data: self.__handle_browse_games(data, handle_func), payload)
 
-    def _handle_browse_games(self, data, handle_func):
+    def __handle_browse_games(self, data, handle_func):
+        debug = DebugDialog(data, None)
+        debug.exec()
         self.browse_active = False
         if data is None:
             data = {}
         if not self.next_browse_request:
-
             try:
-                handle_func(data["data"]["Catalog"]["searchStore"]["elements"])
+                response = ResponseModel.from_dict(data)
+                handle_func(response.data.catalog.search_store.elements)
             except KeyError as e:
+                if DEBUG():
+                    raise e
                 logger.error(str(e))
                 handle_func([])
             except Exception as e:
+                if DEBUG():
+                    raise e
                 logger.error(f"Browse games Api request failed: {e}")
                 handle_func([])
                 return
@@ -143,62 +183,72 @@ class ShopApiCore(QObject):
             self.next_browse_request = tuple(())
 
     def get_game(self, slug: str, is_bundle: bool, handle_func):
-        url = f"https://store-content.ak.epicgames.com/api/{self.locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
-        self.manager.get(url, lambda data: self._handle_get_game(data, handle_func))
+        url = "https://store-content.ak.epicgames.com/api"
+        url += f"/{self.locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
+        self.manager.get(url, lambda data: self.__handle_get_game(data, handle_func))
 
-    def _handle_get_game(self, data, handle_func):
+    @staticmethod
+    def __handle_get_game(data, handle_func):
+        debug = DebugDialog(data, None)
+        debug.exec()
         try:
-            handle_func(data)
+            product = DieselProduct.from_dict(data)
+            handle_func(product)
         except Exception as e:
-            raise e
+            if DEBUG():
+                raise e
             logger.error(str(e))
             # handle_func({})
 
     # needs a captcha
     def add_to_wishlist(self, namespace, offer_id, handle_func: callable):
         payload = {
+            "query": wishlist_add_query,
             "variables": {
                 "offerId": offer_id,
                 "namespace": namespace,
                 "country": self.country_code,
                 "locale": self.locale,
             },
-            "query": add_to_wishlist_query,
         }
         self.authed_manager.post(graphql_url, lambda data: self._handle_add_to_wishlist(data, handle_func), payload)
 
     def _handle_add_to_wishlist(self, data, handle_func):
+        debug = DebugDialog(data, None)
+        debug.exec()
         try:
-            data = data["data"]["Wishlist"]["addToWishlist"]
-            if data["success"]:
-                handle_func(True)
-            else:
-                handle_func(False)
+            response = ResponseModel.from_dict(data)
+            data = response.data.wishlist.add_to_wishlist
+            handle_func(data.success)
         except Exception as e:
+            if DEBUG():
+                raise e
             logger.error(str(e))
             handle_func(False)
         self.update_wishlist.emit()
 
     def remove_from_wishlist(self, namespace, offer_id, handle_func: callable):
         payload = {
+            "query": wishlist_remove_query,
             "variables": {
                 "offerId": offer_id,
                 "namespace": namespace,
                 "operation": "REMOVE",
             },
-            "query": remove_from_wishlist_query,
         }
         self.authed_manager.post(graphql_url, lambda data: self._handle_remove_from_wishlist(data, handle_func),
                                  payload)
 
     def _handle_remove_from_wishlist(self, data, handle_func):
+        debug = DebugDialog(data, None)
+        debug.exec()
         try:
-            data = data["data"]["Wishlist"]["removeFromWishlist"]
-            if data["success"]:
-                handle_func(True)
-            else:
-                handle_func(False)
+            response = ResponseModel.from_dict(data)
+            data = response.data.wishlist.remove_from_wishlist
+            handle_func(data.success)
         except Exception as e:
+            if DEBUG():
+                raise e
             logger.error(str(e))
             handle_func(False)
         self.update_wishlist.emit()
