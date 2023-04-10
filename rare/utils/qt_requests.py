@@ -1,11 +1,11 @@
-import json
 from dataclasses import dataclass, field
 from email.message import Message
 from logging import getLogger
 from typing import Callable, Dict, TypeVar, List, Tuple
 from typing import Union
 
-from PyQt5.QtCore import QObject, pyqtSignal, QUrl, QJsonParseError, QJsonDocument, QUrlQuery, pyqtSlot
+import orjson
+from PyQt5.QtCore import QObject, pyqtSignal, QUrl, QUrlQuery, pyqtSlot
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QNetworkDiskCache
 
 logger = getLogger("QtRequests")
@@ -67,7 +67,7 @@ class QtRequestManager(QObject):
 
     def __post(self, item: RequestQueueItem):
         request = self.__prepare_request(item)
-        payload = json.dumps(item.payload).encode("utf-8")
+        payload = orjson.dumps(item.payload)
         reply = self.manager.post(request, payload)
         reply.errorOccurred.connect(self.__on_error)
         self.__active_requests[reply] = item
@@ -118,7 +118,7 @@ class QtRequestManager(QObject):
     def __on_finished(self, reply: QNetworkReply):
         item = self.__active_requests.pop(reply, None)
         if item is None:
-            logger.error("QNetworkReply: {} without associated item", reply)
+            logger.error("QNetworkReply: %s without associated item", reply.url().toString())
             reply.deleteLater()
             return
         if reply.error():
@@ -128,13 +128,7 @@ class QtRequestManager(QObject):
             maintype, subtype = mimetype.split("/")
             bin_data = reply.readAll().data()
             if mimetype == "application/json":
-                error = QJsonParseError()
-                json_data = QJsonDocument.fromJson(bin_data, error)
-                if not error.error:
-                    data = json.loads(json_data.toJson().data().decode())
-                else:
-                    logger.error(error.errorString())
-                    data = None
+                data = orjson.loads(bin_data)
             elif maintype == "image":
                 data = bin_data
             else:

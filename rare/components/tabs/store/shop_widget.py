@@ -11,17 +11,18 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QWidget, QSizePolicy, QStackedLayout,
 )
-
 from legendary.core import LegendaryCore
+
 from rare.ui.components.tabs.store.store import Ui_ShopWidget
 from rare.utils.extra_widgets import ButtonLineEdit
 from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
+from .api.models.query import SearchStoreQuery
+from .api.models.response import CatalogOfferModel, WishlistItemModel
 from .constants import Constants
 from .game_widgets import GameWidget
 from .image_widget import WaitingSpinner
 from .shop_api_core import ShopApiCore
-from .shop_models import BrowseModel
 
 logger = logging.getLogger("Shop")
 
@@ -98,8 +99,8 @@ class ShopWidget(QWidget, SideTabContents):
     def update_wishlist(self):
         self.api_core.get_wishlist(self.add_wishlist_items)
 
-    def add_wishlist_items(self, wishlist):
-        for w in self.discounts_flow.findChildren(QGroupBox, options=Qt.FindDirectChildrenOnly):
+    def add_wishlist_items(self, wishlist: List[WishlistItemModel]):
+        for w in self.discounts_flow.findChildren(QWidget, options=Qt.FindDirectChildrenOnly):
             self.discounts_flow.layout().removeWidget(w)
             w.deleteLater()
 
@@ -120,8 +121,8 @@ class ShopWidget(QWidget, SideTabContents):
             if not game:
                 continue
             try:
-                if game["offer"]["price"]["totalPrice"]["discount"] > 0:
-                    w = GameWidget(self.api_core.cached_manager, game["offer"])
+                if game.offer.price.total_price["discount"] > 0:
+                    w = GameWidget(self.api_core.cached_manager, game.offer)
                     w.show_info.connect(self.show_game)
                     self.discounts_flow.layout().addWidget(w)
                     discounts += 1
@@ -133,7 +134,7 @@ class ShopWidget(QWidget, SideTabContents):
         # FIXME: FlowLayout doesn't update on adding widget
         self.discounts_flow.layout().update()
 
-    def add_free_games(self, free_games: list):
+    def add_free_games(self, free_games: List[CatalogOfferModel]):
         for w in self.ui.free_container.layout().findChildren(QGroupBox, options=Qt.FindDirectChildrenOnly):
             self.ui.free_container.layout().removeWidget(w)
             w.deleteLater()
@@ -170,14 +171,14 @@ class ShopWidget(QWidget, SideTabContents):
         for game in free_games:
             try:
                 if (
-                    game["price"]["totalPrice"]["fmtPrice"]["discountPrice"] == "0"
-                    and game["price"]["totalPrice"]["fmtPrice"]["originalPrice"]
-                    != game["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
+                    game.price.total_price["fmtPrice"]["discountPrice"] == "0"
+                    and game.price.total_price["fmtPrice"]["originalPrice"]
+                    != game.price.total_price["fmtPrice"]["discountPrice"]
                 ):
                     free_games_now.append(game)
                     continue
 
-                if game["title"] == "Mystery Game":
+                if game.title == "Mystery Game":
                     coming_free_games.append(game)
                     continue
             except KeyError as e:
@@ -187,7 +188,7 @@ class ShopWidget(QWidget, SideTabContents):
                 # parse datetime to check if game is next week or now
                 try:
                     start_date = datetime.datetime.strptime(
-                        game["promotions"]["upcomingPromotionalOffers"][0][
+                        game.promotions["upcomingPromotionalOffers"][0][
                             "promotionalOffers"
                         ][0]["startDate"],
                         "%Y-%m-%dT%H:%M:%S.%fZ",
@@ -195,7 +196,7 @@ class ShopWidget(QWidget, SideTabContents):
                 except Exception:
                     try:
                         start_date = datetime.datetime.strptime(
-                            game["promotions"]["promotionalOffers"][0][
+                            game.promotions["promotionalOffers"][0][
                                 "promotionalOffers"
                             ][0]["startDate"],
                             "%Y-%m-%dT%H:%M:%S.%fZ",
@@ -226,7 +227,7 @@ class ShopWidget(QWidget, SideTabContents):
         # free games next week
         for free_game in coming_free_games:
             w = GameWidget(self.api_core.cached_manager, free_game)
-            if free_game["title"] != "Mystery Game":
+            if free_game.title != "Mystery Game":
                 w.show_info.connect(self.show_game)
             self.free_games_next.layout().addWidget(w)
         # self.coming_free_games.setFixedWidth(int(40 + len(coming_free_games) * 300))
@@ -346,12 +347,12 @@ class ShopWidget(QWidget, SideTabContents):
 
         self.games_layout.setCurrentWidget(self.games_spinner)
 
-        browse_model = BrowseModel(
-            language_code=self.core.language_code,
-            country_code=self.core.country_code,
+        browse_model = SearchStoreQuery(
+            language=self.core.language_code,
+            country=self.core.country_code,
             count=20,
-            price=self.price,
-            onSale=self.ui.on_discount.isChecked(),
+            price_range=self.price,
+            on_sale=self.ui.on_discount.isChecked(),
         )
         browse_model.tag = "|".join(self.tags)
 
@@ -360,14 +361,14 @@ class ShopWidget(QWidget, SideTabContents):
         self.api_core.browse_games(browse_model, self.show_games)
 
     def show_games(self, data):
-        for w in self.games_flow.layout().findChildren(GameWidget, options=Qt.FindDirectChildrenOnly):
+        for w in self.games_flow.findChildren(QWidget, options=Qt.FindDirectChildrenOnly):
             self.games_flow.layout().removeWidget(w)
             w.deleteLater()
 
         if data:
             for game in data:
                 w = GameWidget(self.api_core.cached_manager, game)
-                w.show_info.connect(self.show_game.emit)
+                w.show_info.connect(self.show_game)
                 self.games_flow.layout().addWidget(w)
         else:
             self.games_flow.layout().addWidget(

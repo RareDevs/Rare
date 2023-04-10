@@ -7,3 +7,4 @@ legendary-gl>=0.20.33
 orjson
 vdf; platform_system != "Windows"
 pywin32; platform_system == "Windows"
+

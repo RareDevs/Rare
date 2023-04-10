@@ -1,3 +1,5 @@
+from typing import List
+
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QMessageBox, QWidget
 
@@ -7,10 +9,11 @@ from rare.widgets.side_tab import SideTabContents
 from rare.widgets.flow_layout import FlowLayout
 from .shop_api_core import ShopApiCore
 from .game_widgets import WishlistWidget
+from .api.models.response import WishlistItemModel, CatalogOfferModel
 
 
 class Wishlist(QWidget, SideTabContents):
-    show_game_info = pyqtSignal(dict)
+    show_game_info = pyqtSignal(CatalogOfferModel)
     update_wishlist_signal = pyqtSignal()
 
     def __init__(self, api_core: ShopApiCore, parent=None):
@@ -38,10 +41,10 @@ class Wishlist(QWidget, SideTabContents):
         self.setEnabled(False)
         self.api_core.get_wishlist(self.set_wishlist)
 
-    def delete_from_wishlist(self, game):
+    def delete_from_wishlist(self, game: CatalogOfferModel):
         self.api_core.remove_from_wishlist(
-            game["namespace"],
-            game["id"],
+            game.namespace,
+            game.id,
             lambda success: self.update_wishlist()
             if success
             else QMessageBox.warning(
@@ -73,27 +76,26 @@ class Wishlist(QWidget, SideTabContents):
             self.ui.list_container.layout().removeWidget(w)
 
         if sort == 0:
-            func = lambda x: x.game["title"]
+            func = lambda x: x.game.title
             reverse = self.ui.reverse.isChecked()
         elif sort == 1:
-            func = lambda x: x.game["price"]["totalPrice"]["fmtPrice"]["discountPrice"]
+            func = lambda x: x.game.price.total_price["fmtPrice"]["discountPrice"]
             reverse = self.ui.reverse.isChecked()
         elif sort == 2:
-            func = lambda x: x.game["seller"]["name"]
+            func = lambda x: x.game.seller["name"]
             reverse = self.ui.reverse.isChecked()
         elif sort == 3:
-            func = lambda x: 1 - (x.game["price"]["totalPrice"]["discountPrice"] / x.game["price"]["totalPrice"]["originalPrice"])
+            func = lambda x: 1 - (x.game.price.total_price["discountPrice"] / x.game.price.total_price["originalPrice"])
             reverse = not self.ui.reverse.isChecked()
         else:
-            func = lambda x: x.game["title"]
+            func = lambda x: x.game.title
             reverse = self.ui.reverse.isChecked()
 
         widgets = sorted(widgets, key=func, reverse=reverse)
         for w in widgets:
             self.ui.list_container.layout().addWidget(w)
 
-
-    def set_wishlist(self, wishlist=None, sort=0):
+    def set_wishlist(self, wishlist: List[WishlistItemModel] = None, sort=0):
         if wishlist and wishlist[0] == "error":
             return
 
@@ -111,8 +113,8 @@ class Wishlist(QWidget, SideTabContents):
             self.ui.no_games_label.setVisible(False)
 
         for game in wishlist:
-            w = WishlistWidget(self.api_core.cached_manager, game["offer"], self.ui.list_container)
-            w.open_game.connect(self.show_game_info.emit)
+            w = WishlistWidget(self.api_core.cached_manager, game.offer, self.ui.list_container)
+            w.open_game.connect(self.show_game_info)
             w.delete_from_wishlist.connect(self.delete_from_wishlist)
             self.widgets.append(w)
             self.list_layout.addWidget(w)
