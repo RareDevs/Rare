@@ -72,6 +72,7 @@ class GameInfoTabs(SideTabWidget):
 class GameMetadataView(QTreeView, SideTabContents):
     def __init__(self, parent=None):
         super(GameMetadataView, self).__init__(parent=parent)
+        self.implements_scrollarea = True
         self.setColumnWidth(0, 300)
         self.setWordWrap(True)
         self.model = QJsonModel()

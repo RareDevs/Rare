@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (
     QTabBar,
     QTabWidget,
     QVBoxLayout,
-    QScrollArea, QLayout,
+    QScrollArea, QLayout, QSizePolicy,
 )
 
 from rare.utils.misc import icon as qta_icon
@@ -100,13 +100,14 @@ class SideTabContainer(QWidget):
 
         if not hasattr(widget, "implements_scrollarea") or not widget.implements_scrollarea:
             self.scrollarea = QScrollArea(self)
-            self.scrollarea.setWidgetResizable(True)
             self.scrollarea.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
             self.scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             self.scrollarea.setFrameStyle(QScrollArea.NoFrame)
             self.scrollarea.setMinimumWidth(
                 widget.sizeHint().width() + self.scrollarea.verticalScrollBar().sizeHint().width()
             )
+            self.scrollarea.setWidgetResizable(True)
+            widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
             self.scrollarea.setWidget(widget)
             layout.addWidget(self.scrollarea)
         else:
