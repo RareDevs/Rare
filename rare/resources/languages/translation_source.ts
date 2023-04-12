@@ -136,7 +136,7 @@
 <context>
     <name>CloudSaveDialog</name>
     <message>
-        <location filename="../../components/dialogs/cloud_save_dialog.py" line="44"/>
+        <location filename="../../components/dialogs/cloud_save_dialog.py" line="45"/>
         <source>Newer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -144,42 +144,42 @@
 <context>
     <name>CloudSaves</name>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="40"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="41"/>
         <source>&lt;b&gt;This game doesn&apos;t support cloud saves&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="57"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="62"/>
         <source>Use &quot;Calculate path&quot; or &quot;Browse&quot; ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="64"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="69"/>
         <source>Save path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="66"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="71"/>
         <source>Calculate path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="118"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="123"/>
         <source>Loading...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="139"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="144"/>
         <source>Error - {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="139"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="144"/>
         <source>Error while calculating path for &lt;b&gt;{}&lt;/b&gt;. Insufficient permisions to create &lt;b&gt;{}&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="179"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="187"/>
         <source>Newer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -688,43 +688,31 @@
 <context>
     <name>EnvVars</name>
     <message>
-        <location filename="../../ui/components/tabs/settings/widgets/env_vars.py" line="50"/>
+        <location filename="../../components/tabs/settings/widgets/env_vars.py" line="20"/>
         <source>Environment variables</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>EnvVarsTableModel</name>
     <message>
-        <location filename="../../ui/components/tabs/settings/widgets/env_vars.py" line="52"/>
+        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="79"/>
         <source>Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/widgets/env_vars.py" line="54"/>
+        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="81"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/env_vars.py" line="29"/>
-        <source>Readonly, please edit this via the appropriate setting above.</source>
+        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="119"/>
+        <source>Disabled, please set the variable name first.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/env_vars.py" line="154"/>
-        <source>Please don&apos;t manually add this environment variable. Use the appropriate game setting above.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/settings/widgets/env_vars.py" line="166"/>
-        <source>Please don&apos;t use an equal sign in an env var.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/settings/widgets/env_vars.py" line="175"/>
-        <source>The config already contains this environment variable.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/settings/widgets/env_vars.py" line="177"/>
-        <source>Do you want to keep the newer one or the older one?</source>
+        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="123"/>
+        <source>Readonly, please edit this via setting the appropriate setting.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -820,102 +808,102 @@
 <context>
     <name>GameInfo</name>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="252"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="285"/>
         <source>Game Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="253"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="286"/>
         <source>Developer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="255"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="291"/>
         <source>Installation Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="256"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="290"/>
         <source>Installation Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="263"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="288"/>
         <source>Version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="266"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="287"/>
         <source>Application Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="264"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="293"/>
         <source>Actions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="265"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="289"/>
         <source>ProtonDB Grade</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="257"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="294"/>
         <source>Verify Installation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="260"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="297"/>
         <source>Uninstall Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="343"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="346"/>
         <source>Install Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="95"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="98"/>
         <source>Repair file does not exist or game does not need a repair. Please verify game first</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="254"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="292"/>
         <source>Platform</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="258"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="295"/>
         <source>Repair Installation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="259"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="296"/>
         <source>Move Installation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="132"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="135"/>
         <source>Error - {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="132"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="135"/>
         <source>Installation path for &lt;b&gt;{}&lt;/b&gt; does not exist. Cannot continue.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="229"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="232"/>
         <source>Summary - {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="158"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="161"/>
         <source>&lt;b&gt;{}&lt;/b&gt; has been verified successfully. No missing or corrupt files found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="262"/>
+        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="299"/>
         <source>Import Game</source>
         <translation type="unfinished"></translation>
     </message>
@@ -960,37 +948,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="109"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="112"/>
         <source>Repair and update? - {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="109"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="112"/>
         <source>There is an update for &lt;b&gt;{}&lt;/b&gt; from &lt;b&gt;{}&lt;/b&gt; to &lt;b&gt;{}&lt;/b&gt;. Do you want to update the game while repairing it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="165"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="168"/>
         <source>&lt;b&gt;{}&lt;/b&gt; failed verification, &lt;b&gt;{}&lt;/b&gt; file(s) corrupted, &lt;b&gt;{}&lt;/b&gt; file(s) are missing. Do you want to repair them?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="190"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="193"/>
         <source>Move game? - {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="190"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="193"/>
         <source>Destination &lt;b&gt;{}&lt;/b&gt; already exists. Are you sure you want to overwrite it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="229"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="232"/>
         <source>&lt;b&gt;{}&lt;/b&gt; successfully moved to &lt;b&gt;{}&lt;b&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="340"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="343"/>
         <source>Link/Launch</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1769,7 +1757,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/launch_dialog.py" line="81"/>
+        <location filename="../../components/dialogs/launch_dialog.py" line="80"/>
         <source>Preparing Rare</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1894,11 +1882,6 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
         <source>Executable</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../../components/tabs/settings/widgets/linux.py" line="59"/>
-        <source>Mangohud is not installed or not in path</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ListGameWidget</name>
@@ -2014,100 +1997,105 @@ Are you sure you want to quit?</source>
 <context>
     <name>MangoHudSettings</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="49"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="51"/>
         <source>MangoHud Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="50"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="52"/>
         <source>Custom options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="84"/>
+        <source>Mangohud is not installed or not in path</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MangoSettings</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>FPS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>Frame Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>CPU Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>GPU Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>CPU Temp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>GPU Temp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>Memory usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>VRAM usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>Local Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>MangoHud Version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>System architecture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>FPS Graph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>GPU Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>CPU Power consumption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>GPU Power consumption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>Font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="18"/>
+        <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>Position</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2250,7 +2238,7 @@ Are you sure you want to quit?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/proton.py" line="59"/>
+        <location filename="../../components/tabs/settings/widgets/proton.py" line="61"/>
         <source>Please select path for proton prefix</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2568,47 +2556,47 @@ Are you sure you want to quit?</source>
 <context>
     <name>ShopGameInfo</name>
     <message>
-        <location filename="../../components/tabs/shop/game_info.py" line="57"/>
+        <location filename="../../components/tabs/shop/game_info.py" line="58"/>
         <source>Remove from Wishlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/shop/game_info.py" line="83"/>
+        <location filename="../../components/tabs/shop/game_info.py" line="84"/>
         <source>Show Game on Epic Page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/shop/game_info.py" line="86"/>
+        <location filename="../../components/tabs/shop/game_info.py" line="87"/>
         <source>Buy Game in Epic Games Store</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/shop/game_info.py" line="92"/>
+        <location filename="../../components/tabs/shop/game_info.py" line="93"/>
         <source>Loading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/shop/game_info.py" line="159"/>
+        <location filename="../../components/tabs/shop/game_info.py" line="160"/>
         <source>Free</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/shop/game_info.py" line="174"/>
+        <location filename="../../components/tabs/shop/game_info.py" line="175"/>
         <source>Minimum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/shop/game_info.py" line="176"/>
+        <location filename="../../components/tabs/shop/game_info.py" line="177"/>
         <source>Recommend</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/shop/game_info.py" line="195"/>
+        <location filename="../../components/tabs/shop/game_info.py" line="196"/>
         <source>Could not get requirements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/shop/game_info.py" line="227"/>
+        <location filename="../../components/tabs/shop/game_info.py" line="228"/>
         <source>Social Links</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2744,7 +2732,7 @@ Are you sure you want to quit?</source>
 <context>
     <name>SideTabWidget</name>
     <message>
-        <location filename="../../widgets/side_tab.py" line="122"/>
+        <location filename="../../widgets/side_tab.py" line="129"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2770,13 +2758,8 @@ Are you sure you want to quit?</source>
 <context>
     <name>SyncWidget</name>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/sync_widget.py" line="89"/>
-        <source>Local</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../ui/components/tabs/games/game_info/sync_widget.py" line="90"/>
-        <source>local_age_error</source>
+        <source>Local</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -41,7 +41,7 @@
       <item>
        <widget class="QLabel" name="date_info_local">
         <property name="text">
-         <string notr="true">local_date_error</string>
+         <string notr="true"/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -99,7 +99,7 @@
       <item>
        <widget class="QLabel" name="date_info_remote">
         <property name="text">
-         <string notr="true">remote_date_error</string>
+         <string notr="true"/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
