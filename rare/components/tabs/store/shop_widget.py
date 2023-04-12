@@ -24,6 +24,8 @@ from .game_widgets import GameWidget
 from .image_widget import WaitingSpinner
 from .shop_api_core import ShopApiCore
 
+from .api.models.utils import parse_date
+
 logger = logging.getLogger("Shop")
 
 
@@ -77,7 +79,7 @@ class ShopWidget(QWidget, SideTabContents):
         self.search_bar = ButtonLineEdit(
             "fa.search", placeholder_text=self.tr("Search Games")
         )
-        self.ui.left_layout.insertWidget(0, self.search_bar)
+        self.ui.main_layout.addWidget(self.search_bar, 0, 0)
 
         # self.search_bar.textChanged.connect(self.search_games)
 
@@ -165,7 +167,7 @@ class ShopWidget(QWidget, SideTabContents):
         self.free_games_next.setLayout(free_games_next_layout)
         self.ui.free_container.layout().addWidget(self.free_games_next)
 
-        date = datetime.datetime.now()
+        date = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
         free_games_now = []
         coming_free_games = []
         for game in free_games:
@@ -187,19 +189,13 @@ class ShopWidget(QWidget, SideTabContents):
             try:
                 # parse datetime to check if game is next week or now
                 try:
-                    start_date = datetime.datetime.strptime(
-                        game.promotions["upcomingPromotionalOffers"][0][
-                            "promotionalOffers"
-                        ][0]["startDate"],
-                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    start_date = parse_date(
+                        game.promotions["upcomingPromotionalOffers"][0]["promotionalOffers"][0]["startDate"]
                     )
                 except Exception:
                     try:
-                        start_date = datetime.datetime.strptime(
-                            game.promotions["promotionalOffers"][0][
-                                "promotionalOffers"
-                            ][0]["startDate"],
-                            "%Y-%m-%dT%H:%M:%S.%fZ",
+                        start_date = parse_date(
+                            game.promotions["promotionalOffers"][0]["promotionalOffers"][0]["startDate"]
                         )
                     except Exception as e:
 
