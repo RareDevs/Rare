@@ -161,9 +161,6 @@ class InstallDialog(QDialog):
             lambda: self.non_reload_option_changed("install_prereqs")
         )
 
-        _, _, free_space = shutil.disk_usage(self.options.base_path)
-        self.ui.avail_space.setText(format_size(free_space))
-
         self.non_reload_option_changed("shortcut")
 
         self.ui.cancel_button.clicked.connect(self.cancel_clicked)
@@ -265,6 +262,7 @@ class InstallDialog(QDialog):
         return True, path, IndicatorReasonsCommon.VALID
 
     def save_install_edit(self, path: str):
+        print("Edit")
         if not os.path.exists(path):
             return
         _, _, free_space = shutil.disk_usage(path)
