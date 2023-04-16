@@ -47,7 +47,7 @@ class GamesTab(QStackedWidget):
 
         self.game_info_page = GameInfoTabs(self)
         self.game_info_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
-        self.game_info_page.import_clicked.connect(lambda: self.show_import())
+        self.game_info_page.import_clicked.connect(self.show_import)
         self.addWidget(self.game_info_page)
 
         self.integrations_page = IntegrationsTabs(self)
@@ -118,9 +118,10 @@ class GamesTab(QStackedWidget):
         )
 
     @pyqtSlot()
-    def show_import(self):
+    @pyqtSlot(str)
+    def show_import(self, app_name: str = None):
         self.setCurrentWidget(self.integrations_page)
-        self.integrations_page.show_import()
+        self.integrations_page.show_import(app_name)
 
     @pyqtSlot()
     def show_egl_sync(self):

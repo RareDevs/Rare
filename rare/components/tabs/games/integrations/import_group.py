@@ -217,6 +217,12 @@ class ImportGroup(QGroupBox):
 
         self.threadpool = QThreadPool.globalInstance()
 
+    def set_game(self, app_name: str):
+        if app_name:
+            folder = self.rcore.get_game(app_name).folder_name
+            self.path_edit.setText(os.path.join(self.core.get_default_install_dir(), folder))
+            self.app_name_edit.setText(app_name)
+
     def path_edit_callback(self, path) -> Tuple[bool, str, int]:
         if os.path.exists(path):
             if os.path.exists(os.path.join(path, ".egstore")):
@@ -252,7 +258,7 @@ class ImportGroup(QGroupBox):
             self.ui.import_dlcs_check.setEnabled(
                 bool(self.core.get_dlc_for_game(app_name))
             )
-            self.ui.import_button.setEnabled(True)
+            self.ui.import_button.setEnabled(self.path_edit.is_valid)
         else:
             self.ui.import_dlcs_check.setEnabled(False)
             self.ui.import_button.setEnabled(False)
