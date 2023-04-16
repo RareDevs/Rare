@@ -5,10 +5,9 @@ from PyQt5.QtWidgets import QFrame, QMessageBox, QToolBox
 
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.shared.image_manager import ImageSize
 from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
-from rare.widgets.image_widget import ImageWidget
+from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
 from rare.utils.misc import widget_object_name
 
@@ -76,6 +75,7 @@ class GameDlc(QToolBox, SideTabContents):
 
     def __init__(self, parent=None):
         super(GameDlc, self).__init__(parent=parent)
+        self.implements_scrollarea = True
         self.ui = Ui_GameDlc()
         self.ui.setupUi(self)
         self.core = LegendaryCoreSingleton()
@@ -93,7 +93,7 @@ class GameDlc(QToolBox, SideTabContents):
         return self.ui.installed_dlc_container.findChild(
             InstalledGameDlcWidget,
             name=widget_object_name(InstalledGameDlcWidget, app_name),
-            options = Qt.FindDirectChildrenOnly
+            options=Qt.FindDirectChildrenOnly
         )
 
     def get_available(self, app_name: str) -> Optional[AvailableGameDlcWidget]:
@@ -130,7 +130,6 @@ class GameDlc(QToolBox, SideTabContents):
         i_widget.destroyed.connect(self.update_installed_page)
         i_widget.uninstalled.connect(self.append_available)
         self.ui.installed_dlc_container.layout().addWidget(i_widget)
-
 
     def append_available(self, rdlc: RareGame):
         self.ui.available_dlc_label.setVisible(False)

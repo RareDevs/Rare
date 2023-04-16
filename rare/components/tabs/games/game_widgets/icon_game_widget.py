@@ -4,7 +4,7 @@ from typing import Optional
 from PyQt5.QtCore import QEvent
 
 from rare.models.game import RareGame
-from rare.shared.image_manager import ImageSize
+from rare.models.image import ImageSize
 from .game_widget import GameWidget
 from .icon_widget import IconWidget
 
