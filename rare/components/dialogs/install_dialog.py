@@ -1,5 +1,6 @@
 import os
 import platform as pf
+import shutil
 from typing import Tuple, List, Union, Optional
 
 from PyQt5.QtCore import Qt, QThreadPool, QSettings, QCoreApplication
@@ -79,6 +80,7 @@ class InstallDialog(QDialog):
             path=self.options.base_path,
             file_mode=QFileDialog.DirectoryOnly,
             edit_func=self.option_changed,
+            save_func=self.save_install_edit,
             parent=self,
         )
         self.ui.install_dir_layout.addWidget(self.install_dir_edit)
@@ -158,6 +160,9 @@ class InstallDialog(QDialog):
         self.advanced.ui.install_prereqs_check.stateChanged.connect(
             lambda: self.non_reload_option_changed("install_prereqs")
         )
+
+        _, _, free_space = shutil.disk_usage(self.options.base_path)
+        self.ui.avail_space.setText(format_size(free_space))
 
         self.non_reload_option_changed("shortcut")
 
@@ -258,6 +263,12 @@ class InstallDialog(QDialog):
         self.ui.install_button.setEnabled(False)
         self.ui.verify_button.setEnabled(not self.worker_running)
         return True, path, IndicatorReasonsCommon.VALID
+
+    def save_install_edit(self, path: str):
+        if not os.path.exists(path):
+            return
+        _, _, free_space = shutil.disk_usage(path)
+        self.ui.avail_space.setText(format_size(free_space))
 
     def non_reload_option_changed(self, option: str):
         if option == "download_only":
