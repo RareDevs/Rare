@@ -360,8 +360,9 @@ class RareCore(QObject):
         QThreadPool.globalInstance().start(origin_worker)
 
     def __post_init(self) -> None:
-        self.fetch_saves()
-        self.fetch_entitlements()
+        if not self.__args.offline:
+            self.fetch_saves()
+            self.fetch_entitlements()
         self.resolve_origin()
 
     def load_pixmaps(self) -> None:
