@@ -47,6 +47,7 @@ class GamesTab(QStackedWidget):
 
         self.game_info_page = GameInfoTabs(self)
         self.game_info_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
+        self.game_info_page.import_clicked.connect(lambda: self.show_import())
         self.addWidget(self.game_info_page)
 
         self.integrations_page = IntegrationsTabs(self)

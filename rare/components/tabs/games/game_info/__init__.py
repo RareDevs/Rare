@@ -1,6 +1,6 @@
 from typing import Optional
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QTreeView
 
@@ -15,6 +15,9 @@ from .cloud_saves import CloudSaves
 
 
 class GameInfoTabs(SideTabWidget):
+    # str: app_name
+    import_clicked = pyqtSignal(str)
+
     def __init__(self, parent=None):
         super(GameInfoTabs, self).__init__(show_back=True, parent=parent)
         self.core = LegendaryCoreSingleton()
@@ -22,6 +25,7 @@ class GameInfoTabs(SideTabWidget):
         self.args = ArgumentsSingleton()
 
         self.info_tab = GameInfo(self)
+        self.info_tab.import_clicked.connect(self.import_clicked)
         self.info_index = self.addTab(self.info_tab, self.tr("Information"))
 
         self.settings_tab = GameSettings(self)
