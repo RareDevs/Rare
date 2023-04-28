@@ -30,6 +30,7 @@ class GameListHeadBar(QWidget):
                 self.tr("All games"),
                 self.tr("Installed only"),
                 self.tr("Offline Games"),
+                # self.tr("Hidden")
             ]
         )
 
@@ -37,6 +38,7 @@ class GameListHeadBar(QWidget):
             "all",
             "installed",
             "offline",
+            # "hidden"
         ]
         if self.rcore.bit32_games:
             self.filter.addItem(self.tr("32 Bit Games"))
@@ -68,7 +70,8 @@ class GameListHeadBar(QWidget):
         egl_sync_action = QAction(icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"), integrations_menu)
         egl_sync_action.triggered.connect(self.goto_egl_sync)
 
-        eos_ubisoft_action = QAction(icon("mdi.rocket", "fa.rocket"), self.tr("Epic Overlay and Ubisoft"), integrations_menu)
+        eos_ubisoft_action = QAction(icon("mdi.rocket", "fa.rocket"), self.tr("Epic Overlay and Ubisoft"),
+                                     integrations_menu)
         eos_ubisoft_action.triggered.connect(self.goto_eos_ubisoft)
 
         integrations_menu.addAction(import_action)
