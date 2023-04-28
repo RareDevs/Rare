@@ -33,7 +33,11 @@ class LibraryWidgetController(QObject):
 
     @staticmethod
     def __visibility(widget: Union[IconGameWidget,ListGameWidget], filter_name, search_text) -> Tuple[bool, float]:
-        if filter_name == "installed":
+        if filter_name == "hidden":
+            visible = "hidden" in widget.rgame.metadata.tags
+        elif "hidden" in widget.rgame.metadata.tags:
+            visible = False
+        elif filter_name == "installed":
             visible = widget.rgame.is_installed
         elif filter_name == "offline":
             visible = widget.rgame.can_run_offline
