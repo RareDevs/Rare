@@ -182,6 +182,7 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
+          pip3 install .
       - name: Build
         run: cxfreeze -c rare/__main__.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
       - name: Compress

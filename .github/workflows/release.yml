@@ -115,6 +115,7 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
+          pip3 install .
       - name: Build
         run: cxfreeze -c rare/__main__.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
       - name: Compress
@@ -189,7 +190,7 @@ jobs:
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare-Windows.zip
+          file: Rare-Windows-1.10.0.zip
           asset_name: Rare-Windows-${{ github.event.release.tag_name }}.zip
           tag: ${{ github.ref }}
           overwrite: true
