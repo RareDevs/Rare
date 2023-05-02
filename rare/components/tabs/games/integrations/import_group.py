@@ -292,7 +292,7 @@ class ImportGroup(QGroupBox):
     @pyqtSlot(ImportedGame, int)
     def __on_import_progress(self, imported: ImportedGame, progress: int):
         self.info_progress.setValue(progress)
-        if imported.result == ImportResult.SUCCESS or imported.result == ImportResult.FAILED:
+        if imported.result == ImportResult.SUCCESS:
             self.rcore.get_game(imported.app_name).set_installed(True)
         status = "error" if not imported.result else (
             "failed" if imported.result == ImportResult.FAILED else "successful"
