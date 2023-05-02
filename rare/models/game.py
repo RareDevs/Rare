@@ -290,6 +290,7 @@ class RareGame(RareGameSlim):
         else:
             if self.has_update:
                 self.signals.download.dequeue.emit(self.app_name)
+            self.core.egstore_delete(self.igame)
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
         self.set_pixmap()
