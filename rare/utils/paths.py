@@ -236,7 +236,7 @@ def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "",
             shortcut.WorkingDirectory = str(home_dir())
 
         # Icon
-        shortcut.IconLocation = icon_path.absolute()
+        shortcut.IconLocation = str(icon_path.absolute())
 
         shortcut.save()
         return True
