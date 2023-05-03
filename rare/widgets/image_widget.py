@@ -15,7 +15,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import QWidget
 
-from rare.shared.image_manager import ImageSize
+from rare.models.image import ImageSize
 
 OverlayPath = Tuple[QPainterPath, Union[QColor, QLinearGradient]]
 
@@ -152,3 +152,7 @@ class ImageWidget(QWidget):
         self.paint_image(painter, a0)
         self.paint_overlay(painter, a0)
         painter.end()
+
+
+__all__ = ["ImageSize", "ImageWidget"]
+

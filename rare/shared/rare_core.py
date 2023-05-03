@@ -4,7 +4,7 @@ import time
 from argparse import Namespace
 from itertools import chain
 from logging import getLogger
-from typing import Dict, Iterator, Callable, Optional, List, Union
+from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable
 
 from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool, QRunnable, QTimer
 from legendary.lfs.eos import EOSOverlayApp
@@ -93,10 +93,10 @@ class RareCore(QObject):
         self.queue_workers.remove(worker)
         self.__signals.application.update_statusbar.emit()
 
-    def active_workers(self) -> Iterator[QueueWorker]:
+    def active_workers(self) -> Iterable[QueueWorker]:
         return list(filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers))
 
-    def queued_workers(self) -> Iterator[QueueWorker]:
+    def queued_workers(self) -> Iterable[QueueWorker]:
         return list(filter(lambda w: w.state == QueueWorkerState.QUEUED, self.queue_workers))
 
     def queue_info(self) -> List[QueueWorkerInfo]:

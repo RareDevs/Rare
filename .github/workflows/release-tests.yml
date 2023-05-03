@@ -22,11 +22,11 @@ jobs:
         id: version
         shell: bash
         run: |
-          tag_abbrev=$(git tag | sort -h | grep -oE "(^[0-9]+\.[0-9]+(.[0-9]+)?)$" | tail -1)
-          echo "::set-output name=tag_abbrev::$tag_abbrev"
-          echo "::set-output name=tag_offset::$(git rev-list $tag_abbrev..HEAD --count)"
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=full_desc::$(git describe --long --tags)"
+          tag_abbrev=$(git tag --sort=v:refname | grep -oE "(^[0-9]+\.[0-9]+(.[0-9]+)?)$" | tail -1)
+          echo "tag_abbrev=$tag_abbrev" >> $GITHUB_OUTPUT
+          echo "tag_offset=$(git rev-list $tag_abbrev..HEAD --count)" >> $GITHUB_OUTPUT
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "full_desc=$(git describe --long --tags)" >> $GITHUB_OUTPUT
 
   deb-package:
     needs: version
@@ -48,13 +48,13 @@ jobs:
         run: |
           cd build
           makedeb -d
-          mv *.deb Rare.deb
+          mv *.deb ../Rare.deb
 
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Rare.deb
-          path: build/Rare.deb
+          name: Rare-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.deb
+          path: Rare.deb
 
   appimage:
     needs: version
@@ -75,44 +75,18 @@ jobs:
           cp rare/__main__.py .
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
+          mv Rare-*.AppImage.zsync Rare.AppImage.zsync
 
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Rare.AppImage
+          name: Rare-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.AppImage
           path: Rare.AppImage
-
-  cx_freeze_zip:
-    needs: version
-    runs-on: "windows-latest"
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: "release"
-      - uses: actions/setup-python@v4
-        with:
-          cache: pip
-          python-version: '3.11'
-          check-latest: true
-          architecture: x64
-      - name: Install build dependencies
-        run: pip3 install cx_freeze
-      - name: Install target dependencies
-        run: |
-          pip3 install -r requirements.txt
-          pip3 install -r requirements-presence.txt
-          pip3 install .
-      - name: Build
-        run: cxfreeze -c rare/__main__.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
-      - name: Compress
-        run: |
-          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"
-
-      - name: Upload to Artifacts
+      - name: Upload to Artifacts (zsync)
         uses: actions/upload-artifact@v3
         with:
-          name: Rare-Windows-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.zip
-          path: Rare-Windows.zip
+          name: Rare-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.AppImage.zsync
+          path: Rare.AppImage.zsync
 
   nuitka:
     if: ${{ false }}
@@ -124,8 +98,8 @@ jobs:
         with:
           cache: pip
           python-version: '3.9'
-          architecture: x64
           check-latest: true
+          architecture: x64
       - name: Install build dependencies
         run: pip3 install nuitka ordered-set
       - name: Install target dependencies
@@ -166,14 +140,17 @@ jobs:
         run: |
           Copy-Item -Path "rare.dist\libcrypto-1_1.dll" -Destination "rare.dist\libcrypto-1_1-x64.dll"
           Copy-Item -Path "rare.dist\libssl-1_1.dll" -Destination "rare.dist\libssl-1_1-x64.dll"
+      - name: Compress
+        run: |
+          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'rare.dist')"
 
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: Rare-Windows-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
-          path: rare.dist
+          path: Rare-Windows.zip
 
-  cx_freeze:
+  cx_freeze_msi:
     needs: version
     runs-on: "windows-latest"
     steps:
@@ -193,24 +170,24 @@ jobs:
       - name: Build
         run: |
           python freeze.py bdist_msi
-          mv dist/*.msi dist/Rare-Windows.msi
+          mv dist/*.msi Rare.msi
 
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Rare-Windows-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.msi
-          path: dist/*.msi
+          name: Rare-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.msi
+          path: Rare.msi
 
-  win-zip:
+  cx_freeze_zip:
     needs: version
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: "release"
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          cache: pip
+          python-version: '3.11'
+          check-latest: true
           architecture: x64
       - name: Install build dependencies
         run: pip3 install cx_freeze
@@ -218,6 +195,7 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
+          pip3 install .
       - name: Build
         run: cxfreeze -c rare/__main__.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
       - name: Compress
@@ -259,9 +237,9 @@ jobs:
       - name: Create dmg
         run: |
           git clone https://github.com/create-dmg/create-dmg
-          create-dmg/create-dmg Rare-${{github.ref}}.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
+          create-dmg/create-dmg Rare.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
 
       - uses: actions/upload-artifact@v3
         with:
-          name: Rare-MacOS.dmg
-          path: ./*.dmg
+          name: Rare-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.dmg
+          path: Rare.dmg

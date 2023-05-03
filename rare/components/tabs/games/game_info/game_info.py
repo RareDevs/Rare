@@ -7,6 +7,7 @@ from typing import Optional
 from PyQt5.QtCore import (
     Qt,
     pyqtSlot,
+    pyqtSignal,
 )
 from PyQt5.QtWidgets import (
     QMenu,
@@ -17,11 +18,10 @@ from PyQt5.QtWidgets import (
 
 from rare.models.game import RareGame
 from rare.shared import RareCore
-from rare.shared.image_manager import ImageSize
 from rare.shared.workers import VerifyWorker, MoveWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.misc import format_size
-from rare.widgets.image_widget import ImageWidget
+from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
 from .move_game import MoveGamePopUp, is_game_dir
 
@@ -29,6 +29,9 @@ logger = getLogger("GameInfo")
 
 
 class GameInfo(QWidget, SideTabContents):
+    # str: app_name
+    import_clicked = pyqtSignal(str)
+
     def __init__(self, parent=None):
         super(GameInfo, self).__init__(parent=parent)
         self.ui = Ui_GameInfo()
@@ -49,6 +52,7 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
 
         self.ui.install_button.clicked.connect(self.__on_install)
+        self.ui.import_button.clicked.connect(self.__on_import)
         self.ui.verify_button.clicked.connect(self.__on_verify)
         self.ui.repair_button.clicked.connect(self.__on_repair)
         self.ui.uninstall_button.clicked.connect(self.__on_uninstall)
@@ -84,7 +88,10 @@ class GameInfo(QWidget, SideTabContents):
         else:
             self.rgame.install()
 
-    # FIXME: Move to RareGame
+    @pyqtSlot()
+    def __on_import(self):
+        self.import_clicked.emit(self.rgame.app_name)
+
     @pyqtSlot()
     def __on_uninstall(self):
         """ This method is to be called from the button only """
@@ -275,7 +282,9 @@ class GameInfo(QWidget, SideTabContents):
             (not self.rgame.is_installed or self.rgame.is_non_asset) and self.rgame.is_idle
         )
 
-        self.ui.import_button.setEnabled(False)
+        self.ui.import_button.setEnabled(
+            (not self.rgame.is_installed or self.rgame.is_non_asset) and self.rgame.is_idle
+        )
 
         self.ui.verify_button.setEnabled(
             self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle
