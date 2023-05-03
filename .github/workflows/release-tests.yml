@@ -48,13 +48,13 @@ jobs:
         run: |
           cd build
           makedeb -d
-          mv *.deb Rare.deb
+          mv *.deb ../Rare.deb
 
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: Rare-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.deb
-          path: build/Rare.deb
+          path: Rare.deb
 
   appimage:
     needs: version
@@ -140,12 +140,15 @@ jobs:
         run: |
           Copy-Item -Path "rare.dist\libcrypto-1_1.dll" -Destination "rare.dist\libcrypto-1_1-x64.dll"
           Copy-Item -Path "rare.dist\libssl-1_1.dll" -Destination "rare.dist\libssl-1_1-x64.dll"
+      - name: Compress
+        run: |
+          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'rare.dist')"
 
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: Rare-Windows-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
-          path: rare.dist
+          path: Rare-Windows.zip
 
   cx_freeze_msi:
     needs: version
@@ -167,13 +170,13 @@ jobs:
       - name: Build
         run: |
           python freeze.py bdist_msi
-          mv dist/*.msi dist/Rare-Windows.msi
+          mv dist/*.msi Rare.msi
 
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Rare-Windows-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.msi
-          path: dist/Rare-Windows.msi
+          name: Rare-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.msi
+          path: Rare.msi
 
   cx_freeze_zip:
     needs: version

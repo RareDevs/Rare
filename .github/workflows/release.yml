@@ -50,13 +50,13 @@ jobs:
         run: |
           cd build
           makedeb -d
-          mv *.deb Rare.deb
+          mv *.deb ../Rare.deb
 
       - name: Upload to Releases
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/Rare.deb
+          file: Rare.deb
           asset_name: Rare-${{ github.event.release.tag_name }}.deb
           tag: ${{ github.ref }}
           overwrite: true
@@ -187,14 +187,14 @@ jobs:
       - name: Build
         run: |
           python freeze.py bdist_msi
-          mv dist/*.msi dist/Rare-Windows.msi
+          mv dist/*.msi Rare.msi
 
       - name: Upload to Releases
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: dist/Rare-Windows.msi
-          asset_name: Rare-Windows-${{ github.event.release.tag_name }}.msi
+          file: Rare.msi
+          asset_name: Rare-${{ github.event.release.tag_name }}.msi
           tag: ${{ github.ref }}
           overwrite: true
 
