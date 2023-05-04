@@ -438,7 +438,11 @@ class RareGame(RareGameSlim):
 
     @property
     def folder_name(self) -> str:
-        return self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value")
+        return (
+            folder_name
+            if (folder_name := self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value"))
+            else self.app_title
+        )
 
     @property
     def save_path(self) -> Optional[str]:
