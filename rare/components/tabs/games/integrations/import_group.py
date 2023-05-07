@@ -69,7 +69,14 @@ class ImportWorker(QRunnable):
         progress = pyqtSignal(ImportedGame, int)
         result = pyqtSignal(list)
 
-    def __init__(self, core: LegendaryCore, path: str, app_name: str = None, import_folder: bool = False, import_dlcs: bool = False):
+    def __init__(
+            self,
+            core: LegendaryCore, path: str,
+            app_name: str = None,
+            import_folder: bool = False,
+            import_dlcs: bool = False,
+            import_force: bool = False
+    ):
         super(ImportWorker, self).__init__()
         self.signals = ImportWorker.Signals()
         self.core = core
@@ -78,6 +85,7 @@ class ImportWorker(QRunnable):
         self.app_name = app_name
         self.import_folder = import_folder
         self.import_dlcs = import_dlcs
+        self.import_force = import_force
 
     def run(self) -> None:
         result_list: List = []
@@ -116,6 +124,9 @@ class ImportWorker(QRunnable):
         args = LgndrImportGameArgs(
             app_path=str(path),
             app_name=app_name,
+            disable_check=self.import_force,
+            skip_dlcs=not self.import_dlcs,
+            with_dlcs=self.import_dlcs,
             indirect_status=status,
             get_boolean_choice=lambda prompt, default=True: self.import_dlcs
         )
@@ -237,6 +248,7 @@ class ImportGroup(QGroupBox):
     def path_changed(self, path: str):
         self.info_label.setText("")
         self.ui.import_folder_check.setCheckState(Qt.Unchecked)
+        self.ui.import_force_check.setCheckState(Qt.Unchecked)
         if self.path_edit.is_valid:
             self.app_name_edit.setText(find_app_name(path, self.core))
         else:
@@ -254,6 +266,7 @@ class ImportGroup(QGroupBox):
     def app_name_changed(self, app_name: str):
         self.info_label.setText("")
         self.ui.import_dlcs_check.setCheckState(Qt.Unchecked)
+        self.ui.import_force_check.setCheckState(Qt.Unchecked)
         if self.app_name_edit.is_valid:
             self.ui.import_dlcs_check.setEnabled(
                 bool(self.core.get_dlc_for_game(app_name))
@@ -267,6 +280,7 @@ class ImportGroup(QGroupBox):
     def import_folder_changed(self, state: Qt.CheckState):
         self.app_name_edit.setEnabled(not state)
         self.ui.import_dlcs_check.setCheckState(Qt.Unchecked)
+        self.ui.import_force_check.setCheckState(Qt.Unchecked)
         self.ui.import_dlcs_check.setEnabled(
             state
             or (self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(self.app_name_edit.text())))
@@ -287,6 +301,7 @@ class ImportGroup(QGroupBox):
             self.app_name_edit.text(),
             self.ui.import_folder_check.isChecked(),
             self.ui.import_dlcs_check.isChecked(),
+            self.ui.import_force_check.isChecked()
         )
         worker.signals.result.connect(self.__on_import_result)
         worker.signals.progress.connect(self.__on_import_progress)
