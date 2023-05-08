@@ -346,11 +346,14 @@ class RareLauncher(RareApp):
             self.start_prepare()
 
     def stop(self):
-        if self.console:
-            self.game_process.readyReadStandardOutput.disconnect()
-            self.game_process.readyReadStandardError.disconnect()
-        self.game_process.finished.disconnect()
-        self.game_process.errorOccurred.disconnect()
+        try:
+            if self.console:
+                self.game_process.readyReadStandardOutput.disconnect()
+                self.game_process.readyReadStandardError.disconnect()
+            self.game_process.finished.disconnect()
+            self.game_process.errorOccurred.disconnect()
+        except TypeError as e:
+            logger.error(f"Failed to disconnect signals: {e}")
         self.logger.info("Stopping server")
         try:
             self.server.close()
