@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_GameInfo(object):
     def setupUi(self, GameInfo):
         GameInfo.setObjectName("GameInfo")
-        GameInfo.resize(408, 340)
+        GameInfo.resize(410, 361)
         self.main_layout = QtWidgets.QHBoxLayout(GameInfo)
         self.main_layout.setObjectName("main_layout")
         self.left_layout = QtWidgets.QVBoxLayout()
@@ -165,7 +165,7 @@ class Ui_GameInfo(object):
         self.lbl_game_actions.setFont(font)
         self.lbl_game_actions.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lbl_game_actions.setObjectName("lbl_game_actions")
-        self.info_layout.setWidget(7, QtWidgets.QFormLayout.LabelRole, self.lbl_game_actions)
+        self.info_layout.setWidget(8, QtWidgets.QFormLayout.LabelRole, self.lbl_game_actions)
         self.game_actions_stack = QtWidgets.QStackedWidget(GameInfo)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -257,7 +257,14 @@ class Ui_GameInfo(object):
         spacerItem = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.uninstalled_layout.addItem(spacerItem)
         self.game_actions_stack.addWidget(self.uninstalled_page)
-        self.info_layout.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.game_actions_stack)
+        self.info_layout.setWidget(8, QtWidgets.QFormLayout.FieldRole, self.game_actions_stack)
+        self.hide_game_check = QtWidgets.QCheckBox(GameInfo)
+        self.hide_game_check.setText("")
+        self.hide_game_check.setObjectName("hide_game_check")
+        self.info_layout.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.hide_game_check)
+        self.label = QtWidgets.QLabel(GameInfo)
+        self.label.setObjectName("label")
+        self.info_layout.setWidget(7, QtWidgets.QFormLayout.LabelRole, self.label)
         self.right_layout.addLayout(self.info_layout)
         self.requirements_group = QtWidgets.QFrame(GameInfo)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
@@ -297,6 +304,7 @@ class Ui_GameInfo(object):
         self.uninstall_button.setText(_translate("GameInfo", "Uninstall Game"))
         self.install_button.setText(_translate("GameInfo", "Install Game"))
         self.import_button.setText(_translate("GameInfo", "Import Game"))
+        self.label.setText(_translate("GameInfo", "<html><head/><body><p align=\"right\"><span style=\" font-weight:600;\">Hide Game</span></p></body></html>"))
 
 
 if __name__ == "__main__":

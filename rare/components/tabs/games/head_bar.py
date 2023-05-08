@@ -30,7 +30,7 @@ class GameListHeadBar(QWidget):
                 self.tr("All games"),
                 self.tr("Installed only"),
                 self.tr("Offline Games"),
-                # self.tr("Hidden")
+                self.tr("Hidden")
             ]
         )
 
@@ -38,7 +38,7 @@ class GameListHeadBar(QWidget):
             "all",
             "installed",
             "offline",
-            # "hidden"
+            "hidden"
         ]
         if self.rcore.bit32_games:
             self.filter.addItem(self.tr("32 Bit Games"))

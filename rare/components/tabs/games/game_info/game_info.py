@@ -31,6 +31,7 @@ logger = getLogger("GameInfo")
 class GameInfo(QWidget, SideTabContents):
     # str: app_name
     import_clicked = pyqtSignal(str)
+    hidden_changed = pyqtSignal()
 
     def __init__(self, parent=None):
         super(GameInfo, self).__init__(parent=parent)
@@ -67,6 +68,8 @@ class GameInfo(QWidget, SideTabContents):
         self.move_game_pop_up.move_clicked.connect(self.ui.move_button.menu().close)
         self.move_game_pop_up.move_clicked.connect(self.__on_move)
 
+        self.ui.hide_game_check.stateChanged.connect(self.update_hidden)
+
         self.steam_grade_ratings = {
             "platinum": self.tr("Platinum"),
             "gold": self.tr("Gold"),
@@ -80,6 +83,16 @@ class GameInfo(QWidget, SideTabContents):
 
         # lk: requirements is unused so hide it
         self.ui.requirements_group.setVisible(False)
+
+    # TODO better ui
+    @pyqtSlot()
+    def update_hidden(self):
+        if self.ui.hide_game_check.isChecked():
+            self.rgame.metadata.tags.add("hidden")
+        else:
+            self.rgame.metadata.tags.remove("hidden")
+
+        self.hidden_changed.emit()
 
     @pyqtSlot()
     def __on_install(self):
@@ -281,6 +294,8 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.install_button.setEnabled(
             (not self.rgame.is_installed or self.rgame.is_non_asset) and self.rgame.is_idle
         )
+
+        self.ui.hide_game_check.setChecked("hidden" in self.rgame.metadata.tags)
 
         self.ui.import_button.setEnabled(
             (not self.rgame.is_installed or self.rgame.is_non_asset) and self.rgame.is_idle
