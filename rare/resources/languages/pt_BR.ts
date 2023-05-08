@@ -80,12 +80,12 @@
     <message>
         <location filename="../../components/tabs/games/game_info/game_dlc.py" line="60"/>
         <source>Install DLC</source>
-        <translation type="unfinished"/>
+        <translation>Instalar DLC</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_dlc.py" line="66"/>
         <source>Error</source>
-        <translation type="unfinished"/>
+        <translation>Erro</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/game_dlc.py" line="66"/>
@@ -192,7 +192,7 @@
     <message>
         <location filename="../../ui/components/tabs/games/game_info/cloud_widget.py" line="34"/>
         <source>Sync with cloud</source>
-        <translation type="unfinished"/>
+        <translation>Sincronizar com a nuvem</translation>
     </message>
 </context>
 <context>
@@ -224,12 +224,12 @@
     <message>
         <location filename="../../game_launch_helper/console.py" line="45"/>
         <source>Clear console</source>
-        <translation type="unfinished"/>
+        <translation>Limpar console</translation>
     </message>
     <message>
         <location filename="../../game_launch_helper/console.py" line="105"/>
         <source>Saved</source>
-        <translation type="unfinished"/>
+        <translation>Salvo</translation>
     </message>
     <message>
         <location filename="../../game_launch_helper/console.py" line="121"/>
@@ -374,7 +374,7 @@
     <message>
         <location filename="../../ui/components/tabs/downloads/download_widget.py" line="135"/>
         <source>Download speed:</source>
-        <translation type="unfinished"/>
+        <translation>Velocidade do download:</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/downloads/download_widget.py" line="136"/>
@@ -389,7 +389,7 @@
     <message>
         <location filename="../../ui/components/tabs/downloads/download_widget.py" line="138"/>
         <source>Cache size:</source>
-        <translation type="unfinished"/>
+        <translation>Tamanho do cache:</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/downloads/download_widget.py" line="139"/>
@@ -619,7 +619,7 @@
     <message>
         <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="339"/>
         <source>Import</source>
-        <translation type="unfinished"/>
+        <translation>Importar</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="356"/>
@@ -1001,7 +1001,7 @@
     <message>
         <location filename="../../components/tabs/games/game_info/__init__.py" line="31"/>
         <source>Cloud Saves</source>
-        <translation type="unfinished"/>
+        <translation>Progressos na nuvem</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_info/__init__.py" line="39"/>
@@ -1170,52 +1170,52 @@
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="54"/>
         <source>Reload Image</source>
-        <translation type="unfinished"/>
+        <translation>Recarregar imagem</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="57"/>
         <source>Uninstall</source>
-        <translation type="unfinished"/>
+        <translation>Desinstalar</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="84"/>
         <source>Running...</source>
-        <translation type="unfinished"/>
+        <translation>Rodando...</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="85"/>
         <source>Downloading...</source>
-        <translation type="unfinished"/>
+        <translation>Baixando...</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="86"/>
         <source>Verifying...</source>
-        <translation type="unfinished"/>
+        <translation>Verificando...</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="87"/>
         <source>Moving...</source>
-        <translation type="unfinished"/>
+        <translation>Movendo...</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="88"/>
         <source>Uninstalling...</source>
-        <translation type="unfinished"/>
+        <translation>Desinstalando...</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="89"/>
         <source>Syncing saves...</source>
-        <translation type="unfinished"/>
+        <translation>Sincronizando com a nuvem...</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="90"/>
         <source>Update available</source>
-        <translation type="unfinished"/>
+        <translation>Atualização disponível</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="91"/>
         <source>Needs verification</source>
-        <translation type="unfinished"/>
+        <translation>Necessita verificação</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="103"/>
@@ -1230,27 +1230,27 @@
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="97"/>
         <source>Show information</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar informação</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="98"/>
         <source>Install game</source>
-        <translation type="unfinished"/>
+        <translation>Instalar jogo</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="99"/>
         <source>Launch game</source>
-        <translation type="unfinished"/>
+        <translation>Abrir jogo</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="100"/>
         <source>Launch offline</source>
-        <translation type="unfinished"/>
+        <translation>Abrir offline</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="101"/>
         <source>Launch without version check</source>
-        <translation type="unfinished"/>
+        <translation>Abrir sem verificar a versão</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="102"/>
@@ -1260,12 +1260,12 @@
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="253"/>
         <source>Remove Desktop link</source>
-        <translation type="unfinished"/>
+        <translation>Remover atalho da Área de Trabalho</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="261"/>
         <source>Create Desktop link</source>
-        <translation type="unfinished"/>
+        <translation>Criar atalho da Área de Trabalho</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="255"/>
@@ -1280,7 +1280,7 @@
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="230"/>
         <source>Warning</source>
-        <translation type="unfinished"/>
+        <translation>Aviso</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="230"/>
@@ -1328,12 +1328,12 @@
     <message>
         <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="74"/>
         <source>Import DLCs</source>
-        <translation type="unfinished"/>
+        <translation>Importar DLCs</translation>
     </message>
     <message>
         <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="75"/>
         <source>If a game has DLCs, try to import them too</source>
-        <translation type="unfinished"/>
+        <translation>Se o jogo possui DLCs, importá-las também</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/integrations/import_group.py" line="308"/>
@@ -1373,7 +1373,7 @@
     <message>
         <location filename="../../components/tabs/games/integrations/import_group.py" line="289"/>
         <source>Importing games</source>
-        <translation type="unfinished"/>
+        <translation>Importando jogos</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/integrations/import_group.py" line="325"/>
@@ -1443,7 +1443,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/login/import_login.py" line="66"/>
         <source>Select prefix</source>
-        <translation type="unfinished"/>
+        <translation>Selecione o prefixo</translation>
     </message>
 </context>
 <context>
@@ -1451,7 +1451,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../widgets/indicator_edit.py" line="138"/>
         <source>Default</source>
-        <translation type="unfinished"/>
+        <translation>Padrão</translation>
     </message>
 </context>
 <context>
@@ -1464,42 +1464,42 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../widgets/indicator_edit.py" line="70"/>
         <source>Unknown error occurred</source>
-        <translation type="unfinished"/>
+        <translation>Ocorreu um erro desconhecido</translation>
     </message>
     <message>
         <location filename="../../widgets/indicator_edit.py" line="71"/>
         <source>Value can not be empty</source>
-        <translation type="unfinished"/>
+        <translation>Valor não pode estar vazio</translation>
     </message>
     <message>
         <location filename="../../widgets/indicator_edit.py" line="72"/>
         <source>Wrong format</source>
-        <translation type="unfinished"/>
+        <translation>Formato errado</translation>
     </message>
     <message>
         <location filename="../../widgets/indicator_edit.py" line="73"/>
         <source>Wrong file or directory</source>
-        <translation type="unfinished"/>
+        <translation>Pasta ou arquivo errados</translation>
     </message>
     <message>
         <location filename="../../widgets/indicator_edit.py" line="74"/>
         <source>Directory is not empty</source>
-        <translation type="unfinished"/>
+        <translation>A pasta não está vazia</translation>
     </message>
     <message>
         <location filename="../../widgets/indicator_edit.py" line="75"/>
         <source>Directory does not exist</source>
-        <translation type="unfinished"/>
+        <translation>A pasta não existe</translation>
     </message>
     <message>
         <location filename="../../widgets/indicator_edit.py" line="76"/>
         <source>File does not exist</source>
-        <translation type="unfinished"/>
+        <translation>Arquivo não existe</translation>
     </message>
     <message>
         <location filename="../../widgets/indicator_edit.py" line="77"/>
         <source>Game is not installed or does not exist</source>
-        <translation type="unfinished"/>
+        <translation>O jogo não está instalado ou não existe</translation>
     </message>
 </context>
 <context>
@@ -1602,17 +1602,17 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="52"/>
         <source>Optional downloads</source>
-        <translation type="unfinished"/>
+        <translation>Downloads opcionais</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="63"/>
         <source>Repair</source>
-        <translation type="unfinished"/>
+        <translation>Reparar</translation>
     </message>
     <message>
         <location filename="../../components/dialogs/install_dialog.py" line="65"/>
         <source>Repair and update</source>
-        <translation type="unfinished"/>
+        <translation>Reparar e atualizar</translation>
     </message>
 </context>
 <context>
@@ -1640,12 +1640,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/install_dialog_advanced.py" line="120"/>
         <source>Less is slower (0: Default)</source>
-        <translation type="unfinished"/>
+        <translation>Menos é mais lento (0: Padrão)</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog_advanced.py" line="121"/>
         <source>Install prerequisites</source>
-        <translation type="unfinished"/>
+        <translation>Instalar pré-requisitos</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog_advanced.py" line="122"/>
@@ -1660,12 +1660,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/install_dialog_advanced.py" line="124"/>
         <source>Ignore free space</source>
-        <translation type="unfinished"/>
+        <translation>Ignorar o espaço livre</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog_advanced.py" line="125"/>
         <source>Use with caution!</source>
-        <translation type="unfinished"/>
+        <translation>Use com cuidado!</translation>
     </message>
     <message>
         <location filename="../../ui/components/dialogs/install_dialog_advanced.py" line="126"/>
@@ -1683,7 +1683,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/games/game_info/game_dlc.py" line="44"/>
         <source>Uninstall DLC</source>
-        <translation type="unfinished"/>
+        <translation>Desinstalar DLC</translation>
     </message>
 </context>
 <context>
@@ -1739,7 +1739,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../ui/components/dialogs/login/landing_page.py" line="70"/>
         <source>Import from Epic Games Launcher</source>
-        <translation type="unfinished"/>
+        <translation>Importar do Epic Games Launcher</translation>
     </message>
 </context>
 <context>
@@ -1886,12 +1886,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/games/game_widgets/list_game_widget.py" line="39"/>
         <source>Launch</source>
-        <translation type="unfinished"/>
+        <translation>Abrir</translation>
     </message>
     <message>
         <location filename="../../components/tabs/games/game_widgets/list_game_widget.py" line="39"/>
         <source>Link/Play</source>
-        <translation type="unfinished"/>
+        <translation>Criar atalho/Jogar</translation>
     </message>
 </context>
 <context>
@@ -1932,12 +1932,12 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/__init__.py" line="31"/>
         <source>Games</source>
-        <translation type="unfinished"/>
+        <translation>Jogos</translation>
     </message>
     <message>
         <location filename="../../components/tabs/__init__.py" line="42"/>
         <source>Store (Beta)</source>
-        <translation type="unfinished"/>
+        <translation>Loja (Beta)</translation>
     </message>
     <message>
         <location filename="../../components/tabs/__init__.py" line="83"/>
@@ -1947,7 +1947,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
     <message>
         <location filename="../../components/tabs/__init__.py" line="107"/>
         <source>Logout</source>
-        <translation type="unfinished"/>
+        <translation>Sair</translation>
     </message>
     <message>
         <location filename="../../components/tabs/__init__.py" line="100"/>
@@ -1997,7 +1997,7 @@ Are you sure you want to quit?</source>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="51"/>
         <source>MangoHud Settings</source>
-        <translation type="unfinished"/>
+        <translation>Opções do MangoHud</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="52"/>
@@ -2045,12 +2045,12 @@ Are you sure you want to quit?</source>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>Memory usage</source>
-        <translation type="unfinished"/>
+        <translation>Uso de memória</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>VRAM usage</source>
-        <translation type="unfinished"/>
+        <translation>Uso de VRAM</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
@@ -2060,17 +2060,17 @@ Are you sure you want to quit?</source>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>MangoHud Version</source>
-        <translation type="unfinished"/>
+        <translation>Versão do MangoHud</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>System architecture</source>
-        <translation type="unfinished"/>
+        <translation>Arquitetura do sistema</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
         <source>FPS Graph</source>
-        <translation type="unfinished"/>
+        <translation>Gráfico de FPS</translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/widgets/mangohud.py" line="20"/>
