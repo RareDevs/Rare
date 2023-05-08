@@ -263,6 +263,11 @@ class Ui_GameInfo(object):
         self.hide_game_check.setObjectName("hide_game_check")
         self.info_layout.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.hide_game_check)
         self.label = QtWidgets.QLabel(GameInfo)
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.label.setFont(font)
+        self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label.setObjectName("label")
         self.info_layout.setWidget(7, QtWidgets.QFormLayout.LabelRole, self.label)
         self.right_layout.addLayout(self.info_layout)
@@ -304,7 +309,7 @@ class Ui_GameInfo(object):
         self.uninstall_button.setText(_translate("GameInfo", "Uninstall Game"))
         self.install_button.setText(_translate("GameInfo", "Install Game"))
         self.import_button.setText(_translate("GameInfo", "Import Game"))
-        self.label.setText(_translate("GameInfo", "<html><head/><body><p align=\"right\"><span style=\" font-weight:600;\">Hide Game</span></p></body></html>"))
+        self.label.setText(_translate("GameInfo", "Hide Game"))
 
 
 if __name__ == "__main__":
