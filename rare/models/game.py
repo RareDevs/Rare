@@ -32,7 +32,7 @@ class RareGame(RareGameSlim):
         grant_date: Optional[datetime] = None
         steam_grade: Optional[str] = None
         steam_date: datetime = datetime.min
-        tags: List[str] = field(default_factory=list)
+        tags: set[str] = field(default_factory=set)
 
         @classmethod
         def from_dict(cls, data: Dict):
@@ -44,7 +44,7 @@ class RareGame(RareGameSlim):
                 grant_date=datetime.fromisoformat(data["grant_date"]) if data.get("grant_date", None) else None,
                 steam_grade=data.get("steam_grade", None),
                 steam_date=datetime.fromisoformat(data["steam_date"]) if data.get("steam_date", None) else datetime.min,
-                tags=data.get("tags", []),
+                tags=set(data.get("tags", [])),
             )
 
         def as_dict(self):
@@ -56,7 +56,7 @@ class RareGame(RareGameSlim):
                 grant_date=self.grant_date.isoformat() if self.grant_date else None,
                 steam_grade=self.steam_grade,
                 steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min,
-                tags=self.tags,
+                tags=list(self.tags),
             )
 
         def __bool__(self):
@@ -155,6 +155,14 @@ class RareGame(RareGameSlim):
             metadata[self.app_name] = self.metadata.as_dict()
             with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
                 json.dump(metadata, metadata_json, indent=2)
+
+    def add_tag(self, tag_name: str):
+        self.metadata.tags.add(tag_name)
+        self.__save_metadata()
+
+    def remove_tag(self, tag_name: str):
+        self.metadata.tags.remove(tag_name)
+        self.__save_metadata()
 
     def update_game(self):
         self.game = self.core.get_game(
