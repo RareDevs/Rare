@@ -88,9 +88,9 @@ class GameInfo(QWidget, SideTabContents):
     @pyqtSlot()
     def update_hidden(self):
         if self.ui.hide_game_check.isChecked():
-            self.rgame.metadata.tags.add("hidden")
-        else:
-            self.rgame.metadata.tags.remove("hidden")
+            self.rgame.add_tag("hidden")
+        elif "hidden" in self.rgame.metadata.tags:
+            self.rgame.remove_tag("hidden")
 
         self.hidden_changed.emit()
 
