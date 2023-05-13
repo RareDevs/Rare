@@ -83,6 +83,10 @@ __link_suffix = {
         "link": "desktop",
         "icon": "png",
     },
+    # "Darwin": {
+    #     "link": "",
+    #     "icon": "icns",
+    # },
 }
 
 def desktop_links_supported() -> bool:
