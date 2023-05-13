@@ -34,7 +34,7 @@ from legendary.models.game import Game
 from rare.lgndr.core import LegendaryCore
 from rare.models.image import ImageSize
 from rare.models.signals import GlobalSignals
-from rare.utils.paths import image_dir, resources_path, desktop_icon_suffix
+from rare.utils.paths import image_dir, resources_path, desktop_icon_suffix, desktop_links_supported
 
 # from requests_futures.sessions import FuturesSession
 
@@ -281,8 +281,9 @@ class ImageManager(QObject):
             painter.end()
 
         cover = cover.scaled(ImageSize.Image.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        icon = self.__convert_icon(cover)
-        icon.save(str(self.__img_desktop_icon(game.app_name)), format=desktop_icon_suffix().upper())
+        if desktop_links_supported():
+            icon = self.__convert_icon(cover)
+            icon.save(str(self.__img_desktop_icon(game.app_name)), format=desktop_icon_suffix().upper())
 
         # this is not required if we ever want to re-apply the alpha channel
         # cover = cover.convertToFormat(QImage.Format_Indexed8)
