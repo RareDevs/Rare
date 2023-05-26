@@ -51,6 +51,7 @@ class RareCore(QObject):
         self.__core: Optional[LegendaryCore] = None
         self.__image_manager: Optional[ImageManager] = None
 
+        self.__start_time = time.time()
         self.__fetched_games: List = []
         self.__fetched_dlcs: Dict = {}
 
@@ -281,7 +282,11 @@ class RareCore(QObject):
         if res_type == FetchWorker.Result.NON_ASSET:
             games, dlc_dict = result
             self.__fetched_games += games
-            self.__fetched_dlcs.update(dlc_dict)
+            for catalog_id, dlcs in dlc_dict.items():
+                if catalog_id in self.__fetched_dlcs.keys():
+                    self.__fetched_dlcs[catalog_id] += dlcs
+                else:
+                    self.__fetched_dlcs[catalog_id] = dlcs
             self.__non_asset_fetched = True
             status = self.tr("Prepared games without assets")
         logger.info(f"Got API results for {FetchWorker.Result(res_type).name}")
