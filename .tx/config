@@ -3,7 +3,7 @@ host = https://www.transifex.com
 
 [o:rare-1:p:rare:r:placeholder-ts]
 file_filter  = rare/resources/languages/<lang>.ts
-source_file  = rare/resources/languages/placeholder.ts
+source_file  = rare/resources/languages/translation_source.ts
 source_lang  = en_US
 type         = QT
 minimum_perc = 50

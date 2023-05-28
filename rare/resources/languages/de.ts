@@ -78,17 +78,17 @@
 <context>
     <name>AvailableGameDlcWidget</name>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="60"/>
+        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="59"/>
         <source>Install DLC</source>
         <translation>Erweiterung installieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="66"/>
+        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="65"/>
         <source>Error</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="66"/>
+        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="65"/>
         <source>Base Game is not installed. Please install {} first</source>
         <translation>Hauptspiel ist nicht installiert. Bitte installiere {} davor</translation>
     </message>
@@ -858,12 +858,12 @@
         <translation>Spiel deinstallieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="346"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="355"/>
         <source>Install Game</source>
         <translation>Spiel installieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="98"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="105"/>
         <source>Repair file does not exist or game does not need a repair. Please verify game first</source>
         <translation>Reparationsdatei nicht gefunden oder das Spiel braucht eine Reperatur. Bitte zuerst überprüfen</translation>
     </message>
@@ -883,22 +883,22 @@
         <translation>Spiel verschieben</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="135"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="142"/>
         <source>Error - {}</source>
         <translation>Fehler - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="135"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="142"/>
         <source>Installation path for &lt;b&gt;{}&lt;/b&gt; does not exist. Cannot continue.</source>
         <translation>Installationsordner für &lt;b&gt;{}&lt;/b&gt;existiert nicht. Kann nicht fortführen</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="232"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="239"/>
         <source>Summary - {}</source>
         <translation>Zusammenfassung - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="161"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="168"/>
         <source>&lt;b&gt;{}&lt;/b&gt; has been verified successfully. No missing or corrupt files found</source>
         <translation>&lt;b&gt;{}&lt;/b&gt; wurde erfolgreich überprüft. Keine fehlenden oder kaputten Dateien gefunden</translation>
     </message>
@@ -908,77 +908,77 @@
         <translation>Spiel importieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="67"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="71"/>
         <source>Platinum</source>
         <translation>Platin</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="68"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="72"/>
         <source>Gold</source>
         <translation>Gold</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="69"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="73"/>
         <source>Silver</source>
         <translation>Silber</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="70"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="74"/>
         <source>Bronze</source>
         <translation>Bronze</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="71"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="75"/>
         <source>Borked</source>
         <translation>Kaputt</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="72"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="76"/>
         <source>Failed to get rating</source>
         <translation>Konnte die Bewertung nicht ermitteln</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="73"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="77"/>
         <source>Loading...</source>
         <translation>Laden...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="74"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="78"/>
         <source>Not applicable</source>
         <translation>Keine Angabe</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="112"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="119"/>
         <source>Repair and update? - {}</source>
         <translation>Reparieren und aktualisieren? - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="112"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="119"/>
         <source>There is an update for &lt;b&gt;{}&lt;/b&gt; from &lt;b&gt;{}&lt;/b&gt; to &lt;b&gt;{}&lt;/b&gt;. Do you want to update the game while repairing it?</source>
         <translation>Es gibt ein Update für &lt;b&gt;{}&lt;/b&gt; von &lt;b&gt;{}&lt;/b&gt; zu &lt;b&gt;{}&lt;/b&gt;. Möchtest du das Spiel aktualisieren während der Reparatur? </translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="168"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="175"/>
         <source>&lt;b&gt;{}&lt;/b&gt; failed verification, &lt;b&gt;{}&lt;/b&gt; file(s) corrupted, &lt;b&gt;{}&lt;/b&gt; file(s) are missing. Do you want to repair them?</source>
         <translation>Die Verifizierung für &lt;b&gt;{}&lt;/b&gt; schlug fehl. &lt;b&gt;{}&lt;/b&gt; Datei(en) kaputt, &lt;b&gt;{}&lt;/b&gt; Datei(en) fehlen. Möchtest du diese reparieren?</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="193"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="200"/>
         <source>Move game? - {}</source>
         <translation>Spiel verschieben? - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="193"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="200"/>
         <source>Destination &lt;b&gt;{}&lt;/b&gt; already exists. Are you sure you want to overwrite it?</source>
         <translation>Zielpfad &lt;b&gt;{}&lt;/b&gt; existiert bereits. Möchtest du ihn wirklich überschreiben?</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="232"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="239"/>
         <source>&lt;b&gt;{}&lt;/b&gt; successfully moved to &lt;b&gt;{}&lt;b&gt;.</source>
         <translation>&lt;b&gt;{}&lt;/b&gt; Erfolgreich nach &lt;b&gt;{}&lt;b&gt; verschoben.</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="343"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="352"/>
         <source>Link/Launch</source>
         <translation>Verbinden/Starten</translation>
     </message>
@@ -986,32 +986,32 @@
 <context>
     <name>GameInfoTabs</name>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="25"/>
+        <location filename="../../components/tabs/games/game_info/__init__.py" line="29"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="28"/>
+        <location filename="../../components/tabs/games/game_info/__init__.py" line="32"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="34"/>
+        <location filename="../../components/tabs/games/game_info/__init__.py" line="38"/>
         <source>Downloadable Content</source>
         <translation>Extra Inhalte</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="31"/>
+        <location filename="../../components/tabs/games/game_info/__init__.py" line="35"/>
         <source>Cloud Saves</source>
         <translation>Online Spielstände</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="39"/>
+        <location filename="../../components/tabs/games/game_info/__init__.py" line="43"/>
         <source>Game Metadata</source>
         <translation>Spiel Metadaten</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="41"/>
+        <location filename="../../components/tabs/games/game_info/__init__.py" line="45"/>
         <source>InstalledGame Metadata</source>
         <translation>InstalledGame Metadaten</translation>
     </message>
@@ -1029,37 +1029,37 @@
         <translation>Offline Spiele</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="42"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="44"/>
         <source>32 Bit Games</source>
         <translation>32 Bit Spiele</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="50"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="52"/>
         <source>Exclude Origin</source>
         <translation>Origin ausnehmen</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="65"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="67"/>
         <source>Import Game</source>
         <translation>Spiel importieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="83"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="86"/>
         <source>Search Game</source>
         <translation>Spiel suchen</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="68"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="70"/>
         <source>Sync with EGL</source>
         <translation>Mit EGL synchronisieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="46"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="48"/>
         <source>Mac games</source>
         <translation>Mac Spiele</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="53"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="55"/>
         <source>Include Unreal Engine</source>
         <translation>Unreal Engine einschließen</translation>
     </message>
@@ -1069,22 +1069,22 @@
         <translation>Alle Spiele</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="90"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="93"/>
         <source>Installed games</source>
         <translation>Installierte Spiele</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="99"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="102"/>
         <source>Available games</source>
         <translation>Verfügbare Spiele</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="71"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="73"/>
         <source>Epic Overlay and Ubisoft</source>
         <translation>Epic Overlay und Ubisoft</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="79"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="82"/>
         <source>Integrations</source>
         <translation>Integrationen</translation>
     </message>
@@ -1293,98 +1293,108 @@
 <context>
     <name>ImportGroup</name>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="69"/>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="82"/>
         <source>Import EGL game from a directory</source>
         <translation>Ein Spiel aus einem Ordner importieren</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="70"/>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="83"/>
         <source>Installation path</source>
         <translation>Installationspfad</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="71"/>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="84"/>
         <source>Override app name</source>
         <translation>Appname überschreiben</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="76"/>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="89"/>
         <source>Import Game</source>
         <translation>Spiel importieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="187"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="198"/>
         <source>Use in case the app name was not found automatically</source>
         <translation>Benutze dies, wenn der Appname nicht gefunden werden kann</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="72"/>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="85"/>
         <source>Import all folders</source>
         <translation>Alle Ordner importieren</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="73"/>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="86"/>
         <source>Scan the installation path for game folders and import them</source>
         <translation>Im Ordner nach Spielen suchen und diese importieren</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="74"/>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="87"/>
         <source>Import DLCs</source>
         <translation>DLCs importieren</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="75"/>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="88"/>
         <source>If a game has DLCs, try to import them too</source>
         <translation>Wenn das Spiel DLCs hat, diese auch importieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="308"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="329"/>
         <source>Success: &lt;b&gt;{}&lt;/b&gt; imported</source>
         <translation>Erfolg: &lt;b&gt;{}&lt;/b&gt; importiert</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="312"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="333"/>
         <source>Failed: &lt;b&gt;{}&lt;/b&gt; - {}</source>
         <translation>Fehlgechlagen: &lt;b&gt;{}&lt;/b&gt; - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="316"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="337"/>
         <source>Error: Could not find AppName for &lt;b&gt;{}&lt;/b&gt;</source>
         <translation>Fehler: Konnte den Namen für &lt;b&gt;{}&lt;/b&gt; nicht ermitteln</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="325"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="346"/>
         <source>Import summary</source>
         <translation>Zusammenfassung</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="338"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="359"/>
         <source>Success: {} imported</source>
         <translation>Erfolg: {} importiert</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="342"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="363"/>
         <source>Failed: {} - {}</source>
         <translation>Fehler: {} - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="346"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="367"/>
         <source>Error: Could not find AppName for {}</source>
         <translation>Fehler: Konnte nicht den Appnamen für {} finden</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="289"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="310"/>
         <source>Importing games</source>
         <translation>Importieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="325"/>
+        <location filename="../../components/tabs/games/integrations/import_group.py" line="346"/>
         <source>Tried to import {} folders.
 
 Successfully imported {} games, failed to import {} games and {} errors occurred</source>
         <translation>{} Ordner versucht zu importieren
 
 {} Spiele wurden erfolgreich importiert, {} sind fehlgeschlagen und {} Fehler sind aufgetreten</translation>
+    </message>
+    <message>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="90"/>
+        <source>Force import</source>
+        <translation>Import erzwingen</translation>
+    </message>
+    <message>
+        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="91"/>
+        <source>Import game despite missing files</source>
+        <translation>Spiel importieren auch wenn Dateien fehlen</translation>
     </message>
 </context>
 <context>
@@ -1509,114 +1519,119 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
 <context>
     <name>InstallDialog</name>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="107"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="118"/>
         <source>error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="108"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="119"/>
         <source>Install directory</source>
         <translation>Installationsordner</translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="111"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="122"/>
         <source>Download size</source>
         <translation>Downloadgröße</translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="114"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="125"/>
         <source>Click verify...</source>
         <translation>Drücke Überprüfen...</translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="113"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="124"/>
         <source>Total install size</source>
         <translation>Gesamte Installationsgröße</translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="116"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="127"/>
         <source>None</source>
         <translation>Keine</translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="117"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="128"/>
         <source>Cancel</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="118"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="129"/>
         <source>Verify</source>
         <translation>Überprüfen</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="69"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="70"/>
         <source>Install</source>
         <translation>Installieren</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="67"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="68"/>
         <source>Update</source>
         <translation>Update</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="244"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="246"/>
         <source>Updating...</source>
         <translation>Aktualisieren...</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="297"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="305"/>
         <source>Game already installed</source>
         <translation>Spiel ist bereits installiert</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="318"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="326"/>
         <source>Error</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="109"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="120"/>
         <source>Platform</source>
         <translation>Plattform</translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="110"/>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="121"/>
         <source>Create shortcut</source>
         <translation>Verknüpfung erstellen</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="154"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="156"/>
         <source>Creating a shortcut is not supported on MacOS</source>
         <translation>Eine Verknüpfung zu erstellen ist unter MacOS nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="104"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="106"/>
         <source>Warning</source>
         <translation>Warnung</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="104"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="106"/>
         <source>You will not be able to run the game if you select &lt;b&gt;{}&lt;/b&gt; as platform</source>
         <translation>Es wird nicht möglich sein das Spiel zu starten, wenn du &lt;b&gt;{}&lt;/b&gt; als Plattform wählst</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="311"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="319"/>
         <source>Also install: {}</source>
         <translation>Ebenfalls installieren: {}</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="52"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="53"/>
         <source>Optional downloads</source>
         <translation>Optionale Downloads</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="63"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="64"/>
         <source>Repair</source>
         <translation>Reparieren</translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="65"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="66"/>
         <source>Repair and update</source>
         <translation>Reparieren und aktualisieren</translation>
+    </message>
+    <message>
+        <location filename="../../ui/components/dialogs/install_dialog.py" line="131"/>
+        <source>Available space</source>
+        <translation>Verfügbarer Speicher</translation>
     </message>
 </context>
 <context>
@@ -1685,7 +1700,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
 <context>
     <name>InstalledGameDlcWidget</name>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="44"/>
+        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="43"/>
         <source>Uninstall DLC</source>
         <translation>DLC deinstallieren</translation>
     </message>
@@ -1693,27 +1708,27 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
 <context>
     <name>IntegrationsTabs</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="16"/>
+        <location filename="../../components/tabs/games/integrations/__init__.py" line="17"/>
         <source>To import games from Epic Games Store, please enable EGL Sync.</source>
         <translation>Um Spiele aus dem Epic Games Store zu importieren, bitte EGL Sync aktivieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="21"/>
+        <location filename="../../components/tabs/games/integrations/__init__.py" line="22"/>
         <source>Import Games</source>
         <translation>Spiele importieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="23"/>
+        <location filename="../../components/tabs/games/integrations/__init__.py" line="25"/>
         <source>To import EGL games from directories, please use Import Game.</source>
         <translation>Um EGL Spiele aus einem bestimmten Ordner zu importieren, bitte Spiel importieren nutzen</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="28"/>
+        <location filename="../../components/tabs/games/integrations/__init__.py" line="30"/>
         <source>Sync with EGL</source>
         <translation>Mit EGL synchronisieren</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="37"/>
+        <location filename="../../components/tabs/games/integrations/__init__.py" line="41"/>
         <source>Epic Overlay and Ubisoft</source>
         <translation>Epic Overlay und Ubisoft</translation>
     </message>
@@ -2359,22 +2374,22 @@ Bist du sicher zu beenden? </translation>
 <context>
     <name>RareCore</name>
     <message>
-        <location filename="../../shared/rare_core.py" line="269"/>
+        <location filename="../../shared/rare_core.py" line="270"/>
         <source>Loaded &lt;b&gt;{}&lt;/b&gt;</source>
         <translation>&lt;b&gt;{}&lt;/b&gt; geladen</translation>
     </message>
     <message>
-        <location filename="../../shared/rare_core.py" line="280"/>
+        <location filename="../../shared/rare_core.py" line="281"/>
         <source>Prepared games</source>
         <translation>Spiele vorbereitet</translation>
     </message>
     <message>
-        <location filename="../../shared/rare_core.py" line="286"/>
+        <location filename="../../shared/rare_core.py" line="291"/>
         <source>Prepared games without assets</source>
         <translation>Spiele ohne Anlagen vorbereitet</translation>
     </message>
     <message>
-        <location filename="../../shared/rare_core.py" line="298"/>
+        <location filename="../../shared/rare_core.py" line="303"/>
         <source>Launching Rare</source>
         <translation>Starte Rare</translation>
     </message>
@@ -3045,7 +3060,7 @@ Bist du sicher zu beenden? </translation>
 <context>
     <name>widget</name>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="26"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="27"/>
         <source>Advanced options</source>
         <translation>Erweiterte Optionen</translation>
     </message>
