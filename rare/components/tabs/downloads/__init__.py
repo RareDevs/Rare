@@ -89,7 +89,7 @@ class DownloadsTab(QWidget):
     @pyqtSlot()
     @pyqtSlot(int)
     def update_queues_count(self):
-        count = self.updates_group.count() + self.queue_group.count() +  (1 if self.is_download_active else 0)
+        count = self.updates_group.count() + self.queue_group.count() + (1 if self.is_download_active else 0)
         self.update_title.emit(count)
 
     @property
@@ -131,10 +131,11 @@ class DownloadsTab(QWidget):
         :param app_name:
         :return:
         """
+        rgame = self.rcore.get_game(app_name)
+        rgame.state = RareGame.State.IDLE
         if self.updates_group.contains(app_name):
             self.updates_group.set_widget_enabled(app_name, True)
         else:
-            rgame = self.rcore.get_game(app_name)
             if rgame.is_installed and rgame.has_update:
                 self.__add_update(app_name)
 
@@ -180,7 +181,7 @@ class DownloadsTab(QWidget):
 
     def __start_download(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
-        if not rgame.is_idle:
+        if not rgame.state == RareGame.State.DOWNLOADING:
             logger.error(f"Can't start download {item.options.app_name} due to non-idle state {rgame.state}")
             # lk: invalidate the queue item in case the game was uninstalled
             self.__requeue_download(InstallQueueItemModel(options=item.options))
@@ -188,7 +189,6 @@ class DownloadsTab(QWidget):
         if item.expired:
             self.__refresh_download(item)
             return
-        rgame.state = RareGame.State.DOWNLOADING
         thread = DlThread(item, self.rcore.get_game(item.options.app_name), self.core, self.args.debug)
         thread.result.connect(self.__on_download_result)
         thread.progress.connect(self.__on_download_progress)
@@ -215,6 +215,7 @@ class DownloadsTab(QWidget):
 
     def __requeue_download(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
+        rgame.state = RareGame.State.DOWNLOADING
         self.queue_group.push_front(item, rgame.igame)
         logger.info(f"Re-queued download for {rgame.app_name} ({rgame.app_title})")
 
@@ -278,8 +279,10 @@ class DownloadsTab(QWidget):
 
     @pyqtSlot(InstallOptionsModel)
     def __get_install_options(self, options: InstallOptionsModel):
+        rgame = self.rcore.get_game(options.app_name)
+        rgame.state = RareGame.State.DOWNLOADING
         install_dialog = InstallDialog(
-            self.rcore.get_game(options.app_name),
+            rgame,
             options=options,
             parent=self,
         )
@@ -288,8 +291,10 @@ class DownloadsTab(QWidget):
 
     @pyqtSlot(InstallQueueItemModel)
     def __on_install_dialog_closed(self, item: InstallQueueItemModel):
+        rgame = self.rcore.get_game(item.options.app_name)
         if item and not item.download.game.is_dlc and not item.download.analysis.dl_size:
-            self.rcore.get_game(item.download.game.app_name).set_installed(True)
+            rgame.set_installed(True)
+            rgame.state = RareGame.State.IDLE
             return
         if item:
             # lk: start update only if there is no other active thread and there is no queue
@@ -310,11 +315,14 @@ class DownloadsTab(QWidget):
         else:
             if self.updates_group.contains(item.options.app_name):
                 self.updates_group.set_widget_enabled(item.options.app_name, True)
+            rgame.state = RareGame.State.IDLE
 
     @pyqtSlot(UninstallOptionsModel)
     def __get_uninstall_options(self, options: UninstallOptionsModel):
+        rgame = self.rcore.get_game(options.app_name)
+        rgame.state = RareGame.State.UNINSTALLING
         uninstall_dialog = UninstallDialog(
-            self.rcore.get_game(options.app_name),
+            rgame,
             options=options,
             parent=self,
         )
@@ -334,3 +342,4 @@ class DownloadsTab(QWidget):
     def __on_uninstall_worker_result(self, rgame: RareGame, success: bool, message: str):
         if not success:
             QMessageBox.warning(None, self.tr("Uninstall - {}").format(rgame.title), message, QMessageBox.Close)
+        rgame.state = RareGame.State.IDLE
