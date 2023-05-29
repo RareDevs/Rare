@@ -31,6 +31,13 @@ class GameDlcWidget(QFrame):
 
         self.image.setPixmap(rdlc.pixmap)
 
+        self.__update()
+        rdlc.signals.widget.update.connect(self.__update)
+
+    @pyqtSlot()
+    def __update(self):
+        self.ui.action_button.setEnabled(self.rdlc.is_idle)
+
 
 class InstalledGameDlcWidget(GameDlcWidget):
     uninstalled = pyqtSignal(RareGame)

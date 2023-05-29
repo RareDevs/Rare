@@ -530,12 +530,15 @@ class RareGame(RareGameSlim):
             self.signals.game.uninstalled.emit(self.app_name)
         self.set_pixmap()
 
-    def repair(self, repair_and_update):
+    def repair(self, repair_and_update) -> bool:
+        if not self.is_idle:
+            return False
         self.signals.game.install.emit(
             InstallOptionsModel(
                 app_name=self.app_name, repair_mode=True, repair_and_update=repair_and_update, update=repair_and_update
             )
         )
+        return True
 
     def uninstall(self) -> bool:
         if not self.is_idle:
