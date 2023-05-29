@@ -257,7 +257,7 @@ class RareCore(QObject):
                     rdlc.signals.progress.start.connect(rgame.signals.progress.start)
                     rdlc.signals.progress.update.connect(rgame.signals.progress.update)
                     rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
-                    rgame.owned_dlcs.append(rdlc)
+                    rgame.owned_dlcs.add(rdlc)
                     self.__add_game(rdlc)
             self.__add_game(rgame)
             self.progress.emit(int(idx/length * 80) + 20, self.tr("Loaded <b>{}</b>").format(rgame.app_title))

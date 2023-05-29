@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from logging import getLogger
 from threading import Lock
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Set
 
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
 from PyQt5.QtGui import QPixmap
@@ -77,7 +77,7 @@ class RareGame(RareGameSlim):
         self.metadata: RareGame.Metadata = RareGame.Metadata()
         self.__load_metadata()
 
-        self.owned_dlcs: List[RareGame] = []
+        self.owned_dlcs: Set[RareGame] = set()
 
         if self.has_update:
             logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
