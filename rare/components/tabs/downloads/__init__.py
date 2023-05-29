@@ -182,7 +182,10 @@ class DownloadsTab(QWidget):
     def __start_download(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
         if not rgame.state == RareGame.State.DOWNLOADING:
-            logger.error(f"Can't start download {item.options.app_name} due to non-idle state {rgame.state}")
+            logger.error(
+                f"Can't start download {item.options.app_name}"
+                f"due to incompatible state {RareGame.State(rgame.state).name}"
+            )
             # lk: invalidate the queue item in case the game was uninstalled
             self.__requeue_download(InstallQueueItemModel(options=item.options))
             return
@@ -331,12 +334,14 @@ class DownloadsTab(QWidget):
 
     @pyqtSlot(UninstallOptionsModel)
     def __on_uninstall_dialog_closed(self, options: UninstallOptionsModel):
+        rgame = self.rcore.get_game(options.app_name)
         if options and options.accepted:
-            rgame = self.rcore.get_game(options.app_name)
             rgame.set_installed(False)
             worker = UninstallWorker(self.core, rgame, options)
             worker.signals.result.connect(self.__on_uninstall_worker_result)
             QThreadPool.globalInstance().start(worker)
+        else:
+            rgame.state = RareGame.State.IDLE
 
     @pyqtSlot(RareGame, bool, str)
     def __on_uninstall_worker_result(self, rgame: RareGame, success: bool, message: str):
