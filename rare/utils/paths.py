@@ -60,6 +60,7 @@ def create_dirs() -> None:
     for path in (data_dir(), cache_dir(), image_dir(), log_dir(), tmp_dir()):
         if not path.exists():
             path.mkdir(parents=True)
+            logger.info(f"Created directory at {path}")
 
 
 def home_dir() -> Path:
@@ -83,14 +84,15 @@ __link_suffix = {
         "link": "desktop",
         "icon": "png",
     },
-    # "Darwin": {
-    #     "link": "",
-    #     "icon": "icns",
-    # },
+    "Darwin": {
+         "link": "",
+         "icon": "icns",
+    },
 }
 
 def desktop_links_supported() -> bool:
-    return platform.system() in __link_suffix.keys()
+    supported_systems = [k for (k, v) in __link_suffix.items() if v["link"]]
+    return platform.system() in supported_systems
 
 def desktop_icon_suffix() -> str:
     return __link_suffix[platform.system()]["icon"]
