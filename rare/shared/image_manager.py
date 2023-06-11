@@ -5,7 +5,7 @@ import zlib
 # from concurrent import futures
 from logging import getLogger
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Set
 from typing import Tuple, Dict, Union, Type, List, Callable
 
 import requests
@@ -34,7 +34,7 @@ from legendary.models.game import Game
 from rare.lgndr.core import LegendaryCore
 from rare.models.image import ImageSize
 from rare.models.signals import GlobalSignals
-from rare.utils.paths import image_dir, resources_path, desktop_icon_suffix, desktop_links_supported
+from rare.utils.paths import image_dir, resources_path, desktop_icon_suffix
 
 # from requests_futures.sessions import FuturesSession
 
@@ -61,7 +61,7 @@ class ImageManager(QObject):
 
         def run(self):
             self.func(self.updates, self.json_data, self.game)
-            logger.debug(f" Emitting singal for game {self.game.app_name} - {self.game.app_title}")
+            logger.debug(f" Emitting singal for {self.game.app_name} ({self.game.app_title})")
             self.signals.completed.emit(self.game)
 
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
@@ -69,7 +69,7 @@ class ImageManager(QObject):
         # self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "DieselGameBox", "OfferImageTall")
         self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "OfferImageTall")
         self.__dl_retries = 1
-        self.__worker_app_names: List[str] = []
+        self.__worker_app_names: Set[str] = set()
         super(QObject, self).__init__()
         self.signals = signals
         self.core = core
@@ -116,9 +116,17 @@ class ImageManager(QObject):
         else:
             json_data = json.load(open(self.__img_json(game.app_name), "r"))
 
-        # lk: fast path for games without images, convert Rare's logo
-        if not game.metadata.get("keyImages", False):
-            if not self.__img_color(game.app_name).is_file() or not self.__img_gray(game.app_name).is_file():
+        # lk: Find updates or initialize if images are missing.
+        # lk: `updates` will be empty for games without images
+        # lk: so everything below it is skipped
+        updates = []
+        if not (
+            self.__img_color(game.app_name).is_file()
+            and self.__img_gray(game.app_name).is_file()
+            and self.__img_desktop_icon(game.app_name).is_file()
+        ):
+            # lk: fast path for games without images, convert Rare's logo
+            if not game.metadata.get("keyImages", []):
                 cache_data: Dict = dict(zip(self.__img_types, [None] * len(self.__img_types)))
                 cache_data["DieselGameBoxTall"] = open(
                     resources_path.joinpath("images", "cover.png"), "rb"
@@ -130,19 +138,10 @@ class ImageManager(QObject):
                 json_data["scale"] = ImageSize.Image.pixel_ratio
                 json_data["size"] = ImageSize.Image.size.__str__()
                 json.dump(json_data, open(self.__img_json(game.app_name), "w"))
-
-        # lk: Find updates or initialize if images are missing.
-        # lk: `updates` will be empty for games without images
-        # lk: so everything below it is skipped
-        if not (
-            self.__img_color(game.app_name).is_file()
-            and self.__img_gray(game.app_name).is_file()
-            and self.__img_desktop_icon(game.app_name).is_file()
-        ):
-            updates = [image for image in game.metadata["keyImages"] if image["type"] in self.__img_types]
+            else:
+                updates = [image for image in game.metadata["keyImages"] if image["type"] in self.__img_types]
         else:
-            updates = []
-            for image in game.metadata["keyImages"]:
+            for image in game.metadata.get("keyImages", []):
                 if image["type"] in self.__img_types:
                     if image["type"] not in json_data.keys() or json_data[image["type"]] != image["md5"]:
                         updates.append(image)
@@ -180,9 +179,10 @@ class ImageManager(QObject):
         #         cache_data[req.image_type] = req.result().content
         # else:
         for image in updates:
-            logger.info(f"Downloading {image['type']} for {game.app_title}")
+            logger.info(f"Downloading {image['type']} for {game.app_name} ({game.app_title})")
             json_data[image["type"]] = image["md5"]
             payload = {"resize": 1, "w": ImageSize.Image.size.width(), "h": ImageSize.Image.size.height()}
+            # cache_data[image["type"]] = requests.get(image["url"], params=payload, timeout=2).content
             cache_data[image["type"]] = requests.get(image["url"], params=payload).content
 
         self.__convert(game, cache_data)
@@ -281,9 +281,9 @@ class ImageManager(QObject):
             painter.end()
 
         cover = cover.scaled(ImageSize.Image.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        if desktop_links_supported():
-            icon = self.__convert_icon(cover)
-            icon.save(str(self.__img_desktop_icon(game.app_name)), format=desktop_icon_suffix().upper())
+
+        icon = self.__convert_icon(cover)
+        icon.save(str(self.__img_desktop_icon(game.app_name)), format=desktop_icon_suffix().upper())
 
         # this is not required if we ever want to re-apply the alpha channel
         # cover = cover.convertToFormat(QImage.Format_Indexed8)
@@ -318,16 +318,17 @@ class ImageManager(QObject):
     def download_image(
         self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False
     ) -> None:
+        if game.app_name in self.__worker_app_names:
+            return
+        self.__worker_app_names.add(game.app_name)
         updates, json_data = self.__prepare_download(game, force)
         if not updates:
+            self.__worker_app_names.remove(game.app_name)
             load_callback()
-            return
-        if updates and game.app_name not in self.__worker_app_names:
+        else:
             image_worker = ImageManager.Worker(self.__download, updates, json_data, game)
-            self.__worker_app_names.append(game.app_name)
-
-            image_worker.signals.completed.connect(load_callback)
             image_worker.signals.completed.connect(lambda g: self.__worker_app_names.remove(g.app_name))
+            image_worker.signals.completed.connect(load_callback)
             self.threadpool.start(image_worker, priority)
 
     def download_image_blocking(self, game: Game, force: bool = False) -> None:

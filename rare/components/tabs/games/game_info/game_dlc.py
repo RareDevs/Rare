@@ -31,6 +31,13 @@ class GameDlcWidget(QFrame):
 
         self.image.setPixmap(rdlc.pixmap)
 
+        self.__update()
+        rdlc.signals.widget.update.connect(self.__update)
+
+    @pyqtSlot()
+    def __update(self):
+        self.ui.action_button.setEnabled(self.rdlc.is_idle)
+
 
 class InstalledGameDlcWidget(GameDlcWidget):
     uninstalled = pyqtSignal(RareGame)
@@ -42,7 +49,11 @@ class InstalledGameDlcWidget(GameDlcWidget):
         self.ui.action_button.clicked.connect(self.uninstall_dlc)
         self.ui.action_button.setText(self.tr("Uninstall DLC"))
         # lk: don't reference `self.rdlc` here because the object has been deleted
-        rdlc.signals.game.uninstalled.connect(lambda: self.uninstalled.emit(rdlc))
+        rdlc.signals.game.uninstalled.connect(self.__uninstalled)
+
+    @pyqtSlot()
+    def __uninstalled(self):
+        self.uninstalled.emit(self.rdlc)
 
     def uninstall_dlc(self):
         self.rdlc.uninstall()
@@ -58,7 +69,11 @@ class AvailableGameDlcWidget(GameDlcWidget):
         self.ui.action_button.clicked.connect(self.install_dlc)
         self.ui.action_button.setText(self.tr("Install DLC"))
         # lk: don't reference `self.rdlc` here because the object has been deleted
-        rdlc.signals.game.installed.connect(lambda: self.installed.emit(rdlc))
+        rdlc.signals.game.installed.connect(self.__installed)
+
+    @pyqtSlot()
+    def __installed(self):
+        self.installed.emit(self.rdlc)
 
     def install_dlc(self):
         if not self.rgame.is_installed:

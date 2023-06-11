@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from logging import getLogger
 from threading import Lock
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Set
 
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
 from PyQt5.QtGui import QPixmap
@@ -77,7 +77,7 @@ class RareGame(RareGameSlim):
         self.metadata: RareGame.Metadata = RareGame.Metadata()
         self.__load_metadata()
 
-        self.owned_dlcs: List[RareGame] = []
+        self.owned_dlcs: Set[RareGame] = set()
 
         if self.has_update:
             logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
@@ -530,12 +530,15 @@ class RareGame(RareGameSlim):
             self.signals.game.uninstalled.emit(self.app_name)
         self.set_pixmap()
 
-    def repair(self, repair_and_update):
+    def repair(self, repair_and_update) -> bool:
+        if not self.is_idle:
+            return False
         self.signals.game.install.emit(
             InstallOptionsModel(
                 app_name=self.app_name, repair_mode=True, repair_and_update=repair_and_update, update=repair_and_update
             )
         )
+        return True
 
     def uninstall(self) -> bool:
         if not self.is_idle:

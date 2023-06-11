@@ -4,7 +4,7 @@ import time
 from argparse import Namespace
 from itertools import chain
 from logging import getLogger
-from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable
+from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple
 
 from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool, QRunnable, QTimer
 from legendary.lfs.eos import EOSOverlayApp
@@ -21,8 +21,6 @@ from .workers import (
     VerifyWorker,
     MoveWorker,
     FetchWorker,
-    GamesWorker,
-    NonAssetWorker,
     OriginWineWorker,
 )
 from .workers.uninstall import uninstall_game
@@ -52,11 +50,6 @@ class RareCore(QObject):
         self.__image_manager: Optional[ImageManager] = None
 
         self.__start_time = time.time()
-        self.__fetched_games: List = []
-        self.__fetched_dlcs: Dict = {}
-
-        self.__games_fetched: bool = False
-        self.__non_asset_fetched: bool = False
 
         self.args(args)
         self.signals(init=True)
@@ -144,19 +137,18 @@ class RareCore(QObject):
                 with open(os.path.join(path, "config.ini"), "w") as config_file:
                     config_file.write("[Legendary]")
                 self.__core = LegendaryCore()
-            if "Legendary" not in self.__core.lgd.config.sections():
-                self.__core.lgd.config.add_section("Legendary")
-                self.__core.lgd.save_config()
+            for section in ["Legendary", "default", "default.env"]:
+                if section not in self.__core.lgd.config.sections():
+                    self.__core.lgd.config.add_section(section)
             # workaround if egl sync enabled, but no programdata_path
             # programdata_path might be unset if logging in through the browser
             if self.__core.egl_sync_enabled:
                 if self.__core.egl.programdata_path is None:
                     self.__core.lgd.config.remove_option("Legendary", "egl_sync")
-                    self.__core.lgd.save_config()
                 else:
                     if not os.path.exists(self.__core.egl.programdata_path):
                         self.__core.lgd.config.remove_option("Legendary", "egl_sync")
-                        self.__core.lgd.save_config()
+            self.__core.lgd.save_config()
         return self.__core
 
     def image_manager(self, init: bool = False) -> ImageManager:
@@ -264,60 +256,27 @@ class RareCore(QObject):
                     rdlc.signals.progress.start.connect(rgame.signals.progress.start)
                     rdlc.signals.progress.update.connect(rgame.signals.progress.update)
                     rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
-                    rgame.owned_dlcs.append(rdlc)
+                    rgame.owned_dlcs.add(rdlc)
                     self.__add_game(rdlc)
             self.__add_game(rgame)
             self.progress.emit(int(idx/length * 80) + 20, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
 
     @pyqtSlot(object, int)
-    def handle_result(self, result: object, res_type: int):
-        status = ""
-        if res_type == FetchWorker.Result.GAMES:
-            games, dlc_dict = result
-            self.__fetched_games += games
-            self.__fetched_dlcs.update(dlc_dict)
-            self.fetch_non_asset()
-            self.__games_fetched = True
-            status = self.tr("Prepared games")
-        if res_type == FetchWorker.Result.NON_ASSET:
-            games, dlc_dict = result
-            self.__fetched_games += games
-            for catalog_id, dlcs in dlc_dict.items():
-                if catalog_id in self.__fetched_dlcs.keys():
-                    self.__fetched_dlcs[catalog_id] += dlcs
-                else:
-                    self.__fetched_dlcs[catalog_id] = dlcs
-            self.__non_asset_fetched = True
-            status = self.tr("Prepared games without assets")
+    def __on_fetch_result(self, result: Tuple[List, Dict], res_type: int):
         logger.info(f"Got API results for {FetchWorker.Result(res_type).name}")
-
-        fetched = [
-            self.__games_fetched,
-            self.__non_asset_fetched,
-        ]
-
-        self.progress.emit(sum(fetched) * 10, status)
-
-        if all(fetched):
-            self.__add_games_and_dlcs(self.__fetched_games, self.__fetched_dlcs)
-            self.progress.emit(100, self.tr("Launching Rare"))
-            logger.debug(f"Fetch time {time.time() - self.__start_time} seconds")
-            QTimer.singleShot(100, self.__post_init)
-            self.completed.emit()
+        self.progress.emit(15, self.tr("Preparing library"))
+        self.__add_games_and_dlcs(*result)
+        self.progress.emit(100, self.tr("Launching Rare"))
+        logger.debug(f"Fetch time {time.time() - self.__start_time} seconds")
+        QTimer.singleShot(100, self.__post_init)
+        self.completed.emit()
 
     def fetch(self):
-        self.__games_fetched: bool = False
-        self.__non_asset_fetched: bool = False
         self.__start_time = time.time()
-
-        games_worker = GamesWorker(self.__core, self.__args)
-        games_worker.signals.result.connect(self.handle_result)
-        QThreadPool.globalInstance().start(games_worker)
-
-    def fetch_non_asset(self):
-        non_asset_worker = NonAssetWorker(self.__core, self.__args)
-        non_asset_worker.signals.result.connect(self.handle_result)
-        QThreadPool.globalInstance().start(non_asset_worker)
+        fetch_worker = FetchWorker(self.__core, self.__args)
+        fetch_worker.signals.progress.connect(self.progress)
+        fetch_worker.signals.result.connect(self.__on_fetch_result)
+        QThreadPool.globalInstance().start(fetch_worker)
 
     def fetch_saves(self):
         def __fetch() -> None:

@@ -1,4 +1,4 @@
-from .fetch import FetchWorker, GamesWorker, NonAssetWorker
+from .fetch import FetchWorker
 from .install_info import InstallInfoWorker
 from .move import MoveWorker
 from .uninstall import UninstallWorker
