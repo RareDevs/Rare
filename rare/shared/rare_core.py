@@ -244,21 +244,17 @@ class RareCore(QObject):
         length = len(games)
         for idx, game in enumerate(games):
             rgame = self.__create_or_update_rgame(game)
-            # lk: since loading has to know about game state,
-            # validate installation just adding each RareGame
-            # TODO: this should probably be moved into RareGame
-            if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
-                self.__validate_install(rgame)
             if game_dlcs := dlcs_dict.get(rgame.game.catalog_item_id, False):
                 for dlc in game_dlcs:
                     rdlc = self.__create_or_update_rgame(dlc)
-                    # lk: plug dlc progress signals to the game's
-                    rdlc.signals.progress.start.connect(rgame.signals.progress.start)
-                    rdlc.signals.progress.update.connect(rgame.signals.progress.update)
-                    rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
-                    rgame.owned_dlcs.add(rdlc)
+                    rgame.add_dlc(rdlc)
                     self.__add_game(rdlc)
             self.__add_game(rgame)
+            # lk: since loading has to know about game state,
+            # validate installation just adding each RareGamesu
+            # TODO: this should probably be moved into RareGame
+            if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
+                self.__validate_install(rgame)
             self.progress.emit(int(idx/length * 80) + 20, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
 
     @pyqtSlot(object, int)

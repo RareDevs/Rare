@@ -93,6 +93,13 @@ class RareGame(RareGameSlim):
         if self.is_installed and not self.is_dlc:
             self.game_process.connect_to_server(on_startup=True)
 
+    def add_dlc(self, dlc) -> None:
+        # lk: plug dlc progress signals to the game's
+        dlc.signals.progress.start.connect(self.signals.progress.start)
+        dlc.signals.progress.update.connect(self.signals.progress.update)
+        dlc.signals.progress.finish.connect(self.signals.progress.finish)
+        self.owned_dlcs.add(dlc)
+
     def __on_progress_update(self, progress: int):
         self.progress = progress
 
