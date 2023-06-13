@@ -2,6 +2,10 @@ from cx_Freeze import setup, Executable
 
 from rare import __version__
 
+name = 'Rare'
+author = 'Dummerle'
+description = 'A GUI for Legendary'
+
 shortcut_table = [
     ("DesktopShortcut",  # Shortcut
      "DesktopFolder",  # Directory_
@@ -19,17 +23,25 @@ shortcut_table = [
 ]
 
 msi_data = {"Shortcut": shortcut_table}
-bdist_msi_options = {'data': msi_data}
+bdist_msi_options = {
+    'data': msi_data,
+    # generated with str(uuid.uuid3(uuid.NAMESPACE_DNS, 'io.github.dummerle.rare')).upper()
+    'upgrade_code': '{85D9FCC2-733E-3D74-8DD4-8FE33A07ADF8}'
+}
 base = "Win32GUI"
 
+exe = Executable(
+    "rare/__main__.py",
+    base=base, icon="rare/resources/images/Rare.ico",
+    target_name="Rare")
+
 setup(
-    name="Rare",
+    name=name,
     version=__version__,
-    description="A GUI for Legendary",
+    author=author,
+    description=description,
     options={
         "bdist_msi": bdist_msi_options,
     },
-    executables=[Executable("rare/__main__.py",
-                            base=base, icon="rare/resources/images/Rare.ico",
-                            target_name="Rare")]
+    executables=[exe]
 )
