@@ -61,7 +61,7 @@ class ImageManager(QObject):
 
         def run(self):
             self.func(self.updates, self.json_data, self.game)
-            logger.debug(f" Emitting singal for {self.game.app_name} ({self.game.app_title})")
+            logger.debug(f"Emitting singal for {self.game.app_name} ({self.game.app_title})")
             self.signals.completed.emit(self.game)
 
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
