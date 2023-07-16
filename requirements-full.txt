@@ -6,6 +6,7 @@ setuptools
 legendary-gl
 pywin32; platform_system == "Windows"
 pywebview[qt]; platform_system == "Linux"
+pywebview[qt]; platform_system == "FreeBSD"
 pythonnet>=3.0.0rc4; platform_system == "Windows"
 cefpython3; platform_system == "Windows"
 pywebview[cef]; platform_system == "Windows"
