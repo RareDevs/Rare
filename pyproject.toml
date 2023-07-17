@@ -29,6 +29,7 @@ pywin32 = { version = "^304", markers = "platform_system == 'Windows'" }
 pywebview = [
     { version = "^3.6.3", extras = ["cef"], platform = "windows", optional = true },
     { version = "^3.6.3", extras = ["gtk"], platform = "linux", optional = true },
+    { version = "^3.6.3", extras = ["gtk"], platform = "freebsd", optional = true },
 ]
 legendary-gl = "^0.20.32"
 typing-extensions = "^4.3.0"

@@ -93,7 +93,7 @@ In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find pack
 
 Execute `pip install Rare` for all users, or `pip install Rare --user` for the current user only.
 
-Linux and Mac: execute `rare` in your terminal.
+Linux, Mac and FreeBSD: execute `rare` in your terminal.
 
 Windows: execute `pythonw -m rare` in cmd
 
@@ -123,6 +123,7 @@ On Mac:
    If you want to be able to use the automatic login, run `pip install -r optional_requirements.txt`
    If you are on Arch you can
    run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-psutil`
+   If you are on FreeBSD you have to install py39-qt5 from the packages: `sudo pkg install py39-qt5`
 4. Run `python3 -m rare`
 
 ## Contributing
