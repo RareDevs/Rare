@@ -66,6 +66,8 @@ class InstallDialog(QDialog):
                 header = self.tr("Repair and update")
         elif options.update:
             header = self.tr("Update")
+        elif options.reset_sdl:
+            header = self.tr("Modify")
         else:
             header = self.tr("Install")
         self.ui.install_dialog_label.setText(f'<h3>{header} "{self.rgame.app_title}"</h3>')

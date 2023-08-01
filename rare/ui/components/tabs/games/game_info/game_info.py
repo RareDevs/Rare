@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_GameInfo(object):
     def setupUi(self, GameInfo):
         GameInfo.setObjectName("GameInfo")
-        GameInfo.resize(408, 340)
+        GameInfo.resize(419, 404)
         self.main_layout = QtWidgets.QHBoxLayout(GameInfo)
         self.main_layout.setObjectName("main_layout")
         self.left_layout = QtWidgets.QVBoxLayout()
@@ -180,6 +180,9 @@ class Ui_GameInfo(object):
         self.installed_layout = QtWidgets.QVBoxLayout(self.installed_page)
         self.installed_layout.setContentsMargins(0, 0, 0, 0)
         self.installed_layout.setObjectName("installed_layout")
+        self.modify_button = QtWidgets.QPushButton(self.installed_page)
+        self.modify_button.setObjectName("modify_button")
+        self.installed_layout.addWidget(self.modify_button)
         self.verify_stack = QtWidgets.QStackedWidget(self.installed_page)
         self.verify_stack.setObjectName("verify_stack")
         self.verify_button_page = QtWidgets.QWidget()
@@ -276,7 +279,7 @@ class Ui_GameInfo(object):
         self.main_layout.setStretch(1, 1)
 
         self.retranslateUi(GameInfo)
-        self.game_actions_stack.setCurrentIndex(1)
+        self.game_actions_stack.setCurrentIndex(0)
         self.verify_stack.setCurrentIndex(0)
         self.move_stack.setCurrentIndex(0)
 
@@ -291,6 +294,7 @@ class Ui_GameInfo(object):
         self.lbl_install_path.setText(_translate("GameInfo", "Installation Path"))
         self.lbl_platform.setText(_translate("GameInfo", "Platform"))
         self.lbl_game_actions.setText(_translate("GameInfo", "Actions"))
+        self.modify_button.setText(_translate("GameInfo", "Modify Installation"))
         self.verify_button.setText(_translate("GameInfo", "Verify Installation"))
         self.repair_button.setText(_translate("GameInfo", "Repair Installation"))
         self.move_button.setText(_translate("GameInfo", "Move Installation"))

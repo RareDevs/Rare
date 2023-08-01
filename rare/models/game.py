@@ -495,6 +495,15 @@ class RareGame(RareGameSlim):
             self.__save_metadata()
         return self.metadata.grant_date
 
+    def set_origin_attributes(self, path: str, size: int = 0) -> None:
+        self.__origin_install_path = path
+        self.__origin_install_size = size
+        if self.install_path and self.install_size:
+            self.signals.game.installed.emit(self.app_name)
+        else:
+            self.signals.game.uninstalled.emit(self.app_name)
+        self.set_pixmap()
+
     @property
     def can_launch(self) -> bool:
         if self.is_idle and self.is_origin:
@@ -528,14 +537,15 @@ class RareGame(RareGameSlim):
         )
         return True
 
-    def set_origin_attributes(self, path: str, size: int = 0) -> None:
-        self.__origin_install_path = path
-        self.__origin_install_size = size
-        if self.install_path and self.install_size:
-            self.signals.game.installed.emit(self.app_name)
-        else:
-            self.signals.game.uninstalled.emit(self.app_name)
-        self.set_pixmap()
+    def modify(self) -> bool:
+        if not self.is_idle:
+            return False
+        self.signals.game.install.emit(
+            InstallOptionsModel(
+                app_name=self.app_name, reset_sdl=True
+            )
+        )
+        return True
 
     def repair(self, repair_and_update) -> bool:
         if not self.is_idle:

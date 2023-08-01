@@ -38,6 +38,7 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.setupUi(self)
         # lk: set object names for CSS properties
         self.ui.install_button.setObjectName("InstallButton")
+        self.ui.modify_button.setObjectName("InstallButton")
         self.ui.uninstall_button.setObjectName("UninstallButton")
 
         self.rcore = RareCore.instance()
@@ -53,6 +54,7 @@ class GameInfo(QWidget, SideTabContents):
 
         self.ui.install_button.clicked.connect(self.__on_install)
         self.ui.import_button.clicked.connect(self.__on_import)
+        self.ui.modify_button.clicked.connect(self.__on_modify)
         self.ui.verify_button.clicked.connect(self.__on_verify)
         self.ui.repair_button.clicked.connect(self.__on_repair)
         self.ui.uninstall_button.clicked.connect(self.__on_uninstall)
@@ -96,6 +98,11 @@ class GameInfo(QWidget, SideTabContents):
     def __on_uninstall(self):
         """ This method is to be called from the button only """
         self.rgame.uninstall()
+
+    @pyqtSlot()
+    def __on_modify(self):
+        """ This method is to be called from the button only """
+        self.rgame.modify()
 
     @pyqtSlot()
     def __on_repair(self):
@@ -284,6 +291,10 @@ class GameInfo(QWidget, SideTabContents):
 
         self.ui.import_button.setEnabled(
             (not self.rgame.is_installed or self.rgame.is_non_asset) and self.rgame.is_idle
+        )
+
+        self.ui.modify_button.setEnabled(
+            self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle
         )
 
         self.ui.verify_button.setEnabled(

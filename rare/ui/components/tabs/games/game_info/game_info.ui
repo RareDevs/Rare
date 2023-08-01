@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>408</width>
-    <height>340</height>
+    <width>419</width>
+    <height>404</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -309,7 +309,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="installed_page">
           <layout class="QVBoxLayout" name="installed_layout">
@@ -325,6 +325,13 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <item>
+            <widget class="QPushButton" name="modify_button">
+             <property name="text">
+              <string>Modify Installation</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QStackedWidget" name="verify_stack">
              <property name="currentIndex">
