@@ -30,6 +30,10 @@ extra_wrapper_regex = {
 }
 
 
+class Wrapper:
+    pass
+
+
 class WrapperWidget(QFrame):
     delete_wrapper = pyqtSignal(str)
 
@@ -135,14 +139,9 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
         return " ".join(self.get_wrapper_list())
 
     def get_wrapper_list(self):
-        data: List[str] = []
-        for w in self.wrappers.values():
-            # Get the widget at each index in turn.
-            try:
-                data.append(w.text)
-            except AttributeError:
-                pass
-        return data
+        wrappers = list(self.wrappers.values())
+        wrappers.sort(key=lambda x: self.scroll_content.layout().indexOf(x))
+        return [w.text for w in wrappers]
 
     def add_button_pressed(self):
         header = self.tr("Add wrapper")
