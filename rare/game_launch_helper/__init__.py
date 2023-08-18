@@ -60,23 +60,23 @@ class PreLaunchThread(QRunnable):
             return
         self.signals.ready_to_launch.emit(args)
 
-    def prepare_launch(self, args: InitArgs) -> Union[LaunchArgs, None]:
+    def prepare_launch(self, args: InitArgs) -> Optional[LaunchArgs]:
         try:
-            args = get_launch_args(self.core, args)
+            launch_args = get_launch_args(self.core, args)
         except Exception as e:
             self.signals.error_occurred.emit(str(e))
             return None
-        if not args:
+        if not launch_args:
             return None
 
-        if args.pre_launch_command:
+        if launch_args.pre_launch_command:
             proc = get_configured_process()
-            proc.setProcessEnvironment(args.env)
+            proc.setProcessEnvironment(launch_args.env)
             self.signals.started_pre_launch_command.emit()
-            proc.start(args.pre_launch_command[0], args.pre_launch_command[1:])
-            if args.pre_launch_wait:
+            proc.start(launch_args.pre_launch_command[0], launch_args.pre_launch_command[1:])
+            if launch_args.pre_launch_wait:
                 proc.waitForFinished(-1)
-        return args
+        return launch_args
 
 
 class SyncCheckWorker(QRunnable):
