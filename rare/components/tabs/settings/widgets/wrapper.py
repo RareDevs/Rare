@@ -46,36 +46,57 @@ class WrapperWidget(QFrame):
         self.setFrameShape(QFrame.StyledPanel)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
 
+        self.unmanaged = show_text in extra_wrapper_regex.keys()
+
         self.text = text
+        self.setToolTip(text)
         self.text_lbl = QLabel(show_text, parent=self)
         self.text_lbl.setFont(QFont("monospace"))
+        self.text_lbl.setDisabled(self.unmanaged)
         self.image_lbl = QLabel(parent=self)
         self.image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
-        self.setToolTip(text)
 
-        self.delete_button = QPushButton(icon("ei.remove"), "", parent=self)
-        self.unmanaged = show_text in extra_wrapper_regex.keys()
+        self.edit_button = QPushButton(icon("ei.edit"), "", parent=self)
+        self.edit_button.clicked.connect(self.__edit)
+        self.edit_button.setDisabled(self.unmanaged)
+        self.delete_button = QPushButton(icon("ei.remove", color="red"), "", parent=self)
+        self.delete_button.clicked.connect(self.__delete)
         self.delete_button.setDisabled(self.unmanaged)
-        self.text_lbl.setDisabled(self.unmanaged)
         if self.unmanaged:
+            self.edit_button.setToolTip(self.tr("Edit in settings"))
             self.delete_button.setToolTip(self.tr("Disable in settings"))
         else:
+            self.edit_button.setToolTip(self.tr("Edit"))
             self.delete_button.setToolTip(self.tr("Remove"))
-        self.delete_button.clicked.connect(self.delete)
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.image_lbl)
         layout.addWidget(self.text_lbl)
+        layout.addWidget(self.edit_button)
         layout.addWidget(self.delete_button)
         self.setLayout(layout)
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)
+        self.edit_button.setObjectName(f"{self.objectName()}Button")
         self.delete_button.setObjectName(f"{self.objectName()}Button")
 
-    def delete(self):
+    @pyqtSlot()
+    def __delete(self):
         self.delete_wrapper.emit(self.text)
+
+    def __edit(self) -> None:
+        dialog = QInputDialog(self)
+        dialog.setWindowTitle(f"{self.tr('Edit wrapper')} - {QCoreApplication.instance().applicationName()}")
+        dialog.setLabelText(self.tr("Edit wrapper command"))
+        dialog.setTextValue(self.text)
+        accepted = dialog.exec()
+        wrapper = dialog.textValue()
+        dialog.deleteLater()
+        if accepted:
+            self.update_wrapper.emit(self.text, wrapper)
+
 
     def mouseMoveEvent(self, a0: QMouseEvent) -> None:
         if a0.buttons() == Qt.LeftButton:
@@ -84,21 +105,6 @@ class WrapperWidget(QFrame):
             mime = QMimeData()
             drag.setMimeData(mime)
             drag.exec_(Qt.MoveAction)
-
-    def mouseDoubleClickEvent(self, a0: QMouseEvent) -> None:
-        if a0.button() == Qt.LeftButton:
-            a0.accept()
-            if self.unmanaged:
-                return
-            dialog = QInputDialog(self)
-            dialog.setWindowTitle(f"{self.tr('Edit wrapper')} - {QCoreApplication.instance().applicationName()}")
-            dialog.setLabelText(self.tr("Edit wrapper command"))
-            dialog.setTextValue(self.text)
-            accepted = dialog.exec()
-            wrapper = dialog.textValue()
-            dialog.deleteLater()
-            if accepted:
-                self.update_wrapper.emit(self.text, wrapper)
 
 
 class WrapperSettings(QWidget, Ui_WrapperSettings):
