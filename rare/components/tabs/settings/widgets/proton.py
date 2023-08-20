@@ -124,7 +124,6 @@ class ProtonSettings(QGroupBox):
         proton = proton.replace('"', "")
         self.proton_prefix.setEnabled(bool(proton))
         if proton:
-            print(proton)
             self.ui.proton_combo.setCurrentText(
                 f'"{proton.replace(" run", "")}" run'
             )

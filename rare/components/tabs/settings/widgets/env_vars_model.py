@@ -3,10 +3,11 @@ import sys
 from collections import ChainMap
 from typing import Any, Union
 
-from rare.utils.misc import icon
 from PyQt5.QtCore import Qt, QModelIndex, QAbstractTableModel, pyqtSlot
 from PyQt5.QtGui import QFont
+
 from rare.lgndr.core import LegendaryCore
+from rare.utils.misc import icon
 
 
 class EnvVarsTableModel(QAbstractTableModel):
@@ -54,7 +55,6 @@ class EnvVarsTableModel(QAbstractTableModel):
         try:
             return list(self.__data_map)[index]
         except Exception as e:
-            print(e, index)
             return ""
 
     def __is_local(self, index: Union[QModelIndex, int]):
@@ -220,7 +220,6 @@ class EnvVarsTableModel(QAbstractTableModel):
             self.core.lgd.save_config()
             self.dataChanged.emit(self.index(index.row(), 0), index, [])
             self.headerDataChanged.emit(Qt.Vertical, index.row(), index.row())
-        # pprint([item for item in self.__data_map.items()])
         return True
 
     def removeRow(self, row: int, parent: QModelIndex = None) -> bool:
@@ -244,7 +243,6 @@ class EnvVarsTableModel(QAbstractTableModel):
             del self.__data_map[self.__key(row)]
             self.core.lgd.save_config()
             self.endRemoveRows()
-        # pprint([item for item in self.__data_map.items()])
         return True
 
 
