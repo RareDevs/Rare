@@ -1,7 +1,7 @@
 import re
 import shutil
 from logging import getLogger
-from typing import Dict
+from typing import Dict, Optional
 
 from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData, pyqtSlot, QCoreApplication
 from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont, QMouseEvent
@@ -113,15 +113,16 @@ class WrapperWidget(QFrame):
             drag.exec_(Qt.MoveAction)
 
 
-class WrapperSettings(QWidget, Ui_WrapperSettings):
+class WrapperSettings(QWidget):
     def __init__(self):
         super(WrapperSettings, self).__init__()
-        self.setupUi(self)
+        self.ui = Ui_WrapperSettings()
+        self.ui.setupUi(self)
 
         self.wrappers: Dict[str, WrapperWidget] = {}
-        self.app_name: str
+        self.app_name: str = "default"
 
-        self.wrapper_scroll = QScrollArea(self.widget_stack)
+        self.wrapper_scroll = QScrollArea(self.ui.widget_stack)
         self.wrapper_scroll.setWidgetResizable(True)
         self.wrapper_scroll.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
         self.wrapper_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -130,18 +131,18 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
             save_cb=self.save, parent=self.wrapper_scroll
         )
         self.wrapper_scroll.setWidget(self.scroll_content)
-        self.widget_stack.insertWidget(0, self.wrapper_scroll)
+        self.ui.widget_stack.insertWidget(0, self.wrapper_scroll)
 
         self.core = RareCore.instance().core()
 
-        self.add_button.clicked.connect(self.add_button_pressed)
+        self.ui.add_button.clicked.connect(self.add_button_pressed)
         self.settings = QSettings()
 
         self.wrapper_scroll.horizontalScrollBar().rangeChanged.connect(self.adjust_scrollarea)
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)
-        self.no_wrapper_label.setObjectName(f"{self.objectName()}Label")
+        self.ui.no_wrapper_label.setObjectName(f"{self.objectName()}Label")
         self.wrapper_scroll.setObjectName(f"{self.objectName()}Scroll")
         self.wrapper_scroll.horizontalScrollBar().setObjectName(
             f"{self.wrapper_scroll.objectName()}Bar")
@@ -220,7 +221,7 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
                 )
                 return
 
-        self.widget_stack.setCurrentIndex(0)
+        self.ui.widget_stack.setCurrentIndex(0)
 
         if widget := self.wrappers.get(show_text, None):
             widget.deleteLater()
@@ -251,8 +252,8 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
             widget.deleteLater()
 
         if not self.wrappers:
-            self.wrapper_scroll.setMaximumHeight(self.label_page.sizeHint().height())
-            self.widget_stack.setCurrentIndex(1)
+            self.wrapper_scroll.setMaximumHeight(self.ui.label_page.sizeHint().height())
+            self.ui.widget_stack.setCurrentIndex(1)
 
         self.save()
 
@@ -290,16 +291,15 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
             self.add_wrapper(wrapper, from_load=True)
 
         if not self.wrappers:
-            self.wrapper_scroll.setMaximumHeight(self.label_page.sizeHint().height())
-            self.widget_stack.setCurrentIndex(1)
+            self.wrapper_scroll.setMaximumHeight(self.ui.label_page.sizeHint().height())
+            self.ui.widget_stack.setCurrentIndex(1)
         else:
-            self.widget_stack.setCurrentIndex(0)
+            self.ui.widget_stack.setCurrentIndex(0)
 
         self.save()
 
 
 class WrapperContainer(QWidget):
-    drag_widget: QWidget
 
     def __init__(self, save_cb, parent=None):
         super(WrapperContainer, self).__init__(parent=parent)
@@ -309,6 +309,8 @@ class WrapperContainer(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.setLayout(layout)
+
+        self.drag_widget: Optional[QWidget] = None
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)
