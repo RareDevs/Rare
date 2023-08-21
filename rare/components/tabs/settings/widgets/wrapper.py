@@ -1,20 +1,22 @@
 import re
 import shutil
 from logging import getLogger
-from typing import Dict, List
+from typing import Dict
 
 from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData, pyqtSlot, QCoreApplication
 from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont, QMouseEvent
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
-    QPushButton,
     QInputDialog,
     QFrame,
     QMessageBox,
     QSizePolicy,
     QWidget,
     QScrollArea,
+    QAction,
+    QToolButton,
+    QMenu,
 )
 
 from rare.shared import RareCore
@@ -46,41 +48,46 @@ class WrapperWidget(QFrame):
         self.setFrameShape(QFrame.StyledPanel)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
 
-        self.unmanaged = show_text in extra_wrapper_regex.keys()
-
         self.text = text
         self.setToolTip(text)
-        self.text_lbl = QLabel(show_text, parent=self)
-        self.text_lbl.setFont(QFont("monospace"))
-        self.text_lbl.setDisabled(self.unmanaged)
-        self.image_lbl = QLabel(parent=self)
-        self.image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
 
-        self.edit_button = QPushButton(icon("ei.edit"), "", parent=self)
-        self.edit_button.clicked.connect(self.__edit)
-        self.edit_button.setDisabled(self.unmanaged)
-        self.delete_button = QPushButton(icon("ei.remove", color="red"), "", parent=self)
-        self.delete_button.clicked.connect(self.__delete)
-        self.delete_button.setDisabled(self.unmanaged)
-        if self.unmanaged:
-            self.edit_button.setToolTip(self.tr("Edit in settings"))
-            self.delete_button.setToolTip(self.tr("Disable in settings"))
+        unmanaged = show_text in extra_wrapper_regex.keys()
+
+        text_lbl = QLabel(show_text, parent=self)
+        text_lbl.setFont(QFont("monospace"))
+        text_lbl.setDisabled(unmanaged)
+
+        image_lbl = QLabel(parent=self)
+        image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
+
+        edit_action = QAction("Edit", parent=self)
+        edit_action.triggered.connect(self.__edit)
+        delete_action = QAction("Delete", parent=self)
+        delete_action.triggered.connect(self.__delete)
+
+        manage_menu = QMenu(parent=self)
+        manage_menu.addActions([edit_action, delete_action])
+
+        manage_button = QToolButton(parent=self)
+        manage_button.setIcon(icon("mdi.menu"))
+        manage_button.setMenu(manage_menu)
+        manage_button.setPopupMode(QToolButton.InstantPopup)
+        manage_button.setDisabled(unmanaged)
+        if unmanaged:
+            manage_button.setToolTip(self.tr("Manage through settings"))
         else:
-            self.edit_button.setToolTip(self.tr("Edit"))
-            self.delete_button.setToolTip(self.tr("Remove"))
+            manage_button.setToolTip(self.tr("Manage"))
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.image_lbl)
-        layout.addWidget(self.text_lbl)
-        layout.addWidget(self.edit_button)
-        layout.addWidget(self.delete_button)
+        layout.addWidget(image_lbl)
+        layout.addWidget(text_lbl)
+        layout.addWidget(manage_button)
         self.setLayout(layout)
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)
-        self.edit_button.setObjectName(f"{self.objectName()}Button")
-        self.delete_button.setObjectName(f"{self.objectName()}Button")
+        manage_button.setObjectName(f"{self.objectName()}Button")
 
     @pyqtSlot()
     def __delete(self):
@@ -94,9 +101,8 @@ class WrapperWidget(QFrame):
         accepted = dialog.exec()
         wrapper = dialog.textValue()
         dialog.deleteLater()
-        if accepted:
+        if accepted and wrapper:
             self.update_wrapper.emit(self.text, wrapper)
-
 
     def mouseMoveEvent(self, a0: QMouseEvent) -> None:
         if a0.buttons() == Qt.LeftButton:
