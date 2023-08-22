@@ -204,20 +204,28 @@ class WrapperSettings(QWidget):
         if not from_load:
             if self.wrappers.get(text):
                 QMessageBox.warning(
-                    self, self.tr("Warning"), self.tr("Wrapper is already in the list")
+                    self, self.tr("Warning"), self.tr("Wrapper <b>{0}</b> is already in the list").format(text)
                 )
                 return
 
             if show_text != "proton" and not shutil.which(text.split()[0]):
-                if QMessageBox.question(
-                    self, self.tr("Warning"), self.tr("Wrapper is not in $PATH. Ignore? "),
-                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-                ) == QMessageBox.No:
+                if (
+                    QMessageBox.question(
+                        self,
+                        self.tr("Warning"),
+                        self.tr("Wrapper <b>{0}</b> is not in $PATH. Add it anyway?").format(show_text),
+                        QMessageBox.Yes | QMessageBox.No,
+                        QMessageBox.No,
+                    )
+                    == QMessageBox.No
+                ):
                     return
 
             if text == "proton":
                 QMessageBox.warning(
-                    self, self.tr("Warning"), self.tr("Do not insert proton manually. Add it through Proton settings")
+                    self,
+                    self.tr("Warning"),
+                    self.tr("Do not insert <b>proton</b> manually. Add it through Proton settings"),
                 )
                 return
 
@@ -233,7 +241,7 @@ class WrapperSettings(QWidget):
             self.scroll_content.layout().insertWidget(position, widget)
         self.adjust_scrollarea(
             self.wrapper_scroll.horizontalScrollBar().minimum(),
-            self.wrapper_scroll.horizontalScrollBar().maximum()
+            self.wrapper_scroll.horizontalScrollBar().maximum(),
         )
         widget.update_wrapper.connect(self.update_wrapper)
         widget.delete_wrapper.connect(self.delete_wrapper)
