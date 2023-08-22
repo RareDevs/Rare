@@ -20,7 +20,7 @@ from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.shared.workers import VerifyWorker, MoveWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
-from rare.utils.misc import format_size
+from rare.utils.misc import format_size, icon
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
 from .move_game import MoveGamePopUp, is_game_dir
@@ -40,6 +40,15 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.install_button.setObjectName("InstallButton")
         self.ui.modify_button.setObjectName("InstallButton")
         self.ui.uninstall_button.setObjectName("UninstallButton")
+
+        self.ui.install_button.setIcon(icon("ri.install-line"))
+        self.ui.import_button.setIcon(icon("mdi.file-import"))
+
+        self.ui.modify_button.setIcon(icon("fa.gear"))
+        self.ui.verify_button.setIcon(icon("fa.check"))
+        self.ui.repair_button.setIcon(icon("fa.wrench"))
+        self.ui.move_button.setIcon(icon("mdi.folder-move"))
+        self.ui.uninstall_button.setIcon(icon("ri.uninstall-line"))
 
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
@@ -80,7 +89,7 @@ class GameInfo(QWidget, SideTabContents):
             "na": self.tr("Not applicable"),
         }
 
-        # lk: requirements is unused so hide it
+        # lk: hide unfinished things
         self.ui.requirements_group.setVisible(False)
 
     @pyqtSlot()
