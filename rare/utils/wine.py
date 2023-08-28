@@ -20,6 +20,8 @@ def read_registry(registry: str, wine_pfx: str) -> ConfigParser:
 
 
 def execute(cmd: List, wine_env: Mapping) -> Tuple[str, str]:
+    if os.environ.get("container") == "flatpak":
+        cmd = ["flatpak-spawn", "--host"] + cmd
     proc = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
