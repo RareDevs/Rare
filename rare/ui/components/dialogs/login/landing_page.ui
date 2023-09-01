@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string notr="true">LandingPage</string>
   </property>
-  <layout class="QGridLayout" name="landing_layout" rowstretch="0,1,1">
+  <layout class="QGridLayout" name="landing_layout" rowstretch="0,1,1" columnstretch="0,0,1">
    <property name="sizeConstraint">
     <enum>QLayout::SetDefaultConstraint</enum>
    </property>
@@ -43,18 +43,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="login_browser_label">
-     <property name="font">
-      <font>
-       <italic>true</italic>
-      </font>
-     </property>
-     <property name="text">
-      <string>Login using a browser.</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0">
     <widget class="QRadioButton" name="login_import_radio">
      <property name="sizePolicy">
@@ -68,7 +56,19 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="1" column="1" colspan="2">
+    <widget class="QLabel" name="login_browser_label">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Login using a browser.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
     <widget class="QLabel" name="login_import_label">
      <property name="font">
       <font>
@@ -79,19 +79,6 @@
       <string>Import from Epic Games Launcher</string>
      </property>
     </widget>
-   </item>
-   <item row="1" column="2" rowspan="2">
-    <spacer name="login_hspacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
