@@ -129,6 +129,7 @@ def desktop_link_path(link_name: str, link_type: str) -> Path:
 
 
 def get_rare_executable() -> List[str]:
+    logger.debug(f"Trying to find executable: {sys.executable}, {sys.argv}")
     # lk: detect if nuitka
     if "__compiled__" in globals():
         executable = [sys.executable]
@@ -141,7 +142,7 @@ def get_rare_executable() -> List[str]:
             if sys.executable == os.path.abspath(sys.argv[0]):
                 executable = [sys.executable]
             else:
-                executable = [os.path.abspath(sys.argv[0])]
+                executable = [sys.executable, os.path.abspath(sys.argv[0])]
     elif platform.system() == "Windows":
         executable = [sys.executable]
 

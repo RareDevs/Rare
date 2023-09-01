@@ -45,7 +45,10 @@ setuptools.setup(
     ],
     include_package_data=True,
     python_requires=">=3.9",
-    entry_points=dict(console_scripts=["rare=rare.__main__:main"]),
+    entry_points={
+        # 'console_scripts': ["rare = rare.main:main"],
+        'gui_scripts': ["rare = rare.main:main"],
+    },
     install_requires=requirements,
     extras_require=optional_reqs,
 )

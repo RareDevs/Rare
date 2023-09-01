@@ -550,7 +550,7 @@ class RareGame(RareGameSlim):
 
         cmd_line = get_rare_executable()
         executable, args = cmd_line[0], cmd_line[1:]
-        args.extend(["start", self.app_name])
+        args.extend(["launch", self.app_name])
         if offline:
             args.append("--offline")
         if skip_update_check:

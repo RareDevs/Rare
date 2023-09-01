@@ -1,14 +1,12 @@
 import json
-import logging
 import platform
 import subprocess
-import sys
 import time
 import traceback
 from argparse import Namespace
 from logging import getLogger
 from signal import signal, SIGINT, SIGTERM, strsignal
-from typing import Union, Optional
+from typing import Optional
 
 from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings, Qt, pyqtSlot
 from PyQt5.QtGui import QDesktopServices
@@ -24,8 +22,6 @@ from rare.widgets.rare_app import RareApp, RareAppException
 from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 
-logger = logging.getLogger("RareLauncher")
-
 DETACHED_APP_NAMES = [
     "0a2d9f6403244d12969e11da6713137b"
 ]
@@ -40,6 +36,7 @@ class PreLaunchThread(QRunnable):
 
     def __init__(self, core: LegendaryCore, args: InitArgs, rgame: RareGameSlim, sync_action=None):
         super(PreLaunchThread, self).__init__()
+        self.logger = getLogger(type(self).__name__)
         self.core = core
         self.signals = self.Signals()
         self.args = args
@@ -47,13 +44,13 @@ class PreLaunchThread(QRunnable):
         self.sync_action = sync_action
 
     def run(self) -> None:
-        logger.info(f"Sync action: {self.sync_action}")
+        self.logger.info(f"Sync action: {self.sync_action}")
         if self.sync_action == CloudSaveDialog.UPLOAD:
             self.rgame.upload_saves(False)
         elif self.sync_action == CloudSaveDialog.DOWNLOAD:
             self.rgame.download_saves(False)
         else:
-            logger.info("No sync action")
+            self.logger.info("No sync action")
 
         args = self.prepare_launch(self.args)
         if not args:
@@ -121,11 +118,9 @@ class RareLauncher(RareApp):
     exit_app = pyqtSignal()
 
     def __init__(self, args: InitArgs):
-        log_file = f"Rare_Launcher_{args.app_name}" + "_{0}.log"
-        super(RareLauncher, self).__init__(args, log_file)
+        super(RareLauncher, self).__init__(args, f"{type(self).__name__}_{args.app_name}_{{0}}.log")
         self._hook.deleteLater()
         self._hook = RareLauncherException(self, args, self)
-        self.logger = getLogger(f"Launcher_{args.app_name}")
 
         self.success: bool = True
         self.no_sync_on_exit = False
@@ -280,7 +275,7 @@ class RareLauncher(RareApp):
             self.stop()
             return
         if self.args.dry_run:
-            logger.info("Dry run activated")
+            self.logger.info("Dry run activated")
             if self.console:
                 self.console.log(f"{args.executable} {' '.join(args.args)}")
                 self.console.log(f"Do not start {self.rgame.app_name}")
@@ -338,7 +333,7 @@ class RareLauncher(RareApp):
                 args.offline = True
 
         if not args.offline and self.rgame.auto_sync_saves:
-            logger.info("Start sync worker")
+            self.logger.info("Start sync worker")
             worker = SyncCheckWorker(self.core, self.rgame)
             worker.signals.error_occurred.connect(self.error_occurred)
             worker.signals.sync_state_ready.connect(self.sync_ready)
@@ -355,7 +350,7 @@ class RareLauncher(RareApp):
             self.game_process.finished.disconnect()
             self.game_process.errorOccurred.disconnect()
         except TypeError as e:
-            logger.error(f"Failed to disconnect signals: {e}")
+            self.logger.error(f"Failed to disconnect signals: {e}")
         self.logger.info("Stopping server")
         try:
             self.server.close()
@@ -369,7 +364,7 @@ class RareLauncher(RareApp):
             self.console.on_process_exit(self.rgame.app_name, 0)
 
 
-def start_game(args: Namespace):
+def launch(args: Namespace):
     args = InitArgs.from_argparse(args)
 
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -381,7 +376,7 @@ def start_game(args: Namespace):
     # This prevents ghost QLocalSockets, which block the name, which makes it unable to start
     # No handling for SIGKILL
     def sighandler(s, frame):
-        logger.info(f"{strsignal(s)} received. Stopping")
+        app.logger.info(f"{strsignal(s)} received. Stopping")
         app.stop()
         app.exit(1)
     signal(SIGINT, sighandler)
@@ -392,4 +387,4 @@ def start_game(args: Namespace):
     app.start(args)
     # app.exit_app.connect(lambda: app.exit(0))
 
-    sys.exit(app.exec_())
+    return app.exec_()
