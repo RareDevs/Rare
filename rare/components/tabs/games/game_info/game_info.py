@@ -90,6 +90,7 @@ class GameInfo(QWidget, SideTabContents):
         }
 
         # lk: hide unfinished things
+        self.ui.tags_group.setVisible(False)
         self.ui.requirements_group.setVisible(False)
 
     @pyqtSlot()
