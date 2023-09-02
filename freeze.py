@@ -31,9 +31,11 @@ bdist_msi_options = {
 base = "Win32GUI"
 
 exe = Executable(
-    "rare/__main__.py",
-    base=base, icon="rare/resources/images/Rare.ico",
-    target_name="Rare")
+    "rare/main.py",
+    base=base,
+    icon="rare/resources/images/Rare.ico",
+    target_name=name
+)
 
 setup(
     name=name,

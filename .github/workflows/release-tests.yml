@@ -30,7 +30,7 @@ jobs:
 
   deb-package:
     needs: version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Install Makedeb
         run: |
@@ -40,9 +40,9 @@ jobs:
           sudo apt install makedeb
       - name: Prepare source directory
         run: |
-          git clone https://mpr.hunterwittenborn.com/rare.git build
+          git clone https://mpr.makedeb.org/rare build
           sed -i 's/source=.*/source=("rare-test::git+$url")/g' build/PKGBUILD
-          sed -i "s/\$pkgver/test/g" build/PKGBUILD
+          sed -i "s/\$pkgver/${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}/g" build/PKGBUILD
 
       - name: build deb
         run: |
@@ -72,7 +72,6 @@ jobs:
           sudo pip3 install appimage-builder
       - name: Build
         run: |
-          cp rare/__main__.py .
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
           mv Rare-*.AppImage.zsync Rare.AppImage.zsync
@@ -197,7 +196,7 @@ jobs:
           pip3 install -r requirements-presence.txt
           pip3 install .
       - name: Build
-        run: cxfreeze -c rare/__main__.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
+        run: cxfreeze -c rare/main.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
       - name: Compress
         run: |
           python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"

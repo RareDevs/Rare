@@ -31,7 +31,7 @@ jobs:
           twine upload dist/*
 
   deb-package:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Install Makedeb
         run: |
@@ -74,7 +74,6 @@ jobs:
           sudo pip3 install appimage-builder
       - name: Build
         run: |
-          cp rare/__main__.py .
           appimage-builder --skip-test
           mv Rare-*.AppImage Rare.AppImage
           mv Rare-*.AppImage.zsync Rare.AppImage.zsync
@@ -208,7 +207,7 @@ jobs:
           pip3 install -r requirements-presence.txt
           pip3 install .
       - name: Build
-        run: cxfreeze -c rare/__main__.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
+        run: cxfreeze -c rare/main.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
       - name: Compress
         run: |
           python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"
