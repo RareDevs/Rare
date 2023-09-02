@@ -68,7 +68,7 @@ class PreLaunchThread(QRunnable):
 
         if launch_args.pre_launch_command:
             proc = get_configured_process()
-            proc.setProcessEnvironment(launch_args.env)
+            proc.setProcessEnvironment(launch_args.environment)
             self.signals.started_pre_launch_command.emit()
             proc.start(launch_args.pre_launch_command[0], launch_args.pre_launch_command[1:])
             if launch_args.pre_launch_wait:
@@ -119,6 +119,7 @@ class RareLauncher(RareApp):
 
     def __init__(self, args: InitArgs):
         super(RareLauncher, self).__init__(args, f"{type(self).__name__}_{args.app_name}_{{0}}.log")
+        self.socket: Optional[QLocalSocket] = None
         self._hook.deleteLater()
         self._hook = RareLauncherException(self, args, self)
 
@@ -126,7 +127,11 @@ class RareLauncher(RareApp):
         self.no_sync_on_exit = False
         self.args = args
         self.core = LegendaryCore()
-        self.rgame = RareGameSlim(self.core, self.core.get_game(args.app_name))
+        game = self.core.get_game(args.app_name)
+        if not game:
+            self.logger.error(f"Game {args.app_name} not found. Exiting")
+            QApplication.exit(1)
+        self.rgame = RareGameSlim(self.core, game)
 
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)
@@ -242,13 +247,14 @@ class RareLauncher(RareApp):
         )
         self.stop()
 
+    @pyqtSlot(object)
     def launch_game(self, args: LaunchArgs):
         # should never happen
         if not args:
             self.stop()
             return
         if self.console:
-            self.console.set_env(args.env)
+            self.console.set_env(args.environment)
         self.start_time = time.time()
 
         if args.is_origin_game:
@@ -256,9 +262,9 @@ class RareLauncher(RareApp):
             self.stop()  # stop because it is no subprocess
             return
 
-        if args.cwd:
-            self.game_process.setWorkingDirectory(args.cwd)
-        self.game_process.setProcessEnvironment(args.env)
+        if args.working_directory:
+            self.game_process.setWorkingDirectory(args.working_directory)
+        self.game_process.setProcessEnvironment(args.environment)
         # send start message after process started
         self.game_process.started.connect(lambda: self.send_message(
             StateChangedModel(
@@ -268,8 +274,8 @@ class RareLauncher(RareApp):
         ))
         if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
             self.game_process.deleteLater()
-            subprocess.Popen([args.executable] + args.args, cwd=args.cwd,
-                             env={i: args.env.value(i) for i in args.env.keys()})
+            subprocess.Popen([args.executable] + args.arguments, cwd=args.working_directory,
+                             env={i: args.environment.value(i) for i in args.environment.keys()})
             if self.console:
                 self.console.log("Launching game detached")
             self.stop()
@@ -277,13 +283,13 @@ class RareLauncher(RareApp):
         if self.args.dry_run:
             self.logger.info("Dry run activated")
             if self.console:
-                self.console.log(f"{args.executable} {' '.join(args.args)}")
+                self.console.log(f"{args.executable} {' '.join(args.arguments)}")
                 self.console.log(f"Do not start {self.rgame.app_name}")
                 self.console.accept_close = True
-            print(args.executable, " ".join(args.args))
+            print(args.executable, " ".join(args.arguments))
             self.stop()
             return
-        self.game_process.start(args.executable, args.args)
+        self.game_process.start(args.executable, args.arguments)
 
     def error_occurred(self, error_str: str):
         self.logger.warning(error_str)
