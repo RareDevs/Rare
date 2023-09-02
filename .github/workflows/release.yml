@@ -42,7 +42,7 @@ jobs:
       - name: Prepare source directory
         run: |
           git clone https://mpr.makedeb.org/rare build
-          sed -i "s/pkgver=.*/pkgver=${{ github.event.release.tag_name }}/g" build/PKGBUILD
+          sed "s/pkgver=.*/pkgver=${{ github.event.release.tag_name }}/g" -i build/PKGBUILD
 
       - name: build deb
         run: |
