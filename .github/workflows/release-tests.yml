@@ -15,6 +15,7 @@ jobs:
       tag_offset: ${{ steps.version.outputs.tag_offset }}
       sha_short: ${{ steps.version.outputs.sha_short }}
       full_desc: ${{ steps.version.outputs.full_desc }}
+      branch: ${{ steps.version.outputs.branch }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -28,6 +29,7 @@ jobs:
           echo "tag_offset=$(git rev-list $tag_abbrev..HEAD --count)" >> $GITHUB_OUTPUT
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "full_desc=$(git describe --long --tags)" >> $GITHUB_OUTPUT
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
 
   deb-package:
     needs: version
@@ -42,8 +44,10 @@ jobs:
       - name: Prepare source directory
         run: |
           git clone https://mpr.makedeb.org/rare build
-          sed -i 's/source=.*/source=("rare-test::git+$url")/g' build/PKGBUILD
-          sed -i "s/\$pkgver/${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}/g" build/PKGBUILD
+          sed '/^pkgver=/d' -i build/PKGBUILD
+          sed '/^source=/d' -i build/PKGBUILD
+          echo "pkgver=${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}" >> build/PKGBUILD
+          echo "source=(\"\$pkgname-\$pkgver::git+https://github.com/${{github.repository}}#branch=${{ needs.version.outputs.branch }}\")" >> build/PKGBUILD
 
       - name: build deb
         run: |
