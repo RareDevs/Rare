@@ -3,13 +3,12 @@ version: 1
 
 script:
   # Remove any previous build
-  - rm -rf AppDir Rare | true
+  - rm -rf AppDir | true
   # Make usr and icons dirs
   - mkdir -p AppDir/usr/src
   - mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps/
   # Copy source files
   - cp -r rare AppDir/usr/src/rare
-  - mv AppDir/usr/src/rare/__main__.py AppDir/usr/src/
   # copy Logo
   - cp AppDir/usr/src/rare/resources/images/Rare.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
@@ -23,7 +22,7 @@ AppDir:
     icon: Rare
     version: 1.10.7
     exec: usr/bin/python3
-    exec_args: $APPDIR/usr/src/__main__.py $@
+    exec_args: $APPDIR/usr/src/rare/main.py $@
   apt:
     arch: amd64
     allow_unauthenticated: true
