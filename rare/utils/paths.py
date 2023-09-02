@@ -132,6 +132,8 @@ def get_rare_executable() -> List[str]:
     # lk: detect if nuitka
     if "__compiled__" in globals():
         executable = [sys.executable]
+    elif sys.argv[0].endswith("__main__.py"):
+        executable = [sys.executable, "-m", "rare"]
     elif platform.system() == "Linux" or platform.system() == "Darwin" or platform.system() == "FreeBSD":
         if p := os.environ.get("APPIMAGE"):
             executable = [p]
