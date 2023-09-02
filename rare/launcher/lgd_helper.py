@@ -44,9 +44,9 @@ class InitArgs(Namespace):
 @dataclass
 class LaunchArgs:
     executable: str = ""
-    args: List[str] = None
-    cwd: str = None
-    env: QProcessEnvironment = None
+    arguments: List[str] = None
+    working_directory: str = None
+    environment: QProcessEnvironment = None
     pre_launch_command: str = ""
     pre_launch_wait: bool = False
     is_origin_game: bool = False  # only for windows to launch as url
@@ -60,7 +60,7 @@ def get_origin_params(core: LegendaryCore, app_name, offline: bool,
     origin_uri = core.get_origin_uri(app_name, offline)
     if platform.system() == "Windows":
         launch_args.executable = origin_uri
-        launch_args.args = []
+        launch_args.arguments = []
         # only set it here true, because on linux it is a launch command like every other game
         launch_args.is_origin_game = True
         return launch_args
@@ -71,12 +71,19 @@ def get_origin_params(core: LegendaryCore, app_name, offline: bool,
     command.append(origin_uri)
 
     env = core.get_app_environment(app_name)
-    launch_args.env = QProcessEnvironment.systemEnvironment()
+
+    if os.environ.get("container") == "flatpak":
+        flatpak_command = ["flatpak-spawn", "--host"]
+        for name, value in env.items():
+            flatpak_command.append(f"--env={name}={value}")
+        command = flatpak_command.extend(command)
+
+    launch_args.environment = QProcessEnvironment.systemEnvironment()
     for name, value in env.items():
-        launch_args.env.insert(name, value)
+        launch_args.environment.insert(name, value)
 
     launch_args.executable = command[0]
-    launch_args.args = command[1:]
+    launch_args.arguments = command[1:]
     return launch_args
 
 
@@ -100,10 +107,12 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
         app_name=igame.app_name, offline=args.offline
     )
 
-    full_params = list()
+    full_params = []
 
     if os.environ.get("container") == "flatpak":
         full_params.extend(["flatpak-spawn", "--host"])
+        for name, value in params.environment.items():
+            full_params.append(f"--env={name}={value}")
 
     full_params.extend(params.launch_command)
     full_params.append(
@@ -114,12 +123,12 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
     full_params.extend(params.user_parameters)
 
     launch_args.executable = full_params[0]
-    launch_args.args = full_params[1:]
+    launch_args.arguments = full_params[1:]
 
-    launch_args.env = QProcessEnvironment.systemEnvironment()
+    launch_args.environment = QProcessEnvironment.systemEnvironment()
     for name, value in params.environment.items():
-        launch_args.env.insert(name, value)
-    launch_args.cwd = params.working_directory
+        launch_args.environment.insert(name, value)
+    launch_args.working_directory = params.working_directory
     return launch_args
 
 
