@@ -303,7 +303,10 @@ class GameInfo(QWidget, SideTabContents):
         )
 
         self.ui.modify_button.setEnabled(
-            self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle
+            self.rgame.is_installed
+            and (not self.rgame.is_non_asset)
+            and self.rgame.is_idle
+            and self.rgame.sdl_name is not None
         )
 
         self.ui.verify_button.setEnabled(

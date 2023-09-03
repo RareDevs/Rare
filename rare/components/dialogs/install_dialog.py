@@ -194,7 +194,6 @@ class InstallDialog(QDialog):
         config_disable_sdl = self.core.lgd.config.getboolean(self.rgame.app_name, 'disable_sdl', fallback=False)
         sdl_name = get_sdl_appname(self.rgame.app_name)
         if not config_disable_sdl and sdl_name is not None:
-            # FIXME: this should be updated whenever platform changes
             sdl_data = self.core.get_sdl_data(sdl_name, platform=platform)
             if sdl_data:
                 widget = QWidget(self.selectable)

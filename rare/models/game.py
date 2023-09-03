@@ -10,6 +10,7 @@ from typing import List, Optional, Dict, Set
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
 from PyQt5.QtGui import QPixmap
 from legendary.models.game import Game, InstalledGame
+from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
@@ -450,6 +451,10 @@ class RareGame(RareGameSlim):
             if (folder_name := self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value"))
             else self.app_title
         )
+
+    @property
+    def sdl_name(self) -> Optional[str]:
+        return get_sdl_appname(self.app_name)
 
     @property
     def save_path(self) -> Optional[str]:
