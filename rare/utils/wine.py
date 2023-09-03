@@ -28,17 +28,20 @@ def execute(cmd: List, wine_env: Mapping) -> Tuple[str, str]:
         for name, value in wine_env.items():
             flatpak_cmd.append(f"--env={name}={value}")
         cmd = flatpak_cmd + cmd
-    proc = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        # Use the current environment if we are in flatpak or our own if we are on host
-        # In flatpak our environment is passed through `flatpak-spawn` arguments
-        env=os.environ.copy() if os.environ.get("container") == "flatpak" else wine_env,
-        shell=False,
-        text=True,
-    )
-    res = proc.communicate()
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            # Use the current environment if we are in flatpak or our own if we are on host
+            # In flatpak our environment is passed through `flatpak-spawn` arguments
+            env=os.environ.copy() if os.environ.get("container") == "flatpak" else wine_env,
+            shell=False,
+            text=True,
+        )
+        res = proc.communicate()
+    except (FileNotFoundError, PermissionError) as e:
+        res = ("", str(e))
     return res
 
 
@@ -49,7 +52,11 @@ def resolve_path(wine_exec: str, wine_env: Mapping, path: str) -> str:
     # lk: if path exists and needs a case-sensitive interpretation form
     # cmd = [wine_cmd, 'cmd', '/c', f'cd {path} & cd']
     out, err = execute(cmd, wine_env)
-    return out.strip().strip('"')
+    out, err = out.strip(), err.strip()
+    if not out:
+        logger.error("Failed to resolve wine path due to \"%s\"", err)
+        return out
+    return out.strip('"')
 
 
 def query_reg_path(wine_exec: str, wine_env: Mapping, reg_path: str):
@@ -59,6 +66,10 @@ def query_reg_path(wine_exec: str, wine_env: Mapping, reg_path: str):
 def query_reg_key(wine_exec: str, wine_env: Mapping, reg_path: str, reg_key) -> str:
     cmd = [wine_exec, "reg", "query", reg_path, "/v", reg_key]
     out, err = execute(cmd, wine_env)
+    out, err = out.strip(), err.strip()
+    if not out:
+        logger.error("Failed to query registry key due to \"%s\"", err)
+        return out
     lines = out.split("\n")
     keys: Dict = {}
     for line in lines:
@@ -76,7 +87,10 @@ def convert_to_unix_path(wine_exec: str, wine_env: Mapping, path: str) -> str:
     path = path.strip().strip('"')
     cmd = [wine_exec, "winepath.exe", "-u", path]
     out, err = execute(cmd, wine_env)
-    return os.path.realpath(out.strip())
+    out, err = out.strip(), err.strip()
+    if not out:
+        logger.error("Failed to convert to unix path due to \"%s\"", err)
+    return os.path.realpath(out) if (out := out.strip()) else out
 
 
 def wine(core: LegendaryCore, app_name: str = "default") -> str:

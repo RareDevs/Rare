@@ -98,17 +98,23 @@ class OriginWineWorker(QRunnable):
                     # lk: this is the alternative way of getting the path by using wine itself
                     install_dir = wine.query_reg_key(wine_exec, wine_env, f"HKLM\\{reg_path}", reg_key)
 
-                logger.debug("Found Wine install directory %s", install_dir)
-
                 if install_dir:
+                    logger.debug("Found Wine install directory %s", install_dir)
                     install_dir = wine.convert_to_unix_path(wine_exec, wine_env, install_dir)
-                    logger.debug("Found Unix install directory %s", install_dir)
+                    if install_dir:
+                        logger.debug("Found Unix install directory %s", install_dir)
+                    else:
+                        logger.info("Could not find Unix install directory for %s", rgame.title)
+                else:
+                    logger.info("Could not find Wine install directory for %s", rgame.title)
 
             if install_dir:
                 if os.path.isdir(install_dir):
                     install_size = path_size(install_dir)
                     rgame.set_origin_attributes(install_dir, install_size)
-                    logger.debug(f"Origin game {rgame.title} ({install_dir}, {format_size(install_size)})")
+                    logger.info("Origin game %s (%s, %s)", rgame.title, install_dir, format_size(install_size))
                 else:
-                    logger.warning(f"Origin game {rgame.title} ({install_dir} does not exist)")
-        logger.info(f"Origin worker finished in {time.time() - t}s")
+                    logger.warning("Origin game %s (%s does not exist)", rgame.title, install_dir)
+            else:
+                logger.info("Origin game %s is not installed", rgame.title)
+        logger.info("Origin worker finished in %ss", time.time() - t)
