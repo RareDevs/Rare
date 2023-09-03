@@ -38,7 +38,7 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="overlay_info_page">
-      <layout class="QFormLayout" name="formLayout_3">
+      <layout class="QFormLayout" name="overlay_info_layout">
        <property name="labelAlignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
@@ -74,9 +74,9 @@
         </widget>
        </item>
        <item row="3" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="info_buttons_layout">
          <item>
-          <spacer name="horizontalSpacer">
+          <spacer name="info_buttons_hspacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -90,16 +90,10 @@
          </item>
          <item>
           <widget class="QPushButton" name="uninstall_button">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
+           <property name="minimumSize">
             <size>
-             <width>150</width>
-             <height>16777215</height>
+             <width>120</width>
+             <height>0</height>
             </size>
            </property>
            <property name="text">
@@ -109,16 +103,10 @@
          </item>
          <item>
           <widget class="QPushButton" name="update_check_button">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
+           <property name="minimumSize">
             <size>
-             <width>150</width>
-             <height>16777215</height>
+             <width>120</width>
+             <height>0</height>
             </size>
            </property>
            <property name="text">
@@ -128,16 +116,10 @@
          </item>
          <item>
           <widget class="QPushButton" name="update_button">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
+           <property name="minimumSize">
             <size>
-             <width>150</width>
-             <height>16777215</height>
+             <width>120</width>
+             <height>0</height>
             </size>
            </property>
            <property name="text">
@@ -148,7 +130,7 @@
         </layout>
        </item>
        <item row="2" column="0" colspan="2">
-        <spacer name="verticalSpacer">
+        <spacer name="info_page_vspacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -163,7 +145,7 @@
       </layout>
      </widget>
      <widget class="QWidget" name="overlay_install_page">
-      <layout class="QFormLayout" name="formLayout">
+      <layout class="QFormLayout" name="overlay_install_layout">
        <property name="labelAlignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
@@ -178,9 +160,9 @@
         </widget>
        </item>
        <item row="2" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="install_buttons_layout">
          <item>
-          <spacer name="horizontalSpacer_2">
+          <spacer name="install_buttons_hspacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -194,6 +176,12 @@
          </item>
          <item>
           <widget class="QPushButton" name="install_button">
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
             <string>Install</string>
            </property>
@@ -202,7 +190,7 @@
         </layout>
        </item>
        <item row="1" column="0" colspan="2">
-        <spacer name="verticalSpacer_2">
+        <spacer name="install_page_vspacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -226,7 +214,7 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="enable_layout">
       <item>
        <widget class="QComboBox" name="select_pfx_combo"/>
       </item>
