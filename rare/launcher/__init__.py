@@ -120,57 +120,60 @@ class RareLauncher(RareApp):
     def __init__(self, args: InitArgs):
         super(RareLauncher, self).__init__(args, f"{type(self).__name__}_{args.app_name}_{{0}}.log")
         self.socket: Optional[QLocalSocket] = None
+        self.console: Optional[Console] = None
+        self.game_process: QProcess = QProcess(self)
+        self.server: QLocalServer = QLocalServer(self)
+
         self._hook.deleteLater()
         self._hook = RareLauncherException(self, args, self)
 
-        self.success: bool = True
+        self.success: bool = False
         self.no_sync_on_exit = False
         self.args = args
         self.core = LegendaryCore()
         game = self.core.get_game(args.app_name)
         if not game:
             self.logger.error(f"Game {args.app_name} not found. Exiting")
-            QApplication.exit(1)
+            return
         self.rgame = RareGameSlim(self.core, game)
 
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)
 
-        self.console: Optional[Console] = None
         if QSettings().value("show_console", False, bool):
             self.console = Console()
             self.console.show()
 
-        self.game_process: QProcess = QProcess(self)
-        self.game_process.finished.connect(self.game_finished)
-        self.game_process.errorOccurred.connect(
-            lambda err: self.error_occurred(self.game_process.errorString()))
+        self.game_process.finished.connect(self.__process_finished)
+        self.game_process.errorOccurred.connect(self.__process_errored)
         if self.console:
-            self.game_process.readyReadStandardOutput.connect(
-                lambda: self.console.log(
-                    self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
-                )
-            )
-            self.game_process.readyReadStandardError.connect(
-                lambda: self.console.error(
-                    self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
-                )
-            )
+            self.game_process.readyReadStandardOutput.connect(self.__proc_log_stdout)
+            self.game_process.readyReadStandardError.connect(self.__proc_log_stderr)
             self.console.term.connect(self.__proc_term)
             self.console.kill.connect(self.__proc_kill)
 
-        self.socket: Optional[QLocalSocket] = None
-        self.server: QLocalServer = QLocalServer(self)
         ret = self.server.listen(f"rare_{args.app_name}")
         if not ret:
             self.logger.error(self.server.errorString())
             self.logger.info("Server is running")
             self.server.close()
-            self.success = False
             return
         self.server.newConnection.connect(self.new_server_connection)
 
+        self.success = True
         self.start_time = time.time()
+
+    @pyqtSlot()
+    def __proc_log_stdout(self):
+        self.console.log(
+            self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
+        )
+
+    @pyqtSlot()
+    def __proc_log_stderr(self):
+        self.console.error(
+            self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
+        )
 
     @pyqtSlot()
     def __proc_term(self):
@@ -215,22 +218,27 @@ class RareLauncher(RareApp):
 
         if action == CloudSaveDialog.UPLOAD:
             if self.console:
-                self.console.log("upload saves...")
+                self.console.log("Uploading saves...")
             self.rgame.upload_saves()
         elif action == CloudSaveDialog.DOWNLOAD:
             if self.console:
-                self.console.log("Download saves...")
+                self.console.log("Downloading saves...")
             self.rgame.download_saves()
         else:
             self.on_exit(exit_code)
 
-    def game_finished(self, exit_code):
+    @pyqtSlot(int, QProcess.ExitStatus)
+    def __process_finished(self, exit_code: int, exit_status: QProcess.ExitStatus):
         self.logger.info("Game finished")
 
         if self.rgame.auto_sync_saves:
             self.check_saves_finished(exit_code)
         else:
             self.on_exit(exit_code)
+
+    @pyqtSlot(QProcess.ProcessError)
+    def __process_errored(self, error: QProcess.ProcessError):
+        self.error_occurred(self.game_process.errorString())
 
     def on_exit(self, exit_code: int):
         if self.console:
@@ -277,7 +285,7 @@ class RareLauncher(RareApp):
             subprocess.Popen([args.executable] + args.arguments, cwd=args.working_directory,
                              env={i: args.environment.value(i) for i in args.environment.keys()})
             if self.console:
-                self.console.log("Launching game detached")
+                self.console.log("Launching game as a detached process")
             self.stop()
             return
         if self.args.dry_run:
@@ -323,9 +331,9 @@ class RareLauncher(RareApp):
             self.no_sync_on_exit = True
         if self.console:
             if action == CloudSaveDialog.DOWNLOAD:
-                self.console.log("Downloading saves")
+                self.console.log("Downloading saves...")
             elif action == CloudSaveDialog.UPLOAD:
-                self.console.log("Uloading saves")
+                self.console.log("Uploading saves...")
         self.start_prepare(action)
 
     def start(self, args: InitArgs):
@@ -335,7 +343,7 @@ class RareLauncher(RareApp):
                     raise ValueError("You are not logged in")
             except ValueError:
                 # automatically launch offline if available
-                self.logger.error("Not logged in. Try to launch game offline")
+                self.logger.error("Not logged in. Trying to launch the game in offline mode")
                 args.offline = True
 
         if not args.offline and self.rgame.auto_sync_saves:
@@ -353,10 +361,13 @@ class RareLauncher(RareApp):
             if self.console:
                 self.game_process.readyReadStandardOutput.disconnect()
                 self.game_process.readyReadStandardError.disconnect()
-            self.game_process.finished.disconnect()
-            self.game_process.errorOccurred.disconnect()
+            if self.game_process.receivers(self.game_process.finished):
+                self.game_process.finished.disconnect()
+            if self.game_process.receivers(self.game_process.errorOccurred):
+                self.game_process.errorOccurred.disconnect()
         except TypeError as e:
-            self.logger.error(f"Failed to disconnect signals: {e}")
+            self.logger.error(f"Failed to disconnect process signals: {e}")
+
         self.logger.info("Stopping server")
         try:
             self.server.close()
@@ -370,7 +381,7 @@ class RareLauncher(RareApp):
             self.console.on_process_exit(self.rgame.app_name, 0)
 
 
-def launch(args: Namespace):
+def launch(args: Namespace) -> int:
     args = InitArgs.from_argparse(args)
 
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -389,7 +400,9 @@ def launch(args: Namespace):
     signal(SIGTERM, sighandler)
 
     if not app.success:
-        return
+        app.stop()
+        app.exit(1)
+        return 1
     app.start(args)
     # app.exit_app.connect(lambda: app.exit(0))
 
