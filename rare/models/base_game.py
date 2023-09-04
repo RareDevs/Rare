@@ -142,6 +142,15 @@ class RareGameSlim(RareGameBase):
         pass
 
     @property
+    def platforms(self) -> Tuple:
+        """!
+        @brief Property that holds the platforms a game is available for
+
+        @return Tuple
+        """
+        return tuple(self.game.asset_infos.keys())
+
+    @property
     def is_mac(self) -> bool:
         """!
         @brief Property to report if Game has a mac version
