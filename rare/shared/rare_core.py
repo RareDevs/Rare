@@ -373,6 +373,10 @@ class RareCore(QObject):
         return self.__filter_games(lambda game: game.is_origin and not game.is_dlc)
 
     @property
+    def ubisoft_games(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: game.is_ubisoft and not game.is_dlc)
+
+    @property
     def game_list(self) -> Iterator[Game]:
         for game in self.games:
             yield game.game
