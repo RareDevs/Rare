@@ -13,5 +13,6 @@
   <qresource prefix="images">
     <file alias="Rare.png">images/Rare.png</file>
     <file alias="loader.gif">images/loader.gif</file>
+    <file alias="loader.webp">images/loader.webp</file>
   </qresource>
 </RCC>
