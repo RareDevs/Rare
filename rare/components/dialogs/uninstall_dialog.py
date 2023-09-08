@@ -28,10 +28,17 @@ class UninstallDialog(QDialog):
             self.tr("Do you really want to uninstall <b>{}</b>?").format(rgame.app_title)
         )
 
-        self.keep_files = QCheckBox(self.tr("Keep game files."))
+        self.keep_files = QCheckBox(self.tr("Keep game files"))
         self.keep_files.setChecked(bool(options.keep_files))
-        self.keep_config = QCheckBox(self.tr("Keep game configuation."))
+        self.keep_files.setEnabled(not rgame.is_overlay)
+
+        self.keep_config = QCheckBox(self.tr("Keep game configuation"))
         self.keep_config.setChecked(bool(options.keep_config))
+        self.keep_config.setEnabled(not rgame.is_overlay)
+
+        self.keep_overlay_keys = QCheckBox(self.tr("Keep EOS Overlay registry keys"))
+        self.keep_overlay_keys.setChecked(bool(options.keep_overlay_keys))
+        self.keep_overlay_keys.setEnabled(rgame.is_overlay)
 
         self.uninstall_button = QPushButton(
             icon("ei.remove-circle", color="red"), self.tr("Uninstall")
@@ -46,6 +53,7 @@ class UninstallDialog(QDialog):
         form_layout.setContentsMargins(-1, -1, 0, -1)
         form_layout.addWidget(self.keep_files)
         form_layout.addWidget(self.keep_config)
+        form_layout.addWidget(self.keep_overlay_keys)
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.cancel_button)
@@ -69,9 +77,14 @@ class UninstallDialog(QDialog):
         super(UninstallDialog, self).closeEvent(a0)
 
     def __on_uninstall(self):
-        self.options.values = (True, self.keep_files.isChecked(), self.keep_config.isChecked())
+        self.options.values = (
+            True,
+            self.keep_files.isChecked(),
+            self.keep_config.isChecked(),
+            self.keep_overlay_keys.isChecked()
+        )
         self.close()
 
     def __on_cancel(self):
-        self.options.values = (None, None, None)
+        self.options.values = (None, None, None, None)
         self.close()

@@ -64,6 +64,8 @@ class RareCore(QObject):
 
         self.__library: Dict[str, RareGame] = {}
         self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp)
+        self.__eos_overlay.signals.game.install.connect(self.__signals.game.install)
+        self.__eos_overlay.signals.game.uninstall.connect(self.__signals.game.uninstall)
 
         RareCore.__instance = self
 
@@ -187,12 +189,12 @@ class RareCore(QObject):
             for dlc in rgame.owned_dlcs:
                 if dlc.is_installed:
                     logger.info(f'Uninstalling DLC "{dlc.app_name}" ({dlc.app_title})...')
-                    uninstall_game(self.__core, dlc.app_name, keep_files=True, keep_config=True)
+                    uninstall_game(self.__core, dlc, keep_files=True, keep_config=True)
                     dlc.igame = None
             logger.info(
                 f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...'
             )
-            uninstall_game(self.__core, rgame.app_name, keep_files=True, keep_config=True)
+            uninstall_game(self.__core, rgame, keep_files=True, keep_config=True)
             logger.info(f"Uninstalled {rgame.app_title}, because no game files exist")
             rgame.igame = None
             return
@@ -216,6 +218,9 @@ class RareCore(QObject):
         if app_name == EOSOverlayApp.app_name:
             return self.__eos_overlay
         return self.__library[app_name]
+
+    def get_overlay(self):
+        return self.get_game(EOSOverlayApp.app_name)
 
     def __add_game(self, rgame: RareGame) -> None:
         rgame.signals.download.enqueue.connect(self.__signals.download.enqueue)
@@ -308,7 +313,6 @@ class RareCore(QObject):
             start_time = time.time()
             try:
                 entitlements = self.__core.egs.get_user_entitlements()
-                self.__core.lgd.entitlements = entitlements
                 for game in self.__library.values():
                     game.grant_date()
             except (HTTPError, ConnectionError) as e:

@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QSpacerItem, QSizePoli
 
 from rare.widgets.side_tab import SideTabWidget
 from .egl_sync_group import EGLSyncGroup
-from .eos_group import EOSGroup
+from .eos_group import EosGroup
 from .import_group import ImportGroup
 from .ubisoft_group import UbisoftGroup
 
@@ -35,7 +35,7 @@ class IntegrationsTabs(SideTabWidget):
             self,
         )
         self.ubisoft_group = UbisoftGroup(self.eos_ubisoft)
-        self.eos_group = EOSGroup(self.eos_ubisoft)
+        self.eos_group = EosGroup(self.eos_ubisoft)
         self.eos_ubisoft.addWidget(self.eos_group)
         self.eos_ubisoft.addWidget(self.ubisoft_group)
         self.eos_ubisoft_index = self.addTab(self.eos_ubisoft, self.tr("Epic Overlay and Ubisoft"))
