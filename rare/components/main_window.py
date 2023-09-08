@@ -221,43 +221,42 @@ class MainWindow(QMainWindow):
                 return
 
         # FIXME: Move this to RareCore once the download manager is implemented
-        if not self.args.offline:
-            if self.rcore.queue_threadpool.activeThreadCount():
-                reply = QMessageBox.question(
-                    self,
-                    self.tr("Quit {}?").format(QApplication.applicationName()),
-                    self.tr(
-                        "There are currently running operations. "
-                        "Rare cannot exit until they are completed.\n\n"
-                        "Do you want to clear the queue?"
-                    ),
-                    buttons=(QMessageBox.Yes | QMessageBox.No),
-                    defaultButton=QMessageBox.No,
-                )
-                if reply == QMessageBox.Yes:
-                    self.rcore.queue_threadpool.clear()
-                    for qw in self.rcore.queued_workers():
-                        self.rcore.dequeue_worker(qw)
-                    self.update_statusbar()
+        if self.rcore.queue_threadpool.activeThreadCount():
+            reply = QMessageBox.question(
+                self,
+                self.tr("Quit {}?").format(QApplication.applicationName()),
+                self.tr(
+                    "There are currently running operations. "
+                    "Rare cannot exit until they are completed.\n\n"
+                    "Do you want to clear the queue?"
+                ),
+                buttons=(QMessageBox.Yes | QMessageBox.No),
+                defaultButton=QMessageBox.No,
+            )
+            if reply == QMessageBox.Yes:
+                self.rcore.queue_threadpool.clear()
+                for qw in self.rcore.queued_workers():
+                    self.rcore.dequeue_worker(qw)
+                self.update_statusbar()
+            e.ignore()
+            return
+        elif self.tab_widget.downloads_tab.is_download_active:
+            reply = QMessageBox.question(
+                self,
+                self.tr("Quit {}?").format(QApplication.applicationName()),
+                self.tr(
+                    "There is an active download. "
+                    "Quitting Rare now will stop the download.\n\n"
+                    "Are you sure you want to quit?"
+                ),
+                buttons=(QMessageBox.Yes | QMessageBox.No),
+                defaultButton=QMessageBox.No,
+            )
+            if reply == QMessageBox.Yes:
+                self.tab_widget.downloads_tab.stop_download(omit_queue=True)
+            else:
                 e.ignore()
                 return
-            elif self.tab_widget.downloads_tab.is_download_active:
-                reply = QMessageBox.question(
-                    self,
-                    self.tr("Quit {}?").format(QApplication.applicationName()),
-                    self.tr(
-                        "There is an active download. "
-                        "Quitting Rare now will stop the download.\n\n"
-                        "Are you sure you want to quit?"
-                    ),
-                    buttons=(QMessageBox.Yes | QMessageBox.No),
-                    defaultButton=QMessageBox.No,
-                )
-                if reply == QMessageBox.Yes:
-                    self.tab_widget.downloads_tab.stop_download(omit_queue=True)
-                else:
-                    e.ignore()
-                    return
         # FIXME: End of FIXME
         self.timer.stop()
         self.tray_icon.deleteLater()
