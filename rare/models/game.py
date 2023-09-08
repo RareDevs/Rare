@@ -9,12 +9,13 @@ from typing import List, Optional, Dict, Set
 
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
 from PyQt5.QtGui import QPixmap
+from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
 from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.models.base_game import RareGameBase, RareGameSlim
+from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils.paths import data_dir, get_rare_executable
@@ -582,3 +583,63 @@ class RareEosOverlay(RareGameBase):
         else:
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
+
+    @property
+    def has_update(self) -> bool:
+        self.core.check_for_overlay_updates()
+        return self.core.overlay_update_available
+
+    def is_enabled(self, prefix: Optional[str] = None):
+        reg_paths = eos.query_registry_entries(prefix)
+        return reg_paths["overlay_path"] and self.core.is_overlay_install(reg_paths["overlay_path"])
+
+    def enable(
+        self, prefix: Optional[str] = None, app_name: Optional[str] = None, path: Optional[str] = None
+    ) -> bool:
+        if not self.is_installed or self.is_enabled(prefix):
+            return False
+        if not path:
+            path = self.igame.install_path
+        reg_paths = eos.query_registry_entries(prefix)
+        if old_path := reg_paths["overlay_path"]:
+            if os.path.normpath(old_path) == path:
+                logger.info(f"Overlay already enabled, nothing to do.")
+                return True
+            else:
+                logger.info(f'Updating overlay registry entries from "{old_path}" to "{path}"')
+            eos.remove_registry_entries(prefix)
+        eos.add_registry_entries(path, prefix)
+        logger.info(f"Enabled overlay at: {path} for prefix: {prefix}")
+        return True
+
+    def disable(self, prefix: Optional[str] = None, app_name: Optional[str] = None) -> bool:
+        if not self.is_enabled(prefix):
+            return False
+        logger.info(f"Disabling overlay (removing registry keys) for prefix: {prefix}")
+        eos.remove_registry_entries(prefix)
+        return True
+
+    def install(self) -> bool:
+        if not self.is_idle:
+            return False
+        if self.is_installed:
+            base_path = self.igame.install_path
+        else:
+            base_path = os.path.join(
+                self.core.lgd.config.get("Legendary", "install_dir", fallback=os.path.expanduser("~/legendary")),
+                ".overlay"
+            )
+        self.signals.game.install.emit(
+            InstallOptionsModel(
+                app_name=self.app_name, base_path=base_path, platform="Windows", overlay=True
+            )
+        )
+        return True
+
+    def uninstall(self) -> bool:
+        if not self.is_idle or not self.is_installed:
+            return False
+        self.signals.game.uninstall.emit(
+            UninstallOptionsModel(app_name=self.app_name)
+        )
+        return True
