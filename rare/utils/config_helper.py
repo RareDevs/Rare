@@ -1,4 +1,5 @@
-from typing import Callable, Optional
+import os
+from typing import Callable, Optional, List, Set
 
 from legendary.core import LegendaryCore
 from legendary.models.config import LGDConf
@@ -40,6 +41,30 @@ def remove_option(app_name, option):
 
 def remove_section(app_name):
     return
+    # Disabled due to env variables implementation
     if _config.has_section(app_name):
         _config.remove_section(app_name)
         save_config()
+
+
+def get_wine_prefixes() -> Set[str]:
+    prefixes = ["~/.wine"]
+
+    for name, section in _config.items():
+        pfx = section.get("WINEPREFIX") or section.get("wine_prefix")
+        if pfx:
+            prefixes.append(pfx)
+
+    return {prefix for prefix in prefixes if os.path.isdir(os.path.expanduser(prefix))}
+
+
+def get_wine_prefix(app_name: Optional[str] = None) -> str:
+    if app_name is None:
+        prefix = "~/.wine"
+        prefix = _config.get("default.env", "WINEPREFIX", fallback=prefix)
+        prefix = _config.get("default", "wine_prefix", fallback=prefix)
+    else:
+        prefix = get_wine_prefix()
+        prefix = _config.get(f'{app_name}.env', 'WINEPREFIX', fallback=prefix)
+        prefix = _config.get(app_name, 'wine_prefix', fallback=prefix)
+    return os.path.abspath(os.path.expanduser(prefix))
