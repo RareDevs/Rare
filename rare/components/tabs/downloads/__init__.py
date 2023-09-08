@@ -238,10 +238,7 @@ class DownloadsTab(QWidget):
                 else:
                     logger.info(f"Created desktop link {result.shortcut_name} for {result.options.app_name}")
 
-            if result.options.overlay:
-                self.signals.application.overlay_installed.emit()
-            else:
-                self.signals.application.notify.emit(result.options.app_name)
+            self.signals.application.notify.emit(result.options.app_name)
 
             if self.updates_group.contains(result.options.app_name):
                 self.updates_group.set_widget_enabled(result.options.app_name, True)

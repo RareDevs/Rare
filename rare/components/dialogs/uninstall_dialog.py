@@ -23,14 +23,21 @@ class UninstallDialog(ButtonDialog):
 
         self.keep_files = QCheckBox(self.tr("Keep files"))
         self.keep_files.setChecked(bool(options.keep_files))
+        self.keep_files.setEnabled(not rgame.is_overlay)
 
         self.keep_config = QCheckBox(self.tr("Keep configuation"))
         self.keep_config.setChecked(bool(options.keep_config))
+        self.keep_config.setEnabled(not rgame.is_overlay)
+
+        self.keep_overlay_keys = QCheckBox(self.tr("Keep EOS Overlay registry keys"))
+        self.keep_overlay_keys.setChecked(bool(options.keep_overlay_keys))
+        self.keep_overlay_keys.setEnabled(rgame.is_overlay)
 
         layout = QVBoxLayout()
         layout.addWidget(title_label)
         layout.addWidget(self.keep_files)
         layout.addWidget(self.keep_config)
+        layout.addWidget(self.keep_overlay_keys)
 
         self.setCentralLayout(layout)
 
@@ -51,7 +58,8 @@ class UninstallDialog(ButtonDialog):
             True,
             self.keep_files.isChecked(),
             self.keep_config.isChecked(),
+            self.keep_overlay_keys.isChecked(),
         )
 
     def reject_handler(self):
-        self.options.values = (None, None, None)
+        self.options.values = (None, None, None, None)

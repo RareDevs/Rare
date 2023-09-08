@@ -86,6 +86,7 @@ class UninstallOptionsModel:
     accepted: bool = None
     keep_files: bool = None
     keep_config: bool = None
+    keep_overlay_keys: bool = None
 
     def __bool__(self):
         return (
@@ -93,20 +94,21 @@ class UninstallOptionsModel:
             and (self.accepted is not None)
             and (self.keep_files is not None)
             and (self.keep_config is not None)
+            and (self.keep_overlay_keys is not None)
         )
 
     @property
-    def values(self) -> Tuple[bool, bool, bool]:
+    def values(self) -> Tuple[bool, bool, bool, bool]:
         """
         This model's options
 
         :return:
             Tuple of `accepted` `keep_files` `keep_config` `keep_overlay_keys`
         """
-        return self.accepted, self.keep_config, self.keep_files
+        return self.accepted, self.keep_config, self.keep_files, self.keep_overlay_keys
 
     @values.setter
-    def values(self, values: Tuple[bool, bool, bool]):
+    def values(self, values: Tuple[bool, bool, bool, bool]):
         """
         Set this model's options
 
@@ -117,6 +119,7 @@ class UninstallOptionsModel:
         self.accepted = values[0]
         self.keep_files = values[1]
         self.keep_config = values[2]
+        self.keep_overlay_keys = values[3]
 
 
 @dataclass
