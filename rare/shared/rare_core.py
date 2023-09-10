@@ -9,12 +9,13 @@ from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tu
 from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool, QRunnable, QTimer
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile
-from requests import HTTPError
+from requests.exceptions import HTTPError, ConnectionError
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareSaveGame
 from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
+from rare.utils.metrics import timelogger
 from .image_manager import ImageManager
 from .workers import (
     QueueWorker,
@@ -50,7 +51,7 @@ class RareCore(QObject):
         self.__core: Optional[LegendaryCore] = None
         self.__image_manager: Optional[ImageManager] = None
 
-        self.__start_time = time.time()
+        self.__start_time = time.perf_counter()
 
         self.args(args)
         self.signals(init=True)
@@ -310,12 +311,12 @@ class RareCore(QObject):
         self.progress.emit(15, self.tr("Preparing library"))
         self.__add_games_and_dlcs(*result)
         self.progress.emit(100, self.tr("Launching Rare"))
-        logger.debug(f"Fetch time {time.time() - self.__start_time} seconds")
+        logger.debug(f"Fetch time {time.perf_counter() - self.__start_time} seconds")
         QTimer.singleShot(100, self.__post_init)
         self.completed.emit()
 
     def fetch(self):
-        self.__start_time = time.time()
+        self.__start_time = time.perf_counter()
         fetch_worker = FetchWorker(self.__core, self.__args)
         fetch_worker.signals.progress.connect(self.progress)
         fetch_worker.signals.result.connect(self.__on_fetch_result)
@@ -323,10 +324,10 @@ class RareCore(QObject):
 
     def fetch_saves(self):
         def __fetch() -> None:
-            start_time = time.time()
             saves_dict: Dict[str, List[SaveGameFile]] = {}
             try:
-                saves_list = self.__core.get_save_games()
+                with timelogger(logger, "Request saves"):
+                    saves_list = self.__core.get_save_games()
                 for s in saves_list:
                     if s.app_name not in saves_dict.keys():
                         saves_dict[s.app_name] = [s]
@@ -337,26 +338,28 @@ class RareCore(QObject):
                         continue
                     self.__library[app_name].load_saves(saves)
             except (HTTPError, ConnectionError) as e:
-                logger.error(f"Exception while fetching saves from EGS: {e}")
+                logger.error(f"Exception while fetching saves from EGS.")
+                logger.error(e)
                 return
-            logger.debug(f"Saves: {len(saves_dict)}")
-            logger.debug(f"Request saves: {time.time() - start_time} seconds")
+            logger.info(f"Saves: {len(saves_dict)}")
 
         saves_worker = QRunnable.create(__fetch)
         QThreadPool.globalInstance().start(saves_worker)
 
     def fetch_entitlements(self) -> None:
         def __fetch() -> None:
-            start_time = time.time()
             try:
-                entitlements = self.__core.egs.get_user_entitlements()
+                if (entitlements := self.__core.lgd.entitlements) is None:
+                    with timelogger(logger, "Request entitlements"):
+                        entitlements = self.__core.egs.get_user_entitlements()
+                    self.__core.lgd.entitlements = entitlements
                 for game in self.__library.values():
                     game.grant_date()
             except (HTTPError, ConnectionError) as e:
-                logger.error(f"Failed to retrieve user entitlements from EGS: {e}")
+                logger.error(f"Exception while fetching entitlements from EGS.")
+                logger.error(e)
                 return
-            logger.debug(f"Entitlements: {len(list(entitlements))}")
-            logger.debug(f"Request Entitlements: {time.time() - start_time} seconds")
+            logger.info(f"Entitlements: {len(list(entitlements))}")
 
         entitlements_worker = QRunnable.create(__fetch)
         QThreadPool.globalInstance().start(entitlements_worker)
@@ -368,7 +371,7 @@ class RareCore(QObject):
     def __post_init(self) -> None:
         if not self.__args.offline:
             self.fetch_saves()
-            self.fetch_entitlements()
+            # self.fetch_entitlements()
         self.resolve_origin()
 
     @property
