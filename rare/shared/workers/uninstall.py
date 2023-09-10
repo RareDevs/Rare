@@ -40,7 +40,7 @@ def uninstall_game(
                     remove_registry_entries(prefix)
                     logger.debug("Removed registry entries for prefix %s", prefix)
         else:
-            remove_registry_entries(None)
+            remove_registry_entries()
 
         return True, ""
 

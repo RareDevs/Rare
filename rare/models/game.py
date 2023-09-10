@@ -593,13 +593,23 @@ class RareEosOverlay(RareGameBase):
         reg_paths = eos.query_registry_entries(prefix)
         return reg_paths["overlay_path"] and self.core.is_overlay_install(reg_paths["overlay_path"])
 
+    def active_path(self, prefix: Optional[str] = None) -> str:
+        path = eos.query_registry_entries(prefix)["overlay_path"]
+        return path if path and self.core.is_overlay_install(path) else ""
+
+    def available_paths(self, prefix: Optional[str] = None) -> List[str]:
+        return self.core.search_overlay_installs(prefix)
+
     def enable(
-        self, prefix: Optional[str] = None, app_name: Optional[str] = None, path: Optional[str] = None
+        self, prefix: Optional[str] = None, path: Optional[str] = None
     ) -> bool:
-        if not self.is_installed or self.is_enabled(prefix):
+        if self.is_enabled(prefix):
             return False
         if not path:
-            path = self.igame.install_path
+            if self.is_installed:
+                path = self.igame.install_path
+            else:
+                path = self.available_paths(prefix)[-1]
         reg_paths = eos.query_registry_entries(prefix)
         if old_path := reg_paths["overlay_path"]:
             if os.path.normpath(old_path) == path:
@@ -608,15 +618,25 @@ class RareEosOverlay(RareGameBase):
             else:
                 logger.info(f'Updating overlay registry entries from "{old_path}" to "{path}"')
             eos.remove_registry_entries(prefix)
-        eos.add_registry_entries(path, prefix)
+        try:
+            eos.add_registry_entries(path, prefix)
+        except PermissionError as e:
+            logger.error("Exception while writing registry to enable the overlay .")
+            logger.error(e)
+            return False
         logger.info(f"Enabled overlay at: {path} for prefix: {prefix}")
         return True
 
-    def disable(self, prefix: Optional[str] = None, app_name: Optional[str] = None) -> bool:
+    def disable(self, prefix: Optional[str] = None) -> bool:
         if not self.is_enabled(prefix):
             return False
         logger.info(f"Disabling overlay (removing registry keys) for prefix: {prefix}")
-        eos.remove_registry_entries(prefix)
+        try:
+            eos.remove_registry_entries(prefix)
+        except PermissionError as e:
+            logger.error("Exception while writing registry to disable the overlay.")
+            logger.error(e)
+            return False
         return True
 
     def install(self) -> bool:

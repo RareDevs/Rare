@@ -4,8 +4,17 @@ from logging import getLogger
 from typing import Optional
 
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool, Qt, pyqtSlot, QSize
-from PyQt5.QtWidgets import QGroupBox, QMessageBox, QFrame, QHBoxLayout, QSizePolicy, QLabel, QPushButton, QFormLayout
-from legendary.lfs import eos
+from PyQt5.QtWidgets import (
+    QGroupBox,
+    QMessageBox,
+    QFrame,
+    QHBoxLayout,
+    QSizePolicy,
+    QLabel,
+    QPushButton,
+    QFormLayout,
+    QComboBox,
+)
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareEosOverlay
@@ -42,55 +51,101 @@ class EosPrefixWidget(QFrame):
         self.indicator = QLabel(parent=self)
         self.indicator.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
 
-        self.label = ElideLabel(
-            prefix if prefix is not None else "Epic Online Services Overlay",
-            parent=self
-        )
+        self.prefix_label = ElideLabel(prefix if prefix is not None else overlay.app_title, parent=self)
+        self.overlay_label = ElideLabel(parent=self)
+        self.overlay_label.setDisabled(True)
+
+        self.path_select = QComboBox(self)
+        self.path_select.setMaximumWidth(150)
+        self.path_select.setMinimumWidth(150)
 
         self.button = QPushButton(parent=self)
         self.button.setMinimumWidth(150)
-        self.button.clicked.connect(self.action)
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(-1, 0, 0, 0)
         layout.addWidget(self.indicator)
-        layout.addWidget(self.label, stretch=1)
+        layout.addWidget(self.prefix_label, stretch=2)
+        layout.addWidget(self.overlay_label, stretch=3)
+        layout.addWidget(self.path_select)
         layout.addWidget(self.button)
 
         self.overlay = overlay
         self.prefix = prefix
 
+        self.path_select.currentIndexChanged.connect(self.path_changed)
+        self.button.clicked.connect(self.action)
         self.overlay.signals.game.installed.connect(self.update_state)
         self.overlay.signals.game.uninstalled.connect(self.update_state)
 
         self.update_state()
 
+    @pyqtSlot(int)
+    def path_changed(self, index: int) -> None:
+        path = self.path_select.itemData(index, Qt.UserRole)
+        active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
+        if self.overlay.is_enabled(self.prefix) and (path == active_path):
+            self.button.setText(self.tr("Disable overlay"))
+        else:
+            self.button.setText(self.tr("Enable overlay"))
+
     @pyqtSlot()
-    def update_state(self):
-        if not self.overlay.is_installed:
+    def update_state(self) -> None:
+        active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
+
+        self.overlay_label.setText(f"<i>{active_path}<\i>")
+        self.path_select.clear()
+
+        if not self.overlay.is_installed and not self.overlay.available_paths(self.prefix):
             self.setDisabled(True)
-            self.button.setText(self.tr("Unavailable"))
             self.indicator.setPixmap(icon("fa.circle-o", color="grey").pixmap(20, 20))
+            self.overlay_label.setText(self.overlay.active_path(self.prefix))
+            self.button.setText(self.tr("Unavailable"))
             return
 
         self.setDisabled(False)
+
         if self.overlay.is_enabled(self.prefix):
-            self.button.setText(self.tr("Disable overlay"))
-            self.indicator.setPixmap(
-                icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20))
-            )
+            self.indicator.setPixmap(icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
         else:
-            self.button.setText(self.tr("Enable overlay"))
-            self.indicator.setPixmap(
-                icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20))
-            )
+            self.indicator.setPixmap(icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20)))
+
+        install_path = os.path.normpath(p) if (p := self.overlay.install_path) else ""
+
+        self.path_select.addItem("Auto-detect", "")
+        self.path_select.setItemData(0, "Auto-detect", Qt.ToolTipRole)
+        for path in self.overlay.available_paths(self.prefix):
+            path = os.path.normpath(path)
+            self.path_select.addItem("Legendary-managed" if path == install_path else "EGL-managed", path)
+            self.path_select.setItemData(self.path_select.findData(path), path, Qt.ToolTipRole)
+        self.path_select.setCurrentIndex(self.path_select.findData(active_path))
 
     @pyqtSlot()
-    def action(self):
-        if self.overlay.is_enabled(self.prefix):
-            self.overlay.disable(prefix=self.prefix)
+    def action(self) -> None:
+        path = self.path_select.currentData(Qt.UserRole)
+        active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
+        install_path = os.path.normpath(p) if (p := self.overlay.install_path) else ""
+        if self.overlay.is_enabled(self.prefix) and (path == active_path):
+            if not self.overlay.disable(prefix=self.prefix):
+                QMessageBox.warning(
+                    self, "Warning",
+                    self.tr("Failed to completely disable the active EOS Overlay.{}").format(
+                        self.tr(" Since the previous overlay was managed by EGL you can safely ignore this is.")
+                        if active_path != install_path else ""
+                    ),
+                )
         else:
-            self.overlay.enable(prefix=self.prefix)
+            self.overlay.disable(prefix=self.prefix)
+            if not self.overlay.enable(prefix=self.prefix, path=path):
+                QMessageBox.warning(
+                    self,
+                    "Warning",
+                    self.tr("Failed to completely enable EOS overlay.{}").format(
+                        self.tr(" Since the previous overlay was managed by EGL you can safely ignore this is.")
+                        if active_path != install_path
+                        else ""
+                    ),
+                )
         self.update_state()
 
 
@@ -129,7 +184,7 @@ class EosGroup(QGroupBox):
 
         if self.overlay.is_installed:  # installed
             self.installed_version_label.setText(f"<b>{self.overlay.version}</b>")
-            self.installed_path_label.setText(self.overlay.install_path)
+            self.installed_path_label.setText(os.path.normpath(self.overlay.install_path))
             self.ui.overlay_stack.setCurrentWidget(self.ui.info_page)
         else:
             self.ui.overlay_stack.setCurrentWidget(self.ui.install_page)
@@ -185,65 +240,13 @@ class EosGroup(QGroupBox):
     def uninstall_finished(self):
         self.ui.overlay_stack.setCurrentWidget(self.ui.install_page)
 
-    def change_enable(self):
-        enabled = self.ui.enabled_cb.isChecked()
-        if not enabled:
-            try:
-                eos.remove_registry_entries(self.current_prefix)
-            except PermissionError:
-                logger.error("Can't disable eos overlay")
-                QMessageBox.warning(self, "Error", self.tr(
-                    "Failed to disable Overlay. Probably it is installed by Epic Games Launcher"))
-                return
-            logger.info("Disabled Epic Overlay")
-            self.ui.enabled_info_label.setText(self.tr("Disabled"))
-        else:
-            if not self.overlay.is_installed:
-                available_installs = self.core.search_overlay_installs(self.current_prefix)
-                if not available_installs:
-                    logger.error('No EOS overlay installs found!')
-                    return
-                path = available_installs[0]
-            else:
-                path = self.overlay.install_path
-
-            if not self.core.is_overlay_install(path):
-                logger.error(f'Not a valid Overlay installation: {path}')
-                self.ui.select_pfx_combo.removeItem(self.ui.select_pfx_combo.currentIndex())
-                return
-
-            path = os.path.normpath(path)
-            reg_paths = eos.query_registry_entries(self.current_prefix)
-            if old_path := reg_paths["overlay_path"]:
-                if os.path.normpath(old_path) == path:
-                    logger.info(f'Overlay already enabled, nothing to do.')
-                    return
-                else:
-                    logger.info(f'Updating overlay registry entries from "{old_path}" to "{path}"')
-                try:
-                    eos.remove_registry_entries(self.current_prefix)
-                except PermissionError:
-                    logger.error("Can't disable eos overlay")
-                    QMessageBox.warning(self, "Error", self.tr(
-                        "Failed to disable Overlay. Probably it is installed by Epic Games Launcher"))
-                    return
-            try:
-                eos.add_registry_entries(path, self.current_prefix)
-            except PermissionError:
-                logger.error("Failed to disable eos overlay")
-                QMessageBox.warning(self, "Error", self.tr(
-                    "Failed to enable EOS overlay. Maybe it is already installed by Epic Games Launcher"))
-                return
-            self.ui.enabled_info_label.setText(self.tr("Enabled"))
-            logger.info(f'Enabled overlay at: {path}')
-
     @pyqtSlot()
     def install_overlay(self):
         self.overlay.install()
 
     def uninstall_overlay(self):
         if not self.overlay.is_installed:
-            logger.error('No Rare-managed overlay installation found.')
+            logger.error("No Legendary-managed overlay installation found.")
             self.ui.overlay_stack.setCurrentWidget(self.ui.install_page)
             return
         self.overlay.uninstall()
