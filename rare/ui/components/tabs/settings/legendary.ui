@@ -231,23 +231,33 @@
        <property name="title">
         <string>Game metadata</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="meta_layout">
         <item>
-         <widget class="QCheckBox" name="win32_cb">
+         <widget class="QCheckBox" name="exclude_non_asset_check">
+          <property name="toolTip">
+           <string>Do not load metadata for non-asset games (i.e. Origin games) on start-up.
+
+Disabling this greatly improves start-up time, but some games might not be visible in your library.</string>
+          </property>
           <property name="text">
-           <string>Load 32bit data</string>
+           <string>Exclude non-asset games</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="mac_cb">
+         <widget class="QCheckBox" name="exclude_entitlements_check">
+          <property name="toolTip">
+           <string>Do not load entitlement data (i.e game's date of purchase) on start-up.
+
+Disabling this greatly improves start-up time, but some library filters may not work.</string>
+          </property>
           <property name="text">
-           <string>Load MacOS data</string>
+           <string>Exclude entitlements</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="refresh_game_meta_btn">
+         <widget class="QPushButton" name="refresh_game_meta_button">
           <property name="text">
            <string>Refresh game meta</string>
           </property>

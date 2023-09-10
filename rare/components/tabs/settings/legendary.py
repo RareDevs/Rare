@@ -1,4 +1,3 @@
-import platform
 import re
 from logging import getLogger
 from typing import Tuple
@@ -82,20 +81,27 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         )
         self.locale_layout.addWidget(self.locale_edit)
 
-        self.win32_cb.setChecked(self.settings.value("win32_meta", False, bool))
-        self.win32_cb.stateChanged.connect(lambda: self.settings.setValue("win32_meta", self.win32_cb.isChecked()))
+        self.exclude_non_asset_check.setChecked(
+            self.settings.value("exclude_non_asset", False, bool)
+        )
+        self.exclude_non_asset_check.stateChanged.connect(
+            lambda: self.settings.setValue("exclude_non_asset", self.exclude_non_asset_check.isChecked())
+        )
+        self.exclude_entitlements_check.setChecked(
+            self.settings.value("exclude_entitlements", False, bool)
+        )
+        self.exclude_entitlements_check.stateChanged.connect(
+            lambda: self.settings.setValue("exclude_entitlements", self.exclude_entitlements_check.isChecked())
+        )
 
-        self.mac_cb.setChecked(self.settings.value("mac_meta", platform.system() == "Darwin", bool))
-        self.mac_cb.stateChanged.connect(lambda: self.settings.setValue("mac_meta", self.mac_cb.isChecked()))
-
-        self.refresh_game_meta_btn.clicked.connect(self.refresh_game_meta)
+        self.refresh_game_meta_button.clicked.connect(self.refresh_game_meta)
 
     def refresh_game_meta(self):
-        self.refresh_game_meta_btn.setDisabled(True)
-        self.refresh_game_meta_btn.setText(self.tr("Loading"))
+        self.refresh_game_meta_button.setDisabled(True)
+        self.refresh_game_meta_button.setText(self.tr("Loading"))
         worker = RefreshGameMetaWorker()
-        worker.signals.finished.connect(lambda: self.refresh_game_meta_btn.setDisabled(False))
-        worker.signals.finished.connect(lambda: self.refresh_game_meta_btn.setText(self.tr("Refresh game meta")))
+        worker.signals.finished.connect(lambda: self.refresh_game_meta_button.setDisabled(False))
+        worker.signals.finished.connect(lambda: self.refresh_game_meta_button.setText(self.tr("Refresh game meta")))
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod
