@@ -61,7 +61,6 @@ class LinuxSettings(QWidget):
         self.ui.linux_layout.addWidget(self.mangohud)
         self.mangohud.load_settings(self.name)
 
-
     def load_prefix(self) -> str:
         return self.load_setting(
             f"{self.name}.env",
