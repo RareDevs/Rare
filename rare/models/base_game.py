@@ -250,7 +250,7 @@ class RareGameSlim(RareGameBase):
             return
 
         if thread:
-            worker = QRunnable.create(lambda: _upload())
+            worker = QRunnable.create(_upload)
             QThreadPool.globalInstance().start(worker)
         else:
             _upload()
@@ -275,7 +275,7 @@ class RareGameSlim(RareGameBase):
             return
 
         if thread:
-            worker = QRunnable.create(lambda: _download())
+            worker = QRunnable.create(_download)
             QThreadPool.globalInstance().start(worker)
         else:
             _download()
