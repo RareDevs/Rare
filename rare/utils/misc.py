@@ -1,13 +1,11 @@
 import os
 from logging import getLogger
-from typing import List, Union, Type
+from typing import List, Union, Type, Dict
 
 import qtawesome
 import requests
 from PyQt5.QtCore import (
-    pyqtSignal,
     QObject,
-    QRunnable,
     QSettings,
     QFile,
     QDir,
@@ -16,15 +14,12 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import QPalette, QColor, QFontMetrics
 from PyQt5.QtWidgets import qApp, QStyleFactory, QLabel
 from PyQt5.sip import wrappertype
-from legendary.core import LegendaryCore
-from requests.exceptions import HTTPError
 
 from rare.utils.paths import resources_path
 
 logger = getLogger("Utils")
-settings = QSettings("Rare", "Rare")
 
-color_role_map = {
+color_role_map: Dict[int, str] = {
     0: "WindowText",
     1: "Button",
     2: "Light",
@@ -49,7 +44,7 @@ color_role_map = {
     # 21: "NColorRoles",
 }
 
-color_group_map = {
+color_group_map: Dict[int, str] = {
     0: "Active",
     1: "Disabled",
     2: "Inactive",
@@ -171,40 +166,6 @@ def format_size(b: Union[int, float]) -> str:
         b /= 1024
 
 
-class CloudWorker(QRunnable):
-    class Signals(QObject):
-        # List[SaveGameFile]
-        result_ready = pyqtSignal(dict)
-
-    def __init__(self, core: LegendaryCore):
-        super(CloudWorker, self).__init__()
-        self.core = core
-        self.signals = CloudWorker.Signals()
-        self.setAutoDelete(True)
-
-    def run(self) -> None:
-        try:
-            saves = self.core.get_save_games()
-        except HTTPError:
-            self.signals.result_ready.emit(None)
-            return
-
-        save_games = set()
-        for igame in self.core.get_installed_list():
-            game = self.core.get_game(igame.app_name)
-            if self.core.is_installed(igame.app_name) and game.supports_cloud_saves:
-                save_games.add(igame.app_name)
-
-        latest_saves = dict()
-        for s in sorted(saves, key=lambda a: a.datetime):
-            if s.app_name in save_games:
-                if not latest_saves.get(s.app_name):
-                    latest_saves[s.app_name] = []
-                latest_saves[s.app_name].append(s)
-
-        self.signals.result_ready.emit(latest_saves)
-
-
 def icon(icn_str: str, fallback: str = None, **kwargs):
     try:
         return qtawesome.icon(icn_str, **kwargs)
@@ -221,7 +182,7 @@ def icon(icn_str: str, fallback: str = None, **kwargs):
     return qtawesome.icon("ei.error", **kwargs)
 
 
-def widget_object_name(widget: Union[QObject,wrappertype,Type], suffix: str) -> str:
+def widget_object_name(widget: Union[QObject, wrappertype, Type], suffix: str) -> str:
     suffix = f"_{suffix}" if suffix else ""
     if isinstance(widget, QObject):
         return f"{type(widget).__name__}{suffix}"
