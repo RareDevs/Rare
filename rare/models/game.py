@@ -583,16 +583,29 @@ class RareEosOverlay(RareGameBase):
         self.core.check_for_overlay_updates()
         return self.core.overlay_update_available
 
-    def is_enabled(self, prefix: Optional[str] = None):
-        reg_paths = eos.query_registry_entries(prefix)
+    def is_enabled(self, prefix: Optional[str] = None) -> bool:
+        try:
+            reg_paths = eos.query_registry_entries(prefix)
+        except ValueError as e:
+            logger.info("%s %s", e, prefix)
+            return False
         return reg_paths["overlay_path"] and self.core.is_overlay_install(reg_paths["overlay_path"])
 
     def active_path(self, prefix: Optional[str] = None) -> str:
-        path = eos.query_registry_entries(prefix)["overlay_path"]
+        try:
+            path = eos.query_registry_entries(prefix)["overlay_path"]
+        except ValueError as e:
+            logger.info("%s %s", e, prefix)
+            return ""
         return path if path and self.core.is_overlay_install(path) else ""
 
     def available_paths(self, prefix: Optional[str] = None) -> List[str]:
-        return self.core.search_overlay_installs(prefix)
+        try:
+            installs = self.core.search_overlay_installs(prefix)
+        except ValueError as e:
+            logger.info("%s %s", e, prefix)
+            return []
+        return installs
 
     def enable(
         self, prefix: Optional[str] = None, path: Optional[str] = None
