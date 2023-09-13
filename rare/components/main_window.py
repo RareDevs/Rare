@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Rare - GUI for legendary")
         self.tab_widget = MainTabWidget(self)
-        self.tab_widget.exit_app.connect(self.on_exit_app)
+        self.tab_widget.exit_app.connect(self.__on_exit_app)
         self.setCentralWidget(self.tab_widget)
 
         # Set up status bar stuff (jumping through a lot of hoops)
@@ -112,7 +112,7 @@ class MainWindow(QMainWindow):
         self.timer.start()
 
         self.tray_icon: TrayIcon = TrayIcon(self)
-        self.tray_icon.exit_app.connect(self.on_exit_app)
+        self.tray_icon.exit_app.connect(self.__on_exit_app)
         self.tray_icon.show_app.connect(self.show)
         self.tray_icon.activated.connect(lambda r: self.toggle() if r == self.tray_icon.DoubleClick else None)
 
@@ -203,7 +203,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     @pyqtSlot(int)
-    def on_exit_app(self, exit_code=0) -> None:
+    def __on_exit_app(self, exit_code=0) -> None:
         self.__exit_code = exit_code
         self.close()
 

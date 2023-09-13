@@ -14,7 +14,7 @@ logger = getLogger("LaunchDialog")
 
 
 class LaunchDialog(QDialog):
-    quit_app = pyqtSignal(int)
+    exit_app = pyqtSignal(int)
     start_app = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -74,7 +74,7 @@ class LaunchDialog(QDialog):
                     self.show()
                 self.launch()
             else:
-                self.quit_app.emit(0)
+                self.exit_app.emit(0)
 
     def launch(self):
         self.progress_info.setText(self.tr("Preparing Rare"))

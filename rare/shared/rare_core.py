@@ -179,8 +179,8 @@ class RareCore(QObject):
         del self.__args
         self.__args = None
 
+        del self.__eos_overlay
         RareCore.__instance = None
-
         super(RareCore, self).deleteLater()
 
     def __validate_install(self, rgame: RareGame):
