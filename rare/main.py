@@ -17,6 +17,8 @@ def main() -> int:
         if sys.stderr is None:
             sys.stderr = open(os.devnull, 'w')
 
+    os.environ["QT_QPA_PLATFORMTHEME"] = ""
+
     # fix cx_freeze
     multiprocessing.freeze_support()
 
