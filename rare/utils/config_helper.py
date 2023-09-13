@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Optional, List, Set
+from typing import Callable, Optional, Set, Any
 
 from legendary.core import LegendaryCore
 from legendary.models.config import LGDConf
@@ -47,24 +47,41 @@ def remove_section(app_name):
         save_config()
 
 
-def get_wine_prefixes() -> Set[str]:
-    prefixes = ["~/.wine"]
+def get_game_option(option: str, app_name: Optional[str] = None, fallback: Any = None) -> str:
+    _option = _config.get("default", option, fallback=fallback)
+    if app_name is not None:
+        _option = _config.get(app_name, option, fallback=_option)
+    return _option
 
+
+def get_game_envvar(option: str, app_name: Optional[str] = None, fallback: Any = None) -> str:
+    _option = _config.get("default.env", option, fallback=fallback)
+    if app_name is not None:
+        _option = _config.get(f'{app_name}.env', option, fallback=_option)
+    return _option
+
+
+def get_wine_prefix(app_name: Optional[str] = None, fallback: Any = None) -> str:
+    _prefix = os.path.join(
+        _config.get("default.env", "STEAM_COMPAT_DATA_PATH", fallback=fallback), "pfx")
+    _prefix = _config.get("default.env", "WINEPREFIX", fallback=_prefix)
+    _prefix = _config.get("default", "wine_prefix", fallback=_prefix)
+    if app_name is not None:
+        _prefix = os.path.join(
+            _config.get(f'{app_name}.env', "STEAM_COMPAT_DATA_PATH", fallback=fallback), "pfx")
+        _prefix = _config.get(f'{app_name}.env', 'WINEPREFIX', fallback=_prefix)
+        _prefix = _config.get(app_name, 'wine_prefix', fallback=_prefix)
+    return _prefix
+
+
+def get_wine_prefixes() -> Set[str]:
+    _prefixes = []
     for name, section in _config.items():
         pfx = section.get("WINEPREFIX") or section.get("wine_prefix")
+        if not pfx:
+            pfx = os.path.join(compatdata, "pfx") if (compatdata := section.get("STEAM_COMPAT_DATA_PATH")) else ""
         if pfx:
-            prefixes.append(pfx)
+            _prefixes.append(pfx)
+    _prefixes = [os.path.expanduser(prefix) for prefix in _prefixes]
+    return {p for p in _prefixes if os.path.isdir(p)}
 
-    return {prefix for prefix in prefixes if os.path.isdir(os.path.expanduser(prefix))}
-
-
-def get_wine_prefix(app_name: Optional[str] = None) -> str:
-    if app_name is None:
-        prefix = "~/.wine"
-        prefix = _config.get("default.env", "WINEPREFIX", fallback=prefix)
-        prefix = _config.get("default", "wine_prefix", fallback=prefix)
-    else:
-        prefix = get_wine_prefix()
-        prefix = _config.get(f'{app_name}.env', 'WINEPREFIX', fallback=prefix)
-        prefix = _config.get(app_name, 'wine_prefix', fallback=prefix)
-    return os.path.abspath(os.path.expanduser(prefix))
