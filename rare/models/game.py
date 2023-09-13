@@ -434,9 +434,12 @@ class RareGame(RareGameSlim):
         elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
         if self.metadata.steam_grade is not None and elapsed_time.days < 3:
             return self.metadata.steam_grade
-        worker = QRunnable.create(
-            lambda: self.set_steam_grade(get_rating(self.core, self.app_name))
-        )
+
+        def _set_steam_grade():
+            rating = get_rating(self.core, self.app_name)
+            self.set_steam_grade(rating)
+
+        worker = QRunnable.create(_set_steam_grade)
         QThreadPool.globalInstance().start(worker)
         return "pending"
 
@@ -447,9 +450,10 @@ class RareGame(RareGameSlim):
         self.signals.widget.update.emit()
 
     def grant_date(self, force=False) -> datetime:
+        if (entitlements := self.core.lgd.entitlements) is None:
+            return self.metadata.grant_date
         if self.metadata.grant_date is None or force:
             logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
-            entitlements = self.core.lgd.entitlements
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
             entitlement = next(matching, None)
             grant_date = datetime.fromisoformat(
