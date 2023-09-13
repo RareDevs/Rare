@@ -1,14 +1,20 @@
 import webbrowser
+from enum import IntEnum
 
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QLabel, QPushButton
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.utils.misc import icon
 
 
 class AccountWidget(QWidget):
+    exit_app: pyqtSignal = pyqtSignal(int)
     logout: pyqtSignal = pyqtSignal()
+
+    class ExitCodes(IntEnum):
+        EXIT = 0
+        LOGOUT = -133742
 
     def __init__(self, parent):
         super(AccountWidget, self).__init__(parent=parent)
@@ -25,11 +31,22 @@ class AccountWidget(QWidget):
                 "https://www.epicgames.com/account/personal?productName=epicgames"
             )
         )
-        self.logout_button = QPushButton(self.tr("Logout"))
-        self.logout_button.clicked.connect(self.logout)
+        self.logout_button = QPushButton(self.tr("Logout"), parent=self)
+        self.logout_button.clicked.connect(self.__on_logout)
+        self.quit_button = QPushButton(self.tr("Quit"), parent=self)
+        self.quit_button.clicked.connect(self.__on_quit)
 
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel(self.tr("Account")))
         layout.addWidget(QLabel(self.tr("Logged in as <b>{}</b>").format(username)))
         layout.addWidget(self.open_browser)
         layout.addWidget(self.logout_button)
+        layout.addWidget(self.quit_button)
+
+    @pyqtSlot()
+    def __on_quit(self):
+        self.exit_app.emit(AccountWidget.ExitCodes.EXIT)
+
+    @pyqtSlot()
+    def __on_logout(self):
+        self.exit_app.emit(AccountWidget.ExitCodes.LOGOUT)
