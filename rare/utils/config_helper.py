@@ -64,11 +64,12 @@ def get_game_envvar(option: str, app_name: Optional[str] = None, fallback: Any =
 def get_wine_prefix(app_name: Optional[str] = None, fallback: Any = None) -> str:
     _prefix = os.path.join(
         _config.get("default.env", "STEAM_COMPAT_DATA_PATH", fallback=fallback), "pfx")
+    if app_name is not None:
+        _prefix = os.path.join(
+            _config.get(f'{app_name}.env', "STEAM_COMPAT_DATA_PATH", fallback=_prefix), "pfx")
     _prefix = _config.get("default.env", "WINEPREFIX", fallback=_prefix)
     _prefix = _config.get("default", "wine_prefix", fallback=_prefix)
     if app_name is not None:
-        _prefix = os.path.join(
-            _config.get(f'{app_name}.env', "STEAM_COMPAT_DATA_PATH", fallback=fallback), "pfx")
         _prefix = _config.get(f'{app_name}.env', 'WINEPREFIX', fallback=_prefix)
         _prefix = _config.get(app_name, 'wine_prefix', fallback=_prefix)
     return _prefix
