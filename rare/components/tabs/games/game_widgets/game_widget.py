@@ -38,9 +38,6 @@ class GameWidget(LibraryWidget):
         self.install_action = QAction(self.tr("Install"), self)
         self.install_action.triggered.connect(self._install)
 
-        # self.sync_action = QAction(self.tr("Sync with cloud"), self)
-        # self.sync_action.triggered.connect(self.sync_saves)
-
         self.desktop_link_action = QAction(self)
         self.desktop_link_action.triggered.connect(
             lambda: self._create_link(self.rgame.folder_name, "desktop")
@@ -144,9 +141,6 @@ class GameWidget(LibraryWidget):
         else:
             self.addAction(self.install_action)
 
-        # if self.rgame.game.supports_cloud_saves:
-        #     self.addAction(self.sync_action)
-
         if desktop_links_supported() and self.rgame.is_installed:
             if desktop_link_path(self.rgame.folder_name, "desktop").exists():
                 self.desktop_link_action.setText(self.tr("Remove Desktop link"))
@@ -209,8 +203,6 @@ class GameWidget(LibraryWidget):
     def _launch(self, offline=False, skip_version_check=False):
         if offline or (self.rgame.is_foreign and self.rgame.can_run_offline):
             offline = True
-        # if self.rgame.game.supports_cloud_saves and not offline:
-        #     self.syncing_cloud_saves = True
         if self.rgame.has_update:
             skip_version_check = True
         self.rgame.launch(
@@ -261,21 +253,3 @@ class GameWidget(LibraryWidget):
                 self.desktop_link_action.setText(self.tr("Create Desktop link"))
             elif link_type == "start_menu":
                 self.menu_link_action.setText(self.tr("Create Start Menu link"))
-
-    # def sync_finished(self, app_name):
-    #     self.syncing_cloud_saves = False
-
-    # def sync_game(self):
-    #     try:
-    #         sync = self.game_utils.cloud_save_utils.sync_before_launch_game(
-    #             self.rgame.app_name, True
-    #         )
-    #     except Exception:
-    #         sync = False
-    #     if sync:
-    #         self.syncing_cloud_saves = True
-
-    # def game_finished(self, app_name, error):
-    #     if error:
-    #         QMessageBox.warning(self, "Error", error)
-    #     self.game_running = False
