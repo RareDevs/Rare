@@ -330,31 +330,6 @@ class RareCore(QObject):
             self.fetch_entitlements()
         self.resolve_origin()
 
-    def load_pixmaps(self) -> None:
-        """
-        Load pixmaps for all games
-
-        This exists here solely to fight signal and possibly threading issues.
-        The initial image loading at startup should not be done in the RareGame class
-        for two reasons. It will delay startup due to widget updates and the image
-        might become availabe before the UI is brought up. In case of the second, we
-        will get both a long queue of signals to be serviced and some of them might
-        be not connected yet so the widget won't be updated. So do the loading here
-        by calling this after the MainWindow has finished initializing.
-
-        @return: None
-        """
-        def __load_pixmaps() -> None:
-            # time.sleep(0.1)
-            for rgame in self.__library.values():
-                # self.__image_manager.download_image(rgame.game, rgame.set_pixmap, 0, False)
-                rgame.load_pixmap()
-                # lk: activity perception delay
-                time.sleep(0.0005)
-
-        pixmap_worker = QRunnable.create(__load_pixmaps)
-        QThreadPool.globalInstance().start(pixmap_worker)
-
     @property
     def games_and_dlcs(self) -> Iterator[RareGame]:
         for app_name in self.__library:

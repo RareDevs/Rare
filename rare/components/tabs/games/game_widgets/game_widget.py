@@ -1,8 +1,9 @@
 import platform
+import random
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent
-from PyQt5.QtGui import QMouseEvent
+from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent, QTimer
+from PyQt5.QtGui import QMouseEvent, QShowEvent
 from PyQt5.QtWidgets import QMessageBox, QAction
 
 from rare.models.game import RareGame
@@ -104,6 +105,11 @@ class GameWidget(LibraryWidget):
     # lk: by the Ui class in the children. It must contain at least the same
     # lk: attributes as `GameWidgetUi` class
     __slots__ = "ui"
+
+    def showEvent(self, a0: QShowEvent) -> None:
+        if self.rgame.pixmap.isNull():
+            QTimer.singleShot(random.randrange(42, 361, 7), self.rgame.load_pixmap)
+        super().showEvent(a0)
 
     @pyqtSlot()
     def update_state(self):
