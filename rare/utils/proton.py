@@ -216,9 +216,9 @@ def get_steam_environment(tool: Optional[Union[ProtonTool, CompatibilityTool]], 
 
 def find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     steam_path = find_steam()
-    logger.info("Using Steam install in %s", steam_path)
+    logger.debug("Using Steam install in %s", steam_path)
     steam_libraries = find_libraries(steam_path)
-    logger.info("Searching for tools in libraries %s", steam_libraries)
+    logger.debug("Searching for tools in libraries %s", steam_libraries)
 
     runtimes = {}
     for library in steam_libraries:
