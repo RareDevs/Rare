@@ -8,6 +8,7 @@ from PyQt5.QtGui import QFont
 
 from rare.lgndr.core import LegendaryCore
 from rare.utils.misc import icon
+from rare.utils import proton
 
 
 class EnvVarsTableModel(QAbstractTableModel):
@@ -23,11 +24,11 @@ class EnvVarsTableModel(QAbstractTableModel):
 
         self.__readonly = [
             "STEAM_COMPAT_DATA_PATH",
-            "STEAM_COMPAT_CLIENT_INSTALL_PATH",
             "WINEPREFIX",
             "DXVK_HUD",
             "MANGOHUD_CONFIG",
         ]
+        self.__readonly.extend(proton.get_steam_environment(None).keys())
 
         self.__default: str = "default"
         self.__appname: str = None
