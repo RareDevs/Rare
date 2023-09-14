@@ -14,9 +14,9 @@ logger = getLogger("FetchWorker")
 
 class FetchWorker(Worker):
     class Result(IntEnum):
-        GAMES = 1
-        NON_ASSET = 2
-        COMBINED = 3
+        ERROR = 0
+        GAMESDLCS = 1
+        ENTITLEMENTS = 2
 
     class Signals(QObject):
         progress = pyqtSignal(int, str)
@@ -27,42 +27,56 @@ class FetchWorker(Worker):
         self.signals = FetchWorker.Signals()
         self.core = core
         self.args = args
-        self.exclude_non_asset = QSettings().value("exclude_non_asset", False, bool)
+
+
+class EntitlementsWorker(FetchWorker):
+    def __init__(self, core: LegendaryCore, args: Namespace):
+        super(EntitlementsWorker, self).__init__(core, args)
         self.exclude_entitlements = QSettings().value("exclude_entitlements", False, bool)
 
     def run_real(self):
-        progress = 0
+        entitlements = ()
+        self.signals.progress.emit(0, self.signals.tr("Updating entitlements"))
+        if not self.exclude_entitlements:
+            with timelogger(logger, "Request entitlements"):
+                entitlements = self.core.egs.get_user_entitlements()
+            logger.info(f"Entitlements: {len(list(entitlements))}")
+        self.signals.result.emit(entitlements, FetchWorker.Result.ENTITLEMENTS)
+        return
+
+
+class GamesDlcsWorker(FetchWorker):
+
+    def __init__(self, core: LegendaryCore, args: Namespace):
+        super(GamesDlcsWorker, self).__init__(core, args)
+        self.exclude_non_asset = QSettings().value("exclude_non_asset", False, bool)
+
+    def run_real(self):
 
         # Fetch regular EGL games with assets
-        self.signals.progress.emit(progress, self.signals.tr("Updating game metadata"))
+        self.signals.progress.emit(0, self.signals.tr("Updating game metadata"))
         with timelogger(logger, "Request games"):
             games, dlc_dict = self.core.get_game_and_dlc_list(
                 update_assets=not self.args.offline, platform="Windows", skip_ue=False
             )
-        progress += 10
         logger.info(f"Games: {len(games)}. Games with DLCs {len(dlc_dict)}")
 
         # Fetch non-asset games
         if not self.exclude_non_asset:
-            self.signals.progress.emit(progress, self.signals.tr("Updating non-asset metadata"))
+            self.signals.progress.emit(10, self.signals.tr("Updating non-asset metadata"))
             try:
                 with timelogger(logger, "Request non-asset"):
                     na_games, na_dlc_dict = self.core.get_non_asset_library_items(force_refresh=False, skip_ue=False)
             except (HTTPError, ConnectionError) as e:
-                logger.error(f"Exception while fetching non asset games from EGS.")
+                logger.error(f"Connection error while fetching non asset games")
                 logger.error(e)
                 na_games, na_dlc_dict = ([], {})
-            # FIXME:
-            #  This is here because of broken appIds from Epic:
-            #  https://discord.com/channels/826881530310819914/884510635642216499/1111321692703305729
-            #  There is a tab character in the appId of Fallout New Vegas: Honest Hearts DLC, this breaks metadata storage
-            #  on Windows as they can't handle tabs at the end of the filename (?)
-            #  Legendary and Heroic are also affected, but it completely breaks Rare, so dodge it for now pending a fix.
+            # NOTE: This is here because of broken appIds from Epic
+            # https://discord.com/channels/826881530310819914/884510635642216499/1111321692703305729
             except Exception as e:
-                logger.error(f"Exception while fetching non asset games from EGS.")
+                logger.error(f"General exception while fetching non asset games")
                 logger.error(e)
                 na_games, na_dlc_dict = ([], {})
-            progress += 10
             logger.info(f"Non-asset: {len(na_games)}. Non-asset with DLCs: {len(na_dlc_dict)}")
 
             # Combine the two games lists and the two dlc dictionaries between regular and non-asset results
@@ -74,14 +88,5 @@ class FetchWorker(Worker):
                     dlc_dict[catalog_id] = dlcs
             logger.info(f"Games: {len(games)}. Games with DLCs: {len(dlc_dict)}")
 
-        if not self.exclude_entitlements:
-            # Get entitlements, Ubisoft integration also uses them
-            self.signals.progress.emit(progress, self.signals.tr("Updating entitlements"))
-            with timelogger(logger, "Request entitlements"):
-                entitlements = self.core.egs.get_user_entitlements()
-            self.core.lgd.entitlements = entitlements
-            progress += 10
-            logger.info(f"Entitlements: {len(list(entitlements))}")
-
-        self.signals.progress.emit(progress, self.signals.tr("Preparing games"))
-        self.signals.result.emit((games, dlc_dict), FetchWorker.Result.COMBINED)
+        self.signals.progress.emit(10, self.signals.tr("Preparing library"))
+        self.signals.result.emit((games, dlc_dict), FetchWorker.Result.GAMESDLCS)

@@ -1,6 +1,5 @@
 import os
 import shutil
-import sys
 from argparse import Namespace
 from datetime import datetime, timezone
 from typing import Optional
@@ -13,7 +12,7 @@ from requests import HTTPError
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.shared import RareCore
-from rare.utils import config_helper, paths
+from rare.utils import paths
 from rare.widgets.rare_app import RareApp, RareAppException
 
 
@@ -44,8 +43,6 @@ class Rare(RareApp):
         self.args = RareCore.instance().args()
         self.signals = RareCore.instance().signals()
         self.core = RareCore.instance().core()
-
-        config_helper.init_config_handler(self.core)
 
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)

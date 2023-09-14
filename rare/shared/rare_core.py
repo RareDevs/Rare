@@ -16,12 +16,15 @@ from rare.models.base_game import RareSaveGame
 from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
 from rare.utils.metrics import timelogger
+from rare.utils import config_helper
 from .image_manager import ImageManager
 from .workers import (
     QueueWorker,
     VerifyWorker,
     MoveWorker,
     FetchWorker,
+    GamesDlcsWorker,
+    EntitlementsWorker,
     OriginWineWorker,
 )
 from .workers.uninstall import uninstall_game
@@ -55,6 +58,7 @@ class RareCore(QObject):
         self.args(args)
         self.signals(init=True)
         self.core(init=True)
+        config_helper.init_config_handler(self.__core)
         self.image_manager(init=True)
 
         self.settings = QSettings()
@@ -67,6 +71,10 @@ class RareCore(QObject):
         self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp)
         self.__eos_overlay.signals.game.install.connect(self.__signals.game.install)
         self.__eos_overlay.signals.game.uninstall.connect(self.__signals.game.uninstall)
+
+        self.__fetch_progress: int = 0
+        self.__fetched_games_dlcs: bool = False
+        self.__fetched_entitlements: bool = False
 
         RareCore.__instance = self
 
@@ -266,24 +274,45 @@ class RareCore(QObject):
                     logger.info(f'Marking "{rgame.app_title}" as not installed because an exception has occurred...')
                     logger.error(e)
                     rgame.set_installed(False)
-            self.progress.emit(int(idx/length * 80) + 20, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
+            progress = int(idx/length * self.__fetch_progress) + (100 - self.__fetch_progress)
+            self.progress.emit(progress, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
+
+    @pyqtSlot(int, str)
+    def __on_fetch_progress(self, increment: int, message: str):
+        self.__fetch_progress += increment
+        self.progress.emit(self.__fetch_progress, message)
 
     @pyqtSlot(object, int)
-    def __on_fetch_result(self, result: Tuple[List, Dict], res_type: int):
-        logger.info(f"Got API results for {FetchWorker.Result(res_type).name}")
-        self.progress.emit(15, self.tr("Preparing library"))
-        self.__add_games_and_dlcs(*result)
-        self.progress.emit(100, self.tr("Launching Rare"))
-        logger.debug(f"Fetch time {time.perf_counter() - self.__start_time} seconds")
-        QTimer.singleShot(100, self.__post_init)
-        self.completed.emit()
+    def __on_fetch_result(self, result: Tuple, result_type: int):
+        if result_type == FetchWorker.Result.GAMESDLCS:
+            self.__add_games_and_dlcs(*result)
+            self.__fetched_games_dlcs = True
+
+        if result_type == FetchWorker.Result.ENTITLEMENTS:
+            self.__core.lgd.entitlements = result
+            self.__fetched_entitlements = True
+
+        logger.info(f"Acquired data for {FetchWorker.Result(result_type).name}")
+
+        if all([self.__fetched_games_dlcs, self.__fetched_entitlements]):
+            logger.debug(f"Fetch time {time.perf_counter() - self.__start_time} seconds")
+            self.progress.emit(100, self.tr("Launching Rare"))
+            self.completed.emit()
+            QTimer.singleShot(100, self.__post_init)
 
     def fetch(self):
         self.__start_time = time.perf_counter()
-        fetch_worker = FetchWorker(self.__core, self.__args)
-        fetch_worker.signals.progress.connect(self.progress)
-        fetch_worker.signals.result.connect(self.__on_fetch_result)
-        QThreadPool.globalInstance().start(fetch_worker)
+
+        games_dlcs_worker = GamesDlcsWorker(self.__core, self.__args)
+        games_dlcs_worker.signals.progress.connect(self.__on_fetch_progress)
+        games_dlcs_worker.signals.result.connect(self.__on_fetch_result)
+
+        entitlements_worker = EntitlementsWorker(self.__core, self.__args)
+        entitlements_worker.signals.progress.connect(self.__on_fetch_progress)
+        entitlements_worker.signals.result.connect(self.__on_fetch_result)
+
+        QThreadPool.globalInstance().start(games_dlcs_worker)
+        QThreadPool.globalInstance().start(entitlements_worker)
 
     def fetch_saves(self):
         def __fetch() -> None:
@@ -309,24 +338,6 @@ class RareCore(QObject):
         saves_worker = QRunnable.create(__fetch)
         QThreadPool.globalInstance().start(saves_worker)
 
-    def fetch_entitlements(self) -> None:
-        def __fetch() -> None:
-            try:
-                if (entitlements := self.__core.lgd.entitlements) is None:
-                    with timelogger(logger, "Request entitlements"):
-                        entitlements = self.__core.egs.get_user_entitlements()
-                    self.__core.lgd.entitlements = entitlements
-                for game in self.__library.values():
-                    game.grant_date()
-            except (HTTPError, ConnectionError) as e:
-                logger.error(f"Exception while fetching entitlements from EGS.")
-                logger.error(e)
-                return
-            logger.info(f"Entitlements: {len(list(entitlements))}")
-
-        entitlements_worker = QRunnable.create(__fetch)
-        QThreadPool.globalInstance().start(entitlements_worker)
-
     def resolve_origin(self) -> None:
         origin_worker = OriginWineWorker(self.__core, list(self.origin_games))
         QThreadPool.globalInstance().start(origin_worker)
@@ -334,7 +345,6 @@ class RareCore(QObject):
     def __post_init(self) -> None:
         if not self.__args.offline:
             self.fetch_saves()
-            # self.fetch_entitlements()
         self.resolve_origin()
 
     @property
