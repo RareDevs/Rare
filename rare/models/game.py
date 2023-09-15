@@ -33,7 +33,7 @@ class RareGame(RareGameSlim):
         queue_pos: Optional[int] = None
         last_played: datetime = datetime.min
         grant_date: Optional[datetime] = None
-        steam_appid: int = 0
+        steam_appid: Optional[int] = None
         steam_grade: Optional[str] = None
         steam_date: datetime = datetime.min
         tags: List[str] = field(default_factory=list)
@@ -46,7 +46,7 @@ class RareGame(RareGameSlim):
                 queue_pos=data.get("queue_pos", None),
                 last_played=datetime.fromisoformat(data["last_played"]) if data.get("last_played", None) else datetime.min,
                 grant_date=datetime.fromisoformat(data["grant_date"]) if data.get("grant_date", None) else None,
-                steam_appid=data.get("steam_appid", 0),
+                steam_appid=data.get("steam_appid", None),
                 steam_grade=data.get("steam_grade", None),
                 steam_date=datetime.fromisoformat(data["steam_date"]) if data.get("steam_date", None) else datetime.min,
                 tags=data.get("tags", []),
@@ -450,7 +450,7 @@ class RareGame(RareGameSlim):
         elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
         if (
             self.metadata.steam_grade is not None
-            and self.metadata.steam_appid != 0
+            and self.metadata.steam_appid is not None
             and elapsed_time.days < 3
         ):
             return self.metadata.steam_grade
@@ -468,7 +468,7 @@ class RareGame(RareGameSlim):
         return self.metadata.steam_appid
 
     def set_steam_grade(self, appid: int, grade: str) -> None:
-        if appid and not self.steam_appid:
+        if appid or self.steam_appid is None:
             add_envvar(self.app_name, "SteamAppId", str(appid))
             self.metadata.steam_appid = appid
         self.metadata.steam_grade = grade
