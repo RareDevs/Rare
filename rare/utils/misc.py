@@ -195,3 +195,7 @@ def widget_object_name(widget: Union[QObject, wrappertype, Type], suffix: str) -
 def elide_text(label: QLabel, text: str) -> str:
     metrics = QFontMetrics(label.font())
     return metrics.elidedText(text, Qt.ElideRight, label.sizeHint().width())
+
+
+def style_hyperlink(link: str, title: str) -> str:
+    return "<a href='{}' style='color: #2980b9; text-decoration:none'>{}</a>".format(link, title)

@@ -20,7 +20,7 @@ from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.shared.workers import VerifyWorker, MoveWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
-from rare.utils.misc import format_size, icon
+from rare.utils.misc import format_size, icon, style_hyperlink
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
 from .move_game import MoveGamePopUp, is_game_dir
@@ -293,7 +293,12 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.grade.setDisabled(
             self.rgame.is_unreal or platform.system() == "Windows"
         )
-        self.ui.grade.setText(self.steam_grade_ratings[self.rgame.steam_grade()])
+        self.ui.grade.setText(
+            style_hyperlink(
+                f"https://www.protondb.com/app/{self.rgame.steam_appid}",
+                self.steam_grade_ratings[self.rgame.steam_grade()]
+            )
+        )
 
         self.ui.install_button.setEnabled(
             (not self.rgame.is_installed or self.rgame.is_non_asset) and self.rgame.is_idle

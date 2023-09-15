@@ -133,6 +133,7 @@ class Ui_GameInfo(object):
         self.info_layout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.lbl_grade)
         self.grade = QtWidgets.QLabel(GameInfo)
         self.grade.setText("error")
+        self.grade.setOpenExternalLinks(True)
         self.grade.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.grade.setObjectName("grade")
         self.info_layout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.grade)

@@ -20,6 +20,7 @@ from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
+from rare.utils.config_helper import add_envvar, remove_envvar
 
 logger = getLogger("RareGame")
 
@@ -32,6 +33,7 @@ class RareGame(RareGameSlim):
         queue_pos: Optional[int] = None
         last_played: datetime = datetime.min
         grant_date: Optional[datetime] = None
+        steam_appid: int = 0
         steam_grade: Optional[str] = None
         steam_date: datetime = datetime.min
         tags: List[str] = field(default_factory=list)
@@ -44,6 +46,7 @@ class RareGame(RareGameSlim):
                 queue_pos=data.get("queue_pos", None),
                 last_played=datetime.fromisoformat(data["last_played"]) if data.get("last_played", None) else datetime.min,
                 grant_date=datetime.fromisoformat(data["grant_date"]) if data.get("grant_date", None) else None,
+                steam_appid=data.get("steam_appid", 0),
                 steam_grade=data.get("steam_grade", None),
                 steam_date=datetime.fromisoformat(data["steam_date"]) if data.get("steam_date", None) else datetime.min,
                 tags=data.get("tags", []),
@@ -56,6 +59,7 @@ class RareGame(RareGameSlim):
                 queue_pos=self.queue_pos,
                 last_played=self.last_played.isoformat() if self.last_played else datetime.min,
                 grant_date=self.grant_date.isoformat() if self.grant_date else None,
+                steam_appid=self.steam_appid,
                 steam_grade=self.steam_grade,
                 steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min,
                 tags=self.tags,
@@ -78,6 +82,8 @@ class RareGame(RareGameSlim):
         self.pixmap: QPixmap = QPixmap()
         self.metadata: RareGame.Metadata = RareGame.Metadata()
         self.__load_metadata()
+        if self.metadata.grant_date is None:
+            self.grant_date()
 
         self.owned_dlcs: Set[RareGame] = set()
 
@@ -442,18 +448,29 @@ class RareGame(RareGameSlim):
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
         elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
-        if self.metadata.steam_grade is not None and elapsed_time.days < 3:
+        if (
+            self.metadata.steam_grade is not None
+            and self.metadata.steam_appid != 0
+            and elapsed_time.days < 3
+        ):
             return self.metadata.steam_grade
 
         def _set_steam_grade():
-            rating = get_rating(self.core, self.app_name)
-            self.set_steam_grade(rating)
+            appid, rating = get_rating(self.core, self.app_name)
+            self.set_steam_grade(appid, rating)
 
         worker = QRunnable.create(_set_steam_grade)
         QThreadPool.globalInstance().start(worker)
         return "pending"
 
-    def set_steam_grade(self, grade: str) -> None:
+    @property
+    def steam_appid(self) -> Optional[int]:
+        return self.metadata.steam_appid
+
+    def set_steam_grade(self, appid: int, grade: str) -> None:
+        if appid and not self.steam_appid:
+            add_envvar(self.app_name, "SteamAppId", str(appid))
+            self.metadata.steam_appid = appid
         self.metadata.steam_grade = grade
         self.metadata.steam_date = datetime.utcnow()
         self.__save_metadata()

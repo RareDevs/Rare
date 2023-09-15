@@ -20,26 +20,31 @@ def save_config():
     _save_config()
 
 
-def add_option(app_name: str, option: str, value: str):
+def add_option(app_name: str, option: str, value: str) -> None:
     value = value.replace("%%", "%").replace("%", "%%")
     if not _config.has_section(app_name):
         _config[app_name] = {}
-
     _config.set(app_name, option, value)
     save_config()
 
 
-def remove_option(app_name, option):
+def add_envvar(app_name: str, envvar: str, value: str) -> None:
+    add_option(f"{app_name}.env", envvar, value)
+
+
+def remove_option(app_name: str, option: str) -> None:
     if _config.has_option(app_name, option):
         _config.remove_option(app_name, option)
-
     # if _config.has_section(app_name) and not _config[app_name]:
     #     _config.remove_section(app_name)
-
     save_config()
 
 
-def remove_section(app_name):
+def remove_envvar(app_name: str, option: str) -> None:
+    remove_option(f"{app_name}.env", option)
+
+
+def remove_section(app_name: str) -> None:
     return
     # Disabled due to env variables implementation
     if _config.has_section(app_name):
@@ -61,13 +66,16 @@ def get_game_envvar(option: str, app_name: Optional[str] = None, fallback: Any =
     return _option
 
 
-def get_wine_prefix(app_name: Optional[str] = None, fallback: Any = None) -> str:
-    _prefix = os.path.join(
-        _config.get("default.env", "STEAM_COMPAT_DATA_PATH", fallback=fallback), "pfx")
+def get_proton_compat_data(app_name: Optional[str] = None, fallback: Any = None) -> str:
+    _compat = _config.get("default.env", "STEAM_COMPAT_DATA_PATH", fallback=fallback)
     if app_name is not None:
-        _prefix = os.path.join(
-            _config.get(f'{app_name}.env', "STEAM_COMPAT_DATA_PATH", fallback=_prefix), "pfx")
-    _prefix = _config.get("default.env", "WINEPREFIX", fallback=_prefix)
+        _compat = _config.get(f'{app_name}.env', "STEAM_COMPAT_DATA_PATH", fallback=_compat)
+    # return os.path.join(_compat, "pfx") if _compat else fallback
+    return _compat
+
+
+def get_wine_prefix(app_name: Optional[str] = None, fallback: Any = None) -> str:
+    _prefix = _config.get("default.env", "WINEPREFIX", fallback=fallback)
     _prefix = _config.get("default", "wine_prefix", fallback=_prefix)
     if app_name is not None:
         _prefix = _config.get(f'{app_name}.env', 'WINEPREFIX', fallback=_prefix)
