@@ -105,7 +105,9 @@ class DownloadsTab(QWidget):
     def __add_update(self, update: Union[str, RareGame]):
         if isinstance(update, str):
             update = self.rcore.get_game(update)
-        if update.metadata.auto_update or QSettings().value("auto_update", False, bool):
+        if QSettings().value(
+                f"{update.app_name}/auto_update", False, bool
+        ) or QSettings().value("auto_update", False, bool):
             self.__get_install_options(
                 InstallOptionsModel(app_name=update.app_name, update=True, silent=True)
             )
