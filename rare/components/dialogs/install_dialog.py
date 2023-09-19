@@ -5,7 +5,7 @@ from typing import Tuple, List, Union, Optional
 
 from PyQt5.QtCore import Qt, QThreadPool, QSettings, QCoreApplication
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QKeyEvent
+from PyQt5.QtGui import QCloseEvent, QKeyEvent, QShowEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout, QWidget, QVBoxLayout
 from legendary.utils.selective_dl import get_sdl_appname
 
@@ -171,6 +171,10 @@ class InstallDialog(QDialog):
         self.advanced.ui.install_prereqs_check.setChecked(self.options.install_prereqs)
 
         self.ui.install_dialog_layout.setSizeConstraint(QLayout.SetFixedSize)
+
+    def showEvent(self, a0: QShowEvent) -> None:
+        self.save_install_edit(self.install_dir_edit.text())
+        super().showEvent(a0)
 
     def execute(self):
         if self.options.silent:
