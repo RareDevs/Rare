@@ -1,8 +1,7 @@
-import platform
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QDialog, QApplication
+from PyQt5.QtWidgets import QDialog
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.components.dialogs.login import LoginDialog
