@@ -36,6 +36,12 @@ def lock_file() -> Path:
     return Path(QStandardPaths.writableLocation(QStandardPaths.TempLocation), "Rare.lock")
 
 
+def config_dir() -> Path:
+    # FIXME: This returns ~/.config/Rare/Rare/ for some reason while the settings are in ~/.config/Rare/Rare.conf
+    # Take the parent for now, but this should be investigated
+    return Path(QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation)).parent
+
+
 def data_dir() -> Path:
     return Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation))
 

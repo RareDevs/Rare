@@ -83,7 +83,7 @@ class GameMetadataView(QTreeView, SideTabContents):
         self.set_title.emit(self.rgame.app_title)
         self.model.clear()
         try:
-            self.model.load(view.__dict__)
+            self.model.load(vars(view))
         except Exception as e:
             pass
         self.resizeColumnToContents(0)

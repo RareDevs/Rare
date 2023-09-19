@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Dict
 
 
 class Actions:
@@ -15,7 +16,7 @@ class BaseModel:
     app_name: str
 
     @classmethod
-    def from_json(cls, data: dict):
+    def from_json(cls, data: Dict):
         return cls(
             action=data["action"],
             app_name=data["app_name"]
@@ -28,9 +29,9 @@ class FinishedModel(BaseModel):
     playtime: int  # seconds
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: Dict):
         return cls(
-            **BaseModel.from_json(data).__dict__,
+            **vars(BaseModel.from_json(data)),
             exit_code=data["exit_code"],
             playtime=data["playtime"],
         )
@@ -47,7 +48,7 @@ class StateChangedModel(BaseModel):
     new_state: int
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: Dict):
         return cls(
             action=data["action"],
             app_name=data["app_name"],
@@ -60,8 +61,8 @@ class ErrorModel(BaseModel):
     error_string: str
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: Dict):
         return cls(
-            **BaseModel.from_json(data).__dict__,
+            **vars(BaseModel.from_json(data)),
             error_string=data["error_string"]
         )

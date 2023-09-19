@@ -20,7 +20,7 @@ from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
-from rare.utils.config_helper import add_envvar, remove_envvar
+from rare.utils.config_helper import add_envvar
 
 logger = getLogger("RareGame")
 
@@ -28,7 +28,6 @@ logger = getLogger("RareGame")
 class RareGame(RareGameSlim):
     @dataclass
     class Metadata:
-        auto_update: bool = False
         queued: bool = False
         queue_pos: Optional[int] = None
         last_played: datetime = datetime.min
@@ -41,20 +40,19 @@ class RareGame(RareGameSlim):
         @classmethod
         def from_dict(cls, data: Dict):
             return cls(
-                auto_update=data.get("auto_update", False),
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
-                last_played=datetime.fromisoformat(data["last_played"]) if data.get("last_played", None) else datetime.min,
-                grant_date=datetime.fromisoformat(data["grant_date"]) if data.get("grant_date", None) else None,
+                last_played=datetime.fromisoformat(x) if (x := data.get("last_played", None)) else datetime.min,
+                grant_date=datetime.fromisoformat(x) if (x := data.get("grant_date", None)) else None,
                 steam_appid=data.get("steam_appid", None),
                 steam_grade=data.get("steam_grade", None),
-                steam_date=datetime.fromisoformat(data["steam_date"]) if data.get("steam_date", None) else datetime.min,
+                steam_date=datetime.fromisoformat(x) if (x := data.get("steam_date", None)) else datetime.min,
                 tags=data.get("tags", []),
             )
 
-        def as_dict(self):
+        @property
+        def __dict__(self):
             return dict(
-                auto_update=self.auto_update,
                 queued=self.queued,
                 queue_pos=self.queue_pos,
                 last_played=self.last_played.isoformat() if self.last_played else datetime.min,
@@ -144,13 +142,14 @@ class RareGame(RareGameSlim):
     def __load_metadata_json() -> Dict:
         if RareGame.__metadata_json is None:
             metadata = {}
+            file = os.path.join(data_dir(), "game_meta.json")
             try:
-                with open(os.path.join(data_dir(), "game_meta.json"), "r") as metadata_fh:
-                    metadata = json.load(metadata_fh)
+                with open(file, "r") as f:
+                    metadata = json.load(f)
             except FileNotFoundError:
-                logger.info("Game metadata json file does not exist.")
+                logger.info("%s does not exist", file)
             except json.JSONDecodeError:
-                logger.warning("Game metadata json file is corrupt.")
+                logger.warning("%s is corrupt", file)
             finally:
                 RareGame.__metadata_json = metadata
         return RareGame.__metadata_json
@@ -167,9 +166,9 @@ class RareGame(RareGameSlim):
         with RareGame.__metadata_lock:
             metadata: Dict = self.__load_metadata_json()
             # pylint: disable=unsupported-assignment-operation
-            metadata[self.app_name] = self.metadata.as_dict()
-            with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
-                json.dump(metadata, metadata_json, indent=2)
+            metadata[self.app_name] = vars(self.metadata)
+            with open(os.path.join(data_dir(), "game_meta.json"), "w+") as file:
+                json.dump(metadata, file, indent=2)
 
     def update_game(self):
         self.game = self.core.get_game(
@@ -468,8 +467,10 @@ class RareGame(RareGameSlim):
         return self.metadata.steam_appid
 
     def set_steam_grade(self, appid: int, grade: str) -> None:
-        if appid or self.steam_appid is None:
+        if appid and self.steam_appid is None:
             add_envvar(self.app_name, "SteamAppId", str(appid))
+            add_envvar(self.app_name, "SteamGameId", str(appid))
+            add_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
             self.metadata.steam_appid = appid
         self.metadata.steam_grade = grade
         self.metadata.steam_date = datetime.utcnow()

@@ -42,7 +42,7 @@ class InstallOptionsModel:
     def as_install_kwargs(self) -> Dict:
         return {
             k: getattr(self, k)
-            for k in self.__dict__
+            for k in vars(self)
             if k not in ["update", "silent", "create_shortcut", "overlay", "install_prereqs"]
         }
 

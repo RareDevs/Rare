@@ -11,7 +11,7 @@ from rare.lgndr.glue.arguments import LgndrUninstallGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
 from rare.models.install import UninstallOptionsModel
-from rare.utils import config_helper
+from rare.utils import config_helper as config
 from rare.utils.paths import desktop_links_supported, desktop_link_types, desktop_link_path
 from .worker import Worker
 
@@ -31,7 +31,7 @@ def uninstall_game(
 
         logger.info('Removing registry entries...')
         if platform.system() != "Window":
-            prefixes = config_helper.get_wine_prefixes()
+            prefixes = config.get_prefixes()
             if platform.system() == "Darwin":
                 # TODO: add crossover support
                 pass
@@ -65,10 +65,10 @@ def uninstall_game(
     )
     if not keep_config:
         logger.info("Removing sections in config file")
-        config_helper.remove_section(rgame.app_name)
-        config_helper.remove_section(f"{rgame.app_name}.env")
+        config.remove_section(rgame.app_name)
+        config.remove_section(f"{rgame.app_name}.env")
 
-        config_helper.save_config()
+        config.save_config()
 
     return status.success, status.message
 

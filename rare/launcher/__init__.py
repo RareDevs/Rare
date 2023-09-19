@@ -201,7 +201,7 @@ class RareLauncher(RareApp):
 
     def send_message(self, message: BaseModel):
         if self.socket:
-            self.socket.write(json.dumps(message.__dict__).encode("utf-8"))
+            self.socket.write(json.dumps(vars(message)).encode("utf-8"))
             self.socket.flush()
         else:
             self.logger.error("Can't send message")

@@ -67,9 +67,7 @@ def get_game_envvar(option: str, app_name: Optional[str] = None, fallback: Any =
 
 
 def get_proton_compat_data(app_name: Optional[str] = None, fallback: Any = None) -> str:
-    _compat = _config.get("default.env", "STEAM_COMPAT_DATA_PATH", fallback=fallback)
-    if app_name is not None:
-        _compat = _config.get(f'{app_name}.env', "STEAM_COMPAT_DATA_PATH", fallback=_compat)
+    _compat = get_game_envvar("STEAM_COMPAT_DATA_PATH", app_name, fallback=fallback)
     # return os.path.join(_compat, "pfx") if _compat else fallback
     return _compat
 
@@ -87,10 +85,47 @@ def get_wine_prefixes() -> Set[str]:
     _prefixes = []
     for name, section in _config.items():
         pfx = section.get("WINEPREFIX") or section.get("wine_prefix")
-        if not pfx:
-            pfx = os.path.join(compatdata, "pfx") if (compatdata := section.get("STEAM_COMPAT_DATA_PATH")) else ""
         if pfx:
             _prefixes.append(pfx)
     _prefixes = [os.path.expanduser(prefix) for prefix in _prefixes]
     return {p for p in _prefixes if os.path.isdir(p)}
 
+
+def get_proton_prefixes() -> Set[str]:
+    _prefixes = []
+    for name, section in _config.items():
+        pfx = os.path.join(compatdata, "pfx") if (compatdata := section.get("STEAM_COMPAT_DATA_PATH")) else ""
+        if pfx:
+            _prefixes.append(pfx)
+    _prefixes = [os.path.expanduser(prefix) for prefix in _prefixes]
+    return {p for p in _prefixes if os.path.isdir(p)}
+
+
+def get_prefixes() -> Set[str]:
+    return get_wine_prefixes().union(get_proton_prefixes())
+
+
+def prefix_exists(pfx: str) -> bool:
+    return os.path.isdir(pfx) and os.path.isfile(os.path.join(pfx, "user.reg"))
+
+
+def get_prefix(app_name: str = "default") -> Optional[str]:
+    _compat_path = _config.get(f"{app_name}.env", "STEAM_COMPAT_DATA_PATH", fallback=None)
+    if _compat_path and prefix_exists(_compat_prefix := os.path.join(_compat_path, "pfx")):
+        return _compat_prefix
+
+    _wine_prefix = _config.get(f"{app_name}.env", "WINEPREFIX", fallback=None)
+    _wine_prefix = _config.get(app_name, "wine_prefix", fallback=_wine_prefix)
+    if _wine_prefix and prefix_exists(_wine_prefix):
+        return _wine_prefix
+
+    _compat_path = _config.get(f"default.env", "STEAM_COMPAT_DATA_PATH", fallback=None)
+    if _compat_path and prefix_exists(_compat_prefix := os.path.join(_compat_path, "pfx")):
+        return _compat_prefix
+
+    _wine_prefix = _config.get(f"default.env", "WINEPREFIX", fallback=None)
+    _wine_prefix = _config.get("default", "wine_prefix", fallback=_wine_prefix)
+    if _wine_prefix and prefix_exists(_wine_prefix):
+        return _wine_prefix
+
+    return None
