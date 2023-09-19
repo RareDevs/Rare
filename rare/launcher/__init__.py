@@ -17,6 +17,7 @@ from legendary.models.game import SaveGameStatus
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameSlim
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
+from rare.models.options import options
 from rare.widgets.rare_app import RareApp, RareAppException
 from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
 from .console_dialog import ConsoleDialog
@@ -145,7 +146,7 @@ class RareLauncher(RareApp):
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)
 
-        if QSettings().value("show_console", False, bool):
+        if QSettings(self).value(*options.log_games):
             self.console = ConsoleDialog()
             self.console.show()
 

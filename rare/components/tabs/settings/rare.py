@@ -8,6 +8,7 @@ from PyQt5.QtCore import QSettings, Qt
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from rare.components.tabs.settings.widgets.rpc import RPCSettings
+from rare.models.options import options
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils.misc import (
@@ -39,18 +40,8 @@ class RareSettings(QWidget, Ui_RareSettings):
         super(RareSettings, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()
-        # (widget_name, option_name, default)
-        self.checkboxes = [
-            (self.sys_tray, "sys_tray", True),
-            (self.auto_update, "auto_update", False),
-            (self.confirm_start, "confirm_start", False),
-            (self.auto_sync_cloud, "auto_sync_cloud", False),
-            (self.notification, "notification", True),
-            (self.save_size, "save_size", False),
-            (self.log_games, "show_console", False),
-        ]
+        self.settings = QSettings(self)
 
-        self.settings = QSettings()
         language = self.settings.value("language", self.core.language_code, type=str)
 
         # Select lang
@@ -85,29 +76,37 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.rpc = RPCSettings(self)
         self.right_layout.insertWidget(1, self.rpc, alignment=Qt.AlignTop)
 
-        self.init_checkboxes(self.checkboxes)
+        self.sys_tray.setChecked(self.settings.value(*options.sys_tray))
         self.sys_tray.stateChanged.connect(
-            lambda: self.settings.setValue("sys_tray", self.sys_tray.isChecked())
+            lambda: self.settings.setValue(options.sys_tray.key, self.sys_tray.isChecked())
         )
+
+        self.auto_update.setChecked(self.settings.value(*options.auto_update))
         self.auto_update.stateChanged.connect(
-            lambda: self.settings.setValue("auto_update", self.auto_update.isChecked())
+            lambda: self.settings.setValue(options.auto_update.key, self.auto_update.isChecked())
         )
+
+        self.confirm_start.setChecked(self.settings.value(*options.confirm_start))
         self.confirm_start.stateChanged.connect(
-            lambda: self.settings.setValue(
-                "confirm_start", self.confirm_start.isChecked()
-            )
+            lambda: self.settings.setValue(options.confirm_start.key, self.confirm_start.isChecked())
         )
+
+        self.auto_sync_cloud.setChecked(self.settings.value(*options.auto_sync_cloud))
         self.auto_sync_cloud.stateChanged.connect(
-            lambda: self.settings.setValue(
-                "auto_sync_cloud", self.auto_sync_cloud.isChecked()
-            )
+            lambda: self.settings.setValue(options.auto_sync_cloud.key, self.auto_sync_cloud.isChecked())
         )
+
+        self.notification.setChecked(self.settings.value(*options.notification))
         self.notification.stateChanged.connect(
-            lambda: self.settings.setValue("notification", self.notification.isChecked())
+            lambda: self.settings.setValue(options.notification.key, self.notification.isChecked())
         )
+
+        self.save_size.setChecked(self.settings.value(*options.save_size))
         self.save_size.stateChanged.connect(self.save_window_size)
+
+        self.log_games.setChecked(self.settings.value(*options.log_games))
         self.log_games.stateChanged.connect(
-            lambda: self.settings.setValue("show_console", self.log_games.isChecked())
+            lambda: self.settings.setValue(options.log_games.key, self.log_games.isChecked())
         )
 
         if desktop_links_supported():
@@ -221,13 +220,8 @@ class RareSettings(QWidget, Ui_RareSettings):
             subprocess.Popen([opener, log_dir()])
 
     def save_window_size(self):
-        self.settings.setValue("save_size", self.save_size.isChecked())
-        self.settings.remove("window_size")
+        self.settings.setValue(options.save_size.key, self.save_size.isChecked())
+        self.settings.remove(options.window_size.key)
 
     def update_lang(self, i: int):
         self.settings.setValue("language", languages[i][0])
-
-    def init_checkboxes(self, checkboxes):
-        for cb in checkboxes:
-            widget, option, default = cb
-            widget.setChecked(self.settings.value(option, default, bool))

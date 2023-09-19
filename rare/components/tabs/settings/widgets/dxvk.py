@@ -1,10 +1,10 @@
 from PyQt5.QtCore import QCoreApplication
 
-from .overlay_settings import OverlaySettings, CustomOption
+from .overlays import OverlaySettings, CustomOption
 
 
 class DxvkSettings(OverlaySettings):
-    def __init__(self):
+    def __init__(self, parent=None):
         super(DxvkSettings, self).__init__(
             [
                 ("fps", QCoreApplication.translate("DxvkSettings", "FPS")),
@@ -19,7 +19,8 @@ class DxvkSettings(OverlaySettings):
             [
                 (CustomOption.number_input("scale", 1, True), QCoreApplication.translate("DxvkSettings", "Scale"))
             ],
-            "DXVK_HUD", "0"
+            "DXVK_HUD", "0",
+            parent=parent
         )
 
         self.setTitle(self.tr("DXVK Settings"))

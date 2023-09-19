@@ -2,7 +2,7 @@ import json
 import os
 import platform
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, UTC
 from logging import getLogger
 from threading import Lock
 from typing import List, Optional, Dict, Set
@@ -19,7 +19,7 @@ from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
-from rare.utils.config_helper import add_envvar, remove_envvar
+from rare.utils.config_helper import add_envvar
 
 logger = getLogger("RareGame")
 
@@ -27,11 +27,10 @@ logger = getLogger("RareGame")
 class RareGame(RareGameSlim):
     @dataclass
     class Metadata:
-        auto_update: bool = False
         queued: bool = False
         queue_pos: Optional[int] = None
         last_played: datetime = datetime.min
-        grant_date: Optional[datetime] = None
+        grant_date: datetime = datetime.min
         steam_appid: Optional[int] = None
         steam_grade: Optional[str] = None
         steam_date: datetime = datetime.min
@@ -40,24 +39,23 @@ class RareGame(RareGameSlim):
         @classmethod
         def from_dict(cls, data: Dict):
             return cls(
-                auto_update=data.get("auto_update", False),
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
-                last_played=datetime.fromisoformat(data["last_played"]) if data.get("last_played", None) else datetime.min,
-                grant_date=datetime.fromisoformat(data["grant_date"]) if data.get("grant_date", None) else None,
+                last_played=datetime.fromisoformat(x) if (x := data.get("last_played", None)) else datetime.min,
+                grant_date=datetime.fromisoformat(x) if (x := data.get("grant_date", None)) else datetime.min,
                 steam_appid=data.get("steam_appid", None),
                 steam_grade=data.get("steam_grade", None),
-                steam_date=datetime.fromisoformat(data["steam_date"]) if data.get("steam_date", None) else datetime.min,
+                steam_date=datetime.fromisoformat(x) if (x := data.get("steam_date", None)) else datetime.min,
                 tags=data.get("tags", []),
             )
 
-        def as_dict(self):
+        @property
+        def __dict__(self):
             return dict(
-                auto_update=self.auto_update,
                 queued=self.queued,
                 queue_pos=self.queue_pos,
                 last_played=self.last_played.isoformat() if self.last_played else datetime.min,
-                grant_date=self.grant_date.isoformat() if self.grant_date else None,
+                grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min,
                 steam_appid=self.steam_appid,
                 steam_grade=self.steam_grade,
                 steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min,
@@ -81,8 +79,7 @@ class RareGame(RareGameSlim):
         self.pixmap: QPixmap = QPixmap()
         self.metadata: RareGame.Metadata = RareGame.Metadata()
         self.__load_metadata()
-        if self.metadata.grant_date is None:
-            self.grant_date()
+        self.grant_date()
 
         self.owned_dlcs: Set[RareGame] = set()
 
@@ -143,13 +140,14 @@ class RareGame(RareGameSlim):
     def __load_metadata_json() -> Dict:
         if RareGame.__metadata_json is None:
             metadata = {}
+            file = os.path.join(data_dir(), "game_meta.json")
             try:
-                with open(os.path.join(data_dir(), "game_meta.json"), "r") as metadata_fh:
-                    metadata = json.load(metadata_fh)
+                with open(file, "r") as f:
+                    metadata = json.load(f)
             except FileNotFoundError:
-                logger.info("Game metadata json file does not exist.")
+                logger.info("%s does not exist", file)
             except json.JSONDecodeError:
-                logger.warning("Game metadata json file is corrupt.")
+                logger.warning("%s is corrupt", file)
             finally:
                 RareGame.__metadata_json = metadata
         return RareGame.__metadata_json
@@ -166,9 +164,9 @@ class RareGame(RareGameSlim):
         with RareGame.__metadata_lock:
             metadata: Dict = self.__load_metadata_json()
             # pylint: disable=unsupported-assignment-operation
-            metadata[self.app_name] = self.metadata.as_dict()
-            with open(os.path.join(data_dir(), "game_meta.json"), "w") as metadata_json:
-                json.dump(metadata, metadata_json, indent=2)
+            metadata[self.app_name] = vars(self.metadata)
+            with open(os.path.join(data_dir(), "game_meta.json"), "w+") as file:
+                json.dump(metadata, file, indent=2)
 
     def update_game(self):
         self.game = self.core.get_game(
@@ -432,29 +430,27 @@ class RareGame(RareGameSlim):
     def steam_grade(self) -> str:
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
-        elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
-        if (
-            self.metadata.steam_grade is not None
-            and self.metadata.steam_appid is not None
-            and elapsed_time.days < 3
-        ):
-            return self.metadata.steam_grade
+        if self.metadata.steam_grade != "pending":
+            elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
 
-        def _set_steam_grade():
-            appid, rating = get_rating(self.core, self.app_name)
-            self.set_steam_grade(appid, rating)
-
-        worker = QRunnable.create(_set_steam_grade)
-        QThreadPool.globalInstance().start(worker)
-        return "pending"
+            if elapsed_time.days > 3 and (self.metadata.steam_grade is None or self.metadata.steam_appid is None):
+                def _set_steam_grade():
+                    appid, rating = get_rating(self.core, self.app_name)
+                    self.set_steam_grade(appid, rating)
+                worker = QRunnable.create(_set_steam_grade)
+                QThreadPool.globalInstance().start(worker)
+                self.metadata.steam_grade = "pending"
+        return self.metadata.steam_grade
 
     @property
     def steam_appid(self) -> Optional[int]:
         return self.metadata.steam_appid
 
     def set_steam_grade(self, appid: int, grade: str) -> None:
-        if appid or self.steam_appid is None:
+        if appid and self.steam_appid is None:
             add_envvar(self.app_name, "SteamAppId", str(appid))
+            add_envvar(self.app_name, "SteamGameId", str(appid))
+            add_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
             self.metadata.steam_appid = appid
         self.metadata.steam_grade = grade
         self.metadata.steam_date = datetime.utcnow()
@@ -463,17 +459,17 @@ class RareGame(RareGameSlim):
 
     def grant_date(self, force=False) -> datetime:
         if (entitlements := self.core.lgd.entitlements) is None:
-            return self.metadata.grant_date
-        if self.metadata.grant_date is None or force:
+            return self.metadata.grant_date.replace(tzinfo=UTC)
+        if self.metadata.grant_date == datetime.min.replace(tzinfo=UTC) or force:
             logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
             entitlement = next(matching, None)
             grant_date = datetime.fromisoformat(
                 entitlement["grantDate"].replace("Z", "+00:00")
-            ) if entitlement else None
+            ) if entitlement else datetime.min.replace(tzinfo=UTC)
             self.metadata.grant_date = grant_date
             self.__save_metadata()
-        return self.metadata.grant_date
+        return self.metadata.grant_date.replace(tzinfo=UTC)
 
     def set_origin_attributes(self, path: str, size: int = 0) -> None:
         self.__origin_install_path = path

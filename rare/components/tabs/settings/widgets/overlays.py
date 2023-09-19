@@ -82,8 +82,8 @@ class OverlaySettings(QGroupBox, Ui_OverlaySettings):
 
     def __init__(self, checkboxes_map: List[Tuple[str, str]], value_map: List[Tuple[CustomOption, str]],
                  config_env_var_name: str, no_display_value: str,
-                 set_activation_state: Callable[[Enum], None] = lambda x: None):
-        super(OverlaySettings, self).__init__()
+                 set_activation_state: Callable[[Enum], None] = lambda x: None, parent=None):
+        super(OverlaySettings, self).__init__(parent=parent)
         self.setupUi(self)
         self.core = LegendaryCoreSingleton()
         self.config_env_var_name = config_env_var_name

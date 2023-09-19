@@ -15,6 +15,7 @@ from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.lgndr.models.downloading import UIUpdate
 from rare.models.game import RareGame
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel, UninstallOptionsModel
+from rare.models.options import options
 from rare.shared import RareCore
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.shared.workers.uninstall import UninstallWorker
@@ -105,9 +106,13 @@ class DownloadsTab(QWidget):
     def __add_update(self, update: Union[str, RareGame]):
         if isinstance(update, str):
             update = self.rcore.get_game(update)
-        if QSettings().value(
-                f"{update.app_name}/auto_update", False, bool
-        ) or QSettings().value("auto_update", False, bool):
+
+        auto_update = QSettings(self).value(
+            f"{update.app_name}/{options.auto_update.key}",
+            QSettings(self).value(*options.auto_update),
+            options.auto_update.dtype
+        )
+        if auto_update:
             self.__get_install_options(
                 InstallOptionsModel(app_name=update.app_name, update=True, silent=True)
             )

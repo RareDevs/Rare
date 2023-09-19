@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>190</width>
-    <height>86</height>
+    <width>180</width>
+    <height>84</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <property name="title">
    <string>Proton Settings</string>
   </property>
-  <layout class="QFormLayout" name="proton_settings_layout">
+  <layout class="QFormLayout" name="main_layout">
    <property name="labelAlignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
@@ -48,9 +48,6 @@
       <string>Prefix</string>
      </property>
     </widget>
-   </item>
-   <item row="1" column="1">
-    <layout class="QHBoxLayout" name="prefix_layout"/>
    </item>
   </layout>
  </widget>

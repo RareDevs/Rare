@@ -6,6 +6,7 @@ from typing import Tuple, List
 from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
+from rare.models.options import options
 from rare.shared import LegendaryCoreSingleton
 from rare.shared.workers.worker import Worker
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
@@ -100,33 +101,30 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         )
         self.locale_layout.addWidget(self.locale_edit)
 
-        self.fetch_win32_check.setChecked(self.settings.value("win32_meta", False, bool))
+        self.fetch_win32_check.setChecked(self.settings.value(*options.win32_meta))
         self.fetch_win32_check.stateChanged.connect(
-            lambda: self.settings.setValue("win32_meta", self.fetch_win32_check.isChecked())
+            lambda: self.settings.setValue(options.win32_meta.key, self.fetch_win32_check.isChecked())
         )
 
-        self.fetch_macos_check.setChecked(self.settings.value("macos_meta", pf.system() == "Darwin", bool))
+        self.fetch_macos_check.setChecked(self.settings.value(*options.macos_meta))
         self.fetch_macos_check.stateChanged.connect(
-            lambda: self.settings.setValue("macos_meta", self.fetch_macos_check.isChecked())
+            lambda: self.settings.setValue(options.macos_meta.key, self.fetch_macos_check.isChecked())
         )
         self.fetch_macos_check.setDisabled(pf.system() == "Darwin")
 
-        self.fetch_unreal_check.setChecked(self.settings.value("unreal_meta", False, bool))
+        self.fetch_unreal_check.setChecked(self.settings.value(*options.unreal_meta))
         self.fetch_unreal_check.stateChanged.connect(
-            lambda: self.settings.setValue("unreal_meta", self.fetch_unreal_check.isChecked())
+            lambda: self.settings.setValue(options.unreal_meta.key, self.fetch_unreal_check.isChecked())
         )
 
-        self.exclude_non_asset_check.setChecked(
-            self.settings.value("exclude_non_asset", False, bool)
-        )
+        self.exclude_non_asset_check.setChecked(self.settings.value(*options.exclude_non_asset))
         self.exclude_non_asset_check.stateChanged.connect(
-            lambda: self.settings.setValue("exclude_non_asset", self.exclude_non_asset_check.isChecked())
+            lambda: self.settings.setValue(options.exclude_non_asset.key, self.exclude_non_asset_check.isChecked())
         )
-        self.exclude_entitlements_check.setChecked(
-            self.settings.value("exclude_entitlements", False, bool)
-        )
+
+        self.exclude_entitlements_check.setChecked(self.settings.value(*options.exclude_entitlements))
         self.exclude_entitlements_check.stateChanged.connect(
-            lambda: self.settings.setValue("exclude_entitlements", self.exclude_entitlements_check.isChecked())
+            lambda: self.settings.setValue(options.exclude_entitlements.key, self.exclude_entitlements_check.isChecked())
         )
 
         self.refresh_metadata_button.clicked.connect(self.refresh_metadata)

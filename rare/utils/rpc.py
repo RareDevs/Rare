@@ -7,6 +7,7 @@ from PyQt5.QtCore import QObject, QSettings
 from pypresence import Presence
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.models.options import options
 
 client_id = "830732538225360908"
 logger = getLogger("RPC")
@@ -21,7 +22,7 @@ class DiscordRPC(QObject):
         self.signals = GlobalSignalsSingleton()
 
         self.settings = QSettings()
-        if self.settings.value("rpc_enable", 0, int) == 1:  # show always
+        if self.settings.value(*options.rpc_enable) == 1:  # show always
             self.state = 2
             self.set_discord_rpc()
 
@@ -32,7 +33,7 @@ class DiscordRPC(QObject):
         self.set_discord_rpc(app_name)
 
     def changed_settings(self, game_running: list = None):
-        value = self.settings.value("rpc_enable", 0, int)
+        value = self.settings.value(*options.rpc_enable)
         if value == 2:
             self.remove_rpc()
             return
@@ -44,7 +45,7 @@ class DiscordRPC(QObject):
             self.set_discord_rpc(game_running[0])
 
     def remove_rpc(self):
-        if self.settings.value("rpc_enable", 0, int) != 1:
+        if self.settings.value(*options.rpc_enable) != 1:
             if not self.RPC:
                 return
             try:
@@ -85,8 +86,8 @@ class DiscordRPC(QObject):
         self.update_rpc(app_name)
 
     def update_rpc(self, app_name=None):
-        if self.settings.value("rpc_enable", 0, int) == 2 or (
-                not app_name and self.settings.value("rpc_enable", 0, int) == 0
+        if self.settings.value(*options.rpc_enable) == 2 or (
+                not app_name and self.settings.value(*options.rpc_enable) == 0
         ):
             self.remove_rpc()
             return
@@ -96,17 +97,17 @@ class DiscordRPC(QObject):
                 large_image="logo", details="https://github.com/RareDevs/Rare"
             )
             return
-        if self.settings.value("rpc_name", True, bool):
+        if self.settings.value(*options.rpc_name):
             try:
                 title = self.core.get_installed_game(app_name).title
             except AttributeError:
                 logger.error(f"Could not get title of game: {app_name}")
                 title = app_name
         start = None
-        if self.settings.value("rpc_time", True, bool):
+        if self.settings.value(*options.rpc_time):
             start = str(time.time()).split(".")[0]
         os = None
-        if self.settings.value("rpc_os", True, bool):
+        if self.settings.value(*options.rpc_os):
             os = f"via Rare on {platform.system()}"
 
         self.RPC.update(

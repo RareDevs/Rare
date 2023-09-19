@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import Tuple
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QFileDialog
+from PyQt5.QtWidgets import QLabel, QFileDialog, QFormLayout
 from legendary.models.game import Game, InstalledGame
 
 from rare.components.tabs.settings import DefaultGameSettings
@@ -20,10 +20,6 @@ logger = getLogger("GameSettings")
 class GameSettings(DefaultGameSettings, SideTabContents):
     def __init__(self, parent=None):
         super(GameSettings, self).__init__(False, parent=parent)
-        self.pre_launch_settings = PreLaunchSettings()
-        self.ui.launch_settings_group.layout().addRow(
-            QLabel(self.tr("Pre-launch command")), self.pre_launch_settings
-        )
 
         self.ui.skip_update.currentIndexChanged.connect(
             lambda x: self.update_combobox("skip_update_check", x)
@@ -43,9 +39,17 @@ class GameSettings(DefaultGameSettings, SideTabContents):
             save_func=self.override_exe_save_callback,
             parent=self
         )
-        self.ui.launch_settings_layout.insertRow(
-            self.ui.launch_settings_layout.getWidgetPosition(self.ui.launch_params)[0] + 1,
-            QLabel(self.tr("Override executable"), self), self.override_exe_edit
+        self.ui.launch_settings_layout.setWidget(
+            self.ui.launch_settings_layout.getWidgetPosition(self.ui.override_exe_label)[0],
+            QFormLayout.FieldRole,
+            self.override_exe_edit
+        )
+
+        self.pre_launch_settings = PreLaunchSettings(parent=self)
+        self.ui.launch_settings_layout.setWidget(
+            self.ui.launch_settings_layout.getWidgetPosition(self.ui.pre_launch_label)[0],
+            QFormLayout.FieldRole,
+            self.pre_launch_settings
         )
 
         self.ui.game_settings_layout.setAlignment(Qt.AlignTop)
@@ -126,9 +130,9 @@ class GameSettings(DefaultGameSettings, SideTabContents):
         self.set_title.emit(self.game.app_title)
         if platform.system() != "Windows":
             if self.igame and self.igame.platform == "Mac":
-                self.ui.linux_settings_widget.setVisible(False)
+                self.linux_settings.setVisible(False)
             else:
-                self.ui.linux_settings_widget.setVisible(True)
+                self.linux_settings.setVisible(True)
 
         self.ui.launch_params.setText(self.core.lgd.config.get(self.game.app_name, "start_params", fallback=""))
         self.override_exe_edit.setText(

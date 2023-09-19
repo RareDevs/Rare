@@ -5,18 +5,17 @@ from PyQt5.QtCore import QCoreApplication, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
 
 from rare.shared import LegendaryCoreSingleton
-from .overlay_settings import OverlaySettings, CustomOption, ActivationStates
 from rare.utils import config_helper
+from .overlays import OverlaySettings, CustomOption, ActivationStates
 
 position_values = ["default", "top-left", "top-right", "middle-left", "middle-right", "bottom-left",
                    "bottom-right", "top-center"]
 
 
 class MangoHudSettings(OverlaySettings):
-
     set_wrapper_activated = pyqtSignal(bool)
 
-    def __init__(self):
+    def __init__(self, parent=None):
         super(MangoHudSettings, self).__init__(
             [
                 ("fps", QCoreApplication.translate("MangoSettings", "FPS")),
@@ -45,7 +44,8 @@ class MangoHudSettings(OverlaySettings):
                     QCoreApplication.translate("MangoSettings", "Position")
                 )
             ],
-            "MANGOHUD_CONFIG", "no_display", set_activation_state=self.set_activation_state
+            "MANGOHUD_CONFIG", "no_display", set_activation_state=self.set_activation_state,
+            parent=parent
         )
         self.core = LegendaryCoreSingleton()
         self.setTitle(self.tr("MangoHud Settings"))

@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
 )
 
+from rare.models.options import options
 from rare.components.tabs import MainTabWidget
 from rare.components.tray_icon import TrayIcon
 from rare.shared import RareCore
@@ -93,8 +94,8 @@ class MainWindow(QMainWindow):
         # self.status_timer.start()
 
         width, height = 1280, 720
-        if self.settings.value("save_size", False, bool):
-            width, height = self.settings.value("window_size", (width, height), tuple)
+        if self.settings.value(*options.save_size):
+            width, height = self.settings.value(*options.window_size)
 
         self.resize(width, height)
 
@@ -151,9 +152,9 @@ class MainWindow(QMainWindow):
         self._window_launched = True
 
     def hide(self) -> None:
-        if self.settings.value("save_size", False, bool):
+        if self.settings.value(*options.save_size):
             size = self.size().width(), self.size().height()
-            self.settings.setValue("window_size", size)
+            self.settings.setValue(options.window_size.key, size)
         super(MainWindow, self).hide()
 
     def toggle(self):
@@ -214,7 +215,7 @@ class MainWindow(QMainWindow):
         # lk: `accept_close` is set to `True` by the `close()` method, overrides exiting to tray in `closeEvent()`
         # lk: ensures exiting instead of hiding when `close()` is called programmatically
         if not self.__accept_close:
-            if self.settings.value("sys_tray", True, bool):
+            if self.settings.value(*options.sys_tray):
                 self.hide()
                 e.ignore()
                 return

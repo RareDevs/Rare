@@ -2,18 +2,18 @@ import os
 import shutil
 from typing import Tuple
 
-from PyQt5.QtWidgets import QHBoxLayout, QCheckBox, QFileDialog
+from PyQt5.QtWidgets import QHBoxLayout, QCheckBox, QFileDialog, QWidget
 
 from rare.shared import LegendaryCoreSingleton
 from rare.utils import config_helper
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 
-class PreLaunchSettings(QHBoxLayout):
+class PreLaunchSettings(QWidget):
     app_name: str
 
-    def __init__(self):
-        super(PreLaunchSettings, self).__init__()
+    def __init__(self, parent=None):
+        super(PreLaunchSettings, self).__init__(parent=parent)
         self.core = LegendaryCoreSingleton()
         self.edit = PathEdit(
             path="",
@@ -22,11 +22,14 @@ class PreLaunchSettings(QHBoxLayout):
             edit_func=self.edit_command,
             save_func=self.save_pre_launch_command,
         )
-        self.layout().addWidget(self.edit)
 
         self.wait_check = QCheckBox(self.tr("Wait for finish"))
-        self.layout().addWidget(self.wait_check)
         self.wait_check.stateChanged.connect(self.save_wait_finish)
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.edit)
+        layout.addWidget(self.wait_check)
 
     def edit_command(self, text: str) -> Tuple[bool, str, int]:
         if not text.strip():

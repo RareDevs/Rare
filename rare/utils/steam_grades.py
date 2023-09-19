@@ -1,6 +1,7 @@
 import difflib
 import os
 from datetime import datetime
+from enum import StrEnum, Enum
 from typing import Tuple
 
 import orjson
@@ -18,6 +19,31 @@ __grades_json = None
 __active_download = False
 
 
+class ProtondbRatings(int, Enum):
+    # internal
+    PENDING = ("pending", -2)
+    FAIL = ("fail", -1)
+    # protondb
+    NA = ("na", 0)
+    BORKED = ("borked", 1)
+    BRONZE = ("bronze", 2)
+    SILVER = ("silver", 3)
+    GOLD = ("gold", 4)
+    PLATINUM = ("platinum", 5)
+
+    def __new__(cls, name: str, value: int):
+        obj = int.__new__(cls, value)
+        obj._value_ = value
+        obj._name_ = name
+        return obj
+
+    def __str__(self):
+        return self._name_
+
+    def __int__(self):
+        return self._value_
+
+
 def get_rating(core: LegendaryCore, app_name: str) -> Tuple[int, str]:
     game = core.get_game(app_name)
     try:
@@ -31,7 +57,7 @@ def get_rating(core: LegendaryCore, app_name: str) -> Tuple[int, str]:
         return steam_id, grade
 
 
-# you should iniciate the module with the game's steam code
+# you should initiate the module with the game's steam code
 def get_grade(steam_code):
     if steam_code == 0:
         return "fail"

@@ -10,6 +10,7 @@ from legendary.lfs import eos
 from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
 from legendary.utils.selective_dl import get_sdl_appname
 
+from rare.models.options import options
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import UninstallOptionsModel, InstallOptionsModel
 
@@ -222,11 +223,13 @@ class RareGameSlim(RareGameBase):
 
     @property
     def auto_sync_saves(self):
-        return self.supports_cloud_saves and QSettings().value(
-            f"{self.app_name}/auto_sync_cloud",
-            QSettings().value("auto_sync_cloud", False, bool),
-            bool
+        auto_sync_cloud = QSettings(self).value(
+            f"{self.app_name}/{options.auto_sync_cloud.key}",
+            options.auto_sync_cloud.default,
+            options.auto_sync_cloud.dtype
         )
+        auto_sync_cloud = auto_sync_cloud or QSettings(self).value(*options.auto_sync_cloud)
+        return self.supports_cloud_saves and auto_sync_cloud
 
     @property
     def save_path(self) -> Optional[str]:
