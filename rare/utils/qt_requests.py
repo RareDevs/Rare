@@ -67,7 +67,7 @@ class QtRequestManager(QObject):
 
     def __post(self, item: RequestQueueItem):
         request = self.__prepare_request(item)
-        payload = orjson.dumps(item.payload)
+        payload = orjson.dumps(item.payload)  # pylint: disable=maybe-no-member
         reply = self.manager.post(request, payload)
         reply.errorOccurred.connect(self.__on_error)
         self.__active_requests[reply] = item
@@ -128,7 +128,7 @@ class QtRequestManager(QObject):
             maintype, subtype = mimetype.split("/")
             bin_data = reply.readAll().data()
             if mimetype == "application/json":
-                data = orjson.loads(bin_data)
+                data = orjson.loads(bin_data)  # pylint: disable=maybe-no-member
             elif maintype == "image":
                 data = bin_data
             else:

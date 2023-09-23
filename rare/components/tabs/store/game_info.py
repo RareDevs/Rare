@@ -1,5 +1,4 @@
 import logging
-from pprint import pprint
 from typing import List
 
 from PyQt5.QtCore import Qt, QUrl
@@ -12,14 +11,14 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
 )
 
-from rare.components.tabs.store.api.models.response import CatalogOfferModel, DieselProduct, DieselProductDetail
-from rare.shared import LegendaryCoreSingleton
-from rare.shared.image_manager import ImageSize
+from rare.models.image import ImageSize
 from rare.ui.components.tabs.store.shop_game_info import Ui_ShopInfo
 from rare.utils.misc import icon
-from rare.widgets.side_tab import SideTabWidget, SideTabContents
 from rare.widgets.elide_label import ElideLabel
+from rare.widgets.side_tab import SideTabWidget, SideTabContents
 from .api.debug import DebugDialog
+from .api.models.diesel import DieselProduct, DieselProductDetail
+from .api.models.response import CatalogOfferModel
 from .image_widget import ShopImageWidget
 
 logger = logging.getLogger("ShopInfo")
@@ -107,7 +106,7 @@ class ShopGameInfo(QWidget, SideTabContents):
 
         # init API request
         if slug:
-            self.api_core.get_game(offer.product_slug, is_bundle, self.data_received)
+            self.api_core.get_game_config_cms(offer.product_slug, is_bundle, self.data_received)
         # else:
         #     self.data_received({})
         self.offer = offer

@@ -3,10 +3,9 @@ import logging
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QPushButton
-from orjson import orjson
 
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
-from rare.shared.image_manager import ImageSize
+from rare.models.image import ImageSize
 from rare.utils.misc import icon
 from rare.utils.qt_requests import QtRequestManager
 from .api.debug import DebugDialog

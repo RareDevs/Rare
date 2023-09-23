@@ -5,11 +5,11 @@ from PyQt5.QtWidgets import QMessageBox, QWidget
 
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
 from rare.utils.misc import icon
-from rare.widgets.side_tab import SideTabContents
 from rare.widgets.flow_layout import FlowLayout
-from .shop_api_core import ShopApiCore
-from .game_widgets import WishlistWidget
+from rare.widgets.side_tab import SideTabContents
 from .api.models.response import WishlistItemModel, CatalogOfferModel
+from .game_widgets import WishlistWidget
+from .shop_api_core import ShopApiCore
 
 
 class Wishlist(QWidget, SideTabContents):

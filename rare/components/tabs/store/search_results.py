@@ -7,26 +7,24 @@ from PyQt5.QtWidgets import (
     QLabel, QScrollArea,
 )
 
-from rare.shared.image_manager import ImageSize
+from rare.models.image import ImageSize
 from rare.utils.qt_requests import QtRequestManager
 from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
-from .image_widget import ShopImageWidget
-
 from .api.debug import DebugDialog
 from .api.models.response import CatalogOfferModel
+from .image_widget import ShopImageWidget
 
 
-class SearchResults(QScrollArea, SideTabContents):
+class SearchResultsWidget(QScrollArea):
     show_info = pyqtSignal(CatalogOfferModel)
 
     def __init__(self, api_core, parent=None):
-        super(SearchResults, self).__init__(parent=parent)
-        self.implements_scrollarea = True
+        super(SearchResultsWidget, self).__init__(parent=parent)
         self.api_core = api_core
 
         self.results_container = QWidget(self)
-        self.results_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.results_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.results_layout = FlowLayout(self.results_container)
         self.setWidget(self.results_container)
         self.setWidgetResizable(True)
@@ -59,6 +57,12 @@ class SearchResults(QScrollArea, SideTabContents):
                 self.results_layout.addWidget(w)
         self.results_layout.update()
         self.setEnabled(True)
+
+
+class SearchResults(SearchResultsWidget, SideTabContents):
+    def __init__(self, api_core, parent=None):
+        super(SearchResults, self).__init__(api_core, parent=parent)
+        self.implements_scrollarea = True
 
 
 class SearchResultItem(ShopImageWidget):

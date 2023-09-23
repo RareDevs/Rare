@@ -1,12 +1,11 @@
 from legendary.core import LegendaryCore
 
-from rare.shared import RareCore
 from rare.utils.paths import cache_dir
 from rare.widgets.side_tab import SideTabWidget
+from .api.models.response import CatalogOfferModel
 from .game_info import ShopGameInfo
 from .search_results import SearchResults
 from .shop_api_core import ShopApiCore
-from .api.models.response import CatalogOfferModel
 from .shop_widget import ShopWidget
 from .wishlist import WishlistWidget, Wishlist
 
@@ -28,11 +27,11 @@ class StoreTab(SideTabWidget):
         self.shop = ShopWidget(cache_dir(), self.core, self.api_core, parent=self)
         self.shop_index = self.addTab(self.shop, self.tr("Store"))
         self.shop.show_game.connect(self.show_game)
-        self.shop.show_info.connect(self.show_search)
+        # self.shop.show_info.connect(self.show_search)
 
-        self.search = SearchResults(self.api_core, parent=self)
-        self.search_index = self.addTab(self.search, self.tr("Search"), self.tr("Results"))
-        self.search.show_info.connect(self.show_game)
+        # self.search = SearchResults(self.api_core, parent=self)
+        # self.search_index = self.addTab(self.search, self.tr("Search"), self.tr("Results"))
+        # self.search.show_info.connect(self.show_game)
         # self.search.back_button.clicked.connect(lambda: self.setCurrentIndex(self.shop_index))
 
         self.info = ShopGameInfo(
@@ -67,6 +66,6 @@ class StoreTab(SideTabWidget):
         self.info.update_game(data)
         self.setCurrentIndex(self.info_index)
 
-    def show_search(self, text: str):
-        self.search.load_results(text)
-        self.setCurrentIndex(self.search_index)
+    # def show_search(self, text: str):
+    #     self.search.load_results(text)
+    #     self.setCurrentIndex(self.search_index)
