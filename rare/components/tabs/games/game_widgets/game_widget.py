@@ -107,6 +107,8 @@ class GameWidget(LibraryWidget):
     __slots__ = "ui"
 
     def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
         if self.rgame.pixmap.isNull():
             QTimer.singleShot(random.randrange(42, 361, 7), self.rgame.load_pixmap)
         super().showEvent(a0)

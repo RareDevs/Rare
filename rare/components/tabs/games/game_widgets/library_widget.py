@@ -32,7 +32,10 @@ class ProgressLabel(QLabel):
         return super().event(e)
 
     def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
         self.__center_on_parent()
+        super().showEvent(a0)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
         if a0 is self.parent() and a1.type() == QEvent.Resize:

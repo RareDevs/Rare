@@ -173,6 +173,8 @@ class InstallDialog(QDialog):
         self.ui.install_dialog_layout.setSizeConstraint(QLayout.SetFixedSize)
 
     def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
         self.save_install_edit(self.install_dir_edit.text())
         super().showEvent(a0)
 
