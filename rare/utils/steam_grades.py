@@ -39,8 +39,8 @@ def get_grade(steam_code):
     url = "https://www.protondb.com/api/v1/reports/summaries/"
     res = requests.get(f"{url}{steam_code}.json")
     try:
-        lista = orjson.loads(res.text)
-    except orjson.JSONDecodeError:
+        lista = orjson.loads(res.text)  # pylint: disable=maybe-no-member
+    except orjson.JSONDecodeError:  # pylint: disable=maybe-no-member
         return "fail"
 
     return lista["tier"]
@@ -57,15 +57,15 @@ def load_json() -> dict:
         __active_download = True
         response = requests.get(url)
         __active_download = False
-        steam_ids = orjson.loads(response.text)["applist"]["apps"]
+        steam_ids = orjson.loads(response.text)["applist"]["apps"]  # pylint: disable=maybe-no-member
         ids = {}
         for game in steam_ids:
             ids[game["name"]] = game["appid"]
         with open(file, "w") as f:
-            f.write(orjson.dumps(ids).decode("utf-8"))
+            f.write(orjson.dumps(ids).decode("utf-8"))  # pylint: disable=maybe-no-member
         return ids
     else:
-        return orjson.loads(open(file, "r").read())
+        return orjson.loads(open(file, "r").read())   # pylint: disable=maybe-no-member
 
 
 def get_steam_id(title: str) -> int:

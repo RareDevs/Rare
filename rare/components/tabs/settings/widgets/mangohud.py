@@ -13,7 +13,6 @@ position_values = ["default", "top-left", "top-right", "middle-left", "middle-ri
 
 
 class MangoHudSettings(OverlaySettings):
-
     set_wrapper_activated = pyqtSignal(bool)
 
     def __init__(self):

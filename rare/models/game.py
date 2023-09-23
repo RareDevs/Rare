@@ -2,7 +2,7 @@ import json
 import os
 import platform
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, UTC
 from logging import getLogger
 from threading import Lock
 from typing import List, Optional, Dict, Set
@@ -31,7 +31,7 @@ class RareGame(RareGameSlim):
         queued: bool = False
         queue_pos: Optional[int] = None
         last_played: datetime = datetime.min
-        grant_date: Optional[datetime] = None
+        grant_date: datetime = datetime.min
         steam_appid: Optional[int] = None
         steam_grade: Optional[str] = None
         steam_date: datetime = datetime.min
@@ -43,7 +43,7 @@ class RareGame(RareGameSlim):
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
                 last_played=datetime.fromisoformat(x) if (x := data.get("last_played", None)) else datetime.min,
-                grant_date=datetime.fromisoformat(x) if (x := data.get("grant_date", None)) else None,
+                grant_date=datetime.fromisoformat(x) if (x := data.get("grant_date", None)) else datetime.min,
                 steam_appid=data.get("steam_appid", None),
                 steam_grade=data.get("steam_grade", None),
                 steam_date=datetime.fromisoformat(x) if (x := data.get("steam_date", None)) else datetime.min,
@@ -56,7 +56,7 @@ class RareGame(RareGameSlim):
                 queued=self.queued,
                 queue_pos=self.queue_pos,
                 last_played=self.last_played.isoformat() if self.last_played else datetime.min,
-                grant_date=self.grant_date.isoformat() if self.grant_date else None,
+                grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min,
                 steam_appid=self.steam_appid,
                 steam_grade=self.steam_grade,
                 steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min,
@@ -80,8 +80,7 @@ class RareGame(RareGameSlim):
         self.pixmap: QPixmap = QPixmap()
         self.metadata: RareGame.Metadata = RareGame.Metadata()
         self.__load_metadata()
-        if self.metadata.grant_date is None:
-            self.grant_date()
+        self.grant_date()
 
         self.owned_dlcs: Set[RareGame] = set()
 
@@ -479,17 +478,17 @@ class RareGame(RareGameSlim):
 
     def grant_date(self, force=False) -> datetime:
         if (entitlements := self.core.lgd.entitlements) is None:
-            return self.metadata.grant_date
-        if self.metadata.grant_date is None or force:
+            return self.metadata.grant_date.replace(tzinfo=UTC)
+        if self.metadata.grant_date == datetime.min.replace(tzinfo=UTC) or force:
             logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
             entitlement = next(matching, None)
             grant_date = datetime.fromisoformat(
                 entitlement["grantDate"].replace("Z", "+00:00")
-            ) if entitlement else None
+            ) if entitlement else datetime.min.replace(tzinfo=UTC)
             self.metadata.grant_date = grant_date
             self.__save_metadata()
-        return self.metadata.grant_date
+        return self.metadata.grant_date.replace(tzinfo=UTC)
 
     def set_origin_attributes(self, path: str, size: int = 0) -> None:
         self.__origin_install_path = path

@@ -18,6 +18,8 @@ def main() -> int:
             sys.stderr = open(os.devnull, 'w')
 
     os.environ["QT_QPA_PLATFORMTHEME"] = ""
+    os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "1"
+    os.environ["QT_SCALE_FACTOR_ROUNDING_POLICY"] = "Floor"
 
     # fix cx_freeze
     multiprocessing.freeze_support()

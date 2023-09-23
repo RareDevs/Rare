@@ -76,7 +76,7 @@ def get_origin_params(core: LegendaryCore, app_name, offline: bool,
         flatpak_command = ["flatpak-spawn", "--host"]
         for name, value in env.items():
             flatpak_command.append(f"--env={name}={value}")
-        command = flatpak_command.extend(command)
+        command = flatpak_command + command
 
     launch_args.environment = QProcessEnvironment.systemEnvironment()
     for name, value in env.items():

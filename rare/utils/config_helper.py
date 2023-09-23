@@ -44,6 +44,14 @@ def remove_envvar(app_name: str, option: str) -> None:
     remove_option(f"{app_name}.env", option)
 
 
+def get_option(app_name: str, option: str, fallback: Any = None) -> str:
+    return _config.get(app_name, option, fallback=fallback)
+
+
+def get_envvar(app_name: str, option: str, fallback: Any = None) -> str:
+    return get_option(f"{app_name}.env", option, fallback=fallback)
+
+
 def remove_section(app_name: str) -> None:
     return
     # Disabled due to env variables implementation

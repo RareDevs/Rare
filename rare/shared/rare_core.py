@@ -29,6 +29,7 @@ from .workers import (
 )
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
+from .wrappers import Wrappers
 
 logger = getLogger("RareCore")
 
@@ -52,6 +53,8 @@ class RareCore(QObject):
         self.__signals: Optional[GlobalSignals] = None
         self.__core: Optional[LegendaryCore] = None
         self.__image_manager: Optional[ImageManager] = None
+        self.__settings: Optional[QSettings] = None
+        self.__wrappers: Optional[Wrappers] = None
 
         self.__start_time = time.perf_counter()
 
@@ -60,8 +63,8 @@ class RareCore(QObject):
         self.core(init=True)
         config_helper.init_config_handler(self.__core)
         self.image_manager(init=True)
-
-        self.settings = QSettings()
+        self.__settings = QSettings()
+        self.__wrappers = Wrappers()
 
         self.queue_workers: List[QueueWorker] = []
         self.queue_threadpool = QThreadPool()
@@ -170,6 +173,12 @@ class RareCore(QObject):
         if self.__image_manager is None:
             self.__image_manager = ImageManager(self.signals(), self.core())
         return self.__image_manager
+
+    def wrappers(self) -> Wrappers:
+        return self.__wrappers
+
+    def settings(self) -> QSettings:
+        return self.__settings
 
     def deleteLater(self) -> None:
         self.__image_manager.deleteLater()
@@ -296,6 +305,9 @@ class RareCore(QObject):
 
         if all([self.__fetched_games_dlcs, self.__fetched_entitlements]):
             logger.debug(f"Fetch time {time.perf_counter() - self.__start_time} seconds")
+            self.__wrappers.import_wrappers(
+                self.__core, self.__settings, [rgame.app_name for rgame in self.games]
+            )
             self.progress.emit(100, self.tr("Launching Rare"))
             self.completed.emit()
             QTimer.singleShot(100, self.__post_init)

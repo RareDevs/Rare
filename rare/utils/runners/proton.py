@@ -1,5 +1,7 @@
 import os
+import shlex
 from dataclasses import dataclass
+from hashlib import md5
 from logging import getLogger
 from typing import Optional, Union, List, Dict
 
@@ -25,11 +27,22 @@ def find_libraries(steam_path: str) -> List[str]:
     return libraries
 
 
+# Notes:
+# Anything older than 'Proton 5.13' doesn't have the 'require_tool_appid' attribute.
+# Anything older than 'Proton 7.0' doesn't have the 'compatmanager_layer_name' attribute.
+# In addition to that, the 'Steam Linux Runtime 1.0 (scout)' runtime lists the
+# 'Steam Linux Runtime 2.0 (soldier)' runtime as a dependency and is probably what was
+# being used for any version before 5.13.
+#
+# As a result the following implementation will list versions from 7.0 onwards which honestly
+# is a good trade-off for the amount of complexity supporting everything would ensue.
+
+
 @dataclass
 class SteamBase:
     steam_path: str
     tool_path: str
-    toolmanifest: dict
+    toolmanifest: Dict
 
     def __eq__(self, other):
         return self.tool_path == other.tool_path
@@ -37,23 +50,36 @@ class SteamBase:
     def __hash__(self):
         return hash(self.tool_path)
 
-    def commandline(self):
-        cmd = "".join([f"'{self.tool_path}'", self.toolmanifest["manifest"]["commandline"]])
-        cmd = os.path.normpath(cmd)
+    @property
+    def required_tool(self) -> Optional[str]:
+        return self.toolmanifest["manifest"].get("require_tool_appid", None)
+
+    def command(self, setup: bool = False) -> List[str]:
+        tool_path = os.path.normpath(self.tool_path)
+        cmd = "".join([shlex.quote(tool_path), self.toolmanifest["manifest"]["commandline"]])
         # NOTE: "waitforexitandrun" seems to be the verb used in by steam to execute stuff
-        cmd = cmd.replace("%verb%", "waitforexitandrun")
-        return cmd
+        # `run` is used when setting up the environment, so use that if we are setting up the prefix.
+        verb = "run" if setup else "waitforexitandrun"
+        cmd = cmd.replace("%verb%", verb)
+        return shlex.split(cmd)
+
+    @property
+    def checksum(self) -> str:
+        command = " ".join(shlex.quote(part) for part in self.command(setup=False))
+        return md5(command.encode("utf-8")).hexdigest()
 
 
 @dataclass
 class SteamRuntime(SteamBase):
     steam_library: str
-    appmanifest: dict
+    appmanifest: Dict
 
-    def name(self):
+    @property
+    def name(self) -> str:
         return self.appmanifest["AppState"]["name"]
 
-    def appid(self):
+    @property
+    def appid(self) -> str:
         return self.appmanifest["AppState"]["appid"]
 
 
@@ -61,33 +87,36 @@ class SteamRuntime(SteamBase):
 class ProtonTool(SteamRuntime):
     runtime: SteamRuntime = None
 
-    def __bool__(self):
-        if appid := self.toolmanifest.get("require_tool_appid", False):
-            return self.runtime is not None and self.runtime.appid() == appid
+    def __bool__(self) -> bool:
+        if appid := self.required_tool:
+            return self.runtime is not None and self.runtime.appid == appid
+        return True
 
-    def commandline(self):
-        runtime_cmd = self.runtime.commandline()
-        cmd = super().commandline()
-        return " ".join([runtime_cmd, cmd])
+    def command(self, setup: bool = False) -> List[str]:
+        cmd = self.runtime.command(setup)
+        cmd.extend(super().command(setup))
+        return cmd
 
 
 @dataclass
 class CompatibilityTool(SteamBase):
-    compatibilitytool: dict
+    compatibilitytool: Dict
     runtime: SteamRuntime = None
 
-    def __bool__(self):
-        if appid := self.toolmanifest.get("require_tool_appid", False):
-            return self.runtime is not None and self.runtime.appid() == appid
+    def __bool__(self) -> bool:
+        if appid := self.required_tool:
+            return self.runtime is not None and self.runtime.appid == appid
+        return True
 
-    def name(self):
+    @property
+    def name(self) -> str:
         name, data = list(self.compatibilitytool["compatibilitytools"]["compat_tools"].items())[0]
         return data["display_name"]
 
-    def commandline(self):
-        runtime_cmd = self.runtime.commandline() if self.runtime is not None else ""
-        cmd = super().commandline()
-        return " ".join([runtime_cmd, cmd])
+    def command(self, setup: bool = False) -> List[str]:
+        cmd = self.runtime.command(setup) if self.runtime is not None else []
+        cmd.extend(super().command(setup))
+        return cmd
 
 
 def find_appmanifests(library: str) -> List[dict]:
@@ -184,16 +213,18 @@ def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
 def find_runtime(
     tool: Union[ProtonTool, CompatibilityTool], runtimes: Dict[str, SteamRuntime]
 ) -> Optional[SteamRuntime]:
-    required_tool = tool.toolmanifest["manifest"].get("require_tool_appid")
+    required_tool = tool.required_tool
     if required_tool is None:
         return None
-    return runtimes[required_tool]
+    return runtimes.get(required_tool, None)
 
 
-def get_steam_environment(tool: Optional[Union[ProtonTool, CompatibilityTool]], app_name: str = None) -> Dict:
-    environ = {}
+def get_steam_environment(
+    tool: Optional[Union[ProtonTool, CompatibilityTool]] = None, compat_path: Optional[str] = None
+) -> Dict:
     # If the tool is unset, return all affected env variable names
     # IMPORTANT: keep this in sync with the code below
+    environ = {"STEAM_COMPAT_DATA_PATH": compat_path if compat_path else ""}
     if tool is None:
         environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
         environ["STEAM_COMPAT_LIBRARY_PATHS"] = ""
@@ -218,7 +249,8 @@ def find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     steam_path = find_steam()
     logger.debug("Using Steam install in %s", steam_path)
     steam_libraries = find_libraries(steam_path)
-    logger.debug("Searching for tools in libraries %s", steam_libraries)
+    logger.debug("Searching for tools in libraries:")
+    logger.debug("%s", steam_libraries)
 
     runtimes = {}
     for library in steam_libraries:
@@ -233,6 +265,8 @@ def find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
         runtime = find_runtime(tool, runtimes)
         tool.runtime = runtime
 
+    tools = list(filter(lambda t: bool(t), tools))
+
     return tools
 
 
@@ -244,7 +278,9 @@ if __name__ == "__main__":
 
     for tool in _tools:
         print(get_steam_environment(tool))
-        print(tool.name(), tool.commandline())
+        print(tool.name)
+        print(tool.command())
+        print(" ".join(tool.command()))
 
 
 def find_proton_combos():
