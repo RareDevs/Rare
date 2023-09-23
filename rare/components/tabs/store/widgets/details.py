@@ -1,8 +1,7 @@
 import logging
-from pprint import pprint
 from typing import List
 
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QFont, QDesktopServices, QFontMetrics
 from PyQt5.QtWidgets import (
     QWidget,
@@ -12,38 +11,42 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
 )
 
-from rare.components.tabs.store.api.models.response import CatalogOfferModel, DieselProduct, DieselProductDetail
-from rare.shared import LegendaryCoreSingleton
-from rare.shared.image_manager import ImageSize
-from rare.ui.components.tabs.store.shop_game_info import Ui_ShopInfo
+from rare.components.tabs.store.api.debug import DebugDialog
+from rare.components.tabs.store.api.models.diesel import DieselProduct, DieselProductDetail
+from rare.components.tabs.store.api.models.response import CatalogOfferModel
+from rare.models.image import ImageSize
+from rare.ui.components.tabs.store.details import Ui_DetailsWidget
 from rare.utils.misc import icon
-from rare.widgets.side_tab import SideTabWidget, SideTabContents
 from rare.widgets.elide_label import ElideLabel
-from .api.debug import DebugDialog
-from .image_widget import ShopImageWidget
+from rare.widgets.side_tab import SideTabWidget, SideTabContents
+from .image import LoadingImageWidget
 
-logger = logging.getLogger("ShopInfo")
+logger = logging.getLogger("StoreDetails")
 
 
-class ShopGameInfo(QWidget, SideTabContents):
+class DetailsWidget(QWidget, SideTabContents):
+    back_clicked: pyqtSignal = pyqtSignal()
 
     # TODO Design
     def __init__(self, installed_titles: list, api_core, parent=None):
-        super(ShopGameInfo, self).__init__(parent=parent)
-        self.ui = Ui_ShopInfo()
+        super(DetailsWidget, self).__init__(parent=parent)
+        self.ui = Ui_DetailsWidget()
         self.ui.setupUi(self)
+        self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
+
         # self.core = LegendaryCoreSingleton()
         self.api_core = api_core
         self.installed = installed_titles
-        self.ui.open_store_button.clicked.connect(self.button_clicked)
-        self.image = ShopImageWidget(api_core.cached_manager, self)
-        self.image.setFixedSize(ImageSize.Normal)
-        self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
-
         self.offer: CatalogOfferModel = None
         self.data: dict = {}
 
+        self.image = LoadingImageWidget(api_core.cached_manager, self)
+        self.image.setFixedSize(ImageSize.Normal)
+        self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
+        self.ui.left_layout.setAlignment(Qt.AlignTop)
+
         self.ui.wishlist_button.clicked.connect(self.add_to_wishlist)
+        self.ui.open_store_button.clicked.connect(self.button_clicked)
         self.ui.wishlist_button.setVisible(True)
         self.in_wishlist = False
         self.wishlist = []
@@ -52,7 +55,9 @@ class ShopGameInfo(QWidget, SideTabContents):
         self.requirements_tabs.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.ui.requirements_layout.addWidget(self.requirements_tabs)
 
-        self.setDisabled(True)
+        self.ui.back_button.clicked.connect(self.back_clicked)
+
+        self.setDisabled(False)
 
     def handle_wishlist_update(self, wishlist: List[CatalogOfferModel]):
         if wishlist and wishlist[0] == "error":
@@ -67,7 +72,6 @@ class ShopGameInfo(QWidget, SideTabContents):
     def update_game(self, offer: CatalogOfferModel):
         debug = DebugDialog(offer.__dict__, None)
         debug.exec()
-        self.set_title.emit(offer.title)
         self.ui.title.setText(offer.title)
         self.title_str = offer.title
         self.id_str = offer.id
@@ -107,7 +111,7 @@ class ShopGameInfo(QWidget, SideTabContents):
 
         # init API request
         if slug:
-            self.api_core.get_game(offer.product_slug, is_bundle, self.data_received)
+            self.api_core.get_game_config_cms(offer.product_slug, is_bundle, self.data_received)
         # else:
         #     self.data_received({})
         self.offer = offer
@@ -220,7 +224,7 @@ class ShopGameInfo(QWidget, SideTabContents):
 
         # self.image_stack.setCurrentIndex(0)
         about = product_data.about
-        self.ui.description_label.setText(about.desciption)
+        self.ui.description_label.setMarkdown(about.desciption)
         self.ui.dev.setText(about.developer_attribution)
         # try:
         #     if isinstance(aboudeveloper, list):

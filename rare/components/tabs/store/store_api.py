@@ -11,12 +11,11 @@ from rare.components.tabs.store.constants import (
     wishlist_add_query,
     wishlist_remove_query,
 )
-from rare.components.tabs.store.shop_models import BrowseModel
 from rare.utils.paths import cache_dir
 from rare.utils.qt_requests import QtRequests
 from .api.models.query import SearchStoreQuery
+from .api.models.diesel import DieselProduct
 from .api.models.response import (
-    DieselProduct,
     ResponseModel,
     CatalogOfferModel,
 )
@@ -28,11 +27,11 @@ graphql_url = "https://graphql.epicgames.com/graphql"
 DEBUG: Callable[[], bool] = lambda: "--debug" in QApplication.arguments()
 
 
-class ShopApiCore(QObject):
+class StoreAPI(QObject):
     update_wishlist = pyqtSignal()
 
-    def __init__(self, token, language: str, country: str):
-        super(ShopApiCore, self).__init__()
+    def __init__(self, token, language: str, country: str, installed):
+        super(StoreAPI, self).__init__()
         self.token = token
         self.language_code: str = language
         self.country_code: str = country
@@ -41,6 +40,8 @@ class ShopApiCore(QObject):
         self.manager = QtRequests(parent=self)
         self.authed_manager = QtRequests(token=token, parent=self)
         self.cached_manager = QtRequests(cache=str(cache_dir().joinpath("store")), parent=self)
+
+        self.installed = installed
 
         self.browse_active = False
         self.next_browse_request = tuple(())
@@ -153,13 +154,13 @@ class ShopApiCore(QObject):
             "query": search_query,
             "variables": browse_model.to_dict()
         }
-        debug = DebugDialog(payload["variables"], None)
-        debug.exec()
+        # debug = DebugDialog(payload["variables"], None)
+        # debug.exec()
         self.manager.post(graphql_url, lambda data: self.__handle_browse_games(data, handle_func), payload)
 
     def __handle_browse_games(self, data, handle_func):
-        debug = DebugDialog(data, None)
-        debug.exec()
+        # debug = DebugDialog(data, None)
+        # debug.exec()
         self.browse_active = False
         if data is None:
             data = {}
@@ -182,15 +183,29 @@ class ShopApiCore(QObject):
             self.browse_games(*self.next_browse_request)  # pylint: disable=E1120
             self.next_browse_request = tuple(())
 
-    def get_game(self, slug: str, is_bundle: bool, handle_func):
+    def get_game_config_graphql(self, namespace: str, handle_func):
+        payload = {
+            "query": config_query,
+            "variables": {
+                "namespace": namespace
+            }
+        }
+
+    def __make_graphql_query(self):
+        pass
+
+    def __make_api_query(self):
+        pass
+
+    def get_game_config_cms(self, slug: str, is_bundle: bool, handle_func):
         url = "https://store-content.ak.epicgames.com/api"
         url += f"/{self.locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
         self.manager.get(url, lambda data: self.__handle_get_game(data, handle_func))
 
     @staticmethod
     def __handle_get_game(data, handle_func):
-        debug = DebugDialog(data, None)
-        debug.exec()
+        # debug = DebugDialog(data, None)
+        # debug.exec()
         try:
             product = DieselProduct.from_dict(data)
             handle_func(product)
@@ -214,8 +229,8 @@ class ShopApiCore(QObject):
         self.authed_manager.post(graphql_url, lambda data: self._handle_add_to_wishlist(data, handle_func), payload)
 
     def _handle_add_to_wishlist(self, data, handle_func):
-        debug = DebugDialog(data, None)
-        debug.exec()
+        # debug = DebugDialog(data, None)
+        # debug.exec()
         try:
             response = ResponseModel.from_dict(data)
             data = response.data.wishlist.add_to_wishlist
@@ -240,8 +255,8 @@ class ShopApiCore(QObject):
                                  payload)
 
     def _handle_remove_from_wishlist(self, data, handle_func):
-        debug = DebugDialog(data, None)
-        debug.exec()
+        # debug = DebugDialog(data, None)
+        # debug.exec()
         try:
             response = ResponseModel.from_dict(data)
             data = response.data.wishlist.remove_from_wishlist

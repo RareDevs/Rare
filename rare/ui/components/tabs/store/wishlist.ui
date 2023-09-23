@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string notr="true">Wishlist</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="main_layout">
    <item>
     <layout class="QHBoxLayout" name="tool_layout">
      <item>

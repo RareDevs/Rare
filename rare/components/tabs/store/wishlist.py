@@ -1,27 +1,65 @@
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QMessageBox, QWidget
+from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot
+from PyQt5.QtGui import QShowEvent
+from PyQt5.QtWidgets import QMessageBox, QWidget, QScrollArea, QFrame, QSizePolicy
 
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
 from rare.utils.misc import icon
-from rare.widgets.side_tab import SideTabContents
 from rare.widgets.flow_layout import FlowLayout
-from .shop_api_core import ShopApiCore
-from .game_widgets import WishlistWidget
+from rare.widgets.side_tab import SideTabContents
+from rare.widgets.sliding_stack import SlidingStackedWidget
 from .api.models.response import WishlistItemModel, CatalogOfferModel
+from .store_api import StoreAPI
+from .widgets.details import DetailsWidget
+from .widgets.items import WishlistItemWidget
 
 
-class Wishlist(QWidget, SideTabContents):
-    show_game_info = pyqtSignal(CatalogOfferModel)
+class WishlistPage(SlidingStackedWidget, SideTabContents):
+    def __init__(self, api: StoreAPI, parent=None):
+        super(WishlistPage, self).__init__(parent=parent)
+        self.implements_scrollarea = True
+
+        self.wishlist_widget = WishlistWidget(api, parent=self)
+        self.wishlist_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.wishlist_widget.set_title.connect(self.set_title)
+        self.wishlist_widget.show_details.connect(self.show_details)
+
+        self.details_widget = DetailsWidget([], api, parent=self)
+        self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.details_widget.set_title.connect(self.set_title)
+        self.details_widget.back_clicked.connect(self.show_main)
+
+        self.details_scroll = QScrollArea(self)
+        self.details_scroll.setWidgetResizable(True)
+        self.details_scroll.setFrameStyle(QFrame.NoFrame | QFrame.Plain)
+        self.details_scroll.setWidget(self.details_widget)
+
+        self.setDirection(Qt.Horizontal)
+        self.addWidget(self.wishlist_widget)
+        self.addWidget(self.details_scroll)
+
+    @pyqtSlot()
+    def show_main(self):
+        self.slideInWidget(self.wishlist_widget)
+
+    @pyqtSlot(object)
+    def show_details(self, game: CatalogOfferModel):
+        self.details_widget.update_game(game)
+        self.slideInWidget(self.details_scroll)
+
+
+class WishlistWidget(QWidget, SideTabContents):
+    show_details = pyqtSignal(CatalogOfferModel)
     update_wishlist_signal = pyqtSignal()
 
-    def __init__(self, api_core: ShopApiCore, parent=None):
-        super(Wishlist, self).__init__(parent=parent)
+    def __init__(self, api: StoreAPI, parent=None):
+        super(WishlistWidget, self).__init__(parent=parent)
         self.implements_scrollarea = True
-        self.api_core = api_core
+        self.api = api
         self.ui = Ui_Wishlist()
         self.ui.setupUi(self)
+        self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
         self.setEnabled(False)
         self.wishlist = []
         self.widgets = []
@@ -37,12 +75,16 @@ class Wishlist(QWidget, SideTabContents):
             lambda: self.sort_wishlist(sort=self.ui.sort_cb.currentIndex())
         )
 
+    def showEvent(self, a0: QShowEvent) -> None:
+        self.update_wishlist()
+        return super().showEvent(a0)
+
     def update_wishlist(self):
         self.setEnabled(False)
-        self.api_core.get_wishlist(self.set_wishlist)
+        self.api.get_wishlist(self.set_wishlist)
 
     def delete_from_wishlist(self, game: CatalogOfferModel):
-        self.api_core.remove_from_wishlist(
+        self.api.remove_from_wishlist(
             game.namespace,
             game.id,
             lambda success: self.update_wishlist()
@@ -71,7 +113,7 @@ class Wishlist(QWidget, SideTabContents):
             self.ui.no_games_label.setVisible(False)
 
     def sort_wishlist(self, sort=0):
-        widgets = self.ui.list_container.findChildren(WishlistWidget, options=Qt.FindDirectChildrenOnly)
+        widgets = self.ui.list_container.findChildren(WishlistItemWidget, options=Qt.FindDirectChildrenOnly)
         for w in widgets:
             self.ui.list_container.layout().removeWidget(w)
 
@@ -113,8 +155,8 @@ class Wishlist(QWidget, SideTabContents):
             self.ui.no_games_label.setVisible(False)
 
         for game in wishlist:
-            w = WishlistWidget(self.api_core.cached_manager, game.offer, self.ui.list_container)
-            w.open_game.connect(self.show_game_info)
+            w = WishlistItemWidget(self.api.cached_manager, game.offer, self.ui.list_container)
+            w.show_details.connect(self.show_details)
             w.delete_from_wishlist.connect(self.delete_from_wishlist)
             self.widgets.append(w)
             self.list_layout.addWidget(w)

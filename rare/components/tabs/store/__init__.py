@@ -1,14 +1,13 @@
+from PyQt5.QtGui import QShowEvent, QHideEvent
 from legendary.core import LegendaryCore
 
-from rare.shared import RareCore
-from rare.utils.paths import cache_dir
 from rare.widgets.side_tab import SideTabWidget
-from .game_info import ShopGameInfo
-from .search_results import SearchResults
-from .shop_api_core import ShopApiCore
 from .api.models.response import CatalogOfferModel
-from .shop_widget import ShopWidget
-from .wishlist import WishlistWidget, Wishlist
+from .landing import LandingWidget, LandingPage
+from .search import SearchPage
+from .store_api import StoreAPI
+from .widgets.details import DetailsWidget
+from .wishlist import WishlistPage
 
 
 class StoreTab(SideTabWidget):
@@ -19,45 +18,31 @@ class StoreTab(SideTabWidget):
 
         self.core = core
         # self.rcore = RareCore.instance()
-        self.api_core = ShopApiCore(
+        self.api = StoreAPI(
             self.core.egs.session.headers["Authorization"],
             self.core.language_code,
             self.core.country_code,
+            []  # [i.asset_infos["Windows"].namespace for i in self.rcore.game_list if bool(i.asset_infos)]
         )
 
-        self.shop = ShopWidget(cache_dir(), self.core, self.api_core, parent=self)
-        self.shop_index = self.addTab(self.shop, self.tr("Store"))
-        self.shop.show_game.connect(self.show_game)
-        self.shop.show_info.connect(self.show_search)
+        self.landing = LandingPage(self.api, parent=self)
+        self.landing_index = self.addTab(self.landing, self.tr("Store"))
 
-        self.search = SearchResults(self.api_core, parent=self)
-        self.search_index = self.addTab(self.search, self.tr("Search"), self.tr("Results"))
-        self.search.show_info.connect(self.show_game)
-        # self.search.back_button.clicked.connect(lambda: self.setCurrentIndex(self.shop_index))
+        self.search = SearchPage(self.core, self.api, parent=self)
+        self.search_index = self.addTab(self.search, self.tr("Search"))
 
-        self.info = ShopGameInfo(
-            # [i.asset_infos["Windows"].namespace for i in self.rcore.game_list if bool(i.asset_infos)],
-            [],
-            self.api_core,
-            parent=self
-        )
-        self.info_index = self.addTab(self.info, self.tr("Information"), self.tr("Information"))
-        # self.info.back_button.clicked.connect(lambda: self.setCurrentIndex(self.previous_index))
+        self.wishlist = WishlistPage(self.api, parent=self)
+        self.wishlist_index = self.addTab(self.wishlist, self.tr("Wishlist"))
 
-        self.wishlist = Wishlist(self.api_core, parent=self)
-        self.wishlist_index = self.addTab(self.wishlist, self.tr("Wishlist"), self.tr("Wishlist"))
-        self.wishlist.update_wishlist_signal.connect(self.update_wishlist)
-        self.wishlist.show_game_info.connect(self.show_game)
+        self.api.update_wishlist.connect(self.update_wishlist)
 
-        self.api_core.update_wishlist.connect(self.update_wishlist)
-
-        self.previous_index = self.shop_index
+        self.previous_index = self.landing_index
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous() or self.init:
             return super().showEvent(a0)
-        self.shop.load()
-        self.wishlist_widget.update_wishlist()
+        # self.landing.load()
+        # self.wishlist.update_wishlist()
         self.init = True
         return super().showEvent(a0)
 
@@ -68,13 +53,4 @@ class StoreTab(SideTabWidget):
         return super().hideEvent(a0)
 
     def update_wishlist(self):
-        self.shop.update_wishlist()
-
-    def show_game(self, data: CatalogOfferModel):
-        self.previous_index = self.currentIndex()
-        self.info.update_game(data)
-        self.setCurrentIndex(self.info_index)
-
-    def show_search(self, text: str):
-        self.search.load_results(text)
-        self.setCurrentIndex(self.search_index)
+        self.landing.update_wishlist()

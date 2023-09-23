@@ -18,13 +18,13 @@ class StoreWindow(QDialog):
         layout = QVBoxLayout(self)
         layout.addWidget(self.store_tab)
 
-        self.store_tab.load()
+        self.store_tab.show()
 
 
 if __name__ == "__main__":
-    from rare.utils.misc import set_style_sheet
     import rare.resources.static_css
     import rare.resources.stylesheets.RareStyle
+    from rare.utils.misc import set_style_sheet
 
     app = QApplication(sys.argv)
     app.setApplicationName("Rare")

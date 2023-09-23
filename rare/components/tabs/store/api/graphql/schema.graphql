@@ -39,3 +39,38 @@ type GetPriceRes {
     totalPrice: TotalPrice
     lineOffers: [LineOfferRes]
 }
+
+type Image {
+    type: String
+    url: String
+    alt: String
+}
+
+type StorePageMapping {
+    cmsSlug: String
+    offerId: ID
+    prePurchaseOfferId: ID
+}
+
+type PageSandboxModel {
+    pageSlug: String
+    pageType: String
+    productId: ID
+    sandboxId: ID
+    createdDate: Date
+    updatedDate: Date
+    deletedDate: Date
+    mappings: [StorePageMapping]
+}
+
+type CatalogNamespace {
+    parent: ID
+    displayName: String
+    store: String
+    mappings: [PageSandboxModel]
+}
+
+type CatalogItem {
+    id: ID
+    namespace: ID
+}

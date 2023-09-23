@@ -6,11 +6,11 @@ from typing import List
 @dataclass
 class SearchDateRange:
     start_date: datetime = datetime(year=1990, month=1, day=1, tzinfo=timezone.utc)
-    end_date: datetime = datetime.utcnow()
+    end_date: datetime = datetime.utcnow().replace(tzinfo=timezone.utc)
 
     def __str__(self):
         def fmt_date(date: datetime) -> str:
-            # lk: The formatting accepted by the GraphQL API is either '%Y-%m-%dT%H:%M:%S.000Z' or '%Y-%m-%dT'
+            # lk: The formatting accepted by the GraphQL API is either '%Y-%m-%dT%H:%M:%S.000Z' or '%Y-%m-%d'
             return datetime.strftime(date, '%Y-%m-%dT%H:%M:%S.000Z')
         return f"[{fmt_date(self.start_date)},{fmt_date(self.end_date)}]"
 

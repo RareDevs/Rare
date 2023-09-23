@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTreeView, QDialog, QVBoxLayout
 
-from utils.json_formatter import QJsonModel
+from rare.utils.json_formatter import QJsonModel
 
 
 class DebugView(QTreeView):
