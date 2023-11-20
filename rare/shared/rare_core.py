@@ -238,6 +238,7 @@ class RareCore(QObject):
             rgame.update_rgame()
         else:
             rgame = RareGame(self.__core, self.__image_manager, game)
+            self.__add_game(rgame)
         return rgame
 
     def __add_games_and_dlcs(self, games: List[Game], dlcs_dict: Dict[str, List]) -> None:
@@ -247,14 +248,18 @@ class RareCore(QObject):
             if game_dlcs := dlcs_dict.get(rgame.game.catalog_item_id, False):
                 for dlc in game_dlcs:
                     rdlc = self.__create_or_update_rgame(dlc)
-                    rgame.add_dlc(rdlc)
-                    self.__add_game(rdlc)
-            self.__add_game(rgame)
+                    if rdlc not in rgame.owned_dlcs:
+                        rgame.add_dlc(rdlc)
             # lk: since loading has to know about game state,
             # validate installation just adding each RareGamesu
             # TODO: this should probably be moved into RareGame
             if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
-                self.__validate_install(rgame)
+                try:
+                    self.__validate_install(rgame)
+                except FileNotFoundError as e:
+                    logger.info(f'Marking "{rgame.app_title}" as not installed because an exception has occurred...')
+                    logger.error(e)
+                    rgame.set_installed(False)
             self.progress.emit(int(idx/length * 80) + 20, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
 
     @pyqtSlot(object, int)
