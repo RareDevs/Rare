@@ -71,12 +71,20 @@ You can also use `pip`.
 
 ### Windows
 
-- There is a small beta tool for Windows: [Rare Updater](https://github.com/Dummerle/RareUpdater), which installs and updates rare with a single click
+- Rare is avaible as a [Winget package](https://github.com/microsoft/winget-pkgs/tree/master/manifests/d/Dummerle/Rare)
+You can install Rare with the following one-liner:
 
-- Rare is available as a [Chocolatey package](https://community.chocolatey.org/packages/rare) on Windows.
-You can install rare with the following one-liner:
+    `winget install rare`
+
+- Rare is available as a [Chocolatey package](https://community.chocolatey.org/packages/rare).
+You can install Rare with the following one-liner:
 
     `choco install rare`
+
+- There is a small beta tool for Windows: [Rare Updater](https://github.com/Dummerle/RareUpdater), which installs and updates rare with a single click
+
+
+*NOTE*: On recent Windows you should have MSVC 2015 installed, you can get it from [here](https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2015-2017-2019-and-2022)
 
 ### Packages
 
