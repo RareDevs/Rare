@@ -71,7 +71,7 @@ You can also use `pip`.
 
 ### Windows
 
-- Rare is avaible as a [Winget package](https://github.com/microsoft/winget-pkgs/tree/master/manifests/d/Dummerle/Rare)
+- Rare is available as a [Winget package](https://github.com/microsoft/winget-pkgs/tree/master/manifests/d/Dummerle/Rare)
 You can install Rare with the following one-liner:
 
     `winget install rare`
