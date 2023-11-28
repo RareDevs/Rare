@@ -93,7 +93,7 @@ class DiscordRPC(QObject):
         title = None
         if not app_name:
             self.RPC.update(
-                large_image="logo", details="https://github.com/Dummerle/Rare"
+                large_image="logo", details="https://github.com/RareDevs/Rare"
             )
             return
         if self.settings.value("rpc_name", True, bool):

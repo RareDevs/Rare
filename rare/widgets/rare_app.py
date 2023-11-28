@@ -81,7 +81,7 @@ class RareApp(QApplication):
             logging.getLogger("urllib3").setLevel(logging.WARNING)
             logging.getLogger("asyncio").setLevel(logging.WARNING)
             self.logger.info(
-                f"Launching Rare version {rare.__version__} Codename: {rare.code_name}\n"
+                f"Launching Rare version {rare.__version__} Codename: {rare.__codename__}\n"
                 f" - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
                 f" - Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
                 f" - Running {sys.executable} {' '.join(sys.argv)}\n"
