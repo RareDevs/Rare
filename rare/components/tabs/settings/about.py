@@ -35,12 +35,12 @@ class About(QWidget, Ui_About):
 
         self.manager = QtRequestManager("json")
         self.manager.get(
-            "https://api.github.com/repos/Dummerle/Rare/releases/latest",
+            "https://api.github.com/repos/RareDevs/Rare/releases/latest",
             self.update_available_finished,
         )
 
         self.open_browser.clicked.connect(
-            lambda: webbrowser.open("https://github.com/Dummerle/Rare/releases/latest")
+            lambda: webbrowser.open("https://github.com/RareDevs/Rare/releases/latest")
         )
 
         self.update_available = False
@@ -49,7 +49,7 @@ class About(QWidget, Ui_About):
         if a0.spontaneous():
             return super().showEvent(a0)
         self.manager.get(
-            "https://api.github.com/repos/Dummerle/Rare/releases/latest",
+            "https://api.github.com/repos/RareDevs/Rare/releases/latest",
             self.update_available_finished,
         )
         super().showEvent(a0)

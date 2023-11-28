@@ -148,7 +148,7 @@ def get_translations():
 def get_latest_version():
     try:
         resp = requests.get(
-            "https://api.github.com/repos/Dummerle/Rare/releases/latest", timeout=2,
+            "https://api.github.com/repos/RareDevs/Rare/releases/latest", timeout=2,
         )
         tag = resp.json()["tag_name"]
         return tag
