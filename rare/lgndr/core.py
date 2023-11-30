@@ -1,3 +1,4 @@
+import functools
 import json
 import os
 from multiprocessing import Queue
@@ -28,6 +29,15 @@ class LegendaryCore(LegendaryCoreReal):
         self.handler = LgndrCoreLogHandler()
         self.log.addHandler(self.handler)
 
+    @staticmethod
+    def unlock_installed(func):
+        @functools.wraps(func)
+        def unlock(self, *args, **kwargs):
+            ret = func(self, *args, **kwargs)
+            self.lgd._installed_lock.release(force=True)
+            return ret
+        return unlock
+
     # skip_sync defaults to false but since Rare is persistent, skip by default
     # def get_installed_game(self, app_name, skip_sync=True) -> InstalledGame:
     #     return super(LegendaryCore, self).get_installed_game(app_name, skip_sync)
@@ -43,7 +53,7 @@ class LegendaryCore(LegendaryCoreReal):
                          repair: bool = False, repair_use_latest: bool = False,
                          disable_delta: bool = False, override_delta_manifest: str = '',
                          egl_guid: str = '', preferred_cdn: str = None,
-                         disable_https: bool = False) -> (DLManager, AnalysisResult, ManifestMeta):
+                         disable_https: bool = False, bind_ip: str = None) -> (DLManager, AnalysisResult, ManifestMeta):
         dlm, analysis, igame = super(LegendaryCore, self).prepare_download(
             game=game, base_game=base_game, base_path=base_path,
             status_q=status_q, max_shm=max_shm, max_workers=max_workers,
@@ -56,7 +66,7 @@ class LegendaryCore(LegendaryCoreReal):
             repair=repair, repair_use_latest=repair_use_latest,
             disable_delta=disable_delta, override_delta_manifest=override_delta_manifest,
             egl_guid=egl_guid, preferred_cdn=preferred_cdn,
-            disable_https=disable_https
+            disable_https=disable_https, bind_ip=bind_ip,
         )
         # lk: monkeypatch run_real (the method that emits the stats) into DLManager
         # pylint: disable=E1111
@@ -76,6 +86,7 @@ class LegendaryCore(LegendaryCoreReal):
         finally:
             pass
 
+    @unlock_installed
     def egl_import(self, app_name):
         try:
             super(LegendaryCore, self).egl_import(app_name)
@@ -121,6 +132,7 @@ class LegendaryCore(LegendaryCoreReal):
         if delete_files:
             delete_folder(os.path.join(igame.install_path, '.egstore'))
 
+    @unlock_installed
     def egl_export(self, app_name):
         try:
             super(LegendaryCore, self).egl_export(app_name)

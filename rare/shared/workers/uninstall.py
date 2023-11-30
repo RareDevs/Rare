@@ -14,6 +14,7 @@ from .worker import Worker
 
 logger = getLogger("UninstallWorker")
 
+
 # TODO: You can use RareGame directly here once this is called inside RareCore and skip metadata fetch
 def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_config=False):
     game = core.get_game(app_name)
@@ -32,8 +33,9 @@ def uninstall_game(core: LegendaryCore, app_name: str, keep_files=False, keep_co
         LgndrUninstallGameArgs(
             app_name=app_name,
             keep_files=keep_files,
-            indirect_status=status,
+            skip_uninstaller=False,
             yes=True,
+            indirect_status=status,
         )
     )
     if not keep_config:
