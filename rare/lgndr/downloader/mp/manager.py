@@ -72,7 +72,7 @@ class DLManager(DLManagerReal):
         self.conditions = [shm_cond, task_cond]
 
         # start threads
-        s_time = time.time()
+        s_time = time.perf_counter()
         self.threads.append(Thread(target=self.download_job_manager, args=(task_cond, shm_cond)))
         self.threads.append(Thread(target=self.dl_results_handler, args=(task_cond,)))
         self.threads.append(Thread(target=self.fw_results_handler, args=(shm_cond,)))
@@ -80,13 +80,13 @@ class DLManager(DLManagerReal):
         for t in self.threads:
             t.start()
 
-        last_update = time.time()
+        last_update = time.perf_counter()
 
         # Rare: kill requested
         kill_request = False
 
         while processed_tasks < num_tasks:
-            delta = time.time() - last_update
+            delta = time.perf_counter() - last_update
             if not delta:
                 time.sleep(self.update_interval)
                 continue
@@ -108,10 +108,10 @@ class DLManager(DLManagerReal):
             self.bytes_read_since_last = self.bytes_written_since_last = 0
             self.bytes_downloaded_since_last = self.num_processed_since_last = 0
             self.bytes_decompressed_since_last = self.num_tasks_processed_since_last = 0
-            last_update = time.time()
+            last_update = time.perf_counter()
 
             perc = (processed_chunks / num_chunk_tasks) * 100
-            runtime = time.time() - s_time
+            runtime = time.perf_counter() - s_time
             total_avail = len(self.sms)
             total_used = (num_shared_memory_segments - total_avail) * (self.analysis.biggest_chunk / 1024 / 1024)
 
