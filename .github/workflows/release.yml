@@ -14,8 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: "release"
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -65,8 +63,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: "release"
       - name: Install build dependencies
         run: |
           sudo apt update
@@ -105,8 +101,6 @@ jobs:
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: "release"
       - uses: actions/setup-python@v4
         with:
           cache: pip
@@ -170,8 +164,6 @@ jobs:
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: "release"
       - uses: actions/setup-python@v4
         with:
           cache: pip
@@ -202,8 +194,6 @@ jobs:
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: "release"
       - uses: actions/setup-python@v4
         with:
           cache: pip
@@ -236,8 +226,6 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: "release"
       - uses: actions/setup-python@v4
         with:
           cache: pip
@@ -264,7 +252,7 @@ jobs:
           git clone https://github.com/create-dmg/create-dmg
           create-dmg/create-dmg Rare.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
 
-      - name: upload to GitHub
+      - name: Upload to Releases
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
