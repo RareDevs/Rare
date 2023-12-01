@@ -201,8 +201,7 @@ class LegendaryCLI(LegendaryCLIReal):
                                                           disable_delta=args.disable_delta,
                                                           override_delta_manifest=args.override_delta_manifest,
                                                           preferred_cdn=args.preferred_cdn,
-                                                          disable_https=args.disable_https,
-                                                          bind_ip=args.bind_ip)
+                                                          disable_https=args.disable_https)
 
         # game is either up-to-date or hasn't changed, so we have nothing to do
         if not analysis.dl_size and not game.is_dlc:

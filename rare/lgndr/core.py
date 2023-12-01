@@ -53,7 +53,7 @@ class LegendaryCore(LegendaryCoreReal):
                          repair: bool = False, repair_use_latest: bool = False,
                          disable_delta: bool = False, override_delta_manifest: str = '',
                          egl_guid: str = '', preferred_cdn: str = None,
-                         disable_https: bool = False, bind_ip: str = None) -> (DLManager, AnalysisResult, ManifestMeta):
+                         disable_https: bool = False) -> (DLManager, AnalysisResult, ManifestMeta):
         dlm, analysis, igame = super(LegendaryCore, self).prepare_download(
             game=game, base_game=base_game, base_path=base_path,
             status_q=status_q, max_shm=max_shm, max_workers=max_workers,
@@ -66,7 +66,7 @@ class LegendaryCore(LegendaryCoreReal):
             repair=repair, repair_use_latest=repair_use_latest,
             disable_delta=disable_delta, override_delta_manifest=override_delta_manifest,
             egl_guid=egl_guid, preferred_cdn=preferred_cdn,
-            disable_https=disable_https, bind_ip=bind_ip,
+            disable_https=disable_https
         )
         # lk: monkeypatch run_real (the method that emits the stats) into DLManager
         # pylint: disable=E1111
