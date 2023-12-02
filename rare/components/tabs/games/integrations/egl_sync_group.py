@@ -56,16 +56,9 @@ class EGLSyncGroup(QGroupBox):
             self.egl_path_info.setEnabled(False)
         else:
             self.egl_path_edit.textChanged.connect(self.egl_path_changed)
-            if not self.core.egl.programdata_path:
-                self.egl_path_info.setText(self.tr("Updating..."))
-                wine_resolver = WineResolver(
-                    self.core, PathSpec.egl_programdata, "default"
-                )
-                wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
-                QThreadPool.globalInstance().start(wine_resolver)
-            else:
-                self.egl_path_info_label.setVisible(False)
-                self.egl_path_info.setVisible(False)
+            if self.core.egl.programdata_path:
+                self.egl_path_info_label.setEnabled(True)
+                self.egl_path_info.setEnabled(True)
 
         self.ui.egl_sync_check.setChecked(self.core.egl_sync_enabled)
         self.ui.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
@@ -81,10 +74,22 @@ class EGLSyncGroup(QGroupBox):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
+        if not self.core.egl.programdata_path:
+            self.__run_wine_resolver()
         self.update_lists()
         super().showEvent(a0)
 
-    def wine_resolver_cb(self, path):
+    def __run_wine_resolver(self):
+        self.egl_path_info.setText(self.tr("Updating..."))
+        wine_resolver = WineResolver(
+            self.core,
+            PathSpec.egl_programdata,
+            "default"
+        )
+        wine_resolver.signals.result_ready.connect(self.__on_wine_resolver_result)
+        QThreadPool.globalInstance().start(wine_resolver)
+
+    def __on_wine_resolver_result(self, path):
         self.egl_path_info.setText(path)
         if not path:
             self.egl_path_info.setText(
@@ -168,13 +173,15 @@ class EGLSyncGroup(QGroupBox):
 
     def update_lists(self):
         # self.egl_watcher.blockSignals(True)
-        if have_path := bool(self.core.egl.programdata_path) and os.path.exists(self.core.egl.programdata_path):
+        have_path = False
+        if self.core.egl.programdata_path:
+            have_path = os.path.exists(self.core.egl.programdata_path)
+            if not have_path and os.path.isdir(os.path.dirname(self.core.egl.programdata_path)):
+                # NOTE: This might happen if EGL is installed but no games have been installed through it
+                os.mkdir(self.core.egl.programdata_path)
+                have_path = os.path.isdir(self.core.egl.programdata_path)
             # NOTE: need to clear known manifests to force refresh
             self.core.egl.manifests.clear()
-        elif os.path.isdir(os.path.dirname(self.core.egl.programdata_path)):
-            # NOTE: This might happen if EGL is installed but no games have been installed through it
-            os.mkdir(self.core.egl.programdata_path)
-            have_path = bool(self.core.egl.programdata_path) and os.path.isdir(self.core.egl.programdata_path)
         self.ui.egl_sync_check_label.setEnabled(have_path)
         self.ui.egl_sync_check.setEnabled(have_path)
         self.import_list.populate(have_path)
