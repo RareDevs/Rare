@@ -6,6 +6,7 @@ from logging import getLogger
 from typing import Optional, List, Tuple
 
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSettings
+from legendary.lfs import eos
 from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
 
 from rare.lgndr.core import LegendaryCore
@@ -116,32 +117,6 @@ class RareGameBase(QObject):
         pass
 
     @property
-    @abstractmethod
-    def is_mac(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def is_win32(self) -> bool:
-        pass
-
-
-class RareGameSlim(RareGameBase):
-
-    def __init__(self, legendary_core: LegendaryCore, game: Game):
-        super(RareGameSlim, self).__init__(legendary_core, game)
-        # None if origin or not installed
-        self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
-        self.saves: List[RareSaveGame] = []
-
-    @property
-    def is_installed(self) -> bool:
-        return True
-
-    def set_installed(self, installed: bool) -> None:
-        pass
-
-    @property
     def platforms(self) -> Tuple:
         """!
         @brief Property that holds the platforms a game is available for
@@ -167,6 +142,60 @@ class RareGameSlim(RareGameBase):
         @return bool
         """
         return "Win32" in self.game.asset_infos.keys()
+
+    @property
+    def is_origin(self) -> bool:
+        """!
+        @brief Property to report if a Game is an Origin game
+
+        Legendary and by extenstion Rare can't launch Origin games directly,
+        it just launches the Origin client and thus requires a bit of a special
+        handling to let the user know.
+
+        @return bool If the game is an Origin game
+        """
+        return (
+            self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
+        )
+
+    @property
+    def is_overlay(self):
+        return self.app_name == eos.EOSOverlayApp.app_name
+
+    @property
+    def version(self) -> str:
+        """!
+        @brief Reports the currently installed version of the Game
+
+        If InstalledGame reports the currently installed version, which might be
+        different from the remote version available from EGS. For not installed Games
+        it reports the already known version.
+
+        @return str The current version of the game
+        """
+        return self.igame.version if self.igame is not None else self.game.app_version()
+
+    @property
+    def install_path(self) -> Optional[str]:
+        if self.igame:
+            return self.igame.install_path
+        return None
+
+
+class RareGameSlim(RareGameBase):
+
+    def __init__(self, legendary_core: LegendaryCore, game: Game):
+        super(RareGameSlim, self).__init__(legendary_core, game)
+        # None if origin or not installed
+        self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
+        self.saves: List[RareSaveGame] = []
+
+    @property
+    def is_installed(self) -> bool:
+        return True
+
+    def set_installed(self, installed: bool) -> None:
+        pass
 
     @property
     def auto_sync_saves(self):

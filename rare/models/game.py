@@ -202,12 +202,10 @@ class RareGame(RareGameSlim):
 
     @property
     def install_path(self) -> Optional[str]:
-        if self.igame:
-            return self.igame.install_path
-        elif self.is_origin:
+        if self.is_origin:
             # TODO Linux is also C:\\...
             return self.__origin_install_path
-        return None
+        return super(RareGame, self).install_path
 
     @install_path.setter
     def install_path(self, path: str) -> None:
@@ -216,19 +214,6 @@ class RareGame(RareGameSlim):
             self.store_igame()
         elif self.is_origin:
             self.__origin_install_path = path
-
-    @property
-    def version(self) -> str:
-        """!
-        @brief Reports the currently installed version of the Game
-
-        If InstalledGame reports the currently installed version, which might be
-        different from the remote version available from EGS. For not installed Games
-        it reports the already known version.
-
-        @return str The current version of the game
-        """
-        return self.igame.version if self.igame is not None else self.game.app_version()
 
     @property
     def remote_version(self) -> str:
@@ -424,21 +409,6 @@ class RareGame(RareGameSlim):
         return not self.game.asset_infos or not next(iter(self.game.asset_infos.values())).app_name
 
     @property
-    def is_origin(self) -> bool:
-        """!
-        @brief Property to report if a Game is an Origin game
-
-        Legendary and by extenstion Rare can't launch Origin games directly,
-        it just launches the Origin client and thus requires a bit of a special
-        handling to let the user know.
-
-        @return bool If the game is an Origin game
-        """
-        return (
-            self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
-        )
-
-    @property
     def is_ubisoft(self) -> bool:
         return (
             self.game.metadata.get("customAttributes", {}).get("partnerLinkType", {}).get("value") == "ubisoft"
@@ -612,11 +582,3 @@ class RareEosOverlay(RareGameBase):
         else:
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
-
-    @property
-    def is_mac(self) -> bool:
-        return False
-
-    @property
-    def is_win32(self) -> bool:
-        return False
