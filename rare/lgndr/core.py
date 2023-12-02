@@ -1,8 +1,10 @@
 import functools
 import json
 import os
+from datetime import datetime
 from multiprocessing import Queue
 from uuid import uuid4
+from requests.exceptions import HTTPError, ConnectionError
 
 # On Windows the monkeypatching of `run_real` below doesn't work like on Linux
 # This has the side effect of emitting the UIUpdate in DownloadThread complaining with a TypeError
@@ -12,6 +14,7 @@ from legendary.core import LegendaryCore as LegendaryCoreReal
 from legendary.lfs.utils import delete_folder
 from legendary.models.downloading import AnalysisResult
 from legendary.models.egl import EGLManifest
+from legendary.models.exceptions import InvalidCredentialsError
 from legendary.models.game import Game, InstalledGame
 from legendary.models.manifest import ManifestMeta
 
@@ -37,6 +40,75 @@ class LegendaryCore(LegendaryCoreReal):
             self.lgd._installed_lock.release(force=True)
             return ret
         return unlock
+
+    def _login(self, lock, force_refresh=False) -> bool:
+        """
+        Attempts logging in with existing credentials.
+
+        raises ValueError if no existing credentials or InvalidCredentialsError if the API return an error
+        """
+        if not lock.data:
+            raise ValueError('No saved credentials')
+        elif self.logged_in and lock.data['expires_at']:
+            dt_exp = datetime.fromisoformat(lock.data['expires_at'][:-1])
+            dt_now = datetime.utcnow()
+            td = dt_now - dt_exp
+
+            # if session still has at least 10 minutes left we can re-use it.
+            if dt_exp > dt_now and abs(td.total_seconds()) > 600:
+                return True
+            else:
+                self.logged_in = False
+
+        # run update check
+        if self.update_check_enabled():
+            try:
+                self.check_for_updates()
+            except Exception as e:
+                self.log.warning(f'Checking for Legendary updates failed: {e!r}')
+        else:
+            self.apply_lgd_config()
+
+        # check for overlay updates
+        if self.is_overlay_installed():
+            try:
+                self.check_for_overlay_updates()
+            except Exception as e:
+                self.log.warning(f'Checking for EOS Overlay updates failed: {e!r}')
+
+        if lock.data['expires_at'] and not force_refresh:
+            dt_exp = datetime.fromisoformat(lock.data['expires_at'][:-1])
+            dt_now = datetime.utcnow()
+            td = dt_now - dt_exp
+
+            # if session still has at least 10 minutes left we can re-use it.
+            if dt_exp > dt_now and abs(td.total_seconds()) > 600:
+                self.log.info('Trying to re-use existing login session...')
+                try:
+                    self.egs.resume_session(lock.data)
+                    self.logged_in = True
+                    return True
+                except InvalidCredentialsError as e:
+                    self.log.warning(f'Resuming failed due to invalid credentials: {e!r}')
+                except Exception as e:
+                    self.log.warning(f'Resuming failed for unknown reason: {e!r}')
+                # If verify fails just continue the normal authentication process
+                self.log.info('Falling back to using refresh token...')
+
+        try:
+            self.log.info('Logging in...')
+            userdata = self.egs.start_session(lock.data['refresh_token'])
+        except InvalidCredentialsError:
+            self.log.error('Stored credentials are no longer valid! Please login again.')
+            lock.clear()
+            return False
+        except (HTTPError, ConnectionError) as e:
+            self.log.error(f'HTTP request for login failed: {e!r}, please try again later.')
+            return False
+
+        lock.data = userdata
+        self.logged_in = True
+        return True
 
     # skip_sync defaults to false but since Rare is persistent, skip by default
     # def get_installed_game(self, app_name, skip_sync=True) -> InstalledGame:
