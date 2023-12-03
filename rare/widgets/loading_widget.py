@@ -8,8 +8,9 @@ class LoadingWidget(QLabel):
         super(LoadingWidget, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         self.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.movie = QMovie(":/images/loader.gif", parent=self)
-        self.setFixedSize(128, 128)
+        self.movie = QMovie(":/images/loader.webp", parent=self)
+        # The animation's exact size is 94x94
+        self.setFixedSize(96, 96)
         self.setMovie(self.movie)
         if self.parent() is not None:
             self.parent().installEventFilter(self)
@@ -31,7 +32,10 @@ class LoadingWidget(QLabel):
         return super().event(e)
 
     def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
         self.__center_on_parent()
+        super().showEvent(a0)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
         if a0 is self.parent() and a1.type() == QEvent.Resize:

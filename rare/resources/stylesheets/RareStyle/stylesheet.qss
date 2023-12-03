@@ -721,10 +721,12 @@ QBalloonTip {
 }
 
 /* Wrapper settings styling */
-QPushButton#WrapperWidgetButton {
+QPushButton#WrapperWidgetButton,
+QToolButton#WrapperWidgetButton {
     border-color: rgb( 51, 54, 59);
 }
-QPushButton#WrapperWidgetButton:disabled {
+QPushButton#WrapperWidgetButton:disabled,
+QToolButton#WrapperWidgetButton:disabled {
     border-color: rgb( 41, 43, 47);
 }
 QScrollArea#WrapperSettingsScroll {

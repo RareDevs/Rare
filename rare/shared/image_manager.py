@@ -61,7 +61,7 @@ class ImageManager(QObject):
 
         def run(self):
             self.func(self.updates, self.json_data, self.game)
-            logger.debug(f" Emitting singal for {self.game.app_name} ({self.game.app_title})")
+            logger.debug(f"Emitting singal for {self.game.app_name} ({self.game.app_title})")
             self.signals.completed.emit(self.game)
 
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
@@ -82,7 +82,7 @@ class ImageManager(QObject):
         self.device = ImageSize.Preset(1, QApplication.instance().devicePixelRatio())
 
         self.threadpool = QThreadPool()
-        self.threadpool.setMaxThreadCount(8)
+        self.threadpool.setMaxThreadCount(6)
 
     def __img_dir(self, app_name: str) -> Path:
         return self.image_dir.joinpath(app_name)
@@ -182,8 +182,12 @@ class ImageManager(QObject):
             logger.info(f"Downloading {image['type']} for {game.app_name} ({game.app_title})")
             json_data[image["type"]] = image["md5"]
             payload = {"resize": 1, "w": ImageSize.Image.size.width(), "h": ImageSize.Image.size.height()}
-            # cache_data[image["type"]] = requests.get(image["url"], params=payload, timeout=2).content
-            cache_data[image["type"]] = requests.get(image["url"], params=payload).content
+            try:
+                # cache_data[image["type"]] = requests.get(image["url"], params=payload).content
+                cache_data[image["type"]] = requests.get(image["url"], params=payload, timeout=10).content
+            except Exception as e:
+                logger.error(e)
+                return False
 
         self.__convert(game, cache_data)
         # lk: don't keep the cache if there is no logo (kept for me)

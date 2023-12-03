@@ -165,6 +165,8 @@ class IndicatorLineEdit(QWidget):
         self.is_valid = False
         self.edit_func = edit_func
         self.save_func = save_func
+        if text:
+            self.line_edit.setText(text)
         self.line_edit.textChanged.connect(self.__edit)
         if self.edit_func is None:
             self.line_edit.textChanged.connect(self.__save)
@@ -175,8 +177,8 @@ class IndicatorLineEdit(QWidget):
         # lk: however it is going to edit any "understood" bad input to good input
         # lk: and we might not want that (but the validity check reports on the edited string)
         # lk: it is also going to trigger this widget's textChanged signal but that gets lost
-        if text:
-            self.line_edit.setText(text)
+        # if text:
+        #     self.line_edit.setText(text)
 
     def deleteLater(self) -> None:
         if self.__thread is not None:

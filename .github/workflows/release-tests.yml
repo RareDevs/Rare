@@ -1,5 +1,5 @@
 
-name: "Development Snapshot"
+name: "Snapshot"
 
 
 on:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   version:
-    name: "Describe version"
+    name: "Version"
     runs-on: ubuntu-latest
     outputs:
       tag_abbrev: ${{ steps.version.outputs.tag_abbrev }}
@@ -239,7 +239,8 @@ jobs:
           git clone https://github.com/create-dmg/create-dmg
           create-dmg/create-dmg Rare.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v3
         with:
           name: Rare-${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}.dmg
           path: Rare.dmg

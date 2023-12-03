@@ -238,27 +238,28 @@ class RareCore(QObject):
             rgame.update_rgame()
         else:
             rgame = RareGame(self.__core, self.__image_manager, game)
+            self.__add_game(rgame)
         return rgame
 
     def __add_games_and_dlcs(self, games: List[Game], dlcs_dict: Dict[str, List]) -> None:
         length = len(games)
         for idx, game in enumerate(games):
             rgame = self.__create_or_update_rgame(game)
-            # lk: since loading has to know about game state,
-            # validate installation just adding each RareGame
-            # TODO: this should probably be moved into RareGame
-            if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
-                self.__validate_install(rgame)
             if game_dlcs := dlcs_dict.get(rgame.game.catalog_item_id, False):
                 for dlc in game_dlcs:
                     rdlc = self.__create_or_update_rgame(dlc)
-                    # lk: plug dlc progress signals to the game's
-                    rdlc.signals.progress.start.connect(rgame.signals.progress.start)
-                    rdlc.signals.progress.update.connect(rgame.signals.progress.update)
-                    rdlc.signals.progress.finish.connect(rgame.signals.progress.finish)
-                    rgame.owned_dlcs.add(rdlc)
-                    self.__add_game(rdlc)
-            self.__add_game(rgame)
+                    if rdlc not in rgame.owned_dlcs:
+                        rgame.add_dlc(rdlc)
+            # lk: since loading has to know about game state,
+            # validate installation just adding each RareGamesu
+            # TODO: this should probably be moved into RareGame
+            if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
+                try:
+                    self.__validate_install(rgame)
+                except FileNotFoundError as e:
+                    logger.info(f'Marking "{rgame.app_title}" as not installed because an exception has occurred...')
+                    logger.error(e)
+                    rgame.set_installed(False)
             self.progress.emit(int(idx/length * 80) + 20, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
 
     @pyqtSlot(object, int)
@@ -329,31 +330,6 @@ class RareCore(QObject):
             self.fetch_entitlements()
         self.resolve_origin()
 
-    def load_pixmaps(self) -> None:
-        """
-        Load pixmaps for all games
-
-        This exists here solely to fight signal and possibly threading issues.
-        The initial image loading at startup should not be done in the RareGame class
-        for two reasons. It will delay startup due to widget updates and the image
-        might become availabe before the UI is brought up. In case of the second, we
-        will get both a long queue of signals to be serviced and some of them might
-        be not connected yet so the widget won't be updated. So do the loading here
-        by calling this after the MainWindow has finished initializing.
-
-        @return: None
-        """
-        def __load_pixmaps() -> None:
-            # time.sleep(0.1)
-            for rgame in self.__library.values():
-                # self.__image_manager.download_image(rgame.game, rgame.set_pixmap, 0, False)
-                rgame.load_pixmap()
-                # lk: activity perception delay
-                time.sleep(0.0005)
-
-        pixmap_worker = QRunnable.create(__load_pixmaps)
-        QThreadPool.globalInstance().start(pixmap_worker)
-
     @property
     def games_and_dlcs(self) -> Iterator[RareGame]:
         for app_name in self.__library:
@@ -370,6 +346,10 @@ class RareCore(QObject):
     @property
     def origin_games(self) -> Iterator[RareGame]:
         return self.__filter_games(lambda game: game.is_origin and not game.is_dlc)
+
+    @property
+    def ubisoft_games(self) -> Iterator[RareGame]:
+        return self.__filter_games(lambda game: game.is_ubisoft and not game.is_dlc)
 
     @property
     def game_list(self) -> Iterator[Game]:

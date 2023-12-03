@@ -5,7 +5,7 @@ from typing import Tuple, List, Union, Optional
 
 from PyQt5.QtCore import Qt, QThreadPool, QSettings, QCoreApplication
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QKeyEvent
+from PyQt5.QtGui import QCloseEvent, QKeyEvent, QShowEvent
 from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout, QWidget, QVBoxLayout
 from legendary.utils.selective_dl import get_sdl_appname
 
@@ -66,6 +66,8 @@ class InstallDialog(QDialog):
                 header = self.tr("Repair and update")
         elif options.update:
             header = self.tr("Update")
+        elif options.reset_sdl:
+            header = self.tr("Modify")
         else:
             header = self.tr("Install")
         self.ui.install_dialog_label.setText(f'<h3>{header} "{self.rgame.app_title}"</h3>')
@@ -95,12 +97,8 @@ class InstallDialog(QDialog):
 
         self.error_box()
 
-        platforms = ["Windows"]
-        if self.rgame.is_win32:
-            platforms.append("Win32")
-        if self.rgame.is_mac:
-            platforms.append("Mac")
-        self.ui.platform_combo.addItems(platforms)
+        platforms = self.rgame.platforms
+        self.ui.platform_combo.addItems(reversed(platforms))
         self.ui.platform_combo.currentIndexChanged.connect(lambda: self.option_changed(None))
         self.ui.platform_combo.currentIndexChanged.connect(lambda: self.error_box())
         self.ui.platform_combo.currentIndexChanged.connect(
@@ -113,8 +111,11 @@ class InstallDialog(QDialog):
             if (self.ui.platform_combo.currentText() == "Mac" and pf.system() != "Darwin")
             else None
         )
-        if pf.system() == "Darwin" and "Mac" in platforms:
-            self.ui.platform_combo.setCurrentIndex(platforms.index("Mac"))
+        self.ui.platform_combo.setCurrentIndex(
+            self.ui.platform_combo.findText(
+                "Mac" if (pf.system() == "Darwin" and "Mac" in platforms) else "Windows"
+            )
+        )
         self.ui.platform_combo.currentTextChanged.connect(self.setup_sdl_list)
 
         self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
@@ -135,7 +136,7 @@ class InstallDialog(QDialog):
 
         self.selectable_checks: List[TagCheckBox] = []
         self.config_tags: Optional[List[str]] = None
-        self.setup_sdl_list("Mac" if pf.system() == "Darwin" and "Mac" in platforms else "Windows")
+        self.setup_sdl_list(self.ui.platform_combo.currentText())
 
         self.ui.install_button.setEnabled(False)
 
@@ -171,6 +172,12 @@ class InstallDialog(QDialog):
 
         self.ui.install_dialog_layout.setSizeConstraint(QLayout.SetFixedSize)
 
+    def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        self.save_install_edit(self.install_dir_edit.text())
+        super().showEvent(a0)
+
     def execute(self):
         if self.options.silent:
             self.reject_close = False
@@ -192,7 +199,6 @@ class InstallDialog(QDialog):
         config_disable_sdl = self.core.lgd.config.getboolean(self.rgame.app_name, 'disable_sdl', fallback=False)
         sdl_name = get_sdl_appname(self.rgame.app_name)
         if not config_disable_sdl and sdl_name is not None:
-            # FIXME: this should be updated whenever platform changes
             sdl_data = self.core.get_sdl_data(sdl_name, platform=platform)
             if sdl_data:
                 widget = QWidget(self.selectable)

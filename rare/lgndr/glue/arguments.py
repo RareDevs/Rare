@@ -40,10 +40,12 @@ class LgndrImportGameArgs:
 class LgndrUninstallGameArgs:
     app_name: str
     keep_files: bool = False
+    skip_uninstaller: bool = False
     yes: bool = False
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
-    get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
+    get_boolean_choice_main: GetBooleanChoiceProtocol = get_boolean_choice
+    get_boolean_choice_handler: GetBooleanChoiceProtocol = get_boolean_choice
 
 
 @dataclass

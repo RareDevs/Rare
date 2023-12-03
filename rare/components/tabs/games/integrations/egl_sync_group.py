@@ -5,6 +5,7 @@ from logging import getLogger
 from typing import Tuple, Iterable, List, Union
 
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
+from PyQt5.QtGui import QShowEvent
 from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame, QLabel
 from legendary.models.egl import EGLManifest
 from legendary.models.game import InstalledGame
@@ -15,8 +16,8 @@ from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineResolver
 from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
-from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 from rare.widgets.elide_label import ElideLabel
+from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 logger = getLogger("EGLSync")
 
@@ -28,8 +29,20 @@ class EGLSyncGroup(QGroupBox):
         self.ui.setupUi(self)
         self.core = RareCore.instance().core()
 
+        self.egl_path_edit = PathEdit(
+            path=self.core.egl.programdata_path,
+            placeholder=self.tr(
+                "Path to the Wine prefix where EGL is installed, or the Manifests folder"
+            ),
+            file_mode=QFileDialog.DirectoryOnly,
+            edit_func=self.egl_path_edit_edit_cb,
+            save_func=self.egl_path_edit_save_cb,
+            parent=self,
+        )
+        self.ui.egl_path_edit_layout.addWidget(self.egl_path_edit)
+
         self.egl_path_info_label = QLabel(self.tr("Estimated path"), self)
-        self.egl_path_info = ElideLabel("", parent=self)
+        self.egl_path_info = ElideLabel(parent=self)
         self.egl_path_info.setProperty("infoLabel", 1)
         self.ui.egl_sync_layout.insertRow(
             self.ui.egl_sync_layout.indexOf(self.ui.egl_path_edit_label) + 1,
@@ -37,33 +50,15 @@ class EGLSyncGroup(QGroupBox):
         )
 
         if platform.system() == "Windows":
-            self.ui.egl_path_edit_label.setVisible(False)
-            self.egl_path_info_label.setVisible(False)
-            self.egl_path_info.setVisible(False)
+            self.ui.egl_path_edit_label.setEnabled(False)
+            self.egl_path_edit.setEnabled(False)
+            self.egl_path_info_label.setEnabled(False)
+            self.egl_path_info.setEnabled(False)
         else:
-            self.egl_path_edit = PathEdit(
-                path=self.core.egl.programdata_path,
-                placeholder=self.tr(
-                    "Path to the Wine prefix where EGL is installed, or the Manifests folder"
-                ),
-                file_mode=QFileDialog.DirectoryOnly,
-                edit_func=self.egl_path_edit_edit_cb,
-                save_func=self.egl_path_edit_save_cb,
-                parent=self,
-            )
             self.egl_path_edit.textChanged.connect(self.egl_path_changed)
-            self.ui.egl_path_edit_layout.addWidget(self.egl_path_edit)
-
-            if not self.core.egl.programdata_path:
-                self.egl_path_info.setText(self.tr("Updating..."))
-                wine_resolver = WineResolver(
-                    self.core, PathSpec.egl_programdata, "default"
-                )
-                wine_resolver.signals.result_ready.connect(self.wine_resolver_cb)
-                QThreadPool.globalInstance().start(wine_resolver)
-            else:
-                self.egl_path_info_label.setVisible(False)
-                self.egl_path_info.setVisible(False)
+            if self.core.egl.programdata_path:
+                self.egl_path_info_label.setEnabled(True)
+                self.egl_path_info.setEnabled(True)
 
         self.ui.egl_sync_check.setChecked(self.core.egl_sync_enabled)
         self.ui.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
@@ -76,9 +71,25 @@ class EGLSyncGroup(QGroupBox):
         # self.egl_watcher = QFileSystemWatcher([self.egl_path_edit.text()], self)
         # self.egl_watcher.directoryChanged.connect(self.update_lists)
 
+    def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        if not self.core.egl.programdata_path:
+            self.__run_wine_resolver()
         self.update_lists()
+        super().showEvent(a0)
 
-    def wine_resolver_cb(self, path):
+    def __run_wine_resolver(self):
+        self.egl_path_info.setText(self.tr("Updating..."))
+        wine_resolver = WineResolver(
+            self.core,
+            PathSpec.egl_programdata,
+            "default"
+        )
+        wine_resolver.signals.result_ready.connect(self.__on_wine_resolver_result)
+        QThreadPool.globalInstance().start(wine_resolver)
+
+    def __on_wine_resolver_result(self, path):
         self.egl_path_info.setText(path)
         if not path:
             self.egl_path_info.setText(
@@ -162,9 +173,13 @@ class EGLSyncGroup(QGroupBox):
 
     def update_lists(self):
         # self.egl_watcher.blockSignals(True)
-        if have_path := bool(self.core.egl.programdata_path) and os.path.exists(
-            self.core.egl.programdata_path
-        ):
+        have_path = False
+        if self.core.egl.programdata_path:
+            have_path = os.path.exists(self.core.egl.programdata_path)
+            if not have_path and os.path.isdir(os.path.dirname(self.core.egl.programdata_path)):
+                # NOTE: This might happen if EGL is installed but no games have been installed through it
+                os.mkdir(self.core.egl.programdata_path)
+                have_path = os.path.isdir(self.core.egl.programdata_path)
             # NOTE: need to clear known manifests to force refresh
             self.core.egl.manifests.clear()
         self.ui.egl_sync_check_label.setEnabled(have_path)

@@ -102,7 +102,7 @@ class DownloadsTab(QWidget):
 
     @pyqtSlot(str)
     @pyqtSlot(RareGame)
-    def __add_update(self, update: Union[str,RareGame]):
+    def __add_update(self, update: Union[str, RareGame]):
         if isinstance(update, str):
             update = self.rcore.get_game(update)
         if update.metadata.auto_update or QSettings().value("auto_update", False, bool):
@@ -192,12 +192,12 @@ class DownloadsTab(QWidget):
         if item.expired:
             self.__refresh_download(item)
             return
-        thread = DlThread(item, self.rcore.get_game(item.options.app_name), self.core, self.args.debug)
-        thread.result.connect(self.__on_download_result)
-        thread.progress.connect(self.__on_download_progress)
-        thread.finished.connect(thread.deleteLater)
-        thread.start()
-        self.__thread = thread
+        dl_thread = DlThread(item, self.rcore.get_game(item.options.app_name), self.core, self.args.debug)
+        dl_thread.result.connect(self.__on_download_result)
+        dl_thread.progress.connect(self.__on_download_progress)
+        dl_thread.finished.connect(dl_thread.deleteLater)
+        dl_thread.start()
+        self.__thread = dl_thread
         self.download_widget.ui.kill_button.setDisabled(False)
         self.download_widget.ui.dl_name.setText(item.download.game.app_title)
         self.download_widget.setPixmap(

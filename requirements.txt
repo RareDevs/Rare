@@ -3,5 +3,5 @@ requests
 PyQt5
 QtAwesome
 setuptools
-legendary-gl>=0.20.32
+legendary-gl>=0.20.33
 pywin32; platform_system == "Windows"

@@ -10,6 +10,7 @@ from typing import List, Optional, Dict, Set
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
 from PyQt5.QtGui import QPixmap
 from legendary.models.game import Game, InstalledGame
+from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
@@ -92,6 +93,13 @@ class RareGame(RareGameSlim):
         self.game_process.finished.connect(self.__game_finished)
         if self.is_installed and not self.is_dlc:
             self.game_process.connect_to_server(on_startup=True)
+
+    def add_dlc(self, dlc) -> None:
+        # lk: plug dlc progress signals to the game's
+        dlc.signals.progress.start.connect(self.signals.progress.start)
+        dlc.signals.progress.update.connect(self.signals.progress.update)
+        dlc.signals.progress.finish.connect(self.signals.progress.finish)
+        self.owned_dlcs.add(dlc)
 
     def __on_progress_update(self, progress: int):
         self.progress = progress
@@ -194,12 +202,10 @@ class RareGame(RareGameSlim):
 
     @property
     def install_path(self) -> Optional[str]:
-        if self.igame:
-            return self.igame.install_path
-        elif self.is_origin:
+        if self.is_origin:
             # TODO Linux is also C:\\...
             return self.__origin_install_path
-        return None
+        return super(RareGame, self).install_path
 
     @install_path.setter
     def install_path(self, path: str) -> None:
@@ -208,19 +214,6 @@ class RareGame(RareGameSlim):
             self.store_igame()
         elif self.is_origin:
             self.__origin_install_path = path
-
-    @property
-    def version(self) -> str:
-        """!
-        @brief Reports the currently installed version of the Game
-
-        If InstalledGame reports the currently installed version, which might be
-        different from the remote version available from EGS. For not installed Games
-        it reports the already known version.
-
-        @return str The current version of the game
-        """
-        return self.igame.version if self.igame is not None else self.game.app_version()
 
     @property
     def remote_version(self) -> str:
@@ -416,21 +409,6 @@ class RareGame(RareGameSlim):
         return not self.game.asset_infos or not next(iter(self.game.asset_infos.values())).app_name
 
     @property
-    def is_origin(self) -> bool:
-        """!
-        @brief Property to report if a Game is an Origin game
-
-        Legendary and by extenstion Rare can't launch Origin games directly,
-        it just launches the Origin client and thus requires a bit of a special
-        handling to let the user know.
-
-        @return bool If the game is an Origin game
-        """
-        return (
-            self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
-        )
-
-    @property
     def is_ubisoft(self) -> bool:
         return (
             self.game.metadata.get("customAttributes", {}).get("partnerLinkType", {}).get("value") == "ubisoft"
@@ -443,6 +421,10 @@ class RareGame(RareGameSlim):
             if (folder_name := self.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value"))
             else self.app_title
         )
+
+    @property
+    def sdl_name(self) -> Optional[str]:
+        return get_sdl_appname(self.app_name)
 
     @property
     def save_path(self) -> Optional[str]:
@@ -482,11 +464,18 @@ class RareGame(RareGameSlim):
             grant_date = datetime.fromisoformat(
                 entitlement["grantDate"].replace("Z", "+00:00")
             ) if entitlement else None
-            if force:
-                print(grant_date)
             self.metadata.grant_date = grant_date
             self.__save_metadata()
         return self.metadata.grant_date
+
+    def set_origin_attributes(self, path: str, size: int = 0) -> None:
+        self.__origin_install_path = path
+        self.__origin_install_size = size
+        if self.install_path and self.install_size:
+            self.signals.game.installed.emit(self.app_name)
+        else:
+            self.signals.game.uninstalled.emit(self.app_name)
+        self.set_pixmap()
 
     @property
     def can_launch(self) -> bool:
@@ -521,14 +510,15 @@ class RareGame(RareGameSlim):
         )
         return True
 
-    def set_origin_attributes(self, path: str, size: int = 0) -> None:
-        self.__origin_install_path = path
-        self.__origin_install_size = size
-        if self.install_path and self.install_size:
-            self.signals.game.installed.emit(self.app_name)
-        else:
-            self.signals.game.uninstalled.emit(self.app_name)
-        self.set_pixmap()
+    def modify(self) -> bool:
+        if not self.is_idle:
+            return False
+        self.signals.game.install.emit(
+            InstallOptionsModel(
+                app_name=self.app_name, reset_sdl=True
+            )
+        )
+        return True
 
     def repair(self, repair_and_update) -> bool:
         if not self.is_idle:
@@ -592,11 +582,3 @@ class RareEosOverlay(RareGameBase):
         else:
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
-
-    @property
-    def is_mac(self) -> bool:
-        return False
-
-    @property
-    def is_win32(self) -> bool:
-        return False

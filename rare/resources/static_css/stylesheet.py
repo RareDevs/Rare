@@ -57,7 +57,7 @@ def processResourceFile(filenamesIn, filenameOut, listFiles):
     return library.output(filenameOut)
 
 
-def css_name(widget: Union[wrappertype,QObject,Type], subwidget: str = ""):
+def css_name(widget: Union[wrappertype, QObject, Type], subwidget: str = ""):
     return f"#{widget_object_name(widget, '')}{subwidget}"
 
 

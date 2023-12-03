@@ -143,15 +143,6 @@ class MainWindow(QMainWindow):
         self.resize(window_size)
         self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
 
-    # lk: For the gritty details see `RareCore.load_pixmaps()` method
-    # Just before the window is shown, fire a timer to load game icons
-    # This is by nature a little iffy because we don't really know if the
-    # has been shown, and it might make the window delay as widgets being are updated.
-    # Still better than showing a hanged window frame for a few seconds.
-    def showEvent(self, a0: QShowEvent) -> None:
-        if not self._window_launched:
-            QTimer.singleShot(100, self.rcore.load_pixmaps)
-
     @pyqtSlot()
     def show(self) -> None:
         super(MainWindow, self).show()

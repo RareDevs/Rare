@@ -1,3 +1,4 @@
+import functools
 import logging
 import os
 import queue
@@ -6,6 +7,7 @@ import time
 from typing import Optional, Union, Tuple
 
 from legendary.cli import LegendaryCLI as LegendaryCLIReal
+from legendary.lfs.wine_helpers import case_insensitive_file_search
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame, VerifyResult
 from legendary.lfs.utils import validate_files
@@ -30,21 +32,35 @@ class LegendaryCLI(LegendaryCLIReal):
     # noinspection PyMissingConstructor
     def __init__(self, core: LegendaryCore):
         self.core = core
-        self.logger = logging.getLogger('Cli')
+        self.logger = logging.getLogger('cli')
         self.logging_queue = None
         self.ql = self.setup_threaded_logging()
 
     def __del__(self):
         self.ql.stop()
 
+    @staticmethod
+    def unlock_installed(func):
+        @functools.wraps(func)
+        def unlock(self, *args, **kwargs):
+            ret = func(self, *args, **kwargs)
+            self.core.lgd._installed_lock.release(force=True)
+            return ret
+        return unlock
+
     def resolve_aliases(self, name):
         return super(LegendaryCLI, self)._resolve_aliases(name)
 
+    @unlock_installed
     def install_game(self, args: LgndrInstallGameArgs) -> Optional[Tuple[DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult]]:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger)
         get_boolean_choice = args.get_boolean_choice
         sdl_prompt = args.sdl_prompt
+        if not self.core.lgd.lock_installed():
+            logger.fatal('Failed to acquire installed data lock, only one instance of Legendary may '
+                         'install/import/move applications at a time.')
+            return
 
         args.app_name = self._resolve_aliases(args.app_name)
         if self.core.is_installed(args.app_name):
@@ -131,7 +147,7 @@ class LegendaryCLI(LegendaryCLIReal):
             if config_tags:
                 self.core.lgd.config.remove_option(game.app_name, 'install_tags')
                 config_tags = None
-            self.core.lgd.config.set(game.app_name, 'disable_sdl', True)
+            self.core.lgd.config.set(game.app_name, 'disable_sdl', 'true')
             sdl_enabled = False
         # just disable SDL, but keep config tags that have been manually specified
         elif config_disable_sdl or args.disable_sdl:
@@ -205,10 +221,15 @@ class LegendaryCLI(LegendaryCLIReal):
         return dlm, analysis, igame, game, args.repair_mode, repair_file, res
 
     # Rare: This is currently handled in DownloadThread, this is a trial
+    @unlock_installed
     def install_game_real(self, args: LgndrInstallGameRealArgs, dlm: DLManager, game: Game, igame: InstalledGame) -> LgndrInstallGameRealRet:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger)
         ret = LgndrInstallGameRealRet(game.app_name)
+        if not self.core.lgd.lock_installed():
+            logger.fatal('Failed to acquire installed data lock, only one instance of Legendary may '
+                         'install/import/move applications at a time.')
+            return ret
 
         start_t = time.time()
 
@@ -286,9 +307,14 @@ class LegendaryCLI(LegendaryCLIReal):
 
             return ret
 
+    @unlock_installed
     def install_game_cleanup(self, game: Game, igame: InstalledGame, repair_mode: bool = False, repair_file: str = '') -> None:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(LgndrIndirectStatus(), self.logger)
+        if not self.core.lgd.lock_installed():
+            logger.fatal('Failed to acquire installed data lock, only one instance of Legendary may '
+                         'install/import/move applications at a time.')
+            return
 
         old_igame = self.core.get_installed_game(game.app_name)
         if old_igame and repair_mode and os.path.exists(repair_file):
@@ -309,6 +335,11 @@ class LegendaryCLI(LegendaryCLIReal):
         if old_igame.install_tags:
             self.core.lgd.config.set(game.app_name, 'install_tags', ','.join(old_igame.install_tags))
             self.core.lgd.save_config()
+
+        # check if the version changed, this can happen for DLC that gets a version bump with no actual file changes
+        if old_igame and old_igame.version != igame.version:
+            old_igame.version = igame.version
+            self.core.install_game(old_igame)
 
     def _handle_postinstall(self, postinstall, igame, skip_prereqs=False, choice=True):
         # Override logger for the local context to use message as part of the indirect return value
@@ -347,10 +378,16 @@ class LegendaryCLI(LegendaryCLIReal):
         else:
             logger.info('Automatic installation not available on Linux.')
 
+    @unlock_installed
     def uninstall_game(self, args: LgndrUninstallGameArgs) -> None:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger, logging.WARNING)
-        get_boolean_choice = args.get_boolean_choice
+        get_boolean_choice = args.get_boolean_choice_main
+        # def get_boolean_choice(x, default): return True
+        if not self.core.lgd.lock_installed():
+            logger.fatal('Failed to acquire installed data lock, only one instance of Legendary may '
+                         'install/import/move applications at a time.')
+            return
 
         args.app_name = self._resolve_aliases(args.app_name)
         igame = self.core.get_installed_game(args.app_name)
@@ -361,6 +398,9 @@ class LegendaryCLI(LegendaryCLIReal):
         if not args.yes:
             if not get_boolean_choice(f'Do you wish to uninstall "{igame.title}"?', default=False):
                 return
+
+        if os.name == 'nt' and igame.uninstaller and not args.skip_uninstaller:
+            self._handle_uninstaller(igame, args)
 
         try:
             if not igame.is_dlc:
@@ -379,6 +419,31 @@ class LegendaryCLI(LegendaryCLIReal):
         except Exception as e:
             logger.warning(f'Removing game failed: {e!r}, please remove {igame.install_path} manually.')
             return
+
+    def _handle_uninstaller(self, igame: InstalledGame, args: LgndrUninstallGameArgs):
+        # Override logger for the local context to use message as part of the indirect return value
+        logger = LgndrIndirectLogger(args.indirect_status, self.logger, logging.WARNING)
+        yes = args.yes
+        get_boolean_choice = args.get_boolean_choice_handler
+        # def get_boolean_choice(x, default): return True
+        # noinspection PyShadowingBuiltins
+        def print(x): self.logger.info(x) if x else None
+
+        uninstaller = igame.uninstaller
+
+        print('\nThis game provides the following uninstaller:')
+        print(f'- {uninstaller["path"]} {uninstaller["args"]}\n')
+        
+        if yes or get_boolean_choice('Do you wish to run the uninstaller?', default=True):
+            logger.info('Running uninstaller...')
+            req_path, req_exec = os.path.split(uninstaller['path'])
+            work_dir = os.path.join(igame.install_path, req_path)
+            fullpath = os.path.join(work_dir, req_exec)
+            try:
+                p = subprocess.Popen([fullpath, uninstaller['args']], cwd=work_dir, shell=True)
+                p.wait()
+            except Exception as e:
+                logger.error(f'Failed to run uninstaller: {e!r}')
 
     def verify_game(self, args: Union[LgndrVerifyGameArgs, LgndrInstallGameArgs], print_command=True, repair_mode=False, repair_online=False) -> Optional[Tuple[int, int]]:
         # Override logger for the local context to use message as part of the indirect return value
@@ -492,10 +557,15 @@ class LegendaryCLI(LegendaryCLIReal):
                 logger.info(f'Run "legendary repair {args.app_name}" to repair your game installation.')
             return len(failed), len(missing)
 
+    @unlock_installed
     def import_game(self, args: LgndrImportGameArgs) -> None:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger)
         get_boolean_choice = args.get_boolean_choice
+        if not self.core.lgd.lock_installed():
+            logger.fatal('Failed to acquire installed data lock, only one instance of Legendary may '
+                         'install/import/move applications at a time.')
+            return
 
         # make sure path is absolute
         args.app_path = os.path.abspath(args.app_path)
@@ -535,6 +605,8 @@ class LegendaryCLI(LegendaryCLIReal):
         # get everything needed for import from core, then run additional checks.
         manifest, igame = self.core.import_game(game, args.app_path, platform=args.platform)
         exe_path = os.path.join(args.app_path, manifest.meta.launch_exe.lstrip('/'))
+        if os.name != 'nt':
+            exe_path = case_insensitive_file_search(exe_path)
         # check if most files at least exist or if user might have specified the wrong directory
         total = len(manifest.file_manifest_list.elements)
         found = sum(os.path.exists(os.path.join(args.app_path, f.filename))
@@ -590,9 +662,18 @@ class LegendaryCLI(LegendaryCLIReal):
         logger.info(f'{"DLC" if game.is_dlc else "Game"} "{game.app_title}" has been imported.')
         return
 
+    @unlock_installed
+    def egs_sync(self, args):
+        return super(LegendaryCLI, self).egs_sync(args)
+
+    @unlock_installed
     def move(self, args):
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger)
+        if not self.core.lgd.lock_installed():
+            logger.fatal('Failed to acquire installed data lock, only one instance of Legendary may '
+                         'install/import/move applications at a time.')
+            return
 
         app_name = self._resolve_aliases(args.app_name)
         igame = self.core.get_installed_game(app_name, skip_sync=True)

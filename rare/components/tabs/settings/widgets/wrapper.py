@@ -1,20 +1,22 @@
 import re
 import shutil
 from logging import getLogger
-from typing import Dict, List
+from typing import Dict, Optional
 
 from PyQt5.QtCore import pyqtSignal, QSettings, QSize, Qt, QMimeData, pyqtSlot, QCoreApplication
-from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont
+from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont, QMouseEvent
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
-    QPushButton,
     QInputDialog,
     QFrame,
     QMessageBox,
     QSizePolicy,
     QWidget,
     QScrollArea,
+    QAction,
+    QToolButton,
+    QMenu,
 )
 
 from rare.shared import RareCore
@@ -30,60 +32,97 @@ extra_wrapper_regex = {
 }
 
 
+class Wrapper:
+    pass
+
+
 class WrapperWidget(QFrame):
+    update_wrapper = pyqtSignal(str, str)
     delete_wrapper = pyqtSignal(str)
 
     def __init__(self, text: str, show_text=None, parent=None):
         super(WrapperWidget, self).__init__(parent=parent)
         if not show_text:
-            show_text = text
+            show_text = text.split()[0]
 
         self.setFrameShape(QFrame.StyledPanel)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
 
         self.text = text
-        self.text_lbl = QLabel(show_text, parent=self)
-        self.text_lbl.setFont(QFont("monospace"))
-        self.image_lbl = QLabel(parent=self)
-        self.image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
+        self.setToolTip(text)
 
-        self.delete_button = QPushButton(icon("ei.remove"), "", parent=self)
-        if show_text in extra_wrapper_regex.keys():
-            self.delete_button.setDisabled(True)
-            self.delete_button.setToolTip(self.tr("Disable it in settings"))
-        self.delete_button.clicked.connect(self.delete)
+        unmanaged = show_text in extra_wrapper_regex.keys()
 
-        layout = QHBoxLayout()
+        text_lbl = QLabel(show_text, parent=self)
+        text_lbl.setFont(QFont("monospace"))
+        text_lbl.setDisabled(unmanaged)
+
+        image_lbl = QLabel(parent=self)
+        image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
+
+        edit_action = QAction("Edit", parent=self)
+        edit_action.triggered.connect(self.__edit)
+        delete_action = QAction("Delete", parent=self)
+        delete_action.triggered.connect(self.__delete)
+
+        manage_menu = QMenu(parent=self)
+        manage_menu.addActions([edit_action, delete_action])
+
+        manage_button = QToolButton(parent=self)
+        manage_button.setIcon(icon("mdi.menu"))
+        manage_button.setMenu(manage_menu)
+        manage_button.setPopupMode(QToolButton.InstantPopup)
+        manage_button.setDisabled(unmanaged)
+        if unmanaged:
+            manage_button.setToolTip(self.tr("Manage through settings"))
+        else:
+            manage_button.setToolTip(self.tr("Manage"))
+
+        layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.image_lbl)
-        layout.addWidget(self.text_lbl)
-        layout.addWidget(self.delete_button)
+        layout.addWidget(image_lbl)
+        layout.addWidget(text_lbl)
+        layout.addWidget(manage_button)
         self.setLayout(layout)
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)
-        self.delete_button.setObjectName(f"{self.objectName()}Button")
+        manage_button.setObjectName(f"{self.objectName()}Button")
 
-    def delete(self):
+    @pyqtSlot()
+    def __delete(self):
         self.delete_wrapper.emit(self.text)
 
-    def mouseMoveEvent(self, e):
-        if e.buttons() == Qt.LeftButton:
+    def __edit(self) -> None:
+        dialog = QInputDialog(self)
+        dialog.setWindowTitle(f"{self.tr('Edit wrapper')} - {QCoreApplication.instance().applicationName()}")
+        dialog.setLabelText(self.tr("Edit wrapper command"))
+        dialog.setTextValue(self.text)
+        accepted = dialog.exec()
+        wrapper = dialog.textValue()
+        dialog.deleteLater()
+        if accepted and wrapper:
+            self.update_wrapper.emit(self.text, wrapper)
+
+    def mouseMoveEvent(self, a0: QMouseEvent) -> None:
+        if a0.buttons() == Qt.LeftButton:
+            a0.accept()
             drag = QDrag(self)
             mime = QMimeData()
             drag.setMimeData(mime)
             drag.exec_(Qt.MoveAction)
 
 
-class WrapperSettings(QWidget, Ui_WrapperSettings):
+class WrapperSettings(QWidget):
     def __init__(self):
         super(WrapperSettings, self).__init__()
-        self.setupUi(self)
+        self.ui = Ui_WrapperSettings()
+        self.ui.setupUi(self)
 
         self.wrappers: Dict[str, WrapperWidget] = {}
-        self.app_name: str
+        self.app_name: str = "default"
 
-        self.wrapper_scroll = QScrollArea(self.widget_stack)
+        self.wrapper_scroll = QScrollArea(self.ui.widget_stack)
         self.wrapper_scroll.setWidgetResizable(True)
         self.wrapper_scroll.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
         self.wrapper_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -92,18 +131,18 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
             save_cb=self.save, parent=self.wrapper_scroll
         )
         self.wrapper_scroll.setWidget(self.scroll_content)
-        self.widget_stack.insertWidget(0, self.wrapper_scroll)
+        self.ui.widget_stack.insertWidget(0, self.wrapper_scroll)
 
         self.core = RareCore.instance().core()
 
-        self.add_button.clicked.connect(self.add_button_pressed)
+        self.ui.add_button.clicked.connect(self.add_button_pressed)
         self.settings = QSettings()
 
         self.wrapper_scroll.horizontalScrollBar().rangeChanged.connect(self.adjust_scrollarea)
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)
-        self.no_wrapper_label.setObjectName(f"{self.objectName()}Label")
+        self.ui.no_wrapper_label.setObjectName(f"{self.objectName()}Label")
         self.wrapper_scroll.setObjectName(f"{self.objectName()}Scroll")
         self.wrapper_scroll.horizontalScrollBar().setObjectName(
             f"{self.wrapper_scroll.objectName()}Bar")
@@ -135,77 +174,103 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
         return " ".join(self.get_wrapper_list())
 
     def get_wrapper_list(self):
-        data: List[str] = []
-        for w in self.wrappers.values():
-            # Get the widget at each index in turn.
-            try:
-                data.append(w.text)
-            except AttributeError:
-                pass
-        return data
+        wrappers = list(self.wrappers.values())
+        wrappers.sort(key=lambda x: self.scroll_content.layout().indexOf(x))
+        return [w.text for w in wrappers]
 
     def add_button_pressed(self):
-        header = self.tr("Add wrapper")
-        wrapper, done = QInputDialog.getText(
-            self, f"{header} - {QCoreApplication.instance().applicationName()}", self.tr("Insert wrapper executable")
-        )
-        if not done:
-            return
-        self.add_wrapper(wrapper)
+        dialog = QInputDialog(self)
+        dialog.setWindowTitle(f"{self.tr('Add wrapper')} - {QCoreApplication.instance().applicationName()}")
+        dialog.setLabelText(self.tr("Enter wrapper command"))
+        accepted = dialog.exec()
+        wrapper = dialog.textValue()
+        dialog.deleteLater()
+        if accepted:
+            self.add_wrapper(wrapper)
 
-    def add_wrapper(self, text: str, from_load=False):
+    def add_wrapper(self, text: str, position: int = -1, from_load: bool = False):
         if text == "mangohud" and self.wrappers.get("mangohud"):
             return
-        show_text = text
+        show_text = ""
         for key, extra_wrapper in extra_wrapper_regex.items():
             if re.match(extra_wrapper, text):
                 show_text = key
+        if not show_text:
+            show_text = text.split()[0]
 
         # validate
         if not text.strip():  # is empty
             return
         if not from_load:
             if self.wrappers.get(text):
-                QMessageBox.warning(self, "Warning", self.tr("Wrapper is already in the list"))
+                QMessageBox.warning(
+                    self, self.tr("Warning"), self.tr("Wrapper <b>{0}</b> is already in the list").format(text)
+                )
                 return
 
             if show_text != "proton" and not shutil.which(text.split()[0]):
-                if QMessageBox.question(self, "Warning", self.tr("Wrapper is not in $PATH. Ignore? "),
-                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.No:
+                if (
+                    QMessageBox.question(
+                        self,
+                        self.tr("Warning"),
+                        self.tr("Wrapper <b>{0}</b> is not in $PATH. Add it anyway?").format(show_text),
+                        QMessageBox.Yes | QMessageBox.No,
+                        QMessageBox.No,
+                    )
+                    == QMessageBox.No
+                ):
                     return
 
             if text == "proton":
-                QMessageBox.warning(self, "Warning", self.tr("Do not insert proton manually. Add it in proton settings"))
+                QMessageBox.warning(
+                    self,
+                    self.tr("Warning"),
+                    self.tr("Do not insert <b>proton</b> manually. Add it through Proton settings"),
+                )
                 return
 
-        self.widget_stack.setCurrentIndex(0)
+        self.ui.widget_stack.setCurrentIndex(0)
 
         if widget := self.wrappers.get(show_text, None):
             widget.deleteLater()
 
         widget = WrapperWidget(text, show_text, self.scroll_content)
-        self.scroll_content.layout().addWidget(widget)
+        if position < 0:
+            self.scroll_content.layout().addWidget(widget)
+        else:
+            self.scroll_content.layout().insertWidget(position, widget)
         self.adjust_scrollarea(
             self.wrapper_scroll.horizontalScrollBar().minimum(),
-            self.wrapper_scroll.horizontalScrollBar().maximum()
+            self.wrapper_scroll.horizontalScrollBar().maximum(),
         )
+        widget.update_wrapper.connect(self.update_wrapper)
         widget.delete_wrapper.connect(self.delete_wrapper)
+
         self.wrappers[show_text] = widget
 
         if not from_load:
             self.save()
 
+    @pyqtSlot(str)
     def delete_wrapper(self, text: str):
+        text = text.split()[0]
         widget = self.wrappers.get(text, None)
         if widget:
             self.wrappers.pop(text)
             widget.deleteLater()
 
         if not self.wrappers:
-            self.wrapper_scroll.setMaximumHeight(self.label_page.sizeHint().height())
-            self.widget_stack.setCurrentIndex(1)
+            self.wrapper_scroll.setMaximumHeight(self.ui.label_page.sizeHint().height())
+            self.ui.widget_stack.setCurrentIndex(1)
 
         self.save()
+
+    @pyqtSlot(str, str)
+    def update_wrapper(self, old: str, new: str):
+        key = old.split()[0]
+        idx = self.scroll_content.layout().indexOf(self.wrappers[key])
+        self.delete_wrapper(key)
+        self.add_wrapper(new, position=idx)
 
     def save(self):
         # save wrappers twice, to support wrappers with spaces
@@ -231,19 +296,18 @@ class WrapperSettings(QWidget, Ui_WrapperSettings):
             wrappers = pattern.split(cfg)[1::2]
 
         for wrapper in wrappers:
-            self.add_wrapper(wrapper, True)
+            self.add_wrapper(wrapper, from_load=True)
 
         if not self.wrappers:
-            self.wrapper_scroll.setMaximumHeight(self.label_page.sizeHint().height())
-            self.widget_stack.setCurrentIndex(1)
+            self.wrapper_scroll.setMaximumHeight(self.ui.label_page.sizeHint().height())
+            self.ui.widget_stack.setCurrentIndex(1)
         else:
-            self.widget_stack.setCurrentIndex(0)
+            self.ui.widget_stack.setCurrentIndex(0)
 
         self.save()
 
 
 class WrapperContainer(QWidget):
-    drag_widget: QWidget
 
     def __init__(self, save_cb, parent=None):
         super(WrapperContainer, self).__init__(parent=parent)
@@ -253,6 +317,8 @@ class WrapperContainer(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.setLayout(layout)
+
+        self.drag_widget: Optional[QWidget] = None
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)

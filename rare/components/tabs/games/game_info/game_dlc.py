@@ -9,7 +9,7 @@ from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
 from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
-from rare.utils.misc import widget_object_name
+from rare.utils.misc import widget_object_name, icon
 
 
 class GameDlcWidget(QFrame):
@@ -48,6 +48,7 @@ class InstalledGameDlcWidget(GameDlcWidget):
         self.ui.action_button.setObjectName("UninstallButton")
         self.ui.action_button.clicked.connect(self.uninstall_dlc)
         self.ui.action_button.setText(self.tr("Uninstall DLC"))
+        self.ui.action_button.setIcon(icon("ri.uninstall-line"))
         # lk: don't reference `self.rdlc` here because the object has been deleted
         rdlc.signals.game.uninstalled.connect(self.__uninstalled)
 
@@ -68,6 +69,8 @@ class AvailableGameDlcWidget(GameDlcWidget):
         self.ui.action_button.setObjectName("InstallButton")
         self.ui.action_button.clicked.connect(self.install_dlc)
         self.ui.action_button.setText(self.tr("Install DLC"))
+        self.ui.action_button.setIcon(icon("ri.install-line"))
+
         # lk: don't reference `self.rdlc` here because the object has been deleted
         rdlc.signals.game.installed.connect(self.__installed)
 

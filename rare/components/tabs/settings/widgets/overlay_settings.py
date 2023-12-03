@@ -10,7 +10,7 @@ from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.widgets.overlay import Ui_OverlaySettings
 from rare.utils import config_helper
 
-logger = getLogger("Overlay")
+logger = getLogger("GameOverlays")
 
 
 class TextInputField(QLineEdit):

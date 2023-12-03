@@ -14,6 +14,7 @@ class DxvkSettings(OverlaySettings):
                 ("devinfo", QCoreApplication.translate("DxvkSettings", "Show Device info")),
                 ("version", QCoreApplication.translate("DxvkSettings", "DXVK Version")),
                 ("api", QCoreApplication.translate("DxvkSettings", "D3D feature level")),
+                ("compiler", QCoreApplication.translate("DxvkSettings", "Compiler activity")),
             ],
             [
                 (CustomOption.number_input("scale", 1, True), QCoreApplication.translate("DxvkSettings", "Scale"))

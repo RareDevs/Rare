@@ -10,19 +10,19 @@ from logging import getLogger
 from signal import signal, SIGINT, SIGTERM, strsignal
 from typing import Union, Optional
 
-from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings, Qt
+from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings, Qt, pyqtSlot
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 from PyQt5.QtWidgets import QApplication
 from legendary.models.game import SaveGameStatus
 
+from rare.components.dialogs.cloud_save_dialog import CloudSaveDialog
 from rare.lgndr.core import LegendaryCore
+from rare.models.base_game import RareGameSlim
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
 from rare.widgets.rare_app import RareApp, RareAppException
 from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
-from ..models.base_game import RareGameSlim
-from rare.components.dialogs.cloud_save_dialog import CloudSaveDialog
 
 logger = logging.getLogger("RareLauncher")
 
@@ -41,7 +41,6 @@ class PreLaunchThread(QRunnable):
     def __init__(self, core: LegendaryCore, args: InitArgs, rgame: RareGameSlim, sync_action=None):
         super(PreLaunchThread, self).__init__()
         self.core = core
-        self.app_name = args.app_name
         self.signals = self.Signals()
         self.args = args
         self.rgame = rgame
@@ -119,45 +118,30 @@ class RareLauncherException(RareAppException):
 
 
 class RareLauncher(RareApp):
-    game_process: QProcess
-    server: QLocalServer
-    socket: Optional[QLocalSocket] = None
     exit_app = pyqtSignal()
-    console: Optional[Console] = None
-    success: bool = True
 
     def __init__(self, args: InitArgs):
         log_file = f"Rare_Launcher_{args.app_name}" + "_{0}.log"
         super(RareLauncher, self).__init__(args, log_file)
         self._hook.deleteLater()
         self._hook = RareLauncherException(self, args, self)
-        self.game_process = QProcess()
-        self.app_name = args.app_name
-        self.logger = getLogger(self.app_name)
-        self.core = LegendaryCore()
-        self.args = args
+        self.logger = getLogger(f"Launcher_{args.app_name}")
 
+        self.success: bool = True
         self.no_sync_on_exit = False
-
-        game = self.core.get_game(self.app_name)
-        self.rgame = RareGameSlim(self.core, game)
+        self.args = args
+        self.core = LegendaryCore()
+        self.rgame = RareGameSlim(self.core, self.core.get_game(args.app_name))
 
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)
 
+        self.console: Optional[Console] = None
         if QSettings().value("show_console", False, bool):
             self.console = Console()
             self.console.show()
 
-        self.server = QLocalServer()
-        ret = self.server.listen(f"rare_{self.app_name}")
-        if not ret:
-            self.logger.error(self.server.errorString())
-            self.logger.info("Server is running")
-            self.server.close()
-            self.success = False
-            return
-        self.server.newConnection.connect(self.new_server_connection)
+        self.game_process: QProcess = QProcess(self)
         self.game_process.finished.connect(self.game_finished)
         self.game_process.errorOccurred.connect(
             lambda err: self.error_occurred(self.game_process.errorString()))
@@ -172,10 +156,29 @@ class RareLauncher(RareApp):
                     self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
                 )
             )
-            self.console.term.connect(lambda: self.game_process.terminate())
-            self.console.kill.connect(lambda: self.game_process.kill())
+            self.console.term.connect(self.__proc_term)
+            self.console.kill.connect(self.__proc_kill)
+
+        self.socket: Optional[QLocalSocket] = None
+        self.server: QLocalServer = QLocalServer(self)
+        ret = self.server.listen(f"rare_{args.app_name}")
+        if not ret:
+            self.logger.error(self.server.errorString())
+            self.logger.info("Server is running")
+            self.server.close()
+            self.success = False
+            return
+        self.server.newConnection.connect(self.new_server_connection)
 
         self.start_time = time.time()
+
+    @pyqtSlot()
+    def __proc_term(self):
+        self.game_process.terminate()
+
+    @pyqtSlot()
+    def __proc_kill(self):
+        self.game_process.kill()
 
     def new_server_connection(self):
         if self.socket is not None:
@@ -221,7 +224,6 @@ class RareLauncher(RareApp):
         else:
             self.on_exit(exit_code)
 
-
     def game_finished(self, exit_code):
         self.logger.info("Game finished")
 
@@ -232,12 +234,12 @@ class RareLauncher(RareApp):
 
     def on_exit(self, exit_code: int):
         if self.console:
-            self.console.on_process_exit(self.core.get_game(self.app_name).app_title, exit_code)
+            self.console.on_process_exit(self.core.get_game(self.rgame.app_name).app_title, exit_code)
 
         self.send_message(
             FinishedModel(
                 action=Actions.finished,
-                app_name=self.app_name,
+                app_name=self.rgame.app_name,
                 exit_code=exit_code,
                 playtime=int(time.time() - self.start_time)
             )
@@ -265,11 +267,11 @@ class RareLauncher(RareApp):
         # send start message after process started
         self.game_process.started.connect(lambda: self.send_message(
             StateChangedModel(
-                action=Actions.state_update, app_name=self.app_name,
+                action=Actions.state_update, app_name=self.rgame.app_name,
                 new_state=StateChangedModel.States.started
             )
         ))
-        if self.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
+        if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
             self.game_process.deleteLater()
             subprocess.Popen([args.executable] + args.args, cwd=args.cwd,
                              env={i: args.env.value(i) for i in args.env.keys()})
@@ -281,7 +283,7 @@ class RareLauncher(RareApp):
             logger.info("Dry run activated")
             if self.console:
                 self.console.log(f"{args.executable} {' '.join(args.args)}")
-                self.console.log(f"Do not start {self.app_name}")
+                self.console.log(f"Do not start {self.rgame.app_name}")
                 self.console.accept_close = True
             print(args.executable, " ".join(args.args))
             self.stop()
@@ -291,9 +293,9 @@ class RareLauncher(RareApp):
     def error_occurred(self, error_str: str):
         self.logger.warning(error_str)
         if self.console:
-            self.console.on_process_exit(self.core.get_game(self.app_name).app_title, error_str)
+            self.console.on_process_exit(self.core.get_game(self.rgame.app_name).app_title, error_str)
         self.send_message(ErrorModel(
-            error_string=error_str, app_name=self.app_name,
+            error_string=error_str, app_name=self.rgame.app_name,
             action=Actions.error)
         )
         self.stop()
@@ -364,7 +366,7 @@ class RareLauncher(RareApp):
         if not self.console:
             self.exit()
         else:
-            self.console.on_process_exit(self.app_name, 0)
+            self.console.on_process_exit(self.rgame.app_name, 0)
 
 
 def start_game(args: Namespace):

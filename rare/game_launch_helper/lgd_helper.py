@@ -84,7 +84,7 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
                     launch_args: LaunchArgs) -> LaunchArgs:
     if not args.offline:  # skip for update
         if not args.skip_update_check and not core.is_noupdate_game(igame.app_name):
-            print("Checking for updates...")
+            # print("Checking for updates...")
             # check updates
             try:
                 latest = core.get_asset(
