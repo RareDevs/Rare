@@ -143,7 +143,7 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
         if i is None:
             i = self.select_pfx_combo.currentIndex()
         prefix = os.path.expanduser(self.select_pfx_combo.itemText(i))
-        if platform.system() != "Windows" and not os.path.exists(prefix):
+        if platform.system() != "Windows" and not os.path.isfile(os.path.join(prefix, "user.reg")):
             return
         self.current_prefix = prefix
         reg_paths = eos.query_registry_entries(self.current_prefix)
