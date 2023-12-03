@@ -8,6 +8,10 @@ on:
     types: [ published ]
 
 
+permissions:
+  contents: write
+
+
 jobs:
   pypi-deploy:
     if: "!github.event.release.prerelease"
@@ -50,8 +54,8 @@ jobs:
           makedeb -d
           mv *.deb ../Rare.deb
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare.deb
@@ -79,16 +83,16 @@ jobs:
           mv Rare-*.AppImage Rare.AppImage
           mv Rare-*.AppImage.zsync Rare.AppImage.zsync
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare.AppImage
           asset_name: Rare-${{ github.event.release.tag_name }}.AppImage
           tag: ${{ github.ref }}
           overwrite: true
-      - name: Upload to Releases (zsync)
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Release (zsync)
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare.AppImage.zsync
@@ -151,8 +155,8 @@ jobs:
         run: |
           python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'rare.dist')"
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare-Windows.zip
@@ -181,8 +185,8 @@ jobs:
           python freeze.py bdist_msi
           mv dist/*.msi Rare.msi
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare.msi
@@ -213,8 +217,8 @@ jobs:
         run: |
           python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare-Windows.zip
@@ -252,8 +256,8 @@ jobs:
           git clone https://github.com/create-dmg/create-dmg
           create-dmg/create-dmg Rare.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
 
-      - name: Upload to Releases
-        uses: svenstaro/upload-release-action@2.2.1
+      - name: Upload to Release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Rare.dmg
