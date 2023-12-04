@@ -2,6 +2,7 @@ build
 wheel
 black[d]
 toml
+cx-freeze
 nuitka
 ordered-set
 PyQt5-stubs
