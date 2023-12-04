@@ -31,7 +31,7 @@ pywebview = [
     { version = "^3.6.3", extras = ["gtk"], platform = "linux", optional = true },
     { version = "^3.6.3", extras = ["gtk"], platform = "freebsd", optional = true },
 ]
-legendary-gl = "^0.20.32"
+legendary-gl = "^0.20.33"
 typing-extensions = "^4.3.0"
 
 [tool.poetry.scripts]
