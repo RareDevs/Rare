@@ -117,6 +117,7 @@ class CloudSaves(QWidget, SideTabContents):
                 logger.warning(str(e))
                 resolver = WineResolver(self.core, self.rgame.raw_save_path, self.rgame.app_name)
                 if not resolver.wine_env.get("WINEPREFIX"):
+                    del resolver
                     self.cloud_save_path_edit.setText("")
                     QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")
                     return
@@ -145,7 +146,7 @@ class CloudSaves(QWidget, SideTabContents):
                         self,
                         self.tr("Error - {}").format(self.rgame.title),
                         self.tr(
-                            "Error while calculating path for <b>{}</b>. Insufficient permisions to create <b>{}</b>"
+                            "Error while calculating path for <b>{}</b>. Insufficient permissions to create <b>{}</b>"
                         ).format(self.rgame.title, path),
                     )
                     return
@@ -205,7 +206,10 @@ class CloudSaves(QWidget, SideTabContents):
         self.cloud_ui.cloud_sync.blockSignals(True)
         self.cloud_ui.cloud_sync.setChecked(self.rgame.auto_sync_saves)
         self.cloud_ui.cloud_sync.blockSignals(False)
+
         self.cloud_save_path_edit.setText(self.rgame.save_path if self.rgame.save_path else "")
+        if platform.system() == "Windows" and not self.rgame.save_path:
+            self.compute_save_path()
 
     def update_game(self, rgame: RareGame):
         if self.rgame:
