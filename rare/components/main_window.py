@@ -215,7 +215,7 @@ class MainWindow(QMainWindow):
         # lk: `accept_close` is set to `True` by the `close()` method, overrides exiting to tray in `closeEvent()`
         # lk: ensures exiting instead of hiding when `close()` is called programmatically
         if not self.__accept_close:
-            if self.settings.value("sys_tray", False, bool):
+            if self.settings.value("sys_tray", True, bool):
                 self.hide()
                 e.ignore()
                 return
