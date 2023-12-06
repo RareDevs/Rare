@@ -71,19 +71,20 @@ def get_origin_params(core: LegendaryCore, app_name, offline: bool,
     command.append(origin_uri)
 
     env = core.get_app_environment(app_name)
+    launch_args.environment = QProcessEnvironment.systemEnvironment()
 
     if os.environ.get("container") == "flatpak":
         flatpak_command = ["flatpak-spawn", "--host"]
         for name, value in env.items():
             flatpak_command.append(f"--env={name}={value}")
         command = flatpak_command + command
-
-    launch_args.environment = QProcessEnvironment.systemEnvironment()
-    for name, value in env.items():
-        launch_args.environment.insert(name, value)
+    else:
+        for name, value in env.items():
+            launch_args.environment.insert(name, value)
 
     launch_args.executable = command[0]
     launch_args.arguments = command[1:]
+
     return launch_args
 
 
@@ -108,11 +109,15 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
     )
 
     full_params = []
+    launch_args.environment = QProcessEnvironment.systemEnvironment()
 
     if os.environ.get("container") == "flatpak":
         full_params.extend(["flatpak-spawn", "--host"])
         for name, value in params.environment.items():
             full_params.append(f"--env={name}={value}")
+    else:
+        for name, value in params.environment.items():
+            launch_args.environment.insert(name, value)
 
     full_params.extend(params.launch_command)
     full_params.append(
@@ -124,11 +129,8 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
 
     launch_args.executable = full_params[0]
     launch_args.arguments = full_params[1:]
-
-    launch_args.environment = QProcessEnvironment.systemEnvironment()
-    for name, value in params.environment.items():
-        launch_args.environment.insert(name, value)
     launch_args.working_directory = params.working_directory
+
     return launch_args
 
 

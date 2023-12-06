@@ -22,15 +22,15 @@ def read_registry(registry: str, wine_pfx: str) -> ConfigParser:
     return reg
 
 
-def execute(cmd: List, wine_env: Mapping) -> Tuple[str, str]:
+def execute(command: List, wine_env: Mapping) -> Tuple[str, str]:
     if os.environ.get("container") == "flatpak":
-        flatpak_cmd = ["flatpak-spawn", "--host"]
+        flatpak_command = ["flatpak-spawn", "--host"]
         for name, value in wine_env.items():
-            flatpak_cmd.append(f"--env={name}={value}")
-        cmd = flatpak_cmd + cmd
+            flatpak_command.append(f"--env={name}={value}")
+        command = flatpak_command + command
     try:
         proc = subprocess.Popen(
-            cmd,
+            command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             # Use the current environment if we are in flatpak or our own if we are on host
