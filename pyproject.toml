@@ -17,7 +17,7 @@ description = "A GUI for Legendary"
 authors = ["Dummerle"]
 license = "GPL3"
 readme = "README.md"
-repository = "https://github.com/Dummerle/Rare"
+repository = "https://github.com/RareDevs/Rare"
 
 [tool.poetry.dependencies]
 python = "^3.9"

@@ -1,0 +1,39 @@
+name: job_ubuntu
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install makedeb
+        run: |
+          wget -qO - 'https://proget.hunterwittenborn.com/debian-feeds/makedeb.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/makedeb-archive-keyring.gpg &> /dev/null
+          echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.hunterwittenborn.com/ makedeb main' | sudo tee /etc/apt/sources.list.d/makedeb.list
+          sudo apt update
+          sudo apt install makedeb
+      - name: Prepare source directory
+        run: |
+          git clone https://mpr.makedeb.org/rare build
+          sed '/^pkgver=/d' -i build/PKGBUILD
+          sed '/^source=/d' -i build/PKGBUILD
+          echo "pkgver=${{ inputs.version }}" >> build/PKGBUILD
+          echo "source=(\"\$pkgname-\$pkgver::git+https://github.com/${{ github.repository }}.git#branch=${{ github.ref_name }}\")" >> build/PKGBUILD
+
+      - name: Run makedeb
+        run: |
+          cd build
+          makedeb -d
+          mv *.deb ../Rare.deb
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Rare-${{ inputs.version }}.deb
+          path: Rare.deb

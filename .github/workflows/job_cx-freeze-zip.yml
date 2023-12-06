@@ -1,0 +1,39 @@
+name: job_cx-freeze-zip
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build
+    runs-on: "windows-latest"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          cache: pip
+          python-version: '3.11'
+          check-latest: true
+          architecture: x64
+      - name: Install build dependencies
+        run: pip3 install cx_freeze
+      - name: Install target dependencies
+        run: |
+          pip3 install -r requirements.txt
+          pip3 install -r requirements-presence.txt
+          pip3 install .
+      - name: Build
+        run: cxfreeze -c rare/main.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
+      - name: Compress
+        run: |
+          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Rare-Windows-${{ inputs.version }}.zip
+          path: Rare-Windows.zip
