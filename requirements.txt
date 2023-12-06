@@ -4,4 +4,5 @@ PyQt5
 QtAwesome
 setuptools
 legendary-gl>=0.20.34
+orjson
 pywin32; platform_system == "Windows"

@@ -8,6 +8,7 @@ with open("README.md", "r") as fh:
 requirements = [
     "requests<3.0",
     "legendary-gl>=0.20.34",
+    "orjson",
     "setuptools",
     "wheel",
     "PyQt5",
