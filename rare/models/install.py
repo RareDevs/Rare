@@ -33,7 +33,7 @@ class InstallOptionsModel:
     overlay: bool = False
     update: bool = False
     silent: bool = False
-    install_prereqs: bool = pf.system() == "Windows"
+    install_prereqs: bool = False
 
     def __post_init__(self):
         self.sdl_prompt: Callable[[str, str], list] = \

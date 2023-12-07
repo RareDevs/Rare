@@ -302,7 +302,7 @@ class InstallDialog(QDialog):
         platform = download.igame.platform
         if pf.system() == "Windows":
             return platform == "Windows" or platform == "Win32"
-        elif pf.system() == "Dariwn":
+        elif pf.system() == "Darwin":
             return platform == "Mac"
         else:
             return False
@@ -324,18 +324,18 @@ class InstallDialog(QDialog):
         self.ui.install_size_text.setStyleSheet("font-style: normal; font-weight: bold")
         self.ui.verify_button.setEnabled(self.options_changed)
         self.ui.cancel_button.setEnabled(True)
-        # Offer to install prerequisites only on same platforms or debug mode
-        if self.same_platform(download) or ArgumentsSingleton().debug:
-            if download.igame.prereq_info and not download.igame.prereq_info.get("installed", False):
-                self.advanced.ui.install_prereqs_check.setEnabled(True)
-                self.advanced.ui.install_prereqs_label.setEnabled(True)
-                self.advanced.ui.install_prereqs_check.setChecked(True)
-                prereq_name = download.igame.prereq_info.get("name", "")
-                prereq_path = os.path.split(download.igame.prereq_info.get("path", ""))[-1]
-                prereq_desc = prereq_name if prereq_name else prereq_path
-                self.advanced.ui.install_prereqs_check.setText(
-                    self.tr("Also install: {}").format(prereq_desc)
-                )
+        has_prereqs = bool(download.igame.prereq_info) and not download.igame.prereq_info.get("installed", False)
+        if has_prereqs:
+            prereq_name = download.igame.prereq_info.get("name", "")
+            prereq_path = os.path.split(download.igame.prereq_info.get("path", ""))[-1]
+            prereq_desc = prereq_name if prereq_name else prereq_path
+            self.advanced.ui.install_prereqs_check.setText(self.tr("Also install: {}").format(prereq_desc))
+        else:
+            self.advanced.ui.install_prereqs_check.setText("")
+        # Offer to install prerequisites only on same platforms
+        self.advanced.ui.install_prereqs_label.setEnabled(has_prereqs)
+        self.advanced.ui.install_prereqs_check.setEnabled(has_prereqs)
+        self.advanced.ui.install_prereqs_check.setChecked(has_prereqs and self.same_platform(download))
         if self.options.silent:
             self.close()
 
