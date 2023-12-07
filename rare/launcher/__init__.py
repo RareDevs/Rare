@@ -23,7 +23,8 @@ from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 
 DETACHED_APP_NAMES = [
-    "0a2d9f6403244d12969e11da6713137b"
+    "0a2d9f6403244d12969e11da6713137b"  # Fall Guys
+    "Fortnite"
 ]
 
 
