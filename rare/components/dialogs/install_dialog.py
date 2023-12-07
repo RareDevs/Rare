@@ -297,6 +297,16 @@ class InstallDialog(QDialog):
         self.reject_close = False
         self.close()
 
+    @staticmethod
+    def same_platform(download: InstallDownloadModel) -> bool:
+        platform = download.igame.platform
+        if pf.system() == "Windows":
+            return platform == "Windows" or platform == "Win32"
+        elif pf.system() == "Dariwn":
+            return platform == "Mac"
+        else:
+            return False
+
     @pyqtSlot(InstallDownloadModel)
     def on_worker_result(self, download: InstallDownloadModel):
         self.__download = download
@@ -314,7 +324,8 @@ class InstallDialog(QDialog):
         self.ui.install_size_text.setStyleSheet("font-style: normal; font-weight: bold")
         self.ui.verify_button.setEnabled(self.options_changed)
         self.ui.cancel_button.setEnabled(True)
-        if pf.system() == "Windows" or ArgumentsSingleton().debug:
+        # Offer to install prerequisites only on same platforms or debug mode
+        if self.same_platform(download) or ArgumentsSingleton().debug:
             if download.igame.prereq_info and not download.igame.prereq_info.get("installed", False):
                 self.advanced.ui.install_prereqs_check.setEnabled(True)
                 self.advanced.ui.install_prereqs_label.setEnabled(True)
