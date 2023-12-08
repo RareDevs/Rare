@@ -1,6 +1,5 @@
 import os
 import shutil
-import sys
 from argparse import Namespace
 from datetime import datetime, timezone
 from typing import Optional
@@ -14,6 +13,7 @@ from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.shared import RareCore
 from rare.utils import config_helper, paths
+from rare.utils.misc import ExitCodes
 from rare.widgets.rare_app import RareApp, RareAppException
 
 
@@ -126,6 +126,6 @@ def start(args) -> int:
         app = Rare(args)
         exit_code = app.exec()
         del app
-        if exit_code != -133742:
+        if exit_code != ExitCodes.LOGOUT:
             break
     return exit_code

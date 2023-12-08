@@ -1,20 +1,15 @@
 import webbrowser
-from enum import IntEnum
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.utils.misc import icon
+from rare.utils.misc import icon, ExitCodes
 
 
 class AccountWidget(QWidget):
     exit_app: pyqtSignal = pyqtSignal(int)
     logout: pyqtSignal = pyqtSignal()
-
-    class ExitCodes(IntEnum):
-        EXIT = 0
-        LOGOUT = -133742
 
     def __init__(self, parent):
         super(AccountWidget, self).__init__(parent=parent)
@@ -45,8 +40,8 @@ class AccountWidget(QWidget):
 
     @pyqtSlot()
     def __on_quit(self):
-        self.exit_app.emit(AccountWidget.ExitCodes.EXIT)
+        self.exit_app.emit(ExitCodes.EXIT)
 
     @pyqtSlot()
     def __on_logout(self):
-        self.exit_app.emit(AccountWidget.ExitCodes.LOGOUT)
+        self.exit_app.emit(ExitCodes.LOGOUT)

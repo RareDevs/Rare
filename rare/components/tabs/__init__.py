@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
 
 from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.utils.misc import icon
+from rare.utils.misc import icon, ExitCodes
 from .account import AccountWidget
 from .downloads import DownloadsTab
 from .games import GamesTab
@@ -99,12 +99,12 @@ class MainTabWidget(QTabWidget):
         if self.downloads_tab.is_download_active:
             QMessageBox.warning(
                 self,
-                self.tr("Quit") if exit_code == self.account_widget.ExitCodes.EXIT else self.tr("Logout"),
+                self.tr("Quit") if exit_code == ExitCodes.EXIT else self.tr("Logout"),
                 self.tr("There are active downloads. Stop them before trying to quit."),
             )
             return
         # FIXME: End of FIXME
-        if exit_code == self.account_widget.ExitCodes.LOGOUT:
+        if exit_code == ExitCodes.LOGOUT:
             reply = QMessageBox.question(
                 self,
                 self.tr("Logout"),

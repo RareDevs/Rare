@@ -1,4 +1,5 @@
 import os
+from enum import IntEnum
 from logging import getLogger
 from typing import List, Union, Type, Dict
 
@@ -18,6 +19,12 @@ from PyQt5.sip import wrappertype
 from rare.utils.paths import resources_path
 
 logger = getLogger("Utils")
+
+
+class ExitCodes(IntEnum):
+    EXIT = 0
+    LOGOUT = -133742
+
 
 color_role_map: Dict[int, str] = {
     0: "WindowText",
@@ -143,7 +150,8 @@ def get_translations():
 def get_latest_version():
     try:
         resp = requests.get(
-            "https://api.github.com/repos/RareDevs/Rare/releases/latest", timeout=2,
+            "https://api.github.com/repos/RareDevs/Rare/releases/latest",
+            timeout=2,
         )
         tag = resp.json()["tag_name"]
         return tag
@@ -155,7 +163,8 @@ def path_size(path: Union[str, os.PathLike]) -> int:
     return sum(
         os.stat(os.path.join(dp, f)).st_size
         for dp, dn, filenames in os.walk(path)
-        for f in filenames if os.path.isfile(os.path.join(dp,f ))
+        for f in filenames
+        if os.path.isfile(os.path.join(dp, f))
     )
 
 
