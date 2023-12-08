@@ -19,19 +19,20 @@ def versiontuple(v):
         return tuple((9, 9, 9))  # It is a beta version and newer
 
 
-class About(QWidget, Ui_About):
+class About(QWidget):
     update_available_ready = pyqtSignal()
 
     def __init__(self, parent=None):
         super(About, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.ui = Ui_About()
+        self.ui.setupUi(self)
 
-        self.version.setText(f"{__version__}  {__codename__}")
+        self.ui.version.setText(f"{__version__}  {__codename__}")
 
-        self.update_label.setEnabled(False)
-        self.update_lbl.setEnabled(False)
-        self.open_browser.setVisible(False)
-        self.open_browser.setEnabled(False)
+        self.ui.update_label.setEnabled(False)
+        self.ui.update_lbl.setEnabled(False)
+        self.ui.open_browser.setVisible(False)
+        self.ui.open_browser.setEnabled(False)
 
         self.manager = QtRequestManager("json")
         self.manager.get(
@@ -39,7 +40,7 @@ class About(QWidget, Ui_About):
             self.update_available_finished,
         )
 
-        self.open_browser.clicked.connect(
+        self.ui.open_browser.clicked.connect(
             lambda: webbrowser.open("https://github.com/RareDevs/Rare/releases/latest")
         )
 
@@ -62,11 +63,11 @@ class About(QWidget, Ui_About):
 
         if self.update_available:
             logger.info(f"Update available: {__version__} -> {latest_tag}")
-            self.update_lbl.setText("{} -> {}".format(__version__, latest_tag))
+            self.ui.update_lbl.setText("{} -> {}".format(__version__, latest_tag))
             self.update_available_ready.emit()
         else:
-            self.update_lbl.setText(self.tr("You have the latest version"))
-        self.update_label.setEnabled(self.update_available)
-        self.update_lbl.setEnabled(self.update_available)
-        self.open_browser.setVisible(self.update_available)
-        self.open_browser.setEnabled(self.update_available)
+            self.ui.update_lbl.setText(self.tr("You have the latest version"))
+        self.ui.update_label.setEnabled(self.update_available)
+        self.ui.update_lbl.setEnabled(self.update_available)
+        self.ui.open_browser.setVisible(self.update_available)
+        self.ui.open_browser.setEnabled(self.update_available)
