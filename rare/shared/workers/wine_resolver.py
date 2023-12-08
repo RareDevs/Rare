@@ -84,7 +84,7 @@ class OriginWineWorker(QRunnable):
 
                 use_wine = False
                 if not use_wine:
-                    # lk: this is the original way of gettijng the path by parsing "system.reg"
+                    # lk: this is the original way of getting the path by parsing "system.reg"
                     wine_prefix = wine.prefix(self.core, rgame.app_name)
                     reg = self.__cache.get(wine_prefix, None) or wine.read_registry("system.reg", wine_prefix)
                     self.__cache[wine_prefix] = reg
