@@ -33,7 +33,7 @@ class LaunchDialog(QDialog):
         self.ui = Ui_LaunchDialog()
         self.ui.setupUi(self)
 
-        self.accept_close = False
+        self.reject_close = True
 
         self.progress_info = ElideLabel(parent=self)
         self.progress_info.setFixedHeight(False)
@@ -87,11 +87,9 @@ class LaunchDialog(QDialog):
 
     def __on_completed(self):
         logger.info("App starting")
-        self.accept_close = True
+        self.reject_close = False
         self.start_app.emit()
 
     def reject(self) -> None:
-        if self.accept_close:
+        if not self.reject_close:
             super(LaunchDialog, self).reject()
-        else:
-            pass
