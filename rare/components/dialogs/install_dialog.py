@@ -164,9 +164,9 @@ class InstallDialog(QDialog):
 
         self.non_reload_option_changed("shortcut")
 
-        self.ui.cancel_button.clicked.connect(self.cancel_clicked)
-        self.ui.verify_button.clicked.connect(self.verify_clicked)
-        self.ui.install_button.clicked.connect(self.install_clicked)
+        self.ui.cancel_button.clicked.connect(self.__on_cancel)
+        self.ui.verify_button.clicked.connect(self.__on_verify)
+        self.ui.install_button.clicked.connect(self.__on_install)
 
         self.advanced.ui.install_prereqs_check.setChecked(self.options.install_prereqs)
 
@@ -184,7 +184,7 @@ class InstallDialog(QDialog):
             self.get_download_info()
         else:
             self.setModal(True)
-            self.verify_clicked()
+            self.__on_verify()
             self.show()
 
     @pyqtSlot(str)
@@ -247,7 +247,7 @@ class InstallDialog(QDialog):
         self.worker_running = True
         self.threadpool.start(info_worker)
 
-    def verify_clicked(self):
+    def __on_verify(self):
         self.error_box()
         message = self.tr("Updating...")
         self.ui.download_size_text.setText(message)
@@ -282,7 +282,7 @@ class InstallDialog(QDialog):
         elif option == "install_prereqs":
             self.options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
 
-    def cancel_clicked(self):
+    def __on_cancel(self):
         if self.config_tags is not None:
             config_helper.add_option(self.rgame.app_name, 'install_tags', ','.join(self.config_tags))
         else:
@@ -293,7 +293,7 @@ class InstallDialog(QDialog):
         self.reject_close = False
         self.close()
 
-    def install_clicked(self):
+    def __on_install(self):
         self.reject_close = False
         self.close()
 
@@ -372,7 +372,8 @@ class InstallDialog(QDialog):
 
     def keyPressEvent(self, e: QKeyEvent) -> None:
         if e.key() == Qt.Key_Escape:
-            self.cancel_clicked()
+            e.accept()
+            self.__on_cancel()
 
 
 class TagCheckBox(QCheckBox):
