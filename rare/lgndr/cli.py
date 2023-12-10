@@ -401,7 +401,7 @@ class LegendaryCLI(LegendaryCLIReal):
                 return
 
         if os.name == 'nt' and igame.uninstaller and not args.skip_uninstaller:
-            self._handle_uninstaller(igame, args)
+            self._handle_uninstaller(igame, args.yes, args)
 
         try:
             if not igame.is_dlc:
@@ -421,10 +421,9 @@ class LegendaryCLI(LegendaryCLIReal):
             logger.warning(f'Removing game failed: {e!r}, please remove {igame.install_path} manually.')
             return
 
-    def _handle_uninstaller(self, igame: InstalledGame, args: LgndrUninstallGameArgs):
+    def _handle_uninstaller(self, igame: InstalledGame, yes=False, args: LgndrUninstallGameArgs = None):
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger, logging.WARNING)
-        yes = args.yes
         get_boolean_choice = args.get_boolean_choice_handler
         # def get_boolean_choice(x, default): return True
         # noinspection PyShadowingBuiltins
