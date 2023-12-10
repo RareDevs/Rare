@@ -12,7 +12,7 @@ script:
   # copy Logo
   - cp AppDir/usr/src/rare/resources/images/Rare.png AppDir/usr/share/icons/hicolor/256x256/apps/
   # Install application dependencies
-  - python3 -m pip install --ignore-installed --prefix=/usr --root=AppDir pypresence qtawesome legendary-gl orjson typing_extensions
+  - python3 -m pip install --ignore-installed --prefix=/usr --root=AppDir pypresence qtawesome legendary-gl orjson
 
 AppDir:
   path: AppDir

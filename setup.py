@@ -14,7 +14,6 @@ requirements = [
     "PyQt5",
     "QtAwesome",
     'pywin32; platform_system == "Windows"',
-    "typing_extensions"
 ]
 
 optional_reqs = dict(
