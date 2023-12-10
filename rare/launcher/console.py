@@ -48,15 +48,15 @@ class Console(QDialog):
 
         button_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
 
-        # self.terminate_button = QPushButton(self.tr("Terminate"))
+        self.terminate_button = QPushButton(self.tr("Terminate"))
         # self.terminate_button.setVisible(platform.system() == "Windows")
-        # button_layout.addWidget(self.terminate_button)
-        # self.terminate_button.clicked.connect(lambda: self.term.emit())
-        #
-        # self.kill_button = QPushButton(self.tr("Kill"))
+        button_layout.addWidget(self.terminate_button)
+        self.terminate_button.clicked.connect(lambda: self.term.emit())
+
+        self.kill_button = QPushButton(self.tr("Kill"))
         # self.kill_button.setVisible(platform.system() == "Windows")
-        # button_layout.addWidget(self.kill_button)
-        # self.kill_button.clicked.connect(lambda: self.kill.emit())
+        button_layout.addWidget(self.kill_button)
+        self.kill_button.clicked.connect(lambda: self.kill.emit())
 
         layout.addLayout(button_layout)
 

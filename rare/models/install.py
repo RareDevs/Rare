@@ -1,8 +1,7 @@
 import os
-import platform as pf
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import List, Optional, Callable, Dict, Tuple
+from typing import List, Optional, Dict, Tuple
 
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame
@@ -33,11 +32,7 @@ class InstallOptionsModel:
     overlay: bool = False
     update: bool = False
     silent: bool = False
-    install_prereqs: bool = pf.system() == "Windows"
-
-    def __post_init__(self):
-        self.sdl_prompt: Callable[[str, str], list] = \
-            lambda app_name, title: self.install_tag if self.install_tag is not None else [""]
+    install_prereqs: bool = False
 
     def as_install_kwargs(self) -> Dict:
         return {

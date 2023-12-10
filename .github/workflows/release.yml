@@ -3,7 +3,6 @@ name: "Release"
 
 
 on:
-  workflow_dispatch:
   release:
     types: [ published ]
 
@@ -13,254 +12,98 @@ permissions:
 
 
 jobs:
-  pypi-deploy:
+
+  describe:
+    name: Version ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: "true"
+
+  pypi:
     if: "!github.event.release.prerelease"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine
-      - name: Build and publish
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          python setup.py sdist bdist_wheel
-          twine upload dist/*
+    name: PyPI
+    uses: ./.github/workflows/job_pypi.yml
+    with:
+      version: ${{ github.ref_name }}
 
-  deb-package:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Makedeb
-        run: |
-          wget -qO - 'https://proget.hunterwittenborn.com/debian-feeds/makedeb.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/makedeb-archive-keyring.gpg &> /dev/null
-          echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.hunterwittenborn.com/ makedeb main' | sudo tee /etc/apt/sources.list.d/makedeb.list
-          sudo apt update
-          sudo apt install makedeb
-      - name: Prepare source directory
-        run: |
-          git clone https://mpr.makedeb.org/rare build
-          sed -i "s/pkgver=.*/pkgver=${{ github.event.release.tag_name }}/g" build/PKGBUILD
-
-      - name: build deb
-        run: |
-          cd build
-          makedeb -d
-          mv *.deb ../Rare.deb
-
-      - name: Upload to Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.deb
-          asset_name: Rare-${{ github.event.release.tag_name }}.deb
-          tag: ${{ github.ref }}
-          overwrite: true
+  ubuntu:
+    name: Ubuntu
+    uses: ./.github/workflows/job_ubuntu.yml
+    with:
+      version: ${{ github.ref_name }}
+  ubuntu-release:
+    needs: ubuntu
+    name: Ubuntu
+    uses: ./.github/workflows/job_release.yml
+    with:
+      file1: Rare.deb
+      name1: Rare-${{ github.ref_name }}.deb
 
   appimage:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install build dependencies
-        run: |
-          sudo apt update
-          sudo apt install python3 python3-pip python3-setuptools patchelf desktop-file-utils libgdk-pixbuf2.0-dev fakeroot strace fuse
-      - name: Install appimage-builder
-        run: |
-          sudo wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /usr/local/bin/appimagetool
-          sudo chmod +x /usr/local/bin/appimagetool
-          sudo pip3 install appimage-builder
-      - name: Build
-        run: |
-          cp rare/__main__.py .
-          appimage-builder --skip-test
-          mv Rare-*.AppImage Rare.AppImage
-          mv Rare-*.AppImage.zsync Rare.AppImage.zsync
+    name: AppImage
+    uses: ./.github/workflows/job_appimage.yml
+    with:
+      version: ${{ github.ref_name }}
+  appimage-release:
+    needs: appimage
+    name: AppImage
+    uses: ./.github/workflows/job_release.yml
+    with:
+      file1: Rare.AppImage
+      name1: Rare-${{ github.ref_name }}.AppImage
+      file2: Rare.AppImage.zsync
+      name2: Rare-${{ github.ref_name }}.AppImage.zsync
 
-      - name: Upload to Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.AppImage
-          asset_name: Rare-${{ github.event.release.tag_name }}.AppImage
-          tag: ${{ github.ref }}
-          overwrite: true
-      - name: Upload to Release (zsync)
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.AppImage.zsync
-          asset_name: Rare-${{ github.event.release.tag_name }}.AppImage.zsync
-          tag: ${{ github.ref }}
-          overwrite: true
-
-  nuitka:
+  nuitka-win:
     if: ${{ false }}
-    runs-on: "windows-latest"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          cache: pip
-          python-version: '3.9'
-          check-latest: true
-          architecture: x64
-      - name: Install build dependencies
-        run: pip3 install nuitka ordered-set
-      - name: Install target dependencies
-        run: |
-          pip3 install -r requirements.txt
-          pip3 install -r requirements-presence.txt
-      - name: Build
-        run: >-
-          python -m nuitka
-          --assume-yes-for-downloads
-          --msvc=latest
-          --lto=yes
-          --jobs=2
-          --static-libpython=no
-          --standalone
-          --enable-plugin=anti-bloat
-          --enable-plugin=pyqt5
-          --show-modules
-          --show-anti-bloat-changes
-          --follow-stdlib
-          --follow-imports
-          --nofollow-import-to="*.tests"
-          --nofollow-import-to="*.distutils"
-          --prefer-source-code
-          --include-package=pypresence
-          --include-package-data=qtawesome
-          --include-data-dir=rare\resources\images=rare\resources\images
-          --include-data-files=rare\resources\languages=rare\resources\languages="*.qm"
-          --windows-icon-from-ico=rare\resources\images\Rare.ico
-          --windows-company-name=Rare
-          --windows-product-name=Rare
-          --windows-file-description=rare.exe
-          --windows-file-version=${{ github.event.release.tag_name }}
-          --windows-product-version=${{ github.event.release.tag_name }}
-          --disable-console
-          rare
-      - name: Fix QtNetwork SSL
-        run: |
-          Copy-Item -Path "rare.dist\libcrypto-1_1.dll" -Destination "rare.dist\libcrypto-1_1-x64.dll"
-          Copy-Item -Path "rare.dist\libssl-1_1.dll" -Destination "rare.dist\libssl-1_1-x64.dll"
-      - name: Compress
-        run: |
-          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'rare.dist')"
+    name: Nuitka Windows
+    uses: ./.github/workflows/job_nuitka-win.yml
+    with:
+      version: ${{ github.ref_name }}
+  nuitka-win-release:
+    needs: nuitka-win
+    name: Nuitka Windows
+    uses: ./.github/workflows/job_release.yml
+    with:
+      file1: Rare-Windows.zip
+      name1: Rare-Windows-${{ github.ref_name }}.zip
 
-      - name: Upload to Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare-Windows.zip
-          asset_name: Rare-Windows-${{ github.event.release.tag_name }}.zip
-          tag: ${{ github.ref }}
-          overwrite: true
+  cx-freeze-msi:
+    name: cx-Freeze msi
+    uses: ./.github/workflows/job_cx-freeze-msi.yml
+    with:
+      version: ${{ github.ref_name }}
+  cx-freeze-msi-release:
+    needs: cx-freeze-msi
+    name: cx-Freeze msi
+    uses: ./.github/workflows/job_release.yml
+    with:
+      file1: Rare.msi
+      name1: Rare-${{ github.ref_name }}.msi
 
-  cx_freeze_msi:
-    runs-on: "windows-latest"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          cache: pip
-          python-version: '3.11'
-          check-latest: true
-          architecture: x64
-      - name: Install Build Dependencies
-        run: pip3 install --upgrade cx_freeze wheel
-      - name: Install Target Dependencies
-        run: |
-          pip3 install -r requirements.txt
-          pip3 install -r requirements-presence.txt
-      - name: Build
-        run: |
-          python freeze.py bdist_msi
-          mv dist/*.msi Rare.msi
+  cx-freeze-zip:
+    name: cx-Freeze zip
+    uses: ./.github/workflows/job_cx-freeze-zip.yml
+    with:
+      version: ${{ github.ref_name }}
+  cx-freeze-zip-release:
+    needs: cx-freeze-zip
+    name: cx-Freeze zip
+    uses: ./.github/workflows/job_release.yml
+    with:
+      file1: Rare-Windows.zip
+      name1: Rare-Windows-${{ github.ref_name }}.zip
 
-      - name: Upload to Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.msi
-          asset_name: Rare-${{ github.event.release.tag_name }}.msi
-          tag: ${{ github.ref }}
-          overwrite: true
+  macos:
+    name: MacOS
+    uses: ./.github/workflows/job_macos.yml
+    with:
+      version: ${{ github.ref_name }}
+  macos-release:
+    needs: macos
+    name: MacOS
+    uses: ./.github/workflows/job_release.yml
+    with:
+      file1: Rare.dmg
+      name1: Rare-${{ github.ref_name }}.dmg
 
-  cx_freeze_zip:
-    runs-on: "windows-latest"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          cache: pip
-          python-version: '3.11'
-          check-latest: true
-          architecture: x64
-      - name: Install build dependencies
-        run: pip3 install cx_freeze
-      - name: Install target dependencies
-        run: |
-          pip3 install -r requirements.txt
-          pip3 install -r requirements-presence.txt
-          pip3 install .
-      - name: Build
-        run: cxfreeze -c rare/__main__.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
-      - name: Compress
-        run: |
-          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"
-
-      - name: Upload to Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare-Windows.zip
-          asset_name: Rare-Windows-${{ github.event.release.tag_name }}.zip
-          tag: ${{ github.ref }}
-          overwrite: true
-
-  mac_os:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          cache: pip
-          python-version: '3.11'
-          check-latest: true
-      - name: Install Build Dependencies
-        run: pip install pyinstaller
-      - name: Install Target Dependencies
-        run: |
-          pip install -r requirements.txt
-      - name: Move files
-        run: mv rare/__main__.py __main__.py
-      - name: Build
-        run: >-
-          pyinstaller -F --name Rare
-          --add-data "rare/resources/languages/*:rare/resources/languages"
-          --add-data "rare/resources/images/*:rare/resources/images/"
-          --windowed
-          --icon rare/resources/images/Rare.icns
-          --hidden-import=legendary
-          __main__.py
-      - name: Create dmg
-        run: |
-          git clone https://github.com/create-dmg/create-dmg
-          create-dmg/create-dmg Rare.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
-
-      - name: Upload to Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Rare.dmg
-          asset_name: Rare-${{ github.event.release.tag_name }}.dmg
-          tag: ${{ github.ref }}
-          overwrite: true

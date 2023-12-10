@@ -1,0 +1,49 @@
+name: job_release
+
+on:
+  workflow_call:
+    inputs:
+      file1:
+        required: true
+        type: string
+      name1:
+        required: true
+        type: string
+      name2:
+        type: string
+      file2:
+        type: string
+
+jobs:
+  release:
+    name: Upload
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Download ${{ inputs.name1 }} artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.name1 }}
+    - name: Upload ${{ inputs.name1 }} to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ inputs.file1 }}
+        asset_name: ${{ inputs.name1 }}
+        tag: ${{ github.ref }}
+        overwrite: true
+
+    - name: Download ${{ inputs.name2 }} artifact
+      uses: actions/download-artifact@v3
+      if: ${{ inputs.name2 != '' }}
+      with:
+        name: ${{ inputs.name2 }}
+    - name: Upload ${{ inputs.name2 }} to release
+      uses: svenstaro/upload-release-action@v2
+      if: ${{ inputs.name2 != '' }}
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ inputs.file2 }}
+        asset_name: ${{ inputs.name2 }}
+        tag: ${{ github.ref }}
+        overwrite: true

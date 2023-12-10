@@ -17,7 +17,7 @@ description = "A GUI for Legendary"
 authors = ["Dummerle"]
 license = "GPL3"
 readme = "README.md"
-repository = "https://github.com/Dummerle/Rare"
+repository = "https://github.com/RareDevs/Rare"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -32,10 +32,11 @@ pywebview = [
     { version = "^3.6.3", extras = ["gtk"], platform = "freebsd", optional = true },
 ]
 legendary-gl = "^0.20.34"
+orjson = "^3.8.0"
 typing-extensions = "^4.3.0"
 
 [tool.poetry.scripts]
-start = "rare.__main__:main"
+start = "rare.main:main"
 
 [tool.poetry.dev-dependencies]
 Nuitka = "^1.0.6"

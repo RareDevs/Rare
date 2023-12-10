@@ -1,0 +1,46 @@
+name: job_macos
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          cache: pip
+          python-version: '3.11'
+          check-latest: true
+      - name: Install Build Dependencies
+        run: pip install pyinstaller
+      - name: Install Target Dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Move files
+        run: mv rare/__main__.py __main__.py
+      - name: Build
+        run: >-
+          pyinstaller -F --name Rare
+          --add-data "rare/resources/languages/*:rare/resources/languages"
+          --add-data "rare/resources/images/*:rare/resources/images/"
+          --windowed
+          --icon rare/resources/images/Rare.icns
+          --hidden-import=legendary
+          __main__.py
+      - name: Create dmg
+        run: |
+          git clone https://github.com/create-dmg/create-dmg
+          create-dmg/create-dmg Rare.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Rare-${{ inputs.version }}.dmg
+          path: Rare.dmg

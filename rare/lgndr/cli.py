@@ -43,6 +43,9 @@ class LegendaryCLI(LegendaryCLIReal):
     def unlock_installed(func):
         @functools.wraps(func)
         def unlock(self, *args, **kwargs):
+            if not self.core.lgd.lock_installed():
+                self.logger.debug("Data is locked, trying to forcufully release it")
+                # self.core.lgd._installed_lock.release(force=True)
             try:
                 ret = func(self, *args, **kwargs)
             except Exception as e:
@@ -388,7 +391,6 @@ class LegendaryCLI(LegendaryCLIReal):
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger, logging.WARNING)
         get_boolean_choice = args.get_boolean_choice_main
-        # def get_boolean_choice(x, default): return True
         if not self.core.lgd.lock_installed():
             logger.fatal('Failed to acquire installed data lock, only one instance of Legendary may '
                          'install/import/move applications at a time.')
@@ -429,7 +431,6 @@ class LegendaryCLI(LegendaryCLIReal):
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger, logging.WARNING)
         get_boolean_choice = args.get_boolean_choice_handler
-        # def get_boolean_choice(x, default): return True
         # noinspection PyShadowingBuiltins
         def print(x): self.logger.info(x) if x else None
 

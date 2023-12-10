@@ -1,20 +1,48 @@
 import logging
 from dataclasses import dataclass
+from typing import Callable, List, Optional, Dict
 
-from typing_extensions import Protocol
+from rare.lgndr.models.downloading import UIUpdate
 
-
-class GetBooleanChoiceProtocol(Protocol):
-    def __call__(self, prompt: str, default: bool = ...) -> bool:
-        ...
+logger = logging.getLogger("LgndrMonkeys")
 
 
-def get_boolean_choice(prompt: str, default: bool = True) -> bool:
-    return default
+def get_boolean_choice_factory(value: bool = True) -> Callable[[str, bool], bool]:
+    def get_boolean_choice(prompt: str, default: bool) -> bool:
+        logger.debug("get_boolean_choice: %s, default: %s, choice: %s", prompt, default, value)
+        return value
+    return get_boolean_choice
 
 
-def verify_stdout(a0: int, a1: int, a2: float, a3: float) -> None:
-    print(f"Verification progress: {a0}/{a1} ({a2:.01f}%) [{a3:.1f} MiB/s]\t\r")
+def sdl_prompt_factory(install_tag: Optional[List[str]] = None) -> Callable[[Dict, str], List[str]]:
+    def sdl_prompt(sdl_data: Dict, title: str) -> List[str]:
+        logger.debug("sdl_prompt: %s", title)
+        for key in sdl_data.keys():
+            logger.debug("%s: %s %s", key, sdl_data[key]["tags"], sdl_data[key]["name"])
+        tags = install_tag if install_tag is not None else [""]
+        logger.debug("choice: %s, tags: %s", install_tag, tags)
+        return tags
+    return sdl_prompt
+
+
+def verify_stdout_factory(
+    callback: Callable[[int, int, float, float], None] = None
+) -> Callable[[int, int, float, float], None]:
+    def verify_stdout(a0: int, a1: int, a2: float, a3: float) -> None:
+        if callback is not None and callable(callback):
+            callback(a0, a1, a2, a3)
+        else:
+            logger.info("Verification progress: %d/%d (%.01f%%) [%.1f MiB/s]", a0, a1, a2, a3)
+    return verify_stdout
+
+
+def ui_update_factory(callback: Callable[[UIUpdate], None] = None) -> Callable[[UIUpdate], None]:
+    def ui_update(status: UIUpdate) -> None:
+        if callback is not None and callable(callback):
+            callback(status)
+        else:
+            logger.info("Installation progress: %s", status)
+    return ui_update
 
 
 class DLManagerSignals:

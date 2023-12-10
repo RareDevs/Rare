@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
 
 from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.utils.misc import icon
+from rare.utils.misc import icon, ExitCodes
 from .account import AccountWidget
 from .downloads import DownloadsTab
 from .games import GamesTab
@@ -51,7 +51,7 @@ class MainTabWidget(QTabWidget):
         self.setTabEnabled(button_index, False)
 
         self.account_widget = AccountWidget(self)
-        self.account_widget.logout.connect(self.logout)
+        self.account_widget.exit_app.connect(self.__on_exit_app)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
         account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")
@@ -93,25 +93,28 @@ class MainTabWidget(QTabWidget):
         self.tab_bar.setMinimumWidth(self.width())
         super(MainTabWidget, self).resizeEvent(event)
 
-    @pyqtSlot()
-    def logout(self):
+    @pyqtSlot(int)
+    def __on_exit_app(self, exit_code: int):
         # FIXME: Don't allow logging out if there are active downloads
         if self.downloads_tab.is_download_active:
             QMessageBox.warning(
                 self,
-                self.tr("Logout"),
-                self.tr("There are active downloads. Stop them before logging out."),
+                self.tr("Quit") if exit_code == ExitCodes.EXIT else self.tr("Logout"),
+                self.tr("There are active downloads. Stop them before trying to quit."),
             )
             return
         # FIXME: End of FIXME
-        reply = QMessageBox.question(
-            self,
-            self.tr("Logout"),
-            self.tr("Do you really want to logout <b>{}</b>?").format(self.core.lgd.userdata.get("display_name")),
-            buttons=(QMessageBox.Yes | QMessageBox.No),
-            defaultButton=QMessageBox.No,
-        )
+        if exit_code == ExitCodes.LOGOUT:
+            reply = QMessageBox.question(
+                self,
+                self.tr("Logout"),
+                self.tr("Do you really want to logout <b>{}</b>?").format(self.core.lgd.userdata.get("display_name")),
+                buttons=(QMessageBox.Yes | QMessageBox.No),
+                defaultButton=QMessageBox.No,
+            )
 
-        if reply == QMessageBox.Yes:
-            self.core.lgd.invalidate_userdata()
-            self.exit_app.emit(-133742)  # restart exit code
+            if reply == QMessageBox.Yes:
+                self.core.lgd.invalidate_userdata()
+            else:
+                return
+        self.exit_app.emit(exit_code)  # restart exit code

@@ -7,7 +7,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrVerifyGameArgs
-from rare.lgndr.glue.monkeys import LgndrIndirectStatus
+from rare.lgndr.glue.monkeys import LgndrIndirectStatus, verify_stdout_factory
 from rare.models.game import RareGame
 from .worker import QueueWorker, QueueWorkerInfo
 
@@ -30,7 +30,7 @@ class VerifyWorker(QueueWorker):
         self.args = args
         self.rgame = rgame
 
-    def status_callback(self, num: int, total: int, percentage: float, speed: float):
+    def __status_callback(self, num: int, total: int, percentage: float, speed: float):
         self.rgame.signals.progress.update.emit(num * 100 // total)
         self.signals.progress.emit(self.rgame, num, total, percentage, speed)
 
@@ -45,7 +45,9 @@ class VerifyWorker(QueueWorker):
         cli = LegendaryCLI(self.core)
         status = LgndrIndirectStatus()
         args = LgndrVerifyGameArgs(
-            app_name=self.rgame.app_name, indirect_status=status, verify_stdout=self.status_callback
+            app_name=self.rgame.app_name,
+            indirect_status=status,
+            verify_stdout=verify_stdout_factory(self.__status_callback)
         )
 
         # lk: first pass, verify with the current manifest

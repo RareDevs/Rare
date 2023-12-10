@@ -4,9 +4,10 @@ from typing import Callable, List, Optional, Dict
 
 from rare.lgndr.glue.monkeys import (
     LgndrIndirectStatus,
-    GetBooleanChoiceProtocol,
-    get_boolean_choice,
-    verify_stdout,
+    get_boolean_choice_factory,
+    sdl_prompt_factory,
+    verify_stdout_factory,
+    ui_update_factory,
     DLManagerSignals,
 )
 from rare.lgndr.models.downloading import UIUpdate
@@ -33,7 +34,7 @@ class LgndrImportGameArgs:
     yes: bool = False
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
-    get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
+    get_boolean_choice: Callable[[str, bool], bool] = get_boolean_choice_factory(True)
 
 
 @dataclass
@@ -44,8 +45,8 @@ class LgndrUninstallGameArgs:
     yes: bool = False
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
-    get_boolean_choice_main: GetBooleanChoiceProtocol = get_boolean_choice
-    get_boolean_choice_handler: GetBooleanChoiceProtocol = get_boolean_choice
+    get_boolean_choice_main: Callable[[str, bool], bool] = get_boolean_choice_factory(True)
+    get_boolean_choice_handler: Callable[[str, bool], bool] = get_boolean_choice_factory(True)
 
 
 @dataclass
@@ -53,7 +54,7 @@ class LgndrVerifyGameArgs:
     app_name: str
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
-    verify_stdout: Callable[[int, int, float, float], None] = verify_stdout
+    verify_stdout: Callable[[int, int, float, float], None] = verify_stdout_factory(None)
 
 
 @dataclass
@@ -94,14 +95,11 @@ class LgndrInstallGameArgs:
     yes: bool = True
     # Rare: Extra arguments
     indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
-    get_boolean_choice: GetBooleanChoiceProtocol = get_boolean_choice
-    sdl_prompt: Callable[[str, str], List[str]] = lambda app_name, title: [""]
-    verify_stdout: Callable[[int, int, float, float], None] = verify_stdout
+    get_boolean_choice: Callable[[str, bool], bool] = get_boolean_choice_factory(True)
+    verify_stdout: Callable[[int, int, float, float], None] = verify_stdout_factory(None)
 
-    # def __post_init__(self):
-    #     if self.sdl_prompt is None:
-    #         self.sdl_prompt: Callable[[str, str], list] = \
-    #             lambda app_name, title: self.install_tag if self.install_tag is not None else [""]
+    def __post_init__(self):
+        self.sdl_prompt: Callable[[Dict, str], List[str]] = sdl_prompt_factory(self.install_tag)
 
 
 @dataclass
@@ -119,8 +117,8 @@ class LgndrInstallGameRealArgs:
     # Rare: Extra arguments
     install_prereqs: bool = False
     indirect_status: LgndrIndirectStatus = field(default_factory=LgndrIndirectStatus)
-    ui_update: Callable[[UIUpdate], None] = lambda ui: None
-    dlm_signals: DLManagerSignals = DLManagerSignals()
+    ui_update: Callable[[UIUpdate], None] = ui_update_factory(None)
+    dlm_signals: DLManagerSignals = field(default_factory=DLManagerSignals)
 
 
 @dataclass

@@ -1,7 +1,6 @@
-from dataclasses import dataclass
 from logging import getLogger
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QLayout, QDialog, QMessageBox, QFrame
 from legendary.core import LegendaryCore
 
@@ -15,13 +14,6 @@ from .import_login import ImportLogin
 logger = getLogger("LoginDialog")
 
 
-@dataclass
-class LoginPages:
-    landing: int
-    browser: int
-    import_egl: int
-
-
 class LandingPage(QFrame):
     def __init__(self, parent=None):
         super(LandingPage, self).__init__(parent=parent)
@@ -31,8 +23,7 @@ class LandingPage(QFrame):
 
 
 class LoginDialog(QDialog):
-    logged_in: bool = False
-    pages = LoginPages(landing=0, browser=1, import_egl=2)
+    exit_app: pyqtSignal = pyqtSignal(int)
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(LoginDialog, self).__init__(parent=parent)
@@ -51,6 +42,8 @@ class LoginDialog(QDialog):
         self.ui = Ui_LoginDialog()
         self.ui.setupUi(self)
 
+        self.logged_in: bool = False
+
         self.core = core
         self.args = ArgumentsSingleton()
 
@@ -59,16 +52,16 @@ class LoginDialog(QDialog):
         self.ui.login_stack_layout.addWidget(self.login_stack)
 
         self.landing_page = LandingPage(self.login_stack)
-        self.login_stack.insertWidget(self.pages.landing, self.landing_page)
+        self.login_stack.insertWidget(0, self.landing_page)
 
         self.browser_page = BrowserLogin(self.core, self.login_stack)
-        self.login_stack.insertWidget(self.pages.browser, self.browser_page)
+        self.login_stack.insertWidget(1, self.browser_page)
         self.browser_page.success.connect(self.login_successful)
         self.browser_page.changed.connect(
             lambda: self.ui.next_button.setEnabled(self.browser_page.is_valid())
         )
         self.import_page = ImportLogin(self.core, self.login_stack)
-        self.login_stack.insertWidget(self.pages.import_egl, self.import_page)
+        self.login_stack.insertWidget(2, self.import_page)
         self.import_page.success.connect(self.login_successful)
         self.import_page.changed.connect(lambda: self.ui.next_button.setEnabled(self.import_page.is_valid()))
 
@@ -84,34 +77,34 @@ class LoginDialog(QDialog):
         self.ui.back_button.clicked.connect(self.back_clicked)
         self.ui.next_button.clicked.connect(self.next_clicked)
 
-        self.login_stack.setCurrentIndex(self.pages.landing)
+        self.login_stack.setCurrentWidget(self.landing_page)
 
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
     def back_clicked(self):
         self.ui.back_button.setEnabled(False)
         self.ui.next_button.setEnabled(True)
-        self.login_stack.slideInIndex(self.pages.landing)
+        self.login_stack.slideInWidget(self.landing_page)
 
     def browser_radio_clicked(self):
-        self.login_stack.slideInIndex(self.pages.browser)
+        self.login_stack.slideInWidget(self.browser_page)
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(False)
 
     def import_radio_clicked(self):
-        self.login_stack.slideInIndex(self.pages.import_egl)
+        self.login_stack.slideInWidget(self.import_page)
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(self.import_page.is_valid())
 
     def next_clicked(self):
-        if self.login_stack.currentIndex() == self.pages.landing:
+        if self.login_stack.currentWidget() is self.landing_page:
             if self.landing_page.ui.login_browser_radio.isChecked():
                 self.browser_radio_clicked()
             if self.landing_page.ui.login_import_radio.isChecked():
                 self.import_radio_clicked()
-        elif self.login_stack.currentIndex() == self.pages.browser:
+        elif self.login_stack.currentWidget() is self.browser_page:
             self.browser_page.do_login()
-        elif self.login_stack.currentIndex() == self.pages.import_egl:
+        elif self.login_stack.currentWidget() is self.import_page:
             self.import_page.do_login()
 
     def login(self):

@@ -1,9 +1,9 @@
-typing_extensions
 requests
 PyQt5
 QtAwesome
 setuptools
-legendary-gl
+legendary-gl>=0.20.33
+orjson
 pywin32; platform_system == "Windows"
 pywebview[qt]; platform_system == "Linux"
 pywebview[qt]; platform_system == "FreeBSD"

@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, pyqtSignal, QCoreApplication
-from PyQt5.QtGui import QCloseEvent
+from PyQt5.QtGui import QCloseEvent, QKeyEvent
 from PyQt5.QtWidgets import (
     QDialog,
     QLabel,
@@ -75,3 +75,8 @@ class UninstallDialog(QDialog):
     def __on_cancel(self):
         self.options.values = (None, None, None)
         self.close()
+
+    def keyPressEvent(self, e: QKeyEvent) -> None:
+        if e.key() == Qt.Key_Escape:
+            e.accept()
+            self.__on_cancel()

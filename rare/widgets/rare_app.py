@@ -20,8 +20,8 @@ class RareAppException(QObject):
     exception = pyqtSignal(object, object, object)
 
     def __init__(self, parent=None):
-        self.logger = logging.getLogger(type(self).__name__)
         super(RareAppException, self).__init__(parent=parent)
+        self.logger = logging.getLogger(type(self).__name__)
         sys.excepthook = self._excepthook
         self.exception.connect(self._on_exception)
 
@@ -37,14 +37,19 @@ class RareAppException(QObject):
         if self._handler(exc_type, exc_value, exc_tb):
             return
         self.logger.fatal(message)
-        QMessageBox.warning(None, exc_type.__name__, message)
-        QApplication.exit(1)
+        action = QMessageBox.warning(
+            None, exc_type.__name__, message,
+            buttons=QMessageBox.Ignore | QMessageBox.Close,
+            defaultButton=QMessageBox.Ignore
+        )
+        if action == QMessageBox.RejectRole:
+            QApplication.exit(1)
 
 
 class RareApp(QApplication):
     def __init__(self, args: Namespace, log_file: str):
-        self.logger = logging.getLogger(type(self).__name__)
         super(RareApp, self).__init__(sys.argv)
+        self.logger = logging.getLogger(type(self).__name__)
         self._hook = RareAppException(self)
         self.setQuitOnLastWindowClosed(False)
         self.setAttribute(Qt.AA_DontUseNativeDialogs, True)

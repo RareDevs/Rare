@@ -24,14 +24,12 @@ jobs:
   pylint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install Test Dependencies
+      - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           pip3 install astroid
@@ -45,4 +43,4 @@ jobs:
           pip3 install qstylizer
       - name: Analysis with pylint
         run: |
-          python3 -m pylint -E rare --jobs=3 --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5 --generated-members=PyQt5.*
+          python3 -m pylint -E rare --jobs=3 --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5 --generated-members=PyQt5.*,orjson.*
