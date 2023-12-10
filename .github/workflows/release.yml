@@ -17,8 +17,7 @@ jobs:
     name: Version ${{ github.ref_name }}
     runs-on: ubuntu-latest
     steps:
-      - shell: bash
-        run: "true"
+      - run: "true"
 
   pypi:
     if: "!github.event.release.prerelease"

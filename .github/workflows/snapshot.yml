@@ -41,8 +41,7 @@ jobs:
     name: Version ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
     runs-on: ubuntu-latest
     steps:
-      - shell: bash
-        run: "true"
+      - run: "true"
 
   ubuntu:
     needs: version
