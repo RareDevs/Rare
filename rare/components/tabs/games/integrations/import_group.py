@@ -23,7 +23,7 @@ from PyQt5.QtWidgets import (
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrImportGameArgs
-from rare.lgndr.glue.monkeys import LgndrIndirectStatus
+from rare.lgndr.glue.monkeys import LgndrIndirectStatus, get_boolean_choice_factory
 from rare.shared import RareCore
 from rare.ui.components.tabs.games.integrations.import_group import Ui_ImportGroup
 from rare.widgets.elide_label import ElideLabel
@@ -129,7 +129,7 @@ class ImportWorker(QRunnable):
             skip_dlcs=not self.import_dlcs,
             with_dlcs=self.import_dlcs,
             indirect_status=status,
-            get_boolean_choice=lambda prompt, default=True: self.import_dlcs
+            get_boolean_choice=get_boolean_choice_factory(self.import_dlcs)
         )
         cli.import_game(args)
         return status.success, status.message
