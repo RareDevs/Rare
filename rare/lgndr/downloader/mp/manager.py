@@ -40,10 +40,15 @@ class DLManager(DLManagerReal):
         self.writer_result_q = MPQueue(-1)
 
         self.log.info(f'Starting download workers...')
+
+        bind_ip = None
         for i in range(self.max_workers):
+            if self.bind_ips:
+                bind_ip = self.bind_ips[i % len(self.bind_ips)]
+
             w = DLWorker(f'DLWorker {i + 1}', self.dl_worker_queue, self.dl_result_q,
                          self.shared_memory.name, logging_queue=self.logging_queue,
-                         dl_timeout=self.dl_timeout)
+                         dl_timeout=self.dl_timeout, bind_addr=bind_ip)
             self.children.append(w)
             w.start()
 
