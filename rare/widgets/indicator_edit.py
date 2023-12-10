@@ -145,10 +145,7 @@ class IndicatorLineEdit(QWidget):
         self.line_edit.layout().setContentsMargins(0, 0, 10, 0)
         self.line_edit.layout().addWidget(self.hint_label)
         # Add completer
-        if completer is not None:
-            completer.popup().setItemDelegate(QStyledItemDelegate(self))
-            completer.popup().setAlternatingRowColors(True)
-            self.line_edit.setCompleter(completer)
+        self.setCompleter(completer)
         layout.addWidget(self.line_edit)
         if edit_func is not None:
             self.indicator_label = QLabel()
@@ -194,6 +191,16 @@ class IndicatorLineEdit(QWidget):
     def setHintText(self, text: str):
         self.hint_label.setFrameRect(self.line_edit.rect())
         self.hint_label.setText(text)
+
+    def setCompleter(self, completer: Optional[QCompleter]):
+        if old := self.line_edit.completer():
+            old.deleteLater()
+        if not completer:
+            self.line_edit.setCompleter(None)
+            return
+        completer.popup().setItemDelegate(QStyledItemDelegate(self))
+        completer.popup().setAlternatingRowColors(True)
+        self.line_edit.setCompleter(completer)
 
     def extend_reasons(self, reasons: Dict):
         self.__reasons.extend(reasons)
