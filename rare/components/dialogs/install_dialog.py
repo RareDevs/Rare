@@ -205,7 +205,7 @@ class InstallDialog(QDialog):
                 layout = QVBoxLayout(widget)
                 layout.setSpacing(0)
                 for tag, info in sdl_data.items():
-                    cb = TagCheckBox(info["name"], info["tags"])
+                    cb = TagCheckBox(info["name"], info["description"], info["tags"])
                     if tag == "__required":
                         cb.setChecked(True)
                         cb.setDisabled(True)
@@ -377,9 +377,10 @@ class InstallDialog(QDialog):
 
 
 class TagCheckBox(QCheckBox):
-    def __init__(self, text, tags: List[str], parent=None):
+    def __init__(self, text, desc, tags: List[str], parent=None):
         super(TagCheckBox, self).__init__(parent)
         self.setText(text)
+        self.setToolTip(desc)
         self.tags = tags
 
     def isChecked(self) -> Union[bool, List[str]]:
