@@ -43,8 +43,12 @@ class LegendaryCLI(LegendaryCLIReal):
     def unlock_installed(func):
         @functools.wraps(func)
         def unlock(self, *args, **kwargs):
-            ret = func(self, *args, **kwargs)
-            self.core.lgd._installed_lock.release(force=True)
+            try:
+                ret = func(self, *args, **kwargs)
+            except Exception as e:
+                raise e
+            finally:
+                self.core.lgd._installed_lock.release(force=True)
             return ret
         return unlock
 
@@ -201,7 +205,8 @@ class LegendaryCLI(LegendaryCLIReal):
                                                           disable_delta=args.disable_delta,
                                                           override_delta_manifest=args.override_delta_manifest,
                                                           preferred_cdn=args.preferred_cdn,
-                                                          disable_https=args.disable_https)
+                                                          disable_https=args.disable_https,
+                                                          bind_ip=args.bind_ip)
 
         # game is either up-to-date or hasn't changed, so we have nothing to do
         if not analysis.dl_size and not game.is_dlc:
@@ -400,7 +405,7 @@ class LegendaryCLI(LegendaryCLIReal):
                 return
 
         if os.name == 'nt' and igame.uninstaller and not args.skip_uninstaller:
-            self._handle_uninstaller(igame, args)
+            self._handle_uninstaller(igame, args.yes, args)
 
         try:
             if not igame.is_dlc:
@@ -420,10 +425,9 @@ class LegendaryCLI(LegendaryCLIReal):
             logger.warning(f'Removing game failed: {e!r}, please remove {igame.install_path} manually.')
             return
 
-    def _handle_uninstaller(self, igame: InstalledGame, args: LgndrUninstallGameArgs):
+    def _handle_uninstaller(self, igame: InstalledGame, yes=False, args: LgndrUninstallGameArgs = None):
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger, logging.WARNING)
-        yes = args.yes
         get_boolean_choice = args.get_boolean_choice_handler
         # def get_boolean_choice(x, default): return True
         # noinspection PyShadowingBuiltins
