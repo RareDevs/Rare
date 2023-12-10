@@ -1,2 +1,2 @@
-__version__ = "1.10.6"
+__version__ = "1.10.7"
 __codename__ = "Garlic Crab"
