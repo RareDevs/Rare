@@ -14,19 +14,15 @@ class LgndrWarning(RuntimeWarning):
         super(LgndrWarning, self).__init__(self.message)
 
 
-class LgndrCLILogHandler(logging.Handler):
-    def emit(self, record: logging.LogRecord) -> None:
-        # lk: FATAL is the same as CRITICAL
-        if record.levelno == logging.ERROR or record.levelno == logging.CRITICAL:
-            raise LgndrException(record.getMessage())
-        # if record.levelno < logging.ERROR or record.levelno == logging.WARNING:
-        #     warnings.warn(record.getMessage())
+# Minimum exception levels per class to get back useful error strings
+# CLI: ERROR
+# Core: CRITICAL (FATAL)
+class LgndrLogHandler(logging.Handler):
+    def __init__(self, level=logging.NOTSET):
+        super().__init__(level=level)
 
-
-class LgndrCoreLogHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
-        # lk: FATAL is the same as CRITICAL
-        if record.levelno == logging.CRITICAL:
+        if record.levelno >= self.level:
             raise LgndrException(record.getMessage())
-        # if record.levelno < logging.CRITICAL:
+        # if self.level > record.levelno >= logging.WARNING:
         #     warnings.warn(record.getMessage())

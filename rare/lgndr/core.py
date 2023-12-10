@@ -1,5 +1,6 @@
 import functools
 import json
+import logging
 import os
 from multiprocessing import Queue
 from uuid import uuid4
@@ -16,7 +17,7 @@ from legendary.models.game import Game, InstalledGame
 from legendary.models.manifest import ManifestMeta
 
 from rare.lgndr.downloader.mp.manager import DLManager
-from rare.lgndr.glue.exception import LgndrException, LgndrCoreLogHandler
+from rare.lgndr.glue.exception import LgndrException, LgndrLogHandler
 
 legendary.core.DLManager = DLManager
 
@@ -26,15 +27,19 @@ class LegendaryCore(LegendaryCoreReal):
 
     def __init__(self, override_config=None, timeout=10.0):
         super(LegendaryCore, self).__init__(override_config=override_config, timeout=timeout)
-        self.handler = LgndrCoreLogHandler()
+        self.handler = LgndrLogHandler(logging.CRITICAL)
         self.log.addHandler(self.handler)
 
     @staticmethod
     def unlock_installed(func):
         @functools.wraps(func)
         def unlock(self, *args, **kwargs):
-            ret = func(self, *args, **kwargs)
-            self.lgd._installed_lock.release(force=True)
+            try:
+                ret = func(self, *args, **kwargs)
+            except Exception as e:
+                raise e
+            finally:
+                self.lgd._installed_lock.release(force=True)
             return ret
         return unlock
 

@@ -43,8 +43,12 @@ class LegendaryCLI(LegendaryCLIReal):
     def unlock_installed(func):
         @functools.wraps(func)
         def unlock(self, *args, **kwargs):
-            ret = func(self, *args, **kwargs)
-            self.core.lgd._installed_lock.release(force=True)
+            try:
+                ret = func(self, *args, **kwargs)
+            except Exception as e:
+                raise e
+            finally:
+                self.core.lgd._installed_lock.release(force=True)
             return ret
         return unlock
 
