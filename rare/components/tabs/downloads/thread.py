@@ -58,6 +58,10 @@ class DlThread(QThread):
         self.rgame.signals.progress.finish.emit(not result.code == DlResultCode.FINISHED)
         self.result.emit(result)
 
+    def __status_callback(self, status: UIUpdate):
+        self.progress.emit(status, self.dl_size)
+        self.rgame.signals.progress.update.emit(int(status.progress))
+
     def run(self):
         cli = LegendaryCLI(self.core)
         self.item.download.dlm.logging_queue = cli.logging_queue
@@ -71,9 +75,7 @@ class DlThread(QThread):
             time.sleep(1)
             while self.item.download.dlm.is_alive():
                 try:
-                    status = self.item.download.dlm.status_queue.get(timeout=1.0)
-                    self.rgame.signals.progress.update.emit(int(status.progress))
-                    self.progress.emit(status, self.dl_size)
+                    self.__status_callback(self.item.download.dlm.status_queue.get(timeout=1.0))
                 except queue.Empty:
                     pass
                 if self.dlm_signals.update:
