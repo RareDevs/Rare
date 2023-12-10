@@ -43,6 +43,9 @@ class LegendaryCLI(LegendaryCLIReal):
     def unlock_installed(func):
         @functools.wraps(func)
         def unlock(self, *args, **kwargs):
+            if not self.core.lgd.lock_installed():
+                self.logger.debug("Data is locked, trying to forcufully release it")
+                # self.core.lgd._installed_lock.release(force=True)
             try:
                 ret = func(self, *args, **kwargs)
             except Exception as e:
