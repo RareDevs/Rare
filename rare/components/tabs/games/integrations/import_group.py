@@ -78,6 +78,7 @@ class ImportWorker(QRunnable):
             import_force: bool = False
     ):
         super(ImportWorker, self).__init__()
+        self.setAutoDelete(True)
         self.signals = ImportWorker.Signals()
         self.core = core
 
@@ -183,6 +184,9 @@ class ImportGroup(QGroupBox):
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
 
+        self.worker: Optional[ImportWorker] = None
+        self.threadpool = QThreadPool.globalInstance()
+
         self.app_name_list = [rgame.app_name for rgame in self.rcore.games]
         self.install_dir_list = [rgame.folder_name for rgame in self.rcore.games if not rgame.is_dlc]
 
@@ -225,8 +229,6 @@ class ImportGroup(QGroupBox):
         self.button_info_stack.addWidget(self.info_label)
         self.button_info_stack.addWidget(self.info_progress)
         self.ui.button_info_layout.addWidget(self.button_info_stack)
-
-        self.threadpool = QThreadPool.globalInstance()
 
     def set_game(self, app_name: str):
         if app_name:
@@ -271,7 +273,7 @@ class ImportGroup(QGroupBox):
             self.ui.import_dlcs_check.setEnabled(
                 bool(self.core.get_dlc_for_game(app_name))
             )
-            self.ui.import_button.setEnabled(self.path_edit.is_valid)
+            self.ui.import_button.setEnabled(not bool(self.worker) and self.path_edit.is_valid)
         else:
             self.ui.import_dlcs_check.setEnabled(False)
             self.ui.import_button.setEnabled(False)
@@ -285,17 +287,21 @@ class ImportGroup(QGroupBox):
             state
             or (self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(self.app_name_edit.text())))
         )
-        self.ui.import_button.setEnabled(state or (not state and self.app_name_edit.is_valid))
+        self.ui.import_button.setEnabled(
+            not bool(self.worker) and (state or (not state and self.app_name_edit.is_valid))
+        )
 
     @pyqtSlot(int)
     def import_dlcs_changed(self, state: Qt.CheckState):
-        self.ui.import_button.setEnabled(self.ui.import_folder_check.isChecked() or self.app_name_edit.is_valid)
+        self.ui.import_button.setEnabled(
+            not bool(self.worker) and (self.ui.import_folder_check.isChecked() or self.app_name_edit.is_valid)
+        )
 
     @pyqtSlot(str)
     def __import(self, path: Optional[str] = None):
         if not path:
             path = self.path_edit.text()
-        worker = ImportWorker(
+        self.worker = ImportWorker(
             self.core,
             path,
             self.app_name_edit.text(),
@@ -303,9 +309,9 @@ class ImportGroup(QGroupBox):
             self.ui.import_dlcs_check.isChecked(),
             self.ui.import_force_check.isChecked()
         )
-        worker.signals.result.connect(self.__on_import_result)
-        worker.signals.progress.connect(self.__on_import_progress)
-        self.threadpool.start(worker)
+        self.worker.signals.result.connect(self.__on_import_result)
+        self.worker.signals.progress.connect(self.__on_import_progress)
+        self.threadpool.start(self.worker)
         self.button_info_stack.setCurrentWidget(self.info_progress)
         self.info_label.setText(self.tr("Importing games"))
         self.ui.import_button.setDisabled(True)
@@ -322,6 +328,7 @@ class ImportGroup(QGroupBox):
 
     @pyqtSlot(list)
     def __on_import_result(self, result: List[ImportedGame]):
+        self.worker = None
         self.button_info_stack.setCurrentWidget(self.info_label)
         if len(result) == 1:
             res = result[0]
