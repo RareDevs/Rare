@@ -4,6 +4,10 @@ name: "Snapshot"
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
 
 
 jobs:
