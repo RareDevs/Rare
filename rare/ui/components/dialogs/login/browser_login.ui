@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>198</width>
-    <height>204</height>
+    <width>237</width>
+    <height>243</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -94,7 +94,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Click the &lt;b&gt;Open Browser&lt;/b&gt; button to open the login page in a browser or copy the link and paste it in a browser. After logging in using the browser, copy the &lt;b&gt;&lt;code&gt;authorizationCode&lt;/code&gt;&lt;/b&gt; contents into the empty input above.</string>
+      <string>Click the &lt;b&gt;Open Browser&lt;/b&gt; button to open the login page in a browser or copy the link and paste it in a browser. After logging in using the browser, copy the &lt;b&gt;&lt;code&gt;authorizationCode&lt;/code&gt;&lt;/b&gt; contents into the empty input above. &lt;b&gt;DO NOT SHARE THE INFORMATION IN THE BROWSER PAGE WITH ANYONE AT ANY FORM (TEXT OR SCREENSHOT)!&lt;/b&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

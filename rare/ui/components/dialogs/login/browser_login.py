@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_BrowserLogin(object):
     def setupUi(self, BrowserLogin):
         BrowserLogin.setObjectName("BrowserLogin")
-        BrowserLogin.resize(198, 204)
+        BrowserLogin.resize(237, 243)
         BrowserLogin.setWindowTitle("BrowserLogin")
         self.browser_layout = QtWidgets.QGridLayout(BrowserLogin)
         self.browser_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
@@ -72,7 +72,7 @@ class Ui_BrowserLogin(object):
         _translate = QtCore.QCoreApplication.translate
         self.open_button.setText(_translate("BrowserLogin", "Open Browser"))
         self.title_label.setText(_translate("BrowserLogin", "Login through browser"))
-        self.info_label.setText(_translate("BrowserLogin", "Click the <b>Open Browser</b> button to open the login page in a browser or copy the link and paste it in a browser. After logging in using the browser, copy the <b><code>authorizationCode</code></b> contents into the empty input above."))
+        self.info_label.setText(_translate("BrowserLogin", "Click the <b>Open Browser</b> button to open the login page in a browser or copy the link and paste it in a browser. After logging in using the browser, copy the <b><code>authorizationCode</code></b> contents into the empty input above. <b>DO NOT SHARE THE INFORMATION IN THE BROWSER PAGE WITH ANYONE AT ANY FORM (TEXT OR SCREENSHOT)!</b>"))
 
 
 if __name__ == "__main__":
