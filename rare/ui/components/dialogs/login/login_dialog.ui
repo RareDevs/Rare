@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Rare Login</string>
+   <string>Login - Rare</string>
   </property>
   <layout class="QVBoxLayout" name="login_layout" stretch="0,0,0,0,0">
    <item>
