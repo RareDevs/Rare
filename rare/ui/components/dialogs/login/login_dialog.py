@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_LoginDialog(object):
     def setupUi(self, LoginDialog):
         LoginDialog.setObjectName("LoginDialog")
-        LoginDialog.resize(324, 132)
+        LoginDialog.resize(241, 128)
         self.login_layout = QtWidgets.QVBoxLayout(LoginDialog)
         self.login_layout.setObjectName("login_layout")
         spacerItem = QtWidgets.QSpacerItem(0, 17, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)

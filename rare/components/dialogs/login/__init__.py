@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QLayout, QDialog, QMessageBox, QFrame
 from legendary.core import LegendaryCore
 
@@ -48,7 +48,6 @@ class LoginDialog(QDialog):
         self.args = ArgumentsSingleton()
 
         self.login_stack = SlidingStackedWidget(parent=self)
-        self.login_stack.setMinimumSize(480, 180)
         self.ui.login_stack_layout.addWidget(self.login_stack)
 
         self.landing_page = LandingPage(self.login_stack)
@@ -64,6 +63,12 @@ class LoginDialog(QDialog):
         self.login_stack.insertWidget(2, self.import_page)
         self.import_page.success.connect(self.login_successful)
         self.import_page.changed.connect(lambda: self.ui.next_button.setEnabled(self.import_page.is_valid()))
+
+        self.login_stack.setMinimumSize(
+            self.landing_page.sizeHint().expandedTo(
+                self.browser_page.sizeHint().expandedTo(self.import_page.sizeHint())
+            )
+        )
 
         self.ui.next_button.setEnabled(False)
         self.ui.back_button.setEnabled(False)

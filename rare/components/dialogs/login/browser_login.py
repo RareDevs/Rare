@@ -4,7 +4,7 @@ from typing import Tuple
 
 from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QFrame, qApp
+from PyQt5.QtWidgets import QFrame, qApp, QFormLayout
 from legendary.core import LegendaryCore
 from legendary.utils import webview_login
 
@@ -34,8 +34,9 @@ class BrowserLogin(QFrame):
         self.ui.link_text.setText(self.login_url)
         self.ui.copy_button.setIcon(icon("mdi.content-copy", "fa.copy"))
         self.ui.copy_button.clicked.connect(self.copy_link)
-
-        self.ui.sid_layout.addWidget(self.sid_edit)
+        self.ui.browser_layout.setWidget(
+            self.ui.browser_layout.indexOf(self.ui.sid_label), QFormLayout.FieldRole, self.sid_edit
+        )
 
         self.ui.open_button.clicked.connect(self.open_browser)
         self.sid_edit.textChanged.connect(self.changed.emit)

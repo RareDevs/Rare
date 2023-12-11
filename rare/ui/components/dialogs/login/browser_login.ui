@@ -6,26 +6,71 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>237</width>
-    <height>243</height>
+    <width>480</width>
+    <height>184</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>480</width>
+    <height>180</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string notr="true">BrowserLogin</string>
   </property>
-  <layout class="QGridLayout" name="browser_layout">
-   <property name="sizeConstraint">
-    <enum>QLayout::SetDefaultConstraint</enum>
+  <layout class="QFormLayout" name="browser_layout">
+   <property name="fieldGrowthPolicy">
+    <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
    </property>
-   <item row="2" column="0" colspan="2">
+   <property name="labelAlignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="formAlignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="title_label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Login through browser</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="open_button">
+     <property name="text">
+      <string>Open Browser</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="sid_label">
+     <property name="text">
+      <string>Code</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
     <layout class="QHBoxLayout" name="link_layout">
      <item>
       <widget class="QLineEdit" name="link_text">
        <property name="text">
         <string notr="true"/>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -44,8 +89,48 @@
      </item>
     </layout>
    </item>
+   <item row="3" column="1">
+    <widget class="QLabel" name="status_label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font/>
+     </property>
+     <property name="text">
+      <string notr="true"/>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QLabel" name="info_label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Click the &lt;b&gt;Open Browser&lt;/b&gt; button to open the login page in a browser or copy the link and paste it in a browser. After logging in using the browser, copy the &lt;b&gt;&lt;code&gt;authorizationCode&lt;/code&gt;&lt;/b&gt; contents into the empty input above. &lt;b&gt;DO NOT SHARE THE INFORMATION IN THE BROWSER PAGE WITH ANYONE IN ANY FORM (TEXT OR SCREENSHOT)!&lt;/b&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
    <item row="4" column="0" colspan="2">
-    <spacer name="vspacer">
+    <spacer name="vscaper">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -56,60 +141,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="open_button">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Open Browser</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <layout class="QHBoxLayout" name="sid_layout"/>
-   </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="title_label">
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Login through browser</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QLabel" name="info_label">
-     <property name="font">
-      <font>
-       <italic>true</italic>
-      </font>
-     </property>
-     <property name="text">
-      <string>Click the &lt;b&gt;Open Browser&lt;/b&gt; button to open the login page in a browser or copy the link and paste it in a browser. After logging in using the browser, copy the &lt;b&gt;&lt;code&gt;authorizationCode&lt;/code&gt;&lt;/b&gt; contents into the empty input above. &lt;b&gt;DO NOT SHARE THE INFORMATION IN THE BROWSER PAGE WITH ANYONE AT ANY FORM (TEXT OR SCREENSHOT)!&lt;/b&gt;</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QLabel" name="status_label">
-     <property name="text">
-      <string notr="true"/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

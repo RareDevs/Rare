@@ -15,6 +15,8 @@ logger = getLogger("ImportLogin")
 class ImportLogin(QFrame):
     success = pyqtSignal()
     changed = pyqtSignal()
+
+    # FIXME: Use pathspec instead of duplicated code
     if os.name == "nt":
         localappdata = os.path.expandvars("%LOCALAPPDATA%")
     else:
