@@ -199,7 +199,8 @@ class ImportGroup(QGroupBox):
         )
         self.path_edit.textChanged.connect(self.path_changed)
         self.ui.import_layout.setWidget(
-            self.ui.import_layout.indexOf(self.ui.path_edit_label), QFormLayout.FieldRole, self.path_edit
+            self.ui.import_layout.getWidgetPosition(self.ui.path_edit_label)[0],
+            QFormLayout.FieldRole, self.path_edit
         )
 
         self.app_name_edit = IndicatorLineEdit(
@@ -209,7 +210,8 @@ class ImportGroup(QGroupBox):
         )
         self.app_name_edit.textChanged.connect(self.app_name_changed)
         self.ui.import_layout.setWidget(
-            self.ui.import_layout.indexOf(self.ui.app_name_label), QFormLayout.FieldRole, self.app_name_edit
+            self.ui.import_layout.getWidgetPosition(self.ui.app_name_label)[0],
+            QFormLayout.FieldRole, self.app_name_edit
         )
 
         self.ui.import_folder_check.stateChanged.connect(self.import_folder_changed)
