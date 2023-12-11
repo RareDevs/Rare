@@ -6,7 +6,7 @@ from typing import Tuple, List, Union, Optional
 from PyQt5.QtCore import Qt, QThreadPool, QSettings, QCoreApplication
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QCloseEvent, QKeyEvent, QShowEvent
-from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout, QWidget, QVBoxLayout, QFormLayout
 from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.models.game import RareGame
@@ -85,7 +85,10 @@ class InstallDialog(QDialog):
             save_func=self.save_install_edit,
             parent=self,
         )
-        self.ui.install_dir_layout.addWidget(self.install_dir_edit)
+        self.ui.install_dialog_layout.setWidget(
+            self.ui.install_dialog_layout.indexOf(self.ui.install_dir_label),
+            QFormLayout.FieldRole, self.install_dir_edit
+        )
 
         if self.options.update:
             self.ui.install_dir_label.setEnabled(False)
