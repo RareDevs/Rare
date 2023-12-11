@@ -137,18 +137,11 @@ class IndicatorLineEdit(QWidget):
         self.line_edit.setObjectName(f"{type(self).__name__}Edit")
         self.line_edit.setPlaceholderText(placeholder if placeholder else self.tr("Default"))
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
-        # Add hint_label to line_edit
-        self.line_edit.setLayout(QHBoxLayout())
-        self.hint_label = QLabel()
-        self.hint_label.setObjectName(f"{type(self).__name__}Label")
-        self.hint_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.line_edit.layout().setContentsMargins(0, 0, 10, 0)
-        self.line_edit.layout().addWidget(self.hint_label)
         # Add completer
         self.setCompleter(completer)
         layout.addWidget(self.line_edit)
         if edit_func is not None:
-            self.indicator_label = QLabel()
+            self.indicator_label = QLabel(self)
             self.indicator_label.setPixmap(qta_icon("ei.info-circle", color="gray").pixmap(16, 16))
             self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
             layout.addWidget(self.indicator_label)
@@ -187,10 +180,6 @@ class IndicatorLineEdit(QWidget):
 
     def setText(self, text: str):
         self.line_edit.setText(text)
-
-    def setHintText(self, text: str):
-        self.hint_label.setFrameRect(self.line_edit.rect())
-        self.hint_label.setText(text)
 
     def setCompleter(self, completer: Optional[QCompleter]):
         if old := self.line_edit.completer():
