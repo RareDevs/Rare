@@ -6,7 +6,7 @@ from typing import Tuple, Iterable, List, Union
 
 from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
 from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame, QLabel
+from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame, QFormLayout
 from legendary.models.egl import EGLManifest
 from legendary.models.game import InstalledGame
 
@@ -39,25 +39,27 @@ class EGLSyncGroup(QGroupBox):
             save_func=self.egl_path_edit_save_cb,
             parent=self,
         )
-        self.ui.egl_path_edit_layout.addWidget(self.egl_path_edit)
+        self.ui.egl_sync_layout.setWidget(
+            self.ui.egl_sync_layout.getWidgetPosition(self.ui.egl_path_edit_label)[0],
+            QFormLayout.FieldRole, self.egl_path_edit
+        )
 
-        self.egl_path_info_label = QLabel(self.tr("Estimated path"), self)
         self.egl_path_info = ElideLabel(parent=self)
         self.egl_path_info.setProperty("infoLabel", 1)
-        self.ui.egl_sync_layout.insertRow(
-            self.ui.egl_sync_layout.indexOf(self.ui.egl_path_edit_label) + 1,
-            self.egl_path_info_label, self.egl_path_info
+        self.ui.egl_sync_layout.setWidget(
+            self.ui.egl_sync_layout.getWidgetPosition(self.ui.egl_path_info_label)[0],
+            QFormLayout.FieldRole, self.egl_path_info
         )
 
         if platform.system() == "Windows":
             self.ui.egl_path_edit_label.setEnabled(False)
             self.egl_path_edit.setEnabled(False)
-            self.egl_path_info_label.setEnabled(False)
+            self.ui.egl_path_info_label.setEnabled(False)
             self.egl_path_info.setEnabled(False)
         else:
             self.egl_path_edit.textChanged.connect(self.egl_path_changed)
             if self.core.egl.programdata_path:
-                self.egl_path_info_label.setEnabled(True)
+                self.ui.egl_path_info_label.setEnabled(True)
                 self.egl_path_info.setEnabled(True)
 
         self.ui.egl_sync_check.setChecked(self.core.egl_sync_enabled)
