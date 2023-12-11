@@ -86,7 +86,7 @@ class InstallDialog(QDialog):
             parent=self,
         )
         self.ui.install_dialog_layout.setWidget(
-            self.ui.install_dialog_layout.indexOf(self.ui.install_dir_label),
+            self.ui.install_dialog_layout.getWidgetPosition(self.ui.install_dir_label)[0],
             QFormLayout.FieldRole, self.install_dir_edit
         )
 
