@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>180</height>
+    <width>293</width>
+    <height>78</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -16,16 +16,10 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>480</width>
-    <height>180</height>
-   </size>
-  </property>
   <property name="windowTitle">
    <string notr="true">LandingPage</string>
   </property>
-  <layout class="QFormLayout" name="landing_layout">
+  <layout class="QFormLayout" name="main_layout">
    <property name="fieldGrowthPolicy">
     <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
    </property>

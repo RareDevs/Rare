@@ -47,10 +47,6 @@ class ImportLogin(QFrame):
             if programdata_path := self.core.egl.programdata_path:
                 if wine_pfx := programdata_path.split("drive_c")[0]:
                     self.ui.prefix_combo.addItem(wine_pfx)
-            self.ui.info_label.setText(
-                self.tr("Please select the Wine prefix where Epic Games Launcher is installed. ")
-                + self.ui.info_label.text()
-            )
             prefixes = self.get_wine_prefixes()
             if len(prefixes):
                 self.ui.prefix_combo.addItems(prefixes)
@@ -99,15 +95,15 @@ class ImportLogin(QFrame):
         if os.name == "nt":
             pass
         else:
-            logger.info(f'Using EGL appdata path at "{self.egl_appdata}"')
+            logger.info("Using EGL appdata path at %s", {self.egl_appdata})
             self.core.egl.appdata_path = self.egl_appdata
         try:
             if self.core.auth_import():
-                logger.info(f"Logged in as {self.core.lgd.userdata['displayName']}")
+                logger.info("Logged in as %s", {self.core.lgd.userdata['displayName']})
                 self.success.emit()
             else:
                 self.ui.status_label.setText(self.tr("Login failed."))
                 logger.warning("Failed to import existing session.")
         except Exception as e:
             self.ui.status_label.setText(self.tr("Login failed. {}").format(str(e)))
-            logger.warning(f"Failed to import existing session: {e}")
+            logger.warning("Failed to import existing session: %s", e)

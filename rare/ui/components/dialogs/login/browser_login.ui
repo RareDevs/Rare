@@ -6,30 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>184</height>
+    <width>320</width>
+    <height>243</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>480</width>
-    <height>180</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string notr="true">BrowserLogin</string>
   </property>
-  <layout class="QFormLayout" name="browser_layout">
-   <property name="fieldGrowthPolicy">
-    <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-   </property>
-   <property name="labelAlignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-   </property>
-   <property name="formAlignment">
-    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-   </property>
-   <item row="0" column="0" colspan="2">
+  <layout class="QVBoxLayout" name="main_layout">
+   <item>
     <widget class="QLabel" name="title_label">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -48,40 +33,68 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="open_button">
-     <property name="text">
-      <string>Open Browser</string>
+   <item>
+    <layout class="QFormLayout" name="form_layout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetFixedSize</enum>
      </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="sid_label">
-     <property name="text">
-      <string>Code</string>
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
      </property>
-     <property name="alignment">
+     <property name="labelAlignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <layout class="QHBoxLayout" name="link_layout">
-     <item>
-      <widget class="QLineEdit" name="link_text">
+     <property name="formAlignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="open_button">
        <property name="text">
-        <string notr="true"/>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="placeholderText">
-        <string notr="true"/>
+        <string>Open Browser</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="copy_button">
+     <item row="0" column="1">
+      <layout class="QHBoxLayout" name="link_layout" stretch="1,0">
+       <item>
+        <widget class="QLineEdit" name="link_text">
+         <property name="text">
+          <string notr="true"/>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+         <property name="placeholderText">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="copy_button">
+         <property name="text">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="sid_label">
+       <property name="text">
+        <string notr="true">authorizationCode</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="status_label">
+       <property name="font">
+        <font>
+         <italic>true</italic>
+        </font>
+       </property>
        <property name="text">
         <string notr="true"/>
        </property>
@@ -89,26 +102,20 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="status_label">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+   <item>
+    <spacer name="vscaper">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-     <property name="font">
-      <font/>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>10</height>
+      </size>
      </property>
-     <property name="text">
-      <string notr="true"/>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
+    </spacer>
    </item>
-   <item row="5" column="0" colspan="2">
+   <item>
     <widget class="QLabel" name="info_label">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -116,31 +123,13 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="font">
-      <font>
-       <italic>true</italic>
-      </font>
-     </property>
      <property name="text">
-      <string>Click the &lt;b&gt;Open Browser&lt;/b&gt; button to open the login page in a browser or copy the link and paste it in a browser. After logging in using the browser, copy the &lt;b&gt;&lt;code&gt;authorizationCode&lt;/code&gt;&lt;/b&gt; contents into the empty input above. &lt;b&gt;DO NOT SHARE THE INFORMATION IN THE BROWSER PAGE WITH ANYONE IN ANY FORM (TEXT OR SCREENSHOT)!&lt;/b&gt;</string>
+      <string>&lt;i&gt;Click the &lt;strong&gt;Open Browser&lt;/strong&gt; button to open the login page in your web browser or copy the link and paste it in any web browser. After logging in using the browser, copy the text in the quotes after &lt;/i&gt;&lt;code&gt;&lt;b&gt;authorizationCode&lt;/b&gt;&lt;/code&gt;&lt;i&gt; in the same line into the empty input above.&lt;br&gt;&lt;br&gt;&lt;strong&gt;DO NOT SHARE THE INFORMATION IN THE BROWSER PAGE WITH ANYONE IN ANY FORM (TEXT OR SCREENSHOT)!&lt;/strong&gt;&lt;/i&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>
     </widget>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <spacer name="vscaper">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
