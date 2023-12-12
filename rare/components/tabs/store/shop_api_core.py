@@ -3,15 +3,14 @@ from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from rare.components.tabs.shop.constants import (
+from rare.components.tabs.store.constants import (
     wishlist_query,
     search_query,
     add_to_wishlist_query,
     remove_from_wishlist_query,
 )
-from rare.components.tabs.shop.shop_models import BrowseModel
+from rare.components.tabs.store.shop_models import BrowseModel
 from rare.utils.qt_requests import QtRequests
-from rare.utils.paths import cache_dir
 
 logger = getLogger("ShopAPICore")
 graphql_url = "https://www.epicgames.com/graphql"

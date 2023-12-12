@@ -13,8 +13,8 @@ from PyQt5.QtWidgets import (
     QGridLayout,
 )
 
+from rare.components.tabs.store.shop_models import ShopGame
 from rare.shared import LegendaryCoreSingleton
-from rare.components.tabs.shop.shop_models import ShopGame
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
 from rare.utils.extra_widgets import ImageLabel
 from rare.utils.misc import icon

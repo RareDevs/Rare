@@ -8,7 +8,7 @@ from .downloads import DownloadsTab
 from .games import GamesTab
 from .settings import SettingsTab
 from .settings.debug import DebugSettings
-from .shop import Shop
+from .store import Shop
 from .tab_widgets import MainTabBar, TabButtonWidget
 
 
