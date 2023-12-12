@@ -86,9 +86,6 @@ class MainTabWidget(QTabWidget):
         if index == self.games_index:
             self.games_tab.setCurrentWidget(self.games_tab.games_page)
 
-        if not self.args.offline and index == self.store_index:
-            self.store_tab.load()
-
     def resizeEvent(self, event):
         self.tab_bar.setMinimumWidth(self.width())
         super(MainTabWidget, self).resizeEvent(event)

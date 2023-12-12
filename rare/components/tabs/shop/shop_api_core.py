@@ -10,7 +10,8 @@ from rare.components.tabs.shop.constants import (
     remove_from_wishlist_query,
 )
 from rare.components.tabs.shop.shop_models import BrowseModel
-from rare.utils.qt_requests import QtRequestManager
+from rare.utils.qt_requests import QtRequests
+from rare.utils.paths import cache_dir
 
 logger = getLogger("ShopAPICore")
 graphql_url = "https://www.epicgames.com/graphql"
@@ -25,8 +26,8 @@ class ShopApiCore(QObject):
         self.language_code: str = lc
         self.country_code: str = cc
         self.locale = f"{self.language_code}-{self.country_code}"
-        self.manager = QtRequestManager()
-        self.auth_manager = QtRequestManager(authorization_token=auth_token)
+        self.manager = QtRequests(parent=self)
+        self.auth_manager = QtRequests(token=auth_token, parent=self)
 
         self.browse_active = False
         self.next_browse_request = tuple(())
@@ -52,6 +53,7 @@ class ShopApiCore(QObject):
     def get_wishlist(self, handle_func):
         self.auth_manager.post(
             graphql_url,
+            lambda data: self._handle_wishlist(data, handle_func),
             {
                 "query": wishlist_query,
                 "variables": {
@@ -59,7 +61,6 @@ class ShopApiCore(QObject):
                     "locale": f"{self.language_code}-{self.country_code}",
                 },
             },
-            lambda data: self._handle_wishlist(data, handle_func),
         )
 
     def _handle_wishlist(self, data, handle_func):
@@ -95,7 +96,7 @@ class ShopApiCore(QObject):
         }
 
         self.manager.post(
-            graphql_url, payload, lambda data: self._handle_search(data, handle_func)
+            graphql_url, lambda data: self._handle_search(data, handle_func), payload,
         )
 
     def _handle_search(self, data, handle_func):
@@ -189,8 +190,8 @@ class ShopApiCore(QObject):
         }
         self.auth_manager.post(
             graphql_url,
-            payload,
             lambda data: self._handle_add_to_wishlist(data, handle_func),
+            payload,
         )
 
     def _handle_add_to_wishlist(self, data, handle_func):
@@ -216,8 +217,8 @@ class ShopApiCore(QObject):
         }
         self.auth_manager.post(
             graphql_url,
-            payload,
             lambda data: self._handle_remove_from_wishlist(data, handle_func),
+            payload,
         )
 
     def _handle_remove_from_wishlist(self, data, handle_func):
