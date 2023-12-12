@@ -68,6 +68,10 @@ class ShopWidget(QScrollArea, Ui_ShopWidget):
 
         self.init_filter()
 
+        self.search_bar.setHidden(True)
+        self.filter_gb.setHidden(True)
+        self.filter_game_gb.setHidden(True)
+
         # self.search_bar.textChanged.connect(self.load_completer)
 
     def load(self):
