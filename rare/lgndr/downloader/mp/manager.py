@@ -17,6 +17,10 @@ from rare.lgndr.models.downloading import UIUpdate
 
 # fmt: off
 class DLManager(DLManagerReal):
+    def __init__(self, *args, **kwargs):
+        super(DLManager, self).__init__(*args, **kwargs)
+        self.log.info("Using Rare's DLManager monkey")
+
     # Rare: prototype to avoid undefined variable in type checkers
     signals_queue: MPQueue
 

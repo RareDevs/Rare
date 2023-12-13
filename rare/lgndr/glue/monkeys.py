@@ -1,20 +1,30 @@
 import logging
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Dict
+from typing import Protocol, List, Optional, Dict
 
 from rare.lgndr.models.downloading import UIUpdate
 
 logger = logging.getLogger("LgndrMonkeys")
 
 
-def get_boolean_choice_factory(value: bool = True) -> Callable[[str, bool], bool]:
-    def get_boolean_choice(prompt: str, default: bool) -> bool:
+class GetBooleanChoiceProtocol(Protocol):
+    def __call__(self, prompt: str, default: bool = ...) -> bool:
+        ...
+
+
+def get_boolean_choice_factory(value: bool = True) -> GetBooleanChoiceProtocol:
+    def get_boolean_choice(prompt: str, default: bool = value) -> bool:
         logger.debug("get_boolean_choice: %s, default: %s, choice: %s", prompt, default, value)
         return value
     return get_boolean_choice
 
 
-def sdl_prompt_factory(install_tag: Optional[List[str]] = None) -> Callable[[Dict, str], List[str]]:
+class SdlPromptProtocol(Protocol):
+    def __call__(self, sdl_data: Dict, title: str) -> List[str]:
+        ...
+
+
+def sdl_prompt_factory(install_tag: Optional[List[str]] = None) -> SdlPromptProtocol:
     def sdl_prompt(sdl_data: Dict, title: str) -> List[str]:
         logger.debug("sdl_prompt: %s", title)
         for key in sdl_data.keys():
@@ -25,9 +35,12 @@ def sdl_prompt_factory(install_tag: Optional[List[str]] = None) -> Callable[[Dic
     return sdl_prompt
 
 
-def verify_stdout_factory(
-    callback: Callable[[int, int, float, float], None] = None
-) -> Callable[[int, int, float, float], None]:
+class VerifyStdoutProtocol(Protocol):
+    def __call__(self, a0: int, a1: int, a2: float, a3: float) -> None:
+        ...
+
+
+def verify_stdout_factory(callback: VerifyStdoutProtocol = None) -> VerifyStdoutProtocol:
     def verify_stdout(a0: int, a1: int, a2: float, a3: float) -> None:
         if callback is not None and callable(callback):
             callback(a0, a1, a2, a3)
@@ -36,7 +49,12 @@ def verify_stdout_factory(
     return verify_stdout
 
 
-def ui_update_factory(callback: Callable[[UIUpdate], None] = None) -> Callable[[UIUpdate], None]:
+class UiUpdateProtocol(Protocol):
+    def __call__(self, status: UIUpdate) -> None:
+        ...
+
+
+def ui_update_factory(callback: UiUpdateProtocol = None) -> UiUpdateProtocol:
     def ui_update(status: UIUpdate) -> None:
         if callback is not None and callable(callback):
             callback(status)
