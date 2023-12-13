@@ -98,7 +98,7 @@ class LegendaryCore(LegendaryCoreReal):
         finally:
             pass
 
-    @unlock_installed
+    @unlock_installed.__func__
     def egl_import(self, app_name):
         try:
             super(LegendaryCore, self).egl_import(app_name)
@@ -144,7 +144,7 @@ class LegendaryCore(LegendaryCoreReal):
         if delete_files:
             delete_folder(os.path.join(igame.install_path, '.egstore'))
 
-    @unlock_installed
+    @unlock_installed.__func__
     def egl_export(self, app_name):
         try:
             super(LegendaryCore, self).egl_export(app_name)
@@ -153,7 +153,7 @@ class LegendaryCore(LegendaryCoreReal):
         finally:
             pass
 
-    @unlock_installed
+    @unlock_installed.__func__
     def egl_sync(self, app_name=''):
         try:
             super(LegendaryCore, self).egl_sync(app_name)
