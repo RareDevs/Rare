@@ -37,9 +37,9 @@ class LegendaryCore(LegendaryCoreReal):
     def unlock_installed(func):
         @functools.wraps(func)
         def unlock(self, *args, **kwargs):
-            self.log.debug("Using unlock decorator")
+            self.log.debug("%s: Using unlock decorator", func.__name__)
             if not self.lgd.lock_installed():
-                self.log.info("Data is locked, trying to forcufully release it")
+                self.log.info("Data is locked, trying to forcefully release it")
                 # self.lgd._installed_lock.release(force=True)
             try:
                 ret = func(self, *args, **kwargs)
