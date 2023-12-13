@@ -1,23 +1,18 @@
 from typing import Callable
 
-from PyQt5.QtCore import (
-    Qt,
-    QRect,
-    QPoint,
-)
-from PyQt5.QtWidgets import (
-    QSizePolicy,
-)
+from PyQt5.QtCore import Qt, QRect, QPoint
+from PyQt5.QtWidgets import QSizePolicy
 
 from .flow_layout import FlowLayout
 
 
 class LibraryLayout(FlowLayout):
-    def __init__(self, parent=None, margin=6, spacing=11):
-        super(LibraryLayout, self).__init__(parent=parent, margin=margin, hspacing=spacing, vspacing=spacing)
+    def __init__(self, parent=None):
+        super(LibraryLayout, self).__init__(parent)
 
     def expandingDirections(self) -> Qt.Orientations:
-        return Qt.Horizontal | Qt.Vertical
+        return Qt.Orientations(Qt.Orientation(0))
+        # return Qt.Horizontal | Qt.Vertical
 
     def setGeometry(self, a0: QRect) -> None:
         super(FlowLayout, self).setGeometry(a0)
@@ -127,4 +122,4 @@ class LibraryLayout(FlowLayout):
 
     def sort(self, key: Callable, reverse=False) -> None:
         self._items.sort(key=key, reverse=reverse)
-        self.setGeometry(self.parent().contentsRect())
+        self.setGeometry(self.parent().contentsRect().adjusted(*self.parent().getContentsMargins()))

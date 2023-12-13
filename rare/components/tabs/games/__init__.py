@@ -69,6 +69,7 @@ class GamesTab(QStackedWidget):
 
         self.icon_view = QWidget(self.icon_view_scroll)
         icon_view_layout = LibraryLayout(self.icon_view)
+        icon_view_layout.setSpacing(9)
         icon_view_layout.setContentsMargins(0, 13, 0, 13)
         icon_view_layout.setAlignment(Qt.AlignTop)
 
