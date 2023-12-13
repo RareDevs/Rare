@@ -1,8 +1,8 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QStackedWidget, QMessageBox
 
-from rare.components.tabs.shop import ShopApiCore
-from rare.components.tabs.shop.game_widgets import WishlistWidget
+from rare.components.tabs.store import ShopApiCore
+from rare.components.tabs.store.game_widgets import WishlistWidget
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
 from rare.utils.extra_widgets import WaitingSpinner
 from rare.utils.misc import icon

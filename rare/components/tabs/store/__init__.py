@@ -1,3 +1,4 @@
+from PyQt5.QtGui import QShowEvent, QHideEvent
 from PyQt5.QtWidgets import QStackedWidget, QTabWidget
 from legendary.core import LegendaryCore
 
@@ -26,7 +27,7 @@ class Shop(QStackedWidget):
         self.shop = ShopWidget(cache_dir(), self.core, self.api_core)
         self.wishlist_widget = Wishlist(self.api_core)
 
-        self.store_tabs = QTabWidget()
+        self.store_tabs = QTabWidget(parent=self)
         self.store_tabs.addTab(self.shop, self.tr("Games"))
         self.store_tabs.addTab(self.wishlist_widget, self.tr("Wishlist"))
 
@@ -50,14 +51,22 @@ class Shop(QStackedWidget):
         self.api_core.update_wishlist.connect(self.update_wishlist)
         self.wishlist_widget.update_wishlist_signal.connect(self.update_wishlist)
 
+    def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous() or self.init:
+            return super().showEvent(a0)
+        self.shop.load()
+        self.wishlist_widget.update_wishlist()
+        self.init = True
+        return super().showEvent(a0)
+
+    def hideEvent(self, a0: QHideEvent) -> None:
+        if a0.spontaneous():
+            return super().hideEvent(a0)
+        # TODO: Implement store unloading
+        return super().hideEvent(a0)
+
     def update_wishlist(self):
         self.shop.update_wishlist()
-
-    def load(self):
-        if not self.init:
-            self.init = True
-            self.shop.load()
-            self.wishlist_widget.update_wishlist()
 
     def show_game_info(self, data):
         self.info.update_game(data)

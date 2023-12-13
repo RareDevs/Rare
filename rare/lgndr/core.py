@@ -17,16 +17,19 @@ from legendary.models.game import Game, InstalledGame
 from legendary.models.manifest import ManifestMeta
 
 from rare.lgndr.downloader.mp.manager import DLManager
+from rare.lgndr.lfs.lgndry import LGDLFS
 from rare.lgndr.glue.exception import LgndrException, LgndrLogHandler
 
 legendary.core.DLManager = DLManager
+legendary.core.LGDLFS = LGDLFS
 
 
 # fmt: off
 class LegendaryCore(LegendaryCoreReal):
 
-    def __init__(self, override_config=None, timeout=10.0):
-        super(LegendaryCore, self).__init__(override_config=override_config, timeout=timeout)
+    def __init__(self, *args, **kwargs):
+        super(LegendaryCore, self).__init__(*args, **kwargs)
+        self.log.info("Using Rare's LegendaryCore monkey")
         self.handler = LgndrLogHandler(logging.CRITICAL)
         self.log.addHandler(self.handler)
 
@@ -34,15 +37,16 @@ class LegendaryCore(LegendaryCoreReal):
     def unlock_installed(func):
         @functools.wraps(func)
         def unlock(self, *args, **kwargs):
+            self.log.debug("Using unlock decorator")
             if not self.lgd.lock_installed():
-                self.log.debug("Data is locked, trying to forcufully release it")
+                self.log.info("Data is locked, trying to forcufully release it")
                 # self.lgd._installed_lock.release(force=True)
             try:
                 ret = func(self, *args, **kwargs)
             except Exception as e:
                 raise e
             finally:
-                self.lgd._installed_lock.release(force=True)
+                self.lgd.unlock_installed()
             return ret
         return unlock
 
@@ -94,7 +98,7 @@ class LegendaryCore(LegendaryCoreReal):
         finally:
             pass
 
-    @unlock_installed
+    @unlock_installed.__func__
     def egl_import(self, app_name):
         try:
             super(LegendaryCore, self).egl_import(app_name)
@@ -140,10 +144,19 @@ class LegendaryCore(LegendaryCoreReal):
         if delete_files:
             delete_folder(os.path.join(igame.install_path, '.egstore'))
 
-    @unlock_installed
+    @unlock_installed.__func__
     def egl_export(self, app_name):
         try:
             super(LegendaryCore, self).egl_export(app_name)
+        except LgndrException as ret:
+            raise ret
+        finally:
+            pass
+
+    @unlock_installed.__func__
+    def egl_sync(self, app_name=''):
+        try:
+            super(LegendaryCore, self).egl_sync(app_name)
         except LgndrException as ret:
             raise ret
         finally:

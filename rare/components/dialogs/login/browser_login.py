@@ -4,7 +4,7 @@ from typing import Tuple
 
 from PyQt5.QtCore import pyqtSignal, QUrl
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QFrame, qApp
+from PyQt5.QtWidgets import QFrame, qApp, QFormLayout, QLineEdit
 from legendary.core import LegendaryCore
 from legendary.utils import webview_login
 
@@ -31,11 +31,14 @@ class BrowserLogin(QFrame):
         self.sid_edit = IndicatorLineEdit(
             placeholder=self.tr("Insert authorizationCode here"), edit_func=self.text_changed, parent=self
         )
+        self.sid_edit.line_edit.setEchoMode(QLineEdit.Password)
         self.ui.link_text.setText(self.login_url)
         self.ui.copy_button.setIcon(icon("mdi.content-copy", "fa.copy"))
         self.ui.copy_button.clicked.connect(self.copy_link)
-
-        self.ui.sid_layout.addWidget(self.sid_edit)
+        self.ui.form_layout.setWidget(
+            self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0],
+            QFormLayout.FieldRole, self.sid_edit
+        )
 
         self.ui.open_button.clicked.connect(self.open_browser)
         self.sid_edit.textChanged.connect(self.changed.emit)
@@ -68,7 +71,7 @@ class BrowserLogin(QFrame):
         auth_code = self.sid_edit.text()
         try:
             if self.core.auth_code(auth_code):
-                logger.info(f"Successfully logged in as {self.core.lgd.userdata['displayName']}")
+                logger.info("Successfully logged in as %s", self.core.lgd.userdata['displayName'])
                 self.success.emit()
             else:
                 self.ui.status_label.setText(self.tr("Login failed."))
@@ -82,7 +85,7 @@ class BrowserLogin(QFrame):
             QDesktopServices.openUrl(QUrl(self.login_url))
         else:
             if webview_login.do_webview_login(callback_code=self.core.auth_ex_token):
-                logger.info("Successfully logged in as " f"{self.core.lgd.userdata['displayName']}")
+                logger.info("Successfully logged in as %s", {self.core.lgd.userdata['displayName']})
                 self.success.emit()
             else:
                 logger.warning("Failed to login through browser.")

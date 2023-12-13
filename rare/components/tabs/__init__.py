@@ -8,7 +8,7 @@ from .downloads import DownloadsTab
 from .games import GamesTab
 from .settings import SettingsTab
 from .settings.debug import DebugSettings
-from .shop import Shop
+from .store import Shop
 from .tab_widgets import MainTabBar, TabButtonWidget
 
 
@@ -85,9 +85,6 @@ class MainTabWidget(QTabWidget):
     def mouse_clicked(self, index):
         if index == self.games_index:
             self.games_tab.setCurrentWidget(self.games_tab.games_page)
-
-        if not self.args.offline and index == self.store_index:
-            self.store_tab.load()
 
     def resizeEvent(self, event):
         self.tab_bar.setMinimumWidth(self.width())

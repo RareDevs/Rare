@@ -43,22 +43,23 @@ class LegendaryCLI(LegendaryCLIReal):
     def unlock_installed(func):
         @functools.wraps(func)
         def unlock(self, *args, **kwargs):
+            self.logger.debug("Using unlock decorator")
             if not self.core.lgd.lock_installed():
-                self.logger.debug("Data is locked, trying to forcufully release it")
+                self.logger.info("Data is locked, trying to forcufully release it")
                 # self.core.lgd._installed_lock.release(force=True)
             try:
                 ret = func(self, *args, **kwargs)
             except Exception as e:
                 raise e
             finally:
-                self.core.lgd._installed_lock.release(force=True)
+                self.core.lgd.unlock_installed()
             return ret
         return unlock
 
     def resolve_aliases(self, name):
         return super(LegendaryCLI, self)._resolve_aliases(name)
 
-    @unlock_installed
+    @unlock_installed.__func__
     def install_game(self, args: LgndrInstallGameArgs) -> Optional[Tuple[DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult]]:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger)
@@ -229,7 +230,7 @@ class LegendaryCLI(LegendaryCLIReal):
         return dlm, analysis, igame, game, args.repair_mode, repair_file, res
 
     # Rare: This is currently handled in DownloadThread, this is a trial
-    @unlock_installed
+    @unlock_installed.__func__
     def install_game_real(self, args: LgndrInstallGameRealArgs, dlm: DLManager, game: Game, igame: InstalledGame) -> LgndrInstallGameRealRet:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger)
@@ -315,7 +316,7 @@ class LegendaryCLI(LegendaryCLIReal):
 
             return ret
 
-    @unlock_installed
+    @unlock_installed.__func__
     def install_game_cleanup(self, game: Game, igame: InstalledGame, repair_mode: bool = False, repair_file: str = '') -> None:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(LgndrIndirectStatus(), self.logger)
@@ -386,7 +387,7 @@ class LegendaryCLI(LegendaryCLIReal):
         else:
             logger.info('Automatic installation not available on Linux.')
 
-    @unlock_installed
+    @unlock_installed.__func__
     def uninstall_game(self, args: LgndrUninstallGameArgs) -> None:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger, logging.WARNING)
@@ -562,7 +563,7 @@ class LegendaryCLI(LegendaryCLIReal):
                 logger.info(f'Run "legendary repair {args.app_name}" to repair your game installation.')
             return len(failed), len(missing)
 
-    @unlock_installed
+    @unlock_installed.__func__
     def import_game(self, args: LgndrImportGameArgs) -> None:
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger)
@@ -667,11 +668,11 @@ class LegendaryCLI(LegendaryCLIReal):
         logger.info(f'{"DLC" if game.is_dlc else "Game"} "{game.app_title}" has been imported.')
         return
 
-    @unlock_installed
+    @unlock_installed.__func__
     def egs_sync(self, args):
         return super(LegendaryCLI, self).egs_sync(args)
 
-    @unlock_installed
+    @unlock_installed.__func__
     def move(self, args):
         # Override logger for the local context to use message as part of the indirect return value
         logger = LgndrIndirectLogger(args.indirect_status, self.logger)

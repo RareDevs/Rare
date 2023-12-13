@@ -1,4 +1,3 @@
-import os
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -14,8 +13,8 @@ from PyQt5.QtWidgets import (
 )
 
 from rare.utils.misc import icon as qta_icon
-from rare.utils.paths import tmp_dir
-from rare.utils.qt_requests import QtRequestManager
+from rare.utils.paths import cache_dir
+from rare.utils.qt_requests import QtRequests
 
 logger = getLogger("ExtraWidgets")
 
@@ -81,8 +80,10 @@ class ImageLabel(QLabel):
 
     def __init__(self, parent=None):
         super(ImageLabel, self).__init__(parent=parent)
-        self.path = tmp_dir()
-        self.manager = QtRequestManager("bytes")
+        self.manager = QtRequests(
+            cache=str(cache_dir().joinpath("store")),
+            parent=self
+        )
 
     def update_image(self, url, name="", size: tuple = (240, 320)):
         self.setFixedSize(*size)
@@ -95,11 +96,7 @@ class ImageLabel(QLabel):
         else:
             name_extension = "tall"
         self.name = f"{self.name}_{name_extension}.png"
-        if not os.path.exists(os.path.join(self.path, self.name)):
-            self.manager.get(url, self.image_ready)
-            # self.request.finished.connect(self.image_ready)
-        else:
-            self.show_image()
+        self.manager.get(url, self.image_ready)
 
     def image_ready(self, data):
         try:
@@ -115,16 +112,8 @@ class ImageLabel(QLabel):
             transformMode=Qt.SmoothTransformation,
         )
 
-        image.save(os.path.join(self.path, self.name))
-
         pixmap = QPixmap().fromImage(image)
         self.setPixmap(pixmap)
-
-    def show_image(self):
-        self.image = QPixmap(os.path.join(self.path, self.name)).scaled(
-            *self.img_size, transformMode=Qt.SmoothTransformation
-        )
-        self.setPixmap(self.image)
 
 
 class ButtonLineEdit(QLineEdit):

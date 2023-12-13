@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget
 
 from rare import __version__, __codename__
 from rare.ui.components.tabs.settings.about import Ui_About
-from rare.utils.qt_requests import QtRequestManager
+from rare.utils.qt_requests import QtRequests
 
 logger = getLogger("About")
 
@@ -34,7 +34,7 @@ class About(QWidget):
         self.ui.open_browser.setVisible(False)
         self.ui.open_browser.setEnabled(False)
 
-        self.manager = QtRequestManager("json")
+        self.manager = QtRequests(parent=self)
         self.manager.get(
             "https://api.github.com/repos/RareDevs/Rare/releases/latest",
             self.update_available_finished,

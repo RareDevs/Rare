@@ -44,9 +44,8 @@ class GameSettings(DefaultGameSettings, SideTabContents):
             parent=self
         )
         self.ui.launch_settings_layout.insertRow(
-            int(self.ui.launch_settings_layout.indexOf(self.ui.launch_params)/2) + 1,
-            QLabel(self.tr("Override executable"), self),
-            self.override_exe_edit
+            self.ui.launch_settings_layout.getWidgetPosition(self.ui.launch_params)[0] + 1,
+            QLabel(self.tr("Override executable"), self), self.override_exe_edit
         )
 
         self.ui.game_settings_layout.setAlignment(Qt.AlignTop)

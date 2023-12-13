@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QLayout, QDialog, QMessageBox, QFrame
 from legendary.core import LegendaryCore
 
@@ -48,7 +48,7 @@ class LoginDialog(QDialog):
         self.args = ArgumentsSingleton()
 
         self.login_stack = SlidingStackedWidget(parent=self)
-        self.login_stack.setMinimumSize(480, 180)
+        self.login_stack.setMinimumWidth(480)
         self.ui.login_stack_layout.addWidget(self.login_stack)
 
         self.landing_page = LandingPage(self.login_stack)
@@ -64,6 +64,26 @@ class LoginDialog(QDialog):
         self.login_stack.insertWidget(2, self.import_page)
         self.import_page.success.connect(self.login_successful)
         self.import_page.changed.connect(lambda: self.ui.next_button.setEnabled(self.import_page.is_valid()))
+
+        # # NOTE: The real problem is that the BrowserLogin page has a huge QLabel with word-wrapping enabled.
+        # # That forces the whole form to vertically expand instead of horizontally. Since the form is not shown
+        # # on the first page, the internal Qt calculation for the size of that form calculates it by expanding it
+        # # vertically. Once the form becomes visible, the correct calculation takes place and that is why the
+        # # dialog reduces in height. To avoid that, calculate the bounding size of all forms and set it as the
+        # # minumum size
+        # self.login_stack.setMinimumSize(
+        #     self.landing_page.sizeHint().expandedTo(
+        #         self.browser_page.sizeHint().expandedTo(self.import_page.sizeHint())
+        #     )
+        # )
+
+        self.login_stack.setFixedHeight(
+            max(
+                self.landing_page.heightForWidth(self.login_stack.minimumWidth()),
+                self.browser_page.heightForWidth(self.login_stack.minimumWidth()),
+                self.import_page.heightForWidth(self.login_stack.minimumWidth()),
+            )
+        )
 
         self.ui.next_button.setEnabled(False)
         self.ui.back_button.setEnabled(False)
