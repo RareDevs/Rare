@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings, Qt, pyqtSlot
+from PyQt5.QtGui import QShowEvent
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
 
 from rare.models.game import RareGame
@@ -107,7 +108,14 @@ class GamesTab(QStackedWidget):
         self.signals.game.installed.connect(self.update_count_games_label)
         self.signals.game.uninstalled.connect(self.update_count_games_label)
 
+        self.init = True
+
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous() or not self.init:
+            return super().showEvent(a0)
         self.setup_game_list()
+        self.init = False
+        return super().showEvent(a0)
 
     @pyqtSlot()
     def scroll_to_top(self):
