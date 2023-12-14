@@ -144,10 +144,10 @@ class CloudSaves(QWidget, SideTabContents):
                     self.cloud_save_path_edit.setText("")
                     QMessageBox.warning(
                         self,
-                        self.tr("Error - {}").format(self.rgame.title),
+                        self.tr("Error - {}").format(self.rgame.app_title),
                         self.tr(
                             "Error while calculating path for <b>{}</b>. Insufficient permissions to create <b>{}</b>"
-                        ).format(self.rgame.title, path),
+                        ).format(self.rgame.app_title, path),
                     )
                     return
             if not path:
@@ -217,7 +217,7 @@ class CloudSaves(QWidget, SideTabContents):
 
         self.rgame = rgame
 
-        self.set_title.emit(rgame.title)
+        self.set_title.emit(rgame.app_title)
         rgame.signals.widget.update.connect(self.__update_widget)
 
         self.__update_widget()
