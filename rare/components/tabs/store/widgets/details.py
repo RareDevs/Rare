@@ -41,7 +41,7 @@ class DetailsWidget(QWidget, SideTabContents):
         self.data: dict = {}
 
         self.image = LoadingImageWidget(api_core.cached_manager, self)
-        self.image.setFixedSize(ImageSize.Normal)
+        self.image.setFixedSize(ImageSize.Display)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
         self.ui.left_layout.setAlignment(Qt.AlignTop)
 

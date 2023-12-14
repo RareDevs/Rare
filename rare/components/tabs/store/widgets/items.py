@@ -35,7 +35,7 @@ class ItemWidget(LoadingImageWidget):
 class StoreItemWidget(ItemWidget):
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel = None, parent=None):
         super(StoreItemWidget, self).__init__(manager, catalog_game, parent=parent)
-        self.setFixedSize(ImageSize.Wide)
+        self.setFixedSize(ImageSize.DisplayWide)
         self.ui.setupUi(self)
         if catalog_game:
             self.init_ui(catalog_game)
@@ -80,7 +80,7 @@ class StoreItemWidget(ItemWidget):
 class ResultsItemWidget(ItemWidget):
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
         super(ResultsItemWidget, self).__init__(manager, catalog_game, parent=parent)
-        self.setFixedSize(ImageSize.Normal)
+        self.setFixedSize(ImageSize.Display)
         self.ui.setupUi(self)
 
         key_images = catalog_game.key_images
@@ -106,7 +106,7 @@ class WishlistItemWidget(ItemWidget):
 
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
         super(WishlistItemWidget, self).__init__(manager, catalog_game, parent=parent)
-        self.setFixedSize(ImageSize.Wide)
+        self.setFixedSize(ImageSize.DisplayWide)
         self.ui.setupUi(self)
         for attr in catalog_game.custom_attributes:
             if attr["key"] == "developerName":
