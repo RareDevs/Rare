@@ -253,8 +253,10 @@ class ImportGroup(QGroupBox):
 
     def set_game(self, app_name: str):
         if app_name:
-            folder = self.rcore.get_game(app_name).folder_name
-            self.path_edit.setText(os.path.join(self.core.get_default_install_dir(), folder))
+            game = self.rcore.get_game(app_name)
+            folder = game.folder_name
+            platform = self.core.default_platform if self.core.default_platform in game.platforms else "Windows"
+            self.path_edit.setText(os.path.join(self.core.get_default_install_dir(platform), folder))
             self.app_name_edit.setText(app_name)
 
     def path_edit_callback(self, path) -> Tuple[bool, str, int]:
