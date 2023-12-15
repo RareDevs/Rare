@@ -19,7 +19,7 @@
      <item alignment="Qt::AlignTop">
       <widget class="QGroupBox" name="install_dir_group">
        <property name="title">
-        <string>Default Installation Directory</string>
+        <string>Default installation folder</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -30,7 +30,7 @@
      <item alignment="Qt::AlignTop">
       <widget class="QGroupBox" name="download_group">
        <property name="title">
-        <string>Download Settings</string>
+        <string>Download settings</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -48,7 +48,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Max Workers</string>
+           <string>Max sorkers</string>
           </property>
          </widget>
         </item>
@@ -90,7 +90,7 @@
         <item row="1" column="0">
          <widget class="QLabel" name="max_memory_label">
           <property name="text">
-           <string>Max Shared Memory</string>
+           <string>Max shared memory</string>
           </property>
          </widget>
         </item>
@@ -242,7 +242,7 @@
         <item>
          <widget class="QCheckBox" name="fetch_macos_check">
           <property name="text">
-           <string>Include MacOS games</string>
+           <string>Include macOS games</string>
           </property>
          </widget>
         </item>

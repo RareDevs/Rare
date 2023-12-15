@@ -157,11 +157,11 @@ class Ui_LegendarySettings(object):
 
     def retranslateUi(self, LegendarySettings):
         _translate = QtCore.QCoreApplication.translate
-        self.install_dir_group.setTitle(_translate("LegendarySettings", "Default Installation Directory"))
-        self.download_group.setTitle(_translate("LegendarySettings", "Download Settings"))
-        self.max_workers_label.setText(_translate("LegendarySettings", "Max Workers"))
+        self.install_dir_group.setTitle(_translate("LegendarySettings", "Default installation folder"))
+        self.download_group.setTitle(_translate("LegendarySettings", "Download settings"))
+        self.max_workers_label.setText(_translate("LegendarySettings", "Max sorkers"))
         self.max_workers_info_label.setText(_translate("LegendarySettings", "Less is slower (0: Default)"))
-        self.max_memory_label.setText(_translate("LegendarySettings", "Max Shared Memory"))
+        self.max_memory_label.setText(_translate("LegendarySettings", "Max shared memory"))
         self.max_memory_spin.setSuffix(_translate("LegendarySettings", "MiB"))
         self.max_memory_info_label.setText(_translate("LegendarySettings", "Less is slower (0: Default)"))
         self.preferred_cdn_label.setText(_translate("LegendarySettings", "Preferred CDN"))
@@ -173,7 +173,7 @@ class Ui_LegendarySettings(object):
         self.clean_button.setText(_translate("LegendarySettings", "Remove everything"))
         self.metadata_group.setTitle(_translate("LegendarySettings", "Platforms"))
         self.fetch_win32_check.setText(_translate("LegendarySettings", "Include Win32 games"))
-        self.fetch_macos_check.setText(_translate("LegendarySettings", "Include MacOS games"))
+        self.fetch_macos_check.setText(_translate("LegendarySettings", "Include macOS games"))
         self.fetch_unreal_check.setText(_translate("LegendarySettings", "Include Unreal engine"))
         self.metadata_info.setText(_translate("LegendarySettings", "Restart Rare to apply"))
         self.refresh_metadata_button.setText(_translate("LegendarySettings", "Refresh metadata"))
