@@ -169,7 +169,7 @@ class RareGameBase(QObject):
 
         @return str The current version of the game
         """
-        return self.igame.version if self.igame is not None else self.game.app_version()
+        return self.igame.version if self.igame is not None else self.game.app_version(self.core.default_platform)
 
     @property
     def install_path(self) -> Optional[str]:
