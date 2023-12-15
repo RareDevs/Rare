@@ -198,7 +198,7 @@ class ImportGroup(QGroupBox):
         self.__install_dirs: Set[str] = set()
 
         self.path_edit = PathEdit(
-            self.core.get_default_install_dir(),
+            self.core.get_default_install_dir(self.core.default_platform),
             QFileDialog.DirectoryOnly,
             edit_func=self.path_edit_callback,
             parent=self,

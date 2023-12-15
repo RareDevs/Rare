@@ -213,9 +213,7 @@ class EOSGroup(QGroupBox, Ui_EosWidget):
         self.enabled_cb.setChecked(enabled)
 
     def install_overlay(self, update=False):
-        base_path = os.path.join(
-            self.core.lgd.config.get("Legendary", "install_dir", fallback=os.path.expanduser("~/legendary")),".overlay"
-        )
+        base_path = os.path.join(self.core.get_default_install_dir(), ".overlay")
         if update:
             if not self.overlay:
                 self.overlay_stack.setCurrentIndex(1)
