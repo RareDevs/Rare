@@ -111,8 +111,8 @@ class ImportWorker(QRunnable):
         result.path = str(path)
         if app_name or (app_name := find_app_name(str(path), self.core)):
             result.app_name = app_name
-            result.app_title = app_title = self.core.get_game(app_name).app_title
-            success, message = self.__import_game(path, app_name, app_title)
+            result.app_title = self.core.get_game(app_name).app_title
+            success, message = self.__import_game(path, app_name)
             if not success:
                 result.result = ImportResult.FAILED
                 result.message = message
@@ -120,12 +120,18 @@ class ImportWorker(QRunnable):
                 result.result = ImportResult.SUCCESS
         return result
 
-    def __import_game(self, path: Path, app_name: str, app_title: str):
+    def __import_game(self, path: Path, app_name: str):
         cli = LegendaryCLI(self.core)
         status = LgndrIndirectStatus()
+        # FIXME: Add override option in import form
+        platform = self.core.default_platform
+        if platform not in self.core.get_game(app_name, update_meta=False).asset_infos:
+            platform = "Windows"
+
         args = LgndrImportGameArgs(
             app_path=str(path),
             app_name=app_name,
+            platform=platform,
             disable_check=self.import_force,
             skip_dlcs=not self.import_dlcs,
             with_dlcs=self.import_dlcs,
