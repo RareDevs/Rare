@@ -53,11 +53,11 @@ class FetchWorker(Worker):
 
         if need_macos or want_macos or self.args.debug:
             logger.info(
-                "Requesting MacOS metadata due to %s, %s Unreal engine",
-                platform if need_macos else "settings" if want_macos else "debug",
+                "Requesting macOS metadata due to %s, %s Unreal engine",
+                "platform" if need_macos else "settings" if want_macos else "debug",
                 "with" if want_unreal else "without"
             )
-            self.signals.progress.emit(15, self.signals.tr("Updating game metadata for MacOS"))
+            self.signals.progress.emit(15, self.signals.tr("Updating game metadata for macOS"))
             self.core.get_game_and_dlc_list(
                 update_assets=not self.args.offline, platform="Mac", skip_ue=not want_unreal
             )
