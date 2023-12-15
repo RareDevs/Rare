@@ -133,10 +133,12 @@ class RareCore(QObject):
                 self.__core = LegendaryCore()
             except configparser.MissingSectionHeaderError as e:
                 logger.warning(f"Config is corrupt: {e}")
-                if config_path := os.environ.get("XDG_CONFIG_HOME"):
-                    path = os.path.join(config_path, "legendary")
+                if config_path := os.environ.get('LEGENDARY_CONFIG_PATH'):
+                    path = config_path
+                elif config_path := os.environ.get('XDG_CONFIG_HOME'):
+                    path = os.path.join(config_path, 'legendary')
                 else:
-                    path = os.path.expanduser("~/.config/legendary")
+                    path = os.path.expanduser('~/.config/legendary')
                 with open(os.path.join(path, "config.ini"), "w") as config_file:
                     config_file.write("[Legendary]")
                 self.__core = LegendaryCore()
