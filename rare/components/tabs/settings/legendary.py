@@ -45,11 +45,22 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
 
         self.core = LegendaryCoreSingleton()
 
-        # Default installation directory
+        # Platform specific installation directory for macOS games
+        if pf.system() == "Darwin":
+            self.mac_install_dir = PathEdit(
+                self.core.get_default_install_dir("Mac"),
+                placeholder=self.tr("Default installation folder for macOS games"),
+                file_mode=QFileDialog.DirectoryOnly,
+                save_func=self.__mac_path_save,
+            )
+            self.install_dir_layout.addWidget(self.mac_install_dir)
+
+        # Platform-independent installation directory
         self.install_dir = PathEdit(
             self.core.get_default_install_dir(),
+            placeholder=self.tr("Default installation folder for Windows games"),
             file_mode=QFileDialog.DirectoryOnly,
-            save_func=self.path_save,
+            save_func=self.__win_path_save,
         )
         self.install_dir_layout.addWidget(self.install_dir)
 
@@ -143,12 +154,20 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
                 self.core.lgd.config.remove_option("Legendary", "locale")
         self.core.lgd.save_config()
 
-    def path_save(self, text: str):
-        self.core.lgd.config["Legendary"]["install_dir"] = text
-        if not text and "install_dir" in self.core.lgd.config["Legendary"].keys():
-            self.core.lgd.config["Legendary"].pop("install_dir")
+    def __mac_path_save(self, text: str) -> None:
+        self.__path_save(text, "mac_install_dir")
+
+    def __win_path_save(self, text: str) -> None:
+        self.__path_save(text, "install_dir")
+        if pf.system() != "Darwin":
+            self.__mac_path_save(text)
+
+    def __path_save(self, text: str, option: str = "Windows"):
+        self.core.lgd.config["Legendary"][option] = text
+        if not text and option in self.core.lgd.config["Legendary"].keys():
+            self.core.lgd.config["Legendary"].pop(option)
         else:
-            logger.debug(f"Set config install_dir to {text}")
+            logger.debug(f"Set %s option in config to %s", option, text)
         self.core.lgd.save_config()
 
     def max_worker_save(self, workers: str):
