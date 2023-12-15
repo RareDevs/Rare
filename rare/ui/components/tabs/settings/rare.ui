@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>517</width>
-    <height>434</height>
+    <width>623</width>
+    <height>428</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -126,42 +126,42 @@
         <item row="4" column="0">
          <widget class="QCheckBox" name="notification">
           <property name="text">
-           <string>Show notification on download completion</string>
+           <string>Show notifications when downloads complete</string>
           </property>
          </widget>
         </item>
         <item row="6" column="0">
          <widget class="QCheckBox" name="log_games">
           <property name="text">
-           <string>Show console for game debug</string>
+           <string>Show console windows when launching games</string>
           </property>
          </widget>
         </item>
         <item row="0" column="0">
          <widget class="QCheckBox" name="sys_tray">
           <property name="text">
-           <string>Exit to System tray</string>
+           <string>Exit to system tray</string>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
          <widget class="QCheckBox" name="auto_update">
           <property name="text">
-           <string>Update games on application startup</string>
+           <string>Queue game updates on application startup</string>
           </property>
          </widget>
         </item>
         <item row="2" column="0">
          <widget class="QCheckBox" name="confirm_start">
           <property name="text">
-           <string>Confirm game launch</string>
+           <string>Confirm before launching games</string>
           </property>
          </widget>
         </item>
         <item row="3" column="0">
          <widget class="QCheckBox" name="auto_sync_cloud">
           <property name="text">
-           <string>Automatically sync with cloud</string>
+           <string>Automatically upload/download cloud saves</string>
           </property>
          </widget>
         </item>
@@ -207,14 +207,14 @@
         <item>
          <widget class="QPushButton" name="log_dir_open_button">
           <property name="text">
-           <string>Open Log directory</string>
+           <string>Open log folder</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="log_dir_clean_button">
           <property name="text">
-           <string>Clean Log directory</string>
+           <string>Clean log folder</string>
           </property>
          </widget>
         </item>
@@ -246,14 +246,14 @@
         <item>
          <widget class="QPushButton" name="desktop_link_btn">
           <property name="text">
-           <string>Create Desktop link</string>
+           <string>Create on desktop</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="startmenu_link_btn">
           <property name="text">
-           <string>Create start menu link</string>
+           <string>Create in menu</string>
           </property>
          </widget>
         </item>
