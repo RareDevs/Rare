@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>595</width>
-    <height>334</height>
+    <width>681</width>
+    <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -200,7 +200,7 @@
        <layout class="QVBoxLayout" name="locale_layout"/>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item>
       <widget class="QGroupBox" name="cleanup_group">
        <property name="title">
         <string>Cleanup</string>
@@ -227,29 +227,48 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="meta_group">
+      <widget class="QGroupBox" name="metadata_group">
        <property name="title">
-        <string>Game metadata</string>
+        <string>Platforms</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QCheckBox" name="win32_cb">
+         <widget class="QCheckBox" name="fetch_win32_check">
           <property name="text">
-           <string>Load 32bit data</string>
+           <string>Include Win32 games</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="mac_cb">
+         <widget class="QCheckBox" name="fetch_macos_check">
           <property name="text">
-           <string>Load MacOS data</string>
+           <string>Include MacOS games</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="refresh_game_meta_btn">
+         <widget class="QCheckBox" name="fetch_unreal_check">
           <property name="text">
-           <string>Refresh game meta</string>
+           <string>Include Unreal engine</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="metadata_info">
+          <property name="font">
+           <font>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string>Restart Rare to apply</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="refresh_metadata_button">
+          <property name="text">
+           <string>Refresh metadata</string>
           </property>
          </widget>
         </item>

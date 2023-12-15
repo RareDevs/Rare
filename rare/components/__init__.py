@@ -45,8 +45,6 @@ class Rare(RareApp):
         self.signals = RareCore.instance().signals()
         self.core = RareCore.instance().core()
 
-        config_helper.init_config_handler(self.core)
-
         lang = self.settings.value("language", self.core.language_code, type=str)
         self.load_translator(lang)
 

@@ -1,7 +1,7 @@
-import platform
+import platform as pf
 import re
 from logging import getLogger
-from typing import Tuple
+from typing import Tuple, List
 
 from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
@@ -19,14 +19,21 @@ class RefreshGameMetaWorker(Worker):
     class Signals(QObject):
         finished = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, platforms: List[str], include_unreal: bool):
         super(RefreshGameMetaWorker, self).__init__()
         self.signals = RefreshGameMetaWorker.Signals()
-        self.setAutoDelete(True)
         self.core = LegendaryCoreSingleton()
+        if platforms:
+            self.platforms = platforms
+        else:
+            self.platforms = ["Windows"]
+        self.skip_ue = not include_unreal
 
     def run_real(self) -> None:
-        self.core.get_game_and_dlc_list(True, force_refresh=True)
+        for platform in self.platforms:
+            self.core.get_game_and_dlc_list(
+                True, platform=platform, force_refresh=True, skip_ue=self.skip_ue
+            )
         self.signals.finished.emit()
 
 
@@ -34,7 +41,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
     def __init__(self, parent=None):
         super(LegendarySettings, self).__init__(parent=parent)
         self.setupUi(self)
-        self.settings = QSettings()
+        self.settings = QSettings(self)
 
         self.core = LegendaryCoreSingleton()
 
@@ -82,20 +89,36 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         )
         self.locale_layout.addWidget(self.locale_edit)
 
-        self.win32_cb.setChecked(self.settings.value("win32_meta", False, bool))
-        self.win32_cb.stateChanged.connect(lambda: self.settings.setValue("win32_meta", self.win32_cb.isChecked()))
+        self.fetch_win32_check.setChecked(self.settings.value("win32_meta", False, bool))
+        self.fetch_win32_check.stateChanged.connect(
+            lambda: self.settings.setValue("win32_meta", self.fetch_win32_check.isChecked())
+        )
 
-        self.mac_cb.setChecked(self.settings.value("mac_meta", platform.system() == "Darwin", bool))
-        self.mac_cb.stateChanged.connect(lambda: self.settings.setValue("mac_meta", self.mac_cb.isChecked()))
+        self.fetch_macos_check.setChecked(self.settings.value("macos_meta", pf.system() == "Darwin", bool))
+        self.fetch_macos_check.stateChanged.connect(
+            lambda: self.settings.setValue("macos_meta", self.fetch_macos_check.isChecked())
+        )
+        self.fetch_macos_check.setDisabled(pf.system() == "Darwin")
 
-        self.refresh_game_meta_btn.clicked.connect(self.refresh_game_meta)
+        self.fetch_unreal_check.setChecked(self.settings.value("unreal_meta", False, bool))
+        self.fetch_unreal_check.stateChanged.connect(
+            lambda: self.settings.setValue("unreal_meta", self.fetch_unreal_check.isChecked())
+        )
 
-    def refresh_game_meta(self):
-        self.refresh_game_meta_btn.setDisabled(True)
-        self.refresh_game_meta_btn.setText(self.tr("Loading"))
-        worker = RefreshGameMetaWorker()
-        worker.signals.finished.connect(lambda: self.refresh_game_meta_btn.setDisabled(False))
-        worker.signals.finished.connect(lambda: self.refresh_game_meta_btn.setText(self.tr("Refresh game meta")))
+        self.refresh_metadata_button.clicked.connect(self.refresh_metadata)
+        # FIXME: Disable the button for now because it interferes with RareCore
+        self.refresh_metadata_button.setEnabled(False)
+        self.refresh_metadata_button.setVisible(False)
+
+    def refresh_metadata(self):
+        self.refresh_metadata_button.setDisabled(True)
+        platforms = []
+        if self.fetch_win32_check.isChecked():
+            platforms.append("Win32")
+        if self.fetch_macos_check.isChecked():
+            platforms.append("Mac")
+        worker = RefreshGameMetaWorker(platforms, self.fetch_unreal_check.isChecked())
+        worker.signals.finished.connect(lambda: self.refresh_metadata_button.setDisabled(False))
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod

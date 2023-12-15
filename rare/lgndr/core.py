@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from multiprocessing import Queue
+from sys import platform as sys_platform
 from uuid import uuid4
 
 # On Windows the monkeypatching of `run_real` below doesn't work like on Linux
@@ -17,8 +18,8 @@ from legendary.models.game import Game, InstalledGame
 from legendary.models.manifest import ManifestMeta
 
 from rare.lgndr.downloader.mp.manager import DLManager
-from rare.lgndr.lfs.lgndry import LGDLFS
 from rare.lgndr.glue.exception import LgndrException, LgndrLogHandler
+from rare.lgndr.lfs.lgndry import LGDLFS
 
 legendary.core.DLManager = DLManager
 legendary.core.LGDLFS = LGDLFS
@@ -49,6 +50,11 @@ class LegendaryCore(LegendaryCoreReal):
                 self.lgd.unlock_installed()
             return ret
         return unlock
+
+    @property
+    def default_platform(self) -> str:
+        os_default = "Mac" if sys_platform == "darwin" else "Windows"
+        return self.lgd.config.get("Legendary", "default_platform", fallback=os_default)
 
     # skip_sync defaults to false but since Rare is persistent, skip by default
     # def get_installed_game(self, app_name, skip_sync=True) -> InstalledGame:

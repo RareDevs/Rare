@@ -1,5 +1,6 @@
 import configparser
 import os
+import platform
 import time
 from argparse import Namespace
 from itertools import chain
@@ -25,6 +26,7 @@ from .workers import (
 )
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
+from rare.utils import config_helper
 
 logger = getLogger("RareCore")
 
@@ -54,9 +56,10 @@ class RareCore(QObject):
         self.args(args)
         self.signals(init=True)
         self.core(init=True)
+        config_helper.init_config_handler(self.__core)
         self.image_manager(init=True)
 
-        self.settings = QSettings()
+        self.settings = QSettings(self)
 
         self.queue_workers: List[QueueWorker] = []
         self.queue_threadpool = QThreadPool()
@@ -140,6 +143,9 @@ class RareCore(QObject):
             for section in ["Legendary", "default", "default.env"]:
                 if section not in self.__core.lgd.config.sections():
                     self.__core.lgd.config.add_section(section)
+            # Set some platform defaults
+            self.__core.lgd.config.set("Legendary", "default_platform", self.__core.default_platform)
+            self.__core.lgd.config.set("Legendary", "install_platform_fallback", False)
             # workaround if egl sync enabled, but no programdata_path
             # programdata_path might be unset if logging in through the browser
             if self.__core.egl_sync_enabled:
@@ -357,7 +363,7 @@ class RareCore(QObject):
             yield game.game
 
     @property
-    def dlcs(self) -> Dict[str, Game]:
+    def dlcs(self) -> Dict[str, set[RareGame]]:
         """!
         RareGames that ARE DLCs themselves
         """

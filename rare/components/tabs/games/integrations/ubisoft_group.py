@@ -74,7 +74,6 @@ class UbiConnectWorker(Worker):
     def __init__(self, core: LegendaryCore, ubi_account_id, partner_link_id):
         super(UbiConnectWorker, self).__init__()
         self.signals = UbiConnectWorker.Signals()
-        self.setAutoDelete(True)
         self.core = core
         self.ubi_account_id = ubi_account_id
         self.partner_link_id = partner_link_id
