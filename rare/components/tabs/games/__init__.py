@@ -34,8 +34,6 @@ class GamesTab(QStackedWidget):
         self.image_manager = ImageManagerSingleton()
         self.settings = QSettings()
 
-        self.active_filter: int = 0
-
         self.games_page = QWidget(parent=self)
         games_page_layout = QVBoxLayout(self.games_page)
         self.addWidget(self.games_page)
@@ -99,10 +97,7 @@ class GamesTab(QStackedWidget):
         self.head_bar.refresh_list.clicked.connect(self.library_controller.update_list)
         self.head_bar.view.toggled.connect(self.toggle_view)
 
-        f = self.settings.value("filter", 0, int)
-        if f >= len(self.head_bar.available_filters):
-            f = 0
-        self.active_filter = self.head_bar.available_filters[f]
+        self.active_filter: str = self.head_bar.filter.currentData(Qt.UserRole)
 
         # signals
         self.signals.game.installed.connect(self.update_count_games_label)
@@ -158,7 +153,7 @@ class GamesTab(QStackedWidget):
         for rgame in self.rcore.games:
             icon_widget, list_widget = self.add_library_widget(rgame)
             if not icon_widget or not list_widget:
-                logger.warning(f"Excluding {rgame.app_name} from the game list")
+                logger.warning("Excluding %s from the game list", rgame.app_title)
                 continue
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
@@ -169,8 +164,7 @@ class GamesTab(QStackedWidget):
         try:
             icon_widget, list_widget = self.library_controller.add_game(rgame)
         except Exception as e:
-            raise e
-            logger.error(f"{rgame.app_name} is broken. Don't add it to game list: {e}")
+            logger.error("Could not add widget for %s to library: %s", rgame.app_name, e)
             return None, None
         icon_widget.show_info.connect(self.show_game_info)
         list_widget.show_info.connect(self.show_game_info)

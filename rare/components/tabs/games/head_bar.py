@@ -1,4 +1,6 @@
-from PyQt5.QtCore import QSettings, pyqtSignal, pyqtSlot
+import platform as pf
+
+from PyQt5.QtCore import QSettings, pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtWidgets import (
     QLabel,
     QPushButton,
@@ -22,45 +24,28 @@ class GameListHeadBar(QWidget):
     def __init__(self, parent=None):
         super(GameListHeadBar, self).__init__(parent=parent)
         self.rcore = RareCore.instance()
-        self.settings = QSettings()
+        self.settings = QSettings(self)
 
-        self.filter = QComboBox()
-        self.filter.addItems(
-            [
-                self.tr("All games"),
-                self.tr("Installed only"),
-                self.tr("Offline Games"),
-                # self.tr("Hidden")
-            ]
-        )
-
-        self.available_filters = [
-            "all",
-            "installed",
-            "offline",
-            # "hidden"
-        ]
+        self.filter = QComboBox(self)
+        self.filter.addItem(self.tr("All games"), "all")
+        self.filter.addItem(self.tr("Installed only"), "installed")
+        self.filter.addItem(self.tr("Offline Games"), "offline")
+        # self.filter.addItem(self.tr("Hidden"), "hidden")
         if self.rcore.bit32_games:
-            self.filter.addItem(self.tr("32 Bit Games"))
-            self.available_filters.append("32bit")
-
+            self.filter.addItem(self.tr("32 Bit Games"), "32bit")
         if self.rcore.mac_games:
-            self.filter.addItem(self.tr("Mac games"))
-            self.available_filters.append("mac")
-
+            self.filter.addItem(self.tr("Mac games"), "mac")
         if self.rcore.origin_games:
-            self.filter.addItem(self.tr("Exclude Origin"))
-            self.available_filters.append("installable")
+            self.filter.addItem(self.tr("Exclude Origin"), "installable")
+        self.filter.addItem(self.tr("Include Unreal Engine"), "include_ue")
 
-        self.filter.addItem(self.tr("Include Unreal Engine"))
-        self.available_filters.append("include_ue")
-
+        filter_default = "mac" if pf.system() == "Darwin" else "all"
+        filter_index = i if (i := self.filter.findData(filter_default, Qt.UserRole)) >= 0 else 0
         try:
-            self.filter.setCurrentIndex(self.settings.value("filter", 0, int))
+            self.filter.setCurrentIndex(self.settings.value("library_filter", filter_index, int))
         except TypeError:
-            self.settings.setValue("filter", 0)
-            self.filter.setCurrentIndex(0)
-
+            self.settings.setValue("library_filter", filter_index)
+            self.filter.setCurrentIndex(filter_index)
         self.filter.currentIndexChanged.connect(self.filter_changed)
 
         integrations_menu = QMenu(self)
@@ -139,6 +124,6 @@ class GameListHeadBar(QWidget):
         self.rcore.fetch()
 
     @pyqtSlot(int)
-    def filter_changed(self, i: int):
-        self.filterChanged.emit(self.available_filters[i])
-        self.settings.setValue("filter", i)
+    def filter_changed(self, index: int):
+        self.filterChanged.emit(self.filter.itemData(index, Qt.UserRole))
+        self.settings.setValue("library_filter", index)
