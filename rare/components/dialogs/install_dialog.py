@@ -78,9 +78,7 @@ class InstallDialog(QDialog):
         elif rgame.is_installed:
             base_path = rgame.install_path
         else:
-            base_path = self.core.get_default_install_dir(
-                self.core.default_platform if self.core.default_platform in rgame.platforms else "Windows"
-            )
+            base_path = self.core.get_default_install_dir(rgame.default_platform)
 
         self.install_dir_edit = PathEdit(
             path=base_path,
@@ -103,13 +101,7 @@ class InstallDialog(QDialog):
         self.error_box()
 
         self.ui.platform_combo.addItems(reversed(rgame.platforms))
-        combo_text = (
-            rgame.igame.platform
-            if rgame.is_installed
-            else self.core.default_platform
-            if self.core.default_platform in rgame.platforms
-            else "Windows"
-        )
+        combo_text = rgame.igame.platform if rgame.is_installed else rgame.default_platform
         self.ui.platform_combo.setCurrentIndex(self.ui.platform_combo.findText(combo_text))
         self.ui.platform_combo.currentIndexChanged.connect(lambda i: self.option_changed(None))
         self.ui.platform_combo.currentIndexChanged.connect(self.check_incompatible_platform)

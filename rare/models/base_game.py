@@ -122,6 +122,10 @@ class RareGameBase(QObject):
         return tuple(self.game.asset_infos.keys())
 
     @property
+    def default_platform(self) -> str:
+        return self.core.default_platform if self.core.default_platform in self.platforms else "Windows"
+
+    @property
     def is_mac(self) -> bool:
         """!
         @brief Property to report if Game has a mac version
@@ -169,7 +173,7 @@ class RareGameBase(QObject):
 
         @return str The current version of the game
         """
-        return self.igame.version if self.igame is not None else self.game.app_version(self.core.default_platform)
+        return self.igame.version if self.igame is not None else self.game.app_version(self.default_platform)
 
     @property
     def install_path(self) -> Optional[str]:

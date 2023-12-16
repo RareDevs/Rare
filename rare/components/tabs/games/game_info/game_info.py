@@ -286,7 +286,7 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.platform.setText(
             self.rgame.igame.platform
             if self.rgame.is_installed and not self.rgame.is_non_asset
-            else self.core.default_platform
+            else self.rgame.default_platform
         )
 
         self.ui.lbl_grade.setDisabled(
