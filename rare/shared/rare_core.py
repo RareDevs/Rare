@@ -5,7 +5,7 @@ import time
 from argparse import Namespace
 from itertools import chain
 from logging import getLogger
-from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple
+from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple, Set
 
 from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool, QRunnable, QTimer
 from legendary.lfs.eos import EOSOverlayApp
@@ -143,18 +143,32 @@ class RareCore(QObject):
                 with open(os.path.join(path, "config.ini"), "w") as config_file:
                     config_file.write("[Legendary]")
                 self.__core = LegendaryCore()
+
+            # Initialize sections if they don't exist
             for section in ["Legendary", "default", "default.env"]:
                 if section not in self.__core.lgd.config.sections():
                     self.__core.lgd.config.add_section(section)
-            # Set some platform defaults
-            self.__core.lgd.config.set(
-                "Legendary", "install_dir", self.__core.get_default_install_dir()
-            )
-            self.__core.lgd.config.set(
-                "Legendary", "mac_install_dir", self.__core.get_default_install_dir(self.__core.default_platform)
-            )
-            self.__core.lgd.config.set("Legendary", "default_platform", self.__core.default_platform)
-            self.__core.lgd.config.set("Legendary", "install_platform_fallback", False)
+
+            # Set some platform defaults if unset
+            def check_config(option: str, accepted: Set = None) -> bool:
+                _exists = self.__core.lgd.config.has_option("Legendary", option)
+                _value = self.__core.lgd.config.get("Legendary", option, fallback="")
+                _accepted = _value in accepted if accepted is not None else True
+                return _exists and bool(_value) and _accepted
+
+            if not check_config("default_platform", {"Windows", "Win32", "Mac"}):
+                self.__core.lgd.config.set("Legendary", "default_platform", self.__core.default_platform)
+            if not check_config("install_dir"):
+                self.__core.lgd.config.set(
+                    "Legendary", "install_dir", self.__core.get_default_install_dir()
+                )
+            if not check_config("mac_install_dir"):
+                self.__core.lgd.config.set(
+                    "Legendary", "mac_install_dir", self.__core.get_default_install_dir(self.__core.default_platform)
+                )
+            # Always set this to avoid falling back
+            self.__core.lgd.config.set("Legendary", "install_platform_fallback", 'false')
+
             # workaround if egl sync enabled, but no programdata_path
             # programdata_path might be unset if logging in through the browser
             if self.__core.egl_sync_enabled:
@@ -163,6 +177,7 @@ class RareCore(QObject):
                 else:
                     if not os.path.exists(self.__core.egl.programdata_path):
                         self.__core.lgd.config.remove_option("Legendary", "egl_sync")
+
             self.__core.lgd.save_config()
         return self.__core
 
