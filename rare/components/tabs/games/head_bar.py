@@ -28,16 +28,16 @@ class GameListHeadBar(QWidget):
 
         self.filter = QComboBox(self)
         self.filter.addItem(self.tr("All games"), "all")
-        self.filter.addItem(self.tr("Installed only"), "installed")
-        self.filter.addItem(self.tr("Offline Games"), "offline")
+        self.filter.addItem(self.tr("Installed"), "installed")
+        self.filter.addItem(self.tr("Offline"), "offline")
         # self.filter.addItem(self.tr("Hidden"), "hidden")
         if self.rcore.bit32_games:
-            self.filter.addItem(self.tr("32 Bit Games"), "32bit")
+            self.filter.addItem(self.tr("32bit games"), "32bit")
         if self.rcore.mac_games:
-            self.filter.addItem(self.tr("Mac games"), "mac")
+            self.filter.addItem(self.tr("macOS games"), "mac")
         if self.rcore.origin_games:
             self.filter.addItem(self.tr("Exclude Origin"), "installable")
-        self.filter.addItem(self.tr("Include Unreal Engine"), "include_ue")
+        self.filter.addItem(self.tr("Include Unreal"), "include_ue")
 
         filter_default = "mac" if pf.system() == "Darwin" else "all"
         filter_index = i if (i := self.filter.findData(filter_default, Qt.UserRole)) >= 0 else 0
