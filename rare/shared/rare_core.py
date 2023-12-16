@@ -132,13 +132,14 @@ class RareCore(QObject):
             try:
                 self.__core = LegendaryCore()
             except configparser.MissingSectionHeaderError as e:
-                logger.warning(f"Config is corrupt: {e}")
+                logger.warning("Config is corrupt: %s", e)
                 if config_path := os.environ.get('LEGENDARY_CONFIG_PATH'):
                     path = config_path
                 elif config_path := os.environ.get('XDG_CONFIG_HOME'):
                     path = os.path.join(config_path, 'legendary')
                 else:
                     path = os.path.expanduser('~/.config/legendary')
+                logger.info("Creating config in path: %s", config_path)
                 with open(os.path.join(path, "config.ini"), "w") as config_file:
                     config_file.write("[Legendary]")
                 self.__core = LegendaryCore()
@@ -146,6 +147,12 @@ class RareCore(QObject):
                 if section not in self.__core.lgd.config.sections():
                     self.__core.lgd.config.add_section(section)
             # Set some platform defaults
+            self.__core.lgd.config.set(
+                "Legendary", "install_dir", self.__core.get_default_install_dir()
+            )
+            self.__core.lgd.config.set(
+                "Legendary", "mac_install_dir", self.__core.get_default_install_dir(self.__core.default_platform)
+            )
             self.__core.lgd.config.set("Legendary", "default_platform", self.__core.default_platform)
             self.__core.lgd.config.set("Legendary", "install_platform_fallback", False)
             # workaround if egl sync enabled, but no programdata_path
