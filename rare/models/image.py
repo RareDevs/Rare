@@ -70,9 +70,9 @@ class ImageSize:
     DisplayWide = Preset(1, 1, Orientation.Wide, base=ImageWide)
     """! @brief Size and pixel ratio for wide 16/9 image display"""
 
-    LibraryWide = Preset(1.33, 1, Orientation.Wide, base=ImageWide)
+    LibraryWide = Preset(1.21, 1, Orientation.Wide, base=ImageWide)
 
-    Library = Preset(1.33, 1, base=Image)
+    Library = Preset(1.21, 1, base=Image)
     """! @brief Same as Display"""
 
     Small = Preset(3, 1, base=Image)
