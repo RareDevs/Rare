@@ -1,6 +1,5 @@
 import configparser
 import os
-import platform
 import time
 from argparse import Namespace
 from itertools import chain
