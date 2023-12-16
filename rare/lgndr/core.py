@@ -55,7 +55,8 @@ class LegendaryCore(LegendaryCoreReal):
     @property
     def default_platform(self) -> str:
         os_default = "Mac" if sys_platform == "darwin" else "Windows"
-        return self.lgd.config.get("Legendary", "default_platform", fallback=os_default)
+        usr_platform = self.lgd.config.get("Legendary", "default_platform", fallback=os_default)
+        return usr_platform if usr_platform in ("Windows", "Win32", "Mac") else os_default
 
     # skip_sync defaults to false but since Rare is persistent, skip by default
     # def get_installed_game(self, app_name, skip_sync=True) -> InstalledGame:
