@@ -72,8 +72,10 @@ class ImportWorker(QRunnable):
 
     def __init__(
             self,
-            core: LegendaryCore, path: str,
+            core: LegendaryCore,
+            path: str,
             app_name: str = None,
+            platform: Optional[str] = None,
             import_folder: bool = False,
             import_dlcs: bool = False,
             import_force: bool = False
@@ -86,6 +88,7 @@ class ImportWorker(QRunnable):
         self.path = Path(path)
         self.app_name = app_name
         self.import_folder = import_folder
+        self.platform = platform if platform is not None else self.core.default_platform
         self.import_dlcs = import_dlcs
         self.import_force = import_force
 
@@ -110,9 +113,13 @@ class ImportWorker(QRunnable):
         result = ImportedGame(ImportResult.ERROR)
         result.path = str(path)
         if app_name or (app_name := find_app_name(str(path), self.core)):
+            game = self.core.get_game(app_name)
             result.app_name = app_name
-            result.app_title = self.core.get_game(app_name).app_title
-            success, message = self.__import_game(path, app_name)
+            result.app_title = game.app_title
+            platform = self.platform
+            if platform not in self.core.get_game(app_name, update_meta=False).asset_infos:
+                platform = "Windows"
+            success, message = self.__import_game(path, app_name, platform)
             if not success:
                 result.result = ImportResult.FAILED
                 result.message = message
@@ -120,14 +127,9 @@ class ImportWorker(QRunnable):
                 result.result = ImportResult.SUCCESS
         return result
 
-    def __import_game(self, path: Path, app_name: str):
+    def __import_game(self, path: Path, app_name: str, platform: str):
         cli = LegendaryCLI(self.core)
         status = LgndrIndirectStatus()
-        # FIXME: Add override option in import form
-        platform = self.core.default_platform
-        if platform not in self.core.get_game(app_name, update_meta=False).asset_infos:
-            platform = "Windows"
-
         args = LgndrImportGameArgs(
             app_path=str(path),
             app_name=app_name,
@@ -212,6 +214,7 @@ class ImportGroup(QGroupBox):
         self.app_name_edit = IndicatorLineEdit(
             placeholder=self.tr("Use in case the app name was not found automatically"),
             edit_func=self.app_name_edit_callback,
+            save_func=self.app_name_save_callback,
             parent=self,
         )
         self.app_name_edit.textChanged.connect(self.app_name_changed)
@@ -287,6 +290,12 @@ class ImportGroup(QGroupBox):
         else:
             return False, text, IndicatorReasonsCommon.NOT_INSTALLED
 
+    def app_name_save_callback(self, text) -> None:
+        rgame = self.rcore.get_game(text)
+        self.ui.platform_combo.clear()
+        self.ui.platform_combo.addItems(rgame.platforms)
+        self.ui.platform_combo.setCurrentText(rgame.default_platform)
+
     @pyqtSlot(str)
     def app_name_changed(self, app_name: str):
         self.info_label.setText("")
@@ -302,6 +311,14 @@ class ImportGroup(QGroupBox):
     @pyqtSlot(int)
     def import_folder_changed(self, state: Qt.CheckState):
         self.app_name_edit.setEnabled(not state)
+        self.ui.platform_combo.setEnabled(not state)
+        self.ui.platform_combo.setToolTip(
+            self.tr(
+                "When importing multiple games, the current OS will be used at the"
+                " platform for the games that support it, otherwise the Windows version"
+                " will be imported."
+            ) if state else ""
+        )
         self.ui.import_dlcs_check.setCheckState(Qt.Unchecked)
         self.ui.import_force_check.setCheckState(Qt.Unchecked)
         self.ui.import_dlcs_check.setEnabled(
@@ -330,10 +347,11 @@ class ImportGroup(QGroupBox):
         self.worker = ImportWorker(
             self.core,
             path,
-            self.app_name_edit.text(),
-            self.ui.import_folder_check.isChecked(),
-            self.ui.import_dlcs_check.isChecked(),
-            self.ui.import_force_check.isChecked()
+            app_name=self.app_name_edit.text(),
+            platform=self.ui.platform_combo.currentText() if not self.ui.import_folder_check.isChecked() else None,
+            import_folder=self.ui.import_folder_check.isChecked(),
+            import_dlcs=self.ui.import_dlcs_check.isChecked(),
+            import_force=self.ui.import_force_check.isChecked()
         )
         self.worker.signals.progress.connect(self.__on_import_progress)
         self.worker.signals.result.connect(self.__on_import_result)
