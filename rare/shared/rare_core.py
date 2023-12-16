@@ -166,7 +166,8 @@ class RareCore(QObject):
                 self.__core.lgd.config.set(
                     "Legendary", "mac_install_dir", self.__core.get_default_install_dir(self.__core.default_platform)
                 )
-            # Always set this to avoid falling back
+            # Always set these options
+            # Avoid falling back to Windows games on macOS
             self.__core.lgd.config.set("Legendary", "install_platform_fallback", 'false')
 
             # workaround if egl sync enabled, but no programdata_path
