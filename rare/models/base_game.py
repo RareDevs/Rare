@@ -97,15 +97,11 @@ class RareGameBase(QObject):
 
     @property
     def app_name(self) -> str:
-        return self.igame.app_name if self.igame is not None else self.game.app_name
+        return self.game.app_name
 
     @property
     def app_title(self) -> str:
-        return self.igame.title if self.igame is not None else self.game.app_title
-
-    @property
-    def title(self) -> str:
-        return self.app_title
+        return self.game.app_title
 
     @property
     @abstractmethod
@@ -124,6 +120,10 @@ class RareGameBase(QObject):
         @return Tuple
         """
         return tuple(self.game.asset_infos.keys())
+
+    @property
+    def default_platform(self) -> str:
+        return self.core.default_platform if self.core.default_platform in self.platforms else "Windows"
 
     @property
     def is_mac(self) -> bool:
@@ -173,7 +173,7 @@ class RareGameBase(QObject):
 
         @return str The current version of the game
         """
-        return self.igame.version if self.igame is not None else self.game.app_version()
+        return self.igame.version if self.igame is not None else self.game.app_version(self.default_platform)
 
     @property
     def install_path(self) -> Optional[str]:
@@ -234,7 +234,7 @@ class RareGameSlim(RareGameBase):
         status, (dt_local, dt_remote) = self.save_game_state
 
         def _upload():
-            logger.info(f"Uploading save for {self.title}")
+            logger.info(f"Uploading save for {self.app_title}")
             self.state = RareGameSlim.State.SYNCING
             self.core.upload_save(self.app_name, self.igame.save_path, dt_local)
             self.state = RareGameSlim.State.IDLE
@@ -246,7 +246,7 @@ class RareGameSlim(RareGameBase):
             logger.warning("Can't upload non existing save")
             return
         if self.state == RareGameSlim.State.SYNCING:
-            logger.error(f"{self.title} is already syncing")
+            logger.error(f"{self.app_title} is already syncing")
             return
 
         if thread:
@@ -259,7 +259,7 @@ class RareGameSlim(RareGameBase):
         status, (dt_local, dt_remote) = self.save_game_state
 
         def _download():
-            logger.info(f"Downloading save for {self.title}")
+            logger.info(f"Downloading save for {self.app_title}")
             self.state = RareGameSlim.State.SYNCING
             self.core.download_saves(self.app_name, self.latest_save.file.manifest_name, self.save_path)
             self.state = RareGameSlim.State.IDLE
@@ -271,7 +271,7 @@ class RareGameSlim(RareGameBase):
             logger.error("Can't download non existing save")
             return
         if self.state == RareGameSlim.State.SYNCING:
-            logger.error(f"{self.title} is already syncing")
+            logger.error(f"{self.app_title} is already syncing")
             return
 
         if thread:

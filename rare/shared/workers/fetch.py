@@ -1,9 +1,10 @@
+import platform
 import time
 from argparse import Namespace
 from enum import IntEnum
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, QSettings
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.lgndr.core import LegendaryCore
@@ -27,19 +28,54 @@ class FetchWorker(Worker):
         self.signals = FetchWorker.Signals()
         self.core = core
         self.args = args
+        self.settings = QSettings()
 
     def run_real(self):
         # Fetch regular EGL games with assets
-        self.signals.progress.emit(0, self.signals.tr("Updating game metadata"))
         start_time = time.time()
+
+        want_unreal = self.settings.value("unreal_meta", False, bool) or self.args.debug
+        want_win32 = self.settings.value("win32_meta", False, bool)
+        want_macos = self.settings.value("macos_meta", False, bool)
+        need_macos = platform.system() == "Darwin"
+        need_windows = not any([want_win32, want_macos, need_macos, self.args.debug])
+
+        if want_win32 or self.args.debug:
+            logger.info(
+                "Requesting Win32 metadata due to %s, %s Unreal engine",
+                "settings" if want_win32 else "debug",
+                "with" if want_unreal else "without"
+            )
+            self.signals.progress.emit(00, self.signals.tr("Updating game metadata for Windows"))
+            self.core.get_game_and_dlc_list(
+                update_assets=not self.args.offline, platform="Win32", skip_ue=not want_unreal
+            )
+
+        if need_macos or want_macos or self.args.debug:
+            logger.info(
+                "Requesting macOS metadata due to %s, %s Unreal engine",
+                "platform" if need_macos else "settings" if want_macos else "debug",
+                "with" if want_unreal else "without"
+            )
+            self.signals.progress.emit(15, self.signals.tr("Updating game metadata for macOS"))
+            self.core.get_game_and_dlc_list(
+                update_assets=not self.args.offline, platform="Mac", skip_ue=not want_unreal
+            )
+
+        if need_windows:
+            self.signals.progress.emit(00, self.signals.tr("Updating game metadata for Windows"))
+            logger.info(
+                "Requesting Windows metadata, %s Unreal engine",
+                "with" if want_unreal else "without"
+            )
         games, dlc_dict = self.core.get_game_and_dlc_list(
-            update_assets=not self.args.offline, platform="Windows", skip_ue=False
+            update_assets=need_windows, platform="Windows", skip_ue=not want_unreal
         )
         logger.debug(f"Games {len(games)}, games with DLCs {len(dlc_dict)}")
         logger.debug(f"Request games: {time.time() - start_time} seconds")
 
         # Fetch non-asset games
-        self.signals.progress.emit(10, self.signals.tr("Updating non-asset metadata"))
+        self.signals.progress.emit(30, self.signals.tr("Updating non-asset game metadata"))
         start_time = time.time()
         try:
             na_games, na_dlc_dict = self.core.get_non_asset_library_items(force_refresh=False, skip_ue=False)

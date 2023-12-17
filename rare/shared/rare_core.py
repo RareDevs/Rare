@@ -4,7 +4,7 @@ import time
 from argparse import Namespace
 from itertools import chain
 from logging import getLogger
-from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple
+from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple, Set
 
 from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool, QRunnable, QTimer
 from legendary.lfs.eos import EOSOverlayApp
@@ -25,6 +25,7 @@ from .workers import (
 )
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
+from rare.utils import config_helper
 
 logger = getLogger("RareCore")
 
@@ -54,9 +55,10 @@ class RareCore(QObject):
         self.args(args)
         self.signals(init=True)
         self.core(init=True)
+        config_helper.init_config_handler(self.__core)
         self.image_manager(init=True)
 
-        self.settings = QSettings()
+        self.settings = QSettings(self)
 
         self.queue_workers: List[QueueWorker] = []
         self.queue_threadpool = QThreadPool()
@@ -129,17 +131,44 @@ class RareCore(QObject):
             try:
                 self.__core = LegendaryCore()
             except configparser.MissingSectionHeaderError as e:
-                logger.warning(f"Config is corrupt: {e}")
-                if config_path := os.environ.get("XDG_CONFIG_HOME"):
-                    path = os.path.join(config_path, "legendary")
+                logger.warning("Config is corrupt: %s", e)
+                if config_path := os.environ.get('LEGENDARY_CONFIG_PATH'):
+                    path = config_path
+                elif config_path := os.environ.get('XDG_CONFIG_HOME'):
+                    path = os.path.join(config_path, 'legendary')
                 else:
-                    path = os.path.expanduser("~/.config/legendary")
+                    path = os.path.expanduser('~/.config/legendary')
+                logger.info("Creating config in path: %s", config_path)
                 with open(os.path.join(path, "config.ini"), "w") as config_file:
                     config_file.write("[Legendary]")
                 self.__core = LegendaryCore()
+
+            # Initialize sections if they don't exist
             for section in ["Legendary", "default", "default.env"]:
                 if section not in self.__core.lgd.config.sections():
                     self.__core.lgd.config.add_section(section)
+
+            # Set some platform defaults if unset
+            def check_config(option: str, accepted: Set = None) -> bool:
+                _exists = self.__core.lgd.config.has_option("Legendary", option)
+                _value = self.__core.lgd.config.get("Legendary", option, fallback="")
+                _accepted = _value in accepted if accepted is not None else True
+                return _exists and bool(_value) and _accepted
+
+            if not check_config("default_platform", {"Windows", "Win32", "Mac"}):
+                self.__core.lgd.config.set("Legendary", "default_platform", self.__core.default_platform)
+            if not check_config("install_dir"):
+                self.__core.lgd.config.set(
+                    "Legendary", "install_dir", self.__core.get_default_install_dir()
+                )
+            if not check_config("mac_install_dir"):
+                self.__core.lgd.config.set(
+                    "Legendary", "mac_install_dir", self.__core.get_default_install_dir(self.__core.default_platform)
+                )
+            # Always set these options
+            # Avoid falling back to Windows games on macOS
+            self.__core.lgd.config.set("Legendary", "install_platform_fallback", 'false')
+
             # workaround if egl sync enabled, but no programdata_path
             # programdata_path might be unset if logging in through the browser
             if self.__core.egl_sync_enabled:
@@ -148,6 +177,7 @@ class RareCore(QObject):
                 else:
                     if not os.path.exists(self.__core.egl.programdata_path):
                         self.__core.lgd.config.remove_option("Legendary", "egl_sync")
+
             self.__core.lgd.save_config()
         return self.__core
 
@@ -176,7 +206,9 @@ class RareCore(QObject):
         del self.__args
         self.__args = None
 
-        del self.__eos_overlay
+        # del self.__eos_overlay
+        self.__eos_overlay = None
+
         RareCore.__instance = None
         super(RareCore, self).deleteLater()
 
@@ -357,7 +389,7 @@ class RareCore(QObject):
             yield game.game
 
     @property
-    def dlcs(self) -> Dict[str, Game]:
+    def dlcs(self) -> Dict[str, set[RareGame]]:
         """!
         RareGames that ARE DLCs themselves
         """

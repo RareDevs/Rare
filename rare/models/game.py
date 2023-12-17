@@ -166,7 +166,8 @@ class RareGame(RareGameSlim):
 
     def update_game(self):
         self.game = self.core.get_game(
-            self.app_name, update_meta=False, platform=self.igame.platform if self.igame else "Windows"
+            self.app_name, update_meta=False,
+            platform=self.igame.platform if self.igame else self.default_platform
         )
 
     def update_igame(self):
@@ -228,7 +229,7 @@ class RareGame(RareGameSlim):
         if self.igame is not None:
             return self.game.app_version(self.igame.platform)
         else:
-            return self.game.app_version()
+            return self.game.app_version(self.default_platform)
 
     @property
     def has_update(self) -> bool:

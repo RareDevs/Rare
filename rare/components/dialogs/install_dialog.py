@@ -73,13 +73,15 @@ class InstallDialog(QDialog):
         self.ui.install_dialog_label.setText(f'<h3>{header} "{self.rgame.app_title}"</h3>')
         self.setWindowTitle(f'{header} "{self.rgame.app_title}" - {QCoreApplication.instance().applicationName()}')
 
-        if not self.options.base_path:
-            self.options.base_path = self.core.lgd.config.get(
-                "Legendary", "install_dir", fallback=os.path.expanduser("~/legendary")
-            )
+        if options.base_path:
+            base_path = options.base_path
+        elif rgame.is_installed:
+            base_path = rgame.install_path
+        else:
+            base_path = self.core.get_default_install_dir(rgame.default_platform)
 
         self.install_dir_edit = PathEdit(
-            path=self.options.base_path,
+            path=base_path,
             file_mode=QFileDialog.DirectoryOnly,
             edit_func=self.option_changed,
             save_func=self.save_install_edit,
@@ -90,36 +92,24 @@ class InstallDialog(QDialog):
             QFormLayout.FieldRole, self.install_dir_edit
         )
 
-        if self.options.update:
-            self.ui.install_dir_label.setEnabled(False)
-            self.install_dir_edit.setEnabled(False)
-            self.ui.shortcut_label.setEnabled(False)
-            self.ui.shortcut_check.setEnabled(False)
-        else:
-            self.ui.shortcut_check.setChecked(QSettings().value("create_shortcut", True, bool))
+        self.install_dir_edit.setDisabled(rgame.is_installed)
+        self.ui.install_dir_label.setDisabled(rgame.is_installed)
+        self.ui.shortcut_label.setDisabled(rgame.is_installed)
+        self.ui.shortcut_check.setDisabled(rgame.is_installed)
+        self.ui.shortcut_check.setChecked(not rgame.is_installed and QSettings().value("create_shortcut", True, bool))
 
         self.error_box()
 
-        platforms = self.rgame.platforms
-        self.ui.platform_combo.addItems(reversed(platforms))
-        self.ui.platform_combo.currentIndexChanged.connect(lambda: self.option_changed(None))
-        self.ui.platform_combo.currentIndexChanged.connect(lambda: self.error_box())
-        self.ui.platform_combo.currentIndexChanged.connect(
-            lambda i: self.error_box(
-                self.tr("Warning"),
-                self.tr("You will not be able to run the game if you select <b>{}</b> as platform").format(
-                    self.ui.platform_combo.itemText(i)
-                ),
-            )
-            if (self.ui.platform_combo.currentText() == "Mac" and pf.system() != "Darwin")
-            else None
-        )
-        self.ui.platform_combo.setCurrentIndex(
-            self.ui.platform_combo.findText(
-                "Mac" if (pf.system() == "Darwin" and "Mac" in platforms) else "Windows"
-            )
-        )
-        self.ui.platform_combo.currentTextChanged.connect(self.setup_sdl_list)
+        self.ui.platform_combo.addItems(reversed(rgame.platforms))
+        combo_text = rgame.igame.platform if rgame.is_installed else rgame.default_platform
+        self.ui.platform_combo.setCurrentIndex(self.ui.platform_combo.findText(combo_text))
+        self.ui.platform_combo.currentIndexChanged.connect(lambda i: self.option_changed(None))
+        self.ui.platform_combo.currentIndexChanged.connect(self.check_incompatible_platform)
+        self.ui.platform_combo.currentIndexChanged.connect(self.reset_install_dir)
+        self.ui.platform_combo.currentIndexChanged.connect(self.reset_sdl_list)
+
+        self.ui.platform_label.setDisabled(rgame.is_installed)
+        self.ui.platform_combo.setDisabled(rgame.is_installed)
 
         self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
         self.advanced.ui.max_workers_spin.valueChanged.connect(self.option_changed)
@@ -139,7 +129,10 @@ class InstallDialog(QDialog):
 
         self.selectable_checks: List[TagCheckBox] = []
         self.config_tags: Optional[List[str]] = None
-        self.setup_sdl_list(self.ui.platform_combo.currentText())
+
+        self.reset_install_dir(self.ui.platform_combo.currentIndex())
+        self.reset_sdl_list(self.ui.platform_combo.currentIndex())
+        self.check_incompatible_platform(self.ui.platform_combo.currentIndex())
 
         self.ui.install_button.setEnabled(False)
 
@@ -155,9 +148,10 @@ class InstallDialog(QDialog):
             self.selectable.setEnabled(False)
 
         if pf.system() == "Darwin":
+            self.ui.shortcut_label.setDisabled(True)
             self.ui.shortcut_check.setDisabled(True)
             self.ui.shortcut_check.setChecked(False)
-            self.ui.shortcut_check.setToolTip(self.tr("Creating a shortcut is not supported on MacOS"))
+            self.ui.shortcut_check.setToolTip(self.tr("Creating a shortcut is not supported on macOS"))
 
         self.advanced.ui.install_prereqs_label.setEnabled(False)
         self.advanced.ui.install_prereqs_check.setEnabled(False)
@@ -190,8 +184,16 @@ class InstallDialog(QDialog):
             self.__on_verify()
             self.show()
 
-    @pyqtSlot(str)
-    def setup_sdl_list(self, platform="Windows"):
+    @pyqtSlot(int)
+    def reset_install_dir(self, index: int):
+        if not self.rgame.is_installed:
+            platform = self.ui.platform_combo.itemText(index)
+            default_dir = self.core.get_default_install_dir(platform)
+            self.install_dir_edit.setText(default_dir)
+
+    @pyqtSlot(int)
+    def reset_sdl_list(self, index: int):
+        platform = self.ui.platform_combo.itemText(index)
         for cb in self.selectable_checks:
             cb.disconnect()
             cb.deleteLater()
@@ -223,8 +225,19 @@ class InstallDialog(QDialog):
         else:
             self.selectable.setDisabled(True)
 
+    @pyqtSlot(int)
+    def check_incompatible_platform(self, index: int):
+        platform = self.ui.platform_combo.itemText(index)
+        if platform == "Mac" and pf.system() != "Darwin":
+            self.error_box(
+                self.tr("Warning"),
+                self.tr("You will not be able to run the game if you select <b>{}</b> as platform").format(platform)
+            )
+        else:
+            self.error_box()
+
     def get_options(self):
-        self.options.base_path = self.install_dir_edit.text() if not self.options.update else None
+        self.options.base_path = "" if self.rgame.is_installed else self.install_dir_edit.text()
         self.options.max_workers = self.advanced.ui.max_workers_spin.value()
         self.options.shared_memory = self.advanced.ui.max_memory_spin.value()
         self.options.order_opt = self.advanced.ui.dl_optimizations_check.isChecked()

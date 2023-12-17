@@ -121,7 +121,7 @@ class GameInfo(QWidget, SideTabContents):
         if not os.path.exists(repair_file):
             QMessageBox.warning(
                 self,
-                self.tr("Error - {}").format(self.rgame.title),
+                self.tr("Error - {}").format(self.rgame.app_title),
                 self.tr(
                     "Repair file does not exist or game does not need a repair. Please verify game first"
                 ),
@@ -135,11 +135,11 @@ class GameInfo(QWidget, SideTabContents):
         if rgame.has_update:
             ans = QMessageBox.question(
                 self,
-                self.tr("Repair and update? - {}").format(self.rgame.title),
+                self.tr("Repair and update? - {}").format(self.rgame.app_title),
                 self.tr(
                     "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. "
                     "Do you want to update the game while repairing it?"
-                ).format(rgame.title, rgame.version, rgame.remote_version),
+                ).format(rgame.app_title, rgame.version, rgame.remote_version),
             ) == QMessageBox.Yes
         rgame.repair(repair_and_update=ans)
 
@@ -147,7 +147,7 @@ class GameInfo(QWidget, SideTabContents):
     def __on_worker_error(self, rgame: RareGame, message: str):
         QMessageBox.warning(
             self,
-            self.tr("Error - {}").format(rgame.title),
+            self.tr("Error - {}").format(rgame.app_title),
             message
         )
 
@@ -155,11 +155,11 @@ class GameInfo(QWidget, SideTabContents):
     def __on_verify(self):
         """ This method is to be called from the button only """
         if not os.path.exists(self.rgame.igame.install_path):
-            logger.error(f"Installation path {self.rgame.igame.install_path} for {self.rgame.title} does not exist")
+            logger.error(f"Installation path {self.rgame.igame.install_path} for {self.rgame.app_title} does not exist")
             QMessageBox.warning(
                 self,
-                self.tr("Error - {}").format(self.rgame.title),
-                self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.rgame.title),
+                self.tr("Error - {}").format(self.rgame.app_title),
+                self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.rgame.app_title),
             )
             return
         self.verify_game(self.rgame)
@@ -184,18 +184,18 @@ class GameInfo(QWidget, SideTabContents):
         if success:
             QMessageBox.information(
                 self,
-                self.tr("Summary - {}").format(rgame.title),
+                self.tr("Summary - {}").format(rgame.app_title),
                 self.tr("<b>{}</b> has been verified successfully. "
-                        "No missing or corrupt files found").format(rgame.title),
+                        "No missing or corrupt files found").format(rgame.app_title),
             )
         else:
             ans = QMessageBox.question(
                 self,
-                self.tr("Summary - {}").format(rgame.title),
+                self.tr("Summary - {}").format(rgame.app_title),
                 self.tr(
                     "<b>{}</b> failed verification, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. "
                     "Do you want to repair them?"
-                ).format(rgame.title, failed, missing),
+                ).format(rgame.app_title, failed, missing),
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.Yes,
             )
@@ -216,7 +216,7 @@ class GameInfo(QWidget, SideTabContents):
                 if os.path.basename(self.rgame.install_path) in os.path.basename(item):
                     ans = QMessageBox.question(
                         self,
-                        self.tr("Move game? - {}").format(self.rgame.title),
+                        self.tr("Move game? - {}").format(self.rgame.app_title),
                         self.tr(
                             "Destination <b>{}</b> already exists. "
                             "Are you sure you want to overwrite it?"
@@ -255,8 +255,8 @@ class GameInfo(QWidget, SideTabContents):
     def __on_move_result(self, rgame: RareGame, dst_path: str):
         QMessageBox.information(
             self,
-            self.tr("Summary - {}").format(rgame.title),
-            self.tr("<b>{}</b> successfully moved to <b>{}<b>.").format(rgame.title, dst_path),
+            self.tr("Summary - {}").format(rgame.app_title),
+            self.tr("<b>{}</b> successfully moved to <b>{}<b>.").format(rgame.app_title, dst_path),
         )
 
     @pyqtSlot()
@@ -284,7 +284,9 @@ class GameInfo(QWidget, SideTabContents):
         )
 
         self.ui.platform.setText(
-            self.rgame.igame.platform if self.rgame.is_installed and not self.rgame.is_non_asset else "Windows"
+            self.rgame.igame.platform
+            if self.rgame.is_installed and not self.rgame.is_non_asset
+            else self.rgame.default_platform
         )
 
         self.ui.lbl_grade.setDisabled(

@@ -4,7 +4,6 @@ from logging import getLogger
 from typing import Callable, Tuple, Optional, Dict, List
 
 from PyQt5.QtCore import (
-    Qt,
     QSize,
     pyqtSignal,
     QFileInfo,
@@ -135,7 +134,8 @@ class IndicatorLineEdit(QWidget):
         # Add line_edit
         self.line_edit = QLineEdit(self)
         self.line_edit.setObjectName(f"{type(self).__name__}Edit")
-        self.line_edit.setPlaceholderText(placeholder if placeholder else self.tr("Default"))
+        self.line_edit.setPlaceholderText(placeholder if placeholder else self.tr("Use global/default setting"))
+        self.line_edit.setToolTip(placeholder if placeholder else "")
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
         # Add completer
         self.setCompleter(completer)

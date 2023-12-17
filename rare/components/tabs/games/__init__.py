@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from PyQt5.QtCore import QSettings, Qt, pyqtSlot
+from PyQt5.QtGui import QShowEvent
 from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
 
 from rare.models.game import RareGame
@@ -32,8 +33,6 @@ class GamesTab(QStackedWidget):
         self.args = ArgumentsSingleton()
         self.image_manager = ImageManagerSingleton()
         self.settings = QSettings()
-
-        self.active_filter: int = 0
 
         self.games_page = QWidget(parent=self)
         games_page_layout = QVBoxLayout(self.games_page)
@@ -69,6 +68,7 @@ class GamesTab(QStackedWidget):
 
         self.icon_view = QWidget(self.icon_view_scroll)
         icon_view_layout = LibraryLayout(self.icon_view)
+        icon_view_layout.setSpacing(9)
         icon_view_layout.setContentsMargins(0, 13, 0, 13)
         icon_view_layout.setAlignment(Qt.AlignTop)
 
@@ -97,16 +97,20 @@ class GamesTab(QStackedWidget):
         self.head_bar.refresh_list.clicked.connect(self.library_controller.update_list)
         self.head_bar.view.toggled.connect(self.toggle_view)
 
-        f = self.settings.value("filter", 0, int)
-        if f >= len(self.head_bar.available_filters):
-            f = 0
-        self.active_filter = self.head_bar.available_filters[f]
+        self.active_filter: str = self.head_bar.filter.currentData(Qt.UserRole)
 
         # signals
         self.signals.game.installed.connect(self.update_count_games_label)
         self.signals.game.uninstalled.connect(self.update_count_games_label)
 
+        self.init = True
+
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous() or not self.init:
+            return super().showEvent(a0)
         self.setup_game_list()
+        self.init = False
+        return super().showEvent(a0)
 
     @pyqtSlot()
     def scroll_to_top(self):
@@ -149,7 +153,7 @@ class GamesTab(QStackedWidget):
         for rgame in self.rcore.games:
             icon_widget, list_widget = self.add_library_widget(rgame)
             if not icon_widget or not list_widget:
-                logger.warning(f"Excluding {rgame.app_name} from the game list")
+                logger.warning("Excluding %s from the game list", rgame.app_title)
                 continue
             self.icon_view.layout().addWidget(icon_widget)
             self.list_view.layout().addWidget(list_widget)
@@ -160,8 +164,7 @@ class GamesTab(QStackedWidget):
         try:
             icon_widget, list_widget = self.library_controller.add_game(rgame)
         except Exception as e:
-            raise e
-            logger.error(f"{rgame.app_name} is broken. Don't add it to game list: {e}")
+            logger.error("Could not add widget for %s to library: %s", rgame.app_name, e)
             return None, None
         icon_widget.show_info.connect(self.show_game_info)
         list_widget.show_info.connect(self.show_game_info)

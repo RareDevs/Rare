@@ -82,8 +82,6 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.style_select.setCurrentIndex(0)
         self.style_select.currentIndexChanged.connect(self.on_style_select_changed)
 
-        self.interface_info.setVisible(False)
-
         self.rpc = RPCSettings(self)
         self.right_layout.insertWidget(1, self.rpc, alignment=Qt.AlignTop)
 
@@ -203,7 +201,6 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.settings.setValue("color_scheme", "")
             self.style_select.setDisabled(False)
             set_color_pallete("")
-        self.interface_info.setVisible(True)
 
     def on_style_select_changed(self, style):
         if style:
@@ -215,7 +212,6 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.settings.setValue("style_sheet", "")
             self.color_select.setDisabled(False)
             set_style_sheet("")
-        self.interface_info.setVisible(True)
 
     def open_dir(self):
         if platform.system() == "Windows":
@@ -230,7 +226,6 @@ class RareSettings(QWidget, Ui_RareSettings):
 
     def update_lang(self, i: int):
         self.settings.setValue("language", languages[i][0])
-        self.interface_info.setVisible(True)
 
     def init_checkboxes(self, checkboxes):
         for cb in checkboxes:

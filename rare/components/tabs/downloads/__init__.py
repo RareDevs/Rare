@@ -346,5 +346,5 @@ class DownloadsTab(QWidget):
     @pyqtSlot(RareGame, bool, str)
     def __on_uninstall_worker_result(self, rgame: RareGame, success: bool, message: str):
         if not success:
-            QMessageBox.warning(None, self.tr("Uninstall - {}").format(rgame.title), message, QMessageBox.Close)
+            QMessageBox.warning(None, self.tr("Uninstall - {}").format(rgame.app_title), message, QMessageBox.Close)
         rgame.state = RareGame.State.IDLE

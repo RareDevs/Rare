@@ -15,7 +15,7 @@ class IconGameWidget(GameWidget):
     def __init__(self, rgame: RareGame, parent=None):
         super().__init__(rgame, parent)
         self.setObjectName(f"{rgame.app_name}")
-        self.setFixedSize(ImageSize.Display)
+        self.setFixedSize(ImageSize.Library)
         self.ui = IconWidget()
         self.ui.setupUi(self)
 

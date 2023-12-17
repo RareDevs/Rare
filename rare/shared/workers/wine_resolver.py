@@ -104,17 +104,17 @@ class OriginWineWorker(QRunnable):
                     if install_dir:
                         logger.debug("Found Unix install directory %s", install_dir)
                     else:
-                        logger.info("Could not find Unix install directory for %s", rgame.title)
+                        logger.info("Could not find Unix install directory for %s", rgame.app_title)
                 else:
-                    logger.info("Could not find Wine install directory for %s", rgame.title)
+                    logger.info("Could not find Wine install directory for %s", rgame.app_title)
 
             if install_dir:
                 if os.path.isdir(install_dir):
                     install_size = path_size(install_dir)
                     rgame.set_origin_attributes(install_dir, install_size)
-                    logger.info("Origin game %s (%s, %s)", rgame.title, install_dir, format_size(install_size))
+                    logger.info("Origin game %s (%s, %s)", rgame.app_title, install_dir, format_size(install_size))
                 else:
-                    logger.warning("Origin game %s (%s does not exist)", rgame.title, install_dir)
+                    logger.warning("Origin game %s (%s does not exist)", rgame.app_title, install_dir)
             else:
-                logger.info("Origin game %s is not installed", rgame.title)
+                logger.info("Origin game %s is not installed", rgame.app_title)
         logger.info("Origin worker finished in %ss", time.time() - t)

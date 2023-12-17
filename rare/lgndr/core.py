@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from multiprocessing import Queue
+from sys import platform as sys_platform
 from uuid import uuid4
 
 # On Windows the monkeypatching of `run_real` below doesn't work like on Linux
@@ -17,8 +18,8 @@ from legendary.models.game import Game, InstalledGame
 from legendary.models.manifest import ManifestMeta
 
 from rare.lgndr.downloader.mp.manager import DLManager
-from rare.lgndr.lfs.lgndry import LGDLFS
 from rare.lgndr.glue.exception import LgndrException, LgndrLogHandler
+from rare.lgndr.lfs.lgndry import LGDLFS
 
 legendary.core.DLManager = DLManager
 legendary.core.LGDLFS = LGDLFS
@@ -30,6 +31,7 @@ class LegendaryCore(LegendaryCoreReal):
     def __init__(self, *args, **kwargs):
         super(LegendaryCore, self).__init__(*args, **kwargs)
         self.log.info("Using Rare's LegendaryCore monkey")
+        self.log.info("Using config in %s", self.lgd.path.replace(os.getlogin(), "<username>"))
         self.handler = LgndrLogHandler(logging.CRITICAL)
         self.log.addHandler(self.handler)
 
@@ -37,9 +39,9 @@ class LegendaryCore(LegendaryCoreReal):
     def unlock_installed(func):
         @functools.wraps(func)
         def unlock(self, *args, **kwargs):
-            self.log.debug("Using unlock decorator")
+            self.log.debug("%s: Using unlock decorator", func.__name__)
             if not self.lgd.lock_installed():
-                self.log.info("Data is locked, trying to forcufully release it")
+                self.log.info("Data is locked, trying to forcefully release it")
                 # self.lgd._installed_lock.release(force=True)
             try:
                 ret = func(self, *args, **kwargs)
@@ -49,6 +51,18 @@ class LegendaryCore(LegendaryCoreReal):
                 self.lgd.unlock_installed()
             return ret
         return unlock
+
+    @property
+    def default_platform(self) -> str:
+        os_default = "Mac" if sys_platform == "darwin" else "Windows"
+        usr_platform = self.lgd.config.get("Legendary", "default_platform", fallback=os_default)
+        return usr_platform if usr_platform in ("Windows", "Win32", "Mac") else os_default
+
+    def update_check_enabled(self):
+        return False
+
+    def update_notice_enabled(self):
+        return False
 
     # skip_sync defaults to false but since Rare is persistent, skip by default
     # def get_installed_game(self, app_name, skip_sync=True) -> InstalledGame:

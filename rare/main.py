@@ -18,6 +18,8 @@ def main() -> int:
             sys.stderr = open(os.devnull, 'w')
 
     os.environ["QT_QPA_PLATFORMTHEME"] = ""
+    if "LEGENDARY_CONFIG_PATH" in os.environ:
+        os.environ["LEGENDARY_CONFIG_PATH"] = os.path.expanduser(os.environ["LEGENDARY_CONFIG_PATH"])
 
     # fix cx_freeze
     multiprocessing.freeze_support()

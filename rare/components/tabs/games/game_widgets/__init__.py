@@ -38,15 +38,15 @@ class LibraryWidgetController(QObject):
         elif "hidden" in widget.rgame.metadata.tags:
             visible = False
         elif filter_name == "installed":
-            visible = widget.rgame.is_installed
+            visible = widget.rgame.is_installed and not widget.rgame.is_unreal
         elif filter_name == "offline":
-            visible = widget.rgame.can_run_offline
+            visible = widget.rgame.can_run_offline and not widget.rgame.is_unreal
         elif filter_name == "32bit":
-            visible = widget.rgame.is_win32
+            visible = widget.rgame.is_win32 and not widget.rgame.is_unreal
         elif filter_name == "mac":
-            visible = widget.rgame.is_mac
+            visible = widget.rgame.is_mac and not widget.rgame.is_unreal
         elif filter_name == "installable":
-            visible = not widget.rgame.is_non_asset
+            visible = not widget.rgame.is_non_asset and not widget.rgame.is_unreal
         elif filter_name == "include_ue":
             visible = True
         elif filter_name == "all":
