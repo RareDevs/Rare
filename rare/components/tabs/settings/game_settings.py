@@ -40,8 +40,10 @@ class DefaultGameSettings(QWidget):
 
         if platform.system() != "Windows":
             self.linux_settings = LinuxAppSettings()
-            self.proton_settings = ProtonSettings(self.linux_settings, self.wrapper_settings)
-            self.ui.proton_layout.addWidget(self.proton_settings)
+            if platform.system() != "Darwin":
+                self.proton_settings = ProtonSettings(self.linux_settings, self.wrapper_settings)
+                self.ui.proton_layout.addWidget(self.proton_settings)
+                self.proton_settings.environ_changed.connect(self.env_vars.reset_model)
 
             # FIXME: Remove the spacerItem and margins from the linux settings
             # FIXME: This should be handled differently at soem point in the future
@@ -57,8 +59,6 @@ class DefaultGameSettings(QWidget):
                 lambda active: self.wrapper_settings.add_wrapper("mangohud")
                 if active else self.wrapper_settings.delete_wrapper("mangohud"))
             self.linux_settings.environ_changed.connect(self.env_vars.reset_model)
-            self.proton_settings.environ_changed.connect(self.env_vars.reset_model)
-
         else:
             self.ui.linux_settings_widget.setVisible(False)
 
@@ -77,7 +77,10 @@ class DefaultGameSettings(QWidget):
             proton = self.wrapper_settings.wrappers.get("proton", "")
             if proton:
                 proton = proton.text
-            self.proton_settings.load_settings(app_name, proton)
+            if platform.system() != "Darwin":
+                self.proton_settings.load_settings(app_name, proton)
+            else:
+                proton = ""
             if proton:
                 self.linux_settings.ui.wine_groupbox.setEnabled(False)
             else:
