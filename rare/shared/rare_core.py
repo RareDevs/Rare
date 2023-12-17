@@ -206,7 +206,9 @@ class RareCore(QObject):
         del self.__args
         self.__args = None
 
-        del self.__eos_overlay
+        # del self.__eos_overlay
+        self.__eos_overlay = None
+
         RareCore.__instance = None
         super(RareCore, self).deleteLater()
 
