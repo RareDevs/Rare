@@ -1,83 +1,92 @@
 import os
-import shutil
 from logging import getLogger
+from typing import Optional
 
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QFileDialog, QWidget, QFormLayout, QGroupBox
+from PyQt5.QtCore import pyqtSignal, Qt, QSignalBlocker
+from PyQt5.QtGui import QShowEvent
+from PyQt5.QtWidgets import QFileDialog, QFormLayout, QGroupBox
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.ui.components.tabs.settings.widgets.wine import Ui_WineSettings
+from rare.utils import config_helper as config
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
-from rare.utils import config_helper
 
-logger = getLogger("LinuxSettings")
+logger = getLogger("WineSettings")
 
 
 class WineSettings(QGroupBox):
     # str: option key
     environ_changed = pyqtSignal(str)
 
-    def __init__(self, name=None, parent=None):
+    def __init__(self, parent=None):
         super(WineSettings, self).__init__(parent=parent)
-        self.ui = Ui_WineSettings()
-        self.ui.setupUi(self)
+        self.setTitle(self.tr("Wine Setings"))
 
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
 
-        self.app_name: str = "default"
+        self.app_name: Optional[str] = "default"
 
         # Wine prefix
         self.wine_prefix = PathEdit(
-            self.load_prefix(),
+            path="",
             file_mode=QFileDialog.DirectoryOnly,
             edit_func=lambda path: (os.path.isdir(path) or not path, path, IndicatorReasonsCommon.DIR_NOT_EXISTS),
             save_func=self.save_prefix,
         )
-        self.ui.main_layout.setWidget(
-            self.ui.main_layout.getWidgetPosition(self.ui.prefix_label)[0],
-            QFormLayout.FieldRole,
-            self.wine_prefix
-        )
 
         # Wine executable
         self.wine_exec = PathEdit(
-            self.load_setting(self.app_name, "wine_executable"),
+            path="",
             file_mode=QFileDialog.ExistingFile,
             name_filters=["wine", "wine64"],
             edit_func=lambda text: (os.path.exists(text) or not text, text, IndicatorReasonsCommon.DIR_NOT_EXISTS),
-            save_func=lambda text: self.save_setting(
-                text, section=self.app_name, setting="wine_executable"
-            ),
+            save_func=self.save_exec,
         )
-        self.ui.main_layout.setWidget(
-            self.ui.main_layout.getWidgetPosition(self.ui.exec_label)[0],
-            QFormLayout.FieldRole,
-            self.wine_exec
-        )
+
+        layout = QFormLayout(self)
+        layout.addRow(self.tr("Prefix"), self.wine_prefix)
+        layout.addRow(self.tr("Executable"), self.wine_exec)
+        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        layout.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        layout.setFormAlignment(Qt.AlignLeading | Qt.AlignTop)
+
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous():
+            return super().showEvent(a0)
+
+        _ = QSignalBlocker(self.wine_prefix)
+        self.wine_prefix.setText(self.load_prefix())
+        _ = QSignalBlocker(self.wine_exec)
+        self.wine_exec.setText(self.load_exec())
+        self.setDisabled(config.get_boolean(self.app_name, "no_wine", fallback=False))
+
+        return super().showEvent(a0)
+
+    def tool_enabled(self, enabled: bool):
+        if enabled:
+            config.set_boolean(self.app_name, "no_wine", True)
+        else:
+            config.remove_option(self.app_name, "no_wine")
+        self.setDisabled(enabled)
 
     def load_prefix(self) -> str:
-        return self.load_setting(
-            f"{self.app_name}.env",
-            "WINEPREFIX",
-            fallback=self.load_setting(self.app_name, "wine_prefix"),
-        )
+        if self.app_name is None:
+            raise RuntimeError
+        return config.get_wine_prefix(self.app_name, "")
 
-    def save_prefix(self, text: str):
-        self.save_setting(text, f"{self.app_name}.env", "WINEPREFIX")
+    def save_prefix(self, path: str) -> None:
+        if self.app_name is None:
+            raise RuntimeError
+        config.save_wine_prefix(self.app_name, path)
         self.environ_changed.emit("WINEPREFIX")
-        self.save_setting(text, self.app_name, "wine_prefix")
         self.signals.application.prefix_updated.emit()
 
-    def load_setting(self, section: str, setting: str, fallback: str = ""):
-        return self.core.lgd.config.get(section, setting, fallback=fallback)
+    def load_exec(self) -> str:
+        if self.app_name is None:
+            raise RuntimeError
+        return config.get_option(self.app_name, "wine_executable", "")
 
-    @staticmethod
-    def save_setting(text: str, section: str, setting: str):
-        if text:
-            config_helper.add_option(section, setting, text)
-            logger.debug(f"Set {setting} in {f'[{section}]'} to {text}")
-        else:
-            config_helper.remove_option(section, setting)
-            logger.debug(f"Unset {setting} from {f'[{section}]'}")
-        config_helper.save_config()
+    def save_exec(self, text: str) -> None:
+        if self.app_name is None:
+            raise RuntimeError
+        config.save_option(self.app_name, "wine_executable", text)

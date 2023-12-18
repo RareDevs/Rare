@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import Optional
 
 from PyQt5.QtCore import pyqtSignal, QSize, Qt, QMimeData, pyqtSlot, QCoreApplication
-from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont, QMouseEvent
+from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont, QMouseEvent, QShowEvent
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -16,20 +16,15 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QAction,
     QToolButton,
-    QMenu, QDialog,
+    QMenu, QDialog, QStackedWidget, QPushButton,
 )
 
 from rare.models.wrapper import Wrapper
 from rare.shared import RareCore
-from rare.ui.components.tabs.settings.widgets.wrapper import Ui_WrapperSettings
 from rare.utils.misc import icon
 from rare.utils.runners import proton
 
 logger = getLogger("WrapperSettings")
-
-# extra_wrapper_regex = {
-#     "proton": "\".*proton\" run",  # proton
-# }
 
 
 class WrapperDialog(QDialog):
@@ -122,36 +117,53 @@ class WrapperWidget(QFrame):
 class WrapperSettings(QWidget):
     def __init__(self, parent=None):
         super(WrapperSettings, self).__init__(parent=parent)
-        self.ui = Ui_WrapperSettings()
-        self.ui.setupUi(self)
+        self.widget_stack = QStackedWidget(self)
 
-        self.wrapper_scroll = QScrollArea(self.ui.widget_stack)
-        self.wrapper_scroll.setWidgetResizable(True)
+        self.wrapper_scroll = QScrollArea(self.widget_stack)
         self.wrapper_scroll.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
         self.wrapper_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.wrapper_scroll.setWidgetResizable(True)
         self.wrapper_scroll.setProperty("no_kinetic_scroll", True)
         self.wrapper_container = WrapperContainer(parent=self.wrapper_scroll)
         self.wrapper_container.orderChanged.connect(self.__on_order_changed)
         self.wrapper_scroll.setWidget(self.wrapper_container)
-        self.ui.widget_stack.insertWidget(0, self.wrapper_scroll)
 
-        self.ui.add_button.clicked.connect(self.__on_add_button_pressed)
+        self.no_wrapper_label = QLabel(self.tr("No wrappers defined"), self.widget_stack)
+
+        self.widget_stack.addWidget(self.wrapper_scroll)
+        self.widget_stack.addWidget(self.no_wrapper_label)
+
+        self.add_button = QPushButton(self.tr("Add wrapper"), self)
+        self.add_button.clicked.connect(self.__on_add_button_pressed)
+
         self.wrapper_scroll.horizontalScrollBar().rangeChanged.connect(self.adjust_scrollarea)
 
         # lk: set object names for the stylesheet
-        self.setObjectName(type(self).__name__)
-        self.ui.no_wrapper_label.setObjectName(f"{self.objectName()}Label")
+        self.setObjectName("WrapperSettings")
+        self.no_wrapper_label.setObjectName(f"{self.objectName()}Label")
         self.wrapper_scroll.setObjectName(f"{self.objectName()}Scroll")
         self.wrapper_scroll.horizontalScrollBar().setObjectName(
             f"{self.wrapper_scroll.objectName()}Bar")
         self.wrapper_scroll.verticalScrollBar().setObjectName(
             f"{self.wrapper_scroll.objectName()}Bar")
 
-        self.ui.wrapper_settings_layout.setAlignment(Qt.AlignTop)
+        main_layout = QHBoxLayout(self)
+        main_layout.addWidget(self.widget_stack)
+        main_layout.addWidget(self.add_button, alignment=Qt.AlignTop)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setAlignment(Qt.AlignTop)
+
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.app_name: str = "default"
         self.core = RareCore.instance().core()
         self.wrappers = RareCore.instance().wrappers()
+
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        self.update_state()
+        return super().showEvent(a0)
 
     @pyqtSlot(int, int)
     def adjust_scrollarea(self, minh: int, maxh: int):
@@ -195,7 +207,7 @@ class WrapperSettings(QWidget):
             self.add_user_wrapper(wrapper)
 
     def __add_wrapper(self, wrapper: Wrapper, position: int = -1):
-        self.ui.widget_stack.setCurrentIndex(0)
+        self.widget_stack.setCurrentWidget(self.wrapper_scroll)
         widget = WrapperWidget(wrapper, self.wrapper_container)
         if position < 0:
             self.wrapper_container.addWidget(widget)
@@ -230,15 +242,6 @@ class WrapperSettings(QWidget):
             )
             return
 
-        # if text == "mangohud" and self.wrappers.get("mangohud"):
-        #     return
-        # show_text = ""
-        # for key, extra_wrapper in extra_wrapper_regex.items():
-        #     if re.match(extra_wrapper, text):
-        #         show_text = key
-        # if not show_text:
-        #     show_text = text.split()[0]
-
         if wrapper.checksum in self.wrappers.get_game_md5sum_list(self.app_name):
             QMessageBox.warning(
                 self, self.tr("Warning"), self.tr("Wrapper <b>{0}</b> is already in the list").format(wrapper.command)
@@ -264,8 +267,8 @@ class WrapperSettings(QWidget):
         wrappers.remove(wrapper)
         self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
         if not wrappers:
-            self.wrapper_scroll.setMaximumHeight(self.ui.label_page.sizeHint().height())
-            self.ui.widget_stack.setCurrentIndex(1)
+            self.wrapper_scroll.setMaximumHeight(self.no_wrapper_label.sizeHint().height())
+            self.widget_stack.setCurrentWidget(self.no_wrapper_label)
 
     @pyqtSlot(object, object)
     def __update_wrapper(self, old: Wrapper, new: Wrapper):
@@ -282,16 +285,12 @@ class WrapperSettings(QWidget):
             w.deleteLater()
         wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
         if not wrappers:
-            self.wrapper_scroll.setMaximumHeight(self.ui.label_page.sizeHint().height())
-            self.ui.widget_stack.setCurrentIndex(1)
+            self.wrapper_scroll.setMaximumHeight(self.no_wrapper_label.sizeHint().height())
+            self.widget_stack.setCurrentWidget(self.no_wrapper_label)
         else:
-            self.ui.widget_stack.setCurrentIndex(0)
+            self.widget_stack.setCurrentWidget(self.wrapper_scroll)
         for wrapper in wrappers:
             self.__add_wrapper(wrapper)
-
-    def load_settings(self, app_name: str):
-        self.app_name = app_name
-        self.update_state()
 
 
 class WrapperContainer(QWidget):

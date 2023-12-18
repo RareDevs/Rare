@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from PyQt5.QtCore import QFileSystemWatcher, Qt
+from PyQt5.QtGui import QShowEvent
 from PyQt5.QtWidgets import (
     QGroupBox,
     QHeaderView,
@@ -20,6 +21,7 @@ class EnvVars(QGroupBox):
         self.setTitle(self.tr("Environment variables"))
 
         self.core = LegendaryCoreSingleton()
+        self.app_name: str = "default"
 
         self.table_model = EnvVarsTableModel(self.core)
         self.table_view = QTableView(self)
@@ -44,6 +46,12 @@ class EnvVars(QGroupBox):
         layout = QVBoxLayout(self)
         layout.addWidget(self.table_view)
 
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        self.table_model.load(self.app_name)
+        return super().showEvent(a0)
+
     def keyPressEvent(self, a0):
         if a0.key() in {Qt.Key_Delete, Qt.Key_Backspace}:
             indexes = self.table_view.selectedIndexes()
@@ -59,6 +67,3 @@ class EnvVars(QGroupBox):
 
     def reset_model(self):
         self.table_model.reset()
-
-    def update_game(self, app_name):
-        self.table_model.load(app_name)

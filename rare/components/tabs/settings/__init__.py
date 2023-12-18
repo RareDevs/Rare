@@ -1,9 +1,8 @@
-from rare.components.tabs.settings.widgets.wine import LinuxSettings
 from rare.shared import ArgumentsSingleton
 from rare.widgets.side_tab import SideTabWidget
 from .about import About
 from .debug import DebugSettings
-from .game import DefaultGameSettings
+from .settings import GameSettings
 from .legendary import LegendarySettings
 from .rare import RareSettings
 
@@ -19,7 +18,7 @@ class SettingsTab(SideTabWidget):
         legendary_settings = LegendarySettings(self)
         self.legendary_index = self.addTab(legendary_settings, "Legendary")
 
-        game_settings = DefaultGameSettings(True, self)
+        game_settings = GameSettings(self)
         self.settings_index = self.addTab(game_settings, self.tr("Defaults"))
 
         self.about = About(self)

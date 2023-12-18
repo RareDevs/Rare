@@ -139,8 +139,8 @@ class GamesTab(QStackedWidget):
 
     @pyqtSlot(RareGame)
     def show_game_info(self, rgame):
-        self.setCurrentWidget(self.game_info_page)
         self.game_info_page.update_game(rgame)
+        self.setCurrentWidget(self.game_info_page)
 
     @pyqtSlot()
     def update_count_games_label(self):

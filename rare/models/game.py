@@ -19,7 +19,7 @@ from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
-from rare.utils.config_helper import add_envvar
+from rare.utils.config_helper import set_envvar
 
 logger = getLogger("RareGame")
 
@@ -448,9 +448,9 @@ class RareGame(RareGameSlim):
 
     def set_steam_grade(self, appid: int, grade: str) -> None:
         if appid and self.steam_appid is None:
-            add_envvar(self.app_name, "SteamAppId", str(appid))
-            add_envvar(self.app_name, "SteamGameId", str(appid))
-            add_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
+            set_envvar(self.app_name, "SteamAppId", str(appid))
+            set_envvar(self.app_name, "SteamGameId", str(appid))
+            set_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
             self.metadata.steam_appid = appid
         self.metadata.steam_grade = grade
         self.metadata.steam_date = datetime.utcnow()

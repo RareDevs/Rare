@@ -4,6 +4,7 @@ from logging import getLogger
 from typing import Tuple, List
 
 from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings
+from PyQt5.QtGui import QShowEvent, QHideEvent
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 from rare.models.options import options
@@ -132,6 +133,17 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         self.refresh_metadata_button.setEnabled(False)
         self.refresh_metadata_button.setVisible(False)
 
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        return super().showEvent(a0)
+
+    def hideEvent(self, a0: QHideEvent):
+        if a0.spontaneous():
+            return super().hideEvent(a0)
+        self.core.lgd.save_config()
+        return super().hideEvent(a0)
+
     def refresh_metadata(self):
         self.refresh_metadata_button.setDisabled(True)
         platforms = []
@@ -163,7 +175,6 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         else:
             if self.core.lgd.config.has_option("Legendary", "locale"):
                 self.core.lgd.config.remove_option("Legendary", "locale")
-        self.core.lgd.save_config()
 
     def __mac_path_save(self, text: str) -> None:
         self.__path_save(text, "mac_install_dir")
@@ -179,34 +190,29 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
             self.core.lgd.config["Legendary"].pop(option)
         else:
             logger.debug(f"Set %s option in config to %s", option, text)
-        self.core.lgd.save_config()
 
     def max_worker_save(self, workers: str):
         if workers := int(workers):
             self.core.lgd.config.set("Legendary", "max_workers", str(workers))
         else:
             self.core.lgd.config.remove_option("Legendary", "max_workers")
-        self.core.lgd.save_config()
 
     def max_memory_save(self, memory: str):
         if memory := int(memory):
             self.core.lgd.config.set("Legendary", "max_memory", str(memory))
         else:
             self.core.lgd.config.remove_option("Legendary", "max_memory")
-        self.core.lgd.save_config()
 
     def preferred_cdn_save(self, cdn: str):
         if cdn:
             self.core.lgd.config.set("Legendary", "preferred_cdn", cdn.strip())
         else:
             self.core.lgd.config.remove_option("Legendary", "preferred_cdn")
-        self.core.lgd.save_config()
 
     def disable_https_save(self, checked: int):
         self.core.lgd.config.set(
             "Legendary", "disable_https", str(bool(checked)).lower()
         )
-        self.core.lgd.save_config()
 
     def cleanup(self, keep_manifests: bool):
         before = self.core.lgd.get_dir_size()

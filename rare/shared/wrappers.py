@@ -102,11 +102,7 @@ class Wrappers:
 
     def __save_config(self, app_name: str):
         command_string = self.get_game_wrapper_string(app_name)
-        if command_string:
-            config.add_option(app_name, "wrapper", command_string)
-        else:
-            config.remove_option(app_name, "wrapper")
-        config.save_config()
+        config.save_option(app_name, "wrapper", command_string)
 
     def __save_wrappers(self):
         existing = {wrap_id for wrap_id in self.__wrappers.keys()}
@@ -132,7 +128,7 @@ if __name__ == "__main__":
     config_dir = os.getcwd
     global config
     config = Namespace()
-    config.add_option = lambda x, y, z: print(x, y, z)
+    config.set_option = lambda x, y, z: print(x, y, z)
     config.remove_option = lambda x, y: print(x, y)
     config.save_config = lambda: print()
 
