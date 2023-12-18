@@ -2,4 +2,5 @@ requests
 QtAwesome
 setuptools
 legendary-gl>=0.20.34
+orjson
 pypresence
