@@ -156,8 +156,10 @@ def get_rare_executable() -> List[str]:
             executable.append(os.path.abspath(sys.argv[0]))
 
         if executable[0].endswith("python.exe"):
-            # be sure to start consoleless then
+            # be sure to start console-less then
             executable[0] = executable[0].replace("python.exe", "pythonw.exe")
+
+        if executable[0].endswith("pythonw.exe"):
             if executable[1].endswith("rare"):
                 executable[1] = executable[1] + ".exe"
     else:
