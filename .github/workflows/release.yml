@@ -23,6 +23,7 @@ jobs:
     if: "!github.event.release.prerelease"
     name: PyPI
     uses: ./.github/workflows/job_pypi.yml
+    secrets: inherit
     with:
       version: ${{ github.ref_name }}
 
