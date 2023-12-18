@@ -20,7 +20,7 @@ AppDir:
     id: io.github.dummerle.rare
     name: Rare
     icon: Rare
-    version: 1.10.9
+    version: 1.10.10
     exec: usr/bin/python3
     exec_args: $APPDIR/usr/src/rare/main.py $@
   apt:
