@@ -18,7 +18,7 @@
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
    <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="install_dialog_label">
+    <widget class="QLabel" name="title_label">
      <property name="text">
       <string>error</string>
      </property>

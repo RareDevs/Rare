@@ -23,7 +23,7 @@ from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 class InstallDialogAdvanced(CollapsibleFrame):
     def __init__(self, parent=None):
-        widget = QWidget()
+        widget = QWidget(parent)
         title = widget.tr("Advanced options")
         self.ui = Ui_InstallDialogAdvanced()
         self.ui.setupUi(widget)
@@ -42,7 +42,7 @@ class InstallDialog(QDialog):
         # lk: set object names for CSS properties
         self.ui.install_button.setObjectName("InstallButton")
 
-        self.core = LegendaryCoreSingleton()
+        self.core = rgame.core
         self.rgame = rgame
         self.options = options
         self.__download: Optional[InstallDownloadModel] = None
@@ -70,7 +70,7 @@ class InstallDialog(QDialog):
             header = self.tr("Modify")
         else:
             header = self.tr("Install")
-        self.ui.install_dialog_label.setText(f'<h3>{header} "{self.rgame.app_title}"</h3>')
+        self.ui.title_label.setText(f'<h4>{header} "{self.rgame.app_title}"</h4>')
         self.setWindowTitle(f'{header} "{self.rgame.app_title}" - {QCoreApplication.instance().applicationName()}')
 
         if options.base_path:
@@ -110,6 +110,11 @@ class InstallDialog(QDialog):
 
         self.ui.platform_label.setDisabled(rgame.is_installed)
         self.ui.platform_combo.setDisabled(rgame.is_installed)
+
+        # if we are repairing, disable the SDL selection and open the dialog frame to be visible
+        self.selectable.setDisabled(options.repair_mode and not options.repair_and_update)
+        if options.repair_mode and not options.repair_and_update:
+            self.selectable.click()
 
         self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
         self.advanced.ui.max_workers_spin.valueChanged.connect(self.option_changed)
@@ -210,7 +215,7 @@ class InstallDialog(QDialog):
                 layout = QVBoxLayout(widget)
                 layout.setSpacing(0)
                 for tag, info in sdl_data.items():
-                    cb = TagCheckBox(info["name"], info["description"], info["tags"])
+                    cb = TagCheckBox(info["name"].strip(), info["description"].strip(), info["tags"])
                     if tag == "__required":
                         cb.setChecked(True)
                         cb.setDisabled(True)

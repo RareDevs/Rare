@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QCheckBox,
     QHBoxLayout,
-    QPushButton,
+    QPushButton, QLayout,
 )
 from legendary.utils.selective_dl import get_sdl_appname
 
@@ -24,8 +24,8 @@ class UninstallDialog(QDialog):
         self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
         header = self.tr("Uninstall")
         self.setWindowTitle(f'{header} "{rgame.app_title}" - {QCoreApplication.instance().applicationName()}')
-        self.info_text = QLabel(
-            self.tr("Do you really want to uninstall <b>{}</b>?").format(rgame.app_title)
+        self.title_label = QLabel(
+            self.tr("<h4>Do you really want to uninstall <b>{}</b>?</h4>").format(rgame.app_title)
         )
 
         self.keep_files = QCheckBox(self.tr("Keep game files."))
@@ -52,14 +52,13 @@ class UninstallDialog(QDialog):
         button_layout.addStretch(1)
         button_layout.addWidget(self.uninstall_button)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.info_text)
+        layout = QVBoxLayout(self)
+        layout.setSizeConstraint(QLayout.SetFixedSize)
+        layout.addWidget(self.title_label)
         layout.addLayout(form_layout)
         layout.addLayout(button_layout)
 
-        self.setLayout(layout)
-
-        if get_sdl_appname(rgame.app_name) is not None:
+        if rgame.sdl_name is not None:
             self.keep_config.setChecked(True)
 
         self.options: UninstallOptionsModel = options

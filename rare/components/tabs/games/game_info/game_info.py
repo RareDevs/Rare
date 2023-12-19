@@ -16,6 +16,8 @@ from PyQt5.QtWidgets import (
     QWidgetAction,
 )
 
+from rare.models.install import SelectiveDownloadsModel
+from rare.components.dialogs.selective_dialog import SelectiveDownloadsDialog
 from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.shared.workers import VerifyWorker, MoveWorker
@@ -162,9 +164,23 @@ class GameInfo(QWidget, SideTabContents):
                 self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.rgame.app_title),
             )
             return
-        self.verify_game(self.rgame)
+        if self.rgame.sdl_name is not None:
+            selective_dialog = SelectiveDownloadsDialog(
+                self.rgame, parent=self
+            )
+            selective_dialog.result_ready.connect(self.verify_game)
+            selective_dialog.exec()
+        else:
+            self.verify_game(self.rgame)
 
-    def verify_game(self, rgame: RareGame):
+    @pyqtSlot(RareGame, SelectiveDownloadsModel)
+    def verify_game(self, rgame: RareGame, sdl_model: SelectiveDownloadsModel = None):
+        if sdl_model:
+            if sdl_model.accepted:
+                self.core.lgd.config.set(rgame.app_name, "install_tags", ','.join(sdl_model.install_tag))
+                self.core.lgd.save_config()
+            else:
+                return
         worker = VerifyWorker(self.core, self.args, rgame)
         worker.signals.progress.connect(self.__on_verify_progress)
         worker.signals.result.connect(self.__on_verify_result)
