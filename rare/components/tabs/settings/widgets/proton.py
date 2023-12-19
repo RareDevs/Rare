@@ -40,7 +40,7 @@ class ProtonSettings(QGroupBox):
         layout = QFormLayout(self)
         layout.addRow(self.tr("Proton tool"), self.tool_combo)
         layout.addRow(self.tr("Compat data"), self.tool_prefix)
-        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        layout.setFieldGrowthPolicy(QFormLayout.ExpandingFieldsGrow)
         layout.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
         layout.setFormAlignment(Qt.AlignLeading | Qt.AlignTop)
 

@@ -46,7 +46,7 @@ class LaunchSettingsBase(QGroupBox):
         prelaunch_layout.addWidget(self.prelaunch_check)
 
         self.main_layout = QFormLayout(self)
-        self.main_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        self.main_layout.setFieldGrowthPolicy(QFormLayout.ExpandingFieldsGrow)
         self.main_layout.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.main_layout.setFormAlignment(Qt.AlignLeading | Qt.AlignTop)
 

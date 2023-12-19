@@ -119,7 +119,7 @@ class OverlaySettings(QGroupBox):
 
     @abstractmethod
     def set_activation_state(self, state: ActivationStates):
-        raise NotImplemented
+        raise NotImplementedError
 
     def update_settings(self):
 

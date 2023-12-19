@@ -122,7 +122,7 @@ class CloudSaves(QWidget, SideTabContents):
             except Exception as e:
                 logger.warning(str(e))
                 resolver = WineSavePathResolver(self.core, self.rgame)
-                if not resolver.environment.get("WINEPREFIX"):
+                if not resolver.environ.get("WINEPREFIX"):
                     del resolver
                     self.cloud_save_path_edit.setText("")
                     QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")

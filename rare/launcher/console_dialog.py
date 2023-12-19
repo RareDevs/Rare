@@ -1,4 +1,3 @@
-import platform
 from typing import Union
 
 from PyQt5.QtCore import QProcessEnvironment, pyqtSignal, QSize, Qt
