@@ -1,6 +1,7 @@
 # Rare
 [![Discord Shield](https://discordapp.com/api/guilds/826881530310819914/widget.png?style=shield)](https://discord.gg/YvmABK9YSk)
 
+
 ## A frontend for legendary, the open source Epic Games Launcher alternative
 
 Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, based on PyQt5
@@ -12,6 +13,7 @@ Rare is a graphical interface for Legendary, a command line alternative to Epic 
         licensed under CC BY-SA 4.0</i></p>
 </div>
 
+
 ## Why Rare?
 
 - Runs natively, and supports most of the major platforms
@@ -20,11 +22,31 @@ Rare is a graphical interface for Legendary, a command line alternative to Epic 
 - Integrates seamlessly with legendary as both projects are developed in Python
 - Packages, packages everywhere
 
+
 ## Issues
 
 If you run into any issues, please report it by creating an issue on GitHub or on Discord: https://discord.gg/YvmABK9YSk
 
+When reporting issues, it is helpful to also include the logs with your issue.
+You can find the longs in the following locations depending on your operating system
+- Windows: `C:\Users\<username>\AppData\Local\Rare\Rare\cache\logs`
+- Linux: `~/.cache/Rare/Rare/logs`
+- masOS: `Add`
+
+In these folders you will find files named like below
+
+- `Rare_23-12-19--11-14.log`
+
+These are the logs for the main Rare application. As such are importand when Rare itself is crashing.
+ 
+- `RareLauncher_f4e0c1dff48749fa9145c1585699e276_23-12-17--19-53.log`
+
+These are the logs for each of the games you run through Rare. Rare uses a separate instance of itself
+to launch games, and this is the logs of that instance.
+
+
 ## Installation
+
 
 ### Linux
 
@@ -65,6 +87,7 @@ There is a `.dmg` file available in [releases page](https://github.com/Dummerle/
 
 You can also use `pip`.
 
+
 ### Windows
 
 There is an `.msi` installer available in [releases page](https://github.com/Dummerle/Rare/releases).
@@ -92,7 +115,7 @@ You can install Rare with the following one-liner:
 In [releases page](https://github.com/Dummerle/Rare/releases), AppImages are available for Linux, a .msi file for windows and a .dmg
 file for macOS.
 
-### Latest packages
+### Latest development version
 
 In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find packages for the latest commits.
 
@@ -103,9 +126,8 @@ In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find pack
 
 Execute `pip install Rare` for all users, or `pip install Rare --user` for the current user only.
 
-Linux, Mac and FreeBSD: execute `rare` in your terminal.
-
-Windows: execute `pythonw -m rare` in cmd
+- Linux, macOS and FreeBSD: execute `rare` in your terminal.
+- Windows: execute `pythonw -m rare` in cmd
 
 It is possible to create a desktop link, or a start menu link. Execute the command above with `--desktop-shortcut` or `--startmenu-shortcut` option, alternatively you can create them in the settings.
 
@@ -113,7 +135,7 @@ It is possible to create a desktop link, or a start menu link. Execute the comma
 
 * On Linux `/home/user/.local/bin` must be in your PATH.
 * On Windows `PythonInstallationDirectory\Scripts` must be in your PATH.
-* On Mac  `/Users/user/Library/Python/3.x/bin` must be in your PATH.
+* On macOS  `/Users/user/Library/Python/3.x/bin` must be in your PATH.
 
 
 ### Run from source
@@ -125,6 +147,7 @@ It is possible to create a desktop link, or a start menu link. Execute the comma
    * If you are on Arch you can run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-orjson` and `yay -S legendary`
    * If you are on FreeBSD you have to install py39-qt5 from the packages: `sudo pkg install py39-qt5`
 4. Run `python3 -m rare`
+
 
 ## Contributing
 
