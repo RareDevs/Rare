@@ -59,7 +59,7 @@ class LegendaryCore(LegendaryCoreReal):
         return usr_platform if usr_platform in ("Windows", "Win32", "Mac") else os_default
 
     def update_check_enabled(self):
-        return False
+        return True
 
     def update_notice_enabled(self):
         return False

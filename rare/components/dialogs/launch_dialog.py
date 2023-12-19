@@ -54,8 +54,8 @@ class LaunchDialog(QDialog):
                 pass
             else:
                 # Force an update check and notice in case there are API changes
-                self.core.check_for_updates(force=True)
-                self.core.force_show_update = True
+                # self.core.check_for_updates(force=True)
+                # self.core.force_show_update = True
                 if self.core.login():
                     logger.info("You are logged in")
                 else:
