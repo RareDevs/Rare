@@ -3,7 +3,7 @@ import random
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent, QTimer
-from PyQt5.QtGui import QMouseEvent, QShowEvent
+from PyQt5.QtGui import QMouseEvent, QShowEvent, QPaintEvent
 from PyQt5.QtWidgets import QMessageBox, QAction
 
 from rare.models.game import RareGame
@@ -106,11 +106,21 @@ class GameWidget(LibraryWidget):
     # lk: attributes as `GameWidgetUi` class
     __slots__ = "ui"
 
+    def paintEvent(self, a0: QPaintEvent) -> None:
+        if not self.visibleRegion().isNull() and self.rgame.pixmap.isNull():
+            self.startTimer(random.randrange(42, 2361, 129), Qt.CoarseTimer)
+            # self.startTimer(random.randrange(42, 2361, 363), Qt.VeryCoarseTimer)
+            # self.rgame.load_pixmap()
+            # QTimer.singleShot(random.randrange(42, 2361, 7), Qt.VeryCoarseTimer, self.rgame.load_pixmap)
+        super().paintEvent(a0)
+
+    def timerEvent(self, a0):
+        self.killTimer(a0.timerId())
+        self.rgame.load_pixmap()
+
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        if self.rgame.pixmap.isNull():
-            QTimer.singleShot(random.randrange(42, 361, 7), self.rgame.load_pixmap)
         super().showEvent(a0)
 
     @pyqtSlot()
