@@ -44,3 +44,4 @@ Add any other context about the problem here.
 You can find logs in these locations
 - Windows: `C:\Users\<username>\AppData\Local\Rare\Rare\cache\logs`
 - Linux: `~/.cache/Rare/Rare/logs`
+- masOS: `/Users/<username>/Library/Caches/Rare/Rare/logs`
