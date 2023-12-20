@@ -23,15 +23,18 @@ Rare is a graphical interface for Legendary, a command line alternative to Epic 
 - Packages, packages everywhere
 
 
-## Issues
+## Reporing issues
 
-If you run into any issues, please report it by creating an issue on GitHub or on Discord: https://discord.gg/YvmABK9YSk
+If you run into any issues, you can report them by creating an issue on GitHub: https://github.com/RareDevs/Rare/issues/new/choose
 
 When reporting issues, it is helpful to also include the logs with your issue.
 You can find the longs in the following locations depending on your operating system
-- Windows: `C:\Users\<username>\AppData\Local\Rare\Rare\cache\logs`
-- Linux: `~/.cache/Rare/Rare/logs`
-- masOS: `/Users/<username>/Library/Caches/Rare/Rare/logs`
+
+| OS      | Path                                                     |
+|---------|----------------------------------------------------------|
+| Windows | `C:\Users\<username>\AppData\Local\Rare\Rare\cache\logs` |
+| Linux   | `/home/<username>/.cache/Rare/Rare/logs`                 |
+| masOS   | `/Users/<username>/Library/Caches/Rare/Rare/logs`        |
 
 In these folders you will find files named like below
 
@@ -42,11 +45,12 @@ These are the logs for the main Rare application. As such are importand when Rar
 - `RareLauncher_f4e0c1dff48749fa9145c1585699e276_23-12-17--19-53.log`
 
 These are the logs for each of the games you run through Rare. Rare uses a separate instance of itself
-to launch games, and this is the logs of that instance.
+to launch games, and these are the logs of that instance.
+
+If you don't have a GitHub account or you just want to chat, you also can contact us on Discord: https://discord.gg/YvmABK9YSk
 
 
 ## Installation
-
 
 ### Linux
 
@@ -132,10 +136,13 @@ Execute `pip install Rare` for all users, or `pip install Rare --user` for the c
 It is possible to create a desktop link, or a start menu link. Execute the command above with `--desktop-shortcut` or `--startmenu-shortcut` option, alternatively you can create them in the settings.
 
 **Note about $PATH**:
+Depending on your operating system and the `python` distribution, the following paths might need to be in your environment's `PATH`
 
-* On Linux `/home/user/.local/bin` must be in your PATH.
-* On Windows `PythonInstallationDirectory\Scripts` must be in your PATH.
-* On macOS `/Users/user/Library/Python/3.x/bin` must be in your PATH.
+| OS      | Path                                       |
+|---------|--------------------------------------------|
+| Windows | `<python_installation_folder>\Scripts`     |
+| Linux   | `/home/<username>/.local/bin`              |
+| masOS   | `/Users/<username>/Library/Python/3.x/bin` |
 
 
 ### Run from source
