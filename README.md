@@ -31,7 +31,7 @@ When reporting issues, it is helpful to also include the logs with your issue.
 You can find the longs in the following locations depending on your operating system
 - Windows: `C:\Users\<username>\AppData\Local\Rare\Rare\cache\logs`
 - Linux: `~/.cache/Rare/Rare/logs`
-- masOS: `Add`
+- masOS: `/Users/<username>/Library/Caches/Rare/Rare/logs`
 
 In these folders you will find files named like below
 
@@ -135,7 +135,7 @@ It is possible to create a desktop link, or a start menu link. Execute the comma
 
 * On Linux `/home/user/.local/bin` must be in your PATH.
 * On Windows `PythonInstallationDirectory\Scripts` must be in your PATH.
-* On macOS  `/Users/user/Library/Python/3.x/bin` must be in your PATH.
+* On macOS `/Users/user/Library/Python/3.x/bin` must be in your PATH.
 
 
 ### Run from source

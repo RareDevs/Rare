@@ -1,4 +1,4 @@
-__version__ = "1.10.10"
+__version__ = "1.10.11"
 __codename__ = "Garlic Crab"
 
 # For PyCharm profiler
