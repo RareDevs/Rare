@@ -31,7 +31,7 @@ class LegendaryCore(LegendaryCoreReal):
     def __init__(self, *args, **kwargs):
         super(LegendaryCore, self).__init__(*args, **kwargs)
         self.log.info("Using Rare's LegendaryCore monkey")
-        self.log.info("Using config in %s", self.lgd.path.replace(os.getlogin(), "<username>"))
+        self.log.info("Using config in %s", self.lgd.path)
         self.handler = LgndrLogHandler(logging.CRITICAL)
         self.log.addHandler(self.handler)
 
