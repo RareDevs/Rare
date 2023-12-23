@@ -1,12 +1,15 @@
 import os
+import platform
 import subprocess
 from configparser import ConfigParser
 from logging import getLogger
 from typing import Mapping, Dict, List, Tuple, Optional
 
 from rare.utils import config_helper as config
-from . import proton
-from . import wine
+if platform.system() != "Windows":
+    from . import wine
+    if platform.system() != "Darwin":
+        from . import proton
 
 logger = getLogger("Runners")
 

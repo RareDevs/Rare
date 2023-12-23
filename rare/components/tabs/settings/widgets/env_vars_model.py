@@ -12,9 +12,9 @@ from rare.utils.misc import icon
 
 if platform.system() != "Windows":
     from rare.utils.runners.wine import get_wine_environment
-    if platform.system() != "Darwin":
-        from rare.utils.runners.proton import get_steam_environment
 
+if platform.system() not in {"Windows", "Darwin"}:
+    from rare.utils.runners.proton import get_steam_environment
 
 
 class EnvVarsTableModel(QAbstractTableModel):
@@ -34,8 +34,8 @@ class EnvVarsTableModel(QAbstractTableModel):
         ]
         if platform.system() != "Windows":
             self.__readonly.extend(get_wine_environment().keys())
-            if platform.system() != "Darwin":
-                self.__readonly.extend(get_steam_environment().keys())
+        if platform.system() not in {"Windows", "Darwin"}:
+            self.__readonly.extend(get_steam_environment().keys())
 
         self.__default: str = "default"
         self.__appname: str = None

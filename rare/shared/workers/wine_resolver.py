@@ -10,7 +10,7 @@ from PyQt5.QtCore import pyqtSignal, QObject, QRunnable
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.models.pathspec import PathSpec
-from rare.utils import runners, config_helper as config
+from rare.utils import config_helper as config
 from rare.utils.misc import path_size, format_size
 from .worker import Worker
 
@@ -18,6 +18,8 @@ if platform.system() == "Windows":
     # noinspection PyUnresolvedReferences
     import winreg  # pylint: disable=E0401
     from legendary.lfs import windows_helpers
+else:
+    from rare.utils import runners
 
 logger = getLogger("WineResolver")
 

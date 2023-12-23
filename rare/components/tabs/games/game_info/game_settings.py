@@ -8,16 +8,21 @@ from PyQt5.QtGui import QShowEvent
 from PyQt5.QtWidgets import QFileDialog, QComboBox, QLineEdit
 from legendary.models.game import Game, InstalledGame
 
-from rare.components.tabs.settings.widgets.wrappers import WrapperSettings
-from rare.components.tabs.settings.widgets.game import GameSettingsBase
 from rare.components.tabs.settings.widgets.env_vars import EnvVars
+from rare.components.tabs.settings.widgets.game import GameSettingsBase
 from rare.components.tabs.settings.widgets.launch import LaunchSettingsBase
-from rare.components.tabs.settings.widgets.overlay import MangoHudSettings, DxvkSettings
-from rare.components.tabs.settings.widgets.proton import ProtonSettings
-from rare.components.tabs.settings.widgets.wine import WineSettings
+from rare.components.tabs.settings.widgets.overlay import DxvkSettings
+from rare.components.tabs.settings.widgets.wrappers import WrapperSettings
 from rare.models.game import RareGame
 from rare.utils import config_helper as config
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+
+if pf.system() != "Windows":
+    from rare.components.tabs.settings.widgets.wine import WineSettings
+
+if pf.system() not in {"Windows", "Darwin"}:
+    from rare.components.tabs.settings.widgets.proton import ProtonSettings
+    from rare.components.tabs.settings.widgets.overlay import MangoHudSettings
 
 logger = getLogger("GameSettings")
 
@@ -131,22 +136,25 @@ class GameLaunchSettings(LaunchSettingsBase):
         self.wrappers_widget.load_settings(rgame.app_name)
 
 
-class GameWineSettings(WineSettings):
-    def load_settings(self, app_name):
-        self.app_name = app_name
+if pf.system() != "Windows":
+
+    class GameWineSettings(WineSettings):
+        def load_settings(self, app_name):
+            self.app_name = app_name
 
 
-class GameProtonSettings(ProtonSettings):
-    def load_settings(self, app_name: str):
-        self.app_name = app_name
+if pf.system() not in {"Windows", "Darwin"}:
+
+    class GameProtonSettings(ProtonSettings):
+        def load_settings(self, app_name: str):
+            self.app_name = app_name
+
+    class GameMangoHudSettings(MangoHudSettings):
+        def load_settings(self, app_name: str):
+            self.app_name = app_name
 
 
 class GameDxvkSettings(DxvkSettings):
-    def load_settings(self, app_name: str):
-        self.app_name = app_name
-
-
-class GameMangoHudSettings(MangoHudSettings):
     def load_settings(self, app_name: str):
         self.app_name = app_name
 
@@ -158,11 +166,23 @@ class GameEnvVars(EnvVars):
 
 class GameSettings(GameSettingsBase):
     def __init__(self, parent=None):
-        super(GameSettings, self).__init__(
-            GameLaunchSettings, GameWineSettings, GameProtonSettings,
-            GameDxvkSettings, GameMangoHudSettings, GameEnvVars,
-            parent=parent
-        )
+        if pf.system() not in {"Windows", "Darwin"}:
+            super(GameSettings, self).__init__(
+                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                GameWineSettings, GameProtonSettings, GameMangoHudSettings,
+                parent=parent
+            )
+        elif pf.system() != "Windows":
+            super(GameSettings, self).__init__(
+                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                GameWineSettings,
+                parent=parent
+            )
+        else:
+            super(GameSettings, self).__init__(
+                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                parent=parent
+            )
 
     def load_settings(self, rgame: RareGame):
         self.set_title.emit(rgame.app_title)
@@ -170,7 +190,7 @@ class GameSettings(GameSettingsBase):
         self.launch.load_settings(rgame)
         if pf.system() != "Windows":
             self.wine.load_settings(rgame.app_name)
-        if pf.system() == "Linux":
+        if pf.system() not in {"Windows", "Darwin"}:
             self.proton_tool.load_settings(rgame.app_name)
             self.mangohud.load_settings(rgame.app_name)
         self.dxvk.load_settings(rgame.app_name)

@@ -1,3 +1,4 @@
+import platform as pf
 import shlex
 import shutil
 from logging import getLogger
@@ -22,7 +23,9 @@ from PyQt5.QtWidgets import (
 from rare.models.wrapper import Wrapper
 from rare.shared import RareCore
 from rare.utils.misc import icon
-from rare.utils.runners import proton
+
+if pf.system() not in {"Windows", "Darwin"}:
+    from rare.utils.runners import proton
 
 logger = getLogger("WrapperSettings")
 
@@ -233,14 +236,15 @@ class WrapperSettings(QWidget):
         if not wrapper:
             return
 
-        compat_cmds = [tool.command() for tool in proton.find_tools()]
-        if wrapper.command in compat_cmds:
-            QMessageBox.warning(
-                self,
-                self.tr("Warning"),
-                self.tr("Do not insert compatibility tools manually. Add them through Proton settings"),
-            )
-            return
+        if pf.system() not in {"Windows", "Darwin"}:
+            compat_cmds = [tool.command() for tool in proton.find_tools()]
+            if wrapper.command in compat_cmds:
+                QMessageBox.warning(
+                    self,
+                    self.tr("Warning"),
+                    self.tr("Do not insert compatibility tools manually. Add them through Proton settings"),
+                )
+                return
 
         if wrapper.checksum in self.wrappers.get_game_md5sum_list(self.app_name):
             QMessageBox.warning(
