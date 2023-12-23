@@ -11,9 +11,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Login - Rare</string>
+   <string>Login</string>
   </property>
-  <layout class="QVBoxLayout" name="login_layout" stretch="0,0,0,0,0">
+  <layout class="QVBoxLayout" name="main_layout" stretch="0,0,0,0,0">
    <item>
     <spacer name="login_vspacer_top">
      <property name="orientation">
@@ -59,6 +59,13 @@
    <item>
     <layout class="QHBoxLayout" name="button_layout">
      <item>
+      <widget class="QPushButton" name="exit_button">
+       <property name="text">
+        <string>Exit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="button_hspacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -70,13 +77,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="exit_button">
-       <property name="text">
-        <string>Exit</string>
-       </property>
-      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="back_button">

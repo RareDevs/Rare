@@ -1,12 +1,14 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QLayout, QDialog, QMessageBox, QFrame
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QLayout, QMessageBox, QFrame
 from legendary.core import LegendaryCore
 
 from rare.shared import ArgumentsSingleton
 from rare.ui.components.dialogs.login.landing_page import Ui_LandingPage
 from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
+from rare.utils.misc import icon
+from rare.widgets.dialogs import BaseDialog
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .browser_login import BrowserLogin
 from .import_login import ImportLogin
@@ -22,12 +24,10 @@ class LandingPage(QFrame):
         self.ui.setupUi(self)
 
 
-class LoginDialog(QDialog):
-    exit_app: pyqtSignal = pyqtSignal(int)
+class LoginDialog(BaseDialog):
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(LoginDialog, self).__init__(parent=parent)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(
             Qt.Window
             | Qt.Dialog
@@ -38,7 +38,7 @@ class LoginDialog(QDialog):
             | Qt.WindowCloseButtonHint
             | Qt.MSWindowsFixedSizeDialogHint
         )
-        self.setWindowModality(Qt.WindowModal)
+
         self.ui = Ui_LoginDialog()
         self.ui.setupUi(self)
 
@@ -93,13 +93,22 @@ class LoginDialog(QDialog):
         self.landing_page.ui.login_import_radio.clicked.connect(lambda: self.ui.next_button.setEnabled(True))
         self.landing_page.ui.login_import_radio.clicked.connect(self.import_radio_clicked)
 
-        self.ui.exit_button.clicked.connect(self.close)
+        self.ui.exit_button.clicked.connect(self.reject)
         self.ui.back_button.clicked.connect(self.back_clicked)
         self.ui.next_button.clicked.connect(self.next_clicked)
 
         self.login_stack.setCurrentWidget(self.landing_page)
 
-        self.layout().setSizeConstraint(QLayout.SetFixedSize)
+        self.ui.exit_button.setIcon(icon("fa.remove"))
+        self.ui.back_button.setIcon(icon("fa.chevron-left"))
+        self.ui.next_button.setIcon(icon("fa.chevron-right"))
+
+        # lk: Set next as the default button only to stop closing the dialog when pressing enter
+        self.ui.exit_button.setAutoDefault(False)
+        self.ui.back_button.setAutoDefault(False)
+        self.ui.next_button.setAutoDefault(True)
+
+        self.ui.main_layout.setSizeConstraint(QLayout.SetFixedSize)
 
     def back_clicked(self):
         self.ui.back_button.setEnabled(False)
@@ -129,15 +138,14 @@ class LoginDialog(QDialog):
 
     def login(self):
         if self.args.test_start:
-            return False
-        self.exec_()
-        return self.logged_in
+            self.reject()
+        self.open()
 
     def login_successful(self):
         try:
             if self.core.login():
                 self.logged_in = True
-                self.close()
+                self.accept()
             else:
                 raise ValueError("Login failed.")
         except Exception as e:
@@ -146,3 +154,4 @@ class LoginDialog(QDialog):
             self.ui.next_button.setEnabled(False)
             self.logged_in = False
             QMessageBox.warning(None, self.tr("Login error"), str(e))
+

@@ -36,7 +36,7 @@ class Ui_LaunchDialog(object):
 
     def retranslateUi(self, LaunchDialog):
         _translate = QtCore.QCoreApplication.translate
-        LaunchDialog.setWindowTitle(_translate("LaunchDialog", "Launching - Rare"))
+        LaunchDialog.setWindowTitle(_translate("LaunchDialog", "Launching"))
         self.title_label.setText(_translate("LaunchDialog", "<h2>Launching Rare</h2>"))
 
 

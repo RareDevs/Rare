@@ -76,14 +76,15 @@ class Rare(RareApp):
     @pyqtSlot()
     def launch_app(self):
         self.launch_dialog = LaunchDialog(parent=None)
-        self.launch_dialog.exit_app.connect(self.launch_dialog.close)
-        self.launch_dialog.exit_app.connect(self.__on_exit_app)
-        self.launch_dialog.start_app.connect(self.start_app)
-        self.launch_dialog.start_app.connect(self.launch_dialog.close)
+        self.launch_dialog.rejected.connect(self.__on_exit_app)
+        # lk: the reason we use the `start_app` signal here instead of accepted, is to keep the dialog
+        # until the main window has been created, then we call `accept()` to close the dialog
+        self.launch_dialog.start_app.connect(self.__on_start_app)
+        self.launch_dialog.start_app.connect(self.launch_dialog.accept)
         self.launch_dialog.login()
 
     @pyqtSlot()
-    def start_app(self):
+    def __on_start_app(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.re_login)
         self.poke_timer()
