@@ -30,21 +30,28 @@ class GameListHeadBar(QWidget):
         self.settings = QSettings(self)
 
         self.filter = QComboBox(self)
-        self.filter.addItem(self.tr("All games"), LibraryFilter.ALL)
-        self.filter.addItem(self.tr("Installed"), LibraryFilter.INSTALLED)
-        self.filter.addItem(self.tr("Offline"),   LibraryFilter.OFFLINE)
-        # self.filter.addItem(self.tr("Hidden"),    LibraryFilter.HIDDEN)
+        filters = {
+            int(LibraryFilter.ALL): self.tr("All games"),
+            int(LibraryFilter.INSTALLED): self.tr("Installed"),
+            int(LibraryFilter.OFFLINE): self.tr("Offline"),
+            # int(LibraryFilter.HIDDEN): self.tr("Hidden"),
+        }
+        for data, text in filters.items():
+            self.filter.addItem(text, data)
+
         if self.rcore.bit32_games:
-            self.filter.addItem(self.tr("32bit games"),    LibraryFilter.WIN32)
+            self.filter.addItem(self.tr("32bit games"), int(LibraryFilter.WIN32))
         if self.rcore.mac_games:
-            self.filter.addItem(self.tr("macOS games"),    LibraryFilter.MAC)
+            self.filter.addItem(self.tr("macOS games"), int(LibraryFilter.MAC))
         if self.rcore.origin_games:
-            self.filter.addItem(self.tr("Exclude Origin"), LibraryFilter.INSTALLABLE)
-        self.filter.addItem(self.tr("Include Unreal"),     LibraryFilter.INCLUDE_UE)
+            self.filter.addItem(self.tr("Exclude Origin"), int(LibraryFilter.INSTALLABLE))
+        self.filter.addItem(self.tr("Include Unreal"),     int(LibraryFilter.INCLUDE_UE))
+
         try:
-            self.filter.setCurrentIndex(self.filter.findData(
-                LibraryFilter(self.settings.value(*options.library_filter))
-            ))
+            index = self.filter.findData(self.settings.value(*options.library_filter), Qt.UserRole)
+            if index < 0:
+                raise ValueError
+            self.filter.setCurrentIndex(index)
         except (TypeError, ValueError):
             self.settings.setValue(options.library_filter.key, options.library_filter.default)
             self.filter.setCurrentIndex(self.filter.findData(options.library_filter.default))
@@ -52,20 +59,22 @@ class GameListHeadBar(QWidget):
 
         self.order = QComboBox(parent=self)
         sortings = {
-            LibraryOrder.TITLE:  self.tr("Title"),
-            LibraryOrder.RECENT: self.tr("Recently played"),
-            LibraryOrder.NEWEST: self.tr("Newest"),
-            LibraryOrder.OLDEST: self.tr("Oldest"),
+            int(LibraryOrder.TITLE):  self.tr("Title"),
+            int(LibraryOrder.RECENT): self.tr("Recently played"),
+            int(LibraryOrder.NEWEST): self.tr("Newest"),
+            int(LibraryOrder.OLDEST): self.tr("Oldest"),
         }
         for data, text in sortings.items():
             self.order.addItem(text, data)
+
         try:
-            self.order.setCurrentIndex(self.order.findData(
-                LibraryOrder(self.settings.value(*options.library_order))
-            ))
+            index = self.order.findData(self.settings.value(*options.library_order), Qt.UserRole)
+            if index < 0:
+                raise ValueError
+            self.order.setCurrentIndex(index)
         except (TypeError, ValueError):
             self.settings.setValue(options.library_order.key, options.library_order.default)
-            self.order.setCurrentIndex(self.order.findData(options.library_order.default))
+            self.order.setCurrentIndex(self.order.findData(options.library_order.default, Qt.UserRole))
         self.order.currentIndexChanged.connect(self.__order_changed)
 
         integrations_menu = QMenu(parent=self)
@@ -147,19 +156,19 @@ class GameListHeadBar(QWidget):
         self.rcore.fetch()
 
     def current_filter(self) -> int:
-        return int(self.filter.currentData(Qt.UserRole))
+        return self.filter.currentData(Qt.UserRole)
 
     @pyqtSlot(int)
     def __filter_changed(self, index: int):
-        data = int(self.filter.itemData(index, Qt.UserRole))
+        data = self.filter.itemData(index, Qt.UserRole)
         self.filterChanged.emit(data)
         self.settings.setValue(options.library_filter.key, data)
 
     def current_order(self) -> int:
-        return int(self.order.currentData(Qt.UserRole))
+        return self.order.currentData(Qt.UserRole)
 
     @pyqtSlot(int)
     def __order_changed(self, index: int):
-        data = int(self.order.itemData(index, Qt.UserRole))
+        data = self.order.itemData(index, Qt.UserRole)
         self.orderChanged.emit(data)
         self.settings.setValue(options.library_order.key, data)
