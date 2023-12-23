@@ -65,6 +65,10 @@ class EGLSyncGroup(QGroupBox):
         self.ui.egl_sync_check.setChecked(self.core.egl_sync_enabled)
         self.ui.egl_sync_check.stateChanged.connect(self.egl_sync_changed)
 
+        # lk: Temporarily disable automatic sync with EGL
+        self.ui.egl_sync_check_label.setHidden(True)
+        self.ui.egl_sync_check.setHidden(True)
+
         self.import_list = EGLSyncImportGroup(parent=self)
         self.ui.import_export_layout.addWidget(self.import_list)
         self.export_list = EGLSyncExportGroup(parent=self)
