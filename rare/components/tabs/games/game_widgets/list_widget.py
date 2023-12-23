@@ -40,7 +40,7 @@ class ListWidget(object):
 
         self.install_btn = QPushButton(parent=widget)
         self.install_btn.setObjectName(f"{type(self).__name__}Button")
-        self.install_btn.setIcon(icon("ri.install-fill"))
+        self.install_btn.setIcon(icon("ri.install-line"))
         self.install_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.install_btn.setFixedWidth(120)
 
