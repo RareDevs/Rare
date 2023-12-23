@@ -8,11 +8,14 @@ from PyQt5.QtWidgets import (
 )
 
 from rare.components.tabs.settings.widgets.env_vars import EnvVars
-from rare.components.tabs.settings.widgets.linux import LinuxSettings
-from rare.components.tabs.settings.widgets.proton import ProtonSettings
 from rare.components.tabs.settings.widgets.wrapper import WrapperSettings
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.game_settings import Ui_GameSettings
+
+if platform.system() != "Windows":
+    from rare.components.tabs.settings.widgets.linux import LinuxSettings
+    if platform.system() != "Darwin":
+        from rare.components.tabs.settings.widgets.proton import ProtonSettings
 
 logger = getLogger("GameSettings")
 
@@ -88,15 +91,16 @@ class DefaultGameSettings(QWidget):
         self.env_vars.update_game(app_name)
 
 
-class LinuxAppSettings(LinuxSettings):
-    def __init__(self):
-        super(LinuxAppSettings, self).__init__()
+if platform.system() != "Windows":
+    class LinuxAppSettings(LinuxSettings):
+        def __init__(self):
+            super(LinuxAppSettings, self).__init__()
 
-    def update_game(self, app_name):
-        self.name = app_name
-        self.wine_prefix.setText(self.load_prefix())
-        self.wine_exec.setText(self.load_setting(self.name, "wine_executable"))
+        def update_game(self, app_name):
+            self.name = app_name
+            self.wine_prefix.setText(self.load_prefix())
+            self.wine_exec.setText(self.load_setting(self.name, "wine_executable"))
 
-        self.dxvk.load_settings(self.name)
+            self.dxvk.load_settings(self.name)
 
-        self.mangohud.load_settings(self.name)
+            self.mangohud.load_settings(self.name)

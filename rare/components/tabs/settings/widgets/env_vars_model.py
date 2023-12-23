@@ -1,3 +1,4 @@
+import platform
 import re
 import sys
 from collections import ChainMap
@@ -8,7 +9,10 @@ from PyQt5.QtGui import QFont
 
 from rare.lgndr.core import LegendaryCore
 from rare.utils.misc import icon
-from rare.utils import proton
+
+if platform.system() != "Windows":
+    if platform.system() != "Darwin":
+        from rare.utils import proton
 
 
 class EnvVarsTableModel(QAbstractTableModel):
@@ -28,7 +32,9 @@ class EnvVarsTableModel(QAbstractTableModel):
             "DXVK_HUD",
             "MANGOHUD_CONFIG",
         ]
-        self.__readonly.extend(proton.get_steam_environment(None).keys())
+        if platform.system() != "Windows":
+            if platform.system() != "Darwin":
+                self.__readonly.extend(proton.get_steam_environment(None).keys())
 
         self.__default: str = "default"
         self.__appname: str = None
