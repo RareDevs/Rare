@@ -1,25 +1,24 @@
-import platform
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QDialog, QApplication
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.components.dialogs.login import LoginDialog
 from rare.shared import RareCore
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
+from rare.widgets.dialogs import BaseDialog
 from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("LaunchDialog")
 
 
-class LaunchDialog(QDialog):
-    exit_app = pyqtSignal(int)
+class LaunchDialog(BaseDialog):
+    # lk: the reason we use the `start_app` signal here instead of accepted, is to keep the dialog
+    # until the main window has been created, then we call `accept()` to close the dialog
     start_app = pyqtSignal()
 
     def __init__(self, parent=None):
         super(LaunchDialog, self).__init__(parent=parent)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowFlags(
             Qt.Window
             | Qt.Dialog
@@ -29,11 +28,9 @@ class LaunchDialog(QDialog):
             | Qt.WindowMinimizeButtonHint
             | Qt.MSWindowsFixedSizeDialogHint
         )
-        self.setWindowModality(Qt.WindowModal)
+
         self.ui = Ui_LaunchDialog()
         self.ui.setupUi(self)
-
-        self.reject_close = True
 
         self.progress_info = ElideLabel(parent=self)
         self.progress_info.setFixedHeight(False)
@@ -46,9 +43,11 @@ class LaunchDialog(QDialog):
         self.args = self.rcore.args()
 
         self.login_dialog = LoginDialog(core=self.core, parent=parent)
+        self.login_dialog.rejected.connect(self.reject)
+        self.login_dialog.accepted.connect(self.do_launch)
 
     def login(self):
-        do_launch = True
+        can_launch = True
         try:
             if self.args.offline:
                 pass
@@ -56,25 +55,29 @@ class LaunchDialog(QDialog):
                 # Force an update check and notice in case there are API changes
                 # self.core.check_for_updates(force=True)
                 # self.core.force_show_update = True
-                if self.core.login():
+                if self.core.login(force_refresh=True):
                     logger.info("You are logged in")
+                    self.login_dialog.close()
                 else:
-                    raise ValueError("You are not logged in. Open Login Window")
+                    raise ValueError("You are not logged in. Opening login window.")
         except ValueError as e:
             logger.info(str(e))
             # Do not set parent, because it won't show a task bar icon
             # Update: Inherit the same parent as LaunchDialog
-            do_launch = self.login_dialog.login()
+            can_launch = False
+            self.login_dialog.open()
         except (HTTPError, ConnectionError) as e:
             logger.warning(e)
             self.args.offline = True
         finally:
-            if do_launch:
-                if not self.args.silent:
-                    self.show()
-                self.launch()
-            else:
-                self.exit_app.emit(0)
+            if can_launch:
+                self.do_launch()
+
+    @pyqtSlot()
+    def do_launch(self):
+        if not self.args.silent:
+            self.open()
+        self.launch()
 
     def launch(self):
         self.progress_info.setText(self.tr("Preparing Rare"))
@@ -87,9 +90,4 @@ class LaunchDialog(QDialog):
 
     def __on_completed(self):
         logger.info("App starting")
-        self.reject_close = False
         self.start_app.emit()
-
-    def reject(self) -> None:
-        if not self.reject_close:
-            super(LaunchDialog, self).reject()
