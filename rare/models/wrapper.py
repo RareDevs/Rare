@@ -24,7 +24,7 @@ class Wrapper:
 
     @property
     def is_editable(self) -> bool:
-        return self.__wtype == WrapperType.USER_DEFINED or self.__wtype == WrapperType.LEGENDARY_IMPORT
+        return self.__wtype in {WrapperType.USER_DEFINED, WrapperType.LEGENDARY_IMPORT}
 
     @property
     def checksum(self) -> str:
@@ -53,9 +53,7 @@ class Wrapper:
         return hash(self.__command)
 
     def __bool__(self) -> bool:
-        if not self.is_editable:
-            return True
-        return bool(self.command.strip())
+        return True if not self.is_editable else bool(self.command.strip())
 
     @classmethod
     def from_dict(cls, data: Dict):

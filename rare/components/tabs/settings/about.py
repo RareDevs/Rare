@@ -16,7 +16,7 @@ def versiontuple(v):
     try:
         return tuple(map(int, (v.split("."))))
     except Exception:
-        return tuple((9, 9, 9))  # It is a beta version and newer
+        return 9, 9, 9
 
 
 class About(QWidget):
@@ -63,7 +63,7 @@ class About(QWidget):
 
         if self.update_available:
             logger.info(f"Update available: {__version__} -> {latest_tag}")
-            self.ui.update_lbl.setText("{} -> {}".format(__version__, latest_tag))
+            self.ui.update_lbl.setText(f"{__version__} -> {latest_tag}")
             self.update_available_ready.emit()
         else:
             self.ui.update_lbl.setText(self.tr("You have the latest version"))

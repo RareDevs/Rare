@@ -90,10 +90,7 @@ class LgndrIndirectStatus:
     message: str = ""
 
     def __len__(self):
-        if self.message:
-            return 2
-        else:
-            return 0
+        return 2 if self.message else 0
 
     def __bool__(self):
         return self.success
@@ -128,7 +125,7 @@ class LgndrIndirectLogger:
         self.level = level
 
     def _log(self, level: int, msg: str):
-        self.status.success = True if level < self.level else False
+        self.status.success = level < self.level
         self.status.message = msg
         if self.logger:
             self.logger.log(level, msg)

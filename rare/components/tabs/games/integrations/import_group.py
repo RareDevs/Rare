@@ -263,13 +263,12 @@ class ImportGroup(QGroupBox):
             self.app_name_edit.setText(app_name)
 
     def path_edit_callback(self, path) -> Tuple[bool, str, int]:
-        if os.path.exists(path):
-            if os.path.exists(os.path.join(path, ".egstore")):
-                return True, path, IndicatorReasonsCommon.VALID
-            elif os.path.basename(path) in self.__install_dirs:
-                return True, path, IndicatorReasonsCommon.VALID
-        else:
+        if not os.path.exists(path):
             return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
+        if os.path.exists(os.path.join(path, ".egstore")):
+            return True, path, IndicatorReasonsCommon.VALID
+        elif os.path.basename(path) in self.__install_dirs:
+            return True, path, IndicatorReasonsCommon.VALID
         return False, path, IndicatorReasonsCommon.UNDEFINED
 
     @pyqtSlot(str)

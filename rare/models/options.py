@@ -13,8 +13,7 @@ class Value(Namespace):
         return len(self.__dict__)
 
     def __iter__(self):
-        for v in self.__dict__.values():
-            yield v
+        yield from self.__dict__.values()
 
 
 # They key names are set to the existing option name

@@ -124,25 +124,26 @@ class LibraryWidgetController(QObject):
     @pyqtSlot()
     @pyqtSlot(list)
     def update_game_views(self, app_names: List[str] = None):
-        if not app_names:
-            # lk: base it on icon widgets, the two lists should be identical
-            icon_widgets = self._icon_container.findChildren(IconGameWidget)
-            list_widgets = self._list_container.findChildren(ListGameWidget)
-            icon_app_names = set([iw.rgame.app_name for iw in icon_widgets])
-            list_app_names = set([lw.rgame.app_name for lw in list_widgets])
-            games = list(self.rcore.games)
-            game_app_names = set([g.app_name for g in games])
-            new_icon_app_names = game_app_names.difference(icon_app_names)
-            new_list_app_names = game_app_names.difference(list_app_names)
-            for app_name in new_icon_app_names:
-                game = self.rcore.get_game(app_name)
-                iw = IconGameWidget(game)
-                self._icon_container.layout().addWidget(iw)
-            for app_name in new_list_app_names:
-                game = self.rcore.get_game(app_name)
-                lw = ListGameWidget(game)
-                self._list_container.layout().addWidget(lw)
-            self.order_game_views()
+        if app_names:
+            return
+        # lk: base it on icon widgets, the two lists should be identical
+        icon_widgets = self._icon_container.findChildren(IconGameWidget)
+        list_widgets = self._list_container.findChildren(ListGameWidget)
+        icon_app_names = {iw.rgame.app_name for iw in icon_widgets}
+        list_app_names = {lw.rgame.app_name for lw in list_widgets}
+        games = list(self.rcore.games)
+        game_app_names = {g.app_name for g in games}
+        new_icon_app_names = game_app_names.difference(icon_app_names)
+        new_list_app_names = game_app_names.difference(list_app_names)
+        for app_name in new_icon_app_names:
+            game = self.rcore.get_game(app_name)
+            iw = IconGameWidget(game)
+            self._icon_container.layout().addWidget(iw)
+        for app_name in new_list_app_names:
+            game = self.rcore.get_game(app_name)
+            lw = ListGameWidget(game)
+            self._list_container.layout().addWidget(lw)
+        self.order_game_views()
 
     def __find_widget(self, app_name: str) -> Tuple[Union[IconGameWidget, None], Union[ListGameWidget, None]]:
         iw = self._icon_container.findChild(IconGameWidget, app_name)

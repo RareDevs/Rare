@@ -135,7 +135,7 @@ class MoveDialog(ActionDialog):
         if not os.access(path, os.W_OK) or not os.access(self.rgame.install_path, os.W_OK):
             return helper_func(MovePathEditReasons.NO_WRITE_PERM)
 
-        if src_path == dst_path or src_path == dst_install_path:
+        if src_path in {dst_path, dst_install_path}:
             return helper_func(MovePathEditReasons.SAME_DIR)
 
         if str(src_path) in str(dst_path):

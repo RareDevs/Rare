@@ -1,7 +1,7 @@
 import platform as pf
 import re
 from logging import getLogger
-from typing import Tuple, List
+from typing import Tuple, Set
 
 from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings
 from PyQt5.QtGui import QShowEvent, QHideEvent
@@ -21,14 +21,11 @@ class RefreshGameMetaWorker(Worker):
     class Signals(QObject):
         finished = pyqtSignal()
 
-    def __init__(self, platforms: List[str], include_unreal: bool):
+    def __init__(self, platforms: Set[str], include_unreal: bool):
         super(RefreshGameMetaWorker, self).__init__()
         self.signals = RefreshGameMetaWorker.Signals()
         self.core = LegendaryCoreSingleton()
-        if platforms:
-            self.platforms = platforms
-        else:
-            self.platforms = ["Windows"]
+        self.platforms = platforms if platforms else {"Windows"}
         self.skip_ue = not include_unreal
 
     def run_real(self) -> None:
@@ -146,11 +143,11 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
 
     def refresh_metadata(self):
         self.refresh_metadata_button.setDisabled(True)
-        platforms = []
+        platforms = set()
         if self.fetch_win32_check.isChecked():
-            platforms.append("Win32")
+            platforms.add("Win32")
         if self.fetch_macos_check.isChecked():
-            platforms.append("Mac")
+            platforms.add("Mac")
         worker = RefreshGameMetaWorker(platforms, self.fetch_unreal_check.isChecked())
         worker.signals.finished.connect(lambda: self.refresh_metadata_button.setDisabled(False))
         QThreadPool.globalInstance().start(worker)
@@ -172,9 +169,8 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         if text:
             self.core.egs.language_code, self.core.egs.country_code = text.split("-")
             self.core.lgd.config.set("Legendary", "locale", text)
-        else:
-            if self.core.lgd.config.has_option("Legendary", "locale"):
-                self.core.lgd.config.remove_option("Legendary", "locale")
+        elif self.core.lgd.config.has_option("Legendary", "locale"):
+            self.core.lgd.config.remove_option("Legendary", "locale")
 
     def __mac_path_save(self, text: str) -> None:
         self.__path_save(text, "mac_install_dir")
@@ -189,7 +185,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         if not text and option in self.core.lgd.config["Legendary"].keys():
             self.core.lgd.config["Legendary"].pop(option)
         else:
-            logger.debug(f"Set %s option in config to %s", option, text)
+            logger.debug("Set %s option in config to %s", option, text)
 
     def max_worker_save(self, workers: str):
         if workers := int(workers):
@@ -217,7 +213,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
     def cleanup(self, keep_manifests: bool):
         before = self.core.lgd.get_dir_size()
         logger.debug("Removing app metadata...")
-        app_names = set(g.app_name for g in self.core.get_assets(update_assets=False))
+        app_names = {g.app_name for g in self.core.get_assets(update_assets=False)}
         self.core.lgd.clean_metadata(app_names)
 
         if not keep_manifests:

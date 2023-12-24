@@ -58,7 +58,7 @@ class TrayIcon(QSystemTrayIcon):
     def last_played(self) -> List:
         last_played = [game for game in self.rcore.games if (game.metadata and game.is_installed)]
         last_played.sort(key=lambda g: g.metadata.last_played, reverse=True)
-        return last_played[0:5]
+        return last_played[:5]
 
     @pyqtSlot(str, str)
     def notify(self, title: str, body: str):

@@ -1,5 +1,5 @@
 import os
-from typing import Union, List
+from typing import Union, List, LiteralString
 
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
@@ -37,10 +37,11 @@ class PathSpec:
     @staticmethod
     def wine_egl_prefixes(results: int = 0) -> Union[List[str], str]:
         possible_prefixes = get_prefixes()
-        prefixes = []
-        for prefix in possible_prefixes:
-            if os.path.exists(os.path.join(prefix, PathSpec.wine_egl_programdata())):
-                prefixes.append(prefix)
+        prefixes = [
+            prefix
+            for prefix in possible_prefixes
+            if os.path.exists(os.path.join(prefix, PathSpec.wine_egl_programdata()))
+        ]
         if not prefixes:
             return ""
         if not results:
@@ -59,15 +60,11 @@ class PathSpec:
         }
 
         if core is not None:
-            self.__egl_path_vars.update({
-                "{epicid}": core.lgd.userdata["account_id"]
-            })
+            self.__egl_path_vars["{epicid}"] = core.lgd.userdata["account_id"]
 
         if igame is not None:
-            self.__egl_path_vars.update({
-                "{installdir}": igame.install_path,
-            })
+            self.__egl_path_vars["{installdir}"] = igame.install_path
 
-    def resolve_egl_path_vars(self, path: str) -> str:
+    def resolve_egl_path_vars(self, path: str) -> Union[LiteralString, str, bytes]:
         cooked_path = [self.__egl_path_vars.get(p.lower(), p) for p in path.split("/")]
         return os.path.join(*cooked_path)

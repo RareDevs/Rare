@@ -243,15 +243,14 @@ class UbisoftGroup(QGroupBox):
 
             if not uplay_games:
                 self.info_label.setText(self.tr("You don't own any Ubisoft games."))
+            elif activated == len(uplay_games):
+                self.info_label.setText(self.tr("All your Ubisoft games have already been activated."))
             else:
-                if activated == len(uplay_games):
-                    self.info_label.setText(self.tr("All your Ubisoft games have already been activated."))
-                else:
-                    self.info_label.setText(
-                        self.tr("You have <b>{}</b> games available to redeem.").format(
-                            len(uplay_games) - activated
-                        )
+                self.info_label.setText(
+                    self.tr("You have <b>{}</b> games available to redeem.").format(
+                        len(uplay_games) - activated
                     )
+                )
             logger.info(f"Found {len(uplay_games) - activated} game(s) to redeem.")
 
             self.loading_widget.stop()
