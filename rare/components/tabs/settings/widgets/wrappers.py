@@ -24,7 +24,7 @@ from rare.models.wrapper import Wrapper
 from rare.shared import RareCore
 from rare.utils.misc import icon
 
-if pf.system() not in {"Windows", "Darwin"}:
+if pf.system() in {"Linux", "FreeBSD"}:
     from rare.utils.runners import proton
 
 logger = getLogger("WrapperSettings")
@@ -236,7 +236,7 @@ class WrapperSettings(QWidget):
         if not wrapper:
             return
 
-        if pf.system() not in {"Windows", "Darwin"}:
+        if pf.system() in {"Linux", "FreeBSD"}:
             compat_cmds = [tool.command() for tool in proton.find_tools()]
             if wrapper.command in compat_cmds:
                 QMessageBox.warning(

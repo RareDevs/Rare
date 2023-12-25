@@ -10,7 +10,7 @@ from .widgets.wrappers import WrapperSettings
 if pf.system() != "Windows":
     from .widgets.wine import WineSettings
 
-if pf.system() not in {"Windows", "Darwin"}:
+if pf.system() in {"Linux", "FreeBSD"}:
     from .widgets.proton import ProtonSettings
     from .widgets.overlay import MangoHudSettings
 
@@ -24,7 +24,7 @@ class LaunchSettings(LaunchSettingsBase):
 
 class GameSettings(GameSettingsBase):
     def __init__(self, parent=None):
-        if pf.system() not in {"Windows", "Darwin"}:
+        if pf.system() in {"Linux", "FreeBSD"}:
             super(GameSettings, self).__init__(
                 LaunchSettings, DxvkSettings, EnvVars,
                 WineSettings, ProtonSettings, MangoHudSettings,

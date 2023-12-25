@@ -18,7 +18,7 @@ from .overlay import DxvkSettings
 if pf.system() != "Windows":
     from .wine import WineSettings
 
-if pf.system() not in {"Windows", "Darwin"}:
+if pf.system() in {"Linux", "FreeBSD"}:
     from .proton import ProtonSettings
     from .overlay import MangoHudSettings
 
@@ -48,7 +48,7 @@ class GameSettingsBase(QWidget, SideTabContents):
             self.wine = wine_widget(self)
             self.wine.environ_changed.connect(self.env_vars.reset_model)
 
-        if pf.system() not in {"Windows", "Darwin"}:
+        if pf.system() in {"Linux", "FreeBSD"}:
             self.proton_tool = proton_widget(self)
             self.proton_tool.environ_changed.connect(self.env_vars.reset_model)
             self.proton_tool.tool_enabled.connect(self.wine.tool_enabled)
@@ -57,7 +57,7 @@ class GameSettingsBase(QWidget, SideTabContents):
         self.dxvk = dxvk_widget(self)
         self.dxvk.environ_changed.connect(self.env_vars.reset_model)
 
-        if pf.system() not in {"Windows", "Darwin"}:
+        if pf.system() in {"Linux", "FreeBSD"}:
             self.mangohud = mangohud_widget(self)
             self.mangohud.environ_changed.connect(self.env_vars.reset_model)
 
@@ -65,10 +65,10 @@ class GameSettingsBase(QWidget, SideTabContents):
         self.main_layout.addWidget(self.launch)
         if pf.system() != "Windows":
             self.main_layout.addWidget(self.wine)
-        if pf.system() not in {"Windows", "Darwin"}:
+        if pf.system() in {"Linux", "FreeBSD"}:
             self.main_layout.addWidget(self.proton_tool)
         self.main_layout.addWidget(self.dxvk)
-        if pf.system() not in {"Windows", "Darwin"}:
+        if pf.system() in {"Linux", "FreeBSD"}:
             self.main_layout.addWidget(self.mangohud)
         self.main_layout.addWidget(self.env_vars)
 

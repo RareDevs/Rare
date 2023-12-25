@@ -20,7 +20,7 @@ from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 if pf.system() != "Windows":
     from rare.components.tabs.settings.widgets.wine import WineSettings
 
-if pf.system() not in {"Windows", "Darwin"}:
+if pf.system() in {"Linux", "FreeBSD"}:
     from rare.components.tabs.settings.widgets.proton import ProtonSettings
     from rare.components.tabs.settings.widgets.overlay import MangoHudSettings
 
@@ -143,7 +143,7 @@ if pf.system() != "Windows":
             self.app_name = app_name
 
 
-if pf.system() not in {"Windows", "Darwin"}:
+if pf.system() in {"Linux", "FreeBSD"}:
 
     class GameProtonSettings(ProtonSettings):
         def load_settings(self, app_name: str):
@@ -166,7 +166,7 @@ class GameEnvVars(EnvVars):
 
 class GameSettings(GameSettingsBase):
     def __init__(self, parent=None):
-        if pf.system() not in {"Windows", "Darwin"}:
+        if pf.system() in {"Linux", "FreeBSD"}:
             super(GameSettings, self).__init__(
                 GameLaunchSettings, GameDxvkSettings, GameEnvVars,
                 GameWineSettings, GameProtonSettings, GameMangoHudSettings,
@@ -190,7 +190,7 @@ class GameSettings(GameSettingsBase):
         self.launch.load_settings(rgame)
         if pf.system() != "Windows":
             self.wine.load_settings(rgame.app_name)
-        if pf.system() not in {"Windows", "Darwin"}:
+        if pf.system() in {"Linux", "FreeBSD"}:
             self.proton_tool.load_settings(rgame.app_name)
             self.mangohud.load_settings(rgame.app_name)
         self.dxvk.load_settings(rgame.app_name)
