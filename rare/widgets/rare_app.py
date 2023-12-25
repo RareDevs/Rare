@@ -39,11 +39,11 @@ class RareAppException(QObject):
         self.logger.fatal(message)
         action = QMessageBox.warning(
             None, exc_type.__name__, message,
-            buttons=QMessageBox.Ignore | QMessageBox.Close,
-            defaultButton=QMessageBox.Ignore
+            buttons=QMessageBox.Ignore | QMessageBox.Abort,
+            defaultButton=QMessageBox.Abort
         )
-        if action == QMessageBox.RejectRole:
-            QApplication.exit(1)
+        if action == QMessageBox.Abort:
+            QApplication.quit()
 
 
 class RareApp(QApplication):

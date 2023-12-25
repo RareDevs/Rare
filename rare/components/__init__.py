@@ -31,7 +31,7 @@ class RareException(RareAppException):
             except Exception as e:
                 self.logger.fatal(str(e))
                 QMessageBox.warning(None, "Error", self.tr("Failed to login"))
-                QApplication.exit(1)
+                QApplication.quit()
         return False
 
 
