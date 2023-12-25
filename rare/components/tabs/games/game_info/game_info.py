@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (
 )
 
 from rare.models.install import SelectiveDownloadsModel
-from rare.components.dialogs.selective_dialog import SelectiveDownloadsDialog
+from rare.components.dialogs.selective_dialog import SelectiveDialog
 from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.shared.workers import VerifyWorker, MoveWorker
@@ -165,22 +165,21 @@ class GameInfo(QWidget, SideTabContents):
             )
             return
         if self.rgame.sdl_name is not None:
-            selective_dialog = SelectiveDownloadsDialog(
+            selective_dialog = SelectiveDialog(
                 self.rgame, parent=self
             )
             selective_dialog.result_ready.connect(self.verify_game)
-            selective_dialog.exec()
+            selective_dialog.open()
         else:
             self.verify_game(self.rgame)
 
     @pyqtSlot(RareGame, SelectiveDownloadsModel)
     def verify_game(self, rgame: RareGame, sdl_model: SelectiveDownloadsModel = None):
-        if sdl_model:
-            if sdl_model.accepted:
-                self.core.lgd.config.set(rgame.app_name, "install_tags", ','.join(sdl_model.install_tag))
-                self.core.lgd.save_config()
-            else:
+        if sdl_model is not None:
+            if not sdl_model.accepted or sdl_model.install_tag is None:
                 return
+            self.core.lgd.config.set(rgame.app_name, "install_tags", ','.join(sdl_model.install_tag))
+            self.core.lgd.save_config()
         worker = VerifyWorker(self.core, self.args, rgame)
         worker.signals.progress.connect(self.__on_verify_progress)
         worker.signals.result.connect(self.__on_verify_result)

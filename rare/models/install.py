@@ -124,3 +124,11 @@ class SelectiveDownloadsModel:
     app_name: str
     accepted: bool = None
     install_tag: Optional[List[str]] = None
+
+    def __bool__(self):
+        return (
+            bool(self.app_name)
+            and (self.accepted is not None)
+            and (self.install_tag is not None)
+        )
+

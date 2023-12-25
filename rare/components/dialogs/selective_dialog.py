@@ -1,73 +1,61 @@
 from typing import List, Union, Optional
 
-from PyQt5.QtCore import Qt, pyqtSignal, QCoreApplication
-from PyQt5.QtGui import QCloseEvent, QKeyEvent
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import (
-    QDialog,
     QLabel,
     QVBoxLayout,
     QCheckBox,
-    QHBoxLayout,
-    QPushButton,
     QLayout, QGroupBox,
 )
 from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.models.game import RareGame
 from rare.models.install import SelectiveDownloadsModel
+from rare.widgets.dialogs import ButtonDialog, dialog_title_game
+from rare.utils.misc import icon
 
 
-class SelectiveDownloadsDialog(QDialog):
+class SelectiveDialog(ButtonDialog):
     result_ready = pyqtSignal(RareGame, SelectiveDownloadsModel)
 
     def __init__(self, rgame: RareGame, parent=None):
-        super(SelectiveDownloadsDialog, self).__init__(parent=parent)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        super(SelectiveDialog, self).__init__(parent=parent)
         header = self.tr("Optional downloads for")
-        self.setWindowTitle(f'{header} "{rgame.app_title}" - {QCoreApplication.instance().applicationName()}')
-        self.title_label = QLabel(
-            self.tr("<h4>Select the optional downloads for <b>{}</b> to verify with.</h4>").format(rgame.app_title)
-        )
+        self.setWindowTitle(dialog_title_game(header, rgame.app_title))
+
+        title_label = QLabel(f"<h4>{dialog_title_game(header, rgame.app_title)}</h4>", self)
 
         self.core = rgame.core
         self.rgame = rgame
 
-        self.selectable = QGroupBox(self.tr("Optional downloads"), self)
-        self.selectable_layout = QVBoxLayout(self.selectable)
+        selectable_group = QGroupBox(self.tr("Optional downloads"), self)
+        self.selectable_layout = QVBoxLayout(selectable_group)
         self.selectable_layout.setSpacing(0)
 
         self.selectable_checks: List[TagCheckBox] = []
         self.config_tags: Optional[List[str]] = None
 
-        self.verify_button = QPushButton(self.tr("Verify"))
-        self.verify_button.clicked.connect(self.__on_verify)
-
-        self.cancel_button = QPushButton(self.tr("Cancel"))
-        self.cancel_button.clicked.connect(self.__on_cancel)
-
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.cancel_button)
-        button_layout.addStretch(1)
-        button_layout.addWidget(self.verify_button)
-
-        layout = QVBoxLayout(self)
+        layout = QVBoxLayout()
         layout.setSizeConstraint(QLayout.SetFixedSize)
-        layout.addWidget(self.title_label)
-        layout.addWidget(self.selectable)
-        layout.addLayout(button_layout)
+        layout.addWidget(title_label)
+        layout.addWidget(selectable_group)
+
+        self.setCentralLayout(layout)
+
+        self.accept_button.setText(self.tr("Verify"))
+        self.accept_button.setIcon(icon("fa.check"))
 
         self.options: SelectiveDownloadsModel = SelectiveDownloadsModel(rgame.app_name)
 
         config_disable_sdl = self.core.lgd.config.getboolean(self.rgame.app_name, "disable_sdl", fallback=False)
         sdl_name = get_sdl_appname(self.rgame.app_name)
         if not config_disable_sdl and sdl_name is not None:
-            self.reset_sdl_list()
+            self.create_sdl_list()
         else:
             self.options.accepted = True
-            self.close()
+            self.accept()
 
-    def reset_sdl_list(self):
+    def create_sdl_list(self):
         platform = self.rgame.igame.platform
         for cb in self.selectable_checks:
             cb.disconnect()
@@ -91,17 +79,11 @@ class SelectiveDownloadsDialog(QDialog):
                             cb.setChecked(True)
                     self.selectable_layout.addWidget(cb)
                     self.selectable_checks.append(cb)
-                # for cb in self.selectable_checks:
-                #     cb.stateChanged.connect(self.option_changed)
-                # self.selectable.setWidget(widget)
-        else:
-            self.selectable.setDisabled(True)
 
-    def closeEvent(self, a0: QCloseEvent) -> None:
+    def done_handler(self):
         self.result_ready.emit(self.rgame, self.options)
-        super(SelectiveDownloadsDialog, self).closeEvent(a0)
 
-    def __on_verify(self):
+    def accept_handler(self):
         install_tag = [""]
         for cb in self.selectable_checks:
             if data := cb.isChecked():
@@ -109,17 +91,10 @@ class SelectiveDownloadsDialog(QDialog):
                 install_tag.extend(data)
         self.options.accepted = True
         self.options.install_tag = install_tag
-        self.close()
 
-    def __on_cancel(self):
+    def reject_handler(self):
         self.options.accepted = False
         self.options.install_tag = None
-        self.close()
-
-    def keyPressEvent(self, e: QKeyEvent) -> None:
-        if e.key() == Qt.Key_Escape:
-            e.accept()
-            self.__on_cancel()
 
 
 class TagCheckBox(QCheckBox):
