@@ -51,7 +51,7 @@ class Rare(RareApp):
         # set Application name for settings
         self.main_window: Optional[MainWindow] = None
         self.launch_dialog: Optional[LaunchDialog] = None
-        self.timer: Optional[QTimer] = None
+        self.relogin_timer: Optional[QTimer] = None
 
         # This launches the application after it has been instantiated.
         # The timer's signal will be serviced once we call `exec()` on the application
@@ -61,15 +61,15 @@ class Rare(RareApp):
         dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1]).replace(tzinfo=timezone.utc)
         dt_now = datetime.utcnow().replace(tzinfo=timezone.utc)
         td = abs(dt_exp - dt_now)
-        self.timer.start(int(td.total_seconds() - 60) * 1000)
+        self.relogin_timer.start(int(td.total_seconds() - 60) * 1000)
         self.logger.info(f"Renewed session expires at {self.core.lgd.userdata['expires_at']}")
 
-    def re_login(self):
+    def relogin(self):
         self.logger.info("Session expires shortly. Renew session")
         try:
-            self.core.login()
+            self.core.login(force_refresh=True)
         except requests.exceptions.ConnectionError:
-            self.timer.start(3000)  # try again if no connection
+            self.relogin_timer.start(3000)  # try again if no connection
             return
         self.poke_timer()
 
@@ -85,8 +85,9 @@ class Rare(RareApp):
 
     @pyqtSlot()
     def __on_start_app(self):
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.re_login)
+        self.relogin_timer = QTimer(self)
+        self.relogin_timer.setTimerType(Qt.VeryCoarseTimer)
+        self.relogin_timer.timeout.connect(self.relogin)
         self.poke_timer()
 
         self.main_window = MainWindow()
@@ -105,10 +106,10 @@ class Rare(RareApp):
     def __on_exit_app(self, exit_code=0):
         threadpool = QThreadPool.globalInstance()
         threadpool.waitForDone()
-        if self.timer is not None:
-            self.timer.stop()
-            self.timer.deleteLater()
-            self.timer = None
+        if self.relogin_timer is not None:
+            self.relogin_timer.stop()
+            self.relogin_timer.deleteLater()
+            self.relogin_timer = None
         self.rcore.deleteLater()
         del self.rcore
         self.processEvents()
