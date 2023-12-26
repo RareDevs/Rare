@@ -4,7 +4,7 @@ on:
   workflow_call:
     outputs:
       version:
-        value: ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
+        value: ${{ jobs.version.outputs.tag_abbrev }}.${{ jobs.version.outputs.tag_offset }}
       branch:
         value: ${{ jobs.version.outputs.branch }}
 
