@@ -101,13 +101,13 @@ jobs:
       name1: Rare-Windows-${{ github.ref_name }}.zip
 
   macos:
-    name: MacOS
+    name: macOS
     uses: ./.github/workflows/job_macos.yml
     with:
       version: ${{ github.ref_name }}
   macos-release:
     needs: macos
-    name: MacOS
+    name: macOS
     uses: ./.github/workflows/job_release.yml
     with:
       version: ${{ github.ref_name }}

@@ -23,6 +23,13 @@ jobs:
     steps:
       - run: "true"
 
+  prerelease:
+    needs: version
+    name: Create pre-release
+    runs-on: ubuntu-latest
+    steps:
+      - run: "true"
+
   ubuntu:
     needs: version
     name: Ubuntu
@@ -30,7 +37,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   ubuntu-release:
-    needs: ubuntu
+    needs: [ubuntu, prerelease]
     name: Ubuntu
     uses: ./.github/workflows/job_release.yml
     with:
@@ -45,7 +52,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   appimage-release:
-    needs: appimage
+    needs: [appimage, prerelease]
     name: AppImage
     uses: ./.github/workflows/job_release.yml
     with:
@@ -63,7 +70,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   nuitka-win-release:
-    needs: nuitka-win
+    needs: [nuitka-win, prerelease]
     name: Nuitka Windows
     uses: ./.github/workflows/job_release.yml
     with:
@@ -78,7 +85,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-msi-release:
-    needs: cx-freeze-msi
+    needs: [cx-freeze-msi, prerelease]
     name: cx-Freeze msi
     uses: ./.github/workflows/job_release.yml
     with:
@@ -93,7 +100,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-zip-release:
-    needs: cx-freeze-zip
+    needs: [cx-freeze-zip, prerelease]
     name: cx-Freeze zip
     uses: ./.github/workflows/job_release.yml
     with:
@@ -103,13 +110,13 @@ jobs:
 
   macos:
     needs: version
-    name: MacOS
+    name: macOS
     uses: ./.github/workflows/job_macos.yml
     with:
       version: ${{ needs.version.outputs.version }}
   macos-release:
-    needs: macos
-    name: MacOS
+    needs: [macos, prerelease]
+    name: macOS
     uses: ./.github/workflows/job_release.yml
     with:
       version: ${{ needs.version.outputs.version }}

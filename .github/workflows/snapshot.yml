@@ -3,10 +3,15 @@ name: "Snapshot"
 
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
     types: [closed]
+
+
+permissions:
+  contents: write
 
 
 jobs:
@@ -22,12 +27,29 @@ jobs:
     steps:
       - run: "true"
 
+  prerelease:
+    if: ${{ github.event_name == "workflow_dispatch" }}
+    needs: version
+    name: Create pre-release
+    runs-on: ubuntu-latest
+    steps:
+      - run: "true"
+
   ubuntu:
     needs: version
     name: Ubuntu
     uses: ./.github/workflows/job_ubuntu.yml
     with:
       version: ${{ needs.version.outputs.version }}
+  ubuntu-release:
+    if: ${{ github.event_name == "workflow_dispatch" }}
+    needs: [ubuntu, prerelease]
+    name: Ubuntu
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.deb
+      name1: Rare-${{ needs.version.outputs.version }}.deb
 
   appimage:
     needs: version
@@ -35,6 +57,17 @@ jobs:
     uses: ./.github/workflows/job_appimage.yml
     with:
       version: ${{ needs.version.outputs.version }}
+  appimage-release:
+    if: ${{ github.event_name == "workflow_dispatch" }}
+    needs: [appimage, prerelease]
+    name: AppImage
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.AppImage
+      name1: Rare-${{ needs.version.outputs.version }}.AppImage
+      file2: Rare.AppImage.zsync
+      name2: Rare-${{ needs.version.outputs.version }}.AppImage.zsync
 
   nuitka-win:
     if: ${{ false }}
@@ -43,6 +76,15 @@ jobs:
     uses: ./.github/workflows/job_nuitka-win.yml
     with:
       version: ${{ needs.version.outputs.version }}
+  nuitka-win-release:
+    if: ${{ github.event_name == "workflow_dispatch" }}
+    needs: [nuitka-win, prerelease]
+    name: Nuitka Windows
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare-Windows.zip
+      name1: Rare-Windows-${{ needs.version.outputs.version }}.zip
 
   cx-freeze-msi:
     needs: version
@@ -50,6 +92,15 @@ jobs:
     uses: ./.github/workflows/job_cx-freeze-msi.yml
     with:
       version: ${{ needs.version.outputs.version }}
+  cx-freeze-msi-release:
+    if: ${{ github.event_name == "workflow_dispatch" }}
+    needs: [cx-freeze-msi, prerelease]
+    name: cx-Freeze msi
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.msi
+      name1: Rare-${{ needs.version.outputs.version }}.msi
 
   cx-freeze-zip:
     needs: version
@@ -57,11 +108,29 @@ jobs:
     uses: ./.github/workflows/job_cx-freeze-zip.yml
     with:
       version: ${{ needs.version.outputs.version }}
+  cx-freeze-zip-release:
+    if: ${{ github.event_name == "workflow_dispatch" }}
+    needs: [cx-freeze-zip, prerelease]
+    name: cx-Freeze zip
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare-Windows.zip
+      name1: Rare-Windows-${{ needs.version.outputs.version }}.zip
 
   macos:
     needs: version
-    name: MacOS
+    name: macOS
     uses: ./.github/workflows/job_macos.yml
     with:
       version: ${{ needs.version.outputs.version }}
+  macos-release:
+    if: ${{ github.event_name == "workflow_dispatch" }}
+    needs: [macos, prerelease]
+    name: macOS
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.dmg
+      name1: Rare-${{ needs.version.outputs.version }}.dmg
 
