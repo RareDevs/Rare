@@ -13,7 +13,7 @@ permissions:
 
 jobs:
 
-  describe:
+  title:
     name: Version ${{ github.ref_name }}
     runs-on: ubuntu-latest
     steps:
@@ -37,6 +37,7 @@ jobs:
     name: Ubuntu
     uses: ./.github/workflows/job_release.yml
     with:
+      version: ${{ github.ref_name }}
       file1: Rare.deb
       name1: Rare-${{ github.ref_name }}.deb
 
@@ -50,6 +51,7 @@ jobs:
     name: AppImage
     uses: ./.github/workflows/job_release.yml
     with:
+      version: ${{ github.ref_name }}
       file1: Rare.AppImage
       name1: Rare-${{ github.ref_name }}.AppImage
       file2: Rare.AppImage.zsync
@@ -66,6 +68,7 @@ jobs:
     name: Nuitka Windows
     uses: ./.github/workflows/job_release.yml
     with:
+      version: ${{ github.ref_name }}
       file1: Rare-Windows.zip
       name1: Rare-Windows-${{ github.ref_name }}.zip
 
@@ -79,6 +82,7 @@ jobs:
     name: cx-Freeze msi
     uses: ./.github/workflows/job_release.yml
     with:
+      version: ${{ github.ref_name }}
       file1: Rare.msi
       name1: Rare-${{ github.ref_name }}.msi
 
@@ -92,19 +96,21 @@ jobs:
     name: cx-Freeze zip
     uses: ./.github/workflows/job_release.yml
     with:
+      version: ${{ github.ref_name }}
       file1: Rare-Windows.zip
       name1: Rare-Windows-${{ github.ref_name }}.zip
 
   macos:
-    name: MacOS
+    name: macOS
     uses: ./.github/workflows/job_macos.yml
     with:
       version: ${{ github.ref_name }}
   macos-release:
     needs: macos
-    name: MacOS
+    name: macOS
     uses: ./.github/workflows/job_release.yml
     with:
+      version: ${{ github.ref_name }}
       file1: Rare.dmg
       name1: Rare-${{ github.ref_name }}.dmg
 

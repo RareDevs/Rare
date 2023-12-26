@@ -745,3 +745,7 @@ QLabel#WrapperSettingsLabel {
     border-color: rgb( 47,  79,  79);
     background-color: rgb( 40,  42,  46);
 }
+QLabel#WrapperSettingsLabel:disabled {
+    border-color: rgb( 67,  71,  77);
+    background-color: rgb( 32,  34,  37);
+}

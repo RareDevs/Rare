@@ -4,41 +4,39 @@ name: "Snapshot"
 
 on:
   workflow_dispatch:
+    inputs:
+      prerelease:
+        description: "Create a pre-release"
+        default: false
+        required: true
+        type: boolean
   pull_request:
     branches:
       - main
     types: [closed]
 
 
+permissions:
+  contents: write
+
+
 jobs:
 
   version:
     name: Describe
-    runs-on: ubuntu-latest
-    outputs:
-      tag_abbrev: ${{ steps.describe.outputs.tag_abbrev }}
-      tag_offset: ${{ steps.describe.outputs.tag_offset }}
-      sha_short: ${{ steps.describe.outputs.sha_short }}
-      full_desc: ${{ steps.describe.outputs.full_desc }}
-      branch: ${{ steps.describe.outputs.branch }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Describe version
-        id: describe
-        shell: bash
-        run: |
-          tag_abbrev=$(git tag --sort=v:refname | grep -oE "(^[0-9]+\.[0-9]+(.[0-9]+)?)$" | tail -1)
-          echo "tag_abbrev=$tag_abbrev" >> $GITHUB_OUTPUT
-          echo "tag_offset=$(git rev-list $tag_abbrev..HEAD --count)" >> $GITHUB_OUTPUT
-          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "full_desc=$(git describe --long --tags)" >> $GITHUB_OUTPUT
-          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+    uses: ./.github/workflows/job_version.yml
 
-  describe:
+  title:
     needs: version
-    name: Version ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
+    name: Version ${{ needs.version.outputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: "true"
+
+  prerelease:
+    if: ${{ inputs.prerelease }}
+    needs: version
+    name: Create pre-release
     runs-on: ubuntu-latest
     steps:
       - run: "true"
@@ -48,14 +46,34 @@ jobs:
     name: Ubuntu
     uses: ./.github/workflows/job_ubuntu.yml
     with:
-      version: ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
+      version: ${{ needs.version.outputs.version }}
+  ubuntu-release:
+    if: ${{ inputs.prerelease }}
+    needs: [ubuntu, prerelease]
+    name: Ubuntu
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.deb
+      name1: Rare-${{ needs.version.outputs.version }}.deb
 
   appimage:
     needs: version
     name: AppImage
     uses: ./.github/workflows/job_appimage.yml
     with:
-      version: ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
+      version: ${{ needs.version.outputs.version }}
+  appimage-release:
+    if: ${{ inputs.prerelease }}
+    needs: [appimage, prerelease]
+    name: AppImage
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.AppImage
+      name1: Rare-${{ needs.version.outputs.version }}.AppImage
+      file2: Rare.AppImage.zsync
+      name2: Rare-${{ needs.version.outputs.version }}.AppImage.zsync
 
   nuitka-win:
     if: ${{ false }}
@@ -63,26 +81,62 @@ jobs:
     name: Nuitka Windows
     uses: ./.github/workflows/job_nuitka-win.yml
     with:
-      version: ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
+      version: ${{ needs.version.outputs.version }}
+  nuitka-win-release:
+    if: ${{ inputs.prerelease }}
+    needs: [nuitka-win, prerelease]
+    name: Nuitka Windows
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare-Windows.zip
+      name1: Rare-Windows-${{ needs.version.outputs.version }}.zip
 
   cx-freeze-msi:
     needs: version
     name: cx-Freeze msi
     uses: ./.github/workflows/job_cx-freeze-msi.yml
     with:
-      version: ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
+      version: ${{ needs.version.outputs.version }}
+  cx-freeze-msi-release:
+    if: ${{ inputs.prerelease }}
+    needs: [cx-freeze-msi, prerelease]
+    name: cx-Freeze msi
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.msi
+      name1: Rare-${{ needs.version.outputs.version }}.msi
 
   cx-freeze-zip:
     needs: version
     name: cx-Freeze zip
     uses: ./.github/workflows/job_cx-freeze-zip.yml
     with:
-      version: ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
+      version: ${{ needs.version.outputs.version }}
+  cx-freeze-zip-release:
+    if: ${{ inputs.prerelease }}
+    needs: [cx-freeze-zip, prerelease]
+    name: cx-Freeze zip
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare-Windows.zip
+      name1: Rare-Windows-${{ needs.version.outputs.version }}.zip
 
   macos:
     needs: version
-    name: MacOS
+    name: macOS
     uses: ./.github/workflows/job_macos.yml
     with:
-      version: ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
+      version: ${{ needs.version.outputs.version }}
+  macos-release:
+    if: ${{ inputs.prerelease }}
+    needs: [macos, prerelease]
+    name: macOS
+    uses: ./.github/workflows/job_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.dmg
+      name1: Rare-${{ needs.version.outputs.version }}.dmg
 
