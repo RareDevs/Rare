@@ -3,14 +3,8 @@ name: job_version
 on:
   workflow_call:
     outputs:
-      tag_abbrev:
-        value: ${{ jobs.version.outputs.tag_abbrev }}
-      tag_offset:
-        value: ${{ jobs.version.outputs.tag_offset }}
-      sha_short:
-        value: ${{ jobs.version.outputs.sha_short }}
-      full_desc:
-        value: ${{ jobs.version.outputs.full_desc }}
+      version:
+        value: ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}
       branch:
         value: ${{ jobs.version.outputs.branch }}
 

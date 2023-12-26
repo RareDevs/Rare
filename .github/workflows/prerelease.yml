@@ -1,10 +1,9 @@
 
-name: "Release"
+name: "Prerelease"
 
 
 on:
-  release:
-    types: [ published ]
+  workflow_dispatch:
 
 
 permissions:
@@ -13,104 +12,107 @@ permissions:
 
 jobs:
 
+  version:
+    name: Describe
+    uses: ./.github/workflows/job_version.yml
+
   title:
-    name: Version ${{ github.ref_name }}
+    needs: version
+    name: Version ${{ needs.version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - run: "true"
 
-  pypi:
-    if: "!github.event.release.prerelease"
-    name: PyPI
-    uses: ./.github/workflows/job_pypi.yml
-    secrets: inherit
-    with:
-      version: ${{ github.ref_name }}
-
   ubuntu:
+    needs: version
     name: Ubuntu
     uses: ./.github/workflows/job_ubuntu.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
   ubuntu-release:
     needs: ubuntu
     name: Ubuntu
     uses: ./.github/workflows/job_release.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
       file1: Rare.deb
-      name1: Rare-${{ github.ref_name }}.deb
+      name1: Rare-${{ needs.version.outputs.version }}.deb
 
   appimage:
+    needs: version
     name: AppImage
     uses: ./.github/workflows/job_appimage.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
   appimage-release:
     needs: appimage
     name: AppImage
     uses: ./.github/workflows/job_release.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
       file1: Rare.AppImage
-      name1: Rare-${{ github.ref_name }}.AppImage
+      name1: Rare-${{ needs.version.outputs.version }}.AppImage
       file2: Rare.AppImage.zsync
-      name2: Rare-${{ github.ref_name }}.AppImage.zsync
+      name2: Rare-${{ needs.version.outputs.version }}.AppImage.zsync
 
   nuitka-win:
     if: ${{ false }}
+    needs: version
     name: Nuitka Windows
     uses: ./.github/workflows/job_nuitka-win.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
   nuitka-win-release:
     needs: nuitka-win
     name: Nuitka Windows
     uses: ./.github/workflows/job_release.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
       file1: Rare-Windows.zip
-      name1: Rare-Windows-${{ github.ref_name }}.zip
+      name1: Rare-Windows-${{ needs.version.outputs.version }}.zip
 
   cx-freeze-msi:
+    needs: version
     name: cx-Freeze msi
     uses: ./.github/workflows/job_cx-freeze-msi.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
   cx-freeze-msi-release:
     needs: cx-freeze-msi
     name: cx-Freeze msi
     uses: ./.github/workflows/job_release.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
       file1: Rare.msi
-      name1: Rare-${{ github.ref_name }}.msi
+      name1: Rare-${{ needs.version.outputs.version }}.msi
 
   cx-freeze-zip:
+    needs: version
     name: cx-Freeze zip
     uses: ./.github/workflows/job_cx-freeze-zip.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
   cx-freeze-zip-release:
     needs: cx-freeze-zip
     name: cx-Freeze zip
     uses: ./.github/workflows/job_release.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
       file1: Rare-Windows.zip
-      name1: Rare-Windows-${{ github.ref_name }}.zip
+      name1: Rare-Windows-${{ needs.version.outputs.version }}.zip
 
   macos:
+    needs: version
     name: MacOS
     uses: ./.github/workflows/job_macos.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
   macos-release:
     needs: macos
     name: MacOS
     uses: ./.github/workflows/job_release.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ needs.version.outputs.version }}
       file1: Rare.dmg
-      name1: Rare-${{ github.ref_name }}.dmg
+      name1: Rare-${{ needs.version.outputs.version }}.dmg
 

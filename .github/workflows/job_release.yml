@@ -3,6 +3,9 @@ name: job_release
 on:
   workflow_call:
     inputs:
+      version:
+        required: true
+        type: string
       file1:
         required: true
         type: string
@@ -30,7 +33,7 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{ inputs.file1 }}
         asset_name: ${{ inputs.name1 }}
-        tag: ${{ github.ref }}
+        tag: ${{ inputs.version }}
         overwrite: true
 
     - name: Download ${{ inputs.name2 }} artifact
@@ -45,5 +48,5 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{ inputs.file2 }}
         asset_name: ${{ inputs.name2 }}
-        tag: ${{ github.ref }}
+        tag: ${{ inputs.version }}
         overwrite: true
