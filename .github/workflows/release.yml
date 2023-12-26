@@ -13,7 +13,7 @@ permissions:
 
 jobs:
 
-  describe:
+  title:
     name: Version ${{ github.ref_name }}
     runs-on: ubuntu-latest
     steps:
