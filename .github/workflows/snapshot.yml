@@ -4,6 +4,12 @@ name: "Snapshot"
 
 on:
   workflow_dispatch:
+    inputs:
+      prerelease:
+        description: "Create a pre-release"
+        default: false
+        required: true
+        type: boolean
   pull_request:
     branches:
       - main
@@ -28,7 +34,7 @@ jobs:
       - run: "true"
 
   prerelease:
-    if: ${{ github.event_name == "workflow_dispatch" }}
+    if: ${{ inputs.prerelease }}
     needs: version
     name: Create pre-release
     runs-on: ubuntu-latest
@@ -42,7 +48,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   ubuntu-release:
-    if: ${{ github.event_name == "workflow_dispatch" }}
+    if: ${{ inputs.prerelease }}
     needs: [ubuntu, prerelease]
     name: Ubuntu
     uses: ./.github/workflows/job_release.yml
@@ -58,7 +64,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   appimage-release:
-    if: ${{ github.event_name == "workflow_dispatch" }}
+    if: ${{ inputs.prerelease }}
     needs: [appimage, prerelease]
     name: AppImage
     uses: ./.github/workflows/job_release.yml
@@ -77,7 +83,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   nuitka-win-release:
-    if: ${{ github.event_name == "workflow_dispatch" }}
+    if: ${{ inputs.prerelease }}
     needs: [nuitka-win, prerelease]
     name: Nuitka Windows
     uses: ./.github/workflows/job_release.yml
@@ -93,7 +99,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-msi-release:
-    if: ${{ github.event_name == "workflow_dispatch" }}
+    if: ${{ inputs.prerelease }}
     needs: [cx-freeze-msi, prerelease]
     name: cx-Freeze msi
     uses: ./.github/workflows/job_release.yml
@@ -109,7 +115,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-zip-release:
-    if: ${{ github.event_name == "workflow_dispatch" }}
+    if: ${{ inputs.prerelease }}
     needs: [cx-freeze-zip, prerelease]
     name: cx-Freeze zip
     uses: ./.github/workflows/job_release.yml
@@ -125,7 +131,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   macos-release:
-    if: ${{ github.event_name == "workflow_dispatch" }}
+    if: ${{ inputs.prerelease }}
     needs: [macos, prerelease]
     name: macOS
     uses: ./.github/workflows/job_release.yml
