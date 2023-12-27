@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  discussions: write
 
 
 jobs:
@@ -42,6 +43,7 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         tag: ${{ needs.version.outputs.version }}
+        commit: "main"
         name: Pre-release ${{ needs.version.outputs.version }}
         draft: false
         prerelease: true
