@@ -37,15 +37,17 @@ jobs:
     if: ${{ inputs.prerelease }}
     needs: version
     name: Create pre-release
-    uses: ncipollo/release-action@v1
-    with:
-      tag: ${{ needs.version.outputs.version }}
-      name: Pre-release ${{ github.ref }}
-      draft: false
-      prerelease: true
-      generateReleaseNotes: true
-      discussionCategory: "Releases"
-      makeLatest: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ needs.version.outputs.version }}
+        name: Pre-release ${{ needs.version.outputs.version }}
+        draft: false
+        prerelease: true
+        generateReleaseNotes: true
+        discussionCategory: "Releases"
+        makeLatest: false
 
   ubuntu:
     needs: version
