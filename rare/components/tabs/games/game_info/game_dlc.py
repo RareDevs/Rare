@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
+from PyQt5.QtGui import QShowEvent
 from PyQt5.QtWidgets import QFrame, QMessageBox, QToolBox
 
 from rare.models.game import RareGame
@@ -37,6 +38,14 @@ class GameDlcWidget(QFrame):
     @pyqtSlot()
     def __update(self):
         self.ui.action_button.setEnabled(self.rdlc.is_idle)
+        self.image.setPixmap(self.rdlc.pixmap)
+
+    def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        if self.rdlc.pixmap.isNull():
+            self.rdlc.load_pixmap()
+        super().showEvent(a0)
 
 
 class InstalledGameDlcWidget(GameDlcWidget):
