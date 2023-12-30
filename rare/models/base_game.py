@@ -154,9 +154,7 @@ class RareGameBase(QObject):
 
         @return bool If the game is an Origin game
         """
-        return (
-            self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
-        )
+        return self.game.third_party_store in {"Origin", "the EA app"}
 
     @property
     def is_overlay(self):
