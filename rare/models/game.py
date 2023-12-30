@@ -411,9 +411,7 @@ class RareGame(RareGameSlim):
 
     @property
     def is_ubisoft(self) -> bool:
-        return (
-            self.game.metadata.get("customAttributes", {}).get("partnerLinkType", {}).get("value") == "ubisoft"
-        )
+        return self.game.partner_link_type == "ubisoft"
 
     @property
     def folder_name(self) -> str:
