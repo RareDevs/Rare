@@ -19,9 +19,9 @@ class Ui_InstallDialog(object):
         self.install_dialog_layout = QtWidgets.QFormLayout(InstallDialog)
         self.install_dialog_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.install_dialog_layout.setObjectName("install_dialog_layout")
-        self.install_dialog_label = QtWidgets.QLabel(InstallDialog)
-        self.install_dialog_label.setObjectName("install_dialog_label")
-        self.install_dialog_layout.setWidget(0, QtWidgets.QFormLayout.SpanningRole, self.install_dialog_label)
+        self.title_label = QtWidgets.QLabel(InstallDialog)
+        self.title_label.setObjectName("title_label")
+        self.install_dialog_layout.setWidget(0, QtWidgets.QFormLayout.SpanningRole, self.title_label)
         self.install_dir_label = QtWidgets.QLabel(InstallDialog)
         self.install_dir_label.setObjectName("install_dir_label")
         self.install_dialog_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.install_dir_label)
@@ -112,7 +112,7 @@ class Ui_InstallDialog(object):
 
     def retranslateUi(self, InstallDialog):
         _translate = QtCore.QCoreApplication.translate
-        self.install_dialog_label.setText(_translate("InstallDialog", "error"))
+        self.title_label.setText(_translate("InstallDialog", "error"))
         self.install_dir_label.setText(_translate("InstallDialog", "Install directory"))
         self.platform_label.setText(_translate("InstallDialog", "Platform"))
         self.shortcut_label.setText(_translate("InstallDialog", "Create shortcut"))

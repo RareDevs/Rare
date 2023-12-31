@@ -40,7 +40,7 @@ class CloudSaveDialog(QDialog, Ui_SyncSaveDialog):
 
         self.status = self.CANCEL
 
-        self.title_label.setText(f"{self.title_label.text()} <b>{igame.title}</b>")
+        self.title_label.setText(f"<h4>{self.title_label.text()} <b>{igame.title}</b></h4>")
 
         newer = self.tr("Newer")
         if dt_remote and dt_local:
