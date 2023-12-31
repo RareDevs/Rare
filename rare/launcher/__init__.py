@@ -19,13 +19,17 @@ from rare.models.base_game import RareGameSlim
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
 from rare.widgets.rare_app import RareApp, RareAppException
 from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
-from .console import Console
+from .console_dialog import ConsoleDialog
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 
-DETACHED_APP_NAMES = [
-    "0a2d9f6403244d12969e11da6713137b"  # Fall Guys
-    "Fortnite"
-]
+DETACHED_APP_NAMES = {
+    "0a2d9f6403244d12969e11da6713137b",  # Fall Guys
+    "Fortnite",
+    "afdb5a85efcc45d8ae8e406e2121d81c",  # Fortnite Battle Royale
+    "09e442f830a341f698b4da42abd98c9b",  # Fortnite Festival
+    "d8f7763e07d74c209d760a679f9ed6ac",  # Lego Fortnite
+    "Fortnite_Studio",                   # Unreal Editor for Fortnite
+}
 
 
 class PreLaunchThread(QRunnable):
@@ -120,7 +124,7 @@ class RareLauncher(RareApp):
     def __init__(self, args: InitArgs):
         super(RareLauncher, self).__init__(args, f"{type(self).__name__}_{args.app_name}_{{0}}.log")
         self.socket: Optional[QLocalSocket] = None
-        self.console: Optional[Console] = None
+        self.console: Optional[ConsoleDialog] = None
         self.game_process: QProcess = QProcess(self)
         self.server: QLocalServer = QLocalServer(self)
 
@@ -141,7 +145,7 @@ class RareLauncher(RareApp):
         self.load_translator(lang)
 
         if QSettings().value("show_console", False, bool):
-            self.console = Console()
+            self.console = ConsoleDialog()
             self.console.show()
 
         self.game_process.finished.connect(self.__process_finished)
