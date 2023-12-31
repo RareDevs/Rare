@@ -155,8 +155,8 @@ class GameListHeadBar(QWidget):
     def __refresh_clicked(self):
         self.rcore.fetch()
 
-    def current_filter(self) -> int:
-        return self.filter.currentData(Qt.UserRole)
+    def current_filter(self) -> LibraryFilter:
+        return LibraryFilter(self.filter.currentData(Qt.UserRole))
 
     @pyqtSlot(int)
     def __filter_changed(self, index: int):
@@ -164,8 +164,8 @@ class GameListHeadBar(QWidget):
         self.filterChanged.emit(data)
         self.settings.setValue(options.library_filter.key, data)
 
-    def current_order(self) -> int:
-        return self.order.currentData(Qt.UserRole)
+    def current_order(self) -> LibraryOrder:
+        return LibraryOrder(self.order.currentData(Qt.UserRole))
 
     @pyqtSlot(int)
     def __order_changed(self, index: int):
