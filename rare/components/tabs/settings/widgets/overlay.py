@@ -202,7 +202,7 @@ class OverlaySettings(QGroupBox):
 class DxvkSettings(OverlaySettings):
     def __init__(self, parent=None):
         super(DxvkSettings, self).__init__(parent=parent)
-        self.setTitle(self.tr("DXVK Settings"))
+        self.setTitle(self.tr("DXVK settings"))
         self.setupWidget(
             [
                 ("fps", QCoreApplication.translate("DxvkSettings", "FPS")),
@@ -243,7 +243,7 @@ mangohud_position = [
 class MangoHudSettings(OverlaySettings):
     def __init__(self, parent=None):
         super(MangoHudSettings, self).__init__(parent=parent)
-        self.setTitle(self.tr("MangoHud Settings"))
+        self.setTitle(self.tr("MangoHud settings"))
         self.setupWidget(
             [
                 ("fps", QCoreApplication.translate("MangoSettings", "FPS")),
