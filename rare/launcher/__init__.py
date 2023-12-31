@@ -37,9 +37,8 @@ class PreLaunchThread(QRunnable):
 
     def __init__(self, core: LegendaryCore, args: InitArgs, rgame: RareGameSlim, sync_action=None):
         super(PreLaunchThread, self).__init__()
-        self.logger = getLogger(type(self).__name__)
-        self.core = core
         self.signals = self.Signals()
+        self.logger = getLogger(type(self).__name__)
         self.args = args
         self.rgame = rgame
         self.sync_action = sync_action
@@ -60,7 +59,7 @@ class PreLaunchThread(QRunnable):
 
     def prepare_launch(self, args: InitArgs) -> Optional[LaunchArgs]:
         try:
-            launch_args = get_launch_args(self.core, args)
+            launch_args = get_launch_args(self.rgame, args)
         except Exception as e:
             self.signals.error_occurred.emit(str(e))
             return None

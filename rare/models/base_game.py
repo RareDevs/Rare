@@ -161,6 +161,24 @@ class RareGameBase(QObject):
         return self.app_name == eos.EOSOverlayApp.app_name
 
     @property
+    def is_dlc(self) -> bool:
+        """!
+        @brief Property to report if Game is a dlc
+
+        @return bool
+        """
+        return self.game.is_dlc
+
+    @property
+    def is_launchable_addon(self) -> bool:
+        # lk: the attribute doesn't exist in the currently released version
+        # FIXME: remove after legendary >= 0.20.35
+        try:
+            return self.game.is_launchable_addon
+        except AttributeError:
+            return False
+
+    @property
     def version(self) -> str:
         """!
         @brief Reports the currently installed version of the Game
@@ -190,7 +208,9 @@ class RareGameSlim(RareGameBase):
 
     @property
     def is_installed(self) -> bool:
-        return True
+        if self.is_origin:
+            return True
+        return self.igame is not None
 
     def set_installed(self, installed: bool) -> None:
         pass

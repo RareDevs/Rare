@@ -2,7 +2,8 @@ requests
 PyQt5
 QtAwesome
 setuptools
-legendary-gl>=0.20.34
+legendary-gl>=0.20.34; platform_system != "Windows" or platform_system != "Darwin"
+legendary-gl @ git+https://github.com/derrod/legendary@96e07ff ; platform_system == "Windows" or platform_system == "Darwin"
 orjson
 vdf; platform_system != "Windows"
 pywin32; platform_system == "Windows"
