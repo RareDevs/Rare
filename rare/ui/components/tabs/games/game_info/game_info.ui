@@ -488,7 +488,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QToolButton" name="move_button">
+                <widget class="QPushButton" name="move_button">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -497,15 +497,6 @@
                  </property>
                  <property name="text">
                   <string>Move</string>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::InstantPopup</enum>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonTextOnly</enum>
-                 </property>
-                 <property name="arrowType">
-                  <enum>Qt::DownArrow</enum>
                  </property>
                 </widget>
                </item>

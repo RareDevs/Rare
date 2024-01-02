@@ -10,13 +10,11 @@ from PyQt5.QtCore import (
     pyqtSignal,
 )
 from PyQt5.QtWidgets import (
-    QMenu,
     QWidget,
     QMessageBox,
-    QWidgetAction,
 )
 
-from rare.models.install import SelectiveDownloadsModel
+from rare.models.install import SelectiveDownloadsModel, MoveGameModel
 from rare.components.dialogs.selective_dialog import SelectiveDialog
 from rare.models.game import RareGame
 from rare.shared import RareCore
@@ -25,7 +23,7 @@ from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
 from rare.utils.misc import format_size, icon
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
-from .move_game import MoveGamePopUp, is_game_dir
+from rare.components.dialogs.move_dialog import MoveDialog, is_game_dir
 
 logger = getLogger("GameInfo")
 
@@ -68,17 +66,8 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.modify_button.clicked.connect(self.__on_modify)
         self.ui.verify_button.clicked.connect(self.__on_verify)
         self.ui.repair_button.clicked.connect(self.__on_repair)
+        self.ui.move_button.clicked.connect(self.__on_move)
         self.ui.uninstall_button.clicked.connect(self.__on_uninstall)
-
-        self.move_game_pop_up = MoveGamePopUp(self)
-        move_action = QWidgetAction(self)
-        move_action.setDefaultWidget(self.move_game_pop_up)
-        self.ui.move_button.setMenu(QMenu(self.ui.move_button))
-        self.ui.move_button.menu().addAction(move_action)
-
-        self.move_game_pop_up.browse_done.connect(self.ui.move_button.showMenu)
-        self.move_game_pop_up.move_clicked.connect(self.ui.move_button.menu().close)
-        self.move_game_pop_up.move_clicked.connect(self.__on_move)
 
         self.steam_grade_ratings = {
             "platinum": self.tr("Platinum"),
@@ -217,17 +206,24 @@ class GameInfo(QWidget, SideTabContents):
             if ans == QMessageBox.Yes:
                 self.repair_game(rgame)
 
-    @pyqtSlot(str)
-    def __on_move(self, dst_path: str):
+    @pyqtSlot()
+    def __on_move(self):
         """ This method is to be called from the button only """
-        new_install_path = os.path.join(dst_path, os.path.basename(self.rgame.install_path))
+        move_dialog = MoveDialog(self.rgame, parent=self)
+        move_dialog.result_ready.connect(self.move_game)
+        move_dialog.open()
 
+    def move_game(self, rgame: RareGame, model: MoveGameModel):
+        if not model.accepted:
+            return
+
+        new_install_path = os.path.join(model.target_path, os.path.basename(self.rgame.install_path))
         dir_exists = False
         if os.path.isdir(new_install_path):
             dir_exists = is_game_dir(self.rgame.install_path, new_install_path)
 
         if not dir_exists:
-            for item in os.listdir(dst_path):
+            for item in os.listdir(model.target_path):
                 if os.path.basename(self.rgame.install_path) in os.path.basename(item):
                     ans = QMessageBox.question(
                         self,
@@ -248,11 +244,8 @@ class GameInfo(QWidget, SideTabContents):
                     else:
                         return
 
-        self.move_game(self.rgame, new_install_path, dir_exists)
-
-    def move_game(self, rgame: RareGame, dst_path, dst_exists):
         worker = MoveWorker(
-            self.core, rgame=rgame, dst_path=dst_path, dst_exists=dst_exists
+            self.core, rgame=rgame, dst_path=model.target_path, dst_exists=dir_exists
         )
         worker.signals.progress.connect(self.__on_move_progress)
         worker.signals.result.connect(self.__on_move_result)
@@ -394,8 +387,6 @@ class GameInfo(QWidget, SideTabContents):
             self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
         else:
             self.ui.install_button.setText(self.tr("Install"))
-
-        self.move_game_pop_up.update_game(rgame)
 
         self.rgame = rgame
         self.__update_widget()
