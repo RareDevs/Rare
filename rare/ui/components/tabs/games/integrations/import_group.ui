@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>651</width>
-    <height>218</height>
+    <height>232</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
    <item row="3" column="0">
     <widget class="QLabel" name="import_folder_label">
      <property name="text">
-      <string>Import all folders</string>
+      <string>Import all games</string>
      </property>
     </widget>
    </item>
@@ -97,7 +97,7 @@
    <item row="6" column="0">
     <widget class="QLabel" name="import_button_label">
      <property name="text">
-      <string notr="true">Error</string>
+      <string notr="true">error</string>
      </property>
     </widget>
    </item>
@@ -112,7 +112,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Import Game</string>
+        <string>Import game(s)</string>
        </property>
       </widget>
      </item>

@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ImportGroup(object):
     def setupUi(self, ImportGroup):
         ImportGroup.setObjectName("ImportGroup")
-        ImportGroup.resize(651, 218)
+        ImportGroup.resize(651, 232)
         ImportGroup.setWindowTitle("ImportGroup")
         ImportGroup.setWindowFilePath("")
         self.import_layout = QtWidgets.QFormLayout(ImportGroup)
@@ -54,7 +54,7 @@ class Ui_ImportGroup(object):
         self.import_force_check.setObjectName("import_force_check")
         self.import_layout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.import_force_check)
         self.import_button_label = QtWidgets.QLabel(ImportGroup)
-        self.import_button_label.setText("Error")
+        self.import_button_label.setText("error")
         self.import_button_label.setObjectName("import_button_label")
         self.import_layout.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.import_button_label)
         self.button_info_layout = QtWidgets.QHBoxLayout()
@@ -96,13 +96,13 @@ class Ui_ImportGroup(object):
         ImportGroup.setTitle(_translate("ImportGroup", "Import EGL game from a directory"))
         self.path_edit_label.setText(_translate("ImportGroup", "Installation path"))
         self.app_name_label.setText(_translate("ImportGroup", "Override app name"))
-        self.import_folder_label.setText(_translate("ImportGroup", "Import all folders"))
+        self.import_folder_label.setText(_translate("ImportGroup", "Import all games"))
         self.import_folder_check.setText(_translate("ImportGroup", "Scan the installation path for game folders and import them"))
         self.import_dlcs_label.setText(_translate("ImportGroup", "Import DLCs"))
         self.import_dlcs_check.setText(_translate("ImportGroup", "If a game has DLCs, try to import them too"))
         self.import_force_label.setText(_translate("ImportGroup", "Force import"))
         self.import_force_check.setText(_translate("ImportGroup", "Import game despite missing files"))
-        self.import_button.setText(_translate("ImportGroup", "Import Game"))
+        self.import_button.setText(_translate("ImportGroup", "Import game(s)"))
         self.platform_label.setText(_translate("ImportGroup", "Platform"))
         self.platform_tooltip.setText(_translate("ImportGroup", "Select the native platform of the game"))
 
