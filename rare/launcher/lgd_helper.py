@@ -75,8 +75,7 @@ def get_origin_params(core: LegendaryCore, app_name, offline: bool,
 
     if os.environ.get("container") == "flatpak":
         flatpak_command = ["flatpak-spawn", "--host"]
-        for name, value in env.items():
-            flatpak_command.append(f"--env={name}={value}")
+        flatpak_command.extend(f"--env={name}={value}" for name, value in env.items())
         command = flatpak_command + command
     else:
         for name, value in env.items():
@@ -113,8 +112,10 @@ def get_game_params(core: LegendaryCore, igame: InstalledGame, args: InitArgs,
 
     if os.environ.get("container") == "flatpak":
         full_params.extend(["flatpak-spawn", "--host"])
-        for name, value in params.environment.items():
-            full_params.append(f"--env={name}={value}")
+        full_params.extend(
+            f"--env={name}={value}"
+            for name, value in params.environment.items()
+        )
     else:
         for name, value in params.environment.items():
             launch_args.environment.insert(name, value)
@@ -141,7 +142,7 @@ def get_launch_args(core: LegendaryCore, args: InitArgs = None) -> LaunchArgs:
     resp = LaunchArgs()
 
     if not game:
-        raise GameArgsError(f"Could not find metadata for ")
+        raise GameArgsError("Could not find metadata for ")
 
     if game.third_party_store == "Origin":
         args.offline = False
