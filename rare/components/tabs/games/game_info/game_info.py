@@ -44,12 +44,12 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.uninstall_button.setObjectName("UninstallButton")
 
         self.ui.install_button.setIcon(icon("ri.install-line"))
-        self.ui.import_button.setIcon(icon("mdi.file-import"))
+        self.ui.import_button.setIcon(icon("mdi.application-import"))
 
         self.ui.modify_button.setIcon(icon("fa.gear"))
         self.ui.verify_button.setIcon(icon("fa.check"))
         self.ui.repair_button.setIcon(icon("fa.wrench"))
-        self.ui.move_button.setIcon(icon("mdi.folder-move"))
+        self.ui.move_button.setIcon(icon("mdi.folder-move-outline"))
         self.ui.uninstall_button.setIcon(icon("ri.uninstall-line"))
 
         self.rcore = RareCore.instance()
@@ -393,7 +393,7 @@ class GameInfo(QWidget, SideTabContents):
             self.ui.install_button.setText(self.tr("Link/Launch"))
             self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
         else:
-            self.ui.install_button.setText(self.tr("Install Game"))
+            self.ui.install_button.setText(self.tr("Install"))
 
         self.move_game_pop_up.update_game(rgame)
 

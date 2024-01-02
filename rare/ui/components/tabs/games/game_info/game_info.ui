@@ -395,7 +395,7 @@
            <item>
             <widget class="QPushButton" name="modify_button">
              <property name="text">
-              <string>Modify Installation</string>
+              <string>Modify</string>
              </property>
             </widget>
            </item>
@@ -424,7 +424,7 @@
                <item>
                 <widget class="QPushButton" name="verify_button">
                  <property name="text">
-                  <string>Verify Installation</string>
+                  <string>Verify</string>
                  </property>
                 </widget>
                </item>
@@ -461,7 +461,7 @@
            <item>
             <widget class="QPushButton" name="repair_button">
              <property name="text">
-              <string>Repair Installation</string>
+              <string>Repair</string>
              </property>
             </widget>
            </item>
@@ -496,7 +496,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Move Installation</string>
+                  <string>Move</string>
                  </property>
                  <property name="popupMode">
                   <enum>QToolButton::InstantPopup</enum>
@@ -542,7 +542,7 @@
            <item>
             <widget class="QPushButton" name="uninstall_button">
              <property name="text">
-              <string>Uninstall Game</string>
+              <string>Uninstall</string>
              </property>
             </widget>
            </item>
@@ -565,14 +565,14 @@
            <item>
             <widget class="QPushButton" name="install_button">
              <property name="text">
-              <string>Install Game</string>
+              <string>Install</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="import_button">
              <property name="text">
-              <string>Import Game</string>
+              <string>Import</string>
              </property>
             </widget>
            </item>
