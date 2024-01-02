@@ -330,7 +330,7 @@ class DownloadsTab(QWidget):
             parent=self,
         )
         uninstall_dialog.result_ready.connect(self.__on_uninstall_dialog_closed)
-        uninstall_dialog.exec()
+        uninstall_dialog.open()
 
     @pyqtSlot(UninstallOptionsModel)
     def __on_uninstall_dialog_closed(self, options: UninstallOptionsModel):
