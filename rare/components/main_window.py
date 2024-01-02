@@ -193,9 +193,8 @@ class MainWindow(QMainWindow):
     def timer_finished(self):
         file_path = lock_file()
         if os.path.exists(file_path):
-            file = open(file_path, "r")
-            action = file.read()
-            file.close()
+            with open(file_path, "r") as file:
+                action = file.read()
             if action.startswith("show"):
                 self.show()
             os.remove(file_path)

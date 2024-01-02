@@ -97,7 +97,7 @@ class EnvVarsTableModel(QAbstractTableModel):
         return value == match.group(0)
 
     def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> Any:
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+        if role in {Qt.DisplayRole, Qt.EditRole}:
             if index.row() == self.__data_length():
                 return ""
             if index.column() == 0:

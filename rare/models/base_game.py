@@ -318,8 +318,7 @@ class RareGameSlim(RareGameBase):
     @property
     def is_save_up_to_date(self):
         status, (_, _) = self.save_game_state
-        return (status == SaveGameStatus.SAME_AGE) \
-            or (status == SaveGameStatus.NO_SAVE)
+        return status in {SaveGameStatus.SAME_AGE, SaveGameStatus.NO_SAVE}
 
     @property
     def raw_save_path(self) -> str:

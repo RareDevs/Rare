@@ -97,7 +97,7 @@ def main() -> int:
         print(f"Rare {__version__} Codename: {__codename__}")
         return 0
 
-    if args.subparser == "start" or args.subparser == "launch":
+    if args.subparser in {"start", "launch"}:
         from rare.launcher import launch
         return launch(args)
 

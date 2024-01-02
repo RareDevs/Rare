@@ -143,11 +143,10 @@ class LoginDialog(BaseDialog):
 
     def login_successful(self):
         try:
-            if self.core.login():
-                self.logged_in = True
-                self.accept()
-            else:
+            if not self.core.login():
                 raise ValueError("Login failed.")
+            self.logged_in = True
+            self.accept()
         except Exception as e:
             logger.error(str(e))
             self.core.lgd.invalidate_userdata()

@@ -49,17 +49,14 @@ class LaunchDialog(BaseDialog):
     def login(self):
         can_launch = True
         try:
-            if self.args.offline:
-                pass
-            else:
+            if not self.args.offline:
                 # Force an update check and notice in case there are API changes
                 # self.core.check_for_updates(force=True)
                 # self.core.force_show_update = True
-                if self.core.login(force_refresh=True):
-                    logger.info("You are logged in")
-                    self.login_dialog.close()
-                else:
+                if not self.core.login(force_refresh=True):
                     raise ValueError("You are not logged in. Opening login window.")
+                logger.info("You are logged in")
+                self.login_dialog.close()
         except ValueError as e:
             logger.info(str(e))
             # Do not set parent, because it won't show a task bar icon
