@@ -117,3 +117,18 @@ class UninstallOptionsModel:
         self.accepted = values[0]
         self.keep_files = values[1]
         self.keep_config = values[2]
+
+
+@dataclass
+class SelectiveDownloadsModel:
+    app_name: str
+    accepted: bool = None
+    install_tag: Optional[List[str]] = None
+
+    def __bool__(self):
+        return (
+            bool(self.app_name)
+            and (self.accepted is not None)
+            and (self.install_tag is not None)
+        )
+

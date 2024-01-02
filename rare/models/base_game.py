@@ -154,13 +154,29 @@ class RareGameBase(QObject):
 
         @return bool If the game is an Origin game
         """
-        return (
-            self.game.metadata.get("customAttributes", {}).get("ThirdPartyManagedApp", {}).get("value") == "Origin"
-        )
+        return self.game.third_party_store in {"Origin", "the EA app"}
 
     @property
     def is_overlay(self):
         return self.app_name == eos.EOSOverlayApp.app_name
+
+    @property
+    def is_dlc(self) -> bool:
+        """!
+        @brief Property to report if Game is a dlc
+
+        @return bool
+        """
+        return self.game.is_dlc
+
+    @property
+    def is_launchable_addon(self) -> bool:
+        # lk: the attribute doesn't exist in the currently released version
+        # FIXME: remove after legendary >= 0.20.35
+        try:
+            return self.game.is_launchable_addon
+        except AttributeError:
+            return False
 
     @property
     def version(self) -> str:
@@ -192,7 +208,9 @@ class RareGameSlim(RareGameBase):
 
     @property
     def is_installed(self) -> bool:
-        return True
+        if self.is_origin:
+            return True
+        return self.igame is not None
 
     def set_installed(self, installed: bool) -> None:
         pass
@@ -300,8 +318,7 @@ class RareGameSlim(RareGameBase):
     @property
     def is_save_up_to_date(self):
         status, (_, _) = self.save_game_state
-        return (status == SaveGameStatus.SAME_AGE) \
-            or (status == SaveGameStatus.NO_SAVE)
+        return status in {SaveGameStatus.SAME_AGE, SaveGameStatus.NO_SAVE}
 
     @property
     def raw_save_path(self) -> str:

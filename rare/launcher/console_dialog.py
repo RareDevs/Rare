@@ -14,16 +14,16 @@ from PyQt5.QtWidgets import (
     QSizePolicy, QTableWidgetItem, QHeaderView, QApplication,
 )
 
-from rare.ui.components.extra.console_env import Ui_ConsoleEnv
+from rare.ui.launcher.console_env import Ui_ConsoleEnv
 
 
-class Console(QDialog):
+class ConsoleDialog(QDialog):
     term = pyqtSignal()
     kill = pyqtSignal()
     env: QProcessEnvironment
 
     def __init__(self, parent=None):
-        super(Console, self).__init__(parent=parent)
+        super(ConsoleDialog, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.setWindowTitle("Rare - Console")
         self.setGeometry(0, 0, 640, 480)
@@ -68,7 +68,7 @@ class Console(QDialog):
         self.accept_close = False
 
     def show(self) -> None:
-        super(Console, self).show()
+        super(ConsoleDialog, self).show()
         self.center_window()
 
     def center_window(self):
@@ -131,7 +131,7 @@ class Console(QDialog):
 
     def closeEvent(self, a0: QCloseEvent) -> None:
         if self.accept_close:
-            super(Console, self).closeEvent(a0)
+            super(ConsoleDialog, self).closeEvent(a0)
             a0.accept()
         else:
             self.showMinimized()

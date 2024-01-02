@@ -92,9 +92,7 @@ class ImportLogin(QFrame):
 
     def do_login(self):
         self.ui.status_label.setText(self.tr("Loading..."))
-        if os.name == "nt":
-            pass
-        else:
+        if os.name != "nt":
             logger.info("Using EGL appdata path at %s", {self.egl_appdata})
             self.core.egl.appdata_path = self.egl_appdata
         try:

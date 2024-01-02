@@ -106,10 +106,10 @@ class MainWindow(QMainWindow):
             except ModuleNotFoundError:
                 logger.warning("Discord RPC module not found")
 
-        self.timer = QTimer()
-        self.timer.setInterval(1000)
-        self.timer.timeout.connect(self.timer_finished)
-        self.timer.start()
+        self.singleton_timer = QTimer(self)
+        self.singleton_timer.setInterval(1000)
+        self.singleton_timer.timeout.connect(self.timer_finished)
+        self.singleton_timer.start()
 
         self.tray_icon: TrayIcon = TrayIcon(self)
         self.tray_icon.exit_app.connect(self.__on_exit_app)
@@ -193,13 +193,12 @@ class MainWindow(QMainWindow):
     def timer_finished(self):
         file_path = lock_file()
         if os.path.exists(file_path):
-            file = open(file_path, "r")
-            action = file.read()
-            file.close()
+            with open(file_path, "r") as file:
+                action = file.read()
             if action.startswith("show"):
                 self.show()
             os.remove(file_path)
-        self.timer.start()
+        self.singleton_timer.start()
 
     @pyqtSlot()
     @pyqtSlot(int)
@@ -258,7 +257,7 @@ class MainWindow(QMainWindow):
                 e.ignore()
                 return
         # FIXME: End of FIXME
-        self.timer.stop()
+        self.singleton_timer.stop()
         self.tray_icon.deleteLater()
         self.hide()
         self.exit_app.emit(self.__exit_code)

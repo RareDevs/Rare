@@ -146,7 +146,7 @@ class GamesTab(QStackedWidget):
     def update_count_games_label(self):
         self.head_bar.set_games_count(
             len([game for game in self.rcore.games if game.is_installed]),
-            len([game for game in self.rcore.games])
+            len(list(self.rcore.games)),
         )
 
     def setup_game_list(self):

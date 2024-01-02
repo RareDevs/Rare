@@ -374,7 +374,7 @@ class RareCore(QObject):
 
     @property
     def games(self) -> Iterator[RareGame]:
-        return self.__filter_games(lambda game: not game.is_dlc)
+        return self.__filter_games(lambda game: not game.is_dlc or game.is_launchable_addon)
 
     @property
     def installed_games(self) -> Iterator[RareGame]:

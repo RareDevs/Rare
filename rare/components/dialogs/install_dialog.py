@@ -3,49 +3,63 @@ import platform as pf
 import shutil
 from typing import Tuple, List, Union, Optional
 
-from PyQt5.QtCore import Qt, QThreadPool, QSettings, QCoreApplication
+from PyQt5.QtCore import QThreadPool, QSettings
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QKeyEvent, QShowEvent
-from PyQt5.QtWidgets import QDialog, QFileDialog, QCheckBox, QLayout, QWidget, QVBoxLayout, QFormLayout
+from PyQt5.QtGui import QShowEvent
+from PyQt5.QtWidgets import QFileDialog, QCheckBox, QWidget, QVBoxLayout, QFormLayout
 from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.models.game import RareGame
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel, InstallOptionsModel
-from rare.shared import LegendaryCoreSingleton, ArgumentsSingleton
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
-from rare.utils import config_helper
-from rare.utils.misc import format_size
+from rare.utils.misc import format_size, icon
+from rare.widgets.dialogs import ActionDialog, dialog_title_game
 from rare.widgets.collapsible_widget import CollapsibleFrame
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 
 class InstallDialogAdvanced(CollapsibleFrame):
     def __init__(self, parent=None):
-        widget = QWidget()
+        widget = QWidget(parent)
         title = widget.tr("Advanced options")
         self.ui = Ui_InstallDialogAdvanced()
         self.ui.setupUi(widget)
         super(InstallDialogAdvanced, self).__init__(widget=widget, title=title, parent=parent)
 
 
-class InstallDialog(QDialog):
+class InstallDialog(ActionDialog):
     result_ready = pyqtSignal(InstallQueueItemModel)
 
     def __init__(self, rgame: RareGame, options: InstallOptionsModel, parent=None):
         super(InstallDialog, self).__init__(parent=parent)
-        self.ui = Ui_InstallDialog()
-        self.ui.setupUi(self)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
-        # lk: set object names for CSS properties
-        self.ui.install_button.setObjectName("InstallButton")
 
-        self.core = LegendaryCoreSingleton()
+        header = self.tr("Install")
+        bicon = icon("ri.install-line")
+        if options.repair_mode:
+            header = self.tr("Repair")
+            bicon = icon("fa.wrench")
+            if options.repair_and_update:
+                header = self.tr("Repair and update")
+        elif options.update:
+            header = self.tr("Update")
+        elif options.reset_sdl:
+            header = self.tr("Modify")
+            bicon = icon("fa.gear")
+        self.setWindowTitle(dialog_title_game(header, rgame.app_title))
+
+        install_widget = QWidget(self)
+        self.ui = Ui_InstallDialog()
+        self.ui.setupUi(install_widget)
+
+        self.ui.title_label.setText(f"<h4>{dialog_title_game(header, rgame.app_title)}</h4>")
+
+        self.core = rgame.core
         self.rgame = rgame
-        self.options = options
+        self.__options: InstallOptionsModel = options
         self.__download: Optional[InstallDownloadModel] = None
+        self.__queue_item: Optional[InstallQueueItemModel] = None
 
         self.advanced = InstallDialogAdvanced(parent=self)
         self.ui.advanced_layout.addWidget(self.advanced)
@@ -54,24 +68,9 @@ class InstallDialog(QDialog):
         self.ui.selectable_layout.addWidget(self.selectable)
 
         self.options_changed = False
-        self.worker_running = False
-        self.reject_close = True
 
         self.threadpool = QThreadPool(self)
         self.threadpool.setMaxThreadCount(1)
-
-        if options.repair_mode:
-            header = self.tr("Repair")
-            if options.repair_and_update:
-                header = self.tr("Repair and update")
-        elif options.update:
-            header = self.tr("Update")
-        elif options.reset_sdl:
-            header = self.tr("Modify")
-        else:
-            header = self.tr("Install")
-        self.ui.install_dialog_label.setText(f'<h3>{header} "{self.rgame.app_title}"</h3>')
-        self.setWindowTitle(f'{header} "{self.rgame.app_title}" - {QCoreApplication.instance().applicationName()}')
 
         if options.base_path:
             base_path = options.base_path
@@ -87,8 +86,8 @@ class InstallDialog(QDialog):
             save_func=self.save_install_edit,
             parent=self,
         )
-        self.ui.install_dialog_layout.setWidget(
-            self.ui.install_dialog_layout.getWidgetPosition(self.ui.install_dir_label)[0],
+        self.ui.main_layout.setWidget(
+            self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)[0],
             QFormLayout.FieldRole, self.install_dir_edit
         )
 
@@ -110,6 +109,11 @@ class InstallDialog(QDialog):
 
         self.ui.platform_label.setDisabled(rgame.is_installed)
         self.ui.platform_combo.setDisabled(rgame.is_installed)
+
+        # if we are repairing, disable the SDL selection and open the dialog frame to be visible
+        self.selectable.setDisabled(options.repair_mode and not options.repair_and_update)
+        if options.repair_mode and not options.repair_and_update:
+            self.selectable.click()
 
         self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
         self.advanced.ui.max_workers_spin.valueChanged.connect(self.option_changed)
@@ -134,9 +138,9 @@ class InstallDialog(QDialog):
         self.reset_sdl_list(self.ui.platform_combo.currentIndex())
         self.check_incompatible_platform(self.ui.platform_combo.currentIndex())
 
-        self.ui.install_button.setEnabled(False)
+        self.accept_button.setEnabled(False)
 
-        if self.options.overlay:
+        if self.__options.overlay:
             self.ui.platform_label.setEnabled(False)
             self.ui.platform_combo.setEnabled(False)
             self.advanced.ui.ignore_space_label.setEnabled(False)
@@ -161,13 +165,17 @@ class InstallDialog(QDialog):
 
         self.non_reload_option_changed("shortcut")
 
-        self.ui.cancel_button.clicked.connect(self.__on_cancel)
-        self.ui.verify_button.clicked.connect(self.__on_verify)
-        self.ui.install_button.clicked.connect(self.__on_install)
+        self.advanced.ui.install_prereqs_check.setChecked(self.__options.install_prereqs)
 
-        self.advanced.ui.install_prereqs_check.setChecked(self.options.install_prereqs)
+        # lk: set object names for CSS properties
+        self.accept_button.setText(header)
+        self.accept_button.setIcon(bicon)
+        self.accept_button.setObjectName("InstallButton")
 
-        self.ui.install_dialog_layout.setSizeConstraint(QLayout.SetFixedSize)
+        self.action_button.setText(self.tr("Verify"))
+        self.action_button.setIcon(icon("fa.check"))
+
+        self.setCentralWidget(install_widget)
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
@@ -176,13 +184,11 @@ class InstallDialog(QDialog):
         super().showEvent(a0)
 
     def execute(self):
-        if self.options.silent:
-            self.reject_close = False
+        if self.__options.silent:
             self.get_download_info()
         else:
-            self.setModal(True)
-            self.__on_verify()
-            self.show()
+            self.action_handler()
+            self.open()
 
     @pyqtSlot(int)
     def reset_install_dir(self, index: int):
@@ -210,7 +216,7 @@ class InstallDialog(QDialog):
                 layout = QVBoxLayout(widget)
                 layout.setSpacing(0)
                 for tag, info in sdl_data.items():
-                    cb = TagCheckBox(info["name"], info["description"], info["tags"])
+                    cb = TagCheckBox(info["name"].strip(), info["description"].strip(), info["tags"])
                     if tag == "__required":
                         cb.setChecked(True)
                         cb.setDisabled(True)
@@ -237,50 +243,46 @@ class InstallDialog(QDialog):
             self.error_box()
 
     def get_options(self):
-        self.options.base_path = "" if self.rgame.is_installed else self.install_dir_edit.text()
-        self.options.max_workers = self.advanced.ui.max_workers_spin.value()
-        self.options.shared_memory = self.advanced.ui.max_memory_spin.value()
-        self.options.order_opt = self.advanced.ui.dl_optimizations_check.isChecked()
-        self.options.force = self.advanced.ui.force_download_check.isChecked()
-        self.options.ignore_space = self.advanced.ui.ignore_space_check.isChecked()
-        self.options.no_install = self.advanced.ui.download_only_check.isChecked()
-        self.options.platform = self.ui.platform_combo.currentText()
-        self.options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
-        self.options.create_shortcut = self.ui.shortcut_check.isChecked()
+        self.__options.base_path = "" if self.rgame.is_installed else self.install_dir_edit.text()
+        self.__options.max_workers = self.advanced.ui.max_workers_spin.value()
+        self.__options.shared_memory = self.advanced.ui.max_memory_spin.value()
+        self.__options.order_opt = self.advanced.ui.dl_optimizations_check.isChecked()
+        self.__options.force = self.advanced.ui.force_download_check.isChecked()
+        self.__options.ignore_space = self.advanced.ui.ignore_space_check.isChecked()
+        self.__options.no_install = self.advanced.ui.download_only_check.isChecked()
+        self.__options.platform = self.ui.platform_combo.currentText()
+        self.__options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
+        self.__options.create_shortcut = self.ui.shortcut_check.isChecked()
         if self.selectable_checks:
-            self.options.install_tag = [""]
+            self.__options.install_tag = [""]
             for cb in self.selectable_checks:
                 if data := cb.isChecked():
                     # noinspection PyTypeChecker
-                    self.options.install_tag.extend(data)
+                    self.__options.install_tag.extend(data)
 
     def get_download_info(self):
         self.__download = None
-        info_worker = InstallInfoWorker(self.core, self.options)
+        info_worker = InstallInfoWorker(self.core, self.__options)
         info_worker.signals.result.connect(self.on_worker_result)
         info_worker.signals.failed.connect(self.on_worker_failed)
-        info_worker.signals.finished.connect(self.on_worker_finished)
-        self.worker_running = True
         self.threadpool.start(info_worker)
 
-    def __on_verify(self):
+    def action_handler(self):
         self.error_box()
         message = self.tr("Updating...")
         self.ui.download_size_text.setText(message)
         self.ui.download_size_text.setStyleSheet("font-style: italic; font-weight: normal")
         self.ui.install_size_text.setText(message)
         self.ui.install_size_text.setStyleSheet("font-style: italic; font-weight: normal")
-        self.ui.cancel_button.setEnabled(False)
-        self.ui.verify_button.setEnabled(False)
-        self.ui.install_button.setEnabled(False)
+        self.setActive(True)
         self.options_changed = False
         self.get_options()
         self.get_download_info()
 
     def option_changed(self, path) -> Tuple[bool, str, int]:
         self.options_changed = True
-        self.ui.install_button.setEnabled(False)
-        self.ui.verify_button.setEnabled(not self.worker_running)
+        self.accept_button.setEnabled(False)
+        self.action_button.setEnabled(not self.active())
         return True, path, IndicatorReasonsCommon.VALID
 
     def save_install_edit(self, path: str):
@@ -291,33 +293,18 @@ class InstallDialog(QDialog):
 
     def non_reload_option_changed(self, option: str):
         if option == "download_only":
-            self.options.no_install = self.advanced.ui.download_only_check.isChecked()
+            self.__options.no_install = self.advanced.ui.download_only_check.isChecked()
         elif option == "shortcut":
             QSettings().setValue("create_shortcut", self.ui.shortcut_check.isChecked())
-            self.options.create_shortcut = self.ui.shortcut_check.isChecked()
+            self.__options.create_shortcut = self.ui.shortcut_check.isChecked()
         elif option == "install_prereqs":
-            self.options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
-
-    def __on_cancel(self):
-        if self.config_tags is not None:
-            config_helper.add_option(self.rgame.app_name, 'install_tags', ','.join(self.config_tags))
-        else:
-            # lk: this is purely for cleaning any install tags we might have added erroneously to the config
-            config_helper.remove_option(self.rgame.app_name, 'install_tags')
-
-        self.__download = None
-        self.reject_close = False
-        self.close()
-
-    def __on_install(self):
-        self.reject_close = False
-        self.close()
+            self.__options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
 
     @staticmethod
     def same_platform(download: InstallDownloadModel) -> bool:
         platform = download.igame.platform
         if pf.system() == "Windows":
-            return platform == "Windows" or platform == "Win32"
+            return platform in {"Windows", "Win32"}
         elif pf.system() == "Darwin":
             return platform == "Mac"
         else:
@@ -325,6 +312,7 @@ class InstallDialog(QDialog):
 
     @pyqtSlot(InstallDownloadModel)
     def on_worker_result(self, download: InstallDownloadModel):
+        self.setActive(False)
         self.__download = download
         download_size = download.analysis.dl_size
         install_size = download.analysis.install_size
@@ -332,14 +320,13 @@ class InstallDialog(QDialog):
         if download_size or (not download_size and (download.game.is_dlc or download.repair)):
             self.ui.download_size_text.setText(format_size(download_size))
             self.ui.download_size_text.setStyleSheet("font-style: normal; font-weight: bold")
-            self.ui.install_button.setEnabled(not self.options_changed)
+            self.accept_button.setEnabled(not self.options_changed)
         else:
             self.ui.install_size_text.setText(self.tr("Game already installed"))
             self.ui.install_size_text.setStyleSheet("font-style: italics; font-weight: normal")
         self.ui.install_size_text.setText(format_size(install_size))
         self.ui.install_size_text.setStyleSheet("font-style: normal; font-weight: bold")
-        self.ui.verify_button.setEnabled(self.options_changed)
-        self.ui.cancel_button.setEnabled(True)
+        self.action_button.setEnabled(self.options_changed)
         has_prereqs = bool(download.igame.prereq_info) and not download.igame.prereq_info.get("installed", False)
         if has_prereqs:
             prereq_name = download.igame.prereq_info.get("name", "")
@@ -352,18 +339,19 @@ class InstallDialog(QDialog):
         self.advanced.ui.install_prereqs_label.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setChecked(has_prereqs and self.same_platform(download))
-        if self.options.silent:
-            self.close()
+        if self.__options.silent:
+            self.accept()
 
     def on_worker_failed(self, message: str):
+        self.setActive(False)
         error_text = self.tr("Error")
         self.ui.download_size_text.setText(error_text)
         self.ui.install_size_text.setText(error_text)
         self.error_box(error_text, message)
-        self.ui.verify_button.setEnabled(self.options_changed)
-        self.ui.cancel_button.setEnabled(True)
-        if self.options.silent:
-            self.show()
+        self.action_button.setEnabled(self.options_changed)
+        self.accept_button.setEnabled(False)
+        if self.__options.silent:
+            self.open()
 
     def error_box(self, label: str = "", message: str = ""):
         self.ui.warning_label.setVisible(bool(label))
@@ -371,25 +359,23 @@ class InstallDialog(QDialog):
         self.ui.warning_text.setVisible(bool(message))
         self.ui.warning_text.setText(message)
 
-    def on_worker_finished(self):
-        self.worker_running = False
+    def done_handler(self):
+        self.threadpool.clear()
+        self.threadpool.waitForDone()
+        self.result_ready.emit(self.__queue_item)
 
-    # lk: happens when close() is called, also when top right 'X' is pressed.
-    # lk: reject any events not coming from the buttons in case the WM
-    # lk: doesn't honor the window hints
-    def closeEvent(self, a0: QCloseEvent) -> None:
-        if self.reject_close:
-            a0.ignore()
-        else:
-            self.threadpool.clear()
-            self.threadpool.waitForDone()
-            self.result_ready.emit(InstallQueueItemModel(options=self.options, download=self.__download))
-            super(InstallDialog, self).closeEvent(a0)
+    # lk: __download is already set at this point so just do nothing.
+    def accept_handler(self):
+        self.__queue_item = InstallQueueItemModel(options=self.__options, download=self.__download)
 
-    def keyPressEvent(self, e: QKeyEvent) -> None:
-        if e.key() == Qt.Key_Escape:
-            e.accept()
-            self.__on_cancel()
+    def reject_handler(self):
+        # FIXME: This is implemented through the selective downloads dialog now. remove soon
+        # if self.config_tags is not None:
+        #     config_helper.set_option(self.rgame.app_name, 'install_tags', ','.join(self.config_tags))
+        # else:
+        #     # lk: this is purely for cleaning any install tags we might have added erroneously to the config
+        #     config_helper.remove_option(self.rgame.app_name, 'install_tags')
+        self.__queue_item = InstallQueueItemModel(options=self.__options, download=None)
 
 
 class TagCheckBox(QCheckBox):

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SyncWidget</class>
- <widget class="QWidget" name="SyncWidget">
+ <class>CloudSyncWidget</class>
+ <widget class="QWidget" name="CloudSyncWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string notr="true">SyncWidget</string>
   </property>
-  <layout class="QHBoxLayout" name="sync_layout">
+  <layout class="QHBoxLayout" name="main_layout">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -33,7 +33,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="local_gb">
+    <widget class="QGroupBox" name="local_group">
      <property name="title">
       <string>Local</string>
      </property>
@@ -91,7 +91,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="cloud_gb">
+    <widget class="QGroupBox" name="cloud_group">
      <property name="title">
       <string>Cloud</string>
      </property>

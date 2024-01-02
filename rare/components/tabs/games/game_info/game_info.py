@@ -16,6 +16,8 @@ from PyQt5.QtWidgets import (
     QWidgetAction,
 )
 
+from rare.models.install import SelectiveDownloadsModel
+from rare.components.dialogs.selective_dialog import SelectiveDialog
 from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.shared.workers import VerifyWorker, MoveWorker
@@ -42,12 +44,12 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.uninstall_button.setObjectName("UninstallButton")
 
         self.ui.install_button.setIcon(icon("ri.install-line"))
-        self.ui.import_button.setIcon(icon("mdi.file-import"))
+        self.ui.import_button.setIcon(icon("mdi.application-import"))
 
         self.ui.modify_button.setIcon(icon("fa.gear"))
         self.ui.verify_button.setIcon(icon("fa.check"))
         self.ui.repair_button.setIcon(icon("fa.wrench"))
-        self.ui.move_button.setIcon(icon("mdi.folder-move"))
+        self.ui.move_button.setIcon(icon("mdi.folder-move-outline"))
         self.ui.uninstall_button.setIcon(icon("ri.uninstall-line"))
 
         self.rcore = RareCore.instance()
@@ -162,9 +164,22 @@ class GameInfo(QWidget, SideTabContents):
                 self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.rgame.app_title),
             )
             return
-        self.verify_game(self.rgame)
+        if self.rgame.sdl_name is not None:
+            selective_dialog = SelectiveDialog(
+                self.rgame, parent=self
+            )
+            selective_dialog.result_ready.connect(self.verify_game)
+            selective_dialog.open()
+        else:
+            self.verify_game(self.rgame)
 
-    def verify_game(self, rgame: RareGame):
+    @pyqtSlot(RareGame, SelectiveDownloadsModel)
+    def verify_game(self, rgame: RareGame, sdl_model: SelectiveDownloadsModel = None):
+        if sdl_model is not None:
+            if not sdl_model.accepted or sdl_model.install_tag is None:
+                return
+            self.core.lgd.config.set(rgame.app_name, "install_tags", ','.join(sdl_model.install_tag))
+            self.core.lgd.save_config()
         worker = VerifyWorker(self.core, self.args, rgame)
         worker.signals.progress.connect(self.__on_verify_progress)
         worker.signals.result.connect(self.__on_verify_result)
@@ -378,7 +393,7 @@ class GameInfo(QWidget, SideTabContents):
             self.ui.install_button.setText(self.tr("Link/Launch"))
             self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
         else:
-            self.ui.install_button.setText(self.tr("Install Game"))
+            self.ui.install_button.setText(self.tr("Install"))
 
         self.move_game_pop_up.update_game(rgame)
 

@@ -2,7 +2,7 @@ import json
 import logging
 from enum import IntEnum
 
-from PyQt5.QtCore import QObject, pyqtSignal, QTimer, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSignal, QTimer, pyqtSlot, Qt
 from PyQt5.QtNetwork import QLocalSocket
 from PyQt5.QtWidgets import QMessageBox
 from legendary.models.game import Game

@@ -377,15 +377,6 @@ class RareGame(RareGameSlim):
             os.unlink(self.repair_file)
 
     @property
-    def is_dlc(self) -> bool:
-        """!
-        @brief Property to report if Game is a dlc
-
-        @return bool
-        """
-        return self.game.is_dlc
-
-    @property
     def is_unreal(self) -> bool:
         """!
         @brief Property to report if a Game is an Unreal Engine bundle
@@ -411,9 +402,7 @@ class RareGame(RareGameSlim):
 
     @property
     def is_ubisoft(self) -> bool:
-        return (
-            self.game.metadata.get("customAttributes", {}).get("partnerLinkType", {}).get("value") == "ubisoft"
-        )
+        return self.game.partner_link_type == "ubisoft"
 
     @property
     def folder_name(self) -> str:
