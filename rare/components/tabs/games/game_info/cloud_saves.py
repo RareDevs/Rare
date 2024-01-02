@@ -143,7 +143,7 @@ class CloudSaves(QWidget, SideTabContents):
             self.compute_save_path_button.setDisabled(False)
             if path and not os.path.exists(path):
                 try:
-                    os.makedirs(path)
+                    os.makedirs(path, exist_ok=True)
                 except PermissionError:
                     self.cloud_save_path_edit.setText("")
                     QMessageBox.warning(
