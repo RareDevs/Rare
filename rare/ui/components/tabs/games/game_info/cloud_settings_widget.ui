@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CloudSettingsWidget</class>
+ <widget class="QGroupBox" name="CloudSettingsWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>388</width>
+    <height>78</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">CloudSettingsWidget</string>
+  </property>
+  <property name="title">
+   <string>Settings</string>
+  </property>
+  <layout class="QFormLayout" name="main_layout">
+   <property name="labelAlignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <item row="0" column="0">
+    <widget class="QLabel" name="sync_label">
+     <property name="text">
+      <string>Enable sync</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QCheckBox" name="sync_check">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string notr="true">Automatically synchronize saves with the cloud</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="path_label">
+     <property name="text">
+      <string>Saves path</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

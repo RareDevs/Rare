@@ -14,11 +14,11 @@ from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 from PyQt5.QtWidgets import QApplication
 from legendary.models.game import SaveGameStatus
 
-from rare.components.dialogs.cloud_save_dialog import CloudSaveDialog
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameSlim
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
 from rare.widgets.rare_app import RareApp, RareAppException
+from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
 from .console import Console
 from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
 
@@ -45,9 +45,9 @@ class PreLaunchThread(QRunnable):
 
     def run(self) -> None:
         self.logger.info(f"Sync action: {self.sync_action}")
-        if self.sync_action == CloudSaveDialog.UPLOAD:
+        if self.sync_action == CloudSyncDialogResult.UPLOAD:
             self.rgame.upload_saves(False)
-        elif self.sync_action == CloudSaveDialog.DOWNLOAD:
+        elif self.sync_action == CloudSyncDialogResult.DOWNLOAD:
             self.rgame.download_saves(False)
         else:
             self.logger.info("No sync action")
@@ -212,15 +212,22 @@ class RareLauncher(RareApp):
         state, (dt_local, dt_remote) = self.rgame.save_game_state
 
         if state == SaveGameStatus.LOCAL_NEWER and not self.no_sync_on_exit:
-            action = CloudSaveDialog.UPLOAD
+            action = CloudSyncDialogResult.UPLOAD
+            self.__check_saved_finished(exit_code, action)
         else:
-            action = CloudSaveDialog(self.rgame.igame, dt_local, dt_remote).get_action()
+            sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
+            sync_dialog.result_ready.connect(lambda a: self.__check_saved_finished(exit_code, a))
+            sync_dialog.open()
 
-        if action == CloudSaveDialog.UPLOAD:
+    @pyqtSlot(int, int)
+    @pyqtSlot(int, CloudSyncDialogResult)
+    def __check_saved_finished(self, exit_code, action):
+        action = CloudSyncDialogResult(action)
+        if action == CloudSyncDialogResult.UPLOAD:
             if self.console:
                 self.console.log("Uploading saves...")
             self.rgame.upload_saves()
-        elif action == CloudSaveDialog.DOWNLOAD:
+        elif action == CloudSyncDialogResult.DOWNLOAD:
             if self.console:
                 self.console.log("Downloading saves...")
             self.rgame.download_saves()
@@ -325,14 +332,20 @@ class RareLauncher(RareApp):
             return
 
         _, (dt_local, dt_remote) = self.rgame.save_game_state
-        dlg = CloudSaveDialog(self.rgame.igame, dt_local, dt_remote)
-        action = dlg.get_action()
-        if action == CloudSaveDialog.CANCEL:
+        sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
+        sync_dialog.result_ready.connect(self.__sync_ready)
+        sync_dialog.open()
+
+    @pyqtSlot(int)
+    @pyqtSlot(CloudSyncDialogResult)
+    def __sync_ready(self, action: CloudSyncDialogResult):
+        action = CloudSyncDialogResult(action)
+        if action == CloudSyncDialogResult.CANCEL:
             self.no_sync_on_exit = True
         if self.console:
-            if action == CloudSaveDialog.DOWNLOAD:
+            if action == CloudSyncDialogResult.DOWNLOAD:
                 self.console.log("Downloading saves...")
-            elif action == CloudSaveDialog.UPLOAD:
+            elif action == CloudSyncDialogResult.UPLOAD:
                 self.console.log("Uploading saves...")
         self.start_prepare(action)
 
