@@ -85,13 +85,6 @@ class RareApp(QApplication):
             logging.getLogger("requests").setLevel(logging.WARNING)
             logging.getLogger("urllib3").setLevel(logging.WARNING)
             logging.getLogger("asyncio").setLevel(logging.WARNING)
-            self.logger.info(
-                f"Launching Rare version {rare.__version__} Codename: {rare.__codename__}\n"
-                f" - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
-                f" - Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
-                f" - Running {sys.executable} {' '.join(sys.argv)}\n"
-                f" - Qt version: {QT_VERSION_STR}, PyQt version: {PYQT_VERSION_STR}"
-            )
         else:
             logging.basicConfig(
                 format="[%(name)s] %(levelname)s: %(message)s",
@@ -100,8 +93,13 @@ class RareApp(QApplication):
             )
             file_handler.setLevel(logging.DEBUG)
             logging.root.addHandler(file_handler)
-            self.logger.info(f"Launching Rare version {rare.__version__}")
-            self.logger.info(f"Operating System: {platform.system()}")
+        self.logger.info(
+            f"Launching Rare version {rare.__version__} Codename: {rare.__codename__}\n"
+            f" - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
+            f" - Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
+            f" - Running {sys.executable} {' '.join(sys.argv)}\n"
+            f" - Qt version: {QT_VERSION_STR}, PyQt version: {PYQT_VERSION_STR}"
+        )
 
         self.settings = QSettings()
 
