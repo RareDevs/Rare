@@ -64,7 +64,14 @@ class GameProcess(QObject):
         self.tried_connections += 1
 
         if self.tried_connections > 50:  # 10 seconds
-            QMessageBox.warning(None, "Error", self.tr("Connection to game process failed (Timeout)"))
+            QMessageBox.warning(
+                None,
+                self.tr("Error - {}").format(self.game.app_title),
+                self.tr(
+                    "Connection to game launcher for <b>{}</b> failed due to timeout.\n"
+                    "This is usually do it the game or Rare's game launcher already running"
+                ).format(self.game.app_name)
+            )
             self.timer.stop()
             self.finished.emit(GameProcess.Code.TIMEOUT)
 
