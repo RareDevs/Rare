@@ -101,9 +101,7 @@ class CollapsibleBase(object):
 
 
 class CollapsibleFrame(QFrame, CollapsibleBase):
-    def __init__(
-        self, widget: QWidget = None, title: str = "", button_text: str = "", animation_duration: int = 200, parent=None
-    ):
+    def __init__(self, animation_duration: int = 200, parent=None):
         super(CollapsibleFrame, self).__init__(parent=parent)
         self.setup(animation_duration)
         self.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
@@ -111,11 +109,10 @@ class CollapsibleFrame(QFrame, CollapsibleBase):
         self.toggle_button = QToolButton(self)
         self.toggle_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.toggle_button.setIcon(icon("fa.arrow-right"))
-        self.toggle_button.setText(button_text)
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(False)
 
-        self.title_label = QLabel(title)
+        self.title_label = QLabel(self)
         font = self.title_label.font()
         font.setBold(True)
         self.title_label.setFont(font)
@@ -134,8 +131,11 @@ class CollapsibleFrame(QFrame, CollapsibleBase):
 
         self.toggle_button.clicked.connect(self.animationStart)
 
-        if widget is not None:
-            self.setWidget(widget)
+    def setTitle(self, title: str):
+        self.title_label.setText(title)
+
+    def setText(self, text: str):
+        self.toggle_button.setText(text)
 
     def isChecked(self) -> bool:
         return self.toggle_button.isChecked()
@@ -156,12 +156,9 @@ class CollapsibleFrame(QFrame, CollapsibleBase):
 
 
 class CollapsibleGroupBox(QGroupBox, CollapsibleBase):
-    def __init__(
-        self, widget: QWidget = None, title: str = "", animation_duration: int = 200, parent=None
-    ):
+    def __init__(self, animation_duration: int = 200, parent=None):
         super(CollapsibleGroupBox, self).__init__(parent=parent)
         self.setup(animation_duration)
-        self.setTitle(title)
         self.setCheckable(True)
         self.setChecked(False)
 
@@ -172,9 +169,6 @@ class CollapsibleGroupBox(QGroupBox, CollapsibleBase):
         self.setLayout(self.main_layout)
 
         self.toggled.connect(self.animationStart)
-
-        if widget is not None:
-            self.setWidget(widget)
 
     def isChecked(self) -> bool:
         return super(CollapsibleGroupBox, self).isChecked()
@@ -202,7 +196,9 @@ if __name__ == "__main__":
     ui_frame = Ui_InstallDialogAdvanced()
     widget_frame = QWidget()
     ui_frame.setupUi(widget_frame)
-    collapsible_frame = CollapsibleFrame(widget_frame, title="Frame me!")
+    collapsible_frame = CollapsibleFrame()
+    collapsible_frame.setWidget(widget_frame)
+    collapsible_frame.setTitle("Frame me!")
     collapsible_frame.setDisabled(False)
 
     def replace_func_frame(state):
@@ -217,7 +213,9 @@ if __name__ == "__main__":
     ui_group = Ui_InstallDialogAdvanced()
     widget_group = QWidget()
     ui_group.setupUi(widget_group)
-    collapsible_group = CollapsibleGroupBox(widget_group, title="Group me!")
+    collapsible_group = CollapsibleGroupBox()
+    collapsible_group.setWidget(widget_group)
+    collapsible_group.setTitle("Group me!")
     collapsible_group.setDisabled(False)
 
     def replace_func_group(state):

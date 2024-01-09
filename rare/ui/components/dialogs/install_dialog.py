@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_InstallDialog(object):
     def setupUi(self, InstallDialog):
         InstallDialog.setObjectName("InstallDialog")
-        InstallDialog.resize(179, 204)
+        InstallDialog.resize(197, 216)
         InstallDialog.setWindowTitle("InstallDialog")
         self.main_layout = QtWidgets.QFormLayout(InstallDialog)
         self.main_layout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)

@@ -1,4 +1,4 @@
-requests
+requests<3.0
 PyQt5
 QtAwesome
 setuptools

@@ -6,8 +6,7 @@ from typing import Tuple, List, Union, Optional
 from PyQt5.QtCore import QThreadPool, QSettings
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QFileDialog, QCheckBox, QWidget, QVBoxLayout, QFormLayout
-from legendary.utils.selective_dl import get_sdl_appname
+from PyQt5.QtWidgets import QFileDialog, QCheckBox, QWidget, QFormLayout
 
 from rare.models.game import RareGame
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel, InstallOptionsModel
@@ -15,18 +14,46 @@ from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
 from rare.utils.misc import format_size, icon
-from rare.widgets.dialogs import ActionDialog, dialog_title_game
 from rare.widgets.collapsible_widget import CollapsibleFrame
+from rare.widgets.dialogs import ActionDialog, dialog_title_game
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.selective_widget import SelectiveWidget
 
 
 class InstallDialogAdvanced(CollapsibleFrame):
     def __init__(self, parent=None):
-        widget = QWidget(parent)
-        title = widget.tr("Advanced options")
+        super(InstallDialogAdvanced, self).__init__(parent=parent)
+
+        title = self.tr("Advanced options")
+        self.setTitle(title)
+
+        widget = QWidget(parent=self)
         self.ui = Ui_InstallDialogAdvanced()
         self.ui.setupUi(widget)
-        super(InstallDialogAdvanced, self).__init__(widget=widget, title=title, parent=parent)
+        self.setWidget(widget)
+
+
+class InstallDialogSelective(CollapsibleFrame):
+    stateChanged: pyqtSignal = pyqtSignal()
+
+    def __init__(self, rgame: RareGame, parent=None):
+        super(InstallDialogSelective, self).__init__(parent=parent)
+        title = self.tr("Optional downloads")
+        self.setTitle(title)
+        self.setEnabled(bool(rgame.sdl_name))
+
+        self.selective_widget: SelectiveWidget = None
+        self.rgame = rgame
+
+    def update_list(self, platform: str):
+        if self.selective_widget is not None:
+            self.selective_widget.deleteLater()
+        self.selective_widget = SelectiveWidget(self.rgame, platform, parent=self)
+        self.selective_widget.stateChanged.connect(self.stateChanged)
+        self.setWidget(self.selective_widget)
+
+    def install_tags(self):
+        return self.selective_widget.install_tags()
 
 
 class InstallDialog(ActionDialog):
@@ -64,7 +91,8 @@ class InstallDialog(ActionDialog):
         self.advanced = InstallDialogAdvanced(parent=self)
         self.ui.advanced_layout.addWidget(self.advanced)
 
-        self.selectable = CollapsibleFrame(widget=None, title=self.tr("Optional downloads"), parent=self)
+        self.selectable = InstallDialogSelective(rgame, parent=self)
+        self.selectable.stateChanged.connect(self.option_changed)
         self.ui.selectable_layout.addWidget(self.selectable)
 
         self.options_changed = False
@@ -82,13 +110,14 @@ class InstallDialog(ActionDialog):
         self.install_dir_edit = PathEdit(
             path=base_path,
             file_mode=QFileDialog.DirectoryOnly,
-            edit_func=self.option_changed,
-            save_func=self.save_install_edit,
+            edit_func=self.install_dir_edit_callback,
+            save_func=self.install_dir_save_callback,
             parent=self,
         )
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)[0],
-            QFormLayout.FieldRole, self.install_dir_edit
+            QFormLayout.FieldRole,
+            self.install_dir_edit,
         )
 
         self.install_dir_edit.setDisabled(rgame.is_installed)
@@ -102,10 +131,10 @@ class InstallDialog(ActionDialog):
         self.ui.platform_combo.addItems(reversed(rgame.platforms))
         combo_text = rgame.igame.platform if rgame.is_installed else rgame.default_platform
         self.ui.platform_combo.setCurrentIndex(self.ui.platform_combo.findText(combo_text))
-        self.ui.platform_combo.currentIndexChanged.connect(lambda i: self.option_changed(None))
+        self.ui.platform_combo.currentIndexChanged.connect(self.option_changed)
         self.ui.platform_combo.currentIndexChanged.connect(self.check_incompatible_platform)
         self.ui.platform_combo.currentIndexChanged.connect(self.reset_install_dir)
-        self.ui.platform_combo.currentIndexChanged.connect(self.reset_sdl_list)
+        self.ui.platform_combo.currentTextChanged.connect(self.selectable.update_list)
 
         self.ui.platform_label.setDisabled(rgame.is_installed)
         self.ui.platform_combo.setDisabled(rgame.is_installed)
@@ -131,11 +160,8 @@ class InstallDialog(ActionDialog):
             lambda: self.non_reload_option_changed("shortcut")
         )
 
-        self.selectable_checks: List[TagCheckBox] = []
-        self.config_tags: Optional[List[str]] = None
-
         self.reset_install_dir(self.ui.platform_combo.currentIndex())
-        self.reset_sdl_list(self.ui.platform_combo.currentIndex())
+        self.selectable.update_list(self.ui.platform_combo.currentText())
         self.check_incompatible_platform(self.ui.platform_combo.currentIndex())
 
         self.accept_button.setEnabled(False)
@@ -180,7 +206,7 @@ class InstallDialog(ActionDialog):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        self.save_install_edit(self.install_dir_edit.text())
+        self.install_dir_save_callback(self.install_dir_edit.text())
         super().showEvent(a0)
 
     def execute(self):
@@ -198,67 +224,29 @@ class InstallDialog(ActionDialog):
             self.install_dir_edit.setText(default_dir)
 
     @pyqtSlot(int)
-    def reset_sdl_list(self, index: int):
-        platform = self.ui.platform_combo.itemText(index)
-        for cb in self.selectable_checks:
-            cb.disconnect()
-            cb.deleteLater()
-        self.selectable_checks.clear()
-
-        if config_tags := self.core.lgd.config.get(self.rgame.app_name, 'install_tags', fallback=None):
-            self.config_tags = config_tags.split(",")
-        config_disable_sdl = self.core.lgd.config.getboolean(self.rgame.app_name, 'disable_sdl', fallback=False)
-        sdl_name = get_sdl_appname(self.rgame.app_name)
-        if not config_disable_sdl and sdl_name is not None:
-            sdl_data = self.core.get_sdl_data(sdl_name, platform=platform)
-            if sdl_data:
-                widget = QWidget(self.selectable)
-                layout = QVBoxLayout(widget)
-                layout.setSpacing(0)
-                for tag, info in sdl_data.items():
-                    cb = TagCheckBox(info["name"].strip(), info["description"].strip(), info["tags"])
-                    if tag == "__required":
-                        cb.setChecked(True)
-                        cb.setDisabled(True)
-                    if self.config_tags is not None:
-                        if all(elem in self.config_tags for elem in info["tags"]):
-                            cb.setChecked(True)
-                    layout.addWidget(cb)
-                    self.selectable_checks.append(cb)
-                for cb in self.selectable_checks:
-                    cb.stateChanged.connect(self.option_changed)
-                self.selectable.setWidget(widget)
-        else:
-            self.selectable.setDisabled(True)
-
-    @pyqtSlot(int)
     def check_incompatible_platform(self, index: int):
         platform = self.ui.platform_combo.itemText(index)
         if platform == "Mac" and pf.system() != "Darwin":
             self.error_box(
                 self.tr("Warning"),
-                self.tr("You will not be able to run the game if you select <b>{}</b> as platform").format(platform)
+                self.tr("You will not be able to run the game if you select <b>{}</b> as platform").format(platform),
             )
         else:
             self.error_box()
 
     def get_options(self):
         self.__options.base_path = "" if self.rgame.is_installed else self.install_dir_edit.text()
+        self.__options.platform = self.ui.platform_combo.currentText()
+        self.__options.create_shortcut = self.ui.shortcut_check.isChecked()
         self.__options.max_workers = self.advanced.ui.max_workers_spin.value()
         self.__options.shared_memory = self.advanced.ui.max_memory_spin.value()
         self.__options.order_opt = self.advanced.ui.dl_optimizations_check.isChecked()
         self.__options.force = self.advanced.ui.force_download_check.isChecked()
         self.__options.ignore_space = self.advanced.ui.ignore_space_check.isChecked()
         self.__options.no_install = self.advanced.ui.download_only_check.isChecked()
-        self.__options.platform = self.ui.platform_combo.currentText()
         self.__options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
-        self.__options.create_shortcut = self.ui.shortcut_check.isChecked()
-        if self.selectable_checks:
-            self.__options.install_tag = [""]
-            for cb in self.selectable_checks:
-                if data := cb.isChecked():
-                    # noinspection PyTypeChecker
-                    self.__options.install_tag.extend(data)
+        self.__options.install_tag = self.selectable.install_tags()
+        self.__options.reset_sdl = True
 
     def get_download_info(self):
         self.__download = None
@@ -279,13 +267,17 @@ class InstallDialog(ActionDialog):
         self.get_options()
         self.get_download_info()
 
-    def option_changed(self, path) -> Tuple[bool, str, int]:
+    @pyqtSlot()
+    def option_changed(self):
         self.options_changed = True
         self.accept_button.setEnabled(False)
         self.action_button.setEnabled(not self.active())
+
+    def install_dir_edit_callback(self, path: str) -> Tuple[bool, str, int]:
+        self.option_changed()
         return True, path, IndicatorReasonsCommon.VALID
 
-    def save_install_edit(self, path: str):
+    def install_dir_save_callback(self, path: str):
         if not os.path.exists(path):
             return
         _, _, free_space = shutil.disk_usage(path)
@@ -369,12 +361,6 @@ class InstallDialog(ActionDialog):
         self.__queue_item = InstallQueueItemModel(options=self.__options, download=self.__download)
 
     def reject_handler(self):
-        # FIXME: This is implemented through the selective downloads dialog now. remove soon
-        # if self.config_tags is not None:
-        #     config_helper.set_option(self.rgame.app_name, 'install_tags', ','.join(self.config_tags))
-        # else:
-        #     # lk: this is purely for cleaning any install tags we might have added erroneously to the config
-        #     config_helper.remove_option(self.rgame.app_name, 'install_tags')
         self.__queue_item = InstallQueueItemModel(options=self.__options, download=None)
 
 
@@ -387,6 +373,3 @@ class TagCheckBox(QCheckBox):
 
     def isChecked(self) -> Union[bool, List[str]]:
         return self.tags if super(TagCheckBox, self).isChecked() else False
-
-
-

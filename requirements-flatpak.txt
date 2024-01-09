@@ -1,4 +1,4 @@
-requests
+requests<3.0
 QtAwesome
 setuptools
 legendary-gl>=0.20.34
