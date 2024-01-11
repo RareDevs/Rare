@@ -58,10 +58,10 @@ class ImageSize:
         def base(self) -> 'ImageSize.Preset':
             return self.__base
 
-    Image = Preset(1, 2)
+    Image = Preset(1, 1)
     """! @brief Size and pixel ratio of the image on disk"""
 
-    ImageWide = Preset(1, 2, Orientation.Wide)
+    ImageWide = Preset(1, 1, Orientation.Wide)
     """! @brief Size and pixel ratio for wide 16/9 image on disk"""
 
     Display = Preset(1, 1, base=Image)
