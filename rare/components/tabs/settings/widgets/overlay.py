@@ -31,8 +31,8 @@ class OverlayComboBox(QComboBox):
     def __init__(self, parent=None):
         super(OverlayComboBox, self).__init__(parent=parent)
         self.valueChanged = self.currentIndexChanged
-        self.getValue = self.currentText
         self.setValue = self.setCurrentText
+        self.getValue = self.currentText
 
     def setDefault(self):
         self.setCurrentIndex(0)
@@ -122,7 +122,6 @@ class OverlaySettings(QGroupBox):
         raise NotImplementedError
 
     def update_settings(self):
-
         if self.ui.show_overlay_combo.currentIndex() == 0:
             # System default
             config.remove_envvar(self.app_name, self.envvar_name)
@@ -307,7 +306,6 @@ class MangoHudSettings(OverlaySettings):
             config.set_envvar(self.app_name, "MANGOHUD_CONFIG", self.force_disabled)
 
         elif state == ActivationStates.ENABLED:
-
             mango_config = config.get_envvar(self.app_name, "MANGOHUD_CONFIG", fallback="")
 
             split_config = mango_config.split(",")
