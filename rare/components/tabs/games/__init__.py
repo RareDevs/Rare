@@ -90,7 +90,7 @@ class GamesTab(QStackedWidget):
         else:
             self.view_stack.setCurrentWidget(self.icon_view_scroll)
 
-        self.head_bar.search_bar.textChanged.connect(lambda x: self.filter_games("", x))
+        self.head_bar.search_bar.textChanged.connect(self.search_games)
         self.head_bar.search_bar.textChanged.connect(self.scroll_to_top)
         self.head_bar.filterChanged.connect(self.filter_games)
         self.head_bar.filterChanged.connect(self.scroll_to_top)
@@ -170,16 +170,15 @@ class GamesTab(QStackedWidget):
         list_widget.show_info.connect(self.show_game_info)
         return icon_widget, list_widget
 
+    @pyqtSlot(str)
+    def search_games(self, search_text: str = ""):
+        self.filter_games(self.head_bar.current_filter(), search_text)
+
     @pyqtSlot(int)
     @pyqtSlot(int, str)
     def filter_games(self, library_filter: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
-
-        # if library_filter:
-        #     self.active_filter = filter_type
-        # if not library_filter and (t := self.active_filter):
-        #     library_filter = t
 
         self.library_controller.filter_game_views(library_filter, search_text.lower())
 

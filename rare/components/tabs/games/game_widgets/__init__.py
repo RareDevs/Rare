@@ -67,15 +67,15 @@ class LibraryWidgetController(QObject):
 
         return visible, opacity
 
-    def filter_game_views(self, filter_name="all", search_text: str = ""):
+    def filter_game_views(self, library_filter=LibraryFilter.ALL, search_text: str = ""):
         icon_widgets = self._icon_container.findChildren(IconGameWidget)
         list_widgets = self._list_container.findChildren(ListGameWidget)
         for iw in icon_widgets:
-            visibility, opacity = self.__visibility(iw, filter_name, search_text)
+            visibility, opacity = self.__visibility(iw, library_filter, search_text)
             iw.setOpacity(opacity)
             iw.setVisible(visibility)
         for lw in list_widgets:
-            visibility, opacity = self.__visibility(lw, filter_name, search_text)
+            visibility, opacity = self.__visibility(lw, library_filter, search_text)
             lw.setOpacity(opacity)
             lw.setVisible(visibility)
         self.order_game_views(search_text=search_text)
