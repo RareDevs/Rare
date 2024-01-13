@@ -45,6 +45,9 @@ class SelectiveWidget(QWidget):
                             cb.setChecked(True)
                     cb.stateChanged.connect(self.stateChanged)
                     main_layout.addWidget(cb)
+            self.parent().setDisabled(False)
+        else:
+            self.parent().setDisabled(True)
 
     def install_tags(self):
         install_tags = [""]
