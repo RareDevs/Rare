@@ -8,7 +8,7 @@ from threading import Lock
 from typing import List, Optional, Dict, Set
 
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QPixmapCache
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
 
@@ -481,6 +481,7 @@ class RareGame(RareGameSlim):
 
     def set_pixmap(self):
         self.pixmap = self.image_manager.get_pixmap(self.app_name, self.is_installed)
+        QPixmapCache.clear()
         if not self.pixmap.isNull():
             self.signals.widget.update.emit()
 
