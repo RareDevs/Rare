@@ -105,9 +105,15 @@ def get_game_params(rgame: RareGameSlim, args: InitArgs, launch_args: LaunchArgs
             app_name = rgame.game.metadata['mainGameItem']['releaseInfo'][0]['appId']
             rgame.igame = rgame.core.get_installed_game(app_name)
 
-    params: LaunchParameters = rgame.core.get_launch_parameters(
-        app_name=rgame.game.app_name, offline=args.offline, addon_app_name=rgame.igame.app_name
-    )
+    try:
+        params: LaunchParameters = rgame.core.get_launch_parameters(
+            app_name=rgame.game.app_name, offline=args.offline, addon_app_name=rgame.igame.app_name
+        )
+    except TypeError:
+        logger.warning("Using older get_launch_parameters due to legendary version")
+        params: LaunchParameters = rgame.core.get_launch_parameters(
+            app_name=rgame.game.app_name, offline=args.offline
+        )
 
     full_params = []
     launch_args.environment = QProcessEnvironment.systemEnvironment()
