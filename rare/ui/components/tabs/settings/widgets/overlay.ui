@@ -11,10 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">Overlay Settings</string>
+   <string notr="true">OverlaySettings</string>
   </property>
   <property name="title">
-   <string/>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="main_layout">
    <item row="0" column="0">
@@ -38,27 +38,12 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <item>
-      <property name="text">
-       <string>System Default</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Hidden</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Visible</string>
-      </property>
-     </item>
     </widget>
    </item>
    <item row="2" column="0" colspan="3">
     <widget class="QGroupBox" name="options_group">
      <property name="title">
-      <string/>
+      <string notr="true"/>
      </property>
      <layout class="QGridLayout" name="options_layout">
       <item row="1" column="0">

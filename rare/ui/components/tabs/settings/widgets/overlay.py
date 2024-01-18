@@ -15,7 +15,7 @@ class Ui_OverlaySettings(object):
     def setupUi(self, OverlaySettings):
         OverlaySettings.setObjectName("OverlaySettings")
         OverlaySettings.resize(555, 188)
-        OverlaySettings.setWindowTitle("Overlay Settings")
+        OverlaySettings.setWindowTitle("OverlaySettings")
         OverlaySettings.setTitle("")
         self.main_layout = QtWidgets.QGridLayout(OverlaySettings)
         self.main_layout.setObjectName("main_layout")
@@ -34,9 +34,6 @@ class Ui_OverlaySettings(object):
         sizePolicy.setHeightForWidth(self.show_overlay_combo.sizePolicy().hasHeightForWidth())
         self.show_overlay_combo.setSizePolicy(sizePolicy)
         self.show_overlay_combo.setObjectName("show_overlay_combo")
-        self.show_overlay_combo.addItem("")
-        self.show_overlay_combo.addItem("")
-        self.show_overlay_combo.addItem("")
         self.main_layout.addWidget(self.show_overlay_combo, 0, 1, 1, 2)
         self.options_group = QtWidgets.QGroupBox(OverlaySettings)
         self.options_group.setTitle("")
@@ -59,9 +56,6 @@ class Ui_OverlaySettings(object):
     def retranslateUi(self, OverlaySettings):
         _translate = QtCore.QCoreApplication.translate
         self.show_overlay_label.setText(_translate("OverlaySettings", "Show HUD"))
-        self.show_overlay_combo.setItemText(0, _translate("OverlaySettings", "System Default"))
-        self.show_overlay_combo.setItemText(1, _translate("OverlaySettings", "Hidden"))
-        self.show_overlay_combo.setItemText(2, _translate("OverlaySettings", "Visible"))
 
 
 if __name__ == "__main__":
