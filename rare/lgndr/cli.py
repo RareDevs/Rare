@@ -341,7 +341,7 @@ class LegendaryCLI(LegendaryCLIReal):
             self.core.uninstall_tag(old_igame)
             self.core.install_game(old_igame)
 
-        if old_igame.install_tags:
+        if old_igame and old_igame.install_tags:
             self.core.lgd.config.set(game.app_name, 'install_tags', ','.join(old_igame.install_tags))
             self.core.lgd.save_config()
 
