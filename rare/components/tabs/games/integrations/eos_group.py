@@ -4,6 +4,7 @@ from logging import getLogger
 from typing import Optional
 
 from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool, Qt, pyqtSlot, QSize
+from PyQt5.QtGui import QShowEvent
 from PyQt5.QtWidgets import (
     QGroupBox,
     QMessageBox,
@@ -20,7 +21,7 @@ from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareEosOverlay
 from rare.shared import RareCore
 from rare.ui.components.tabs.games.integrations.eos_widget import Ui_EosWidget
-from rare.utils import config_helper
+from rare.utils import config_helper as config
 from rare.utils.misc import icon
 from rare.widgets.elide_label import ElideLabel
 
@@ -51,7 +52,10 @@ class EosPrefixWidget(QFrame):
         self.indicator = QLabel(parent=self)
         self.indicator.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
 
-        self.prefix_label = ElideLabel(prefix if prefix is not None else overlay.app_title, parent=self)
+        self.prefix_label = ElideLabel(
+            prefix.replace(os.path.expanduser("~"), "~") if prefix is not None else overlay.app_title,
+            parent=self,
+        )
         self.overlay_label = ElideLabel(parent=self)
         self.overlay_label.setDisabled(True)
 
@@ -93,7 +97,7 @@ class EosPrefixWidget(QFrame):
     def update_state(self) -> None:
         active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
 
-        self.overlay_label.setText(f"<i>{active_path}<\i>")
+        self.overlay_label.setText(f"<i>{active_path}</i>")
         self.path_select.clear()
 
         if not self.overlay.is_installed and not self.overlay.available_paths(self.prefix):
@@ -102,8 +106,6 @@ class EosPrefixWidget(QFrame):
             self.overlay_label.setText(self.overlay.active_path(self.prefix))
             self.button.setText(self.tr("Unavailable"))
             return
-
-        self.setDisabled(False)
 
         if self.overlay.is_enabled(self.prefix):
             self.indicator.setPixmap(icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
@@ -120,6 +122,8 @@ class EosPrefixWidget(QFrame):
             self.path_select.setItemData(self.path_select.findData(path), path, Qt.ToolTipRole)
         self.path_select.setCurrentIndex(self.path_select.findData(active_path))
 
+        self.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
+
     @pyqtSlot()
     def action(self) -> None:
         path = self.path_select.currentData(Qt.UserRole)
@@ -128,10 +132,14 @@ class EosPrefixWidget(QFrame):
         if self.overlay.is_enabled(self.prefix) and (path == active_path):
             if not self.overlay.disable(prefix=self.prefix):
                 QMessageBox.warning(
-                    self, "Warning",
+                    self,
+                    "Warning",
                     self.tr("Failed to completely disable the active EOS Overlay.{}").format(
-                        self.tr(" Since the previous overlay was managed by EGL you can safely ignore this is.")
-                        if active_path != install_path else ""
+                        self.tr(
+                            " Since the previous overlay was managed by EGL you can safely ignore this is."
+                        )
+                        if active_path != install_path
+                        else ""
                     ),
                 )
         else:
@@ -141,7 +149,9 @@ class EosPrefixWidget(QFrame):
                     self,
                     "Warning",
                     self.tr("Failed to completely enable EOS overlay.{}").format(
-                        self.tr(" Since the previous overlay was managed by EGL you can safely ignore this is.")
+                        self.tr(
+                            " Since the previous overlay was managed by EGL you can safely ignore this is."
+                        )
                         if active_path != install_path
                         else ""
                     ),
@@ -175,6 +185,7 @@ class EosGroup(QGroupBox):
         self.signals = self.rcore.signals()
         self.overlay = self.rcore.get_overlay()
 
+        self.overlay.signals.widget.update.connect(self.update_state)
         self.overlay.signals.game.installed.connect(self.install_finished)
         self.overlay.signals.game.uninstalled.connect(self.uninstall_finished)
 
@@ -191,18 +202,29 @@ class EosGroup(QGroupBox):
         self.ui.update_button.setEnabled(False)
 
         self.threadpool = QThreadPool.globalInstance()
+        self.worker: Optional[CheckForUpdateWorker] = None
 
-    def showEvent(self, a0) -> None:
+    def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
         self.check_for_update()
         self.update_prefixes()
+        self.update_state()
         super().showEvent(a0)
+
+    @pyqtSlot()
+    def update_state(self):
+        self.ui.install_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
+        self.ui.update_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE and self.overlay.has_update)
+        self.ui.uninstall_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
 
     def update_prefixes(self):
         for widget in self.findChildren(EosPrefixWidget, options=Qt.FindDirectChildrenOnly):
             widget.deleteLater()
 
         if platform.system() != "Windows":
-            prefixes = config_helper.get_wine_prefixes()
+            prefixes = config.get_prefixes()
+            prefixes = {prefix for prefix in prefixes if config.prefix_exists(prefix)}
             if platform.system() == "Darwin":
                 # TODO: add crossover support
                 pass
@@ -214,16 +236,22 @@ class EosGroup(QGroupBox):
             widget = EosPrefixWidget(self.overlay, None)
             self.ui.eos_layout.addWidget(widget)
 
+    @pyqtSlot(bool)
+    def check_for_update_finished(self, update_available: bool):
+        self.worker = None
+        self.ui.update_button.setEnabled(update_available)
+
     def check_for_update(self):
+        self.ui.update_button.setEnabled(False)
         if not self.overlay.is_installed:
             return
 
-        def worker_finished(update_available):
-            self.ui.update_button.setEnabled(update_available)
+        if self.worker is not None:
+            return
 
-        worker = CheckForUpdateWorker(self.core)
-        worker.signals.update_available.connect(worker_finished)
-        QThreadPool.globalInstance().start(worker)
+        self.worker = CheckForUpdateWorker(self.core)
+        self.worker.signals.update_available.connect(self.check_for_update_finished)
+        QThreadPool.globalInstance().start(self.worker)
 
     @pyqtSlot()
     def install_finished(self):

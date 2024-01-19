@@ -575,7 +575,9 @@ class RareEosOverlay(RareGameBase):
 
     @property
     def has_update(self) -> bool:
-        self.core.check_for_overlay_updates()
+        # lk: Don't check for updates here to ensure fast return
+        # There is already a thread in the EosGroup form to update it for us asynchronously
+        # and legendary does it too during login
         return self.core.overlay_update_available
 
     def is_enabled(self, prefix: Optional[str] = None) -> bool:
@@ -644,13 +646,11 @@ class RareEosOverlay(RareGameBase):
     def install(self) -> bool:
         if not self.is_idle:
             return False
-        if self.is_installed:
-            base_path = self.igame.install_path
-        else:
-            base_path = self.core.get_default_install_dir()
         self.signals.game.install.emit(
             InstallOptionsModel(
-                app_name=self.app_name, base_path=base_path, platform="Windows", overlay=True
+                app_name=self.app_name,
+                base_path=self.core.get_default_install_dir(),
+                platform="Windows", update=self.is_installed, overlay=True
             )
         )
         return True
