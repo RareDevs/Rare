@@ -235,7 +235,8 @@ class InstallDialog(ActionDialog):
             self.error_box()
 
     def get_options(self):
-        self.__options.base_path = "" if self.rgame.is_installed else self.install_dir_edit.text()
+        base_path = os.path.join(self.install_dir_edit.text(), ".overlay" if self.__options.overlay else "")
+        self.__options.base_path = "" if self.rgame.is_installed else base_path
         self.__options.platform = self.ui.platform_combo.currentText()
         self.__options.create_shortcut = self.ui.shortcut_check.isChecked()
         self.__options.max_workers = self.advanced.ui.max_workers_spin.value()

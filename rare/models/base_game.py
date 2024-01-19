@@ -8,6 +8,7 @@ from typing import Optional, List, Tuple
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSettings
 from legendary.lfs import eos
 from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
+from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import UninstallOptionsModel, InstallOptionsModel
@@ -177,6 +178,10 @@ class RareGameBase(QObject):
             return self.game.is_launchable_addon
         except AttributeError:
             return False
+
+    @property
+    def sdl_name(self) -> Optional[str]:
+        return get_sdl_appname(self.app_name)
 
     @property
     def version(self) -> str:

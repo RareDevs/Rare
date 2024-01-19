@@ -11,7 +11,6 @@ from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
 from PyQt5.QtGui import QPixmap
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
-from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameBase, RareGameSlim
@@ -414,10 +413,6 @@ class RareGame(RareGameSlim):
         )
 
     @property
-    def sdl_name(self) -> Optional[str]:
-        return get_sdl_appname(self.app_name)
-
-    @property
     def save_path(self) -> Optional[str]:
         return super(RareGame, self).save_path
 
@@ -628,7 +623,7 @@ class RareEosOverlay(RareGameBase):
         try:
             eos.add_registry_entries(path, prefix)
         except PermissionError as e:
-            logger.error("Exception while writing registry to enable the overlay .")
+            logger.error("Exception while writing registry to enable the overlay.")
             logger.error(e)
             return False
         logger.info(f"Enabled overlay at: {path} for prefix: {prefix}")
@@ -652,10 +647,7 @@ class RareEosOverlay(RareGameBase):
         if self.is_installed:
             base_path = self.igame.install_path
         else:
-            base_path = os.path.join(
-                self.core.lgd.config.get("Legendary", "install_dir", fallback=os.path.expanduser("~/legendary")),
-                ".overlay"
-            )
+            base_path = self.core.get_default_install_dir()
         self.signals.game.install.emit(
             InstallOptionsModel(
                 app_name=self.app_name, base_path=base_path, platform="Windows", overlay=True
