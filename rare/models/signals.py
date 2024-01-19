@@ -11,8 +11,8 @@ class GlobalSignals:
     class ApplicationSignals(QObject):
         # int: exit code
         quit = pyqtSignal(int)
-        # str: app_title
-        notify = pyqtSignal(str)
+        # str: title, str: body
+        notify = pyqtSignal(str, str)
         # none
         prefix_updated = pyqtSignal()
         # none

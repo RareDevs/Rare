@@ -34,8 +34,8 @@ class DlResultModel:
     sync_saves: bool = False
     tip_url: str = ""
     shortcut: bool = False
-    shortcut_name: str = ""
-    shortcut_title: str = ""
+    folder_name: str = ""
+    app_title: str = ""
 
 
 class DlThread(QThread):
@@ -151,10 +151,9 @@ class DlThread(QThread):
                 self.item.download.repair_file,
             )
 
-            if not self.item.options.update and self.item.options.create_shortcut:
-                result.shortcut = True
-                result.shortcut_name = self.rgame.folder_name
-                result.shortcut_title = self.rgame.app_title
+            result.shortcut = not self.item.options.update and self.item.options.create_shortcut
+            result.folder_name = self.rgame.folder_name
+            result.app_title = self.rgame.app_title
 
         self.__finish(result)
 
