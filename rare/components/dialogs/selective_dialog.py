@@ -25,7 +25,10 @@ class SelectiveDialog(ButtonDialog):
         container_layout.setContentsMargins(0, 0, 0, 0)
         container_layout.addWidget(self.selective_widget)
 
-        self.setCentralWidget(container)
+        layout = QVBoxLayout()
+        layout.addWidget(container)
+
+        self.setCentralLayout(layout)
 
         self.accept_button.setText(self.tr("Verify"))
         self.accept_button.setIcon(icon("fa.check"))
