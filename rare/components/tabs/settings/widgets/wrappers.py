@@ -4,12 +4,11 @@ import shutil
 from logging import getLogger
 from typing import Optional, Tuple
 
-from PyQt5.QtCore import pyqtSignal, QSize, Qt, QMimeData, pyqtSlot, QCoreApplication
+from PyQt5.QtCore import pyqtSignal, QSize, Qt, QMimeData, pyqtSlot
 from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont, QMouseEvent, QShowEvent
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
-    QInputDialog,
     QFrame,
     QMessageBox,
     QSizePolicy,
@@ -17,7 +16,7 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QAction,
     QToolButton,
-    QMenu, QDialog, QStackedWidget, QPushButton, QLineEdit, QVBoxLayout,
+    QMenu, QStackedWidget, QPushButton, QLineEdit, QVBoxLayout,
 )
 
 from rare.models.wrapper import Wrapper

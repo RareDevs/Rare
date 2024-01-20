@@ -1,5 +1,5 @@
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QLayout, QGroupBox
+from PyQt5.QtWidgets import QVBoxLayout, QGroupBox
 
 from rare.models.game import RareGame
 from rare.models.install import SelectiveDownloadsModel
