@@ -75,12 +75,11 @@ class InstallDialog(ActionDialog):
             header = self.tr("Modify")
             bicon = icon("fa.gear")
         self.setWindowTitle(dialog_title_game(header, rgame.app_title))
+        self.setSubtitle(dialog_title_game(header, rgame.app_title))
 
         install_widget = QWidget(self)
         self.ui = Ui_InstallDialog()
         self.ui.setupUi(install_widget)
-
-        self.ui.title_label.setText(f"<h4>{dialog_title_game(header, rgame.app_title)}</h4>")
 
         self.core = rgame.core
         self.rgame = rgame

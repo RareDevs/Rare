@@ -34,8 +34,7 @@ class MoveDialog(ActionDialog):
         super(MoveDialog, self).__init__(parent=parent)
         header = self.tr("Move")
         self.setWindowTitle(dialog_title_game(header, rgame.app_title))
-
-        title_label = QLabel(f"<h4>{dialog_title_game(header, rgame.app_title)}</h4>", self)
+        self.setSubtitle(dialog_title_game(header, rgame.app_title))
 
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
@@ -70,7 +69,6 @@ class MoveDialog(ActionDialog):
 
         layout = QVBoxLayout()
         layout.setSizeConstraint(QLayout.SetFixedSize)
-        layout.addWidget(title_label)
         layout.addWidget(self.path_edit)
         layout.addWidget(self.warn_label)
         layout.addLayout(bottom_layout)

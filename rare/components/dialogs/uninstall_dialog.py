@@ -1,6 +1,5 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import (
-    QLabel,
     QVBoxLayout,
     QCheckBox,
 )
@@ -18,8 +17,7 @@ class UninstallDialog(ButtonDialog):
         super(UninstallDialog, self).__init__(parent=parent)
         header = self.tr("Uninstall")
         self.setWindowTitle(dialog_title_game(header, rgame.app_title))
-
-        title_label = QLabel(f"<h4>{dialog_title_game(header, rgame.app_title)}</h4>", self)
+        self.setSubtitle(dialog_title_game(header, rgame.app_title))
 
         self.keep_files = QCheckBox(self.tr("Keep files"))
         self.keep_files.setChecked(bool(options.keep_files))
@@ -34,7 +32,6 @@ class UninstallDialog(ButtonDialog):
         self.keep_overlay_keys.setEnabled(rgame.is_overlay)
 
         layout = QVBoxLayout()
-        layout.addWidget(title_label)
         layout.addWidget(self.keep_files)
         layout.addWidget(self.keep_config)
         layout.addWidget(self.keep_overlay_keys)

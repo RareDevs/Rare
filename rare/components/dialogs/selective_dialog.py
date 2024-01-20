@@ -15,8 +15,7 @@ class SelectiveDialog(ButtonDialog):
         super(SelectiveDialog, self).__init__(parent=parent)
         header = self.tr("Optional downloads for")
         self.setWindowTitle(dialog_title_game(header, rgame.app_title))
-
-        title_label = QLabel(f"<h4>{dialog_title_game(header, rgame.app_title)}</h4>", self)
+        self.setSubtitle(dialog_title_game(header, rgame.app_title))
 
         self.rgame = rgame
         self.selective_widget = SelectiveWidget(rgame, rgame.igame.platform, self)
@@ -26,12 +25,7 @@ class SelectiveDialog(ButtonDialog):
         container_layout.setContentsMargins(0, 0, 0, 0)
         container_layout.addWidget(self.selective_widget)
 
-        layout = QVBoxLayout()
-        layout.setSizeConstraint(QLayout.SetFixedSize)
-        layout.addWidget(title_label)
-        layout.addWidget(container)
-
-        self.setCentralLayout(layout)
+        self.setCentralWidget(container)
 
         self.accept_button.setText(self.tr("Verify"))
         self.accept_button.setIcon(icon("fa.check"))

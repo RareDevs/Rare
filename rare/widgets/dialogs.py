@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QWidget,
-    QLayout, QSpacerItem, QSizePolicy,
+    QLayout, QSpacerItem, QSizePolicy, QLabel,
 )
 
 from rare.utils.misc import icon
@@ -74,6 +74,9 @@ class ButtonDialog(BaseDialog):
     def __init__(self, parent=None):
         super(ButtonDialog, self).__init__(parent=parent)
 
+        self.subtitle_label = QLabel(self)
+        self.subtitle_label.setVisible(False)
+
         self.reject_button = QPushButton(self)
         self.reject_button.setText(self.tr("Cancel"))
         self.reject_button.setIcon(icon("fa.remove"))
@@ -91,6 +94,7 @@ class ButtonDialog(BaseDialog):
         self.button_layout.addWidget(self.accept_button)
 
         self.main_layout = QVBoxLayout(self)
+        self.main_layout.addWidget(self.subtitle_label)
         # lk: dirty way to set a minimum width with fixed size constraint
         spacer = QSpacerItem(
             480, self.main_layout.spacing(),
@@ -103,13 +107,23 @@ class ButtonDialog(BaseDialog):
     def close(self):
         raise RuntimeError(f"Don't use `close()` with {type(self).__name__}")
 
+    def setSubtitle(self, text: str):
+        self.subtitle_label.setText(f"<b>{text}</b>")
+        self.subtitle_label.setVisible(True)
+
     def setCentralWidget(self, widget: QWidget):
         widget.layout().setContentsMargins(0, 0, 0, 0)
-        self.main_layout.insertWidget(0, widget)
+        self.main_layout.insertWidget(
+            self.main_layout.indexOf(self.subtitle_label) + 1,
+            widget
+        )
 
     def setCentralLayout(self, layout: QLayout):
         layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.insertLayout(0, layout)
+        self.main_layout.insertLayout(
+            self.main_layout.indexOf(self.subtitle_label) + 1,
+            layout
+        )
 
     @abstractmethod
     def accept_handler(self):
