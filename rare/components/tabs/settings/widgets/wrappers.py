@@ -2,7 +2,7 @@ import platform as pf
 import shlex
 import shutil
 from logging import getLogger
-from typing import Optional
+from typing import Optional, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QSize, Qt, QMimeData, pyqtSlot, QCoreApplication
 from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont, QMouseEvent, QShowEvent
@@ -17,12 +17,13 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QAction,
     QToolButton,
-    QMenu, QDialog, QStackedWidget, QPushButton,
+    QMenu, QDialog, QStackedWidget, QPushButton, QLineEdit, QVBoxLayout,
 )
 
 from rare.models.wrapper import Wrapper
 from rare.shared import RareCore
 from rare.utils.misc import icon
+from rare.widgets.dialogs import ButtonDialog, dialog_title_game
 
 if pf.system() in {"Linux", "FreeBSD"}:
     from rare.utils.runners import proton
@@ -30,8 +31,45 @@ if pf.system() in {"Linux", "FreeBSD"}:
 logger = getLogger("WrapperSettings")
 
 
-class WrapperDialog(QDialog):
-    pass
+class WrapperDialog(ButtonDialog):
+    result_ready = pyqtSignal(bool, str)
+
+    def __init__(self, wrapper_name, wrapper_command, parent=None):
+        super(WrapperDialog, self).__init__(parent=parent)
+        if wrapper_name:
+            header = self.tr("Edit wrapper")
+        else:
+            header = self.tr("Add wrapper")
+        self.setWindowTitle(header)
+
+        title_label = QLabel(f"<h4>{dialog_title_game(header, wrapper_name)}</h4>", self)
+        self.line_edit = QLineEdit(wrapper_command, self)
+        self.line_edit.textChanged.connect(self.__on_text_changed)
+
+        layout = QVBoxLayout()
+        layout.addWidget(title_label)
+        layout.addWidget(self.line_edit)
+
+        self.setCentralLayout(layout)
+
+        self.accept_button.setText(self.tr("Save"))
+        self.accept_button.setIcon(icon("fa.edit"))
+        self.accept_button.setEnabled(False)
+
+        self.result: Tuple = ()
+
+    @pyqtSlot(str)
+    def __on_text_changed(self, text: str):
+        self.accept_button.setEnabled(bool(text))
+
+    def done_handler(self):
+        self.result_ready.emit(*self.result)
+
+    def accept_handler(self):
+        self.result = (True, self.line_edit.text())
+
+    def reject_handler(self):
+        self.result = (False, self.line_edit.text())
 
 
 class WrapperWidget(QFrame):
@@ -54,9 +92,9 @@ class WrapperWidget(QFrame):
         image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
 
         edit_action = QAction("Edit", parent=self)
-        edit_action.triggered.connect(self.__edit)
+        edit_action.triggered.connect(self.__on_edit)
         delete_action = QAction("Delete", parent=self)
-        delete_action.triggered.connect(self.__delete)
+        delete_action.triggered.connect(self.__on_delete)
 
         manage_menu = QMenu(parent=self)
         manage_menu.addActions([edit_action, delete_action])
@@ -88,19 +126,18 @@ class WrapperWidget(QFrame):
         return self.wrapper
 
     @pyqtSlot()
-    def __delete(self) -> None:
+    def __on_delete(self) -> None:
         self.delete_wrapper.emit(self.wrapper)
         self.deleteLater()
 
     @pyqtSlot()
-    def __edit(self) -> None:
-        dialog = QInputDialog(self)
-        dialog.setWindowTitle(f"{self.tr('Edit wrapper')} - {QCoreApplication.instance().applicationName()}")
-        dialog.setLabelText(self.tr("Edit wrapper command"))
-        dialog.setTextValue(self.wrapper.command)
-        accepted = dialog.exec()
-        command = dialog.textValue()
-        dialog.deleteLater()
+    def __on_edit(self) -> None:
+        dialog = WrapperDialog(self.wrapper.name, self.wrapper.command, self)
+        dialog.result_ready.connect(self.__on_edit_result)
+        dialog.show()
+
+    @pyqtSlot(bool, str)
+    def __on_edit_result(self, accepted: bool, command: str):
         if accepted and command:
             new_wrapper = Wrapper(command=shlex.split(command))
             self.update_wrapper.emit(self.wrapper, new_wrapper)
@@ -137,7 +174,7 @@ class WrapperSettings(QWidget):
         self.widget_stack.addWidget(self.no_wrapper_label)
 
         self.add_button = QPushButton(self.tr("Add wrapper"), self)
-        self.add_button.clicked.connect(self.__on_add_button_pressed)
+        self.add_button.clicked.connect(self.__on_add)
 
         self.wrapper_scroll.horizontalScrollBar().rangeChanged.connect(self.adjust_scrollarea)
 
@@ -198,14 +235,14 @@ class WrapperSettings(QWidget):
         self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
 
     @pyqtSlot()
-    def __on_add_button_pressed(self):
-        dialog = QInputDialog(self)
-        dialog.setWindowTitle(f"{self.tr('Add wrapper')} - {QCoreApplication.instance().applicationName()}")
-        dialog.setLabelText(self.tr("Enter wrapper command"))
-        accepted = dialog.exec()
-        command = dialog.textValue()
-        dialog.deleteLater()
-        if accepted:
+    def __on_add(self) -> None:
+        dialog = WrapperDialog("", "", self)
+        dialog.result_ready.connect(self.__on_add_result)
+        dialog.show()
+
+    @pyqtSlot(bool, str)
+    def __on_add_result(self, accepted: bool, command: str):
+        if accepted and command:
             wrapper = Wrapper(shlex.split(command))
             self.add_user_wrapper(wrapper)
 
