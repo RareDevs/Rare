@@ -41,13 +41,12 @@ class WrapperDialog(ButtonDialog):
         else:
             header = self.tr("Add wrapper")
         self.setWindowTitle(header)
+        self.setSubtitle(dialog_title_game(header, wrapper_name) if wrapper_name else header)
 
-        title_label = QLabel(f"<h4>{dialog_title_game(header, wrapper_name)}</h4>", self)
         self.line_edit = QLineEdit(wrapper_command, self)
         self.line_edit.textChanged.connect(self.__on_text_changed)
 
         layout = QVBoxLayout()
-        layout.addWidget(title_label)
         layout.addWidget(self.line_edit)
 
         self.setCentralLayout(layout)
