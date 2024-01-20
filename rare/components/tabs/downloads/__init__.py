@@ -326,6 +326,7 @@ class DownloadsTab(QWidget):
             if self.updates_group.contains(item.options.app_name):
                 self.updates_group.set_widget_enabled(item.options.app_name, True)
             rgame.state = RareGame.State.IDLE
+        self.update_queues_count()
 
     @pyqtSlot(UninstallOptionsModel)
     def __get_uninstall_options(self, options: UninstallOptionsModel):
