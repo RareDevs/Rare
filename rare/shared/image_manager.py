@@ -82,7 +82,7 @@ class ImageManager(QObject):
         self.device = ImageSize.Preset(1, QApplication.instance().devicePixelRatio())
 
         self.threadpool = QThreadPool()
-        self.threadpool.setMaxThreadCount(6)
+        self.threadpool.setMaxThreadCount(4)
 
     def __img_dir(self, app_name: str) -> Path:
         return self.image_dir.joinpath(app_name)

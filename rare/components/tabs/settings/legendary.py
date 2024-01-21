@@ -116,6 +116,19 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
             lambda: self.settings.setValue("unreal_meta", self.fetch_unreal_check.isChecked())
         )
 
+        self.exclude_non_asset_check.setChecked(
+            self.settings.value("exclude_non_asset", False, bool)
+        )
+        self.exclude_non_asset_check.stateChanged.connect(
+            lambda: self.settings.setValue("exclude_non_asset", self.exclude_non_asset_check.isChecked())
+        )
+        self.exclude_entitlements_check.setChecked(
+            self.settings.value("exclude_entitlements", False, bool)
+        )
+        self.exclude_entitlements_check.stateChanged.connect(
+            lambda: self.settings.setValue("exclude_entitlements", self.exclude_entitlements_check.isChecked())
+        )
+
         self.refresh_metadata_button.clicked.connect(self.refresh_metadata)
         # FIXME: Disable the button for now because it interferes with RareCore
         self.refresh_metadata_button.setEnabled(False)

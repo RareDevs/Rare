@@ -105,7 +105,9 @@ class DownloadsTab(QWidget):
     def __add_update(self, update: Union[str, RareGame]):
         if isinstance(update, str):
             update = self.rcore.get_game(update)
-        if update.metadata.auto_update or QSettings().value("auto_update", False, bool):
+        if QSettings().value(
+                f"{update.app_name}/auto_update", False, bool
+        ) or QSettings().value("auto_update", False, bool):
             self.__get_install_options(
                 InstallOptionsModel(app_name=update.app_name, update=True, silent=True)
             )
@@ -192,7 +194,7 @@ class DownloadsTab(QWidget):
         if item.expired:
             self.__refresh_download(item)
             return
-        dl_thread = DlThread(item, self.rcore.get_game(item.options.app_name), self.core, self.args.debug)
+        dl_thread = DlThread(item, rgame, self.core, self.args.debug)
         dl_thread.result.connect(self.__on_download_result)
         dl_thread.progress.connect(self.__on_download_progress)
         dl_thread.finished.connect(dl_thread.deleteLater)
@@ -202,6 +204,11 @@ class DownloadsTab(QWidget):
         self.download_widget.ui.dl_name.setText(item.download.game.app_title)
         self.download_widget.setPixmap(
             RareCore.instance().image_manager().get_pixmap(rgame.app_name, True)
+        )
+
+        self.signals.application.notify.emit(
+            self.tr("Downloads"),
+            self.tr("Starting: \"{}\" is now downloading.").format(rgame.app_title)
         )
 
     @pyqtSlot(UIUpdate, object)
@@ -229,19 +236,19 @@ class DownloadsTab(QWidget):
             if result.shortcut and desktop_links_supported():
                 if not create_desktop_link(
                     app_name=result.options.app_name,
-                    app_title=result.shortcut_title,
-                    link_name=result.shortcut_name,
+                    app_title=result.app_title,
+                    link_name=result.folder_name,
                     link_type="desktop",
                 ):
                     # maybe add it to download summary, to show in finished downloads
                     logger.error(f"Failed to create desktop link on {platform.system()}")
                 else:
-                    logger.info(f"Created desktop link {result.shortcut_name} for {result.options.app_name}")
+                    logger.info(f"Created desktop link {result.folder_name} for {result.app_title}")
 
-            if result.options.overlay:
-                self.signals.application.overlay_installed.emit()
-            else:
-                self.signals.application.notify.emit(result.options.app_name)
+            self.signals.application.notify.emit(
+                self.tr("Downloads"),
+                self.tr("Finished: \"{}\" is now playable.").format(result.app_title),
+            )
 
             if self.updates_group.contains(result.options.app_name):
                 self.updates_group.set_widget_enabled(result.options.app_name, True)
@@ -319,6 +326,7 @@ class DownloadsTab(QWidget):
             if self.updates_group.contains(item.options.app_name):
                 self.updates_group.set_widget_enabled(item.options.app_name, True)
             rgame.state = RareGame.State.IDLE
+        self.update_queues_count()
 
     @pyqtSlot(UninstallOptionsModel)
     def __get_uninstall_options(self, options: UninstallOptionsModel):

@@ -41,9 +41,6 @@ class InstallInfoWorker(Worker):
                 else:
                     raise LgndrException(status.message)
             else:
-                if not os.path.exists(path := self.options.base_path):
-                    os.makedirs(path)
-
                 dlm, analysis, igame = self.core.prepare_overlay_install(
                     path=self.options.base_path
                 )

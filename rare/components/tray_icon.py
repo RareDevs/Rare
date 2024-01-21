@@ -59,17 +59,10 @@ class TrayIcon(QSystemTrayIcon):
         last_played.sort(key=lambda g: g.metadata.last_played, reverse=True)
         return last_played[0:5]
 
-    @pyqtSlot(str)
-    def notify(self, app_name: str):
+    @pyqtSlot(str, str)
+    def notify(self, title: str, body: str):
         if self.settings.value("notification", True, bool):
-            self.showMessage(
-                self.tr("Download finished"),
-                self.tr("Download finished. {} is playable now").format(
-                    self.rcore.get_game(app_name).app_title
-                ),
-                self.Information,
-                4000,
-            )
+            self.showMessage(f"{QApplication.applicationName()} - {title}", body, QSystemTrayIcon.Information, 4000)
 
     @pyqtSlot()
     def update_actions(self):

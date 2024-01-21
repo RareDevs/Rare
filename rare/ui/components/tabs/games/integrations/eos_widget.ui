@@ -6,15 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>586</width>
-    <height>146</height>
+    <width>464</width>
+    <height>98</height>
    </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string notr="true">GroupBox</string>
@@ -22,163 +16,63 @@
   <property name="title">
    <string>Epic Overlay</string>
   </property>
-  <layout class="QHBoxLayout" name="eos_layout" stretch="0,0">
+  <layout class="QVBoxLayout" name="eos_layout" stretch="0">
    <property name="sizeConstraint">
     <enum>QLayout::SetDefaultConstraint</enum>
    </property>
    <item>
     <widget class="QStackedWidget" name="overlay_stack">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="overlay_info_page">
-      <layout class="QFormLayout" name="overlay_info_layout">
-       <property name="labelAlignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     <widget class="QWidget" name="install_page">
+      <layout class="QHBoxLayout" name="install_page_layout" stretch="1,0">
+       <property name="leftMargin">
+        <number>0</number>
        </property>
-       <property name="formAlignment">
-        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+       <property name="topMargin">
+        <number>0</number>
        </property>
-       <item row="0" column="0">
-        <widget class="QLabel" name="installed_version_info_lbl">
-         <property name="text">
-          <string>Version</string>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QFormLayout" name="install_label_layout">
+         <property name="labelAlignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="installed_version_lbl">
-         <property name="text">
-          <string notr="true">error</string>
+         <property name="formAlignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="installed_path_info_lbl">
-         <property name="text">
-          <string>Location</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="installed_path_lbl">
-         <property name="text">
-          <string notr="true">error</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="info_buttons_layout">
-         <item>
-          <spacer name="info_buttons_hspacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="uninstall_button">
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>0</height>
-            </size>
-           </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="install_label">
            <property name="text">
-            <string>Uninstall</string>
+            <string>Status:</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="update_check_button">
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>0</height>
-            </size>
-           </property>
+         <item row="0" column="1">
+          <widget class="QLabel" name="install_text">
            <property name="text">
-            <string>Check for update</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="update_button">
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Update</string>
+            <string>Epic Online Services Overlay is not installed</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
-       <item row="2" column="0" colspan="2">
-        <spacer name="info_page_vspacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+       <item>
+        <layout class="QVBoxLayout" name="install_button_layout">
+         <property name="rightMargin">
+          <number>0</number>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>6</width>
-           <height>6</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="overlay_install_page">
-      <layout class="QFormLayout" name="overlay_install_layout">
-       <property name="labelAlignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="formAlignment">
-        <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-       </property>
-       <item row="0" column="0" colspan="2">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Epic Overlay Services is not installed</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="install_buttons_layout">
-         <item>
-          <spacer name="install_buttons_hspacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
          <item>
           <widget class="QPushButton" name="install_button">
            <property name="minimumSize">
             <size>
-             <width>120</width>
+             <width>140</width>
              <height>0</height>
             </size>
            </property>
@@ -189,55 +83,84 @@
          </item>
         </layout>
        </item>
-       <item row="1" column="0" colspan="2">
-        <spacer name="install_page_vspacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="info_page">
+      <layout class="QHBoxLayout" name="info_page_layout" stretch="1,0">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QFormLayout" name="info_label_layout">
+         <property name="labelAlignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>6</width>
-           <height>6</height>
-          </size>
+         <property name="formAlignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
-        </spacer>
+         <item row="0" column="0">
+          <widget class="QLabel" name="version_label">
+           <property name="text">
+            <string>Version:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="path_label">
+           <property name="text">
+            <string>Path:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="info_button_layout">
+         <item>
+          <widget class="QPushButton" name="update_button">
+           <property name="minimumSize">
+            <size>
+             <width>140</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Update</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="uninstall_button">
+           <property name="minimumSize">
+            <size>
+             <width>140</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Uninstall</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QFrame" name="enable_frame">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QVBoxLayout" name="enable_layout">
-      <item>
-       <widget class="QComboBox" name="select_pfx_combo"/>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="enabled_cb">
-        <property name="text">
-         <string>Activated</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="enabled_info_label">
-        <property name="font">
-         <font>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </item>
   </layout>

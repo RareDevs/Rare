@@ -8,13 +8,13 @@ from threading import Lock
 from typing import List, Optional, Dict, Set
 
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QPixmapCache
+from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
-from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.models.base_game import RareGameBase, RareGameSlim
+from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils.paths import data_dir, get_rare_executable
@@ -413,10 +413,6 @@ class RareGame(RareGameSlim):
         )
 
     @property
-    def sdl_name(self) -> Optional[str]:
-        return get_sdl_appname(self.app_name)
-
-    @property
     def save_path(self) -> Optional[str]:
         return super(RareGame, self).save_path
 
@@ -433,9 +429,12 @@ class RareGame(RareGameSlim):
         elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
         if self.metadata.steam_grade is not None and elapsed_time.days < 3:
             return self.metadata.steam_grade
-        worker = QRunnable.create(
-            lambda: self.set_steam_grade(get_rating(self.core, self.app_name))
-        )
+
+        def _set_steam_grade():
+            rating = get_rating(self.core, self.app_name)
+            self.set_steam_grade(rating)
+
+        worker = QRunnable.create(_set_steam_grade)
         QThreadPool.globalInstance().start(worker)
         return "pending"
 
@@ -446,9 +445,10 @@ class RareGame(RareGameSlim):
         self.signals.widget.update.emit()
 
     def grant_date(self, force=False) -> datetime:
+        if (entitlements := self.core.lgd.entitlements) is None:
+            return self.metadata.grant_date
         if self.metadata.grant_date is None or force:
             logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
-            entitlements = self.core.lgd.entitlements
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
             entitlement = next(matching, None)
             grant_date = datetime.fromisoformat(
@@ -481,6 +481,7 @@ class RareGame(RareGameSlim):
 
     def set_pixmap(self):
         self.pixmap = self.image_manager.get_pixmap(self.app_name, self.is_installed)
+        QPixmapCache.clear()
         if not self.pixmap.isNull():
             self.signals.widget.update.emit()
 
@@ -572,3 +573,93 @@ class RareEosOverlay(RareGameBase):
         else:
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
+
+    @property
+    def has_update(self) -> bool:
+        # lk: Don't check for updates here to ensure fast return
+        # There is already a thread in the EosGroup form to update it for us asynchronously
+        # and legendary does it too during login
+        return self.core.overlay_update_available
+
+    def is_enabled(self, prefix: Optional[str] = None) -> bool:
+        try:
+            reg_paths = eos.query_registry_entries(prefix)
+        except ValueError as e:
+            logger.info("%s %s", e, prefix)
+            return False
+        return reg_paths["overlay_path"] and self.core.is_overlay_install(reg_paths["overlay_path"])
+
+    def active_path(self, prefix: Optional[str] = None) -> str:
+        try:
+            path = eos.query_registry_entries(prefix)["overlay_path"]
+        except ValueError as e:
+            logger.info("%s %s", e, prefix)
+            return ""
+        return path if path and self.core.is_overlay_install(path) else ""
+
+    def available_paths(self, prefix: Optional[str] = None) -> List[str]:
+        try:
+            installs = self.core.search_overlay_installs(prefix)
+        except ValueError as e:
+            logger.info("%s %s", e, prefix)
+            return []
+        return installs
+
+    def enable(
+        self, prefix: Optional[str] = None, path: Optional[str] = None
+    ) -> bool:
+        if self.is_enabled(prefix):
+            return False
+        if not path:
+            if self.is_installed:
+                path = self.igame.install_path
+            else:
+                path = self.available_paths(prefix)[-1]
+        reg_paths = eos.query_registry_entries(prefix)
+        if old_path := reg_paths["overlay_path"]:
+            if os.path.normpath(old_path) == path:
+                logger.info(f"Overlay already enabled, nothing to do.")
+                return True
+            else:
+                logger.info(f'Updating overlay registry entries from "{old_path}" to "{path}"')
+            eos.remove_registry_entries(prefix)
+        try:
+            eos.add_registry_entries(path, prefix)
+        except PermissionError as e:
+            logger.error("Exception while writing registry to enable the overlay.")
+            logger.error(e)
+            return False
+        logger.info(f"Enabled overlay at: {path} for prefix: {prefix}")
+        return True
+
+    def disable(self, prefix: Optional[str] = None) -> bool:
+        if not self.is_enabled(prefix):
+            return False
+        logger.info(f"Disabling overlay (removing registry keys) for prefix: {prefix}")
+        try:
+            eos.remove_registry_entries(prefix)
+        except PermissionError as e:
+            logger.error("Exception while writing registry to disable the overlay.")
+            logger.error(e)
+            return False
+        return True
+
+    def install(self) -> bool:
+        if not self.is_idle:
+            return False
+        self.signals.game.install.emit(
+            InstallOptionsModel(
+                app_name=self.app_name,
+                base_path=self.core.get_default_install_dir(),
+                platform="Windows", update=self.is_installed, overlay=True
+            )
+        )
+        return True
+
+    def uninstall(self) -> bool:
+        if not self.is_idle or not self.is_installed:
+            return False
+        self.signals.game.uninstall.emit(
+            UninstallOptionsModel(app_name=self.app_name)
+        )
+        return True

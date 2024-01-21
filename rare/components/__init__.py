@@ -12,7 +12,7 @@ from requests import HTTPError
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.shared import RareCore
-from rare.utils import config_helper, paths
+from rare.utils import paths
 from rare.utils.misc import ExitCodes
 from rare.widgets.rare_app import RareApp, RareAppException
 

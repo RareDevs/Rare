@@ -10,13 +10,11 @@ class GlobalSignals:
 
     class ApplicationSignals(QObject):
         # int: exit code
-        quit =  pyqtSignal(int)
-        # str: app_title
-        notify = pyqtSignal(str)
+        quit = pyqtSignal(int)
+        # str: title, str: body
+        notify = pyqtSignal(str, str)
         # none
         prefix_updated = pyqtSignal()
-        # none
-        overlay_installed = pyqtSignal()
         # none
         update_tray = pyqtSignal()
         # none

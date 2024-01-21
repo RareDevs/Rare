@@ -8,6 +8,7 @@ from typing import Optional, List, Tuple
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSettings
 from legendary.lfs import eos
 from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
+from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import UninstallOptionsModel, InstallOptionsModel
@@ -179,6 +180,10 @@ class RareGameBase(QObject):
             return False
 
     @property
+    def sdl_name(self) -> Optional[str]:
+        return get_sdl_appname(self.app_name)
+
+    @property
     def version(self) -> str:
         """!
         @brief Reports the currently installed version of the Game
@@ -268,7 +273,7 @@ class RareGameSlim(RareGameBase):
             return
 
         if thread:
-            worker = QRunnable.create(lambda: _upload())
+            worker = QRunnable.create(_upload)
             QThreadPool.globalInstance().start(worker)
         else:
             _upload()
@@ -293,7 +298,7 @@ class RareGameSlim(RareGameBase):
             return
 
         if thread:
-            worker = QRunnable.create(lambda: _download())
+            worker = QRunnable.create(_download)
             QThreadPool.globalInstance().start(worker)
         else:
             _download()
