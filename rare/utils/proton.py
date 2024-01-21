@@ -5,7 +5,8 @@ from logging import getLogger
 from typing import Optional, Union, List, Dict
 
 if pf.system() in {"Linux", "FreeBSD"}:
-    import vdf
+    # noinspection PyUnresolvedReferences
+    import vdf  # pylint: disable=E0401
 
 logger = getLogger("Proton")
 
