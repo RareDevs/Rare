@@ -1,9 +1,11 @@
+import platform as pf
 import os
 from dataclasses import dataclass
 from logging import getLogger
 from typing import Optional, Union, List, Dict
 
-import vdf
+if pf.system() in {"Linux", "FreeBSD"}:
+    import vdf
 
 logger = getLogger("Proton")
 
