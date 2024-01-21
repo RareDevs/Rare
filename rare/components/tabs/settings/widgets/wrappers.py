@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import (
 from rare.models.wrapper import Wrapper
 from rare.shared import RareCore
 from rare.utils.misc import icon
-from rare.widgets.dialogs import ButtonDialog, dialog_title_game
+from rare.widgets.dialogs import ButtonDialog, game_title
 
 if pf.system() in {"Linux", "FreeBSD"}:
     from rare.utils.runners import proton
@@ -40,7 +40,7 @@ class WrapperDialog(ButtonDialog):
         else:
             header = self.tr("Add wrapper")
         self.setWindowTitle(header)
-        self.setSubtitle(dialog_title_game(header, wrapper_name) if wrapper_name else header)
+        self.setSubtitle(game_title(header, wrapper_name) if wrapper_name else header)
 
         self.line_edit = QLineEdit(wrapper_command, self)
         self.line_edit.textChanged.connect(self.__on_text_changed)

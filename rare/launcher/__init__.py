@@ -147,7 +147,7 @@ class RareLauncher(RareApp):
         self.load_translator(lang)
 
         if QSettings(self).value(*options.log_games):
-            self.console = ConsoleDialog()
+            self.console = ConsoleDialog(game.app_title)
             self.console.show()
 
         self.game_process.finished.connect(self.__process_finished)

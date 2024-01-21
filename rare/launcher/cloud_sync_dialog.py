@@ -10,7 +10,7 @@ from legendary.models.game import InstalledGame
 
 from rare.ui.components.tabs.games.game_info.cloud_sync_widget import Ui_CloudSyncWidget
 from rare.utils.misc import icon
-from rare.widgets.dialogs import ButtonDialog, dialog_title_game
+from rare.widgets.dialogs import ButtonDialog, game_title
 
 logger = getLogger("CloudSyncDialog")
 
@@ -28,9 +28,9 @@ class CloudSyncDialog(ButtonDialog):
     def __init__(self, igame: InstalledGame, dt_local: datetime, dt_remote: datetime, parent=None):
         super(CloudSyncDialog, self).__init__(parent=parent)
         header = self.tr("Cloud saves for")
-        self.setWindowTitle(dialog_title_game(header, igame.title))
+        self.setWindowTitle(game_title(header, igame.title))
 
-        title_label = QLabel(f"<h4>{dialog_title_game(header, igame.title)}</h4>", self)
+        title_label = QLabel(f"<h4>{game_title(header, igame.title)}</h4>", self)
 
         sync_widget = QWidget(self)
         self.sync_ui = Ui_CloudSyncWidget()

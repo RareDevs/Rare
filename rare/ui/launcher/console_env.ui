@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Rare - Console Environment</string>
+   <string notr="true">ConsoleEnv</string>
   </property>
   <layout class="QVBoxLayout" name="layout">
    <item>

@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (
 from rare.utils.misc import icon
 
 
-def dialog_title_game(text: str, app_title: str) -> str:
+def game_title(text: str, app_title: str) -> str:
     return f"{text} '{app_title}'"
 
 
@@ -213,7 +213,7 @@ class ActionDialog(ButtonDialog):
         super(BaseDialog, self).closeEvent(a0)
 
 
-__all__ = ["dialog_title", "dialog_title_game", "BaseDialog", "ButtonDialog", "ActionDialog"]
+__all__ = ["dialog_title", "game_title", "BaseDialog", "ButtonDialog", "ActionDialog"]
 
 
 class TestDialog(BaseDialog):
