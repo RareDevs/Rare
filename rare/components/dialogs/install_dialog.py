@@ -27,10 +27,10 @@ class InstallDialogAdvanced(CollapsibleFrame):
         title = self.tr("Advanced options")
         self.setTitle(title)
 
-        widget = QWidget(parent=self)
+        self.widget = QWidget(parent=self)
         self.ui = Ui_InstallDialogAdvanced()
-        self.ui.setupUi(widget)
-        self.setWidget(widget)
+        self.ui.setupUi(self.widget)
+        self.setWidget(self.widget)
 
 
 class InstallDialogSelective(CollapsibleFrame):
@@ -42,18 +42,18 @@ class InstallDialogSelective(CollapsibleFrame):
         self.setTitle(title)
         self.setEnabled(bool(rgame.sdl_name))
 
-        self.selective_widget: SelectiveWidget = None
+        self.widget: SelectiveWidget = None
         self.rgame = rgame
 
     def update_list(self, platform: str):
-        if self.selective_widget is not None:
-            self.selective_widget.deleteLater()
-        self.selective_widget = SelectiveWidget(self.rgame, platform, parent=self)
-        self.selective_widget.stateChanged.connect(self.stateChanged)
-        self.setWidget(self.selective_widget)
+        if self.widget is not None:
+            self.widget.deleteLater()
+        self.widget = SelectiveWidget(self.rgame, platform, parent=self)
+        self.widget.stateChanged.connect(self.stateChanged)
+        self.setWidget(self.widget)
 
     def install_tags(self):
-        return self.selective_widget.install_tags()
+        return self.widget.install_tags()
 
 
 class InstallDialog(ActionDialog):
