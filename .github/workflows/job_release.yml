@@ -14,39 +14,34 @@ on:
         type: string
       name2:
         type: string
+        default: ""
       file2:
         type: string
+        default: ""
 
 jobs:
   release:
     name: Upload
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: ${{ inputs.name1 }}
+            file: ${{ inputs.file1 }}
+          - name: ${{ inputs.name2 }}
+            file: ${{ inputs.file2 }}
     steps:
-
-    - name: Download ${{ inputs.name1 }} artifact
+    - name: Download ${{ matrix.name }} from artifact
       uses: actions/download-artifact@v3
+      if: ${{ matrix.name != '' }}
       with:
-        name: ${{ inputs.name1 }}
-    - name: Upload ${{ inputs.name1 }} to release
+        name: ${{ matrix.name }}
+    - name: Upload ${{ matrix.name }} to release
       uses: svenstaro/upload-release-action@v2
+      if: ${{ matrix.name != '' }}
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ inputs.file1 }}
-        asset_name: ${{ inputs.name1 }}
-        tag: ${{ inputs.version }}
-        overwrite: true
-
-    - name: Download ${{ inputs.name2 }} artifact
-      uses: actions/download-artifact@v3
-      if: ${{ inputs.name2 != '' }}
-      with:
-        name: ${{ inputs.name2 }}
-    - name: Upload ${{ inputs.name2 }} to release
-      uses: svenstaro/upload-release-action@v2
-      if: ${{ inputs.name2 != '' }}
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ inputs.file2 }}
-        asset_name: ${{ inputs.name2 }}
+        file: ${{ matrix.file }}
+        asset_name: ${{ matrix.name }}
         tag: ${{ inputs.version }}
         overwrite: true
