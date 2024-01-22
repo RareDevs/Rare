@@ -2,7 +2,7 @@ import platform as pf
 import shlex
 import shutil
 from logging import getLogger
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Iterable
 
 from PyQt5.QtCore import pyqtSignal, QSize, Qt, QMimeData, pyqtSlot
 from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont, QMouseEvent, QShowEvent
@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QAction,
     QToolButton,
-    QMenu, QStackedWidget, QPushButton, QLineEdit, QVBoxLayout,
+    QMenu, QStackedWidget, QPushButton, QLineEdit, QVBoxLayout, QComboBox,
 )
 
 from rare.models.wrapper import Wrapper
@@ -30,31 +30,31 @@ if pf.system() in {"Linux", "FreeBSD"}:
 logger = getLogger("WrapperSettings")
 
 
-class WrapperDialog(ButtonDialog):
+class WrapperEditDialog(ButtonDialog):
     result_ready = pyqtSignal(bool, str)
 
-    def __init__(self, wrapper_name, wrapper_command, parent=None):
-        super(WrapperDialog, self).__init__(parent=parent)
-        if wrapper_name:
-            header = self.tr("Edit wrapper")
-        else:
-            header = self.tr("Add wrapper")
-        self.setWindowTitle(header)
-        self.setSubtitle(game_title(header, wrapper_name) if wrapper_name else header)
+    def __init__(self, parent=None):
+        super(WrapperEditDialog, self).__init__(parent=parent)
 
-        self.line_edit = QLineEdit(wrapper_command, self)
+        self.line_edit = QLineEdit(self)
         self.line_edit.textChanged.connect(self.__on_text_changed)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.line_edit)
+        self.widget_layout = QVBoxLayout()
+        self.widget_layout.addWidget(self.line_edit)
 
-        self.setCentralLayout(layout)
+        self.setCentralLayout(self.widget_layout)
 
         self.accept_button.setText(self.tr("Save"))
         self.accept_button.setIcon(icon("fa.edit"))
         self.accept_button.setEnabled(False)
 
         self.result: Tuple = ()
+
+    def setup(self, wrapper: Wrapper):
+        header = self.tr("Edit wrapper")
+        self.setWindowTitle(header)
+        self.setSubtitle(game_title(header, wrapper.name))
+        self.line_edit.setText(wrapper.command)
 
     @pyqtSlot(str)
     def __on_text_changed(self, text: str):
@@ -68,6 +68,27 @@ class WrapperDialog(ButtonDialog):
 
     def reject_handler(self):
         self.result = (False, self.line_edit.text())
+
+
+class WrapperAddDialog(WrapperEditDialog):
+    def __init__(self, parent=None):
+        super(WrapperAddDialog, self).__init__(parent=parent)
+        self.combo_box = QComboBox(self)
+        self.combo_box.addItem("None", "")
+        self.combo_box.currentIndexChanged.connect(self.__on_index_changed)
+        self.widget_layout.insertWidget(0, self.combo_box)
+
+    def setup(self, wrappers: Iterable[Wrapper]):
+        header = self.tr("Add wrapper")
+        self.setWindowTitle(header)
+        self.setSubtitle(header)
+        for wrapper in wrappers:
+            self.combo_box.addItem(f"{wrapper.name} ({wrapper.command})", wrapper.command)
+
+    @pyqtSlot(int)
+    def __on_index_changed(self, index: int):
+        command = self.combo_box.itemData(index, Qt.UserRole)
+        self.line_edit.setText(command)
 
 
 class WrapperWidget(QFrame):
@@ -130,7 +151,8 @@ class WrapperWidget(QFrame):
 
     @pyqtSlot()
     def __on_edit(self) -> None:
-        dialog = WrapperDialog(self.wrapper.name, self.wrapper.command, self)
+        dialog = WrapperEditDialog(self)
+        dialog.setup(self.wrapper)
         dialog.result_ready.connect(self.__on_edit_result)
         dialog.show()
 
@@ -234,7 +256,8 @@ class WrapperSettings(QWidget):
 
     @pyqtSlot()
     def __on_add(self) -> None:
-        dialog = WrapperDialog("", "", self)
+        dialog = WrapperAddDialog(self)
+        dialog.setup(self.wrappers.user_wrappers)
         dialog.result_ready.connect(self.__on_add_result)
         dialog.show()
 
