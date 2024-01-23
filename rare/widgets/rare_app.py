@@ -131,13 +131,13 @@ class RareApp(QApplication):
     def load_translator(self, lang: str):
         # translator for qt stuff
         if self.qt_translator.load(f"qt_{lang}", os.path.join(paths.resources_path, "languages")):
-            self.logger.debug("Using translation for locale: $s", lang)
+            self.logger.debug("Using translation for locale: %s", lang)
         else:
             self.logger.info("Couldn't find translation for locale: %s", lang)
         self.installTranslator(self.qt_translator)
 
         if self.translator.load(lang, os.path.join(paths.resources_path, "languages")):
-            self.logger.info("Using translation for locale: $s", lang)
+            self.logger.info("Using translation for locale: %s", lang)
         else:
             self.logger.info("Couldn't find translation for locale: %s", lang)
         self.installTranslator(self.translator)
