@@ -1,3 +1,4 @@
+import locale
 import platform as pf
 from argparse import Namespace
 from typing import Any, Type
@@ -24,6 +25,7 @@ class Defaults(Namespace):
     exclude_non_asset = Value(key="exclude_non_asset", default=False, dtype=bool)
     exclude_entitlements = Value(key="exclude_entitlements", default=False, dtype=bool)
 
+    language = Value(key="language", default=locale.getlocale()[0], dtype=str)
     sys_tray = Value(key="sys_tray", default=True, dtype=bool)
     auto_update = Value(key="auto_update", default=False, dtype=bool)
     auto_sync_cloud = Value(key="auto_sync_cloud", default=False, dtype=bool)

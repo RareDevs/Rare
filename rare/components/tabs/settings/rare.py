@@ -23,17 +23,6 @@ from rare.utils.paths import create_desktop_link, desktop_link_path, log_dir, de
 
 logger = getLogger("RareSettings")
 
-languages = [("en", "English"),
-             ("de", "Deutsch"),
-             ("fr", "Français"),
-             ("zh-Hans", "Simplified Chinese"),
-             ("zh_TW", "Chinese Taiwan"),
-             ("pt_BR", "Portuguese (Brazil)"),
-             ("ca", "Catalan"),
-             ("ru", "Russian"),
-             ("tr", "Turkish"),
-             ("uk", "Ukrainian")]
-
 
 class RareSettings(QWidget, Ui_RareSettings):
     def __init__(self, parent=None):
@@ -42,20 +31,19 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.core = LegendaryCoreSingleton()
         self.settings = QSettings(self)
 
-        language = self.settings.value("language", self.core.language_code, type=str)
-
         # Select lang
-        self.lang_select.addItems([i[1] for i in languages])
-        if language in get_translations():
-            index = [lang[0] for lang in languages].index(language)
+        language = self.settings.value(*options.language)
+        self.lang_select.addItem(self.tr("System default"), "")
+        for locale, title in get_translations():
+            self.lang_select.addItem(title, locale)
+        if (index := self.lang_select.findData(language, Qt.UserRole)) > 0:
             self.lang_select.setCurrentIndex(index)
         else:
             self.lang_select.setCurrentIndex(0)
-        self.lang_select.currentIndexChanged.connect(self.update_lang)
+        self.lang_select.currentIndexChanged.connect(self.on_lang_changed)
 
-        colors = get_color_schemes()
-        self.color_select.addItems(colors)
-        if (color := self.settings.value("color_scheme")) in colors:
+        self.color_select.addItems(get_color_schemes())
+        if (color := self.settings.value("color_scheme")) in get_color_schemes():
             self.color_select.setCurrentIndex(self.color_select.findText(color))
             self.color_select.setDisabled(False)
             self.style_select.setDisabled(True)
@@ -63,9 +51,8 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.color_select.setCurrentIndex(0)
         self.color_select.currentIndexChanged.connect(self.on_color_select_changed)
 
-        styles = get_style_sheets()
-        self.style_select.addItems(styles)
-        if (style := self.settings.value("style_sheet")) in styles:
+        self.style_select.addItems(get_style_sheets())
+        if (style := self.settings.value("style_sheet")) in get_style_sheets():
             self.style_select.setCurrentIndex(self.style_select.findText(style))
             self.style_select.setDisabled(False)
             self.color_select.setDisabled(True)
@@ -129,7 +116,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.desktop_link_btn.clicked.connect(self.create_desktop_link)
         self.startmenu_link_btn.clicked.connect(self.create_start_menu_link)
 
-        self.log_dir_open_button.clicked.connect(self.open_dir)
+        self.log_dir_open_button.clicked.connect(self.open_directory)
         self.log_dir_clean_button.clicked.connect(self.clean_logdir)
 
         # get size of logdir
@@ -212,7 +199,8 @@ class RareSettings(QWidget, Ui_RareSettings):
             self.color_select.setDisabled(False)
             set_style_sheet("")
 
-    def open_dir(self):
+    @staticmethod
+    def open_directory():
         if platform.system() == "Windows":
             os.startfile(log_dir())  # pylint: disable=E1101
         else:
@@ -223,5 +211,9 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.settings.setValue(options.save_size.key, self.save_size.isChecked())
         self.settings.remove(options.window_size.key)
 
-    def update_lang(self, i: int):
-        self.settings.setValue("language", languages[i][0])
+    def on_lang_changed(self, index: int):
+        if not index:
+            self.settings.remove(options.language.key)
+            return
+        language = self.lang_select.itemData(index, Qt.UserRole)
+        self.settings.setValue(options.language.key, language)

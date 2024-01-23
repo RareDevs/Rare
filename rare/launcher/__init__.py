@@ -143,8 +143,8 @@ class RareLauncher(RareApp):
             return
         self.rgame = RareGameSlim(self.core, game)
 
-        lang = self.settings.value("language", self.core.language_code, type=str)
-        self.load_translator(lang)
+        language = self.settings.value(*options.language)
+        self.load_translator(language)
 
         if QSettings(self).value(*options.log_games):
             self.console = ConsoleDialog(game.app_title)

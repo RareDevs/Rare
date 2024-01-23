@@ -19,7 +19,7 @@ class WineSettings(QGroupBox):
 
     def __init__(self, parent=None):
         super(WineSettings, self).__init__(parent=parent)
-        self.setTitle(self.tr("Wine Setings"))
+        self.setTitle(self.tr("Wine settings"))
 
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
@@ -79,7 +79,6 @@ class WineSettings(QGroupBox):
             raise RuntimeError
         config.save_wine_prefix(self.app_name, path)
         self.environ_changed.emit("WINEPREFIX")
-        self.signals.application.prefix_updated.emit()
 
     def load_exec(self) -> str:
         if self.app_name is None:

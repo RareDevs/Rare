@@ -101,11 +101,11 @@ class RareApp(QApplication):
             f" - Qt version: {QT_VERSION_STR}, PyQt version: {PYQT_VERSION_STR}"
         )
 
-        self.settings = QSettings()
+        self.settings = QSettings(self)
 
         # Translator
-        self.translator = QTranslator()
-        self.qt_translator = QTranslator()
+        self.translator = QTranslator(self)
+        self.qt_translator = QTranslator(self)
 
         # Style
         # lk: this is a bit silly but serves well until we have a class
@@ -129,15 +129,15 @@ class RareApp(QApplication):
         self.setWindowIcon(QIcon(":/images/Rare.png"))
 
     def load_translator(self, lang: str):
-        if os.path.isfile(f := os.path.join(paths.resources_path, "languages", f"{lang}.qm")):
-            self.translator.load(f)
-            self.logger.info(f"Your language is supported: {lang}")
-        elif not lang == "en":
-            self.logger.info("Your language is not supported")
-        self.installTranslator(self.translator)
-
         # translator for qt stuff
-        if os.path.isfile(f := os.path.join(paths.resources_path, f"qt_{lang}.qm")):
-            self.qt_translator = QTranslator()
-            self.qt_translator.load(f)
-            self.installTranslator(self.qt_translator)
+        if self.qt_translator.load(f"qt_{lang}", os.path.join(paths.resources_path, "languages")):
+            self.logger.debug("Using translation for locale: $s", lang)
+        else:
+            self.logger.info("Couldn't find translation for locale: %s", lang)
+        self.installTranslator(self.qt_translator)
+
+        if self.translator.load(lang, os.path.join(paths.resources_path, "languages")):
+            self.logger.info("Using translation for locale: $s", lang)
+        else:
+            self.logger.info("Couldn't find translation for locale: %s", lang)
+        self.installTranslator(self.translator)

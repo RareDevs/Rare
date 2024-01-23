@@ -15,6 +15,7 @@ if platform.system() == "Windows":
 
 logger = getLogger("Paths")
 
+# This depends on the location of this file (obviously)
 resources_path = Path(__file__).absolute().parent.parent.joinpath("resources")
 
 # lk: delete old Rare directories
