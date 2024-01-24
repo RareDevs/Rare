@@ -270,8 +270,7 @@ class GameInfo(QWidget, SideTabContents):
     @pyqtSlot()
     def __update_widget(self):
         """ React to state updates from RareGame """
-        # self.image.setPixmap(self.image_manager.get_pixmap(self.rgame.app_name, True))
-        self.image.setPixmap(self.rgame.pixmap)
+        self.image.setPixmap(self.rgame.get_pixmap(True))
 
         self.ui.lbl_version.setDisabled(self.rgame.is_non_asset)
         self.ui.version.setDisabled(self.rgame.is_non_asset)
