@@ -63,7 +63,7 @@ class TrayIcon(QSystemTrayIcon):
     @pyqtSlot(str, str)
     def notify(self, title: str, body: str):
         if self.settings.value(*options.notification):
-            self.showMessage(f"{QApplication.applicationName()} - {title}", body, QSystemTrayIcon.Information, 4000)
+            self.showMessage(f"{title} - {QApplication.applicationName()}", body, QSystemTrayIcon.Information, 4000)
 
     @pyqtSlot()
     def update_actions(self):

@@ -24,7 +24,7 @@ class ProtonSettings(QGroupBox):
 
     def __init__(self, parent=None):
         super(ProtonSettings, self).__init__(parent=parent)
-        self.setTitle(self.tr("Proton Settings"))
+        self.setTitle(self.tr("Proton settings"))
 
         self.tool_combo = QComboBox(self)
         self.tool_combo.currentIndexChanged.connect(self.__on_proton_changed)

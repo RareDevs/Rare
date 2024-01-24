@@ -20,7 +20,7 @@ class LaunchSettingsBase(QGroupBox):
         parent=None
     ):
         super(LaunchSettingsBase, self).__init__(parent=parent)
-        self.setTitle(self.tr("Launch Settings"))
+        self.setTitle(self.tr("Launch settings"))
 
         self.core = LegendaryCoreSingleton()
         self.app_name: str = "default"

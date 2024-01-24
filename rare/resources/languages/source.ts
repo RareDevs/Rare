@@ -973,7 +973,7 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="391"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="390"/>
         <source>Link/Launch</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2323,11 +2323,6 @@ Are you sure you want to quit?</source>
 <context>
     <name>PathEdit</name>
     <message>
-        <location filename="../../ui/utils/pathedit.py" line="34"/>
-        <source>Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../widgets/indicator_edit.py" line="312"/>
         <source>Browse...</source>
         <translation type="unfinished"></translation>
@@ -2532,42 +2527,42 @@ Are you sure you want to quit?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="159"/>
+        <location filename="../../components/tabs/settings/rare.py" line="155"/>
         <source>Create start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="116"/>
+        <location filename="../../components/tabs/settings/rare.py" line="112"/>
         <source>Remove desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="156"/>
+        <location filename="../../components/tabs/settings/rare.py" line="152"/>
         <source>Remove start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="173"/>
+        <location filename="../../components/tabs/settings/rare.py" line="169"/>
         <source>Remove Desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="176"/>
+        <location filename="../../components/tabs/settings/rare.py" line="172"/>
         <source>Create desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="110"/>
+        <location filename="../../components/tabs/settings/rare.py" line="106"/>
         <source>Not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="179"/>
+        <location filename="../../components/tabs/settings/rare.py" line="175"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="179"/>
+        <location filename="../../components/tabs/settings/rare.py" line="175"/>
         <source>Permission error, cannot remove {}</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2634,6 +2629,11 @@ Are you sure you want to quit?</source>
     <message>
         <location filename="../../ui/components/tabs/settings/rare.py" line="169"/>
         <source>Create in menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/rare.py" line="37"/>
+        <source>System default</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
