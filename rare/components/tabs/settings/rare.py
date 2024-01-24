@@ -1,6 +1,7 @@
 import os
 import platform
 import subprocess
+import locale
 import sys
 from logging import getLogger
 
@@ -33,9 +34,9 @@ class RareSettings(QWidget, Ui_RareSettings):
 
         # Select lang
         language = self.settings.value(*options.language)
-        self.lang_select.addItem(self.tr("System default"), "")
-        for locale, title in get_translations():
-            self.lang_select.addItem(title, locale)
+        self.lang_select.addItem(self.tr("System default"), options.language.default)
+        for lang_code, title in get_translations():
+            self.lang_select.addItem(title, lang_code)
         if (index := self.lang_select.findData(language, Qt.UserRole)) > 0:
             self.lang_select.setCurrentIndex(index)
         else:
@@ -212,8 +213,8 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.settings.remove(options.window_size.key)
 
     def on_lang_changed(self, index: int):
-        if not index:
+        lang_code = self.lang_select.itemData(index, Qt.UserRole)
+        if lang_code == locale.getlocale()[0]:
             self.settings.remove(options.language.key)
-            return
-        language = self.lang_select.itemData(index, Qt.UserRole)
-        self.settings.setValue(options.language.key, language)
+        else:
+            self.settings.setValue(options.language.key, lang_code)

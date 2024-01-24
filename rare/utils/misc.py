@@ -135,8 +135,8 @@ def get_style_sheets() -> Iterable[str]:
 def get_translations() -> Tuple[Tuple[str, str], ...]:
     langs = []
     for i in os.listdir(os.path.join(resources_path, "languages")):
-        if i.endswith(".qm") and not i.startswith("qt_"):
-            locale = QLocale(i.split(".")[0])
+        if i.endswith(".qm") and i.startswith("rare_"):
+            locale = QLocale(i.removesuffix(".qm").removeprefix("rare_"))
             langs.append((locale.name(), f"{locale.nativeLanguageName()} ({locale.nativeCountryName()})"))
     return tuple(langs)
 

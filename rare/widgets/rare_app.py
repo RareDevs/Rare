@@ -7,7 +7,18 @@ import traceback
 from argparse import Namespace
 
 import legendary
-from PyQt5.QtCore import QSettings, QTranslator, QT_VERSION_STR, PYQT_VERSION_STR, QObject, pyqtSignal, pyqtSlot, Qt
+from PyQt5.QtCore import (
+    QSettings,
+    QTranslator,
+    QT_VERSION_STR,
+    PYQT_VERSION_STR,
+    QObject,
+    pyqtSignal,
+    pyqtSlot,
+    Qt,
+    QLibraryInfo,
+    QLocale,
+)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
@@ -103,9 +114,9 @@ class RareApp(QApplication):
 
         self.settings = QSettings(self)
 
-        # Translator
-        self.translator = QTranslator(self)
-        self.qt_translator = QTranslator(self)
+        # # Translator
+        # self.translator = QTranslator(self)
+        # self.qt_translator = QTranslator(self)
 
         # Style
         # lk: this is a bit silly but serves well until we have a class
@@ -130,14 +141,17 @@ class RareApp(QApplication):
 
     def load_translator(self, lang: str):
         # translator for qt stuff
-        if self.qt_translator.load(f"qt_{lang}", os.path.join(paths.resources_path, "languages")):
-            self.logger.debug("Using translation for locale: %s", lang)
-        else:
-            self.logger.info("Couldn't find translation for locale: %s", lang)
-        self.installTranslator(self.qt_translator)
-
-        if self.translator.load(lang, os.path.join(paths.resources_path, "languages")):
-            self.logger.info("Using translation for locale: %s", lang)
-        else:
-            self.logger.info("Couldn't find translation for locale: %s", lang)
-        self.installTranslator(self.translator)
+        locale = QLocale(lang)
+        self.logger.info("Using locale: %s", locale.name())
+        translations = {
+            "qtbase": QLibraryInfo.location(QLibraryInfo.TranslationsPath),
+            "rare": os.path.join(paths.resources_path, "languages"),
+        }
+        for filename, path in translations.items():
+            translator = QTranslator(self)
+            if translator.load(locale, filename, "_", path):
+                self.logger.debug("Loaded translation file: %s", translator.filePath())
+                self.installTranslator(translator)
+            else:
+                self.logger.info("Couldn't find translation for locale: %s", locale.name())
+                translator.deleteLater()
