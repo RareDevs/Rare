@@ -95,7 +95,8 @@ class OverlayNumberInput(OverlayLineEdit):
 class OverlaySelectInput(OverlayComboBox):
     def __init__(self, option: str, values: List, parent=None):
         super().__init__(option, parent=parent)
-        self.addItems([str(v) for v in values])
+        # self.addItems([str(v) for v in values])
+        self.addItems(map(str, values))
 
 
 class ActivationStates(IntEnum):
@@ -179,16 +180,7 @@ class OverlaySettings(QGroupBox):
         elif current_state == ActivationStates.CUSTOM:
             self.ui.options_group.setDisabled(False)
             # custom options
-            options = [widget.getValue() for widget in self.option_widgets]
-
-            # options = []
-            # for var_name, cb in self.checkboxes.items():
-            #     options.append(cb.getValue())
-            #
-            # for var_name, widget in self.values.items():
-            #     options.append(widget.getValue())
-
-            options = [name for name in options if name is not None]
+            options = (name for widget in self.option_widgets if (name := widget.getValue()) is not None)
 
             config.set_envvar(self.app_name, self.envvar, ",".join(options))
 
@@ -205,11 +197,6 @@ class OverlaySettings(QGroupBox):
         if a0.spontaneous():
             return super().showEvent(a0)
         self.ui.options_group.blockSignals(True)
-
-        # for checkbox in self.checkboxes.values():
-        #     checkbox.setChecked(False)
-        # for widget in self.values.values():
-        #     widget.setDefault()
 
         config_options = config.get_envvar(self.app_name, self.envvar, fallback=None)
         if config_options is None:
@@ -236,26 +223,9 @@ class OverlaySettings(QGroupBox):
             for widget in self.option_widgets:
                 print(opts)
                 widget.setValue(opts)
-            # for checkbox in self.checkboxes.values():
-            #     print(opts)
-            #     checkbox.setValue(opts)
-            #
-            # for values in self.values.values():
-            #     print(opts)
-            #     values.setValue(opts)
-
+            if opts:
+                logger.info("Remaining options without a gui switch: %s", ",".join(opts.keys()))
             print(opts)
-            # try:
-            #     if "=" in option:
-            #         key, value = option.split("=")
-            #         if key in self.checkboxes.keys():
-            #             self.checkboxes[key].setChecked(False)
-            #         else:
-            #             self.values[key].setValue(value)
-            #     else:
-            #         self.checkboxes[option].setChecked(True)
-            # except Exception as e:
-            #     logger.warning(e)
 
         self.ui.options_group.blockSignals(False)
         return super().showEvent(a0)
@@ -327,25 +297,6 @@ class MangoHudSettings(OverlaySettings):
         if a0.spontaneous():
             return super().showEvent(a0)
         self.ui.options_group.blockSignals(True)
-
-        # override
-        # activated = config.get_envvar(self.app_name, "MANGOHUD", None)
-        # mango_config = config.get_envvar(self.app_name, "MANGOHUD_CONFIG", fallback="")
-        # if activated is None:
-        #     self.setCurrentState(ActivationStates.SYSTEM)
-        # else:
-        #     if activated == "1":
-        # if not activated:
-        #     self.ui.options_group.setDisabled(True)
-        #     for i, checkbox in enumerate(list(self.checkboxes.values())):
-        #         checkbox.setChecked(i < 4)
-        #     self.ui.show_overlay_combo.setCurrentIndex(0)
-        #     return
-        # self.ui.show_overlay_combo.setCurrentIndex(2)
-        # self.ui.options_group.setDisabled(False)
-        # for var_name, checkbox in list(self.checkboxes.items())[:4]:
-        #     checkbox.setChecked(f"{var_name}=0" not in mango_config)
-
         self.ui.options_group.blockSignals(False)
         return super().showEvent(a0)
 
@@ -361,30 +312,6 @@ class MangoHudSettings(OverlaySettings):
 
         elif state == ActivationStates.CUSTOM:
             config.set_envvar(self.app_name, "MANGOHUD", "1")
-            # mango_config = config.get_envvar(self.app_name, self.envvar, fallback="")
-            # mango_config = f"read_cfg,{mango_config}" if mango_config else "read_cfg"
-            # config.set_envvar(self.app_name, self.envvar, mango_config)
-            # self.environ_changed.emit("MANGOHUD_CONFIG")
-
-            # split_config = mango_config.split(",")
-            # for name in list(self.checkboxes.keys())[:4]:
-            #     if name in split_config:
-            #         split_config.remove(name)
-            # mango_config = ",".join(split_config)
-            #
-            # # first three are activated by default
-            # for var_name, checkbox in list(self.checkboxes.items())[:4]:
-            #     if not checkbox.isChecked():
-            #         if mango_config:
-            #             mango_config += f",{var_name}=0"
-            #         else:
-            #             mango_config = f"{var_name}=0"
-            # if mango_config:
-            #     config.set_envvar(self.app_name, "MANGOHUD", "1")
-            #     config.set_envvar(self.app_name, "MANGOHUD_CONFIG", mango_config)
-            # else:
-            #     config.remove_envvar(self.app_name, "MANGOHUD")
-            #     config.remove_envvar(self.app_name, "MANGOHUD_CONFIG")
 
         self.environ_changed.emit("MANGOHUD")
 
