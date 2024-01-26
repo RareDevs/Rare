@@ -112,7 +112,9 @@ class ListGameWidget(GameWidget):
         # lk: trade some possible delay and start-up time
         # lk: for faster rendering. Gradients are expensive
         # lk: so pre-generate the image
-        super(ListGameWidget, self).setPixmap(self.prepare_pixmap(pixmap))
+        if not pixmap.isNull():
+            pixmap = self.prepare_pixmap(pixmap)
+        super(ListGameWidget, self).setPixmap(pixmap)
 
     def paint_image_cover(self, painter: QPainter, a0: QPaintEvent) -> None:
         painter.setOpacity(self._opacity)
