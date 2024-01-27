@@ -37,6 +37,8 @@ class WinePathResolver(Worker):
 
     @staticmethod
     def _resolve_unix_path(cmd, env, path: str) -> str:
+        if "waitforexitandrun" in cmd:
+            cmd[cmd.index("waitforexitandrun")] = "runinprefix"
         logger.info("Resolving path '%s'", path)
         wine_path = runners.resolve_path(cmd, env, path)
         logger.debug("Resolved Wine path '%s'", path)
@@ -53,8 +55,8 @@ class WinePathResolver(Worker):
 class WineSavePathResolver(WinePathResolver):
 
     def __init__(self, core: LegendaryCore, rgame: RareGame):
-        cmd = core.get_app_launch_command(rgame.app_name)
-        env = core.get_app_environment(rgame.app_name)
+        cmd = core.get_app_launch_command(rgame.app_name, disable_wine=config.get_boolean(rgame.app_name, "no_wine"))
+        env = core.get_app_environment(rgame.app_name, disable_wine=config.get_boolean(rgame.app_name, "no_wine"))
         env = runners.get_environment(env, silent=True)
         path = PathSpec(core, rgame.igame).resolve_egl_path_vars(rgame.raw_save_path)
         if not (cmd and env and path):
