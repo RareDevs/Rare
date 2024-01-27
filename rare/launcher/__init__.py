@@ -29,6 +29,7 @@ DETACHED_APP_NAMES = {
     "09e442f830a341f698b4da42abd98c9b",  # Fortnite Festival
     "d8f7763e07d74c209d760a679f9ed6ac",  # Lego Fortnite
     "Fortnite_Studio",                   # Unreal Editor for Fortnite
+    "dcfccf8d965a4f2281dddf9fead042de",  # Homeworld Remastered Collection (issue#376)
 }
 
 
@@ -39,7 +40,7 @@ class PreLaunchThread(QRunnable):
         pre_launch_command_finished = pyqtSignal(int)  # exit_code
         error_occurred = pyqtSignal(str)
 
-    def __init__(self, core: LegendaryCore, args: InitArgs, rgame: RareGameSlim, sync_action=None):
+    def __init__(self, args: InitArgs, rgame: RareGameSlim, sync_action=None):
         super(PreLaunchThread, self).__init__()
         self.signals = self.Signals()
         self.logger = getLogger(type(self).__name__)
@@ -321,7 +322,7 @@ class RareLauncher(RareApp):
         self.stop()
 
     def start_prepare(self, sync_action=None):
-        worker = PreLaunchThread(self.core, self.args, self.rgame, sync_action)
+        worker = PreLaunchThread(self.args, self.rgame, sync_action)
         worker.signals.ready_to_launch.connect(self.launch_game)
         worker.signals.error_occurred.connect(self.error_occurred)
         # worker.signals.started_pre_launch_command(None)
