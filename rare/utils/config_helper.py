@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Optional, Set, Any
+from typing import Callable, Optional, Set, Any, List
 
 from legendary.core import LegendaryCore
 from legendary.models.config import LGDConf
@@ -67,14 +67,14 @@ def get_option(app_name: str, option: str, fallback: Any = None) -> str:
     return _config.get(app_name, option, fallback=fallback)
 
 
-def get_option_fallback(option: str, app_name: str, fallback: Any = None) -> str:
+def get_option_fallback(app_name: str, option: str, fallback: Any = None) -> str:
     _option = get_option("default", option, fallback=fallback)
     _option = get_option(app_name, option, fallback=_option)
     return _option
 
 
-def get_boolean(option: str, app_name: str, fallback: bool = False) -> bool:
-    return _config.getboolean(option, app_name, fallback=fallback)
+def get_boolean(app_name: str, option: str, fallback: bool = False) -> bool:
+    return _config.getboolean(app_name, option, fallback=fallback)
 
 
 def save_envvar(app_name: str, option: str, value: str) -> None:
@@ -88,7 +88,7 @@ def get_envvar(app_name: str, option: str, fallback: Any = None) -> str:
     return get_option(f"{app_name}.env", option, fallback=fallback)
 
 
-def get_envvar_fallback(option: str, app_name: str, fallback: Any = None) -> str:
+def get_envvar_fallback(app_name: str, option: str, fallback: Any = None) -> str:
     _option = _config.get("default.env", option, fallback=fallback)
     _option = _config.get(f'{app_name}.env', option, fallback=_option)
     return _option
@@ -128,23 +128,23 @@ def get_proton_compatdata_fallback(app_name: Optional[str] = None, fallback: Any
 
 
 def get_wine_prefixes() -> Set[str]:
-    _prefixes = []
+    _prefixes: Set[str] = set()
     for name, section in _config.items():
         pfx = section.get("WINEPREFIX") or section.get("wine_prefix")
         if pfx:
-            _prefixes.append(pfx)
-    _prefixes = [os.path.expanduser(prefix) for prefix in _prefixes]
-    return {p for p in _prefixes if os.path.isdir(p)}
+            _prefixes.update([pfx])
+    _prefixes = {os.path.expanduser(prefix) for prefix in _prefixes}
+    return set(filter(os.path.isdir, _prefixes))
 
 
 def get_proton_prefixes() -> Set[str]:
-    _prefixes = []
+    _prefixes: Set[str] = set()
     for name, section in _config.items():
         pfx = os.path.join(compatdata, "pfx") if (compatdata := section.get("STEAM_COMPAT_DATA_PATH")) else ""
         if pfx:
-            _prefixes.append(pfx)
-    _prefixes = [os.path.expanduser(prefix) for prefix in _prefixes]
-    return {p for p in _prefixes if os.path.isdir(p)}
+            _prefixes.update([pfx])
+    _prefixes = {os.path.expanduser(prefix) for prefix in _prefixes}
+    return set(filter(os.path.isdir, _prefixes))
 
 
 def get_prefixes() -> Set[str]:
