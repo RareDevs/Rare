@@ -23,6 +23,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
 import rare.resources.resources
+from rare.models.options import options
 from rare.utils import paths
 from rare.utils.misc import set_color_pallete, set_style_sheet, get_static_style
 
@@ -123,17 +124,17 @@ class RareApp(QApplication):
         # lk: store the default qt style name from the system on startup as a property for later reference
         self.setProperty("rareDefaultQtStyle", self.style().objectName())
         if (
-                self.settings.value("color_scheme", None) is None
-                and self.settings.value("style_sheet", None) is None
+                self.settings.value(options.style_sheet.key, None) is None
+                and self.settings.value(options.color_scheme.key, None) is None
         ):
-            self.settings.setValue("color_scheme", "")
-            self.settings.setValue("style_sheet", "RareStyle")
+            self.settings.setValue(options.color_scheme.key, options.color_scheme.default)
+            self.settings.setValue(options.style_sheet.key, options.style_sheet.default)
 
-        if color_scheme := self.settings.value("color_scheme", False):
-            self.settings.setValue("style_sheet", "")
+        if color_scheme := self.settings.value(options.color_scheme.key, False):
+            self.settings.setValue(options.style_sheet.key, "")
             set_color_pallete(color_scheme)
-        elif style_sheet := self.settings.value("style_sheet", False):
-            self.settings.setValue("color_scheme", "")
+        elif style_sheet := self.settings.value(options.style_sheet.key, False):
+            self.settings.setValue(options.color_scheme.key, "")
             set_style_sheet(style_sheet)
         else:
             self.setStyleSheet(get_static_style())

@@ -1,6 +1,11 @@
 from enum import IntEnum
 
 
+class LibraryView(IntEnum):
+    COVER = 1
+    VLIST = 2
+
+
 class LibraryFilter(IntEnum):
     ALL = 1
     INSTALLED = 2

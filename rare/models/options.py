@@ -2,7 +2,7 @@ import locale
 import platform as pf
 from argparse import Namespace
 from typing import Any, Type
-from .library import LibraryFilter, LibraryOrder
+from .library import LibraryFilter, LibraryOrder, LibraryView
 
 
 class Value(Namespace):
@@ -35,13 +35,15 @@ class Defaults(Namespace):
     notification = Value(key="notification", default=True, dtype=bool)
     log_games = Value(key="show_console", default=False, dtype=bool)
 
+    color_scheme = Value(key="color_scheme", default="", dtype=str)
+    style_sheet = Value(key="style_sheet", default="RareStyle", dtype=str)
+
+    library_view = Value(key="library_view", default=int(LibraryView.COVER), dtype=int)
     library_filter = Value(
         key="library_filter",
         default=int(LibraryFilter.MAC if pf.system() == "Darwin" else LibraryFilter.ALL), dtype=int
     )
-    library_order = Value(
-        key="library_order", default=int(LibraryOrder.TITLE), dtype=int
-    )
+    library_order = Value(key="library_order", default=int(LibraryOrder.TITLE), dtype=int)
 
     rpc_enable = Value(key="rpc_enable", default=0, dtype=int)
     rpc_name = Value(key="rpc_game", default=True, dtype=bool)
@@ -51,4 +53,4 @@ class Defaults(Namespace):
 
 options = Defaults()
 
-__all__ = ['options']
+__all__ = ['options', 'LibraryFilter', 'LibraryOrder', 'LibraryView']

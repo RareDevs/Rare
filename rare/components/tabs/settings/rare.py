@@ -5,11 +5,11 @@ import locale
 import sys
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, Qt
+from PyQt5.QtCore import QSettings, Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from rare.components.tabs.settings.widgets.rpc import RPCSettings
-from rare.models.options import options
+from rare.models.options import options, LibraryView
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils.misc import (
@@ -33,33 +33,48 @@ class RareSettings(QWidget, Ui_RareSettings):
         self.settings = QSettings(self)
 
         # Select lang
-        language = self.settings.value(*options.language)
         self.lang_select.addItem(self.tr("System default"), options.language.default)
         for lang_code, title in get_translations():
             self.lang_select.addItem(title, lang_code)
+        language = self.settings.value(*options.language)
         if (index := self.lang_select.findData(language, Qt.UserRole)) > 0:
             self.lang_select.setCurrentIndex(index)
         else:
             self.lang_select.setCurrentIndex(0)
         self.lang_select.currentIndexChanged.connect(self.on_lang_changed)
 
-        self.color_select.addItems(get_color_schemes())
-        if (color := self.settings.value("color_scheme")) in get_color_schemes():
-            self.color_select.setCurrentIndex(self.color_select.findText(color))
+        self.color_select.addItem(self.tr("None"), "")
+        for item in get_color_schemes():
+            self.color_select.addItem(item, item)
+        color = self.settings.value(*options.color_scheme)
+        if (index := self.color_select.findData(color, Qt.UserRole)) > 0:
+            self.color_select.setCurrentIndex(index)
             self.color_select.setDisabled(False)
             self.style_select.setDisabled(True)
         else:
             self.color_select.setCurrentIndex(0)
         self.color_select.currentIndexChanged.connect(self.on_color_select_changed)
 
-        self.style_select.addItems(get_style_sheets())
-        if (style := self.settings.value("style_sheet")) in get_style_sheets():
-            self.style_select.setCurrentIndex(self.style_select.findText(style))
+        self.style_select.addItem(self.tr("None"), "")
+        for item in get_style_sheets():
+            self.style_select.addItem(item, item)
+        style = self.settings.value(*options.style_sheet)
+        if (index := self.style_select.findData(style, Qt.UserRole)) > 0:
+            self.style_select.setCurrentIndex(index)
             self.style_select.setDisabled(False)
             self.color_select.setDisabled(True)
         else:
             self.style_select.setCurrentIndex(0)
         self.style_select.currentIndexChanged.connect(self.on_style_select_changed)
+
+        self.view_combo.addItem(self.tr("Game covers"), LibraryView.COVER)
+        self.view_combo.addItem(self.tr("Vertical list"), LibraryView.VLIST)
+        view = LibraryView(self.settings.value(*options.library_view))
+        if (index := self.view_combo.findData(view)) > -1:
+            self.view_combo.setCurrentIndex(index)
+        else:
+            self.view_combo.setCurrentIndex(0)
+        self.view_combo.currentIndexChanged.connect(self.on_view_combo_changed)
 
         self.rpc = RPCSettings(self)
         self.right_layout.insertWidget(1, self.rpc, alignment=Qt.AlignTop)
@@ -178,27 +193,32 @@ class RareSettings(QWidget, Ui_RareSettings):
                 self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
             )
 
-    def on_color_select_changed(self, scheme):
+    @pyqtSlot(int)
+    def on_color_select_changed(self, index: int):
+        scheme = self.color_select.itemData(index, Qt.UserRole)
         if scheme:
             self.style_select.setCurrentIndex(0)
             self.style_select.setDisabled(True)
-            self.settings.setValue("color_scheme", self.color_select.currentText())
-            set_color_pallete(self.color_select.currentText())
         else:
-            self.settings.setValue("color_scheme", "")
             self.style_select.setDisabled(False)
-            set_color_pallete("")
+        self.settings.setValue("color_scheme", scheme)
+        set_color_pallete(scheme)
 
-    def on_style_select_changed(self, style):
+    @pyqtSlot(int)
+    def on_style_select_changed(self, index: int):
+        style = self.style_select.itemData(index, Qt.UserRole)
         if style:
             self.color_select.setCurrentIndex(0)
             self.color_select.setDisabled(True)
-            self.settings.setValue("style_sheet", self.style_select.currentText())
-            set_style_sheet(self.style_select.currentText())
         else:
-            self.settings.setValue("style_sheet", "")
             self.color_select.setDisabled(False)
-            set_style_sheet("")
+        self.settings.setValue("style_sheet", style)
+        set_style_sheet(style)
+
+    @pyqtSlot(int)
+    def on_view_combo_changed(self, index: int):
+        view = LibraryView(self.view_combo.itemData(index, Qt.UserRole))
+        self.settings.setValue(options.library_view.key, int(view))
 
     @staticmethod
     def open_directory():
