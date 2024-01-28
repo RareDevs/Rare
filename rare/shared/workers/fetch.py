@@ -39,7 +39,7 @@ class EntitlementsWorker(FetchWorker):
         want_entitlements = not self.settings.value(*options.exclude_entitlements)
 
         entitlements = ()
-        if want_entitlements:
+        if want_entitlements and not self.args.offline:
             # Get entitlements, Ubisoft integration also uses them
             self.signals.progress.emit(0, self.signals.tr("Updating entitlements"))
             with timelogger(logger, "Request entitlements"):
