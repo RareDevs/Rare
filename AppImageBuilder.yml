@@ -45,6 +45,7 @@ AppDir:
       # Path to the site-packages dir or other modules dirs
       # See https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH
       PYTHONPATH: '${APPDIR}/usr/lib/python3.8/site-packages:${APPDIR}/usr/lib/python3.9/site-packages'
+      PYTHONNOUSERSITE: 1
 
   test:
     fedora:
