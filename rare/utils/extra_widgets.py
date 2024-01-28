@@ -30,11 +30,10 @@ class WaitingSpinner(QLabel):
 
 
 class SelectViewWidget(QWidget):
-    toggled = pyqtSignal()
+    toggled = pyqtSignal(bool)
 
     def __init__(self, icon_view: bool, parent=None):
         super(SelectViewWidget, self).__init__(parent=parent)
-        self.icon_view = icon_view
         self.icon_button = QPushButton(self)
         self.icon_button.setObjectName(f"{type(self).__name__}Button")
         self.list_button = QPushButton(self)
@@ -42,9 +41,9 @@ class SelectViewWidget(QWidget):
 
         if icon_view:
             self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
-            self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list"))
+            self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="#eee"))
         else:
-            self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
+            self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="#eee"))
             self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
 
         self.icon_button.clicked.connect(self.icon)
@@ -57,20 +56,15 @@ class SelectViewWidget(QWidget):
 
         self.setLayout(layout)
 
-    def isChecked(self):
-        return self.icon_view
-
     def icon(self):
         self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
-        self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list"))
-        self.icon_view = False
-        self.toggled.emit()
+        self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="#eee"))
+        self.toggled.emit(True)
 
     def list(self):
-        self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large"))
+        self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="#eee"))
         self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
-        self.icon_view = True
-        self.toggled.emit()
+        self.toggled.emit(False)
 
 
 class ImageLabel(QLabel):

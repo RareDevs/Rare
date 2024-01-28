@@ -12,10 +12,11 @@ from rare.shared import (
     ImageManagerSingleton,
 )
 from rare.shared import RareCore
+from rare.models.options import options
 from rare.widgets.library_layout import LibraryLayout
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .game_info import GameInfoTabs
-from .game_widgets import LibraryWidgetController, LibraryFilter, LibraryOrder
+from .game_widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
 from .game_widgets.icon_game_widget import IconGameWidget
 from .game_widgets.list_game_widget import ListGameWidget
 from .head_bar import GameListHeadBar
@@ -84,9 +85,10 @@ class GamesTab(QStackedWidget):
         self.view_stack.addWidget(self.list_view_scroll)
         games_page_layout.addWidget(self.view_stack)
 
-        if not self.settings.value("icon_view", True, bool):
+        library_view = LibraryView(self.settings.value(*options.library_view))
+        self.view_stack.setCurrentWidget(self.list_view_scroll)
+        if library_view == LibraryView.VLIST:
             self.view_stack.setCurrentWidget(self.list_view_scroll)
-            self.head_bar.view.list()
         else:
             self.view_stack.setCurrentWidget(self.icon_view_scroll)
 
@@ -97,7 +99,7 @@ class GamesTab(QStackedWidget):
         self.head_bar.orderChanged.connect(self.order_games)
         self.head_bar.orderChanged.connect(self.scroll_to_top)
         self.head_bar.refresh_list.clicked.connect(self.library_controller.update_game_views)
-        self.head_bar.view.toggled.connect(self.toggle_view)
+        self.head_bar.viewChanged.connect(self.change_view)
 
         # signals
         self.signals.game.installed.connect(self.update_count_games_label)
@@ -174,26 +176,25 @@ class GamesTab(QStackedWidget):
     def search_games(self, search_text: str = ""):
         self.filter_games(self.head_bar.current_filter(), search_text)
 
-    @pyqtSlot(int)
-    @pyqtSlot(int, str)
+    @pyqtSlot(object)
+    @pyqtSlot(object, str)
     def filter_games(self, library_filter: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
 
         self.library_controller.filter_game_views(library_filter, search_text.lower())
 
-    @pyqtSlot(int)
-    @pyqtSlot(int, str)
+    @pyqtSlot(object)
+    @pyqtSlot(object, str)
     def order_games(self, library_order: LibraryOrder = LibraryFilter.ALL, search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
 
         self.library_controller.order_game_views(library_order, search_text.lower())
 
-    def toggle_view(self):
-        self.settings.setValue("icon_view", not self.head_bar.view.isChecked())
-
-        if not self.head_bar.view.isChecked():
-            self.view_stack.slideInWidget(self.icon_view_scroll)
-        else:
+    @pyqtSlot(object)
+    def change_view(self, library_view: LibraryView = LibraryView.COVER):
+        if library_view == LibraryView.VLIST:
             self.view_stack.slideInWidget(self.list_view_scroll)
+        else:
+            self.view_stack.slideInWidget(self.icon_view_scroll)

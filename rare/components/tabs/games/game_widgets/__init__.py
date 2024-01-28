@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.models.signals import GlobalSignals
-from rare.models.library import LibraryFilter, LibraryOrder
+from rare.models.library import LibraryFilter, LibraryOrder, LibraryView
 from rare.shared import RareCore
 from .icon_game_widget import IconGameWidget
 from .list_game_widget import ListGameWidget
