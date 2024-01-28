@@ -11,8 +11,8 @@ from PyQt5.QtWidgets import (
 )
 
 from rare.shared import RareCore
-from rare.models.options import options, LibraryFilter, LibraryOrder, LibraryView
-from rare.utils.extra_widgets import SelectViewWidget, ButtonLineEdit
+from rare.models.options import options, LibraryFilter, LibraryOrder
+from rare.utils.extra_widgets import ButtonLineEdit
 from rare.utils.misc import icon
 
 
@@ -107,7 +107,7 @@ class GameListHeadBar(QWidget):
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Game"))
         self.search_bar.setObjectName("SearchBar")
         self.search_bar.setFrame(False)
-        self.search_bar.setMinimumWidth(200)
+        self.search_bar.setMinimumWidth(250)
 
         installed_tooltip = self.tr("Installed games")
         self.installed_icon = QLabel(parent=self)
@@ -125,10 +125,6 @@ class GameListHeadBar(QWidget):
         self.available_label = QLabel(parent=self)
         self.available_label.setToolTip(available_tooltip)
 
-        view = LibraryView(QSettings(self).value(*options.library_view))
-        self.library_view = SelectViewWidget(view == LibraryView.COVER)
-        self.library_view.toggled.connect(self.__view_changed)
-
         self.refresh_list = QPushButton(parent=self)
         self.refresh_list.setIcon(icon("fa.refresh"))  # Reload icon
         self.refresh_list.clicked.connect(self.__refresh_clicked)
@@ -139,16 +135,14 @@ class GameListHeadBar(QWidget):
         layout.addWidget(self.order)
         layout.addStretch(0)
         layout.addWidget(integrations)
-        layout.addStretch(2)
+        layout.addStretch(3)
         layout.addWidget(self.search_bar)
-        layout.addStretch(2)
+        layout.addStretch(4)
         layout.addWidget(self.installed_icon)
         layout.addWidget(self.installed_label)
         layout.addWidget(self.available_icon)
         layout.addWidget(self.available_label)
-        layout.addStretch(2)
-        layout.addWidget(self.library_view)
-        layout.addStretch(2)
+        layout.addStretch(4)
         layout.addWidget(self.refresh_list)
 
     def set_games_count(self, inst: int, avail: int) -> None:
@@ -160,7 +154,7 @@ class GameListHeadBar(QWidget):
         self.rcore.fetch()
 
     def current_filter(self) -> LibraryFilter:
-        return LibraryFilter(self.filter.currentData(Qt.UserRole))
+        return self.filter.currentData(Qt.UserRole)
 
     @pyqtSlot(int)
     def __filter_changed(self, index: int):
@@ -169,16 +163,10 @@ class GameListHeadBar(QWidget):
         self.settings.setValue(options.library_filter.key, int(data))
 
     def current_order(self) -> LibraryOrder:
-        return LibraryOrder(self.order.currentData(Qt.UserRole))
+        return self.order.currentData(Qt.UserRole)
 
     @pyqtSlot(int)
     def __order_changed(self, index: int):
         data = self.order.itemData(index, Qt.UserRole)
         self.orderChanged.emit(data)
         self.settings.setValue(options.library_order.key, int(data))
-
-    @pyqtSlot(bool)
-    def __view_changed(self, icon_view: bool):
-        view = LibraryView.COVER if icon_view else LibraryView.VLIST
-        self.viewChanged.emit(view)
-        self.settings.setValue(options.library_view.key, int(view))
