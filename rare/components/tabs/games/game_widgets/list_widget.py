@@ -26,7 +26,7 @@ class ListWidget(object):
         self.size_label = None
 
     def setupUi(self, widget: QWidget):
-        self.title_label = QLabel(parent=widget)
+        self.title_label = ElideLabel(parent=widget)
         self.title_label.setObjectName(f"{type(self).__name__}TitleLabel")
         self.title_label.setWordWrap(False)
 
@@ -41,13 +41,13 @@ class ListWidget(object):
         self.install_btn = QPushButton(parent=widget)
         self.install_btn.setObjectName(f"{type(self).__name__}Button")
         self.install_btn.setIcon(icon("ri.install-line"))
-        self.install_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.install_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.install_btn.setFixedWidth(120)
 
         self.launch_btn = QPushButton(parent=widget)
         self.launch_btn.setObjectName(f"{type(self).__name__}Button")
         self.launch_btn.setIcon(icon("ei.play-alt"))
-        self.launch_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.launch_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.launch_btn.setFixedWidth(120)
 
         # lk: do not focus on button
@@ -71,19 +71,19 @@ class ListWidget(object):
         self.size_label.setFixedWidth(60)
 
         # Create layouts
-        top_layout = QHBoxLayout()
-        top_layout.setAlignment(Qt.AlignLeft)
+        left_layout = QVBoxLayout()
+        left_layout.setAlignment(Qt.AlignLeft)
 
         bottom_layout = QHBoxLayout()
         bottom_layout.setAlignment(Qt.AlignRight)
 
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
         layout.setSpacing(0)
         layout.setContentsMargins(3, 3, 3, 3)
 
         # Layout the widgets
         # (from inner to outer)
-        top_layout.addWidget(self.title_label, stretch=1)
+        left_layout.addWidget(self.title_label, stretch=1)
 
         bottom_layout.addWidget(self.developer_label, stretch=0, alignment=Qt.AlignLeft)
         bottom_layout.addItem(QSpacerItem(20, 0, QSizePolicy.Fixed, QSizePolicy.Minimum))
@@ -94,15 +94,17 @@ class ListWidget(object):
         bottom_layout.addWidget(self.status_label, stretch=0, alignment=Qt.AlignLeft)
         bottom_layout.addItem(QSpacerItem(20, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
         bottom_layout.addWidget(self.tooltip_label, stretch=0, alignment=Qt.AlignRight)
-        bottom_layout.addWidget(self.install_btn, stretch=0, alignment=Qt.AlignRight)
-        bottom_layout.addWidget(self.launch_btn, stretch=0, alignment=Qt.AlignRight)
 
-        layout.addLayout(top_layout)
-        layout.addLayout(bottom_layout)
+        left_layout.addLayout(bottom_layout)
+
+        layout.addLayout(left_layout)
+        layout.addWidget(self.install_btn, stretch=0, alignment=Qt.AlignRight)
+        layout.addWidget(self.launch_btn, stretch=0, alignment=Qt.AlignRight)
 
         widget.setLayout(layout)
 
-        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
+        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        widget.setFixedHeight(widget.sizeHint().height())
         widget.leaveEvent(None)
 
         self.translateUi(widget)
