@@ -9,12 +9,10 @@ from PyQt5.QtGui import (
     QLinearGradient,
     QPixmap,
     QImage,
-    QResizeEvent,
 )
 
 from rare.models.game import RareGame
 from rare.utils.misc import format_size
-from rare.widgets.image_widget import ImageWidget
 from .game_widget import GameWidget
 from .list_widget import ListWidget
 
@@ -70,23 +68,6 @@ class ListGameWidget(GameWidget):
     refactored to be used in downloads and/or dlcs
     """
 
-    def event(self, e: QEvent) -> bool:
-        if e.type() == QEvent.LayoutRequest:
-            if self.progress_label.isVisible():
-                width = int(self._pixmap.width() / self._pixmap.devicePixelRatioF())
-                origin = self.width() - width
-                fill_rect = QRect(origin, 0, width, self.sizeHint().height())
-                self.progress_label.setGeometry(fill_rect)
-        return ImageWidget.event(self, e)
-
-    def resizeEvent(self, a0: QResizeEvent) -> None:
-        if self.progress_label.isVisible():
-            width = int(self._pixmap.width() / self._pixmap.devicePixelRatioF())
-            origin = self.width() - width
-            fill_rect = QRect(origin, 0, width, self.sizeHint().height())
-            self.progress_label.setGeometry(fill_rect)
-        ImageWidget.resizeEvent(self, a0)
-
     def prepare_pixmap(self, pixmap: QPixmap) -> QPixmap:
         device: QImage = QImage(
             pixmap.size().width() * 3,
@@ -112,7 +93,9 @@ class ListGameWidget(GameWidget):
         # lk: trade some possible delay and start-up time
         # lk: for faster rendering. Gradients are expensive
         # lk: so pre-generate the image
-        super(ListGameWidget, self).setPixmap(self.prepare_pixmap(pixmap))
+        if not pixmap.isNull():
+            pixmap = self.prepare_pixmap(pixmap)
+        super(ListGameWidget, self).setPixmap(pixmap)
 
     def paint_image_cover(self, painter: QPainter, a0: QPaintEvent) -> None:
         painter.setOpacity(self._opacity)

@@ -24,10 +24,6 @@ def main() -> int:
     # fix cx_freeze
     multiprocessing.freeze_support()
 
-    # insert legendary for installed via pip/setup.py submodule to path
-    # if not __name__ == "__main__":
-    #     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "legendary"))
-
     # CLI Options
     parser = ArgumentParser()
     parser.add_argument(
@@ -121,12 +117,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    # run from source
-    # insert raw legendary submodule
-    # sys.path.insert(
-    #     0, os.path.join(pathlib.Path(__file__).parent.absolute(), "legendary")
-    # )
-
     # insert source directory if running `main.py` as python script
     # Required by AppImage
     if "__compiled__" not in globals():

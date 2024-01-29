@@ -479,6 +479,10 @@ class RareGame(RareGameSlim):
             return True
         return False
 
+    def get_pixmap(self, color=True) -> QPixmap:
+        QPixmapCache.clear()
+        return self.image_manager.get_pixmap(self.app_name, color)
+
     def set_pixmap(self):
         self.pixmap = self.image_manager.get_pixmap(self.app_name, self.is_installed)
         QPixmapCache.clear()

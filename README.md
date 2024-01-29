@@ -147,12 +147,24 @@ Depending on your operating system and the `python` distribution, the following 
 
 ### Run from source
 
-1. Clone the repo: `git clone https://github.com/Dummerle/Rare
+1. Clone the repo: `git clone https://github.com/RareDevs/Rare`
 2. Change your working directory to the project folder: `cd Rare`
 3. Run `pip install -r requirements.txt` to install all required dependencies.
-   * If you want to be able to use the automatic login and Discord pypresence, run `pip install -r requirements-full.txt`
-   * If you are on Arch you can run `sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-orjson` and `yay -S legendary`
-   * If you are on FreeBSD you have to install py39-qt5 from the packages: `sudo pkg install py39-qt5`
+   * If you want to be able to use the automatic login and Discord pypresence, run 
+     ```shell
+     pip install -r requirements-full.txt
+     ```
+   * If you are on Arch you can run
+     ```shell
+     sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-orjson
+     ```
+     ```
+     yay -S legendary
+     ```
+   * If you are on FreeBSD you have to install py39-qt5 from the packages
+     ```shell
+     sudo pkg install py39-qt5
+     ```
 4. Run `python3 -m rare`
 
 
@@ -165,10 +177,16 @@ There are several options to contribute.
 
 More information is available in CONTRIBUTING.md.
 
-## Images
+## Screenshots
+| Game covers                                  | Vertical list                                |
+|----------------------------------------------|----------------------------------------------|
+| ![alt text](Screenshots/RareLibraryIcon.png) | ![alt text](Screenshots/RareLibraryList.png) |
 
-![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/Rare.png?raw=true)
-![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/GameInfo.png?raw=true)
-![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/RareSettings.png?raw=true)
-![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/RareDownloads.png?raw=true)
-![alt text](https://github.com/Dummerle/Rare/blob/main/Screenshots/GameSettings.png?raw=true)
+| Game details                              | Game settings                                 |
+|-------------------------------------------|-----------------------------------------------|
+| ![alt text](Screenshots/RareGameInfo.png) | ![alt text](Screenshots/RareGameSettings.png) |
+
+| Downloads                                  | Application settings                      |
+|--------------------------------------------|-------------------------------------------|
+| ![alt text](Screenshots/RareDownloads.png) | ![alt text](Screenshots/RareSettings.png) |
+

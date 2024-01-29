@@ -52,7 +52,9 @@ class DownloadWidget(ImageWidget):
         # lk: trade some possible delay and start-up time
         # lk: for faster rendering. Gradients are expensive
         # lk: so pre-generate the image
-        super(DownloadWidget, self).setPixmap(self.prepare_pixmap(pixmap))
+        if not pixmap.isNull():
+            pixmap = self.prepare_pixmap(pixmap)
+        super(DownloadWidget, self).setPixmap(pixmap)
 
     def paint_image_empty(self, painter: QPainter, a0: QPaintEvent) -> None:
         # when pixmap object is not available yet, show a gray rectangle

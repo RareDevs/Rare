@@ -163,7 +163,7 @@ css.QPushButton[css_name(IconWidget, "Button")].hover.borderColor.setValue("gray
 
 # ListGameWidget
 from rare.components.tabs.games.game_widgets.list_widget import ListWidget
-css.QLabel[css_name(ListWidget,"TitleLabel")].fontWeight.setValue("bold")
+css.QLabel[css_name(ListWidget, "TitleLabel")].fontWeight.setValue("bold")
 list_status_label_props = {
     "color": "white",
     "backgroundColor": "rgba(0, 0, 0, 75%)",
