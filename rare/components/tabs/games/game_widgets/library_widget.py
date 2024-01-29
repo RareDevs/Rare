@@ -18,7 +18,7 @@ class ProgressLabel(QLabel):
 
     def __center_on_parent(self):
         fm = QFontMetrics(self.font())
-        rect = fm.boundingRect(f"  {self.text()}  ")
+        rect = fm.boundingRect("  100%  ")
         rect.moveCenter(self.parent().contentsRect().center())
         self.setGeometry(rect)
 
