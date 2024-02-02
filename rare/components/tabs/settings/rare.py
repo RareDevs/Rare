@@ -1,11 +1,9 @@
 import os
-import platform
-import subprocess
 import locale
-import sys
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, Qt, pyqtSlot
+from PyQt5.QtCore import QSettings, Qt, pyqtSlot, QUrl
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from rare.components.tabs.settings.widgets.rpc import RPCSettings
@@ -145,6 +143,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         # self.log_dir_clean_button.setVisible(False)
         # self.log_dir_size_label.setVisible(False)
 
+    @pyqtSlot()
     def clean_logdir(self):
         for f in log_dir().iterdir():
             try:
@@ -159,6 +158,7 @@ class RareSettings(QWidget, Ui_RareSettings):
         )
         self.log_dir_size_label.setText(format_size(size))
 
+    @pyqtSlot()
     def create_start_menu_link(self):
         try:
             if not os.path.exists(self.start_menu_link):
@@ -176,6 +176,7 @@ class RareSettings(QWidget, Ui_RareSettings):
                 self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
             )
 
+    @pyqtSlot()
     def create_desktop_link(self):
         try:
             if not os.path.exists(self.desktop_link):
@@ -220,18 +221,16 @@ class RareSettings(QWidget, Ui_RareSettings):
         view = LibraryView(self.view_combo.itemData(index, Qt.UserRole))
         self.settings.setValue(options.library_view.key, int(view))
 
-    @staticmethod
-    def open_directory():
-        if platform.system() == "Windows":
-            os.startfile(log_dir())  # pylint: disable=E1101
-        else:
-            opener = "open" if sys.platform == "darwin" else "xdg-open"
-            subprocess.Popen([opener, log_dir()])
+    @pyqtSlot()
+    def open_directory(self):
+        QDesktopServices.openUrl(QUrl(f"file://{log_dir()}"))
 
+    @pyqtSlot()
     def save_window_size(self):
         self.settings.setValue(options.save_size.key, self.save_size.isChecked())
         self.settings.remove(options.window_size.key)
 
+    @pyqtSlot(int)
     def on_lang_changed(self, index: int):
         lang_code = self.lang_select.itemData(index, Qt.UserRole)
         if lang_code == locale.getlocale()[0]:
