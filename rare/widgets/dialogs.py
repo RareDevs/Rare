@@ -103,6 +103,7 @@ class ButtonDialog(BaseDialog):
         self.main_layout.addItem(spacer)
         self.main_layout.addLayout(self.button_layout)
         self.main_layout.setSizeConstraint(QLayout.SetFixedSize)
+        self.main_layout.setAlignment(Qt.AlignVCenter)
 
     def close(self):
         raise RuntimeError(f"Don't use `close()` with {type(self).__name__}")
@@ -117,6 +118,7 @@ class ButtonDialog(BaseDialog):
             self.main_layout.indexOf(self.subtitle_label) + 1,
             widget
         )
+        widget.layout().setAlignment(Qt.AlignTop)
 
     def setCentralLayout(self, layout: QLayout):
         layout.setContentsMargins(0, 0, 0, 0)
@@ -124,6 +126,7 @@ class ButtonDialog(BaseDialog):
             self.main_layout.indexOf(self.subtitle_label) + 1,
             layout
         )
+        layout.setAlignment(Qt.AlignTop)
 
     @abstractmethod
     def accept_handler(self):
