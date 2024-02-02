@@ -2,14 +2,15 @@ import json
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import pyqtSignal, QUrl
+from PyQt5.QtCore import pyqtSignal, QUrl, QProcess, pyqtSlot
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QFrame, qApp, QFormLayout, QLineEdit
-from legendary.core import LegendaryCore
 from legendary.utils import webview_login
 
+from rare.lgndr.core import LegendaryCore
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
 from rare.utils.misc import icon
+from rare.utils.paths import get_rare_executable
 from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon
 
 logger = getLogger("BrowserLogin")
@@ -43,6 +44,7 @@ class BrowserLogin(QFrame):
         self.ui.open_button.clicked.connect(self.open_browser)
         self.sid_edit.textChanged.connect(self.changed.emit)
 
+    @pyqtSlot()
     def copy_link(self):
         clipboard = qApp.clipboard()
         clipboard.setText(self.login_url)
@@ -79,12 +81,24 @@ class BrowserLogin(QFrame):
         except Exception as e:
             logger.warning(e)
 
+    @pyqtSlot()
     def open_browser(self):
         if not webview_login.webview_available:
             logger.warning("You don't have webengine installed, you will need to manually copy the authorizationCode.")
             QDesktopServices.openUrl(QUrl(self.login_url))
         else:
-            if webview_login.do_webview_login(callback_code=self.core.auth_ex_token):
+            cmd = get_rare_executable() + ["login", self.core.get_egl_version()]
+            proc = QProcess(self)
+            proc.start(cmd[0], cmd[1:])
+            proc.waitForFinished(-1)
+            out, err = (
+                proc.readAllStandardOutput().data().decode("utf-8", "ignore"),
+                proc.readAllStandardError().data().decode("utf-8", "ignore")
+            )
+            proc.deleteLater()
+
+            if out:
+                self.core.auth_ex_token(out)
                 logger.info("Successfully logged in as %s", {self.core.lgd.userdata['displayName']})
                 self.success.emit()
             else:
