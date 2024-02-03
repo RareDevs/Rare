@@ -64,8 +64,8 @@ class GameInfoTabs(SideTabWidget):
 
         self.setCurrentIndex(self.info_index)
 
-    def keyPressEvent(self, e: QKeyEvent):
-        if e.key() == Qt.Key_Escape:
+    def keyPressEvent(self, a0: QKeyEvent):
+        if a0.key() == Qt.Key_Escape:
             self.back_clicked.emit()
 
 

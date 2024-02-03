@@ -44,8 +44,8 @@ class EnvVars(QGroupBox):
         layout = QVBoxLayout(self)
         layout.addWidget(self.table_view)
 
-    def keyPressEvent(self, e):
-        if e.key() in {Qt.Key_Delete, Qt.Key_Backspace}:
+    def keyPressEvent(self, a0):
+        if a0.key() in {Qt.Key_Delete, Qt.Key_Backspace}:
             indexes = self.table_view.selectedIndexes()
             if not len(indexes):
                 return
@@ -54,8 +54,8 @@ class EnvVars(QGroupBox):
                     self.table_view.model().removeRow(idx.row())
                 elif idx.column() == 1:
                     self.table_view.model().setData(idx, "", Qt.EditRole)
-        elif e.key() == Qt.Key_Escape:
-            e.ignore()
+        elif a0.key() == Qt.Key_Escape:
+            a0.ignore()
 
     def reset_model(self):
         self.table_model.reset()
