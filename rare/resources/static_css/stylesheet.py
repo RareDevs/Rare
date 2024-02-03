@@ -64,6 +64,14 @@ def css_name(widget: Union[wrappertype, QObject, Type], subwidget: str = ""):
 css = qstylizer.style.StyleSheet()
 
 
+# Generic flat button
+css['QPushButton[flat="true"]'].setValues(
+    border="0px",
+    borderRadius="5px",
+    backgroundColor="rgba(255, 255, 255, 5%)",
+)
+
+
 # InfoLabel
 css.QLabel["#InfoLabel"].setValues(
     color="#999",

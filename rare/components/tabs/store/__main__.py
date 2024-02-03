@@ -23,13 +23,14 @@ class StoreWindow(QDialog):
 
 if __name__ == "__main__":
     import rare.resources.static_css
-    import rare.resources.stylesheets.RareStyle
+    # import rare.resources.stylesheets.RareStyle
     from rare.utils.misc import set_style_sheet
 
     app = QApplication(sys.argv)
     app.setApplicationName("Rare")
     app.setOrganizationName("Rare")
 
+    set_style_sheet("")
     set_style_sheet("RareStyle")
     window = StoreWindow()
     window.setWindowTitle(f"{app.applicationName()} - Store")

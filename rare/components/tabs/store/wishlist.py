@@ -30,14 +30,9 @@ class WishlistPage(SlidingStackedWidget, SideTabContents):
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)
 
-        self.details_scroll = QScrollArea(self)
-        self.details_scroll.setWidgetResizable(True)
-        self.details_scroll.setFrameStyle(QFrame.NoFrame | QFrame.Plain)
-        self.details_scroll.setWidget(self.details_widget)
-
         self.setDirection(Qt.Horizontal)
         self.addWidget(self.wishlist_widget)
-        self.addWidget(self.details_scroll)
+        self.addWidget(self.details_widget)
 
     @pyqtSlot()
     def show_main(self):
@@ -46,7 +41,7 @@ class WishlistPage(SlidingStackedWidget, SideTabContents):
     @pyqtSlot(object)
     def show_details(self, game: CatalogOfferModel):
         self.details_widget.update_game(game)
-        self.slideInWidget(self.details_scroll)
+        self.slideInWidget(self.details_widget)
 
 
 class WishlistWidget(QWidget, SideTabContents):
@@ -118,19 +113,19 @@ class WishlistWidget(QWidget, SideTabContents):
             self.ui.list_container.layout().removeWidget(w)
 
         if sort == 0:
-            func = lambda x: x.game.title
+            func = lambda x: x.catalog_game.title
             reverse = self.ui.reverse.isChecked()
         elif sort == 1:
-            func = lambda x: x.game.price.total_price["fmtPrice"]["discountPrice"]
+            func = lambda x: x.catalog_game.price.total_price["fmtPrice"]["discountPrice"]
             reverse = self.ui.reverse.isChecked()
         elif sort == 2:
-            func = lambda x: x.game.seller["name"]
+            func = lambda x: x.catalog_game.seller["name"]
             reverse = self.ui.reverse.isChecked()
         elif sort == 3:
-            func = lambda x: 1 - (x.game.price.total_price["discountPrice"] / x.game.price.total_price["originalPrice"])
+            func = lambda x: 1 - (x.catalog_game.price.total_price["discountPrice"] / x.catalog_game.price.total_price["originalPrice"])
             reverse = not self.ui.reverse.isChecked()
         else:
-            func = lambda x: x.game.title
+            func = lambda x: x.catalog_game.title
             reverse = self.ui.reverse.isChecked()
 
         widgets = sorted(widgets, key=func, reverse=reverse)

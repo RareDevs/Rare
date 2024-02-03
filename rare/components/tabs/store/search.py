@@ -40,14 +40,9 @@ class SearchPage(SlidingStackedWidget, SideTabContents):
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)
 
-        self.details_scroll = QScrollArea(self)
-        self.details_scroll.setWidgetResizable(True)
-        self.details_scroll.setFrameStyle(QFrame.NoFrame | QFrame.Plain)
-        self.details_scroll.setWidget(self.details_widget)
-
         self.setDirection(Qt.Horizontal)
         self.addWidget(self.search_widget)
-        self.addWidget(self.details_scroll)
+        self.addWidget(self.details_widget)
 
     @pyqtSlot()
     def show_main(self):
@@ -56,7 +51,7 @@ class SearchPage(SlidingStackedWidget, SideTabContents):
     @pyqtSlot(object)
     def show_details(self, game: CatalogOfferModel):
         self.details_widget.update_game(game)
-        self.slideInWidget(self.details_scroll)
+        self.slideInWidget(self.details_widget)
 
 
 # noinspection PyAttributeOutsideInit,PyBroadException

@@ -17,7 +17,6 @@ class ResultsWidget(QScrollArea):
 
     def __init__(self, store_api, parent=None):
         super(ResultsWidget, self).__init__(parent=parent)
-        self.implements_scrollarea = True
         self.store_api = store_api
 
         self.results_container = QWidget(self)

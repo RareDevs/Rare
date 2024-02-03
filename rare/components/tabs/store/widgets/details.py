@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
-from PyQt5.QtGui import QFont, QDesktopServices, QFontMetrics
+from PyQt5.QtGui import QFont, QDesktopServices, QKeyEvent
 from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
 )
 
 from rare.components.tabs.store.api.debug import DebugDialog
-from rare.components.tabs.store.api.models.diesel import DieselProduct, DieselProductDetail
+from rare.components.tabs.store.api.models.diesel import DieselProduct, DieselProductDetail, DieselSystemDetail
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.models.image import ImageSize
 from rare.ui.components.tabs.store.details import Ui_DetailsWidget
@@ -30,6 +30,8 @@ class DetailsWidget(QWidget, SideTabContents):
     # TODO Design
     def __init__(self, installed_titles: list, api_core, parent=None):
         super(DetailsWidget, self).__init__(parent=parent)
+        self.implements_scrollarea = True
+
         self.ui = Ui_DetailsWidget()
         self.ui.setupUi(self)
         self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
@@ -55,6 +57,7 @@ class DetailsWidget(QWidget, SideTabContents):
         self.requirements_tabs.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.ui.requirements_layout.addWidget(self.requirements_tabs)
 
+        self.ui.back_button.setIcon(icon("fa.chevron-left"))
         self.ui.back_button.clicked.connect(self.back_clicked)
 
         self.setDisabled(False)
@@ -182,31 +185,10 @@ class DetailsWidget(QWidget, SideTabContents):
         else:
             self.ui.discount_price.setVisible(False)
 
-        bold_font = QFont()
-        bold_font.setBold(True)
-
-        fm = QFontMetrics(self.font())
         requirements = product_data.requirements
         if requirements and requirements.systems:
             for system in requirements.systems:
-                req_widget = QWidget(self.requirements_tabs)
-                req_layout = QGridLayout(req_widget)
-                req_widget.layout().setAlignment(Qt.AlignTop)
-                req_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-                min_label = QLabel(self.tr("Minimum"), parent=req_widget)
-                min_label.setFont(bold_font)
-                rec_label = QLabel(self.tr("Recommend"), parent=req_widget)
-                rec_label.setFont(bold_font)
-                req_layout.addWidget(min_label, 0, 1)
-                req_layout.addWidget(rec_label, 0, 2)
-                req_layout.setColumnStretch(1, 2)
-                req_layout.setColumnStretch(2, 2)
-                for i, detail in enumerate(system.details):
-                    req_layout.addWidget(QLabel(detail.title, parent=req_widget), i + 1, 0)
-                    min_label = ElideLabel(detail.minimum, parent=req_widget)
-                    req_layout.addWidget(min_label, i + 1, 1)
-                    rec_label = ElideLabel(detail.recommended, parent=req_widget)
-                    req_layout.addWidget(rec_label, i + 1, 2)
+                req_widget = RequirementsWidget(system, self.requirements_tabs)
                 self.requirements_tabs.addTab(req_widget, system.system_type)
                 # self.req_group_box.layout().addWidget(req_tabs)
                 # self.req_group_box.layout().setAlignment(Qt.AlignTop)
@@ -273,6 +255,10 @@ class DetailsWidget(QWidget, SideTabContents):
         return
         QDesktopServices.openUrl(QUrl(f"https://www.epicgames.com/store/{self.core.language_code}/p/{self.slug}"))
 
+    def keyPressEvent(self, a0: QKeyEvent):
+        if a0.key() == Qt.Key_Escape:
+            self.back_clicked.emit()
+
 
 class SocialButton(QPushButton):
     def __init__(self, icn, url, parent=None):
@@ -280,3 +266,30 @@ class SocialButton(QPushButton):
         self.url = url
         self.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(url)))
         self.setToolTip(url)
+
+
+class RequirementsWidget(QWidget, SideTabContents):
+    def __init__(self, system: DieselSystemDetail, parent=None):
+        super().__init__(parent=parent)
+        self.implements_scrollarea = True
+
+        bold_font = self.font()
+        bold_font.setBold(True)
+
+        req_layout = QGridLayout(self)
+        min_label = QLabel(self.tr("Minimum"), parent=self)
+        min_label.setFont(bold_font)
+        rec_label = QLabel(self.tr("Recommend"), parent=self)
+        rec_label.setFont(bold_font)
+        req_layout.addWidget(min_label, 0, 1)
+        req_layout.addWidget(rec_label, 0, 2)
+        req_layout.setColumnStretch(1, 2)
+        req_layout.setColumnStretch(2, 2)
+        for i, detail in enumerate(system.details):
+            req_layout.addWidget(QLabel(detail.title, parent=self), i + 1, 0)
+            min_label = ElideLabel(detail.minimum, parent=self)
+            req_layout.addWidget(min_label, i + 1, 1)
+            rec_label = ElideLabel(detail.recommended, parent=self)
+            req_layout.addWidget(rec_label, i + 1, 2)
+        req_layout.setAlignment(Qt.AlignTop)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
