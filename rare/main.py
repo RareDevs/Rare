@@ -59,7 +59,7 @@ def main() -> int:
     )
     subparsers = parser.add_subparsers(title="Commands", dest="subparser")
 
-    launch_parser = subparsers.add_parser("start", aliases=["launch"])
+    launch_parser = subparsers.add_parser("launch", aliases=["start"])
     launch_parser.add_argument("app_name", help="AppName of the game to launch",
                                metavar="<App Name>", action="store")
     launch_parser.add_argument("--dry-run", help="Print arguments and exit", action="store_true")
@@ -100,11 +100,11 @@ def main() -> int:
         return 0
 
     if args.subparser in {"login", "auth"}:
-        from rare.webview import launch
+        from rare.commands.webview import launch
         return launch(args)
 
-    if args.subparser in {"start", "launch"}:
-        from rare.launcher import launch
+    if args.subparser in {"launch", "start"}:
+        from rare.commands.launcher import launch
         return launch(args)
 
     from rare.utils import singleton
