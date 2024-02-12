@@ -26,16 +26,16 @@ logger = logging.getLogger("Shop")
 
 
 class SearchPage(SlidingStackedWidget, SideTabContents):
-    def __init__(self, core, api: StoreAPI, parent=None):
+    def __init__(self, store_api: StoreAPI, parent=None):
         super(SearchPage, self).__init__(parent=parent)
         self.implements_scrollarea = True
 
-        self.search_widget = SearchWidget(core, api, parent=self)
+        self.search_widget = SearchWidget(store_api, parent=self)
         self.search_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.search_widget.set_title.connect(self.set_title)
         self.search_widget.show_details.connect(self.show_details)
 
-        self.details_widget = DetailsWidget([], api, parent=self)
+        self.details_widget = DetailsWidget([], store_api, parent=self)
         self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)
@@ -58,27 +58,25 @@ class SearchPage(SlidingStackedWidget, SideTabContents):
 class SearchWidget(QWidget, SideTabContents):
     show_details = pyqtSignal(CatalogOfferModel)
 
-    def __init__(self, core: LegendaryCore, api: StoreAPI, parent=None):
+    def __init__(self, store_api: StoreAPI, parent=None):
         super(SearchWidget, self).__init__(parent=parent)
         self.implements_scrollarea = True
         self.ui = Ui_SearchWidget()
         self.ui.setupUi(self)
         self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
 
-        self.core = core
-        self.api_core = api
+        self.store_api = store_api
         self.price = ""
         self.tags = []
         self.types = []
         self.update_games_allowed = True
 
-        self.free_game_widgets = []
         self.active_search_request = False
         self.next_search = ""
         self.wishlist: List = []
 
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Games"))
-        self.results_scrollarea = ResultsWidget(self.api_core, self)
+        self.results_scrollarea = ResultsWidget(self.store_api, self)
         self.results_scrollarea.show_details.connect(self.show_details)
 
         self.ui.left_layout.addWidget(self.search_bar)
@@ -188,8 +186,8 @@ class SearchWidget(QWidget, SideTabContents):
         self.games_group.loading(True)
 
         browse_model = SearchStoreQuery(
-            language=self.core.language_code,
-            country=self.core.country_code,
+            language=self.store_api.language_code,
+            country=self.store_api.country_code,
             count=20,
             price_range=self.price,
             on_sale=self.ui.on_discount.isChecked(),
@@ -198,7 +196,7 @@ class SearchWidget(QWidget, SideTabContents):
 
         if self.types:
             browse_model.category = "|".join(self.types)
-        self.api_core.browse_games(browse_model, self.show_games)
+        self.store_api.browse_games(browse_model, self.show_games)
 
 
 class CheckBox(QCheckBox):

@@ -20,7 +20,7 @@ from .api.models.response import (
     CatalogOfferModel,
 )
 
-logger = getLogger("ShopAPICore")
+logger = getLogger("StoreAPI")
 graphql_url = "https://graphql.epicgames.com/graphql"
 
 
@@ -46,7 +46,7 @@ class StoreAPI(QObject):
         self.browse_active = False
         self.next_browse_request = tuple(())
 
-    def get_free_games(self, handle_func: callable):
+    def get_free(self, handle_func: callable):
         url = "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions"
         params = {
             "locale": self.locale,
@@ -59,7 +59,7 @@ class StoreAPI(QObject):
     def __handle_free_games(data, handle_func):
         try:
             response = ResponseModel.from_dict(data)
-            results: List[CatalogOfferModel] = response.data.catalog.search_store.elements
+            results: List[CatalogOfferModel] = response.data.catalog.searchStore.elements
             handle_func(results)
         except KeyError as e:
             if DEBUG():
@@ -94,7 +94,7 @@ class StoreAPI(QObject):
             response = ResponseModel.from_dict(data)
             if response.errors:
                 logger.error(response.errors)
-            handle_func(response.data.wishlist.wishlist_items.elements)
+            handle_func(response.data.wishlist.wishlistItems.elements)
         except KeyError as e:
             if DEBUG():
                 raise e
@@ -132,7 +132,7 @@ class StoreAPI(QObject):
     def __handle_search(data, handler):
         try:
             response = ResponseModel.from_dict(data)
-            handler(response.data.catalog.search_store.elements)
+            handler(response.data.catalog.searchStore.elements)
         except KeyError as e:
             logger.error(str(e))
             if DEBUG():
@@ -167,7 +167,7 @@ class StoreAPI(QObject):
         if not self.next_browse_request:
             try:
                 response = ResponseModel.from_dict(data)
-                handle_func(response.data.catalog.search_store.elements)
+                handle_func(response.data.catalog.searchStore.elements)
             except KeyError as e:
                 if DEBUG():
                     raise e
@@ -233,7 +233,7 @@ class StoreAPI(QObject):
         # debug.exec()
         try:
             response = ResponseModel.from_dict(data)
-            data = response.data.wishlist.add_to_wishlist
+            data = response.data.wishlist.addToWishlist
             handle_func(data.success)
         except Exception as e:
             if DEBUG():
@@ -259,7 +259,7 @@ class StoreAPI(QObject):
         # debug.exec()
         try:
             response = ResponseModel.from_dict(data)
-            data = response.data.wishlist.remove_from_wishlist
+            data = response.data.wishlist.removeFromWishlist
             handle_func(data.success)
         except Exception as e:
             if DEBUG():

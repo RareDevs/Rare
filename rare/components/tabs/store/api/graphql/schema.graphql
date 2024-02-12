@@ -25,14 +25,14 @@ type DiscountSetting {
     discountType: String
 }
 
-type AppliedRuled {
+type AppliedRules {
     id: ID
     endDate: Date
     discountSetting: DiscountSetting
 }
 
 type LineOfferRes {
-    appliedRules: [AppliedRuled]
+    appliedRules: [AppliedRules]
 }
 
 type GetPriceRes {

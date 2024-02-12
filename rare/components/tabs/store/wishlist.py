@@ -116,13 +116,13 @@ class WishlistWidget(QWidget, SideTabContents):
             func = lambda x: x.catalog_game.title
             reverse = self.ui.reverse.isChecked()
         elif sort == 1:
-            func = lambda x: x.catalog_game.price.total_price["fmtPrice"]["discountPrice"]
+            func = lambda x: x.catalog_game.price.totalPrice["fmtPrice"]["discountPrice"]
             reverse = self.ui.reverse.isChecked()
         elif sort == 2:
             func = lambda x: x.catalog_game.seller["name"]
             reverse = self.ui.reverse.isChecked()
         elif sort == 3:
-            func = lambda x: 1 - (x.catalog_game.price.total_price["discountPrice"] / x.catalog_game.price.total_price["originalPrice"])
+            func = lambda x: 1 - (x.catalog_game.price.totalPrice["discountPrice"] / x.catalog_game.price.totalPrice["originalPrice"])
             reverse = not self.ui.reverse.isChecked()
         else:
             func = lambda x: x.catalog_game.title

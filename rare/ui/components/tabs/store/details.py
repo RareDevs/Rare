@@ -18,6 +18,8 @@ class Ui_DetailsWidget(object):
         DetailsWidget.setWindowTitle("DetailsWidget")
         self.main_layout = QtWidgets.QHBoxLayout(DetailsWidget)
         self.main_layout.setObjectName("main_layout")
+        self.left_layout = QtWidgets.QVBoxLayout()
+        self.left_layout.setObjectName("left_layout")
         self.back_button = QtWidgets.QPushButton(DetailsWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -28,9 +30,7 @@ class Ui_DetailsWidget(object):
         self.back_button.setIconSize(QtCore.QSize(32, 32))
         self.back_button.setFlat(True)
         self.back_button.setObjectName("back_button")
-        self.main_layout.addWidget(self.back_button)
-        self.left_layout = QtWidgets.QVBoxLayout()
-        self.left_layout.setObjectName("left_layout")
+        self.left_layout.addWidget(self.back_button)
         self.main_layout.addLayout(self.left_layout)
         self.right_layout = QtWidgets.QVBoxLayout()
         self.right_layout.setObjectName("right_layout")
@@ -176,7 +176,7 @@ class Ui_DetailsWidget(object):
         self.description_label.setObjectName("description_label")
         self.right_layout.addWidget(self.description_label)
         self.main_layout.addLayout(self.right_layout)
-        self.main_layout.setStretch(2, 1)
+        self.main_layout.setStretch(1, 1)
 
         self.retranslateUi(DetailsWidget)
 

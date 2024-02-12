@@ -5,7 +5,7 @@ from typing import Callable, Dict, TypeVar, List, Tuple
 from typing import Union
 
 import orjson
-from PyQt5.QtCore import QObject, pyqtSignal, QUrl, QUrlQuery, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSignal, QUrl, QUrlQuery, pyqtSlot, QJsonDocument
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QNetworkDiskCache
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"

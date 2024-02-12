@@ -11,7 +11,7 @@ from rare.utils.misc import qta_icon
 from rare.utils.qt_requests import QtRequests
 from .image import LoadingImageWidget
 
-logger = logging.getLogger("GameWidgets")
+logger = logging.getLogger("StoreWidgets")
 
 
 class ItemWidget(LoadingImageWidget):
@@ -46,15 +46,15 @@ class StoreItemWidget(ItemWidget):
             return
 
         self.ui.title_label.setText(game.title)
-        for attr in game.custom_attributes:
+        for attr in game.customAttributes:
             if attr["key"] == "developerName":
                 developer = attr["value"]
                 break
         else:
             developer = game.seller["name"]
         self.ui.developer_label.setText(developer)
-        price = game.price.total_price["fmtPrice"]["originalPrice"]
-        discount_price = game.price.total_price["fmtPrice"]["discountPrice"]
+        price = game.price.totalPrice.fmtPrice["originalPrice"]
+        discount_price = game.price.totalPrice.fmtPrice["discountPrice"]
         self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
         if price != discount_price:
             font = self.ui.price_label.font()
@@ -64,7 +64,7 @@ class StoreItemWidget(ItemWidget):
         else:
             self.ui.discount_label.setVisible(False)
 
-        key_images = game.key_images
+        key_images = game.keyImages
         self.fetchPixmap(key_images.for_dimensions(self.width(), self.height()).url)
 
         # for img in json_info["keyImages"]:
@@ -83,13 +83,13 @@ class ResultsItemWidget(ItemWidget):
         self.setFixedSize(ImageSize.Display)
         self.ui.setupUi(self)
 
-        key_images = catalog_game.key_images
+        key_images = catalog_game.keyImages
         self.fetchPixmap(key_images.for_dimensions(self.width(), self.height()).url)
 
         self.ui.title_label.setText(catalog_game.title)
 
-        price = catalog_game.price.total_price["fmtPrice"]["originalPrice"]
-        discount_price = catalog_game.price.total_price["fmtPrice"]["discountPrice"]
+        price = catalog_game.price.totalPrice.fmtPrice["originalPrice"]
+        discount_price = catalog_game.price.totalPrice.fmtPrice["discountPrice"]
         self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
         if price != discount_price:
             font = self.ui.price_label.font()
@@ -108,14 +108,14 @@ class WishlistItemWidget(ItemWidget):
         super(WishlistItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.DisplayWide)
         self.ui.setupUi(self)
-        for attr in catalog_game.custom_attributes:
+        for attr in catalog_game.customAttributes:
             if attr["key"] == "developerName":
                 developer = attr["value"]
                 break
         else:
             developer = catalog_game.seller["name"]
-        original_price = catalog_game.price.total_price["fmtPrice"]["originalPrice"]
-        discount_price = catalog_game.price.total_price["fmtPrice"]["discountPrice"]
+        original_price = catalog_game.price.totalPrice.fmtPrice["originalPrice"]
+        discount_price = catalog_game.price.totalPrice.fmtPrice["discountPrice"]
 
         self.ui.title_label.setText(catalog_game.title)
         self.ui.developer_label.setText(developer)
@@ -127,7 +127,7 @@ class WishlistItemWidget(ItemWidget):
             self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
         else:
             self.ui.discount_label.setVisible(False)
-        key_images = catalog_game.key_images
+        key_images = catalog_game.keyImages
         self.fetchPixmap(
             key_images.for_dimensions(self.width(), self.height()).url
         )

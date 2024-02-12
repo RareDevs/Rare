@@ -33,7 +33,7 @@ class DieselSystemDetailItem:
 class DieselSystemDetail:
     p_type: Optional[str] = None
     details: Optional[List[DieselSystemDetailItem]] = None
-    system_type: Optional[str] = None
+    systemType: Optional[str] = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -47,7 +47,7 @@ class DieselSystemDetail:
         tmp = cls(
             p_type=d.pop("_type", ""),
             details=details,
-            system_type=d.pop("systemType", ""),
+            systemType=d.pop("systemType", ""),
         )
         tmp.unmapped = d
         return tmp
@@ -107,7 +107,7 @@ class DieselProductDetail:
     p_type: Optional[str] = None
     about: Optional[DieselProductAbout] = None
     requirements: Optional[DieselSystemDetails] = None
-    social_links: Optional[DieselSocialLinks] = None
+    socialLinks: Optional[DieselSocialLinks] = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -119,7 +119,7 @@ class DieselProductDetail:
             p_type=d.pop("_type", ""),
             about=about,
             requirements=requirements,
-            social_links=d.pop("socialLinks", {}),
+            socialLinks=d.pop("socialLinks", {}),
         )
         tmp.unmapped = d
         return tmp
@@ -136,7 +136,7 @@ class DieselProduct:
     namespace: Optional[str] = None
     pages: Optional[List["DieselProduct"]] = None
     data: Optional[DieselProductDetail] = None
-    product_name: Optional[str] = None
+    productName: Optional[str] = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -158,7 +158,7 @@ class DieselProduct:
             namespace=d.pop("namespace", ""),
             pages=pages,
             data=data,
-            product_name=d.pop("productName", ""),
+            productName=d.pop("productName", ""),
         )
         tmp.unmapped = d
         return tmp

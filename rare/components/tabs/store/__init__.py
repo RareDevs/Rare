@@ -28,21 +28,15 @@ class StoreTab(SideTabWidget):
         self.landing = LandingPage(self.api, parent=self)
         self.landing_index = self.addTab(self.landing, self.tr("Store"))
 
-        self.search = SearchPage(self.core, self.api, parent=self)
+        self.search = SearchPage(self.api, parent=self)
         self.search_index = self.addTab(self.search, self.tr("Search"))
 
         self.wishlist = WishlistPage(self.api, parent=self)
         self.wishlist_index = self.addTab(self.wishlist, self.tr("Wishlist"))
 
-        self.api.update_wishlist.connect(self.update_wishlist)
-
-        self.previous_index = self.landing_index
-
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous() or self.init:
             return super().showEvent(a0)
-        # self.landing.load()
-        # self.wishlist.update_wishlist()
         self.init = True
         return super().showEvent(a0)
 
@@ -51,6 +45,3 @@ class StoreTab(SideTabWidget):
             return super().hideEvent(a0)
         # TODO: Implement store unloading
         return super().hideEvent(a0)
-
-    def update_wishlist(self):
-        self.landing.update_wishlist()

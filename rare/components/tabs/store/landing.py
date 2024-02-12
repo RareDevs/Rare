@@ -14,26 +14,25 @@ from PyQt5.QtWidgets import (
     QFrame,
 )
 
+from rare.components.tabs.store.api.models.response import CatalogOfferModel, WishlistItemModel
 from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
-from rare.components.tabs.store.api.models.response import CatalogOfferModel, WishlistItemModel
-from .api.models.utils import parse_date
 from .store_api import StoreAPI
 from .widgets.details import DetailsWidget
-from .widgets.items import StoreItemWidget
 from .widgets.groups import StoreGroup
+from .widgets.items import StoreItemWidget
 
 logger = logging.getLogger("StoreLanding")
 
 
 class LandingPage(SlidingStackedWidget, SideTabContents):
 
-    def __init__(self, api: StoreAPI, parent=None):
+    def __init__(self, store_api: StoreAPI, parent=None):
         super(LandingPage, self).__init__(parent=parent)
         self.implements_scrollarea = True
 
-        self.landing_widget = LandingWidget(api, parent=self)
+        self.landing_widget = LandingWidget(store_api, parent=self)
         self.landing_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.landing_widget.set_title.connect(self.set_title)
         self.landing_widget.show_details.connect(self.show_details)
@@ -43,7 +42,7 @@ class LandingPage(SlidingStackedWidget, SideTabContents):
         self.landing_scroll.setFrameStyle(QFrame.NoFrame | QFrame.Plain)
         self.landing_scroll.setWidget(self.landing_widget)
 
-        self.details_widget = DetailsWidget([], api, parent=self)
+        self.details_widget = DetailsWidget([], store_api, parent=self)
         self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)
@@ -83,7 +82,7 @@ class LandingWidget(QWidget, SideTabContents):
         self.discounts_group = StoreGroup(self.tr("Wishlist discounts"), layout=FlowLayout, parent=self)
         self.discounts_group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        self.games_group = StoreGroup(self.tr("Games"), FlowLayout, self)
+        self.games_group = StoreGroup(self.tr("Free to play"), FlowLayout, self)
         self.games_group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.games_group.loading(False)
         self.games_group.setVisible(True)
@@ -97,8 +96,8 @@ class LandingWidget(QWidget, SideTabContents):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        self.api.get_free_games(self.__add_free)
-        self.api.get_wishlist(self.__add_discounts)
+        self.api.get_free(self.__update_free_games)
+        self.api.get_wishlist(self.__update_wishlist_discounts)
         return super().showEvent(a0)
 
     def hideEvent(self, a0: QHideEvent) -> None:
@@ -107,28 +106,20 @@ class LandingWidget(QWidget, SideTabContents):
         # TODO: Implement tab unloading
         return super().hideEvent(a0)
 
-    def __add_discounts(self, wishlist: List[WishlistItemModel]):
+    def __update_wishlist_discounts(self, wishlist: List[WishlistItemModel]):
         for w in self.discounts_group.findChildren(StoreItemWidget, options=Qt.FindDirectChildrenOnly):
             self.discounts_group.layout().removeWidget(w)
             w.deleteLater()
 
-        discounts = 0
-        for game in wishlist:
-            if not game:
-                continue
-            try:
-                if game.offer.price.total_price["discount"] > 0:
-                    w = StoreItemWidget(self.api.cached_manager, game.offer)
-                    w.show_details.connect(self.show_details)
-                    self.discounts_group.layout().addWidget(w)
-                    discounts += 1
-            except Exception as e:
-                logger.warning(f"{game} {e}")
-                continue
-        # self.discounts_group.setVisible(discounts > 0)
+        for item in wishlist:
+            if item.offer.price.totalPrice.discount > 0:
+                w = StoreItemWidget(self.api.cached_manager, item.offer)
+                w.show_details.connect(self.show_details)
+                self.discounts_group.layout().addWidget(w)
+        self.discounts_group.setVisible(bool(wishlist))
         self.discounts_group.loading(False)
 
-    def __add_free(self, free_games: List[CatalogOfferModel]):
+    def __update_free_games(self, free_games: List[CatalogOfferModel]):
         for w in self.free_games_now.findChildren(StoreItemWidget, options=Qt.FindDirectChildrenOnly):
             self.free_games_now.layout().removeWidget(w)
             w.deleteLater()
@@ -140,56 +131,38 @@ class LandingWidget(QWidget, SideTabContents):
         date = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
         free_now = []
         free_next = []
-        for game in free_games:
+        for item in free_games:
             try:
-                if (
-                    game.price.total_price["fmtPrice"]["discountPrice"] == "0"
-                    and game.price.total_price["fmtPrice"]["originalPrice"]
-                    != game.price.total_price["fmtPrice"]["discountPrice"]
-                ):
-                    free_now.append(game)
+                if item.price.totalPrice.discountPrice == 0:
+                    free_now.append(item)
                     continue
-
-                if game.title == "Mystery Game":
-                    free_next.append(game)
+                if item.title == "Mystery Game":
+                    free_next.append(item)
                     continue
             except KeyError as e:
                 logger.warning(str(e))
 
-            try:
-                # parse datetime to check if game is next week or now
-                try:
-                    start_date = parse_date(
-                        game.promotions["upcomingPromotionalOffers"][0]["promotionalOffers"][0]["startDate"]
-                    )
-                except Exception:
-                    try:
-                        start_date = parse_date(
-                            game.promotions["promotionalOffers"][0]["promotionalOffers"][0]["startDate"]
-                        )
-                    except Exception as e:
-                        continue
-
-            except TypeError:
-                print("type error")
-                continue
+            if not item.promotions.promotionalOffers:
+                start_date = item.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].startDate
+            else:
+                start_date = item.promotions.promotionalOffers[0].promotionalOffers[0].startDate
 
             if start_date > date:
-                free_next.append(game)
+                free_next.append(item)
 
         # free games now
-        self.free_games_now.setVisible(bool(len(free_now)))
-        for game in free_now:
-            w = StoreItemWidget(self.api.cached_manager, game)
+        self.free_games_now.setVisible(bool(free_now))
+        for item in free_now:
+            w = StoreItemWidget(self.api.cached_manager, item)
             w.show_details.connect(self.show_details)
             self.free_games_now.layout().addWidget(w)
         self.free_games_now.loading(False)
 
         # free games next week
-        self.free_games_next.setVisible(bool(len(free_next)))
-        for game in free_next:
-            w = StoreItemWidget(self.api.cached_manager, game)
-            if game.title != "Mystery Game":
+        self.free_games_next.setVisible(bool(free_next))
+        for item in free_next:
+            w = StoreItemWidget(self.api.cached_manager, item)
+            if item.title != "Mystery Game":
                 w.show_details.connect(self.show_details)
             self.free_games_next.layout().addWidget(w)
         self.free_games_next.loading(False)

@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Dict
 
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QFont, QDesktopServices, QKeyEvent
@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
 from rare.components.tabs.store.api.debug import DebugDialog
 from rare.components.tabs.store.api.models.diesel import DieselProduct, DieselProductDetail, DieselSystemDetail
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
+from rare.components.tabs.store.store_api import StoreAPI
 from rare.models.image import ImageSize
 from rare.ui.components.tabs.store.details import Ui_DetailsWidget
 from rare.utils.misc import icon
@@ -28,7 +29,7 @@ class DetailsWidget(QWidget, SideTabContents):
     back_clicked: pyqtSignal = pyqtSignal()
 
     # TODO Design
-    def __init__(self, installed_titles: list, api_core, parent=None):
+    def __init__(self, installed: List, store_api: StoreAPI, parent=None):
         super(DetailsWidget, self).__init__(parent=parent)
         self.implements_scrollarea = True
 
@@ -36,13 +37,11 @@ class DetailsWidget(QWidget, SideTabContents):
         self.ui.setupUi(self)
         self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
 
-        # self.core = LegendaryCoreSingleton()
-        self.api_core = api_core
-        self.installed = installed_titles
-        self.offer: CatalogOfferModel = None
-        self.data: dict = {}
+        self.store_api = store_api
+        self.installed = installed
+        self.catalog_offer: CatalogOfferModel = None
 
-        self.image = LoadingImageWidget(api_core.cached_manager, self)
+        self.image = LoadingImageWidget(store_api.cached_manager, self)
         self.image.setFixedSize(ImageSize.Display)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
         self.ui.left_layout.setAlignment(Qt.AlignTop)
@@ -53,7 +52,7 @@ class DetailsWidget(QWidget, SideTabContents):
         self.in_wishlist = False
         self.wishlist = []
 
-        self.requirements_tabs: SideTabWidget = SideTabWidget(parent=self.ui.requirements_frame)
+        self.requirements_tabs = SideTabWidget(parent=self.ui.requirements_frame)
         self.requirements_tabs.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.ui.requirements_layout.addWidget(self.requirements_tabs)
 
@@ -78,15 +77,17 @@ class DetailsWidget(QWidget, SideTabContents):
         self.ui.title.setText(offer.title)
         self.title_str = offer.title
         self.id_str = offer.id
-        self.api_core.get_wishlist(self.handle_wishlist_update)
+        self.store_api.get_wishlist(self.handle_wishlist_update)
+
         # lk: delete tabs in reverse order because indices are updated on deletion
         while self.requirements_tabs.count():
             self.requirements_tabs.widget(0).deleteLater()
             self.requirements_tabs.removeTab(0)
         self.requirements_tabs.clear()
-        slug = offer.product_slug
+
+        slug = offer.productSlug
         if not slug:
-            for mapping in offer.offer_mappings:
+            for mapping in offer.offerMappings:
                 if mapping["pageType"] == "productHome":
                     slug = mapping["pageSlug"]
                     break
@@ -114,24 +115,24 @@ class DetailsWidget(QWidget, SideTabContents):
 
         # init API request
         if slug:
-            self.api_core.get_game_config_cms(offer.product_slug, is_bundle, self.data_received)
+            self.store_api.get_game_config_cms(offer.productSlug, is_bundle, self.data_received)
         # else:
         #     self.data_received({})
-        self.offer = offer
+        self.catalog_offer = offer
 
     def add_to_wishlist(self):
         if not self.in_wishlist:
-            self.api_core.add_to_wishlist(
-                self.offer.namespace,
-                self.offer.id,
+            self.store_api.add_to_wishlist(
+                self.catalog_offer.namespace,
+                self.catalog_offer.id,
                 lambda success: self.ui.wishlist_button.setText(self.tr("Remove from wishlist"))
                 if success
                 else self.ui.wishlist_button.setText("Something went wrong")
             )
         else:
-            self.api_core.remove_from_wishlist(
-                self.offer.namespace,
-                self.offer.id,
+            self.store_api.remove_from_wishlist(
+                self.catalog_offer.namespace,
+                self.catalog_offer.id,
                 lambda success: self.ui.wishlist_button.setText(self.tr("Add to wishlist"))
                 if success
                 else self.ui.wishlist_button.setText("Something went wrong"),
@@ -146,34 +147,16 @@ class DetailsWidget(QWidget, SideTabContents):
         except Exception as e:
             raise e
             logger.error(str(e))
-            self.price.setText("Error")
-            self.requirements_tabs.setEnabled(False)
-            for img in self.data.get("keyImages"):
-                if img["type"] in [
-                    "DieselStoreFrontWide",
-                    "OfferImageTall",
-                    "VaultClosed",
-                    "ProductLogo",
-                ]:
-                    self.image.fetchPixmap(img["url"])
-                    break
-            self.price.setText("")
-            self.discount_price.setText("")
-            self.social_group.setEnabled(False)
-            self.tags.setText("")
-            self.dev.setText(self.data.get("seller", {}).get("name", ""))
-            return
-        # self.title.setText(self.game.title)
 
-        self.ui.price.setFont(QFont())
-        price = self.offer.price.total_price["fmtPrice"]["originalPrice"]
-        discount_price = self.offer.price.total_price["fmtPrice"]["discountPrice"]
+        self.ui.price.setFont(self.font())
+        price = self.catalog_offer.price.totalPrice.fmtPrice["originalPrice"]
+        discount_price = self.catalog_offer.price.totalPrice.fmtPrice["discountPrice"]
         if price == "0" or price == 0:
             self.ui.price.setText(self.tr("Free"))
         else:
             self.ui.price.setText(price)
         if price != discount_price:
-            font = QFont()
+            font = self.font()
             font.setStrikeOut(True)
             self.ui.price.setFont(font)
             self.ui.discount_price.setText(
@@ -189,18 +172,11 @@ class DetailsWidget(QWidget, SideTabContents):
         if requirements and requirements.systems:
             for system in requirements.systems:
                 req_widget = RequirementsWidget(system, self.requirements_tabs)
-                self.requirements_tabs.addTab(req_widget, system.system_type)
-                # self.req_group_box.layout().addWidget(req_tabs)
-                # self.req_group_box.layout().setAlignment(Qt.AlignTop)
-            # else:
-            #     self.req_group_box.layout().addWidget(
-            #         QLabel(self.tr("Could not get requirements"))
-            #     )
-            self.ui.requirements_frame.setVisible(True)
+                self.requirements_tabs.addTab(req_widget, system.systemType)
         else:
             self.ui.requirements_frame.setVisible(False)
 
-        key_images = self.offer.key_images
+        key_images = self.catalog_offer.keyImages
         img_url = key_images.for_dimensions(self.image.size().width(), self.image.size().height())
         self.image.fetchPixmap(img_url.url)
 
@@ -223,7 +199,7 @@ class DetailsWidget(QWidget, SideTabContents):
             self.ui.social_layout.removeWidget(b)
             b.deleteLater()
 
-        links = product_data.social_links
+        links = product_data.socialLinks
         link_count = 0
         for name, url in links.items():
             if name == "_type":
@@ -252,8 +228,7 @@ class DetailsWidget(QWidget, SideTabContents):
     #         self.wishlist.append(game["offer"]["title"])
 
     def button_clicked(self):
-        return
-        QDesktopServices.openUrl(QUrl(f"https://www.epicgames.com/store/{self.core.language_code}/p/{self.slug}"))
+        QDesktopServices.openUrl(QUrl(f"https://www.epicgames.com/store/{self.store_api.language_code}/p/{self.slug}"))
 
     def keyPressEvent(self, a0: QKeyEvent):
         if a0.key() == Qt.Key_Escape:
