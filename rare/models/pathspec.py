@@ -39,7 +39,7 @@ class PathSpec:
         possible_prefixes = get_prefixes()
         prefixes = [
             prefix
-            for prefix in possible_prefixes
+            for prefix, _ in possible_prefixes
             if os.path.exists(os.path.join(prefix, PathSpec.wine_egl_programdata()))
         ]
         if not prefixes:
@@ -66,5 +66,5 @@ class PathSpec:
             self.__egl_path_vars["{installdir}"] = igame.install_path
 
     def resolve_egl_path_vars(self, path: str) -> Union[LiteralString, str, bytes]:
-        cooked_path = [self.__egl_path_vars.get(p.lower(), p) for p in path.split("/")]
+        cooked_path = (self.__egl_path_vars.get(p.lower(), p) for p in path.split("/"))
         return os.path.join(*cooked_path)

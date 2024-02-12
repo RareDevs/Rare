@@ -3,13 +3,14 @@ import platform
 import time
 from configparser import ConfigParser
 from logging import getLogger
-from typing import Union, Iterable, Mapping, List
+from typing import Union, Iterable, List, Tuple, Dict
 
-from PyQt5.QtCore import pyqtSignal, QObject, QRunnable
+from PyQt5.QtCore import pyqtSignal, QObject
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.models.pathspec import PathSpec
+from rare.shared.wrappers import Wrappers
 from rare.utils import config_helper as config
 from rare.utils.misc import path_size, format_size
 from .worker import Worker
@@ -19,7 +20,7 @@ if platform.system() == "Windows":
     import winreg  # pylint: disable=E0401
     from legendary.lfs import windows_helpers
 else:
-    from rare.utils import runners
+    from rare.utils.compat import utils as compat_utils, proton
 
 logger = getLogger("WineResolver")
 
@@ -28,45 +29,71 @@ class WinePathResolver(Worker):
     class Signals(QObject):
         result_ready = pyqtSignal(str, str)
 
-    def __init__(self, command: List[str], environ: Mapping, path: str):
+    def __init__(self, core: LegendaryCore, app_name: str, path: str):
         super(WinePathResolver, self). __init__()
         self.signals = WinePathResolver.Signals()
-        self.command = command
-        self.environ = environ
+        self.core = core
+        self.app_name = app_name
         self.path = path
 
     @staticmethod
+    def _configure_process(core: LegendaryCore, app_name: str) -> Tuple[List, Dict]:
+        tool: proton.CompatibilityTool = None
+
+        if config.get_boolean(app_name, "no_wine"):
+            wrappers = Wrappers()
+            for w in wrappers.get_game_wrapper_list(app_name):
+                if w.is_compat_tool:
+                    for t in proton.find_tools():
+                        if t.checksum == w.checksum:
+                            tool = t
+                            break
+
+        cmd = core.get_app_launch_command(
+            app_name,
+            wrapper=tool.as_str(proton.SteamVerb.RUN_IN_PREFIX) if tool is not None else None,
+            disable_wine=config.get_boolean(app_name, "no_wine")
+        )
+        env = core.get_app_environment(app_name, disable_wine=config.get_boolean(app_name, "no_wine"))
+        env = compat_utils.get_host_environment(env, silent=True)
+
+        return cmd, env
+
+    @staticmethod
     def _resolve_unix_path(cmd, env, path: str) -> str:
-        if "waitforexitandrun" in cmd:
-            cmd[cmd.index("waitforexitandrun")] = "runinprefix"
         logger.info("Resolving path '%s'", path)
-        wine_path = runners.resolve_path(cmd, env, path)
-        logger.debug("Resolved Wine path '%s'", path)
-        unix_path = runners.convert_to_unix_path(cmd, env, wine_path)
-        logger.debug("Resolved Unix path '%s'", unix_path)
+        wine_path = compat_utils.resolve_path(cmd, env, path)
+        logger.info("Resolved Wine path '%s'", wine_path)
+        unix_path = compat_utils.convert_to_unix_path(cmd, env, wine_path)
+        logger.info("Resolved Unix path '%s'", unix_path)
         return unix_path
 
     def run_real(self):
-        path = self._resolve_unix_path(self.command, self.environ, self.path)
-        self.signals.result_ready.emit(path, "default")
+        command, environ = self._configure_process(self.core, self.app_name)
+        if not (command and environ):
+            logger.error("Cannot setup %s, missing infomation", {type(self).__name__})
+            self.signals.result_ready.emit("", self.app_name)
+
+        path = self._resolve_unix_path(command, environ, self.path)
+        self.signals.result_ready.emit(path, self.app_name)
         return
 
 
 class WineSavePathResolver(WinePathResolver):
 
     def __init__(self, core: LegendaryCore, rgame: RareGame):
-        cmd = core.get_app_launch_command(rgame.app_name, disable_wine=config.get_boolean(rgame.app_name, "no_wine"))
-        env = core.get_app_environment(rgame.app_name, disable_wine=config.get_boolean(rgame.app_name, "no_wine"))
-        env = runners.get_environment(env, silent=True)
         path = PathSpec(core, rgame.igame).resolve_egl_path_vars(rgame.raw_save_path)
-        if not (cmd and env and path):
-            raise RuntimeError(f"Cannot setup {type(self).__name__}, missing infomation")
-        super(WineSavePathResolver, self).__init__(cmd, env, path)
+        super(WineSavePathResolver, self).__init__(rgame.core, rgame.app_name, str(path))
         self.rgame = rgame
 
     def run_real(self):
         logger.info("Resolving save path for %s (%s)", self.rgame.app_title, self.rgame.app_name)
-        path = self._resolve_unix_path(self.command, self.environ, self.path)
+        command, environ = self._configure_process(self.core, self.rgame.app_name)
+        if not (command and environ):
+            logger.error("Cannot setup %s, missing infomation", {type(self).__name__})
+            self.signals.result_ready.emit("", self.rgame.app_name)
+
+        path = self._resolve_unix_path(command, environ, self.path)
         # Clean wine output
         # pylint: disable=E1136
         if os.path.exists(path):
@@ -75,14 +102,14 @@ class WineSavePathResolver(WinePathResolver):
         return
 
 
-class OriginWineWorker(QRunnable):
+class OriginWineWorker(WinePathResolver):
     def __init__(self, core: LegendaryCore, games: Union[Iterable[RareGame], RareGame]):
-        super(OriginWineWorker, self).__init__()
+        super(OriginWineWorker, self).__init__(core, "", "")
         self.__cache: dict[str, ConfigParser] = {}
         self.core = core
         self.games = [games] if isinstance(games, RareGame) else games
 
-    def run(self) -> None:
+    def run_real(self) -> None:
         t = time.time()
 
         for rgame in self.games:
@@ -102,18 +129,16 @@ class OriginWineWorker(QRunnable):
             if platform.system() == "Windows":
                 install_dir = windows_helpers.query_registry_value(winreg.HKEY_LOCAL_MACHINE, reg_path, reg_key)
             else:
-                command = self.core.get_app_launch_command(rgame.app_name)
-                environ = self.core.get_app_environment(rgame.app_name)
-                environ = runners.get_environment(environ, silent=True)
+                command, environ = self._configure_process(self.core, rgame.app_name)
 
                 prefix = config.get_prefix(rgame.app_name)
                 if not prefix:
                     return
 
-                use_wine = False
+                use_wine = True
                 if not use_wine:
                     # lk: this is the original way of getting the path by parsing "system.reg"
-                    reg = self.__cache.get(prefix, None) or runners.read_registry("system.reg", prefix)
+                    reg = self.__cache.get(prefix, None) or compat_utils.read_registry("system.reg", prefix)
                     self.__cache[prefix] = reg
 
                     reg_path = reg_path.replace("SOFTWARE", "Software").replace("WOW6432Node", "Wow6432Node")
@@ -123,11 +148,11 @@ class OriginWineWorker(QRunnable):
                     install_dir = reg.get(reg_path, f'"{reg_key}"', fallback=None)
                 else:
                     # lk: this is the alternative way of getting the path by using wine itself
-                    install_dir = runners.query_reg_key(command, environ, f"HKLM\\{reg_path}", reg_key)
+                    install_dir = compat_utils.query_reg_key(command, environ, f"HKLM\\{reg_path}", reg_key)
 
                 if install_dir:
                     logger.debug("Found Wine install directory %s", install_dir)
-                    install_dir = runners.convert_to_unix_path(command, environ, install_dir)
+                    install_dir = compat_utils.convert_to_unix_path(command, environ, install_dir)
                     if install_dir:
                         logger.debug("Found Unix install directory %s", install_dir)
                     else:

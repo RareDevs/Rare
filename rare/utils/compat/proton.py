@@ -2,9 +2,10 @@ import platform as pf
 import os
 import shlex
 from dataclasses import dataclass
+from enum import StrEnum
 from hashlib import md5
 from logging import getLogger
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union, List, Dict, Set
 
 if pf.system() in {"Linux", "FreeBSD"}:
     # noinspection PyUnresolvedReferences
@@ -22,11 +23,12 @@ def find_steam() -> str:
             return path
 
 
-def find_libraries(steam_path: str) -> List[str]:
+def find_libraries(steam_path: str) -> Set[str]:
     vdf_path = os.path.join(steam_path, "steamapps", "libraryfolders.vdf")
     with open(vdf_path, "r") as f:
         libraryfolders = vdf.load(f)["libraryfolders"]
-    libraries = [os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()]
+    # libraries = [os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()]
+    libraries = {os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()}
     return libraries
 
 
@@ -39,6 +41,16 @@ def find_libraries(steam_path: str) -> List[str]:
 #
 # As a result the following implementation will list versions from 7.0 onwards which honestly
 # is a good trade-off for the amount of complexity supporting everything would ensue.
+
+
+class SteamVerb(StrEnum):
+    RUN = "run"
+    WAIT_FOR_EXIT_AND_RUN = "waitforexitandrun"
+    RUN_IN_PREFIX = "runinprefix"
+    DESTROY_PREFIX = "destroyprefix"
+    GET_COMPAT_PATH = "getcompatpath"
+    GET_NATIVE_PATH = "getnativepath"
+    DEFAULT = WAIT_FOR_EXIT_AND_RUN
 
 
 @dataclass
@@ -57,19 +69,20 @@ class SteamBase:
     def required_tool(self) -> Optional[str]:
         return self.toolmanifest["manifest"].get("require_tool_appid", None)
 
-    def command(self, setup: bool = False) -> List[str]:
+    def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> List[str]:
         tool_path = os.path.normpath(self.tool_path)
         cmd = "".join([shlex.quote(tool_path), self.toolmanifest["manifest"]["commandline"]])
         # NOTE: "waitforexitandrun" seems to be the verb used in by steam to execute stuff
         # `run` is used when setting up the environment, so use that if we are setting up the prefix.
-        verb = "run" if setup else "waitforexitandrun"
-        cmd = cmd.replace("%verb%", verb)
+        cmd = cmd.replace("%verb%", str(verb))
         return shlex.split(cmd)
+
+    def as_str(self, verb: SteamVerb = SteamVerb.DEFAULT):
+        return " ".join(map(shlex.quote, self.command(verb)))
 
     @property
     def checksum(self) -> str:
-        command = " ".join(shlex.quote(part) for part in self.command(setup=False))
-        return md5(command.encode("utf-8")).hexdigest()
+        return md5(self.as_str().encode("utf-8")).hexdigest()
 
 
 @dataclass
@@ -95,9 +108,9 @@ class ProtonTool(SteamRuntime):
             return self.runtime is not None and self.runtime.appid == appid
         return True
 
-    def command(self, setup: bool = False) -> List[str]:
-        cmd = self.runtime.command(setup)
-        cmd.extend(super().command(setup))
+    def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> List[str]:
+        cmd = self.runtime.command(verb)
+        cmd.extend(super().command(verb))
         return cmd
 
 
@@ -116,9 +129,9 @@ class CompatibilityTool(SteamBase):
         name, data = list(self.compatibilitytool["compatibilitytools"]["compat_tools"].items())[0]
         return data["display_name"]
 
-    def command(self, setup: bool = False) -> List[str]:
-        cmd = self.runtime.command(setup) if self.runtime is not None else []
-        cmd.extend(super().command(setup))
+    def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> List[str]:
+        cmd = self.runtime.command(verb) if self.runtime is not None else []
+        cmd.extend(super().command(verb))
         return cmd
 
 
@@ -229,6 +242,7 @@ def get_steam_environment(
     # IMPORTANT: keep this in sync with the code below
     environ = {"STEAM_COMPAT_DATA_PATH": compat_path if compat_path else ""}
     if tool is None:
+        environ["STEAM_COMPAT_DATA_PATH"] = ""
         environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
         environ["STEAM_COMPAT_LIBRARY_PATHS"] = ""
         environ["STEAM_COMPAT_MOUNTS"] = ""
@@ -282,29 +296,5 @@ if __name__ == "__main__":
     for tool in _tools:
         print(get_steam_environment(tool))
         print(tool.name)
-        print(tool.command())
-        print(" ".join(tool.command()))
-
-
-def find_proton_combos():
-    possible_proton_combos = []
-    compatibilitytools_dirs = [
-        os.path.expanduser("~/.steam/steam/steamapps/common"),
-        "/usr/share/steam/compatibilitytools.d",
-        os.path.expanduser("~/.steam/compatibilitytools.d"),
-        os.path.expanduser("~/.steam/root/compatibilitytools.d"),
-    ]
-    for c in compatibilitytools_dirs:
-        if os.path.exists(c):
-            for i in os.listdir(c):
-                proton = os.path.join(c, i, "proton")
-                compatibilitytool = os.path.join(c, i, "compatibilitytool.vdf")
-                toolmanifest = os.path.join(c, i, "toolmanifest.vdf")
-                if os.path.exists(proton) and (
-                        os.path.exists(compatibilitytool) or os.path.exists(toolmanifest)
-                ):
-                    wrapper = f'"{proton}" run'
-                    possible_proton_combos.append(wrapper)
-    if not possible_proton_combos:
-        logger.warning("Unable to find any Proton version")
-    return possible_proton_combos
+        print(tool.command(SteamVerb.RUN))
+        print(" ".join(tool.command(SteamVerb.RUN_IN_PREFIX)))

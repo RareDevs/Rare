@@ -69,7 +69,7 @@ class Wrappers:
         #         yield wrap
 
     def get_game_wrapper_string(self, app_name: str) -> str:
-        commands = [wrapper.command for wrapper in self.get_game_wrapper_list(app_name)]
+        commands = [wrapper.as_str for wrapper in self.get_game_wrapper_list(app_name)]
         return " ".join(commands)
 
     def get_game_wrapper_list(self, app_name: str) -> List[Wrapper]:
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     from pprint import pprint
     from argparse import Namespace
 
-    from rare.utils.runners import proton
+    from rare.utils.compat import proton
 
     global config_dir
     config_dir = os.getcwd
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     for i, tool in enumerate(proton.find_tools()):
         wt = Wrapper(command=tool.command(), name=tool.name, wtype=WrapperType.COMPAT_TOOL)
         wr.set_game_wrapper_list(f"compat_game_{i}", [wt])
-        print(wt.command)
+        print(wt.as_str)
 
     for wrp in wr.user_wrappers:
         pprint(wrp)

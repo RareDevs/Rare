@@ -28,15 +28,20 @@ class Wrapper:
 
     @property
     def checksum(self) -> str:
-        return md5(self.command.encode("utf-8")).hexdigest()
+        return md5(self.as_str.encode("utf-8")).hexdigest()
 
     @property
     def executable(self) -> str:
         return shlex.quote(self.__command[0])
 
     @property
-    def command(self) -> str:
-        return " ".join(shlex.quote(part) for part in self.__command)
+    def command(self) -> List[str]:
+        return self.__command
+
+    @property
+    def as_str(self) -> str:
+        # return " ".join(shlex.quote(part) for part in self.__command)
+        return " ".join(map(shlex.quote, self.__command))
 
     @property
     def name(self) -> str:
@@ -47,13 +52,13 @@ class Wrapper:
         return self.__wtype
 
     def __eq__(self, other) -> bool:
-        return self.command == other.command
+        return self.as_str == other.as_str
 
     def __hash__(self):
         return hash(self.__command)
 
     def __bool__(self) -> bool:
-        return True if not self.is_editable else bool(self.command.strip())
+        return True if not self.is_editable else bool(self.as_str.strip())
 
     @classmethod
     def from_dict(cls, data: Dict):

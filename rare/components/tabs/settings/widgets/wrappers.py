@@ -25,7 +25,7 @@ from rare.utils.misc import icon
 from rare.widgets.dialogs import ButtonDialog, game_title
 
 if pf.system() in {"Linux", "FreeBSD"}:
-    from rare.utils.runners import proton
+    from rare.utils.compat import proton
 
 logger = getLogger("WrapperSettings")
 
@@ -54,7 +54,7 @@ class WrapperEditDialog(ButtonDialog):
         header = self.tr("Edit wrapper")
         self.setWindowTitle(header)
         self.setSubtitle(game_title(header, wrapper.name))
-        self.line_edit.setText(wrapper.command)
+        self.line_edit.setText(wrapper.as_str)
 
     @pyqtSlot(str)
     def __on_text_changed(self, text: str):
@@ -83,7 +83,7 @@ class WrapperAddDialog(WrapperEditDialog):
         self.setWindowTitle(header)
         self.setSubtitle(header)
         for wrapper in wrappers:
-            self.combo_box.addItem(f"{wrapper.name} ({wrapper.command})", wrapper.command)
+            self.combo_box.addItem(f"{wrapper.name} ({wrapper.as_str})", wrapper.as_str)
 
     @pyqtSlot(int)
     def __on_index_changed(self, index: int):
@@ -101,7 +101,7 @@ class WrapperWidget(QFrame):
         super(WrapperWidget, self).__init__(parent=parent)
         self.setFrameShape(QFrame.StyledPanel)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
-        self.setToolTip(wrapper.command)
+        self.setToolTip(wrapper.as_str)
 
         text_lbl = QLabel(wrapper.name, parent=self)
         text_lbl.setFont(QFont("monospace"))
@@ -296,7 +296,7 @@ class WrapperSettings(QWidget):
 
         if pf.system() in {"Linux", "FreeBSD"}:
             compat_cmds = [tool.command() for tool in proton.find_tools()]
-            if wrapper.command in compat_cmds:
+            if wrapper.as_str in compat_cmds:
                 QMessageBox.warning(
                     self,
                     self.tr("Warning"),
@@ -306,7 +306,7 @@ class WrapperSettings(QWidget):
 
         if wrapper.checksum in self.wrappers.get_game_md5sum_list(self.app_name):
             QMessageBox.warning(
-                self, self.tr("Warning"), self.tr("Wrapper <b>{0}</b> is already in the list").format(wrapper.command)
+                self, self.tr("Warning"), self.tr("Wrapper <b>{0}</b> is already in the list").format(wrapper.as_str)
             )
             return
 

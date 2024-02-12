@@ -81,6 +81,15 @@ def desktop_dir() -> Path:
 def applications_dir() -> Path:
     return Path(QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation))
 
+
+def proton_compat_dir(app_name: str) -> Path:
+    return data_dir().joinpath(f"compatdata/{app_name}")
+
+
+def wine_compat_dir(app_name: str) -> Path:
+    return proton_compat_dir(app_name).joinpath("pfx")
+
+
 # fmt: off
 __link_suffix = {
     "Windows": {

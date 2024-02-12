@@ -28,7 +28,7 @@ from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 from rare.widgets.loading_widget import LoadingWidget
 from rare.widgets.side_tab import SideTabContents
 
-logger = getLogger("CloudWidget")
+logger = getLogger("CloudSaves")
 
 
 class CloudSaves(QWidget, SideTabContents):
@@ -122,11 +122,11 @@ class CloudSaves(QWidget, SideTabContents):
             except Exception as e:
                 logger.warning(str(e))
                 resolver = WineSavePathResolver(self.core, self.rgame)
-                if not resolver.environ.get("WINEPREFIX"):
-                    del resolver
-                    self.cloud_save_path_edit.setText("")
-                    QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")
-                    return
+                # if not resolver.environ.get("WINEPREFIX"):
+                #     del resolver
+                #     self.cloud_save_path_edit.setText("")
+                #     QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")
+                #     return
                 self.cloud_save_path_edit.setText(self.tr("Loading..."))
                 self.cloud_save_path_edit.setDisabled(True)
                 self.compute_save_path_button.setDisabled(True)
@@ -139,7 +139,8 @@ class CloudSaves(QWidget, SideTabContents):
 
     @pyqtSlot(str, str)
     def __on_wine_resolver_result(self, path, app_name):
-        logger.info(f"Wine resolver finished for {app_name}. Computed save path: {path}")
+        logger.info("Wine resolver finished for %s", app_name)
+        logger.info("Computed save path: %s", path)
         if app_name == self.rgame.app_name:
             self.cloud_save_path_edit.setDisabled(False)
             self.compute_save_path_button.setDisabled(False)

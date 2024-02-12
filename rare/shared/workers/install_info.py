@@ -58,7 +58,8 @@ class InstallInfoWorker(Worker):
             if not download.res or not download.res.failures:
                 self.signals.result.emit(download)
             else:
-                self.signals.failed.emit("\n".join(str(i) for i in download.res.failures))
+                # self.signals.failed.emit("\n".join(str(i) for i in download.res.failures))
+                self.signals.failed.emit("\n".join(map(str, download.res.failures)))
         except LgndrException as ret:
             self.signals.failed.emit(ret.message)
         except Exception as e:

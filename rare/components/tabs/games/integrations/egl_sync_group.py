@@ -16,7 +16,7 @@ from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WinePathResolver
 from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
-from rare.utils import runners
+from rare.utils.compat import utils as compat_utils
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
@@ -88,11 +88,7 @@ class EGLSyncGroup(QGroupBox):
 
     def __run_wine_resolver(self):
         self.egl_path_info.setText(self.tr("Updating..."))
-        wine_resolver = WinePathResolver(
-            self.core.get_app_launch_command("default"),
-            runners.get_environment(self.core.get_app_environment("default")),
-            PathSpec.egl_programdata()
-        )
+        wine_resolver = WinePathResolver(self.core, "default", str(PathSpec.egl_programdata()))
         wine_resolver.signals.result_ready.connect(self.__on_wine_resolver_result)
         QThreadPool.globalInstance().start(wine_resolver)
 
@@ -306,7 +302,8 @@ class EGLSyncListGroup(QGroupBox):
     def items(self) -> Iterable[EGLSyncListItem]:
         # for i in range(self.list.count()):
         #     yield self.list.item(i)
-        return [self.ui.list.item(i) for i in range(self.ui.list.count())]
+        return map(self.ui.list.item, range(self.ui.list.count()))
+        # return [self.ui.list.item(i) for i in range(self.ui.list.count())]
 
 
 class EGLSyncExportGroup(EGLSyncListGroup):

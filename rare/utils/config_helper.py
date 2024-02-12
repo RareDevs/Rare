@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Optional, Set, Any, List
+from typing import Callable, Optional, Set, Any, List, Tuple
 
 from legendary.core import LegendaryCore
 from legendary.models.config import LGDConf
@@ -127,27 +127,27 @@ def get_proton_compatdata_fallback(app_name: Optional[str] = None, fallback: Any
     return _compat
 
 
-def get_wine_prefixes() -> Set[str]:
-    _prefixes: Set[str] = set()
+def get_wine_prefixes() -> Set[Tuple[str, str]]:
+    _prefixes: Set[Tuple[str, str]] = set()
     for name, section in _config.items():
         pfx = section.get("WINEPREFIX") or section.get("wine_prefix")
         if pfx:
-            _prefixes.update([pfx])
-    _prefixes = {os.path.expanduser(prefix) for prefix in _prefixes}
-    return set(filter(os.path.isdir, _prefixes))
+            _prefixes.update([(pfx, name[:-len(".env")] if name.endswith(".env") else name)])
+    _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
+    return {(p, n) for p, n in _prefixes if os.path.isdir(p)}
 
 
-def get_proton_prefixes() -> Set[str]:
-    _prefixes: Set[str] = set()
+def get_proton_prefixes() -> Set[Tuple[str, str]]:
+    _prefixes: Set[Tuple[str, str]] = set()
     for name, section in _config.items():
         pfx = os.path.join(compatdata, "pfx") if (compatdata := section.get("STEAM_COMPAT_DATA_PATH")) else ""
         if pfx:
-            _prefixes.update([pfx])
-    _prefixes = {os.path.expanduser(prefix) for prefix in _prefixes}
-    return set(filter(os.path.isdir, _prefixes))
+            _prefixes.update([(pfx, name[:-len(".env")] if name.endswith(".env") else name)])
+    _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
+    return {(p, n) for p, n in _prefixes if os.path.isdir(p)}
 
 
-def get_prefixes() -> Set[str]:
+def get_prefixes() -> Set[Tuple[str, str]]:
     return get_wine_prefixes().union(get_proton_prefixes())
 
 

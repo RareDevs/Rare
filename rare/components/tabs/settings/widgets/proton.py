@@ -10,7 +10,8 @@ from rare.models.wrapper import Wrapper, WrapperType
 from rare.shared import RareCore
 from rare.shared.wrappers import Wrappers
 from rare.utils import config_helper as config
-from rare.utils.runners import proton
+from rare.utils.compat import proton
+from rare.utils.paths import proton_compat_dir
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 logger = getLogger("ProtonSettings")
@@ -82,7 +83,7 @@ class ProtonSettings(QGroupBox):
     def __on_proton_changed(self, index):
         steam_tool: Union[proton.ProtonTool, proton.CompatibilityTool] = self.tool_combo.itemData(index)
 
-        steam_environ = proton.get_steam_environment(steam_tool)
+        steam_environ = proton.get_steam_environment(steam_tool, self.tool_prefix.text())
         for key, value in steam_environ.items():
             config.save_envvar(self.app_name, key, value)
             self.environ_changed.emit(key)
@@ -101,8 +102,16 @@ class ProtonSettings(QGroupBox):
         self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
 
         self.tool_prefix.setEnabled(steam_tool is not None)
-        if steam_tool and not config.get_proton_compatdata(self.app_name, fallback=""):
-            self.tool_prefix.setText(os.path.expanduser("~/.proton"))
+        if steam_tool:
+            if not (compatdata_path := config.get_proton_compatdata(self.app_name, fallback="")):
+                compatdata_path = proton_compat_dir(self.app_name)
+                config.save_proton_compatdata(self.app_name, str(compatdata_path))
+                target = compatdata_path.joinpath("pfx")
+                if not target.is_dir():
+                    os.makedirs(target, exist_ok=True)
+            self.tool_prefix.setText(str(compatdata_path))
+        else:
+            self.tool_prefix.setText("")
 
         self.tool_enabled.emit(steam_tool is not None)
 

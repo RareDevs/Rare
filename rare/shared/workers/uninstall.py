@@ -35,8 +35,8 @@ def uninstall_game(
             if platform.system() == "Darwin":
                 # TODO: add crossover support
                 pass
-            if prefixes is not None:
-                for prefix in prefixes:
+            if len(prefixes):
+                for prefix, _ in prefixes:
                     remove_registry_entries(prefix)
                     logger.debug("Removed registry entries for prefix %s", prefix)
         else:

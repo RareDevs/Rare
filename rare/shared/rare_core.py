@@ -102,13 +102,17 @@ class RareCore(QObject):
         self.__signals.application.update_statusbar.emit()
 
     def active_workers(self) -> Iterable[QueueWorker]:
-        return list(filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers))
+        # return list(filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers))
+        yield from filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers)
 
     def queued_workers(self) -> Iterable[QueueWorker]:
-        return list(filter(lambda w: w.state == QueueWorkerState.QUEUED, self.queue_workers))
+        # return list(filter(lambda w: w.state == QueueWorkerState.QUEUED, self.queue_workers))
+        yield from filter(lambda w: w.state == QueueWorkerState.QUEUED, self.queue_workers)
 
-    def queue_info(self) -> List[QueueWorkerInfo]:
-        return [w.worker_info() for w in self.queue_workers]
+    def queue_info(self) -> Iterable[QueueWorkerInfo]:
+        # return (w.worker_info() for w in self.queue_workers)
+        for w in self.queue_workers:
+            yield w.worker_info()
 
     @staticmethod
     def instance() -> 'RareCore':
