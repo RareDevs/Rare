@@ -44,8 +44,8 @@ class WineSettings(QGroupBox):
         )
 
         layout = QFormLayout(self)
-        layout.addRow(self.tr("Prefix"), self.wine_prefix)
         layout.addRow(self.tr("Executable"), self.wine_exec)
+        layout.addRow(self.tr("Prefix"), self.wine_prefix)
         layout.setFieldGrowthPolicy(QFormLayout.ExpandingFieldsGrow)
         layout.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
         layout.setFormAlignment(Qt.AlignLeading | Qt.AlignTop)
