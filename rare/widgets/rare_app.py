@@ -55,7 +55,7 @@ class RareAppException(QObject):
             defaultButton=QMessageBox.Abort
         )
         if action == QMessageBox.Abort:
-            QApplication.quit()
+            QApplication.instance().quit()
 
 
 class RareApp(QApplication):
