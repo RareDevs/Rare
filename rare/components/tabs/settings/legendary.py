@@ -36,10 +36,11 @@ class RefreshGameMetaWorker(Worker):
         self.signals.finished.emit()
 
 
-class LegendarySettings(QWidget, Ui_LegendarySettings):
+class LegendarySettings(QWidget):
     def __init__(self, parent=None):
         super(LegendarySettings, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.ui = Ui_LegendarySettings()
+        self.ui.setupUi(self)
         self.settings = QSettings(self)
 
         self.core = LegendaryCoreSingleton()
@@ -52,7 +53,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
                 file_mode=QFileDialog.DirectoryOnly,
                 save_func=self.__mac_path_save,
             )
-            self.install_dir_layout.addWidget(self.mac_install_dir)
+            self.ui.install_dir_layout.addWidget(self.mac_install_dir)
 
         # Platform-independent installation directory
         self.install_dir = PathEdit(
@@ -61,34 +62,34 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
             file_mode=QFileDialog.DirectoryOnly,
             save_func=self.__win_path_save,
         )
-        self.install_dir_layout.addWidget(self.install_dir)
+        self.ui.install_dir_layout.addWidget(self.install_dir)
 
         # Max Workers
         max_workers = self.core.lgd.config["Legendary"].getint(
             "max_workers", fallback=0
         )
-        self.max_worker_spin.setValue(max_workers)
-        self.max_worker_spin.valueChanged.connect(self.max_worker_save)
+        self.ui.max_worker_spin.setValue(max_workers)
+        self.ui.max_worker_spin.valueChanged.connect(self.max_worker_save)
         # Max memory
         max_memory = self.core.lgd.config["Legendary"].getint("max_memory", fallback=0)
-        self.max_memory_spin.setValue(max_memory)
-        self.max_memory_spin.valueChanged.connect(self.max_memory_save)
+        self.ui.max_memory_spin.setValue(max_memory)
+        self.ui.max_memory_spin.valueChanged.connect(self.max_memory_save)
         # Preferred CDN
         preferred_cdn = self.core.lgd.config["Legendary"].get(
             "preferred_cdn", fallback=""
         )
-        self.preferred_cdn_line.setText(preferred_cdn)
-        self.preferred_cdn_line.textChanged.connect(self.preferred_cdn_save)
+        self.ui.preferred_cdn_line.setText(preferred_cdn)
+        self.ui.preferred_cdn_line.textChanged.connect(self.preferred_cdn_save)
         # Disable HTTPS
         disable_https = self.core.lgd.config["Legendary"].getboolean(
             "disable_https", fallback=False
         )
-        self.disable_https_check.setChecked(disable_https)
-        self.disable_https_check.stateChanged.connect(self.disable_https_save)
+        self.ui.disable_https_check.setChecked(disable_https)
+        self.ui.disable_https_check.stateChanged.connect(self.disable_https_save)
 
         # Cleanup
-        self.clean_button.clicked.connect(lambda: self.cleanup(False))
-        self.clean_keep_manifests_button.clicked.connect(lambda: self.cleanup(True))
+        self.ui.clean_button.clicked.connect(lambda: self.cleanup(False))
+        self.ui.clean_keep_manifests_button.clicked.connect(lambda: self.cleanup(True))
 
         self.locale_edit = IndicatorLineEdit(
             f"{self.core.language_code}-{self.core.country_code}",
@@ -97,38 +98,38 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
             horiz_policy=QSizePolicy.Minimum,
             parent=self,
         )
-        self.locale_layout.addWidget(self.locale_edit)
+        self.ui.locale_layout.addWidget(self.locale_edit)
 
-        self.fetch_win32_check.setChecked(self.settings.value(*options.win32_meta))
-        self.fetch_win32_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.win32_meta.key, self.fetch_win32_check.isChecked())
+        self.ui.fetch_win32_check.setChecked(self.settings.value(*options.win32_meta))
+        self.ui.fetch_win32_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.win32_meta.key, self.ui.fetch_win32_check.isChecked())
         )
 
-        self.fetch_macos_check.setChecked(self.settings.value(*options.macos_meta))
-        self.fetch_macos_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.macos_meta.key, self.fetch_macos_check.isChecked())
+        self.ui.fetch_macos_check.setChecked(self.settings.value(*options.macos_meta))
+        self.ui.fetch_macos_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.macos_meta.key, self.ui.fetch_macos_check.isChecked())
         )
-        self.fetch_macos_check.setDisabled(pf.system() == "Darwin")
+        self.ui.fetch_macos_check.setDisabled(pf.system() == "Darwin")
 
-        self.fetch_unreal_check.setChecked(self.settings.value(*options.unreal_meta))
-        self.fetch_unreal_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.unreal_meta.key, self.fetch_unreal_check.isChecked())
-        )
-
-        self.exclude_non_asset_check.setChecked(self.settings.value(*options.exclude_non_asset))
-        self.exclude_non_asset_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.exclude_non_asset.key, self.exclude_non_asset_check.isChecked())
+        self.ui.fetch_unreal_check.setChecked(self.settings.value(*options.unreal_meta))
+        self.ui.fetch_unreal_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.unreal_meta.key, self.ui.fetch_unreal_check.isChecked())
         )
 
-        self.exclude_entitlements_check.setChecked(self.settings.value(*options.exclude_entitlements))
-        self.exclude_entitlements_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.exclude_entitlements.key, self.exclude_entitlements_check.isChecked())
+        self.ui.exclude_non_asset_check.setChecked(self.settings.value(*options.exclude_non_asset))
+        self.ui.exclude_non_asset_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.exclude_non_asset.key, self.ui.exclude_non_asset_check.isChecked())
         )
 
-        self.refresh_metadata_button.clicked.connect(self.refresh_metadata)
+        self.ui.exclude_entitlements_check.setChecked(self.settings.value(*options.exclude_entitlements))
+        self.ui.exclude_entitlements_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.exclude_entitlements.key, self.ui.exclude_entitlements_check.isChecked())
+        )
+
+        self.ui.refresh_metadata_button.clicked.connect(self.refresh_metadata)
         # FIXME: Disable the button for now because it interferes with RareCore
-        self.refresh_metadata_button.setEnabled(False)
-        self.refresh_metadata_button.setVisible(False)
+        self.ui.refresh_metadata_button.setEnabled(False)
+        self.ui.refresh_metadata_button.setVisible(False)
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
@@ -142,14 +143,14 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         return super().hideEvent(a0)
 
     def refresh_metadata(self):
-        self.refresh_metadata_button.setDisabled(True)
+        self.ui.refresh_metadata_button.setDisabled(True)
         platforms = set()
-        if self.fetch_win32_check.isChecked():
+        if self.ui.fetch_win32_check.isChecked():
             platforms.add("Win32")
-        if self.fetch_macos_check.isChecked():
+        if self.ui.fetch_macos_check.isChecked():
             platforms.add("Mac")
-        worker = RefreshGameMetaWorker(platforms, self.fetch_unreal_check.isChecked())
-        worker.signals.finished.connect(lambda: self.refresh_metadata_button.setDisabled(False))
+        worker = RefreshGameMetaWorker(platforms, self.ui.fetch_unreal_check.isChecked())
+        worker.signals.finished.connect(lambda: self.ui.refresh_metadata_button.setDisabled(False))
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod

@@ -6,30 +6,31 @@ from rare.models.options import options
 from rare.ui.components.tabs.settings.widgets.rpc import Ui_RPCSettings
 
 
-class RPCSettings(QGroupBox, Ui_RPCSettings):
+class RPCSettings(QGroupBox):
     def __init__(self, parent):
         super(RPCSettings, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.ui = Ui_RPCSettings()
+        self.ui.setupUi(self)
         self.signals = GlobalSignalsSingleton()
 
         self.settings = QSettings()
 
-        self.enable.setCurrentIndex(self.settings.value(*options.rpc_enable))
-        self.enable.currentIndexChanged.connect(self.__enable_changed)
+        self.ui.enable.setCurrentIndex(self.settings.value(*options.rpc_enable))
+        self.ui.enable.currentIndexChanged.connect(self.__enable_changed)
 
-        self.show_game.setChecked((self.settings.value(*options.rpc_name)))
-        self.show_game.stateChanged.connect(
-            lambda: self.settings.setValue(options.rpc_name.key, self.show_game.isChecked())
+        self.ui.show_game.setChecked((self.settings.value(*options.rpc_name)))
+        self.ui.show_game.stateChanged.connect(
+            lambda: self.settings.setValue(options.rpc_name.key, self.ui.show_game.isChecked())
         )
 
-        self.show_os.setChecked((self.settings.value(*options.rpc_os)))
-        self.show_os.stateChanged.connect(
-            lambda: self.settings.setValue(options.rpc_os.key, self.show_os.isChecked())
+        self.ui.show_os.setChecked((self.settings.value(*options.rpc_os)))
+        self.ui.show_os.stateChanged.connect(
+            lambda: self.settings.setValue(options.rpc_os.key, self.ui.show_os.isChecked())
         )
 
-        self.show_time.setChecked((self.settings.value(*options.rpc_time)))
-        self.show_time.stateChanged.connect(
-            lambda: self.settings.setValue(options.rpc_time.key, self.show_time.isChecked())
+        self.ui.show_time.setChecked((self.settings.value(*options.rpc_time)))
+        self.ui.show_time.stateChanged.connect(
+            lambda: self.settings.setValue(options.rpc_time.key, self.ui.show_time.isChecked())
         )
 
         try:
