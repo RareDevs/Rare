@@ -108,7 +108,10 @@ class GameLaunchSettings(LaunchSettingsBase):
             return True, path, IndicatorReasonsCommon.VALID
         if not os.path.isabs(path):
             path = os.path.join(self.igame.install_path, path)
-        if self.igame.install_path not in path:
+        # lk: Compare paths through python's commonpath because in windows we
+        # cannot compare as strings
+        # antonia disapproves of this
+        if os.path.commonpath([self.igame.install_path, path]) != self.igame.install_path:
             return False, self.igame.install_path, IndicatorReasonsCommon.WRONG_PATH
         if not os.path.exists(path):
             return False, path, IndicatorReasonsCommon.WRONG_PATH
