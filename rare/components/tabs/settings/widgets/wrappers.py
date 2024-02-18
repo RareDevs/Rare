@@ -25,7 +25,7 @@ from rare.utils.misc import icon
 from rare.widgets.dialogs import ButtonDialog, game_title
 
 if pf.system() in {"Linux", "FreeBSD"}:
-    from rare.utils.compat import proton
+    from rare.utils.compat import steam
 
 logger = getLogger("WrapperSettings")
 
@@ -295,7 +295,7 @@ class WrapperSettings(QWidget):
             return
 
         if pf.system() in {"Linux", "FreeBSD"}:
-            compat_cmds = [tool.command() for tool in proton.find_tools()]
+            compat_cmds = [tool.command() for tool in steam.find_tools()]
             if wrapper.as_str in compat_cmds:
                 QMessageBox.warning(
                     self,

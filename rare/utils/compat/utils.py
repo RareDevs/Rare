@@ -11,7 +11,7 @@ from rare.utils import config_helper as config
 if platform.system() != "Windows":
     from . import wine
     if platform.system() != "Darwin":
-        from . import proton
+        from . import steam
 
 logger = getLogger("CompatUtils")
 

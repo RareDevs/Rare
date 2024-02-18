@@ -67,11 +67,15 @@ class SteamBase:
 
     @property
     def required_tool(self) -> Optional[str]:
-        return self.toolmanifest["manifest"].get("require_tool_appid", None)
+        return self.toolmanifest.get("require_tool_appid", None)
+
+    @property
+    def layer(self) -> Optional[str]:
+        return self.toolmanifest.get("compatmanager_layer_name", None)
 
     def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> List[str]:
         tool_path = os.path.normpath(self.tool_path)
-        cmd = "".join([shlex.quote(tool_path), self.toolmanifest["manifest"]["commandline"]])
+        cmd = "".join([shlex.quote(tool_path), self.toolmanifest["commandline"]])
         # NOTE: "waitforexitandrun" seems to be the verb used in by steam to execute stuff
         # `run` is used when setting up the environment, so use that if we are setting up the prefix.
         cmd = cmd.replace("%verb%", str(verb))
@@ -126,8 +130,7 @@ class CompatibilityTool(SteamBase):
 
     @property
     def name(self) -> str:
-        name, data = list(self.compatibilitytool["compatibilitytools"]["compat_tools"].items())[0]
-        return data["display_name"]
+        return self.compatibilitytool["display_name"]
 
     def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> List[str]:
         cmd = self.runtime.command(verb) if self.runtime is not None else []
@@ -162,7 +165,7 @@ def find_protons(steam_path: str, library: str) -> List[ProtonTool]:
                             steam_library=library,
                             appmanifest=appmanifest,
                             tool_path=tool_path,
-                            toolmanifest=toolmanifest,
+                            toolmanifest=toolmanifest["manifest"],
                         )
                     )
     return protons
@@ -181,23 +184,43 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
     tools = []
     for path in compatibilitytools_paths:
         for entry in os.scandir(path):
+            entry_path = os.path.join(path, entry.name)
             if entry.is_dir():
-                tool_path = os.path.join(path, entry.name)
-                tool_vdf = os.path.join(tool_path, "compatibilitytool.vdf")
+                tool_vdf = os.path.join(entry_path, "compatibilitytool.vdf")
+            elif entry.is_file() and entry.name.endswith(".vdf"):
+                tool_vdf = entry_path
+            else:
+                continue
+
+            if not os.path.isfile(tool_vdf):
+                continue
+
+            with open(tool_vdf, "r") as f:
+                compatibilitytool = vdf.load(f)
+
+            entry_tools = compatibilitytool["compatibilitytools"]["compat_tools"]
+            for entry_tool in entry_tools.values():
+                if entry_tool["from_oslist"] != "windows" and entry_tool["to_oslist"] != "linux":
+                    continue
+
+                install_path = entry_tool["install_path"]
+                tool_path = os.path.abspath(os.path.join(os.path.dirname(tool_vdf), install_path))
                 manifest_vdf = os.path.join(tool_path, "toolmanifest.vdf")
-                if os.path.isfile(tool_vdf) and os.path.isfile(manifest_vdf):
-                    with open(tool_vdf, "r") as f:
-                        compatibilitytool = vdf.load(f)
-                    with open(manifest_vdf, "r") as f:
-                        manifest = vdf.load(f)
-                    tools.append(
-                        CompatibilityTool(
-                            steam_path=steam_path,
-                            tool_path=tool_path,
-                            toolmanifest=manifest,
-                            compatibilitytool=compatibilitytool,
-                        )
+
+                if not os.path.isfile(manifest_vdf):
+                    continue
+
+                with open(manifest_vdf, "r") as f:
+                    manifest = vdf.load(f)
+
+                tools.append(
+                    CompatibilityTool(
+                        steam_path=steam_path,
+                        tool_path=tool_path,
+                        toolmanifest=manifest["manifest"],
+                        compatibilitytool=entry_tool,
                     )
+                )
     return tools
 
 
@@ -212,6 +235,7 @@ def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
             with open(vdf_file, "r") as f:
                 toolmanifest = vdf.load(f)
                 if toolmanifest["manifest"]["compatmanager_layer_name"] == "container-runtime":
+                    print(toolmanifest["manifest"])
                     runtimes.update(
                         {
                             appmanifest["AppState"]["appid"]: SteamRuntime(
@@ -219,7 +243,7 @@ def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
                                 steam_library=library,
                                 appmanifest=appmanifest,
                                 tool_path=tool_path,
-                                toolmanifest=toolmanifest,
+                                toolmanifest=toolmanifest["manifest"],
                             )
                         }
                     )
@@ -233,6 +257,24 @@ def find_runtime(
     if required_tool is None:
         return None
     return runtimes.get(required_tool, None)
+
+
+def get_ulwgl_environment(
+    tool: Optional[ProtonTool] = None, compat_path: Optional[str] = None
+) -> Dict:
+    # If the tool is unset, return all affected env variable names
+    # IMPORTANT: keep this in sync with the code below
+    environ = {"WINEPREFIX": compat_path if compat_path else ""}
+    if tool is None:
+        environ["WINEPREFIX"] = ""
+        environ["PROTONPATH"] = ""
+        environ["GAMEID"] = ""
+        environ["STORE"] = ""
+        return environ
+
+    environ["PROTONPATH"] = tool.tool_path
+    environ["STORE"] = "egs"
+    return environ
 
 
 def get_steam_environment(
@@ -293,8 +335,8 @@ if __name__ == "__main__":
     _tools = find_tools()
     pprint(_tools)
 
-    for tool in _tools:
-        print(get_steam_environment(tool))
-        print(tool.name)
-        print(tool.command(SteamVerb.RUN))
-        print(" ".join(tool.command(SteamVerb.RUN_IN_PREFIX)))
+    for _tool in _tools:
+        print(get_steam_environment(_tool))
+        print(_tool.name)
+        print(_tool.command(SteamVerb.RUN))
+        print(" ".join(_tool.command(SteamVerb.RUN_IN_PREFIX)))

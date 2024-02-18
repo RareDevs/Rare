@@ -14,7 +14,7 @@ if platform.system() != "Windows":
     from rare.utils.compat.wine import get_wine_environment
 
 if platform.system() in {"Linux", "FreeBSD"}:
-    from rare.utils.compat.proton import get_steam_environment
+    from rare.utils.compat.steam import get_steam_environment
 
 
 class EnvVarsTableModel(QAbstractTableModel):

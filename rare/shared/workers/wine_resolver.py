@@ -20,7 +20,7 @@ if platform.system() == "Windows":
     import winreg  # pylint: disable=E0401
     from legendary.lfs import windows_helpers
 else:
-    from rare.utils.compat import utils as compat_utils, proton
+    from rare.utils.compat import utils as compat_utils, steam
 
 logger = getLogger("WineResolver")
 
@@ -38,20 +38,20 @@ class WinePathResolver(Worker):
 
     @staticmethod
     def _configure_process(core: LegendaryCore, app_name: str) -> Tuple[List, Dict]:
-        tool: proton.CompatibilityTool = None
+        tool: steam.CompatibilityTool = None
 
         if config.get_boolean(app_name, "no_wine"):
             wrappers = Wrappers()
             for w in wrappers.get_game_wrapper_list(app_name):
                 if w.is_compat_tool:
-                    for t in proton.find_tools():
+                    for t in steam.find_tools():
                         if t.checksum == w.checksum:
                             tool = t
                             break
 
         cmd = core.get_app_launch_command(
             app_name,
-            wrapper=tool.as_str(proton.SteamVerb.RUN_IN_PREFIX) if tool is not None else None,
+            wrapper=tool.as_str(steam.SteamVerb.RUN_IN_PREFIX) if tool is not None else None,
             disable_wine=config.get_boolean(app_name, "no_wine")
         )
         env = core.get_app_environment(app_name, disable_wine=config.get_boolean(app_name, "no_wine"))

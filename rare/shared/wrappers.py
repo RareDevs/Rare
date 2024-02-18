@@ -122,7 +122,7 @@ if __name__ == "__main__":
     from pprint import pprint
     from argparse import Namespace
 
-    from rare.utils.compat import proton
+    from rare.utils.compat import steam
 
     global config_dir
     config_dir = os.getcwd
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     game_wrappers = wr.get_game_wrapper_list("testgame2")
     pprint(game_wrappers)
 
-    for i, tool in enumerate(proton.find_tools()):
+    for i, tool in enumerate(steam.find_tools()):
         wt = Wrapper(command=tool.command(), name=tool.name, wtype=WrapperType.COMPAT_TOOL)
         wr.set_game_wrapper_list(f"compat_game_{i}", [wt])
         print(wt.as_str)

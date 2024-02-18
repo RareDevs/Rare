@@ -4,13 +4,13 @@ from typing import Tuple, Union, Optional
 
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox, QLabel
+from PyQt5.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox
 
 from rare.models.wrapper import Wrapper, WrapperType
 from rare.shared import RareCore
 from rare.shared.wrappers import Wrappers
 from rare.utils import config_helper as config
-from rare.utils.compat import proton
+from rare.utils.compat import steam
 from rare.utils.paths import proton_compat_dir
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
@@ -57,7 +57,7 @@ class ProtonSettings(QGroupBox):
         self.tool_combo.blockSignals(True)
         self.tool_combo.clear()
         self.tool_combo.addItem(self.tr("Don't use a compatibility tool"), None)
-        tools = proton.find_tools()
+        tools = steam.find_tools()
         for tool in tools:
             self.tool_combo.addItem(tool.name, tool)
         try:
@@ -81,9 +81,9 @@ class ProtonSettings(QGroupBox):
         super().showEvent(a0)
 
     def __on_proton_changed(self, index):
-        steam_tool: Union[proton.ProtonTool, proton.CompatibilityTool] = self.tool_combo.itemData(index)
+        steam_tool: Union[steam.ProtonTool, steam.CompatibilityTool] = self.tool_combo.itemData(index)
 
-        steam_environ = proton.get_steam_environment(steam_tool, self.tool_prefix.text())
+        steam_environ = steam.get_steam_environment(steam_tool, self.tool_prefix.text())
         for key, value in steam_environ.items():
             config.save_envvar(self.app_name, key, value)
             self.environ_changed.emit(key)
