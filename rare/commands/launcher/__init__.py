@@ -17,6 +17,7 @@ from legendary.models.game import SaveGameStatus
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameSlim
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
+from rare.models.options import options
 from rare.widgets.rare_app import RareApp, RareAppException
 from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
 from .console_dialog import ConsoleDialog
@@ -142,11 +143,11 @@ class RareLauncher(RareApp):
             return
         self.rgame = RareGameSlim(self.core, game)
 
-        lang = self.settings.value("language", self.core.language_code, type=str)
-        self.load_translator(lang)
+        language = self.settings.value(*options.language)
+        self.load_translator(language)
 
-        if QSettings().value("show_console", False, bool):
-            self.console = ConsoleDialog()
+        if QSettings(self).value(*options.log_games):
+            self.console = ConsoleDialog(game.app_title)
             self.console.show()
 
         self.game_process.finished.connect(self.__process_finished)
@@ -294,10 +295,10 @@ class RareLauncher(RareApp):
         ))
         if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
             self.game_process.deleteLater()
-            subprocess.Popen([args.executable] + args.arguments, cwd=args.working_directory,
-                             env={i: args.environment.value(i) for i in args.environment.keys()})
             if self.console:
                 self.console.log("Launching game as a detached process")
+            subprocess.Popen([args.executable] + args.arguments, cwd=args.working_directory,
+                             env={i: args.environment.value(i) for i in args.environment.keys()})
             self.stop()
             return
         if self.args.dry_run:

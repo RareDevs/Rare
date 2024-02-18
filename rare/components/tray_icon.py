@@ -5,6 +5,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSettings
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction, QApplication
 
+from rare.models.options import options
 from rare.shared import RareCore
 
 logger = getLogger("TrayIcon")
@@ -57,12 +58,12 @@ class TrayIcon(QSystemTrayIcon):
     def last_played(self) -> List:
         last_played = [game for game in self.rcore.games if (game.metadata and game.is_installed)]
         last_played.sort(key=lambda g: g.metadata.last_played, reverse=True)
-        return last_played[0:5]
+        return last_played[:5]
 
     @pyqtSlot(str, str)
     def notify(self, title: str, body: str):
-        if self.settings.value("notification", True, bool):
-            self.showMessage(f"{QApplication.applicationName()} - {title}", body, QSystemTrayIcon.Information, 4000)
+        if self.settings.value(*options.notification):
+            self.showMessage(f"{title} - {QApplication.applicationName()}", body, QSystemTrayIcon.Information, 4000)
 
     @pyqtSlot()
     def update_actions(self):

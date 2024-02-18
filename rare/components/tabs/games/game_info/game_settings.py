@@ -1,64 +1,117 @@
 import os.path
-import platform
+import platform as pf
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QFileDialog
+from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QShowEvent
+from PyQt5.QtWidgets import QFileDialog, QComboBox, QLineEdit
 from legendary.models.game import Game, InstalledGame
 
-from rare.components.tabs.settings import DefaultGameSettings
-from rare.components.tabs.settings.widgets.pre_launch import PreLaunchSettings
+from rare.components.tabs.settings.widgets.env_vars import EnvVars
+from rare.components.tabs.settings.widgets.game import GameSettingsBase
+from rare.components.tabs.settings.widgets.launch import LaunchSettingsBase
+from rare.components.tabs.settings.widgets.overlay import DxvkSettings
+from rare.components.tabs.settings.widgets.wrappers import WrapperSettings
 from rare.models.game import RareGame
-from rare.utils import config_helper
-from rare.widgets.side_tab import SideTabContents
+from rare.utils import config_helper as config
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+
+if pf.system() != "Windows":
+    from rare.components.tabs.settings.widgets.wine import WineSettings
+
+if pf.system() in {"Linux", "FreeBSD"}:
+    from rare.components.tabs.settings.widgets.proton import ProtonSettings
+    from rare.components.tabs.settings.widgets.overlay import MangoHudSettings
 
 logger = getLogger("GameSettings")
 
 
-class GameSettings(DefaultGameSettings, SideTabContents):
+class GameWrapperSettings(WrapperSettings):
     def __init__(self, parent=None):
-        super(GameSettings, self).__init__(False, parent=parent)
-        self.pre_launch_settings = PreLaunchSettings()
-        self.ui.launch_settings_group.layout().addRow(
-            QLabel(self.tr("Pre-launch command")), self.pre_launch_settings
-        )
+        super().__init__(parent=parent)
 
-        self.ui.skip_update.currentIndexChanged.connect(
-            lambda x: self.update_combobox("skip_update_check", x)
-        )
-        self.ui.offline.currentIndexChanged.connect(
-            lambda x: self.update_combobox("offline", x)
-        )
-        self.ui.launch_params.textChanged.connect(
-            lambda x: self.line_edit_save_callback("start_params", x)
-        )
+    def load_settings(self, app_name: str):
+        self.app_name = app_name
 
-        self.override_exe_edit = PathEdit(
-            file_mode=QFileDialog.ExistingFile,
-            name_filters=["*.exe", "*.app"],
-            placeholder=self.tr("Relative path to launch executable"),
-            edit_func=self.override_exe_edit_callback,
-            save_func=self.override_exe_save_callback,
-            parent=self
-        )
-        self.ui.launch_settings_layout.insertRow(
-            self.ui.launch_settings_layout.getWidgetPosition(self.ui.launch_params)[0] + 1,
-            QLabel(self.tr("Override executable"), self), self.override_exe_edit
-        )
 
-        self.ui.game_settings_layout.setAlignment(Qt.AlignTop)
+class GameLaunchSettings(LaunchSettingsBase):
+
+    def __init__(self, parent=None):
+        super(GameLaunchSettings, self).__init__(GameWrapperSettings, parent=parent)
 
         self.game: Game = None
         self.igame: InstalledGame = None
 
-    def override_exe_edit_callback(self, path: str) -> Tuple[bool, str, int]:
+        self.skip_update_combo = QComboBox(self)
+        self.skip_update_combo.addItem(self.tr("Default"), None)
+        self.skip_update_combo.addItem(self.tr("No"), "false")
+        self.skip_update_combo.addItem(self.tr("Yes"), "true")
+        self.skip_update_combo.currentIndexChanged.connect(self.__skip_update_changed)
+
+        self.offline_combo = QComboBox(self)
+        self.offline_combo.addItem(self.tr("Default"), None)
+        self.offline_combo.addItem(self.tr("No"), "false")
+        self.offline_combo.addItem(self.tr("Yes"), "true")
+        self.offline_combo.currentIndexChanged.connect(self.__offline_changed)
+
+        self.override_exe_edit = PathEdit(
+            file_mode=QFileDialog.ExistingFile,
+            name_filters=["*.exe", "*.app"],
+            placeholder=self.tr("Relative path to the replacement executable"),
+            edit_func=self.__override_exe_edit_callback,
+            save_func=self.__override_exe_save_callback,
+            parent=self
+        )
+
+        self.launch_params_edit = QLineEdit(self)
+        self.launch_params_edit.setPlaceholderText(self.tr("Game specific command line arguments"))
+        self.launch_params_edit.textChanged.connect(self.__launch_params_changed)
+
+        self.main_layout.insertRow(0, self.tr("Skip update check"), self.skip_update_combo)
+        self.main_layout.insertRow(1, self.tr("Offline mode"), self.offline_combo)
+        self.main_layout.insertRow(2, self.tr("Launch parameters"), self.launch_params_edit)
+        self.main_layout.insertRow(3, self.tr("Override executable"), self.override_exe_edit)
+
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous():
+            return super().showEvent(a0)
+
+        skip_update = config.get_option(self.app_name, "skip_update_check", fallback=None)
+        self.skip_update_combo.setCurrentIndex(self.offline_combo.findData(skip_update, Qt.UserRole))
+
+        offline = config.get_option(self.app_name, "offline", fallback=None)
+        self.offline_combo.setCurrentIndex(self.offline_combo.findData(offline, Qt.UserRole))
+
+        if self.igame:
+            self.offline_combo.setEnabled(self.igame.can_run_offline)
+            self.override_exe_edit.set_root(self.igame.install_path)
+        else:
+            self.offline_combo.setEnabled(False)
+            self.override_exe_edit.set_root("")
+
+        launch_params = config.get_option(self.app_name, "start_params", "")
+        self.launch_params_edit.setText(launch_params)
+
+        override_exe = config.get_option(self.app_name, "override_exe", fallback="")
+        self.override_exe_edit.setText(override_exe)
+
+        return super().showEvent(a0)
+
+    @pyqtSlot(int)
+    def __skip_update_changed(self, index):
+        data = self.skip_update_combo.itemData(index, Qt.UserRole)
+        config.save_option(self.app_name, "skip_update_check", data)
+
+    def __override_exe_edit_callback(self, path: str) -> Tuple[bool, str, int]:
         if not path or self.igame is None:
             return True, path, IndicatorReasonsCommon.VALID
         if not os.path.isabs(path):
             path = os.path.join(self.igame.install_path, path)
-        if self.igame.install_path not in path:
+        # lk: Compare paths through python's commonpath because in windows we
+        # cannot compare as strings
+        # antonia disapproves of this
+        if os.path.commonpath([self.igame.install_path, path]) != self.igame.install_path:
             return False, self.igame.install_path, IndicatorReasonsCommon.WRONG_PATH
         if not os.path.exists(path):
             return False, path, IndicatorReasonsCommon.WRONG_PATH
@@ -68,72 +121,80 @@ class GameSettings(DefaultGameSettings, SideTabContents):
         path = os.path.relpath(path, self.igame.install_path)
         return True, path, IndicatorReasonsCommon.VALID
 
-    def override_exe_save_callback(self, path: str):
-        self.line_edit_save_callback("override_exe", path)
+    def __override_exe_save_callback(self, path: str):
+        config.save_option(self.app_name, "override_exe", path)
 
-    def line_edit_save_callback(self, option, value) -> None:
-        if value:
-            config_helper.add_option(self.game.app_name, option, value)
-        else:
-            config_helper.remove_option(self.game.app_name, option)
-        config_helper.save_config()
+    @pyqtSlot(int)
+    def __offline_changed(self, index):
+        data = self.skip_update_combo.itemData(index, Qt.UserRole)
+        config.save_option(self.app_name, "offline", data)
 
-    def update_combobox(self, option, index):
-        if self.change:
-            # remove section
-            if index:
-                if index == 1:
-                    config_helper.add_option(self.game.app_name, option, "true")
-                if index == 2:
-                    config_helper.add_option(self.game.app_name, option, "false")
-            else:
-                config_helper.remove_option(self.game.app_name, option)
-            config_helper.save_config()
+    def __launch_params_changed(self, value) -> None:
+        config.save_option(self.app_name, "start_params", value)
 
     def load_settings(self, rgame: RareGame):
-        self.change = False
-        # FIXME: Use RareGame for the rest of the code
-        app_name = rgame.app_name
-        super(GameSettings, self).load_settings(app_name)
         self.game = rgame.game
         self.igame = rgame.igame
-        if self.igame:
-            if self.igame.can_run_offline:
-                offline = self.core.lgd.config.get(self.game.app_name, "offline", fallback="unset")
-                if offline == "true":
-                    self.ui.offline.setCurrentIndex(1)
-                elif offline == "false":
-                    self.ui.offline.setCurrentIndex(2)
-                else:
-                    self.ui.offline.setCurrentIndex(0)
+        self.app_name = rgame.app_name
+        self.wrappers_widget.load_settings(rgame.app_name)
 
-                self.ui.offline.setEnabled(True)
-            else:
-                self.ui.offline.setEnabled(False)
-            self.override_exe_edit.set_root(self.igame.install_path)
+
+if pf.system() != "Windows":
+
+    class GameWineSettings(WineSettings):
+        def load_settings(self, app_name):
+            self.app_name = app_name
+
+
+if pf.system() in {"Linux", "FreeBSD"}:
+
+    class GameProtonSettings(ProtonSettings):
+        def load_settings(self, app_name: str):
+            self.app_name = app_name
+
+    class GameMangoHudSettings(MangoHudSettings):
+        def load_settings(self, app_name: str):
+            self.app_name = app_name
+
+
+class GameDxvkSettings(DxvkSettings):
+    def load_settings(self, app_name: str):
+        self.app_name = app_name
+
+
+class GameEnvVars(EnvVars):
+    def load_settings(self, app_name):
+        self.app_name = app_name
+
+
+class GameSettings(GameSettingsBase):
+    def __init__(self, parent=None):
+        if pf.system() in {"Linux", "FreeBSD"}:
+            super(GameSettings, self).__init__(
+                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                GameWineSettings, GameProtonSettings, GameMangoHudSettings,
+                parent=parent
+            )
+        elif pf.system() != "Windows":
+            super(GameSettings, self).__init__(
+                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                GameWineSettings,
+                parent=parent
+            )
         else:
-            self.ui.offline.setEnabled(False)
-            self.override_exe_edit.set_root("")
+            super(GameSettings, self).__init__(
+                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                parent=parent
+            )
 
-        skip_update = self.core.lgd.config.get(self.game.app_name, "skip_update_check", fallback="unset")
-        if skip_update == "true":
-            self.ui.skip_update.setCurrentIndex(1)
-        elif skip_update == "false":
-            self.ui.skip_update.setCurrentIndex(2)
-        else:
-            self.ui.skip_update.setCurrentIndex(0)
-
-        self.set_title.emit(self.game.app_title)
-        if platform.system() != "Windows":
-            if self.igame and self.igame.platform == "Mac":
-                self.ui.linux_settings_widget.setVisible(False)
-            else:
-                self.ui.linux_settings_widget.setVisible(True)
-
-        self.ui.launch_params.setText(self.core.lgd.config.get(self.game.app_name, "start_params", fallback=""))
-        self.override_exe_edit.setText(
-            self.core.lgd.config.get(self.game.app_name, "override_exe", fallback="")
-        )
-        self.pre_launch_settings.load_settings(app_name)
-
-        self.change = True
+    def load_settings(self, rgame: RareGame):
+        self.set_title.emit(rgame.app_title)
+        self.app_name = rgame.app_name
+        self.launch.load_settings(rgame)
+        if pf.system() != "Windows":
+            self.wine.load_settings(rgame.app_name)
+        if pf.system() in {"Linux", "FreeBSD"}:
+            self.proton_tool.load_settings(rgame.app_name)
+            self.mangohud.load_settings(rgame.app_name)
+        self.dxvk.load_settings(rgame.app_name)
+        self.env_vars.load_settings(rgame.app_name)

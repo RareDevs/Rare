@@ -13,9 +13,10 @@ from legendary.models.game import InstalledGame
 from rare.lgndr.glue.exception import LgndrException
 from rare.models.pathspec import PathSpec
 from rare.shared import RareCore
-from rare.shared.workers.wine_resolver import WineResolver
+from rare.shared.workers.wine_resolver import WinePathResolver
 from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
 from rare.ui.components.tabs.games.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
+from rare.utils.compat import utils as compat_utils
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
@@ -87,11 +88,7 @@ class EGLSyncGroup(QGroupBox):
 
     def __run_wine_resolver(self):
         self.egl_path_info.setText(self.tr("Updating..."))
-        wine_resolver = WineResolver(
-            self.core,
-            PathSpec.egl_programdata,
-            "default"
-        )
+        wine_resolver = WinePathResolver(self.core, "default", str(PathSpec.egl_programdata()))
         wine_resolver.signals.result_ready.connect(self.__on_wine_resolver_result)
         QThreadPool.globalInstance().start(wine_resolver)
 
@@ -122,14 +119,8 @@ class EGLSyncGroup(QGroupBox):
                 os.path.join(path, "dosdevices/c:")
         ):
             # path is a wine prefix
-            path = os.path.join(
-                path,
-                "dosdevices/c:",
-                "ProgramData/Epic/EpicGamesLauncher/Data/Manifests",
-            )
-        elif not path.rstrip("/").endswith(
-                "ProgramData/Epic/EpicGamesLauncher/Data/Manifests"
-        ):
+            path = PathSpec.prefix_egl_programdata(path)
+        elif not path.rstrip("/").endswith(PathSpec.wine_egl_programdata()):
             # lower() might or might not be needed in the check
             return False, path, IndicatorReasonsCommon.WRONG_FORMAT
         if os.path.exists(path):
@@ -311,7 +302,8 @@ class EGLSyncListGroup(QGroupBox):
     def items(self) -> Iterable[EGLSyncListItem]:
         # for i in range(self.list.count()):
         #     yield self.list.item(i)
-        return [self.ui.list.item(i) for i in range(self.ui.list.count())]
+        return map(self.ui.list.item, range(self.ui.list.count()))
+        # return [self.ui.list.item(i) for i in range(self.ui.list.count())]
 
 
 class EGLSyncExportGroup(EGLSyncListGroup):

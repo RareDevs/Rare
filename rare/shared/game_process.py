@@ -73,6 +73,7 @@ class GameProcess(QObject):
                 ).format(self.game.app_name)
             )
             self.timer.stop()
+            self.tried_connections = 0
             self.finished.emit(GameProcess.Code.TIMEOUT)
 
     @pyqtSlot()

@@ -29,7 +29,7 @@ from .workers import (
 )
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
-from rare.utils import config_helper
+from .wrappers import Wrappers
 
 logger = getLogger("RareCore")
 
@@ -53,6 +53,8 @@ class RareCore(QObject):
         self.__signals: Optional[GlobalSignals] = None
         self.__core: Optional[LegendaryCore] = None
         self.__image_manager: Optional[ImageManager] = None
+        self.__settings: Optional[QSettings] = None
+        self.__wrappers: Optional[Wrappers] = None
 
         self.__start_time = time.perf_counter()
 
@@ -61,8 +63,8 @@ class RareCore(QObject):
         self.core(init=True)
         config_helper.init_config_handler(self.__core)
         self.image_manager(init=True)
-
-        self.settings = QSettings(self)
+        self.__settings = QSettings(self)
+        self.__wrappers = Wrappers()
 
         self.queue_workers: List[QueueWorker] = []
         self.queue_threadpool = QThreadPool()
@@ -100,13 +102,17 @@ class RareCore(QObject):
         self.__signals.application.update_statusbar.emit()
 
     def active_workers(self) -> Iterable[QueueWorker]:
-        return list(filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers))
+        # return list(filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers))
+        yield from filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers)
 
     def queued_workers(self) -> Iterable[QueueWorker]:
-        return list(filter(lambda w: w.state == QueueWorkerState.QUEUED, self.queue_workers))
+        # return list(filter(lambda w: w.state == QueueWorkerState.QUEUED, self.queue_workers))
+        yield from filter(lambda w: w.state == QueueWorkerState.QUEUED, self.queue_workers)
 
-    def queue_info(self) -> List[QueueWorkerInfo]:
-        return [w.worker_info() for w in self.queue_workers]
+    def queue_info(self) -> Iterable[QueueWorkerInfo]:
+        # return (w.worker_info() for w in self.queue_workers)
+        for w in self.queue_workers:
+            yield w.worker_info()
 
     @staticmethod
     def instance() -> 'RareCore':
@@ -204,6 +210,12 @@ class RareCore(QObject):
         if self.__image_manager is None:
             self.__image_manager = ImageManager(self.signals(), self.core())
         return self.__image_manager
+
+    def wrappers(self) -> Wrappers:
+        return self.__wrappers
+
+    def settings(self) -> QSettings:
+        return self.__settings
 
     def deleteLater(self) -> None:
         self.__image_manager.deleteLater()
@@ -328,10 +340,13 @@ class RareCore(QObject):
             self.__core.lgd.entitlements = result
             self.__fetched_entitlements = True
 
-        logger.info(f"Acquired data for {FetchWorker.Result(result_type).name}")
+        logger.info("Acquired data from %s worker", FetchWorker.Result(result_type).name)
 
         if all([self.__fetched_games_dlcs, self.__fetched_entitlements]):
-            logger.debug(f"Fetch time {time.perf_counter() - self.__start_time} seconds")
+            logger.debug("Fetch time %s seconds", time.perf_counter() - self.__start_time)
+            self.__wrappers.import_wrappers(
+                self.__core, self.__settings, [rgame.app_name for rgame in self.games]
+            )
             self.progress.emit(100, self.tr("Launching Rare"))
             self.completed.emit()
             QTimer.singleShot(100, self.__post_init)
@@ -366,7 +381,7 @@ class RareCore(QObject):
                         continue
                     self.__library[app_name].load_saves(saves)
             except (HTTPError, ConnectionError) as e:
-                logger.error(f"Exception while fetching saves from EGS.")
+                logger.error("Exception while fetching saves from EGS.")
                 logger.error(e)
                 return
             logger.info(f"Saves: {len(saves_dict)}")

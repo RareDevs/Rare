@@ -11,12 +11,14 @@ from rare.lgndr.core import LegendaryCore
 from rare.utils.misc import icon
 
 if platform.system() != "Windows":
-    if platform.system() != "Darwin":
-        from rare.utils import proton
+    from rare.utils.compat.wine import get_wine_environment
+
+if platform.system() in {"Linux", "FreeBSD"}:
+    from rare.utils.compat.steam import get_steam_environment
 
 
 class EnvVarsTableModel(QAbstractTableModel):
-    def __init__(self, core: LegendaryCore, parent = None):
+    def __init__(self, core: LegendaryCore, parent=None):
         super(EnvVarsTableModel, self).__init__(parent=parent)
         self.core = core
 
@@ -26,15 +28,15 @@ class EnvVarsTableModel(QAbstractTableModel):
         self.__validator = re.compile(r"(^[A-Za-z_][A-Za-z0-9_]*)")
         self.__data_map: ChainMap = ChainMap()
 
-        self.__readonly = [
-            "STEAM_COMPAT_DATA_PATH",
-            "WINEPREFIX",
+        self.__readonly = {
             "DXVK_HUD",
+            "MANGOHUD",
             "MANGOHUD_CONFIG",
-        ]
+        }
         if platform.system() != "Windows":
-            if platform.system() != "Darwin":
-                self.__readonly.extend(proton.get_steam_environment(None).keys())
+            self.__readonly.update(get_wine_environment().keys())
+        if platform.system() in {"Linux", "FreeBSD"}:
+            self.__readonly.update(get_steam_environment().keys())
 
         self.__default: str = "default"
         self.__appname: str = None
@@ -256,8 +258,6 @@ class EnvVarsTableModel(QAbstractTableModel):
 if __name__ == "__main__":
     from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QTableView, QHeaderView
 
-    from rare.resources import static_css
-    from rare.resources.stylesheets import RareStyle
     from rare.utils.misc import set_style_sheet
     from legendary.core import LegendaryCore
 

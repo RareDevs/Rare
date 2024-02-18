@@ -224,7 +224,7 @@ class EosGroup(QGroupBox):
 
         if platform.system() != "Windows":
             prefixes = config.get_prefixes()
-            prefixes = {prefix for prefix in prefixes if config.prefix_exists(prefix)}
+            prefixes = {prefix for prefix, _ in prefixes if config.prefix_exists(prefix)}
             if platform.system() == "Darwin":
                 # TODO: add crossover support
                 pass

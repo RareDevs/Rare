@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>623</width>
-    <height>428</height>
+    <width>629</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,6 +28,9 @@
         <string>Interface</string>
        </property>
        <layout class="QFormLayout" name="interface_layout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+        </property>
         <property name="labelAlignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
@@ -39,14 +42,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QComboBox" name="lang_select">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
+         <widget class="QComboBox" name="lang_select"/>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="color_label">
@@ -56,19 +52,7 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QComboBox" name="color_select">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <item>
-           <property name="text">
-            <string>None</string>
-           </property>
-          </item>
-         </widget>
+         <widget class="QComboBox" name="color_select"/>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="style_label">
@@ -78,21 +62,9 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QComboBox" name="style_select">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <item>
-           <property name="text">
-            <string>None</string>
-           </property>
-          </item>
-         </widget>
+         <widget class="QComboBox" name="style_select"/>
         </item>
-        <item row="3" column="0" colspan="2">
+        <item row="4" column="0" colspan="2">
          <widget class="QLabel" name="interface_info">
           <property name="font">
            <font>
@@ -106,6 +78,16 @@
            <bool>true</bool>
           </property>
          </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="view_label">
+          <property name="text">
+           <string>Library view</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="view_combo"/>
         </item>
        </layout>
       </widget>

@@ -15,7 +15,7 @@ from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
 from rare.utils.misc import format_size, icon
 from rare.widgets.collapsible_widget import CollapsibleFrame
-from rare.widgets.dialogs import ActionDialog, dialog_title_game
+from rare.widgets.dialogs import ActionDialog, game_title
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 from rare.widgets.selective_widget import SelectiveWidget
 
@@ -74,8 +74,8 @@ class InstallDialog(ActionDialog):
         elif options.reset_sdl:
             header = self.tr("Modify")
             bicon = icon("fa.gear")
-        self.setWindowTitle(dialog_title_game(header, rgame.app_title))
-        self.setSubtitle(dialog_title_game(header, rgame.app_title))
+        self.setWindowTitle(game_title(header, rgame.app_title))
+        self.setSubtitle(game_title(header, rgame.app_title))
 
         install_widget = QWidget(self)
         self.ui = Ui_InstallDialog()

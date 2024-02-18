@@ -12,10 +12,9 @@ from rare.shared import (
     ImageManagerSingleton,
 )
 from rare.shared import RareCore
-from rare.widgets.library_layout import LibraryLayout
-from rare.widgets.sliding_stack import SlidingStackedWidget
+from rare.models.options import options
 from .game_info import GameInfoTabs
-from .game_widgets import LibraryWidgetController
+from .game_widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
 from .game_widgets.icon_game_widget import IconGameWidget
 from .game_widgets.list_game_widget import ListGameWidget
 from .head_bar import GameListHeadBar
@@ -53,51 +52,22 @@ class GamesTab(QStackedWidget):
         self.integrations_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
         self.addWidget(self.integrations_page)
 
-        self.view_stack = SlidingStackedWidget(self.games_page)
-        self.view_stack.setFrameStyle(QFrame.NoFrame)
+        self.view_scroll = QScrollArea(self.games_page)
+        self.view_scroll.setWidgetResizable(True)
+        self.view_scroll.setFrameShape(QFrame.StyledPanel)
+        self.view_scroll.horizontalScrollBar().setDisabled(True)
 
-        self.icon_view_scroll = QScrollArea(self.view_stack)
-        self.icon_view_scroll.setWidgetResizable(True)
-        self.icon_view_scroll.setFrameShape(QFrame.StyledPanel)
-        self.icon_view_scroll.horizontalScrollBar().setDisabled(True)
+        library_view = LibraryView(self.settings.value(*options.library_view))
+        self.library_controller = LibraryWidgetController(library_view, self.view_scroll)
+        games_page_layout.addWidget(self.view_scroll)
 
-        self.list_view_scroll = QScrollArea(self.view_stack)
-        self.list_view_scroll.setWidgetResizable(True)
-        self.list_view_scroll.setFrameShape(QFrame.StyledPanel)
-        self.list_view_scroll.horizontalScrollBar().setDisabled(True)
-
-        self.icon_view = QWidget(self.icon_view_scroll)
-        icon_view_layout = LibraryLayout(self.icon_view)
-        icon_view_layout.setSpacing(9)
-        icon_view_layout.setContentsMargins(0, 13, 0, 13)
-        icon_view_layout.setAlignment(Qt.AlignTop)
-
-        self.list_view = QWidget(self.list_view_scroll)
-        list_view_layout = QVBoxLayout(self.list_view)
-        list_view_layout.setContentsMargins(3, 3, 9, 3)
-        list_view_layout.setAlignment(Qt.AlignTop)
-
-        self.library_controller = LibraryWidgetController(self.icon_view, self.list_view, self)
-        self.icon_view_scroll.setWidget(self.icon_view)
-        self.list_view_scroll.setWidget(self.list_view)
-        self.view_stack.addWidget(self.icon_view_scroll)
-        self.view_stack.addWidget(self.list_view_scroll)
-        games_page_layout.addWidget(self.view_stack)
-
-        if not self.settings.value("icon_view", True, bool):
-            self.view_stack.setCurrentWidget(self.list_view_scroll)
-            self.head_bar.view.list()
-        else:
-            self.view_stack.setCurrentWidget(self.icon_view_scroll)
-
-        self.head_bar.search_bar.textChanged.connect(lambda x: self.filter_games("", x))
+        self.head_bar.search_bar.textChanged.connect(self.search_games)
         self.head_bar.search_bar.textChanged.connect(self.scroll_to_top)
         self.head_bar.filterChanged.connect(self.filter_games)
         self.head_bar.filterChanged.connect(self.scroll_to_top)
-        self.head_bar.refresh_list.clicked.connect(self.library_controller.update_list)
-        self.head_bar.view.toggled.connect(self.toggle_view)
-
-        self.active_filter: str = self.head_bar.filter.currentData(Qt.UserRole)
+        self.head_bar.orderChanged.connect(self.order_games)
+        self.head_bar.orderChanged.connect(self.scroll_to_top)
+        self.head_bar.refresh_list.clicked.connect(self.library_controller.update_game_views)
 
         # signals
         self.signals.game.installed.connect(self.update_count_games_label)
@@ -114,11 +84,8 @@ class GamesTab(QStackedWidget):
 
     @pyqtSlot()
     def scroll_to_top(self):
-        self.icon_view_scroll.verticalScrollBar().setSliderPosition(
-            self.icon_view_scroll.verticalScrollBar().minimum()
-        )
-        self.list_view_scroll.verticalScrollBar().setSliderPosition(
-            self.list_view_scroll.verticalScrollBar().minimum()
+        self.view_scroll.verticalScrollBar().setSliderPosition(
+            self.view_scroll.verticalScrollBar().minimum()
         )
 
     @pyqtSlot()
@@ -139,8 +106,8 @@ class GamesTab(QStackedWidget):
 
     @pyqtSlot(RareGame)
     def show_game_info(self, rgame):
-        self.setCurrentWidget(self.game_info_page)
         self.game_info_page.update_game(rgame)
+        self.setCurrentWidget(self.game_info_page)
 
     @pyqtSlot()
     def update_count_games_label(self):
@@ -151,42 +118,38 @@ class GamesTab(QStackedWidget):
 
     def setup_game_list(self):
         for rgame in self.rcore.games:
-            icon_widget, list_widget = self.add_library_widget(rgame)
-            if not icon_widget or not list_widget:
+            widget = self.add_library_widget(rgame)
+            if not widget:
                 logger.warning("Excluding %s from the game list", rgame.app_title)
                 continue
-            self.icon_view.layout().addWidget(icon_widget)
-            self.list_view.layout().addWidget(list_widget)
-        self.filter_games(self.active_filter)
+        self.filter_games(self.head_bar.current_filter())
         self.update_count_games_label()
 
     def add_library_widget(self, rgame: RareGame):
         try:
-            icon_widget, list_widget = self.library_controller.add_game(rgame)
+            widget = self.library_controller.add_game(rgame)
         except Exception as e:
             logger.error("Could not add widget for %s to library: %s", rgame.app_name, e)
-            return None, None
-        icon_widget.show_info.connect(self.show_game_info)
-        list_widget.show_info.connect(self.show_game_info)
-        return icon_widget, list_widget
+            return None
+        widget.show_info.connect(self.show_game_info)
+        return widget
 
     @pyqtSlot(str)
-    @pyqtSlot(str, str)
-    def filter_games(self, filter_name="all", search_text: str = ""):
+    def search_games(self, search_text: str = ""):
+        self.filter_games(self.head_bar.current_filter(), search_text)
+
+    @pyqtSlot(object)
+    @pyqtSlot(object, str)
+    def filter_games(self, library_filter: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
 
-        if filter_name:
-            self.active_filter = filter_name
-        if not filter_name and (t := self.active_filter):
-            filter_name = t
+        self.library_controller.filter_game_views(library_filter, search_text.lower())
 
-        self.library_controller.filter_list(filter_name, search_text.lower())
+    @pyqtSlot(object)
+    @pyqtSlot(object, str)
+    def order_games(self, library_order: LibraryOrder = LibraryFilter.ALL, search_text: str = ""):
+        if not search_text and (t := self.head_bar.search_bar.text()):
+            search_text = t
 
-    def toggle_view(self):
-        self.settings.setValue("icon_view", not self.head_bar.view.isChecked())
-
-        if not self.head_bar.view.isChecked():
-            self.view_stack.slideInWidget(self.icon_view_scroll)
-        else:
-            self.view_stack.slideInWidget(self.list_view_scroll)
+        self.library_controller.order_game_views(library_order, search_text.lower())

@@ -11,7 +11,7 @@ from rare.models.install import MoveGameModel
 from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.utils.misc import path_size, format_size, icon
-from rare.widgets.dialogs import ActionDialog, dialog_title_game
+from rare.widgets.dialogs import ActionDialog, game_title
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasons, IndicatorReasonsCommon
 
@@ -33,8 +33,8 @@ class MoveDialog(ActionDialog):
     def __init__(self, rgame: RareGame, parent=None):
         super(MoveDialog, self).__init__(parent=parent)
         header = self.tr("Move")
-        self.setWindowTitle(dialog_title_game(header, rgame.app_title))
-        self.setSubtitle(dialog_title_game(header, rgame.app_title))
+        self.setWindowTitle(game_title(header, rgame.app_title))
+        self.setSubtitle(game_title(header, rgame.app_title))
 
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
@@ -135,7 +135,7 @@ class MoveDialog(ActionDialog):
         if not os.access(path, os.W_OK) or not os.access(self.rgame.install_path, os.W_OK):
             return helper_func(MovePathEditReasons.NO_WRITE_PERM)
 
-        if src_path == dst_path or src_path == dst_install_path:
+        if src_path in {dst_path, dst_install_path}:
             return helper_func(MovePathEditReasons.SAME_DIR)
 
         if str(src_path) in str(dst_path):

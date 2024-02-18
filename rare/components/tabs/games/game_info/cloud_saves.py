@@ -3,7 +3,7 @@ import platform
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import QThreadPool, QSettings
+from PyQt5.QtCore import QThreadPool, QSettings, pyqtSlot
 from PyQt5.QtWidgets import (
     QWidget,
     QFileDialog,
@@ -19,15 +19,16 @@ from legendary.models.game import SaveGameStatus
 
 from rare.models.game import RareGame
 from rare.shared import RareCore
-from rare.shared.workers.wine_resolver import WineResolver
+from rare.shared.workers.wine_resolver import WineSavePathResolver
 from rare.ui.components.tabs.games.game_info.cloud_settings_widget import Ui_CloudSettingsWidget
 from rare.ui.components.tabs.games.game_info.cloud_sync_widget import Ui_CloudSyncWidget
 from rare.utils.misc import icon
+from rare.utils.metrics import timelogger
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 from rare.widgets.loading_widget import LoadingWidget
 from rare.widgets.side_tab import SideTabContents
 
-logger = getLogger("CloudWidget")
+logger = getLogger("CloudSaves")
 
 
 class CloudSaves(QWidget, SideTabContents):
@@ -114,30 +115,32 @@ class CloudSaves(QWidget, SideTabContents):
     def compute_save_path(self):
         if self.rgame.is_installed and self.rgame.game.supports_cloud_saves:
             try:
-                new_path = self.core.get_save_path(self.rgame.app_name)
+                with timelogger(logger, "Detecting save path"):
+                    new_path = self.core.get_save_path(self.rgame.app_name)
                 if platform.system() != "Windows" and not os.path.exists(new_path):
                     raise ValueError(f'Path "{new_path}" does not exist.')
             except Exception as e:
                 logger.warning(str(e))
-                resolver = WineResolver(self.core, self.rgame.raw_save_path, self.rgame.app_name)
-                if not resolver.wine_env.get("WINEPREFIX"):
-                    del resolver
-                    self.cloud_save_path_edit.setText("")
-                    QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")
-                    return
+                resolver = WineSavePathResolver(self.core, self.rgame)
+                # if not resolver.environ.get("WINEPREFIX"):
+                #     del resolver
+                #     self.cloud_save_path_edit.setText("")
+                #     QMessageBox.warning(self, "Warning", "No wine prefix selected. Please set it in settings")
+                #     return
                 self.cloud_save_path_edit.setText(self.tr("Loading..."))
                 self.cloud_save_path_edit.setDisabled(True)
                 self.compute_save_path_button.setDisabled(True)
 
-                app_name = self.rgame.app_name
-                resolver.signals.result_ready.connect(lambda x: self.wine_resolver_finished(x, app_name))
+                resolver.signals.result_ready.connect(self.__on_wine_resolver_result)
                 QThreadPool.globalInstance().start(resolver)
                 return
             else:
                 self.cloud_save_path_edit.setText(new_path)
 
-    def wine_resolver_finished(self, path, app_name):
-        logger.info(f"Wine resolver finished for {app_name}. Computed save path: {path}")
+    @pyqtSlot(str, str)
+    def __on_wine_resolver_result(self, path, app_name):
+        logger.info("Wine resolver finished for %s", app_name)
+        logger.info("Computed save path: %s", path)
         if app_name == self.rgame.app_name:
             self.cloud_save_path_edit.setDisabled(False)
             self.compute_save_path_button.setDisabled(False)
@@ -158,8 +161,6 @@ class CloudSaves(QWidget, SideTabContents):
                 self.cloud_save_path_edit.setText("")
                 return
             self.cloud_save_path_edit.setText(path)
-        elif path:
-            self.rcore.get_game(app_name).save_path = path
 
     def __update_widget(self):
         supports_saves = self.rgame.igame is not None and (

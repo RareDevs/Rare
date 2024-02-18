@@ -1,85 +1,122 @@
 import os
 from logging import getLogger
-from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union, Optional
 
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QGroupBox, QFileDialog
+from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtGui import QShowEvent
+from PyQt5.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox
 
-from rare.components.tabs.settings import LinuxSettings
-from rare.shared import LegendaryCoreSingleton
-from rare.ui.components.tabs.settings.proton import Ui_ProtonSettings
-from rare.utils import config_helper, proton
+from rare.models.wrapper import Wrapper, WrapperType
+from rare.shared import RareCore
+from rare.shared.wrappers import Wrappers
+from rare.utils import config_helper as config
+from rare.utils.compat import steam
+from rare.utils.paths import proton_compat_dir
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
-from .wrapper import WrapperSettings
 
-logger = getLogger("Proton")
+logger = getLogger("ProtonSettings")
 
 
 class ProtonSettings(QGroupBox):
     # str: option key
-    environ_changed = pyqtSignal(str)
-    app_name: str
-    changeable = True
+    environ_changed: pyqtSignal = pyqtSignal(str)
+    # bool: state
+    tool_enabled: pyqtSignal = pyqtSignal(bool)
 
-    def __init__(self, linux_settings: LinuxSettings, wrapper_settings: WrapperSettings):
-        super(ProtonSettings, self).__init__()
-        self.ui = Ui_ProtonSettings()
-        self.ui.setupUi(self)
-        self._linux_settings = linux_settings
-        self._wrapper_settings = wrapper_settings
-        self.core = LegendaryCoreSingleton()
-        self.possible_proton_combos = proton.find_proton_combos()
+    def __init__(self, parent=None):
+        super(ProtonSettings, self).__init__(parent=parent)
+        self.setTitle(self.tr("Proton settings"))
 
-        self.ui.proton_combo.addItems(self.possible_proton_combos)
-        self.ui.proton_combo.currentIndexChanged.connect(self.change_proton)
+        self.tool_combo = QComboBox(self)
+        self.tool_combo.currentIndexChanged.connect(self.__on_proton_changed)
 
-        self.proton_prefix = PathEdit(
+        self.tool_prefix = PathEdit(
             file_mode=QFileDialog.DirectoryOnly,
             edit_func=self.proton_prefix_edit,
             save_func=self.proton_prefix_save,
-            placeholder=self.tr("Please select path for proton prefix")
+            placeholder=self.tr("Please select path for proton prefix"),
+            parent=self
         )
-        self.ui.prefix_layout.addWidget(self.proton_prefix)
 
-    def change_proton(self, i):
-        if not self.changeable:
-            return
-        # First combo box entry: Don't use Proton
-        if i == 0:
-            self._wrapper_settings.delete_wrapper("proton")
-            config_helper.remove_option(self.app_name, "no_wine")
-            config_helper.remove_option(f"{self.app_name}.env", "STEAM_COMPAT_DATA_PATH")
-            self.environ_changed.emit("STEAM_COMPAT_DATA_PATH")
-            config_helper.remove_option(f"{self.app_name}.env", "STEAM_COMPAT_CLIENT_INSTALL_PATH")
-            self.environ_changed.emit("STEAM_COMPAT_CLIENT_INSTALL_PATH")
+        layout = QFormLayout(self)
+        layout.addRow(self.tr("Proton tool"), self.tool_combo)
+        layout.addRow(self.tr("Compat data"), self.tool_prefix)
+        layout.setFieldGrowthPolicy(QFormLayout.ExpandingFieldsGrow)
+        layout.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        layout.setFormAlignment(Qt.AlignLeading | Qt.AlignTop)
 
-            self.proton_prefix.setEnabled(False)
-            self.proton_prefix.setText("")
+        self.app_name: str = "default"
+        self.core = RareCore.instance().core()
+        self.wrappers: Wrappers = RareCore.instance().wrappers()
+        self.tool_wrapper: Optional[Wrapper] = None
 
-            self._linux_settings.ui.wine_groupbox.setEnabled(True)
-        else:
-            self.proton_prefix.setEnabled(True)
-            self._linux_settings.ui.wine_groupbox.setEnabled(False)
-            wrapper = self.possible_proton_combos[i - 1]
-            self._wrapper_settings.add_wrapper(wrapper)
-            config_helper.add_option(self.app_name, "no_wine", "true")
-            config_helper.add_option(
-                f"{self.app_name}.env",
-                "STEAM_COMPAT_CLIENT_INSTALL_PATH",
-                str(Path.home().joinpath(".steam", "steam"))
+    def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
+
+        self.tool_combo.blockSignals(True)
+        self.tool_combo.clear()
+        self.tool_combo.addItem(self.tr("Don't use a compatibility tool"), None)
+        tools = steam.find_tools()
+        for tool in tools:
+            self.tool_combo.addItem(tool.name, tool)
+        try:
+            wrapper = next(
+                filter(lambda w: w.is_compat_tool, self.wrappers.get_game_wrapper_list(self.app_name))
             )
-            self.environ_changed.emit("STEAM_COMPAT_CLIENT_INSTALL_PATH")
+            self.tool_wrapper = wrapper
+            tool = next(filter(lambda t: t.checksum == wrapper.checksum, tools))
+            index = self.tool_combo.findData(tool)
+        except StopIteration:
+            index = 0
+        self.tool_combo.setCurrentIndex(index)
+        self.tool_combo.blockSignals(False)
 
-            self.proton_prefix.setText(os.path.expanduser("~/.proton"))
+        enabled = bool(self.tool_combo.currentData(Qt.UserRole))
+        self.tool_prefix.blockSignals(True)
+        self.tool_prefix.setText(config.get_proton_compatdata(self.app_name, fallback=""))
+        self.tool_prefix.setEnabled(enabled)
+        self.tool_prefix.blockSignals(False)
 
-            # Don't use Wine
-            self._linux_settings.wine_exec.setText("")
-            self._linux_settings.wine_prefix.setText("")
+        super().showEvent(a0)
 
-        config_helper.save_config()
+    def __on_proton_changed(self, index):
+        steam_tool: Union[steam.ProtonTool, steam.CompatibilityTool] = self.tool_combo.itemData(index)
 
-    def proton_prefix_edit(self, text: str) -> Tuple[bool, str, int]:
+        steam_environ = steam.get_steam_environment(steam_tool, self.tool_prefix.text())
+        for key, value in steam_environ.items():
+            config.save_envvar(self.app_name, key, value)
+            self.environ_changed.emit(key)
+
+        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        if self.tool_wrapper and self.tool_wrapper in wrappers:
+            wrappers.remove(self.tool_wrapper)
+        if steam_tool is None:
+            self.tool_wrapper = None
+        else:
+            wrapper = Wrapper(
+                command=steam_tool.command(), name=steam_tool.name, wtype=WrapperType.COMPAT_TOOL
+            )
+            wrappers.append(wrapper)
+            self.tool_wrapper = wrapper
+        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+
+        self.tool_prefix.setEnabled(steam_tool is not None)
+        if steam_tool:
+            if not (compatdata_path := config.get_proton_compatdata(self.app_name, fallback="")):
+                compatdata_path = proton_compat_dir(self.app_name)
+                config.save_proton_compatdata(self.app_name, str(compatdata_path))
+                target = compatdata_path.joinpath("pfx")
+                if not target.is_dir():
+                    os.makedirs(target, exist_ok=True)
+            self.tool_prefix.setText(str(compatdata_path))
+        else:
+            self.tool_prefix.setText("")
+
+        self.tool_enabled.emit(steam_tool is not None)
+
+    @staticmethod
+    def proton_prefix_edit(text: str) -> Tuple[bool, str, int]:
         if not text:
             return False, text, IndicatorReasonsCommon.EMPTY
         parent_dir = os.path.dirname(text)
@@ -88,28 +125,6 @@ class ProtonSettings(QGroupBox):
     def proton_prefix_save(self, text: str):
         if not text:
             return
-        config_helper.add_option(
-            f"{self.app_name}.env", "STEAM_COMPAT_DATA_PATH", text
-        )
+        config.save_proton_compatdata(self.app_name, text)
         self.environ_changed.emit("STEAM_COMPAT_DATA_PATH")
-        config_helper.save_config()
 
-    def load_settings(self, app_name: str, proton: str):
-        self.changeable = False
-        self.app_name = app_name
-        proton = proton.replace('"', "")
-        self.proton_prefix.setEnabled(bool(proton))
-        if proton:
-            self.ui.proton_combo.setCurrentText(
-                f'"{proton.replace(" run", "")}" run'
-            )
-        else:
-            self.ui.proton_combo.setCurrentIndex(0)
-
-        proton_prefix = self.core.lgd.config.get(
-            f"{app_name}.env",
-            "STEAM_COMPAT_DATA_PATH",
-            fallback="",
-        )
-        self.proton_prefix.setText(proton_prefix)
-        self.changeable = True

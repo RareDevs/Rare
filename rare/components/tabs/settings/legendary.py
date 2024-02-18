@@ -1,11 +1,13 @@
 import platform as pf
 import re
 from logging import getLogger
-from typing import Tuple, List
+from typing import Tuple, Set
 
 from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings
+from PyQt5.QtGui import QShowEvent, QHideEvent
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
+from rare.models.options import options
 from rare.shared import LegendaryCoreSingleton
 from rare.shared.workers.worker import Worker
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
@@ -19,14 +21,11 @@ class RefreshGameMetaWorker(Worker):
     class Signals(QObject):
         finished = pyqtSignal()
 
-    def __init__(self, platforms: List[str], include_unreal: bool):
+    def __init__(self, platforms: Set[str], include_unreal: bool):
         super(RefreshGameMetaWorker, self).__init__()
         self.signals = RefreshGameMetaWorker.Signals()
         self.core = LegendaryCoreSingleton()
-        if platforms:
-            self.platforms = platforms
-        else:
-            self.platforms = ["Windows"]
+        self.platforms = platforms if platforms else {"Windows"}
         self.skip_ue = not include_unreal
 
     def run_real(self) -> None:
@@ -37,10 +36,11 @@ class RefreshGameMetaWorker(Worker):
         self.signals.finished.emit()
 
 
-class LegendarySettings(QWidget, Ui_LegendarySettings):
+class LegendarySettings(QWidget):
     def __init__(self, parent=None):
         super(LegendarySettings, self).__init__(parent=parent)
-        self.setupUi(self)
+        self.ui = Ui_LegendarySettings()
+        self.ui.setupUi(self)
         self.settings = QSettings(self)
 
         self.core = LegendaryCoreSingleton()
@@ -53,7 +53,7 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
                 file_mode=QFileDialog.DirectoryOnly,
                 save_func=self.__mac_path_save,
             )
-            self.install_dir_layout.addWidget(self.mac_install_dir)
+            self.ui.install_dir_layout.addWidget(self.mac_install_dir)
 
         # Platform-independent installation directory
         self.install_dir = PathEdit(
@@ -62,34 +62,34 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
             file_mode=QFileDialog.DirectoryOnly,
             save_func=self.__win_path_save,
         )
-        self.install_dir_layout.addWidget(self.install_dir)
+        self.ui.install_dir_layout.addWidget(self.install_dir)
 
         # Max Workers
         max_workers = self.core.lgd.config["Legendary"].getint(
             "max_workers", fallback=0
         )
-        self.max_worker_spin.setValue(max_workers)
-        self.max_worker_spin.valueChanged.connect(self.max_worker_save)
+        self.ui.max_worker_spin.setValue(max_workers)
+        self.ui.max_worker_spin.valueChanged.connect(self.max_worker_save)
         # Max memory
         max_memory = self.core.lgd.config["Legendary"].getint("max_memory", fallback=0)
-        self.max_memory_spin.setValue(max_memory)
-        self.max_memory_spin.valueChanged.connect(self.max_memory_save)
+        self.ui.max_memory_spin.setValue(max_memory)
+        self.ui.max_memory_spin.valueChanged.connect(self.max_memory_save)
         # Preferred CDN
         preferred_cdn = self.core.lgd.config["Legendary"].get(
             "preferred_cdn", fallback=""
         )
-        self.preferred_cdn_line.setText(preferred_cdn)
-        self.preferred_cdn_line.textChanged.connect(self.preferred_cdn_save)
+        self.ui.preferred_cdn_line.setText(preferred_cdn)
+        self.ui.preferred_cdn_line.textChanged.connect(self.preferred_cdn_save)
         # Disable HTTPS
         disable_https = self.core.lgd.config["Legendary"].getboolean(
             "disable_https", fallback=False
         )
-        self.disable_https_check.setChecked(disable_https)
-        self.disable_https_check.stateChanged.connect(self.disable_https_save)
+        self.ui.disable_https_check.setChecked(disable_https)
+        self.ui.disable_https_check.stateChanged.connect(self.disable_https_save)
 
         # Cleanup
-        self.clean_button.clicked.connect(lambda: self.cleanup(False))
-        self.clean_keep_manifests_button.clicked.connect(lambda: self.cleanup(True))
+        self.ui.clean_button.clicked.connect(lambda: self.cleanup(False))
+        self.ui.clean_keep_manifests_button.clicked.connect(lambda: self.cleanup(True))
 
         self.locale_edit = IndicatorLineEdit(
             f"{self.core.language_code}-{self.core.country_code}",
@@ -98,51 +98,59 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
             horiz_policy=QSizePolicy.Minimum,
             parent=self,
         )
-        self.locale_layout.addWidget(self.locale_edit)
+        self.ui.locale_layout.addWidget(self.locale_edit)
 
-        self.fetch_win32_check.setChecked(self.settings.value("win32_meta", False, bool))
-        self.fetch_win32_check.stateChanged.connect(
-            lambda: self.settings.setValue("win32_meta", self.fetch_win32_check.isChecked())
-        )
-
-        self.fetch_macos_check.setChecked(self.settings.value("macos_meta", pf.system() == "Darwin", bool))
-        self.fetch_macos_check.stateChanged.connect(
-            lambda: self.settings.setValue("macos_meta", self.fetch_macos_check.isChecked())
-        )
-        self.fetch_macos_check.setDisabled(pf.system() == "Darwin")
-
-        self.fetch_unreal_check.setChecked(self.settings.value("unreal_meta", False, bool))
-        self.fetch_unreal_check.stateChanged.connect(
-            lambda: self.settings.setValue("unreal_meta", self.fetch_unreal_check.isChecked())
+        self.ui.fetch_win32_check.setChecked(self.settings.value(*options.win32_meta))
+        self.ui.fetch_win32_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.win32_meta.key, self.ui.fetch_win32_check.isChecked())
         )
 
-        self.exclude_non_asset_check.setChecked(
-            self.settings.value("exclude_non_asset", False, bool)
+        self.ui.fetch_macos_check.setChecked(self.settings.value(*options.macos_meta))
+        self.ui.fetch_macos_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.macos_meta.key, self.ui.fetch_macos_check.isChecked())
         )
-        self.exclude_non_asset_check.stateChanged.connect(
-            lambda: self.settings.setValue("exclude_non_asset", self.exclude_non_asset_check.isChecked())
-        )
-        self.exclude_entitlements_check.setChecked(
-            self.settings.value("exclude_entitlements", False, bool)
-        )
-        self.exclude_entitlements_check.stateChanged.connect(
-            lambda: self.settings.setValue("exclude_entitlements", self.exclude_entitlements_check.isChecked())
+        self.ui.fetch_macos_check.setDisabled(pf.system() == "Darwin")
+
+        self.ui.fetch_unreal_check.setChecked(self.settings.value(*options.unreal_meta))
+        self.ui.fetch_unreal_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.unreal_meta.key, self.ui.fetch_unreal_check.isChecked())
         )
 
-        self.refresh_metadata_button.clicked.connect(self.refresh_metadata)
+        self.ui.exclude_non_asset_check.setChecked(self.settings.value(*options.exclude_non_asset))
+        self.ui.exclude_non_asset_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.exclude_non_asset.key, self.ui.exclude_non_asset_check.isChecked())
+        )
+
+        self.ui.exclude_entitlements_check.setChecked(self.settings.value(*options.exclude_entitlements))
+        self.ui.exclude_entitlements_check.stateChanged.connect(
+            lambda: self.settings.setValue(options.exclude_entitlements.key, self.ui.exclude_entitlements_check.isChecked())
+        )
+
+        self.ui.refresh_metadata_button.clicked.connect(self.refresh_metadata)
         # FIXME: Disable the button for now because it interferes with RareCore
-        self.refresh_metadata_button.setEnabled(False)
-        self.refresh_metadata_button.setVisible(False)
+        self.ui.refresh_metadata_button.setEnabled(False)
+        self.ui.refresh_metadata_button.setVisible(False)
+
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        return super().showEvent(a0)
+
+    def hideEvent(self, a0: QHideEvent):
+        if a0.spontaneous():
+            return super().hideEvent(a0)
+        self.core.lgd.save_config()
+        return super().hideEvent(a0)
 
     def refresh_metadata(self):
-        self.refresh_metadata_button.setDisabled(True)
-        platforms = []
-        if self.fetch_win32_check.isChecked():
-            platforms.append("Win32")
-        if self.fetch_macos_check.isChecked():
-            platforms.append("Mac")
-        worker = RefreshGameMetaWorker(platforms, self.fetch_unreal_check.isChecked())
-        worker.signals.finished.connect(lambda: self.refresh_metadata_button.setDisabled(False))
+        self.ui.refresh_metadata_button.setDisabled(True)
+        platforms = set()
+        if self.ui.fetch_win32_check.isChecked():
+            platforms.add("Win32")
+        if self.ui.fetch_macos_check.isChecked():
+            platforms.add("Mac")
+        worker = RefreshGameMetaWorker(platforms, self.ui.fetch_unreal_check.isChecked())
+        worker.signals.finished.connect(lambda: self.ui.refresh_metadata_button.setDisabled(False))
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod
@@ -162,10 +170,8 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         if text:
             self.core.egs.language_code, self.core.egs.country_code = text.split("-")
             self.core.lgd.config.set("Legendary", "locale", text)
-        else:
-            if self.core.lgd.config.has_option("Legendary", "locale"):
-                self.core.lgd.config.remove_option("Legendary", "locale")
-        self.core.lgd.save_config()
+        elif self.core.lgd.config.has_option("Legendary", "locale"):
+            self.core.lgd.config.remove_option("Legendary", "locale")
 
     def __mac_path_save(self, text: str) -> None:
         self.__path_save(text, "mac_install_dir")
@@ -180,40 +186,35 @@ class LegendarySettings(QWidget, Ui_LegendarySettings):
         if not text and option in self.core.lgd.config["Legendary"].keys():
             self.core.lgd.config["Legendary"].pop(option)
         else:
-            logger.debug(f"Set %s option in config to %s", option, text)
-        self.core.lgd.save_config()
+            logger.debug("Set %s option in config to %s", option, text)
 
     def max_worker_save(self, workers: str):
         if workers := int(workers):
             self.core.lgd.config.set("Legendary", "max_workers", str(workers))
         else:
             self.core.lgd.config.remove_option("Legendary", "max_workers")
-        self.core.lgd.save_config()
 
     def max_memory_save(self, memory: str):
         if memory := int(memory):
             self.core.lgd.config.set("Legendary", "max_memory", str(memory))
         else:
             self.core.lgd.config.remove_option("Legendary", "max_memory")
-        self.core.lgd.save_config()
 
     def preferred_cdn_save(self, cdn: str):
         if cdn:
             self.core.lgd.config.set("Legendary", "preferred_cdn", cdn.strip())
         else:
             self.core.lgd.config.remove_option("Legendary", "preferred_cdn")
-        self.core.lgd.save_config()
 
     def disable_https_save(self, checked: int):
         self.core.lgd.config.set(
             "Legendary", "disable_https", str(bool(checked)).lower()
         )
-        self.core.lgd.save_config()
 
     def cleanup(self, keep_manifests: bool):
         before = self.core.lgd.get_dir_size()
         logger.debug("Removing app metadata...")
-        app_names = set(g.app_name for g in self.core.get_assets(update_assets=False))
+        app_names = {g.app_name for g in self.core.get_assets(update_assets=False)}
         self.core.lgd.clean_metadata(app_names)
 
         if not keep_manifests:

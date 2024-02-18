@@ -7,11 +7,23 @@ import traceback
 from argparse import Namespace
 
 import legendary
-from PyQt5.QtCore import QSettings, QTranslator, QT_VERSION_STR, PYQT_VERSION_STR, QObject, pyqtSignal, pyqtSlot, Qt
+from PyQt5.QtCore import (
+    QSettings,
+    QTranslator,
+    QT_VERSION_STR,
+    PYQT_VERSION_STR,
+    QObject,
+    pyqtSignal,
+    pyqtSlot,
+    Qt,
+    QLibraryInfo,
+    QLocale,
+)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
 import rare.resources.resources
+from rare.models.options import options
 from rare.utils import paths
 from rare.utils.misc import set_color_pallete, set_style_sheet, get_static_style
 
@@ -43,7 +55,7 @@ class RareAppException(QObject):
             defaultButton=QMessageBox.Abort
         )
         if action == QMessageBox.Abort:
-            QApplication.quit()
+            QApplication.instance().quit()
 
 
 class RareApp(QApplication):
@@ -101,43 +113,46 @@ class RareApp(QApplication):
             f" - Qt version: {QT_VERSION_STR}, PyQt version: {PYQT_VERSION_STR}"
         )
 
-        self.settings = QSettings()
+        self.settings = QSettings(self)
 
-        # Translator
-        self.translator = QTranslator()
-        self.qt_translator = QTranslator()
+        # # Translator
+        # self.translator = QTranslator(self)
+        # self.qt_translator = QTranslator(self)
 
         # Style
         # lk: this is a bit silly but serves well until we have a class
         # lk: store the default qt style name from the system on startup as a property for later reference
         self.setProperty("rareDefaultQtStyle", self.style().objectName())
         if (
-                self.settings.value("color_scheme", None) is None
-                and self.settings.value("style_sheet", None) is None
+                self.settings.value(options.style_sheet.key, None) is None
+                and self.settings.value(options.color_scheme.key, None) is None
         ):
-            self.settings.setValue("color_scheme", "")
-            self.settings.setValue("style_sheet", "RareStyle")
+            self.settings.setValue(options.color_scheme.key, options.color_scheme.default)
+            self.settings.setValue(options.style_sheet.key, options.style_sheet.default)
 
-        if color_scheme := self.settings.value("color_scheme", False):
-            self.settings.setValue("style_sheet", "")
+        if color_scheme := self.settings.value(options.color_scheme.key, False):
+            self.settings.setValue(options.style_sheet.key, "")
             set_color_pallete(color_scheme)
-        elif style_sheet := self.settings.value("style_sheet", False):
-            self.settings.setValue("color_scheme", "")
+        elif style_sheet := self.settings.value(options.style_sheet.key, False):
+            self.settings.setValue(options.color_scheme.key, "")
             set_style_sheet(style_sheet)
         else:
             self.setStyleSheet(get_static_style())
         self.setWindowIcon(QIcon(":/images/Rare.png"))
 
     def load_translator(self, lang: str):
-        if os.path.isfile(f := os.path.join(paths.resources_path, "languages", f"{lang}.qm")):
-            self.translator.load(f)
-            self.logger.info(f"Your language is supported: {lang}")
-        elif not lang == "en":
-            self.logger.info("Your language is not supported")
-        self.installTranslator(self.translator)
-
         # translator for qt stuff
-        if os.path.isfile(f := os.path.join(paths.resources_path, f"qt_{lang}.qm")):
-            self.qt_translator = QTranslator()
-            self.qt_translator.load(f)
-            self.installTranslator(self.qt_translator)
+        locale = QLocale(lang)
+        self.logger.info("Using locale: %s", locale.name())
+        translations = {
+            "qtbase": QLibraryInfo.location(QLibraryInfo.TranslationsPath),
+            "rare": os.path.join(paths.resources_path, "languages"),
+        }
+        for filename, path in translations.items():
+            translator = QTranslator(self)
+            if translator.load(locale, filename, "_", path):
+                self.logger.debug("Loaded translation file: %s", translator.filePath())
+                self.installTranslator(translator)
+            else:
+                self.logger.info("Couldn't find translation for locale: %s", locale.name())
+                translator.deleteLater()

@@ -9,6 +9,7 @@ from PyQt5.QtCore import QThreadPool, QTimer, pyqtSlot, Qt
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from requests import HTTPError
 
+from rare.models.options import options
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import MainWindow
 from rare.shared import RareCore
@@ -45,8 +46,8 @@ class Rare(RareApp):
         self.signals = RareCore.instance().signals()
         self.core = RareCore.instance().core()
 
-        lang = self.settings.value("language", self.core.language_code, type=str)
-        self.load_translator(lang)
+        language = self.settings.value(*options.language)
+        self.load_translator(language)
 
         # set Application name for settings
         self.main_window: Optional[MainWindow] = None

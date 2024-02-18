@@ -31,13 +31,13 @@ class MainTabWidget(QTabWidget):
         self.games_index = self.addTab(self.games_tab, self.tr("Games"))
 
         # Downloads Tab after Games Tab to use populated RareCore games list
-        if not self.args.offline:
-            self.downloads_tab = DownloadsTab(self)
-            self.downloads_index = self.addTab(self.downloads_tab, "")
-            self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
-            self.downloads_tab.update_queues_count()
-            self.setTabEnabled(self.downloads_index, not self.args.offline)
+        self.downloads_tab = DownloadsTab(self)
+        self.downloads_index = self.addTab(self.downloads_tab, "")
+        self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
+        self.downloads_tab.update_queues_count()
+        self.setTabEnabled(self.downloads_index, not self.args.offline)
 
+        if not self.args.offline:
             self.store_tab = Shop(self.core)
             self.store_index = self.addTab(self.store_tab, self.tr("Store (Beta)"))
             self.setTabEnabled(self.store_index, not self.args.offline)

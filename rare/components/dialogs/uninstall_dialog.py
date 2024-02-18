@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
 from rare.models.game import RareGame
 from rare.models.install import UninstallOptionsModel
 from rare.utils.misc import icon
-from rare.widgets.dialogs import ButtonDialog, dialog_title_game
+from rare.widgets.dialogs import ButtonDialog, game_title
 
 
 class UninstallDialog(ButtonDialog):
@@ -16,8 +16,8 @@ class UninstallDialog(ButtonDialog):
     def __init__(self, rgame: RareGame, options: UninstallOptionsModel, parent=None):
         super(UninstallDialog, self).__init__(parent=parent)
         header = self.tr("Uninstall")
-        self.setWindowTitle(dialog_title_game(header, rgame.app_title))
-        self.setSubtitle(dialog_title_game(header, rgame.app_title))
+        self.setWindowTitle(game_title(header, rgame.app_title))
+        self.setSubtitle(game_title(header, rgame.app_title))
 
         self.keep_files = QCheckBox(self.tr("Keep files"))
         self.keep_files.setChecked(bool(options.keep_files))

@@ -1,16 +1,15 @@
 import os
 from enum import IntEnum
 from logging import getLogger
-from typing import List, Union, Type, Dict
+from typing import Union, Type, Dict, Tuple, Iterable
 
 import qtawesome
-import requests
 from PyQt5.QtCore import (
     QObject,
     QSettings,
     QFile,
     QDir,
-    Qt,
+    Qt, QLocale,
 )
 from PyQt5.QtGui import QPalette, QColor, QFontMetrics
 from PyQt5.QtWidgets import qApp, QStyleFactory, QLabel
@@ -106,11 +105,8 @@ def set_color_pallete(color_scheme: str) -> None:
         qtawesome.set_defaults(color=icon_color)
 
 
-def get_color_schemes() -> List[str]:
-    colors = []
-    for file in QDir(":/schemes"):
-        colors.append(file)
-    return colors
+def get_color_schemes() -> Iterable[str]:
+    yield from QDir(":/schemes")
 
 
 def set_style_sheet(style_sheet: str) -> None:
@@ -132,31 +128,17 @@ def set_style_sheet(style_sheet: str) -> None:
     qtawesome.set_defaults(color="#eeeeee")
 
 
-def get_style_sheets() -> List[str]:
-    styles = []
-    for file in QDir(":/stylesheets/"):
-        styles.append(file)
-    return styles
+def get_style_sheets() -> Iterable[str]:
+    yield from QDir(":/stylesheets/")
 
 
-def get_translations():
-    langs = ["en"]
+def get_translations() -> Tuple[Tuple[str, str], ...]:
+    langs = []
     for i in os.listdir(os.path.join(resources_path, "languages")):
-        if i.endswith(".qm") and not i.startswith("qt_"):
-            langs.append(i.split(".")[0])
-    return langs
-
-
-def get_latest_version():
-    try:
-        resp = requests.get(
-            "https://api.github.com/repos/RareDevs/Rare/releases/latest",
-            timeout=2,
-        )
-        tag = resp.json()["tag_name"]
-        return tag
-    except requests.exceptions.ConnectionError:
-        return "0.0.0"
+        if i.endswith(".qm") and i.startswith("rare_"):
+            locale = QLocale(i.removesuffix(".qm").removeprefix("rare_"))
+            langs.append((locale.name(), f"{locale.nativeLanguageName()} ({locale.nativeCountryName()})"))
+    return tuple(langs)
 
 
 def path_size(path: Union[str, os.PathLike]) -> int:
@@ -169,7 +151,7 @@ def path_size(path: Union[str, os.PathLike]) -> int:
 
 
 def format_size(b: Union[int, float]) -> str:
-    for s in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"]:
+    for s in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"):
         if b < 1024:
             return f"{b:.2f} {s}B"
         b /= 1024
@@ -204,3 +186,7 @@ def widget_object_name(widget: Union[QObject, wrappertype, Type], suffix: str) -
 def elide_text(label: QLabel, text: str) -> str:
     metrics = QFontMetrics(label.font())
     return metrics.elidedText(text, Qt.ElideRight, label.sizeHint().width())
+
+
+def style_hyperlink(link: str, title: str) -> str:
+    return "<a href='{}' style='color: #2980b9; text-decoration:none'>{}</a>".format(link, title)

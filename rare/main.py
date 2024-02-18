@@ -18,6 +18,8 @@ def main() -> int:
             sys.stderr = open(os.devnull, 'w')
 
     os.environ["QT_QPA_PLATFORMTHEME"] = ""
+    os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "1"
+    os.environ["QT_SCALE_FACTOR_ROUNDING_POLICY"] = "Floor"
     if "LEGENDARY_CONFIG_PATH" in os.environ:
         os.environ["LEGENDARY_CONFIG_PATH"] = os.path.expanduser(os.environ["LEGENDARY_CONFIG_PATH"])
 
@@ -57,22 +59,26 @@ def main() -> int:
     )
     subparsers = parser.add_subparsers(title="Commands", dest="subparser")
 
-    launch_minimal_parser = subparsers.add_parser("start", aliases=["launch"])
-    launch_minimal_parser.add_argument("app_name", help="AppName of the game to launch",
-                                       metavar="<App Name>", action="store")
-    launch_minimal_parser.add_argument("--dry-run", help="Print arguments and exit", action="store_true")
-    launch_minimal_parser.add_argument("--offline", help="Launch game offline",
-                                       action="store_true")
-    launch_minimal_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
-                                       default=os.environ.get('LGDRY_WINE_BINARY', None),
-                                       help='Set WINE binary to use to launch the app')
-    launch_minimal_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
-                                       default=os.environ.get('LGDRY_WINE_PREFIX', None),
-                                       help='Set WINE prefix to use')
-    launch_minimal_parser.add_argument("--ask-sync-saves", help="Ask to sync cloud saves",
-                                       action="store_true")
-    launch_minimal_parser.add_argument("--skip-update-check", help="Do not check for updates",
-                                       action="store_true")
+    launch_parser = subparsers.add_parser("launch", aliases=["start"])
+    launch_parser.add_argument("app_name", help="AppName of the game to launch",
+                               metavar="<App Name>", action="store")
+    launch_parser.add_argument("--dry-run", help="Print arguments and exit", action="store_true")
+    launch_parser.add_argument("--offline", help="Launch game offline",
+                               action="store_true")
+    launch_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
+                               default=os.environ.get('LGDRY_WINE_BINARY', None),
+                               help='Set WINE binary to use to launch the app')
+    launch_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
+                               default=os.environ.get('LGDRY_WINE_PREFIX', None),
+                               help='Set WINE prefix to use')
+    launch_parser.add_argument("--ask-sync-saves", help="Ask to sync cloud saves",
+                               action="store_true")
+    launch_parser.add_argument("--skip-update-check", help="Do not check for updates",
+                               action="store_true")
+
+    login_parser = subparsers.add_parser("login", aliases=["auth"])
+    login_parser.add_argument("egl_version", help="Epic Games Launcher User Agent version",
+                              metavar="<EGL Version>", action="store")
 
     args = parser.parse_args()
 
@@ -93,8 +99,12 @@ def main() -> int:
         print(f"Rare {__version__} Codename: {__codename__}")
         return 0
 
-    if args.subparser in {"start", "launch"}:
-        from rare.launcher import launch
+    if args.subparser in {"login", "auth"}:
+        from rare.commands.webview import launch
+        return launch(args)
+
+    if args.subparser in {"launch", "start"}:
+        from rare.commands.launcher import launch
         return launch(args)
 
     from rare.utils import singleton

@@ -1,4 +1,3 @@
-import platform
 from typing import Union
 
 from PyQt5.QtCore import QProcessEnvironment, pyqtSignal, QSize, Qt
@@ -15,6 +14,7 @@ from PyQt5.QtWidgets import (
 )
 
 from rare.ui.launcher.console_env import Ui_ConsoleEnv
+from rare.widgets.dialogs import dialog_title, game_title
 
 
 class ConsoleDialog(QDialog):
@@ -22,10 +22,12 @@ class ConsoleDialog(QDialog):
     kill = pyqtSignal()
     env: QProcessEnvironment
 
-    def __init__(self, parent=None):
+    def __init__(self, app_title: str, parent=None):
         super(ConsoleDialog, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowTitle("Rare - Console")
+        self.setWindowTitle(
+            dialog_title(game_title(self.tr("Console"), app_title))
+        )
         self.setGeometry(0, 0, 640, 480)
         layout = QVBoxLayout()
 
@@ -62,7 +64,7 @@ class ConsoleDialog(QDialog):
 
         self.setLayout(layout)
 
-        self.env_variables = ConsoleEnv(self)
+        self.env_variables = ConsoleEnv(app_title, self)
         self.env_variables.hide()
 
         self.accept_close = False
@@ -140,11 +142,14 @@ class ConsoleDialog(QDialog):
 
 class ConsoleEnv(QDialog):
 
-    def __init__(self, parent=None):
+    def __init__(self, app_title: str, parent=None):
         super(ConsoleEnv, self).__init__(parent=parent)
         self.setAttribute(Qt.WA_DeleteOnClose, False)
         self.ui = Ui_ConsoleEnv()
         self.ui.setupUi(self)
+        self.setWindowTitle(
+            dialog_title(game_title(self.tr("Environment"), app_title))
+        )
 
     def setTable(self, env: QProcessEnvironment):
         self.ui.table.clearContents()
@@ -168,12 +173,12 @@ class ConsoleEdit(QPlainTextEdit):
         self._cursor_output = self.textCursor()
 
     def log(self, text):
-        html = f"<p style=\"color:#BBB;white-space:pre\">{text}</p>"
+        html = f"<p style=\"color:#aaa;white-space:pre\">{text}</p>"
         self._cursor_output.insertHtml(html)
         self.scroll_to_last_line()
 
     def error(self, text):
-        html = f"<p style=\"color:#eee;white-space:pre\">{text}</p>"
+        html = f"<p style=\"color:#a33;white-space:pre\">{text}</p>"
         self._cursor_output.insertHtml(html)
         self.scroll_to_last_line()
 

@@ -14,11 +14,11 @@ class GlobalSignals:
         # str: title, str: body
         notify = pyqtSignal(str, str)
         # none
-        prefix_updated = pyqtSignal()
-        # none
         update_tray = pyqtSignal()
         # none
         update_statusbar = pyqtSignal()
+        # str: locale
+        # change_translation = pyqtSignal(str)
 
     class GameSignals(QObject):
         # model

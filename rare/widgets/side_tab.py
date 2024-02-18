@@ -113,6 +113,8 @@ class SideTabContainer(QWidget):
         else:
             layout.addWidget(widget)
 
+        layout.setAlignment(Qt.AlignTop)
+
     def setTitle(self, text: str) -> None:
         self.title.setText(f"<h2>{text}</h2>")
         self.title.setVisible(bool(text))

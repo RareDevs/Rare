@@ -55,7 +55,7 @@ class DlThread(QThread):
         if result.code == DlResultCode.FINISHED:
             self.rgame.set_installed(True)
         self.rgame.state = RareGame.State.IDLE
-        self.rgame.signals.progress.finish.emit(not result.code == DlResultCode.FINISHED)
+        self.rgame.signals.progress.finish.emit(result.code != DlResultCode.FINISHED)
         self.result.emit(result)
 
     def __status_callback(self, status: UIUpdate):
@@ -125,15 +125,14 @@ class DlThread(QThread):
                 dlcs = self.core.get_dlc_for_game(self.item.download.igame.app_name)
                 if dlcs and not self.item.options.skip_dlcs:
                     result.dlcs = []
-                    for dlc in dlcs:
-                        result.dlcs.append(
-                            {
-                                "app_name": dlc.app_name,
-                                "app_title": dlc.app_title,
-                                "app_version": dlc.app_version(self.item.options.platform),
-                            }
-                        )
-
+                    result.dlcs.extend(
+                        {
+                            "app_name": dlc.app_name,
+                            "app_title": dlc.app_title,
+                            "app_version": dlc.app_version(self.item.options.platform),
+                        }
+                        for dlc in dlcs
+                    )
                 if (
                     self.item.download.game.supports_cloud_saves
                     or self.item.download.game.supports_mac_cloud_saves

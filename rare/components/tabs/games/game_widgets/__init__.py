@@ -1,55 +1,50 @@
-from typing import Tuple, List, Union, Optional
+from abc import abstractmethod
+from typing import Tuple, List, Union, Type, TypeVar
 
-from PyQt5.QtCore import QObject, pyqtSlot
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtCore import QObject, pyqtSlot, Qt
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QScrollArea
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.models.signals import GlobalSignals
+from rare.models.library import LibraryFilter, LibraryOrder, LibraryView
 from rare.shared import RareCore
+from rare.widgets.library_layout import LibraryLayout
 from .icon_game_widget import IconGameWidget
 from .list_game_widget import ListGameWidget
 
+ViewWidget = TypeVar("ViewWidget", IconGameWidget, ListGameWidget)
 
-class LibraryWidgetController(QObject):
-    def __init__(self, icon_container: QWidget, list_container: QWidget, parent: QWidget = None):
-        super(LibraryWidgetController, self).__init__(parent=parent)
-        self._icon_container: QWidget = icon_container
-        self._list_container: QWidget = list_container
-        self.rcore = RareCore.instance()
-        self.core: LegendaryCore = self.rcore.core()
-        self.signals: GlobalSignals = self.rcore.signals()
 
-        self.signals.game.installed.connect(self.sort_list)
-        self.signals.game.uninstalled.connect(self.sort_list)
+class ViewContainer(QWidget):
+    def __init__(self, rcore: RareCore, parent=None):
+        super().__init__(parent=parent)
+        self.rcore: RareCore = rcore
 
-    def add_game(self, rgame: RareGame):
-        return self.add_widgets(rgame)
-
-    def add_widgets(self, rgame: RareGame) -> Tuple[IconGameWidget, ListGameWidget]:
-        icon_widget = IconGameWidget(rgame, self._icon_container)
-        list_widget = ListGameWidget(rgame, self._list_container)
-        return icon_widget, list_widget
+    def _add_widget(self, widget_type: Type[ViewWidget], rgame: RareGame) -> ViewWidget:
+        widget = widget_type(rgame, self)
+        self.layout().addWidget(widget)
+        return widget
 
     @staticmethod
-    def __visibility(widget: Union[IconGameWidget,ListGameWidget], filter_name, search_text) -> Tuple[bool, float]:
-        if filter_name == "hidden":
+    def __visibility(widget: ViewWidget, library_filter, search_text) -> Tuple[bool, float]:
+        if library_filter == LibraryFilter.HIDDEN:
             visible = "hidden" in widget.rgame.metadata.tags
         elif "hidden" in widget.rgame.metadata.tags:
             visible = False
-        elif filter_name == "installed":
+        elif library_filter == LibraryFilter.INSTALLED:
             visible = widget.rgame.is_installed and not widget.rgame.is_unreal
-        elif filter_name == "offline":
+        elif library_filter == LibraryFilter.OFFLINE:
             visible = widget.rgame.can_run_offline and not widget.rgame.is_unreal
-        elif filter_name == "32bit":
+        elif library_filter == LibraryFilter.WIN32:
             visible = widget.rgame.is_win32 and not widget.rgame.is_unreal
-        elif filter_name == "mac":
+        elif library_filter == LibraryFilter.MAC:
             visible = widget.rgame.is_mac and not widget.rgame.is_unreal
-        elif filter_name == "installable":
+        elif library_filter == LibraryFilter.INSTALLABLE:
             visible = not widget.rgame.is_non_asset and not widget.rgame.is_unreal
-        elif filter_name == "include_ue":
+        elif library_filter == LibraryFilter.INCLUDE_UE:
             visible = True
-        elif filter_name == "all":
+        elif library_filter == LibraryFilter.ALL:
             visible = not widget.rgame.is_unreal
         else:
             visible = True
@@ -64,74 +59,159 @@ class LibraryWidgetController(QObject):
 
         return visible, opacity
 
-    def filter_list(self, filter_name="all", search_text: str = ""):
-        icon_widgets = self._icon_container.findChildren(IconGameWidget)
-        list_widgets = self._list_container.findChildren(ListGameWidget)
-        for iw in icon_widgets:
-            visibility, opacity = self.__visibility(iw, filter_name, search_text)
+    def _filter_view(self, widget_type: Type[ViewWidget], filter_by: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
+        widgets = self.findChildren(widget_type)
+        for iw in widgets:
+            visibility, opacity = self.__visibility(iw, filter_by, search_text)
             iw.setOpacity(opacity)
             iw.setVisible(visibility)
-        for lw in list_widgets:
-            visibility, opacity = self.__visibility(lw, filter_name, search_text)
-            lw.setOpacity(opacity)
-            lw.setVisible(visibility)
-        self.sort_list(search_text)
+
+    def _update_view(self, widget_type: Type[ViewWidget]):
+        widgets = self.findChildren(widget_type)
+        app_names = {iw.rgame.app_name for iw in widgets}
+        games = list(self.rcore.games)
+        game_app_names = {g.app_name for g in games}
+        new_app_names = game_app_names.difference(app_names)
+        for app_name in new_app_names:
+            game = self.rcore.get_game(app_name)
+            w = widget_type(game, self)
+            self.layout().addWidget(w)
+
+    def _find_widget(self, widget_type: Type[ViewWidget], app_name: str) -> ViewWidget:
+        w = self.findChild(widget_type, app_name)
+        return w
+
+    @abstractmethod
+    def order_view(self):
+        pass
+
+
+class IconViewContainer(ViewContainer):
+    def __init__(self, rcore: RareCore, parent=None):
+        super().__init__(rcore, parent=parent)
+        view_layout = LibraryLayout(self)
+        view_layout.setSpacing(9)
+        view_layout.setContentsMargins(0, 13, 0, 13)
+        view_layout.setAlignment(Qt.AlignTop)
+        self.setLayout(view_layout)
+
+    def add_widget(self, rgame: RareGame) -> IconGameWidget:
+        return self._add_widget(IconGameWidget, rgame)
+
+    def filter_view(self, filter_by: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
+        self._filter_view(IconGameWidget, filter_by, search_text)
+
+    def update_view(self):
+        self._update_view(IconGameWidget)
+
+    def find_widget(self, app_name: str) -> ViewWidget:
+        return self._find_widget(IconGameWidget, app_name)
+
+    def order_view(self, order_by: LibraryOrder = LibraryOrder.TITLE, search_text: str = ""):
+        if search_text:
+            self.layout().sort(
+                lambda x: (search_text not in x.widget().rgame.app_title.lower(),)
+            )
+        else:
+            if (newest := order_by == LibraryOrder.NEWEST) or order_by == LibraryOrder.OLDEST:
+                # Sort by grant date
+                self.layout().sort(
+                    key=lambda x: (x.widget().rgame.is_installed, not x.widget().rgame.is_non_asset, x.widget().rgame.grant_date()),
+                    reverse=newest,
+                )
+            elif order_by == LibraryOrder.RECENT:
+                # Sort by recently played
+                self.layout().sort(
+                    key=lambda x: (not x.widget().rgame.is_installed, x.widget().rgame.is_non_asset, x.widget().rgame.metadata.last_played),
+                    reverse=True,
+                )
+            else:
+                # Sort by title
+                self.layout().sort(
+                    key=lambda x: (not x.widget().rgame.is_installed, x.widget().rgame.is_non_asset, x.widget().rgame.app_title)
+                )
+
+
+class ListViewContainer(ViewContainer):
+    def __init__(self, rcore, parent=None):
+        super().__init__(rcore, parent=parent)
+        view_layout = QVBoxLayout(self)
+        view_layout.setContentsMargins(3, 3, 9, 3)
+        view_layout.setAlignment(Qt.AlignTop)
+        self.setLayout(view_layout)
+
+    def add_widget(self, rgame: RareGame) -> ListGameWidget:
+        return self._add_widget(ListGameWidget, rgame)
+
+    def filter_view(self, filter_by: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
+        self._filter_view(ListGameWidget, filter_by, search_text)
+
+    def update_view(self):
+        self._update_view(ListGameWidget)
+
+    def find_widget(self, app_name: str) -> ViewWidget:
+        return self._find_widget(ListGameWidget, app_name)
+
+    def order_view(self, order_by: LibraryOrder = LibraryOrder.TITLE, search_text: str = ""):
+        list_widgets = self.findChildren(ListGameWidget)
+        if search_text:
+            list_widgets.sort(key=lambda x: (search_text not in x.rgame.app_title.lower(),))
+        else:
+            if (newest := order_by == LibraryOrder.NEWEST) or order_by == LibraryOrder.OLDEST:
+                list_widgets.sort(
+                    key=lambda x: (x.rgame.is_installed, not x.rgame.is_non_asset, x.rgame.grant_date()),
+                    reverse=newest,
+                )
+            elif order_by == LibraryOrder.RECENT:
+                list_widgets.sort(
+                    key=lambda x: (not x.rgame.is_installed, x.rgame.is_non_asset, x.rgame.metadata.last_played),
+                    reverse=True,
+                )
+            else:
+                list_widgets.sort(
+                    key=lambda x: (not x.rgame.is_installed, x.rgame.is_non_asset, x.rgame.app_title)
+                )
+        for idx, wl in enumerate(list_widgets):
+            self.layout().insertWidget(idx, wl)
+
+
+class LibraryWidgetController(QObject):
+    def __init__(self, view: LibraryView, parent: QScrollArea = None):
+        super(LibraryWidgetController, self).__init__(parent=parent)
+        self.rcore = RareCore.instance()
+        self.core: LegendaryCore = self.rcore.core()
+        self.signals: GlobalSignals = self.rcore.signals()
+
+        if view == LibraryView.COVER:
+            self._container: IconViewContainer = IconViewContainer(self.rcore, parent)
+        else:
+            self._container: ListViewContainer = ListViewContainer(self.rcore, parent)
+        parent.setWidget(self._container)
+
+        self.signals.game.installed.connect(self.order_game_views)
+        self.signals.game.uninstalled.connect(self.order_game_views)
+
+    def add_game(self, rgame: RareGame):
+        return self.add_widgets(rgame)
+
+    def add_widgets(self, rgame: RareGame) -> ViewWidget:
+        return self._container.add_widget(rgame)
+
+    def filter_game_views(self, filter_by: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
+        self._container.filter_view(filter_by, search_text)
+        self.order_game_views(search_text=search_text)
 
     @pyqtSlot()
-    def sort_list(self, sort_by: str = ""):
-        # lk: this is the existing sorting implemenation
-        # lk: it sorts by installed then by title
-        if sort_by:
-            self._icon_container.layout().sort(lambda x: (sort_by not in x.widget().rgame.app_title.lower(),))
-        else:
-            self._icon_container.layout().sort(
-                key=lambda x: (
-                # Sort by grant date
-                #     x.widget().rgame.is_installed,
-                #     not x.widget().rgame.is_non_asset,
-                #     x.widget().rgame.grant_date(),
-                # ), reverse=True
-                    not x.widget().rgame.is_installed,
-                    x.widget().rgame.is_non_asset,
-                    x.widget().rgame.app_title,
-                )
-            )
-        list_widgets = self._list_container.findChildren(ListGameWidget)
-        if sort_by:
-            list_widgets.sort(key=lambda x: (sort_by not in x.rgame.app_title.lower(),))
-        else:
-            list_widgets.sort(
-                # Sort by grant date
-                # key=lambda x: (x.rgame.is_installed, not x.rgame.is_non_asset, x.rgame.grant_date()), reverse=True
-                key=lambda x: (not x.rgame.is_installed, x.rgame.is_non_asset, x.rgame.app_title)
-            )
-        for idx, wl in enumerate(list_widgets):
-            self._list_container.layout().insertWidget(idx, wl)
+    def order_game_views(self, order_by: LibraryOrder = LibraryOrder.TITLE, search_text: str = ""):
+        self._container.order_view(order_by, search_text)
 
     @pyqtSlot()
     @pyqtSlot(list)
-    def update_list(self, app_names: List[str] = None):
-        if not app_names:
-            # lk: base it on icon widgets, the two lists should be identical
-            icon_widgets = self._icon_container.findChildren(IconGameWidget)
-            list_widgets = self._list_container.findChildren(ListGameWidget)
-            icon_app_names = set([iw.rgame.app_name for iw in icon_widgets])
-            list_app_names = set([lw.rgame.app_name for lw in list_widgets])
-            games = list(self.rcore.games)
-            game_app_names = set([g.app_name for g in games])
-            new_icon_app_names = game_app_names.difference(icon_app_names)
-            new_list_app_names = game_app_names.difference(list_app_names)
-            for app_name in new_icon_app_names:
-                game = self.rcore.get_game(app_name)
-                iw = IconGameWidget(game)
-                self._icon_container.layout().addWidget(iw)
-            for app_name in new_list_app_names:
-                game = self.rcore.get_game(app_name)
-                lw = ListGameWidget(game)
-                self._list_container.layout().addWidget(lw)
-            self.sort_list()
+    def update_game_views(self, app_names: List[str] = None):
+        if app_names:
+            return
+        self._container.update_view()
+        self.order_game_views()
 
-    def __find_widget(self, app_name: str) -> Tuple[Union[IconGameWidget, None], Union[ListGameWidget, None]]:
-        iw = self._icon_container.findChild(IconGameWidget, app_name)
-        lw = self._list_container.findChild(ListGameWidget, app_name)
-        return iw, lw
+    def __find_widget(self, app_name: str) -> Union[ViewWidget, None]:
+        return self._container.find_widget(app_name)

@@ -21,14 +21,9 @@ class ImageSize:
                 self.__img_factor = 17
                 self.__size = QSize(self.__img_factor * 16, self.__img_factor * 9) * pixel_ratio / divisor
             # lk: for prettier images set this to true
-            self.__smooth_transform: bool = True
-            if divisor > 2:
-                self.__smooth_transform = False
-
-            if base is not None:
-                self.__base = base
-            else:
-                self.__base = self
+            # self.__smooth_transform: bool = True
+            self.__smooth_transform = divisor <= 2
+            self.__base = base if base is not None else self
 
         def __eq__(self, other: 'ImageSize.Preset'):
             return (
