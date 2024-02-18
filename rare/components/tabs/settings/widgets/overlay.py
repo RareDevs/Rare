@@ -187,8 +187,6 @@ class OverlaySettings(QGroupBox):
         self.environ_changed.emit(self.envvar)
         self.update_settings_override(current_state)
 
-        print(f"{self.envvar} = {config.get_envvar(self.app_name, self.envvar)}")
-
     def setCurrentState(self, state: ActivationStates):
         self.ui.show_overlay_combo.setCurrentIndex(self.ui.show_overlay_combo.findData(state, Qt.UserRole))
         self.ui.options_group.setEnabled(state == ActivationStates.CUSTOM)
@@ -221,11 +219,9 @@ class OverlaySettings(QGroupBox):
                     opts[o] = "enable"
 
             for widget in self.option_widgets:
-                print(opts)
                 widget.setValue(opts)
             if opts:
                 logger.info("Remaining options without a gui switch: %s", ",".join(opts.keys()))
-            print(opts)
 
         self.ui.options_group.blockSignals(False)
         return super().showEvent(a0)
@@ -314,8 +310,6 @@ class MangoHudSettings(OverlaySettings):
             config.set_envvar(self.app_name, "MANGOHUD", "1")
 
         self.environ_changed.emit("MANGOHUD")
-
-        print(f"MANGOHUD = {config.get_envvar(self.app_name, 'MANGOHUD')}")
 
 
 if __name__ == "__main__":
