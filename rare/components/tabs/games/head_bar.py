@@ -7,11 +7,11 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QToolButton,
     QMenu,
-    QAction,
+    QAction, QSpacerItem, QSizePolicy,
 )
 
-from rare.shared import RareCore
 from rare.models.options import options, LibraryFilter, LibraryOrder
+from rare.shared import RareCore
 from rare.utils.extra_widgets import ButtonLineEdit
 from rare.utils.misc import icon
 
@@ -105,6 +105,7 @@ class GameListHeadBar(QWidget):
         integrations.setPopupMode(QToolButton.InstantPopup)
 
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Game"))
+        self.search_bar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         self.search_bar.setObjectName("SearchBar")
         self.search_bar.setFrame(False)
         self.search_bar.setMinimumWidth(250)
@@ -133,16 +134,14 @@ class GameListHeadBar(QWidget):
         layout.setContentsMargins(0, 5, 0, 5)
         layout.addWidget(self.filter)
         layout.addWidget(self.order)
-        layout.addStretch(0)
-        layout.addWidget(integrations)
-        layout.addStretch(3)
+        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
         layout.addWidget(self.search_bar)
-        layout.addStretch(4)
         layout.addWidget(self.installed_icon)
         layout.addWidget(self.installed_label)
         layout.addWidget(self.available_icon)
         layout.addWidget(self.available_label)
-        layout.addStretch(4)
+        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        layout.addWidget(integrations)
         layout.addWidget(self.refresh_list)
 
     def set_games_count(self, inst: int, avail: int) -> None:
