@@ -118,22 +118,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/login/browser_login.py" line="70"/>
+        <location filename="../../components/dialogs/login/browser_login.py" line="72"/>
         <source>Logging in...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/login/browser_login.py" line="77"/>
+        <location filename="../../components/dialogs/login/browser_login.py" line="79"/>
         <source>Login failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/login/browser_login.py" line="49"/>
+        <location filename="../../components/dialogs/login/browser_login.py" line="51"/>
         <source>Copied to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/login/browser_login.py" line="31"/>
+        <location filename="../../components/dialogs/login/browser_login.py" line="32"/>
         <source>Insert authorizationCode here</source>
         <translation type="unfinished"></translation>
     </message>
@@ -174,17 +174,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="151"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="152"/>
         <source>Error - {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="192"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="193"/>
         <source>Newer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="151"/>
+        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="152"/>
         <source>Error while calculating path for &lt;b&gt;{}&lt;/b&gt;. Insufficient permissions to create &lt;b&gt;{}&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -210,17 +210,17 @@
 <context>
     <name>CloudSyncDialog</name>
     <message>
-        <location filename="../../launcher/cloud_sync_dialog.py" line="30"/>
+        <location filename="../../commands/launcher/cloud_sync_dialog.py" line="30"/>
         <source>Cloud saves for</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/cloud_sync_dialog.py" line="43"/>
+        <location filename="../../commands/launcher/cloud_sync_dialog.py" line="43"/>
         <source>Skip</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/cloud_sync_dialog.py" line="50"/>
+        <location filename="../../commands/launcher/cloud_sync_dialog.py" line="50"/>
         <source>Newer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -251,7 +251,7 @@
 <context>
     <name>Code</name>
     <message>
-        <location filename="../../shared/game_process.py" line="105"/>
+        <location filename="../../shared/game_process.py" line="106"/>
         <source>Error in game {}:
 {}</source>
         <translation type="unfinished"></translation>
@@ -271,43 +271,43 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>ConsoleDialog</name>
     <message>
-        <location filename="../../launcher/console_dialog.py" line="39"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="39"/>
         <source>Show environment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/console_dialog.py" line="43"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="43"/>
         <source>Save output to file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/console_dialog.py" line="47"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="47"/>
         <source>Clear console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/console_dialog.py" line="53"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="53"/>
         <source>Terminate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/console_dialog.py" line="58"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="58"/>
         <source>Kill</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/console_dialog.py" line="107"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="107"/>
         <source>Saved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/console_dialog.py" line="123"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="123"/>
         <source>Application &quot;{}&quot; finished with &quot;{}&quot;
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/console_dialog.py" line="28"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="28"/>
         <source>Console</source>
         <translation type="unfinished"></translation>
     </message>
@@ -325,7 +325,7 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../launcher/console_dialog.py" line="150"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="150"/>
         <source>Environment</source>
         <translation type="unfinished"></translation>
     </message>
@@ -517,52 +517,52 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>DxvkSettings</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="270"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="235"/>
         <source>FPS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="271"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="236"/>
         <source>Frametime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="272"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="237"/>
         <source>Memory usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="273"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="238"/>
         <source>GPU usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="276"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="241"/>
         <source>D3D feature level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="279"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="244"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="277"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="242"/>
         <source>Compiler activity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="268"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="233"/>
         <source>DXVK settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="274"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="239"/>
         <source>Device info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="275"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="240"/>
         <source>DXVK version</source>
         <translation type="unfinished"></translation>
     </message>
@@ -570,22 +570,22 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>EGLSyncExportGroup</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="316"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="312"/>
         <source>Exportable games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="317"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="313"/>
         <source>No games to export to EGL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="318"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="314"/>
         <source>Export</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="334"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="330"/>
         <source>The following errors occurred while exporting.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -623,12 +623,12 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="102"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="98"/>
         <source>Default Wine prefix is unset, or path does not exist. Create it or configure it in Settings -&gt; Linux.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="109"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="105"/>
         <source>Default Wine prefix is set but EGL manifests path does not exist. Your configured default Wine prefix might not be where EGL is installed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -641,22 +641,22 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>EGLSyncImportGroup</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="354"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="350"/>
         <source>Importable games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="355"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="351"/>
         <source>No games to import from EGL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="356"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="352"/>
         <source>Import</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="373"/>
+        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="369"/>
         <source>The following errors occurred while importing.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -978,7 +978,7 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="342"/>
+        <location filename="../../components/tabs/games/game_info/game_info.py" line="393"/>
         <source>Install</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1127,17 +1127,17 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="81"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="85"/>
         <source>Import Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="103"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="107"/>
         <source>Search Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="86"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="90"/>
         <source>Sync with EGL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1147,22 +1147,22 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="110"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="112"/>
         <source>Installed games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="119"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="121"/>
         <source>Available games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="89"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="93"/>
         <source>Epic Overlay and Ubisoft</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="99"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="103"/>
         <source>Integrations</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1192,22 +1192,22 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="62"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="64"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="63"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="65"/>
         <source>Recently played</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="64"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="66"/>
         <source>Newest</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="65"/>
+        <location filename="../../components/tabs/games/head_bar.py" line="67"/>
         <source>Oldest</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1652,7 +1652,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/dialogs/install_dialog.py" line="106"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="229"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1931,17 +1931,17 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/legendary.py" line="237"/>
+        <location filename="../../components/tabs/settings/legendary.py" line="238"/>
         <source>Cleanup complete! Successfully removed {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/legendary.py" line="49"/>
+        <location filename="../../components/tabs/settings/legendary.py" line="50"/>
         <source>Default installation folder for macOS games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/legendary.py" line="58"/>
+        <location filename="../../components/tabs/settings/legendary.py" line="59"/>
         <source>Default installation folder for Windows games</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2023,12 +2023,12 @@ Disabling this greatly improves start-up time, but some library filters may not 
 <context>
     <name>ListGameWidget</name>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/list_game_widget.py" line="39"/>
+        <location filename="../../components/tabs/games/game_widgets/list_game_widget.py" line="37"/>
         <source>Launch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/list_game_widget.py" line="39"/>
+        <location filename="../../components/tabs/games/game_widgets/list_game_widget.py" line="37"/>
         <source>Link/Play</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2139,97 +2139,97 @@ Are you sure you want to quit?</source>
 <context>
     <name>MangoHudSettings</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="301"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="266"/>
         <source>MangoHud settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="303"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="268"/>
         <source>Read config</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="304"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="269"/>
         <source>FPS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="305"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="270"/>
         <source>Frame time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="306"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="271"/>
         <source>CPU load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="307"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="272"/>
         <source>GPU load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="308"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="273"/>
         <source>CPU temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="309"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="274"/>
         <source>GPU temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="310"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="275"/>
         <source>Memory usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="311"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="276"/>
         <source>VRAM usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="312"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="277"/>
         <source>Local time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="313"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="278"/>
         <source>MangoHud version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="314"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="279"/>
         <source>System architecture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="315"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="280"/>
         <source>FPS graph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="316"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="281"/>
         <source>GPU name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="317"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="282"/>
         <source>CPU power consumption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="318"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="283"/>
         <source>GPU power consumption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="321"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="286"/>
         <source>Font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="322"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="287"/>
         <source>Position</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2336,27 +2336,27 @@ Are you sure you want to quit?</source>
 <context>
     <name>ProtonSettings</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/proton.py" line="32"/>
+        <location filename="../../components/tabs/settings/widgets/proton.py" line="33"/>
         <source>Please select path for proton prefix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/proton.py" line="27"/>
+        <location filename="../../components/tabs/settings/widgets/proton.py" line="28"/>
         <source>Proton settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/proton.py" line="41"/>
+        <location filename="../../components/tabs/settings/widgets/proton.py" line="42"/>
         <source>Proton tool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/proton.py" line="42"/>
+        <location filename="../../components/tabs/settings/widgets/proton.py" line="43"/>
         <source>Compat data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/proton.py" line="58"/>
+        <location filename="../../components/tabs/settings/widgets/proton.py" line="59"/>
         <source>Don&apos;t use a compatibility tool</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2463,7 +2463,7 @@ Are you sure you want to quit?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/rpc.py" line="39"/>
+        <location filename="../../components/tabs/settings/widgets/rpc.py" line="40"/>
         <source>Pypresence is not installed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2492,148 +2492,163 @@ Are you sure you want to quit?</source>
 <context>
     <name>RareSettings</name>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="149"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="139"/>
         <source>Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="150"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="140"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="154"/>
+        <location filename="../../components/tabs/settings/rare.py" line="57"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="156"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="145"/>
         <source>Behavior</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="157"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="146"/>
         <source>Restore window size on application startup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="164"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="153"/>
         <source>Logs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="167"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="156"/>
         <source>Shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="155"/>
+        <location filename="../../components/tabs/settings/rare.py" line="171"/>
         <source>Create start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="112"/>
+        <location filename="../../components/tabs/settings/rare.py" line="126"/>
         <source>Remove desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="152"/>
+        <location filename="../../components/tabs/settings/rare.py" line="168"/>
         <source>Remove start menu link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="169"/>
+        <location filename="../../components/tabs/settings/rare.py" line="186"/>
         <source>Remove Desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="172"/>
+        <location filename="../../components/tabs/settings/rare.py" line="189"/>
         <source>Create desktop link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="106"/>
+        <location filename="../../components/tabs/settings/rare.py" line="120"/>
         <source>Not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="175"/>
+        <location filename="../../components/tabs/settings/rare.py" line="192"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="175"/>
+        <location filename="../../components/tabs/settings/rare.py" line="192"/>
         <source>Permission error, cannot remove {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="151"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="141"/>
         <source>Color scheme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="153"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="142"/>
         <source>Style sheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="155"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="143"/>
         <source>Restart Rare to apply changes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="158"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="147"/>
         <source>Show notifications when downloads complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="159"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="148"/>
         <source>Show console windows when launching games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="160"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="149"/>
         <source>Exit to system tray</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="161"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="150"/>
         <source>Queue game updates on application startup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="162"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="151"/>
         <source>Confirm before launching games</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="163"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="152"/>
         <source>Automatically upload/download cloud saves</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="165"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="154"/>
         <source>Open log folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="166"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="155"/>
         <source>Clean log folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="168"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="157"/>
         <source>Create on desktop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/settings/rare.py" line="169"/>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="158"/>
         <source>Create in menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/rare.py" line="37"/>
+        <location filename="../../components/tabs/settings/rare.py" line="35"/>
         <source>System default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../ui/components/tabs/settings/rare.py" line="144"/>
+        <source>Library view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/rare.py" line="69"/>
+        <source>Game covers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/rare.py" line="70"/>
+        <source>Vertical list</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2868,7 +2883,7 @@ Are you sure you want to quit?</source>
 <context>
     <name>SideTabWidget</name>
     <message>
-        <location filename="../../widgets/side_tab.py" line="130"/>
+        <location filename="../../widgets/side_tab.py" line="132"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2986,12 +3001,12 @@ Are you sure you want to quit?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wine.py" line="47"/>
+        <location filename="../../components/tabs/settings/widgets/wine.py" line="48"/>
         <source>Prefix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wine.py" line="48"/>
+        <location filename="../../components/tabs/settings/widgets/wine.py" line="47"/>
         <source>Executable</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3201,7 +3216,7 @@ Are you sure you want to quit?</source>
 <context>
     <name>widget</name>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/list_widget.py" line="111"/>
+        <location filename="../../components/tabs/games/game_widgets/list_widget.py" line="113"/>
         <source>Install</source>
         <translation type="unfinished"></translation>
     </message>
