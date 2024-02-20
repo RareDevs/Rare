@@ -66,6 +66,7 @@ class RareApp(QApplication):
         self.setQuitOnLastWindowClosed(False)
         self.setAttribute(Qt.AA_DontUseNativeDialogs, True)
 
+        self.setDesktopFileName("rare")
         self.setApplicationName("Rare")
         self.setOrganizationName("Rare")
 
