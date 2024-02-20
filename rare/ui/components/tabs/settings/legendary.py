@@ -165,7 +165,7 @@ class Ui_LegendarySettings(object):
         _translate = QtCore.QCoreApplication.translate
         self.install_dir_group.setTitle(_translate("LegendarySettings", "Default installation folder"))
         self.download_group.setTitle(_translate("LegendarySettings", "Download settings"))
-        self.max_workers_label.setText(_translate("LegendarySettings", "Max sorkers"))
+        self.max_workers_label.setText(_translate("LegendarySettings", "Max workers"))
         self.max_workers_info_label.setText(_translate("LegendarySettings", "Less is slower (0: Default)"))
         self.max_memory_label.setText(_translate("LegendarySettings", "Max shared memory"))
         self.max_memory_spin.setSuffix(_translate("LegendarySettings", "MiB"))
