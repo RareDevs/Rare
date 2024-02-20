@@ -47,7 +47,7 @@ class DetailsWidget(QWidget, SideTabContents):
         self.ui.left_layout.setAlignment(Qt.AlignTop)
 
         self.ui.wishlist_button.clicked.connect(self.add_to_wishlist)
-        self.ui.open_store_button.clicked.connect(self.button_clicked)
+        self.ui.store_button.clicked.connect(self.button_clicked)
         self.ui.wishlist_button.setVisible(True)
         self.in_wishlist = False
         self.wishlist = []
@@ -99,13 +99,13 @@ class DetailsWidget(QWidget, SideTabContents):
         self.slug = slug
 
         if offer.namespace in self.installed:
-            self.ui.open_store_button.setText(self.tr("Show Game on Epic Page"))
-            self.ui.owned_label.setVisible(True)
+            self.ui.store_button.setText(self.tr("Show Game on Epic Page"))
+            self.ui.status.setVisible(True)
         else:
-            self.ui.open_store_button.setText(self.tr("Buy Game in Epic Games Store"))
-            self.ui.owned_label.setVisible(False)
+            self.ui.store_button.setText(self.tr("Buy Game in Epic Games Store"))
+            self.ui.status.setVisible(False)
 
-        self.ui.price.setText(self.tr("Loading"))
+        self.ui.original_price.setText(self.tr("Loading"))
         # self.title.setText(self.tr("Loading"))
         # self.image.setPixmap(QPixmap())
         is_bundle = False
@@ -148,17 +148,17 @@ class DetailsWidget(QWidget, SideTabContents):
             raise e
             logger.error(str(e))
 
-        self.ui.price.setFont(self.font())
+        self.ui.original_price.setFont(self.font())
         price = self.catalog_offer.price.totalPrice.fmtPrice["originalPrice"]
         discount_price = self.catalog_offer.price.totalPrice.fmtPrice["discountPrice"]
         if price == "0" or price == 0:
-            self.ui.price.setText(self.tr("Free"))
+            self.ui.original_price.setText(self.tr("Free"))
         else:
-            self.ui.price.setText(price)
+            self.ui.original_price.setText(price)
         if price != discount_price:
             font = self.font()
             font.setStrikeOut(True)
-            self.ui.price.setFont(font)
+            self.ui.original_price.setFont(font)
             self.ui.discount_price.setText(
                 discount_price
                 if discount_price != "0"
@@ -173,6 +173,7 @@ class DetailsWidget(QWidget, SideTabContents):
             for system in requirements.systems:
                 req_widget = RequirementsWidget(system, self.requirements_tabs)
                 self.requirements_tabs.addTab(req_widget, system.systemType)
+            self.ui.requirements_frame.setVisible(True)
         else:
             self.ui.requirements_frame.setVisible(False)
 
@@ -183,7 +184,7 @@ class DetailsWidget(QWidget, SideTabContents):
         # self.image_stack.setCurrentIndex(0)
         about = product_data.about
         self.ui.description_label.setMarkdown(about.desciption)
-        self.ui.dev.setText(about.developer_attribution)
+        self.ui.developer.setText(about.developerAttribution)
         # try:
         #     if isinstance(aboudeveloper, list):
         #         self.ui.dev.setText(", ".join(self.game.developer))
@@ -195,8 +196,8 @@ class DetailsWidget(QWidget, SideTabContents):
         self.ui.tags.setText(", ".join(tags))
 
         # clear Layout
-        for b in self.ui.social_group.findChildren(SocialButton, options=Qt.FindDirectChildrenOnly):
-            self.ui.social_layout.removeWidget(b)
+        for b in self.ui.social_links.findChildren(SocialButton, options=Qt.FindDirectChildrenOnly):
+            self.ui.social_links_layout.removeWidget(b)
             b.deleteLater()
 
         links = product_data.socialLinks
@@ -214,11 +215,11 @@ class DetailsWidget(QWidget, SideTabContents):
                     logger.error(str(e))
                     continue
 
-            button = SocialButton(icn, url, parent=self.ui.social_group)
-            self.ui.social_layout.addWidget(button)
+            button = SocialButton(icn, url, parent=self.ui.social_links)
+            self.ui.social_links_layout.addWidget(button)
             link_count += 1
 
-        self.ui.social_group.setEnabled(bool(link_count))
+        self.ui.social_links.setEnabled(bool(link_count))
 
         self.setEnabled(True)
 
@@ -238,6 +239,7 @@ class DetailsWidget(QWidget, SideTabContents):
 class SocialButton(QPushButton):
     def __init__(self, icn, url, parent=None):
         super(SocialButton, self).__init__(icn, "", parent=parent)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.url = url
         self.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(url)))
         self.setToolTip(url)

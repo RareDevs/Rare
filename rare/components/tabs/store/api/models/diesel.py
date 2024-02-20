@@ -10,7 +10,7 @@ DieselSocialLinks = Dict
 
 @dataclass
 class DieselSystemDetailItem:
-    p_type: Optional[str] = None
+    _type: Optional[str] = None
     minimum: Optional[str] = None
     recommended: Optional[str] = None
     title: Optional[str] = None
@@ -20,7 +20,7 @@ class DieselSystemDetailItem:
     def from_dict(cls: Type["DieselSystemDetailItem"], src: Dict[str, Any]) -> "DieselSystemDetailItem":
         d = src.copy()
         tmp = cls(
-            p_type=d.pop("_type", ""),
+            _type=d.pop("_type", ""),
             minimum=d.pop("minimum", ""),
             recommended=d.pop("recommended", ""),
             title=d.pop("title", ""),
@@ -31,7 +31,7 @@ class DieselSystemDetailItem:
 
 @dataclass
 class DieselSystemDetail:
-    p_type: Optional[str] = None
+    _type: Optional[str] = None
     details: Optional[List[DieselSystemDetailItem]] = None
     systemType: Optional[str] = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
@@ -45,7 +45,7 @@ class DieselSystemDetail:
             detail = DieselSystemDetailItem.from_dict(item)
             details.append(detail)
         tmp = cls(
-            p_type=d.pop("_type", ""),
+            _type=d.pop("_type", ""),
             details=details,
             systemType=d.pop("systemType", ""),
         )
@@ -55,7 +55,7 @@ class DieselSystemDetail:
 
 @dataclass
 class DieselSystemDetails:
-    p_type: Optional[str] = None
+    _type: Optional[str] = None
     languages: Optional[List[str]] = None
     rating: Optional[Dict] = None
     systems: Optional[List[DieselSystemDetail]] = None
@@ -70,7 +70,7 @@ class DieselSystemDetails:
             system = DieselSystemDetail.from_dict(item)
             systems.append(system)
         tmp = cls(
-            p_type=d.pop("_type", ""),
+            _type=d.pop("_type", ""),
             languages=d.pop("languages", []),
             rating=d.pop("rating", {}),
             systems=systems,
@@ -81,22 +81,22 @@ class DieselSystemDetails:
 
 @dataclass
 class DieselProductAbout:
-    p_type: Optional[str] = None
+    _type: Optional[str] = None
     desciption: Optional[str] = None
-    developer_attribution: Optional[str] = None
-    publisher_attribution: Optional[str] = None
-    short_description: Optional[str] = None
+    developerAttribution: Optional[str] = None
+    publisherAttribution: Optional[str] = None
+    shortDescription: Optional[str] = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls: Type["DieselProductAbout"], src: Dict[str, Any]) -> "DieselProductAbout":
         d = src.copy()
         tmp = cls(
-            p_type=d.pop("_type", ""),
+            _type=d.pop("_type", ""),
             desciption=d.pop("description", ""),
-            developer_attribution=d.pop("developerAttribution", ""),
-            publisher_attribution=d.pop("publisherAttribution", ""),
-            short_description=d.pop("shortDescription", ""),
+            developerAttribution=d.pop("developerAttribution", ""),
+            publisherAttribution=d.pop("publisherAttribution", ""),
+            shortDescription=d.pop("shortDescription", ""),
         )
         tmp.unmapped = d
         return tmp
@@ -104,7 +104,7 @@ class DieselProductAbout:
 
 @dataclass
 class DieselProductDetail:
-    p_type: Optional[str] = None
+    _type: Optional[str] = None
     about: Optional[DieselProductAbout] = None
     requirements: Optional[DieselSystemDetails] = None
     socialLinks: Optional[DieselSocialLinks] = None
@@ -116,7 +116,7 @@ class DieselProductDetail:
         about = DieselProductAbout.from_dict(x) if (x := d.pop("about"), {}) else None
         requirements = DieselSystemDetails.from_dict(x) if (x := d.pop("requirements", {})) else None
         tmp = cls(
-            p_type=d.pop("_type", ""),
+            _type=d.pop("_type", ""),
             about=about,
             requirements=requirements,
             socialLinks=d.pop("socialLinks", {}),
@@ -127,12 +127,12 @@ class DieselProductDetail:
 
 @dataclass
 class DieselProduct:
-    p_id: Optional[str] = None
-    p_images_: Optional[List[str]] = None
-    p_locale: Optional[str] = None
-    p_slug: Optional[str] = None
-    p_title: Optional[str] = None
-    p_url_pattern: Optional[str] = None
+    _id: Optional[str] = None
+    _images_: Optional[List[str]] = None
+    _locale: Optional[str] = None
+    _slug: Optional[str] = None
+    _title: Optional[str] = None
+    _urlPattern: Optional[str] = None
     namespace: Optional[str] = None
     pages: Optional[List["DieselProduct"]] = None
     data: Optional[DieselProductDetail] = None
@@ -149,12 +149,12 @@ class DieselProduct:
             pages.append(page)
         data = DieselProductDetail.from_dict(x) if (x := d.pop("data", {})) else None
         tmp = cls(
-            p_id=d.pop("_id", ""),
-            p_images_=d.pop("_images_", []),
-            p_locale=d.pop("_locale", ""),
-            p_slug=d.pop("_slug", ""),
-            p_title=d.pop("_title", ""),
-            p_url_pattern=d.pop("_urlPattern", ""),
+            _id=d.pop("_id", ""),
+            _images_=d.pop("_images_", []),
+            _locale=d.pop("_locale", ""),
+            _slug=d.pop("_slug", ""),
+            _title=d.pop("_title", ""),
+            _urlPattern=d.pop("_urlPattern", ""),
             namespace=d.pop("namespace", ""),
             pages=pages,
             data=data,

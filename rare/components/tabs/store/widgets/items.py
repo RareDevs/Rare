@@ -101,7 +101,6 @@ class ResultsItemWidget(ItemWidget):
 
 
 class WishlistItemWidget(ItemWidget):
-    show_details = pyqtSignal(CatalogOfferModel)
     delete_from_wishlist = pyqtSignal(CatalogOfferModel)
 
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
