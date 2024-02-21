@@ -22,7 +22,7 @@ from rare.models.game import RareEosOverlay
 from rare.shared import RareCore
 from rare.ui.components.tabs.games.integrations.eos_widget import Ui_EosWidget
 from rare.utils import config_helper as config
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("EpicOverlay")
@@ -102,15 +102,15 @@ class EosPrefixWidget(QFrame):
 
         if not self.overlay.is_installed and not self.overlay.available_paths(self.prefix):
             self.setDisabled(True)
-            self.indicator.setPixmap(icon("fa.circle-o", color="grey").pixmap(20, 20))
+            self.indicator.setPixmap(qta_icon("fa.circle-o", color="grey").pixmap(20, 20))
             self.overlay_label.setText(self.overlay.active_path(self.prefix))
             self.button.setText(self.tr("Unavailable"))
             return
 
         if self.overlay.is_enabled(self.prefix):
-            self.indicator.setPixmap(icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
+            self.indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
         else:
-            self.indicator.setPixmap(icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20)))
+            self.indicator.setPixmap(qta_icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20)))
 
         install_path = os.path.normpath(p) if (p := self.overlay.install_path) else ""
 
@@ -171,8 +171,8 @@ class EosGroup(QGroupBox):
         self.ui.install_page_layout.setAlignment(Qt.AlignTop)
         self.ui.info_page_layout.setAlignment(Qt.AlignTop)
 
-        self.ui.install_button.setIcon(icon("ri.install-line"))
-        self.ui.uninstall_button.setIcon(icon("ri.uninstall-line"))
+        self.ui.install_button.setIcon(qta_icon("ri.install-line"))
+        self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
 
         self.installed_path_label = ElideLabel(parent=self)
         self.installed_version_label = ElideLabel(parent=self)

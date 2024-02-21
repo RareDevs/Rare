@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 
 
@@ -40,13 +40,13 @@ class ListWidget(object):
 
         self.install_btn = QPushButton(parent=widget)
         self.install_btn.setObjectName(f"{type(self).__name__}Button")
-        self.install_btn.setIcon(icon("ri.install-line"))
+        self.install_btn.setIcon(qta_icon("ri.install-line"))
         self.install_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.install_btn.setFixedWidth(120)
 
         self.launch_btn = QPushButton(parent=widget)
         self.launch_btn.setObjectName(f"{type(self).__name__}Button")
-        self.launch_btn.setIcon(icon("ei.play-alt"))
+        self.launch_btn.setIcon(qta_icon("ei.play-alt"))
         self.launch_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.launch_btn.setFixedWidth(120)
 

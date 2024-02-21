@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
     QLabel,
 )
 
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 
 
 class CollapsibleBase(object):
@@ -108,7 +108,7 @@ class CollapsibleFrame(QFrame, CollapsibleBase):
 
         self.toggle_button = QToolButton(self)
         self.toggle_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.toggle_button.setIcon(icon("fa.arrow-right"))
+        self.toggle_button.setIcon(qta_icon("fa.arrow-right"))
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(False)
 
@@ -150,7 +150,7 @@ class CollapsibleFrame(QFrame, CollapsibleBase):
         return super(CollapsibleFrame, self).sizeHint()
 
     def animationStart(self, checked):
-        arrow_type = icon("fa.arrow-down") if checked else icon("fa.arrow-right")
+        arrow_type = qta_icon("fa.arrow-down") if checked else qta_icon("fa.arrow-right")
         self.toggle_button.setIcon(arrow_type)
         super(CollapsibleFrame, self).animationStart(checked)
 

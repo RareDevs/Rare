@@ -9,7 +9,7 @@ from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
 
 from rare.ui.components.tabs.games.game_info.cloud_sync_widget import Ui_CloudSyncWidget
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title
 
 logger = getLogger("CloudSyncDialog")
@@ -41,7 +41,7 @@ class CloudSyncDialog(ButtonDialog):
         layout.addWidget(sync_widget)
 
         self.accept_button.setText(self.tr("Skip"))
-        self.accept_button.setIcon(icon("fa.chevron-right"))
+        self.accept_button.setIcon(qta_icon("fa.chevron-right"))
 
         self.setCentralLayout(layout)
 
@@ -62,8 +62,8 @@ class CloudSyncDialog(ButtonDialog):
         self.sync_ui.date_info_local.setText(dt_local.strftime("%A, %d. %B %Y %X") if dt_local else "None")
         self.sync_ui.date_info_remote.setText(dt_remote.strftime("%A, %d. %B %Y %X") if dt_remote else "None")
 
-        self.sync_ui.icon_local.setPixmap(icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
-        self.sync_ui.icon_remote.setPixmap(icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))
+        self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
+        self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))
 
         self.sync_ui.upload_button.clicked.connect(self.__on_upload)
         self.sync_ui.download_button.clicked.connect(self.__on_download)

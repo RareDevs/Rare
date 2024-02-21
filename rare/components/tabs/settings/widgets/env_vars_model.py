@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt, QModelIndex, QAbstractTableModel, pyqtSlot
 from PyQt5.QtGui import QFont
 
 from rare.lgndr.core import LegendaryCore
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 
 if platform.system() != "Windows":
     from rare.utils.compat.wine import get_wine_environment
@@ -139,12 +139,12 @@ class EnvVarsTableModel(QAbstractTableModel):
             if orientation == Qt.Vertical:
                 if section < self.__data_length():
                     if self.__is_readonly(section) or not self.__is_local(section):
-                        return icon("mdi.lock", "ei.lock")
+                        return qta_icon("mdi.lock", "ei.lock")
                     if self.__is_global(section) and self.__is_local(section):
-                        return icon("mdi.refresh", "ei.refresh")
+                        return qta_icon("mdi.refresh", "ei.refresh")
                     if self.__is_local(section):
-                        return icon("mdi.delete", "ei.remove-sign")
-                return icon("mdi.plus", "ei.plus-sign")
+                        return qta_icon("mdi.delete", "ei.remove-sign")
+                return qta_icon("mdi.plus", "ei.plus-sign")
         if role == Qt.TextAlignmentRole:
             return Qt.AlignVCenter + Qt.AlignHCenter
         return None

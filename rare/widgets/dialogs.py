@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
     QLayout, QSpacerItem, QSizePolicy, QLabel,
 )
 
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 
 
 def game_title(text: str, app_title: str) -> str:
@@ -79,7 +79,7 @@ class ButtonDialog(BaseDialog):
 
         self.reject_button = QPushButton(self)
         self.reject_button.setText(self.tr("Cancel"))
-        self.reject_button.setIcon(icon("fa.remove"))
+        self.reject_button.setIcon(qta_icon("fa.remove"))
         self.reject_button.setAutoDefault(False)
         self.reject_button.clicked.connect(self.reject)
 

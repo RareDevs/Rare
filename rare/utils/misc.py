@@ -157,7 +157,7 @@ def format_size(b: Union[int, float]) -> str:
         b /= 1024
 
 
-def icon(icn_str: str, fallback: str = None, **kwargs):
+def qta_icon(icn_str: str, fallback: str = None, **kwargs):
     try:
         return qtawesome.icon(icn_str, **kwargs)
     except Exception as e:

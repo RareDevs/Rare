@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import (
     QFileIconProvider,
 )
 
-from rare.utils.misc import icon as qta_icon
+from rare.utils.misc import qta_icon
 
 logger = getLogger("IndicatorEdit")
 

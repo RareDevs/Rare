@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import (
     QScrollArea, QLayout, QSizePolicy,
 )
 
-from rare.utils.misc import icon as qta_icon
+from rare.utils.misc import qta_icon
 
 logger = getLogger("SideTab")
 
@@ -29,7 +29,7 @@ logger = getLogger("SideTab")
 class SideTabBar(QTabBar):
     def __init__(self, padding: int = -1, parent=None):
         super(SideTabBar, self).__init__(parent=parent)
-        self.setObjectName("SideTabBar")
+        self.setObjectName(type(self).__name__)
         self.padding = padding
         self.fm = QFontMetrics(self.font())
 

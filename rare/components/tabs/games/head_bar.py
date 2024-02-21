@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
 from rare.models.options import options, LibraryFilter, LibraryOrder
 from rare.shared import RareCore
 from rare.utils.extra_widgets import ButtonLineEdit
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 
 
 class GameListHeadBar(QWidget):
@@ -83,15 +83,15 @@ class GameListHeadBar(QWidget):
 
         integrations_menu = QMenu(parent=self)
         import_action = QAction(
-            icon("mdi.import", "fa.arrow-down"), self.tr("Import Game"), integrations_menu
+            qta_icon("mdi.import", "fa.arrow-down"), self.tr("Import Game"), integrations_menu
         )
 
         import_action.triggered.connect(self.goto_import)
-        egl_sync_action = QAction(icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"), integrations_menu)
+        egl_sync_action = QAction(qta_icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"), integrations_menu)
         egl_sync_action.triggered.connect(self.goto_egl_sync)
 
         eos_ubisoft_action = QAction(
-            icon("mdi.rocket", "fa.rocket"), self.tr("Epic Overlay and Ubisoft"), integrations_menu
+            qta_icon("mdi.rocket", "fa.rocket"), self.tr("Epic Overlay and Ubisoft"), integrations_menu
         )
         eos_ubisoft_action.triggered.connect(self.goto_eos_ubisoft)
 
@@ -104,15 +104,14 @@ class GameListHeadBar(QWidget):
         integrations.setMenu(integrations_menu)
         integrations.setPopupMode(QToolButton.InstantPopup)
 
-        self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Game"))
+        self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search"))
         self.search_bar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
         self.search_bar.setObjectName("SearchBar")
-        self.search_bar.setFrame(False)
         self.search_bar.setMinimumWidth(250)
 
         installed_tooltip = self.tr("Installed games")
         self.installed_icon = QLabel(parent=self)
-        self.installed_icon.setPixmap(icon("ph.floppy-disk-back-fill").pixmap(QSize(16, 16)))
+        self.installed_icon.setPixmap(qta_icon("ph.floppy-disk-back-fill").pixmap(QSize(16, 16)))
         self.installed_icon.setToolTip(installed_tooltip)
         self.installed_label = QLabel(parent=self)
         font = self.installed_label.font()
@@ -121,13 +120,13 @@ class GameListHeadBar(QWidget):
         self.installed_label.setToolTip(installed_tooltip)
         available_tooltip = self.tr("Available games")
         self.available_icon = QLabel(parent=self)
-        self.available_icon.setPixmap(icon("ph.floppy-disk-back-light").pixmap(QSize(16, 16)))
+        self.available_icon.setPixmap(qta_icon("ph.floppy-disk-back-light").pixmap(QSize(16, 16)))
         self.available_icon.setToolTip(available_tooltip)
         self.available_label = QLabel(parent=self)
         self.available_label.setToolTip(available_tooltip)
 
         self.refresh_list = QPushButton(parent=self)
-        self.refresh_list.setIcon(icon("fa.refresh"))  # Reload icon
+        self.refresh_list.setIcon(qta_icon("fa.refresh"))  # Reload icon
         self.refresh_list.clicked.connect(self.__refresh_clicked)
 
         layout = QHBoxLayout(self)

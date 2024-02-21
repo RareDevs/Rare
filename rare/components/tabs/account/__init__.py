@@ -4,7 +4,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.utils.misc import icon, ExitCodes
+from rare.utils.misc import qta_icon, ExitCodes
 
 
 class AccountWidget(QWidget):
@@ -20,7 +20,7 @@ class AccountWidget(QWidget):
         if not username:
             username = "Offline"
 
-        self.open_browser = QPushButton(icon("fa.external-link"), self.tr("Account settings"))
+        self.open_browser = QPushButton(qta_icon("fa.external-link"), self.tr("Account settings"))
         self.open_browser.clicked.connect(
             lambda: webbrowser.open(
                 "https://www.epicgames.com/account/personal?productName=epicgames"

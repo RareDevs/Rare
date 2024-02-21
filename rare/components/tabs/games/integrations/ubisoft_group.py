@@ -20,7 +20,7 @@ from rare.lgndr.core import LegendaryCore
 from rare.shared import RareCore
 from rare.shared.workers.worker import Worker
 from rare.utils.metrics import timelogger
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.loading_widget import LoadingWidget
 
@@ -104,7 +104,7 @@ class UbiLinkWidget(QFrame):
         self.ubi_account_id = ubi_account_id
 
         self.ok_indicator = QLabel(parent=self)
-        self.ok_indicator.setPixmap(icon("fa.circle-o", color="grey").pixmap(20, 20))
+        self.ok_indicator.setPixmap(qta_icon("fa.circle-o", color="grey").pixmap(20, 20))
         self.ok_indicator.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
 
         self.title_label = ElideLabel(game.app_title, parent=self)
@@ -116,7 +116,7 @@ class UbiLinkWidget(QFrame):
         if activated:
             self.link_button.setText(self.tr("Already activated"))
             self.link_button.setDisabled(True)
-            self.ok_indicator.setPixmap(icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
+            self.ok_indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(-1, 0, 0, 0)
@@ -127,7 +127,7 @@ class UbiLinkWidget(QFrame):
     def activate(self):
         self.link_button.setDisabled(True)
         # self.ok_indicator.setPixmap(icon("mdi.loading", color="grey").pixmap(20, 20))
-        self.ok_indicator.setPixmap(icon("mdi.transit-connection-horizontal", color="grey").pixmap(20, 20))
+        self.ok_indicator.setPixmap(qta_icon("mdi.transit-connection-horizontal", color="grey").pixmap(20, 20))
 
         if self.args.debug:
             worker = UbiConnectWorker(RareCore.instance().core(), None, None)
@@ -140,11 +140,11 @@ class UbiLinkWidget(QFrame):
 
     def worker_finished(self, error):
         if not error:
-            self.ok_indicator.setPixmap(icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
+            self.ok_indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
             self.link_button.setDisabled(True)
             self.link_button.setText(self.tr("Already activated"))
         else:
-            self.ok_indicator.setPixmap(icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20)))
+            self.ok_indicator.setPixmap(qta_icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20)))
             self.ok_indicator.setToolTip(error)
             self.link_button.setText(self.tr("Try again"))
             self.link_button.setDisabled(False)
