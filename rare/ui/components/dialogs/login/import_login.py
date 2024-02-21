@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ImportLogin(object):
     def setupUi(self, ImportLogin):
         ImportLogin.setObjectName("ImportLogin")
-        ImportLogin.resize(233, 156)
+        ImportLogin.resize(256, 143)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -52,9 +52,9 @@ class Ui_ImportLogin(object):
         self.prefix_combo.setEditable(True)
         self.prefix_combo.setObjectName("prefix_combo")
         self.prefix_layout.addWidget(self.prefix_combo)
-        self.prefix_tool = QtWidgets.QToolButton(ImportLogin)
-        self.prefix_tool.setObjectName("prefix_tool")
-        self.prefix_layout.addWidget(self.prefix_tool)
+        self.prefix_button = QtWidgets.QPushButton(ImportLogin)
+        self.prefix_button.setObjectName("prefix_button")
+        self.prefix_layout.addWidget(self.prefix_button)
         self.prefix_layout.setStretch(0, 1)
         self.form_layout.setLayout(0, QtWidgets.QFormLayout.FieldRole, self.prefix_layout)
         self.prefix_label = QtWidgets.QLabel(ImportLogin)
@@ -85,7 +85,7 @@ class Ui_ImportLogin(object):
     def retranslateUi(self, ImportLogin):
         _translate = QtCore.QCoreApplication.translate
         self.title_label.setText(_translate("ImportLogin", "Import existing session from EGL"))
-        self.prefix_tool.setText(_translate("ImportLogin", "Browse"))
+        self.prefix_button.setText(_translate("ImportLogin", "Browse..."))
         self.prefix_label.setText(_translate("ImportLogin", "Select prefix"))
         self.info_label.setText(_translate("ImportLogin", "<i>Please select the Wine prefix where Epic Games Launcher is installed. You will get logged out from EGL in the process.</i>"))
 

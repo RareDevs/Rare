@@ -6,7 +6,7 @@ disabled:  #43474d rgb( 67,  71,  77)     -- disabled font color
                   rgba( 67,  71,  77, 25%) == rgb( 41, 43, 47)
 [Background]
 normal:    #202225 rgb( 32,  34,  37)     -- main background color
-editable:  #333344 rgb( 51,  51,  68)     -- background color for reactive/editable widgets (TextEdits, ProgressBars etc)
+editable:  #272733 rgb( 38,  38,  51)     -- background color for reactive/editable widgets (TextEdits, ProgressBars etc)
 hover:     #222233 rgb( 34,  34,  51)     -- background color when hovering over reactive widgets (Buttons, Headers)
 selection: #2f4f4f rgb( 47,  79,  79)     -- background color for selectable widgets
 alternate: #282a2e rgb( 40,  42,  46)     -- background color for alternating rows in List/Tree/TableViews and for ScrollBars
@@ -20,7 +20,6 @@ disabled:  #43474d rgb( 67,  71,  77)     -- border for disabled widgets
 alternate: #3c3f41 rgb( 60,  63,  65)     -- border color for gradient backgrounds on widgets like Tabs and Popups
 
 [Special]
-info-normal:        #bbb rgb(187, 187, 187)   -- infoLabel
 install-normal:     #070 rgb(  0, 119,   0)   -- install
 install-hover:      #050 rgb(  0,  85,   0)   -- install
 install-disabled:   #020 rgb(  0,  34,   0)   -- install
@@ -48,12 +47,6 @@ QLabel:disabled {
     padding: 0px;
     selection-background-color: rgb( 47,  79,  79);
 }
-QLabel[infoLabel="1"] {
-    color: rgb(187, 187, 187);
-    font-style: italic;
-    font-weight: normal;
-}
-
 
 QMenu,
 QListView,
@@ -98,9 +91,10 @@ QDoubleSpinBox,
 QProgressBar,
 QScrollBar {
     border-color: rgb( 47,  79,  79);
-    background-color: rgb( 51,  51,  68);
+    background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 47,  79,  79);
 }
+
 QLineEdit,
 QTextEdit,
 QTimeEdit,
@@ -111,11 +105,22 @@ QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
 QPushButton {
-    height: 1.30em;
+    min-height: 1.30em;
+}
+QLineEdit,
+QTextEdit
+QTimeEdit,
+QDateEdit,
+QDateTimeEdit,
+QSpinBox,
+QDoubleSpinBox,
+QProgressBar {
+    max-height: 1.30em;
 }
 QToolButton {
-    height: 1.10em;
+    min-height: 1.10em;
 }
+
 QFrame[frameShape="0"] {
     border-width: 0px;
 }
@@ -230,7 +235,7 @@ QScrollBar::handle {
     border-width: 1px;
     border-style: solid;
     border-color: rgb( 72,  61, 139);
-    background-color: rgb( 51,  51,  68);
+    background-color: rgb( 38,  38,  51);
     border-radius: 2px;
     min-height: 30px;
     min-width: 30px;
@@ -314,12 +319,15 @@ QToolButton {
     padding-left: 6px;
     padding-right: 6px;
 }
-QPushButton::menu-indicator {
+/*
+QPushButton::menu-indicator,
+QToolButton::menu-indicator {
     subcontrol-position: right center;
     subcontrol-origin: padding;
     left: -2px;
     border-style: none;
 }
+*/
 
 QGroupBox,
 QCheckBox,
@@ -449,12 +457,6 @@ QSizeGrip {
     image: none;
     width: 4px;
     height: 4px;
-}
-
-QLineEdit#SearchBar {
-    padding: 3px;
-    border-radius: 5px;
-    background-color: rgb( 51,  51,  68);
 }
 
 QTabWidget::pane {
@@ -610,6 +612,39 @@ QTabBar::tab:right:selected:disabled {
     border-left-color: transparent;
 }
 
+QStatusBar {
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: rgb( 72,  61, 139);
+    border-bottom-color: rgb( 60,  63,  65);
+    background: qlineargradient(
+        x1: 0, y1: 3,
+        x2: 0, y2: 0,
+        stop: 0 rgb( 60,  63,  65),
+        stop: 1 rgb( 32,  34,  37));
+}
+
+QToolTip {
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb( 72,  61, 139);
+    border-radius: 4px;
+    padding: 1px;
+    opacity: 200;
+}
+
+QBalloonTip {
+    color: rgb(238, 238, 238);
+    background-color: rgb( 32,  34,  37);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb( 72,  61, 139);
+    border-radius: 4px;
+    padding: 1px;
+}
+
+/* Main tab bar styling */
 QTabBar#MainTabBar {
     border-width: 1px;
     border-style: solid;
@@ -632,7 +667,7 @@ QTabBar#MainTabBar::tab {
     margin-right: 3px;
     border-top-color: transparent;
     border-bottom-color: rgb( 72,  61, 139);
-    padding: 5px;
+    padding: 3px 5px;
 }/*
 QTabBar#MainTabBar::tab:top:first,
 QTabBar#MainTabBar::tab:bottom:first {
@@ -651,6 +686,17 @@ QTabBar#MainTabBar::tab:top:selected {
     border-color: rgb( 72,  61, 139);
     border-bottom-color: rgb( 32,  34,  37);
 }
+QPushButton#TabButtonWidget,
+QToolButton#TabButtonWidget {
+    padding: 0px;
+    border-color: rgb( 51, 54, 59);
+}
+QPushButton#TabButtonWidget:disabled,
+QToolButton#TabButtonWidget:disabled {
+    border-color: rgb( 41, 43, 47);
+}
+
+/* Side tab bar styling */
 QTabBar#SideTabBar {
     border-width: 1px;
     border-style: solid;
@@ -688,41 +734,16 @@ QTabBar#SideTabBar::tab:disabled {
     background-color: transparent;
 }
 
-QStatusBar {
-    border-width: 1px;
-    border-style: solid;
-    border-color: transparent;
-    border-top-color: rgb( 72,  61, 139);
-    border-bottom-color: rgb( 60,  63,  65);
-    background: qlineargradient(
-        x1: 0, y1: 3,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
-}
-
-QToolTip {
-    border-width: 1px;
-    border-style: solid;
-    border-color: rgb( 72,  61, 139);
-    border-radius: 4px;
-    padding: 1px;
-    opacity: 200;
-}
-
-QBalloonTip {
-    color: rgb(238, 238, 238);
-    background-color: rgb( 32,  34,  37);
-    border-width: 1px;
-    border-style: solid;
-    border-color: rgb( 72,  61, 139);
-    border-radius: 4px;
-    padding: 1px;
+/* Search bar styling */
+QLineEdit#SearchBar {
+    border-radius: 5px;
+    background-color: rgb( 38,  38,  51);
 }
 
 /* Wrapper settings styling */
 QPushButton#WrapperWidgetButton,
 QToolButton#WrapperWidgetButton {
+    padding: 0px;
     border-color: rgb( 51, 54, 59);
 }
 QPushButton#WrapperWidgetButton:disabled,
@@ -731,7 +752,7 @@ QToolButton#WrapperWidgetButton:disabled {
 }
 QScrollArea#WrapperSettingsScroll {
     border-color: rgb( 47,  79,  79);
-    background-color: rgb( 40,  42,  46);
+    background-color: rgb( 38,  38,  51);
 }
 QScrollBar#WrapperSettingsScrollBar {
     background-color: rgb( 40,  42,  46);
@@ -743,7 +764,7 @@ QLabel#WrapperSettingsLabel {
     padding: 2px;
     color: #999;
     border-color: rgb( 47,  79,  79);
-    background-color: rgb( 40,  42,  46);
+    background-color: rgb( 38,  38,  51);
 }
 QLabel#WrapperSettingsLabel:disabled {
     border-color: rgb( 67,  71,  77);

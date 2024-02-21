@@ -1,6 +1,11 @@
 
 /* This file is auto-generated from "stylesheet.py". DO NOT EDIT!!! */
 
+QLabel#InfoLabel {
+    color: #999;
+    font-style: italic;
+    font-weight: normal;
+}
 QPushButton#InstallButton {
     border-color: #00b400;
     background-color: #007800;
@@ -105,4 +110,9 @@ QLabel#WaitingSpinner {
 QPushButton#SelectViewWidgetButton {
     border: none;
     background-color: transparent;
+}
+QPushButton#ButtonLineEditButton {
+    background-color: transparent;
+    border: 0px;
+    padding: 0px;
 }

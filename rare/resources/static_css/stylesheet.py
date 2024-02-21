@@ -5,7 +5,7 @@ from typing import Union, Type
 import qstylizer.style
 from PyQt5.QtCore import QDir, QObject
 from PyQt5.QtGui import QColor
-from PyQt5.pyrcc import RCCResourceLibrary, CONSTANT_COMPRESSLEVEL_DEFAULT, CONSTANT_COMPRESSTHRESHOLD_DEFAULT
+from PyQt5.pyrcc import RCCResourceLibrary, CONSTANT_COMPRESSTHRESHOLD_DEFAULT
 from PyQt5.sip import wrappertype
 
 from rare.utils.misc import widget_object_name
@@ -63,6 +63,13 @@ def css_name(widget: Union[wrappertype, QObject, Type], subwidget: str = ""):
 
 css = qstylizer.style.StyleSheet()
 
+
+# InfoLabel
+css.QLabel["#InfoLabel"].setValues(
+    color="#999",
+    fontStyle="italic",
+    fontWeight="normal",
+)
 
 # [Un]InstallButton
 css.QPushButton["#InstallButton"].setValues(
@@ -194,6 +201,15 @@ from rare.utils.extra_widgets import SelectViewWidget
 css.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
     border="none",
     backgroundColor="transparent",
+)
+
+
+# ButtonLineEdit
+from rare.utils.extra_widgets import ButtonLineEdit
+css.QPushButton[css_name(ButtonLineEdit, "Button")].setValues(
+    backgroundColor="transparent",
+    border="0px",
+    padding="0px",
 )
 
 

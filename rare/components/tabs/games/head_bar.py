@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout,
     QComboBox,
-    QToolButton,
     QMenu,
     QAction, QSpacerItem, QSizePolicy,
 )
@@ -99,10 +98,9 @@ class GameListHeadBar(QWidget):
         integrations_menu.addAction(egl_sync_action)
         integrations_menu.addAction(eos_ubisoft_action)
 
-        integrations = QToolButton(parent=self)
+        integrations = QPushButton(parent=self)
         integrations.setText(self.tr("Integrations"))
         integrations.setMenu(integrations_menu)
-        integrations.setPopupMode(QToolButton.InstantPopup)
 
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search"))
         self.search_bar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
@@ -130,7 +128,7 @@ class GameListHeadBar(QWidget):
         self.refresh_list.clicked.connect(self.__refresh_clicked)
 
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 5, 0, 5)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.filter)
         layout.addWidget(self.order)
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))

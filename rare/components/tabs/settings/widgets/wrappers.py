@@ -15,7 +15,6 @@ from PyQt5.QtWidgets import (
     QWidget,
     QScrollArea,
     QAction,
-    QToolButton,
     QMenu, QStackedWidget, QPushButton, QLineEdit, QVBoxLayout, QComboBox,
 )
 
@@ -118,10 +117,9 @@ class WrapperWidget(QFrame):
         manage_menu = QMenu(parent=self)
         manage_menu.addActions([edit_action, delete_action])
 
-        manage_button = QToolButton(parent=self)
-        manage_button.setIcon(qta_icon("mdi.menu"))
+        manage_button = QPushButton(parent=self)
+        manage_button.setIcon(qta_icon("mdi.menu", fallback="fa.align-justify"))
         manage_button.setMenu(manage_menu)
-        manage_button.setPopupMode(QToolButton.InstantPopup)
         manage_button.setEnabled(wrapper.is_editable)
         if not wrapper.is_editable:
             manage_button.setToolTip(self.tr("Manage through settings"))

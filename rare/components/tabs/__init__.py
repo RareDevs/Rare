@@ -2,7 +2,7 @@ from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
 
 from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
-from rare.utils.misc import icon, ExitCodes
+from rare.utils.misc import qta_icon, ExitCodes
 from .account import AccountWidget
 from .downloads import DownloadsTab
 from .games import GamesTab
@@ -18,6 +18,7 @@ class MainTabWidget(QTabWidget):
 
     def __init__(self, parent):
         super(MainTabWidget, self).__init__(parent=parent)
+
         self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
@@ -47,29 +48,29 @@ class MainTabWidget(QTabWidget):
         self.setTabEnabled(space_index, False)
         self.tab_bar.expanded = space_index
         # Button
-        button_index = self.addTab(QWidget(self), "")
+        button_index = self.addTab(QWidget(self), qta_icon("mdi.account-circle", fallback="fa.user"), "")
         self.setTabEnabled(button_index, False)
 
         self.account_widget = AccountWidget(self)
         self.account_widget.exit_app.connect(self.__on_exit_app)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
-        account_button = TabButtonWidget("mdi.account-circle", "Account", fallback_icon="fa.user")
-        account_button.setMenu(QMenu())
-        account_button.menu().addAction(account_action)
+        account_button = TabButtonWidget(qta_icon("mdi.menu", fallback="fa.align-justify"), tooltip="Menu")
+        account_menu = QMenu(account_button)
+        account_menu.addAction(account_action)
+        account_button.setMenu(account_menu)
         self.tab_bar.setTabButton(
             button_index, MainTabBar.RightSide, account_button
         )
 
         self.settings_tab = SettingsTab(self)
-        self.settings_index = self.addTab(self.settings_tab, icon("fa.gear"), "")
+        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear"), "")
         self.settings_tab.about.update_available_ready.connect(
             lambda: self.tab_bar.setTabText(self.settings_index, "(!)")
         )
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
-        self.setIconSize(QSize(24, 24))
 
         # shortcuts
         QShortcut("Alt+1", self).activated.connect(lambda: self.setCurrentIndex(self.games_index))

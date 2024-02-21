@@ -45,7 +45,7 @@ class Ui_EGLSyncGroup(object):
     def retranslateUi(self, EGLSyncGroup):
         _translate = QtCore.QCoreApplication.translate
         EGLSyncGroup.setTitle(_translate("EGLSyncGroup", "Sync with Epic Games Launcher"))
-        self.egl_path_edit_label.setText(_translate("EGLSyncGroup", "Prefix/Manifest path"))
+        self.egl_path_edit_label.setText(_translate("EGLSyncGroup", "Manifest path"))
         self.egl_sync_check_label.setText(_translate("EGLSyncGroup", "Enable automatic sync"))
         self.egl_sync_check.setText(_translate("EGLSyncGroup", "This will immediately synchronize with EGL"))
         self.egl_path_info_label.setText(_translate("EGLSyncGroup", "Estimated path"))

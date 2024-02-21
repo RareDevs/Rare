@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>233</width>
-    <height>156</height>
+    <width>256</width>
+    <height>143</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -69,9 +69,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="prefix_tool">
+        <widget class="QPushButton" name="prefix_button">
          <property name="text">
-          <string>Browse</string>
+          <string>Browse...</string>
          </property>
         </widget>
        </item>

@@ -101,8 +101,9 @@ def set_color_pallete(color_scheme: str) -> None:
     if custom_palette is not None:
         qApp.setPalette(custom_palette)
         qApp.setStyleSheet(static)
-        icon_color = qApp.palette().color(QPalette.Foreground).name()
-        qtawesome.set_defaults(color=icon_color)
+        icon_color_normal = qApp.palette().color(QPalette.Foreground).name()
+        icon_color_disabled = qApp.palette().color(QPalette.Foreground).name()
+        qtawesome.set_defaults(color=icon_color_normal, color_disabled=icon_color_disabled)
 
 
 def get_color_schemes() -> Iterable[str]:
@@ -124,8 +125,9 @@ def set_style_sheet(style_sheet: str) -> None:
     file.close()
     qApp.setStyleSheet(stylesheet + static)
 
-    icon_color = qApp.palette().color(QPalette.Text).name()
-    qtawesome.set_defaults(color="#eeeeee")
+    icon_color_normal = qApp.palette().color(QPalette.Text).name()
+    icon_color_disabled = qApp.palette().color(QPalette.Text).name()
+    qtawesome.set_defaults(color="#eee", color_disabled="#eee")
 
 
 def get_style_sheets() -> Iterable[str]:

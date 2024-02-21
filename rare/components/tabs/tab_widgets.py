@@ -1,15 +1,13 @@
-from PyQt5.QtCore import QSize
-from PyQt5.QtWidgets import QTabBar, QToolButton
-
-from rare.utils.misc import icon
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QTabBar, QSizePolicy, QPushButton
 
 
 class MainTabBar(QTabBar):
     def __init__(self, parent=None):
         super(MainTabBar, self).__init__(parent=parent)
-        self.setObjectName("MainTabBar")
+        self.setObjectName(type(self).__name__)
         font = self.font()
-        font.setPointSize(font.pointSize() + 2)
+        font.setPointSize(font.pointSize() + 1)
         font.setBold(True)
         self.setFont(font)
         self.expanded = -1
@@ -24,11 +22,9 @@ class MainTabBar(QTabBar):
         return size
 
 
-class TabButtonWidget(QToolButton):
-    def __init__(self, button_icon: str, tool_tip: str, fallback_icon=None, parent=None):
+class TabButtonWidget(QPushButton):
+    def __init__(self, icon: QIcon, tooltip: str = "", parent=None):
         super(TabButtonWidget, self).__init__(parent=parent)
-        self.setText("Icon")
-        self.setPopupMode(QToolButton.InstantPopup)
-        self.setIcon(icon(button_icon, fallback_icon, scale_factor=1.25))
-        self.setToolTip(tool_tip)
-        self.setIconSize(QSize(25, 25))
+        self.setObjectName(type(self).__name__)
+        self.setIcon(icon)
+        self.setToolTip(tooltip)
