@@ -2,10 +2,10 @@ from typing import List
 
 from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot
 from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QMessageBox, QWidget, QScrollArea, QFrame, QSizePolicy
+from PyQt5.QtWidgets import QMessageBox, QWidget, QSizePolicy
 
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
@@ -64,7 +64,7 @@ class WishlistWidget(QWidget, SideTabContents):
         self.ui.sort_cb.currentIndexChanged.connect(self.sort_wishlist)
         self.ui.filter_cb.currentIndexChanged.connect(self.set_filter)
         self.ui.reload_button.clicked.connect(self.update_wishlist)
-        self.ui.reload_button.setIcon(icon("fa.refresh", color="white"))
+        self.ui.reload_button.setIcon(qta_icon("fa.refresh", color="white"))
 
         self.ui.reverse.stateChanged.connect(
             lambda: self.sort_wishlist(sort=self.ui.sort_cb.currentIndex())

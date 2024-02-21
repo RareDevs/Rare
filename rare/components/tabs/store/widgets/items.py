@@ -132,7 +132,7 @@ class WishlistItemWidget(ItemWidget):
         )
 
         self.delete_button = QPushButton(self)
-        self.delete_button.setIcon(icon("mdi.delete", color="white"))
+        self.delete_button.setIcon(qta_icon("mdi.delete", color="white"))
         self.delete_button.clicked.connect(
             lambda: self.delete_from_wishlist.emit(self.catalog_game)
         )

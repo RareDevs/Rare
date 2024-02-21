@@ -142,13 +142,14 @@ class LandingWidget(QWidget, SideTabContents):
             except KeyError as e:
                 logger.warning(str(e))
 
-            if not item.promotions.promotionalOffers:
-                start_date = item.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].startDate
-            else:
-                start_date = item.promotions.promotionalOffers[0].promotionalOffers[0].startDate
+            if item.promotions is not None:
+                if not item.promotions.promotionalOffers:
+                    start_date = item.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].startDate
+                else:
+                    start_date = item.promotions.promotionalOffers[0].promotionalOffers[0].startDate
 
-            if start_date > date:
-                free_next.append(item)
+                if start_date > date:
+                    free_next.append(item)
 
         # free games now
         self.free_games_now.setVisible(bool(free_now))

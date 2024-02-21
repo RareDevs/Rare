@@ -17,7 +17,7 @@ from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.components.tabs.store.store_api import StoreAPI
 from rare.models.image import ImageSize
 from rare.ui.components.tabs.store.details import Ui_DetailsWidget
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.side_tab import SideTabWidget, SideTabContents
 from .image import LoadingImageWidget
@@ -56,7 +56,7 @@ class DetailsWidget(QWidget, SideTabContents):
         self.requirements_tabs.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.ui.requirements_layout.addWidget(self.requirements_tabs)
 
-        self.ui.back_button.setIcon(icon("fa.chevron-left"))
+        self.ui.back_button.setIcon(qta_icon("fa.chevron-left"))
         self.ui.back_button.clicked.connect(self.back_clicked)
 
         self.setDisabled(False)
@@ -207,10 +207,10 @@ class DetailsWidget(QWidget, SideTabContents):
                 continue
             name = name.replace("link", "").lower()
             if name == "homepage":
-                icn = icon("mdi.web", "fa.search", scale_factor=1.5)
+                icn = qta_icon("mdi.web", "fa.search", scale_factor=1.5)
             else:
                 try:
-                    icn = icon(f"mdi.{name}", f"fa.{name}", scale_factor=1.5)
+                    icn = qta_icon(f"mdi.{name}", f"fa.{name}", scale_factor=1.5)
                 except Exception as e:
                     logger.error(str(e))
                     continue

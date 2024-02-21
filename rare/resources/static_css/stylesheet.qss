@@ -1,6 +1,11 @@
 
 /* This file is auto-generated from "stylesheet.py". DO NOT EDIT!!! */
 
+QPushButton[flat="true"] {
+    border: 0px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 5%);
+}
 QLabel#InfoLabel {
     color: #999;
     font-style: italic;
