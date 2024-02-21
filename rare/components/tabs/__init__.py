@@ -48,14 +48,14 @@ class MainTabWidget(QTabWidget):
         self.setTabEnabled(space_index, False)
         self.tab_bar.expanded = space_index
         # Button
-        button_index = self.addTab(QWidget(self), qta_icon("mdi.account-circle", fallback="fa.user"), "")
+        button_index = self.addTab(QWidget(self), "")
         self.setTabEnabled(button_index, False)
 
         self.account_widget = AccountWidget(self)
         self.account_widget.exit_app.connect(self.__on_exit_app)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
-        account_button = TabButtonWidget(qta_icon("mdi.menu", fallback="fa.align-justify"), tooltip="Menu")
+        account_button = TabButtonWidget(qta_icon("mdi.account-circle", fallback="fa.user"), tooltip="Menu")
         account_menu = QMenu(account_button)
         account_menu.addAction(account_action)
         account_button.setMenu(account_menu)
