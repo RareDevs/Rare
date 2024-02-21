@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
     QSizePolicy, QTableWidgetItem, QHeaderView, QApplication,
 )
 
-from rare.ui.launcher.console_env import Ui_ConsoleEnv
+from rare.ui.commands.launcher.console_env import Ui_ConsoleEnv
 from rare.widgets.dialogs import dialog_title, game_title
 
 
