@@ -85,10 +85,10 @@ class GameLaunchSettings(LaunchSettingsBase):
 
         if self.igame:
             self.offline_combo.setEnabled(self.igame.can_run_offline)
-            self.override_exe_edit.set_root(self.igame.install_path)
+            self.override_exe_edit.setRootPath(self.igame.install_path)
         else:
             self.offline_combo.setEnabled(False)
-            self.override_exe_edit.set_root("")
+            self.override_exe_edit.setRootPath(os.path.expanduser("~/"))
 
         launch_params = config.get_option(self.app_name, "start_params", "")
         self.launch_params_edit.setText(launch_params)

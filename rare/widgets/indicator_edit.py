@@ -317,13 +317,13 @@ class PathEdit(IndicatorLineEdit):
 
         self.path_select.clicked.connect(self.__set_path)
 
-    def set_root(self, path: str):
+    def setRootPath(self, path: str):
         self.__root_path = path
         self.__completer_model.setRootPath(path)
 
     def __set_path(self):
         dlg_path = self.line_edit.text()
-        if not dlg_path:
+        if not dlg_path or not os.path.isabs(dlg_path):
             dlg_path = self.__root_path
         dlg = QFileDialog(self, self.tr("Choose path"), dlg_path)
         dlg.setOption(QFileDialog.DontUseCustomDirectoryIcons)

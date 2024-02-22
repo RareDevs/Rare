@@ -16,11 +16,12 @@ logger = getLogger("Proton")
 steam_compat_client_install_paths = [os.path.expanduser("~/.local/share/Steam")]
 
 
-def find_steam() -> str:
+def find_steam() -> Optional[str]:
     # return the first valid path
     for path in steam_compat_client_install_paths:
         if os.path.isdir(path) and os.path.isfile(os.path.join(path, "steam.sh")):
             return path
+    return None
 
 
 def find_libraries(steam_path: str) -> Set[str]:
@@ -306,7 +307,11 @@ def get_steam_environment(
 
 def find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     steam_path = find_steam()
-    logger.debug("Using Steam install in %s", steam_path)
+    if steam_path is None:
+        logger.info("Steam could not be found")
+        return []
+    logger.info("Found Steam in %s", steam_path)
+
     steam_libraries = find_libraries(steam_path)
     logger.debug("Searching for tools in libraries:")
     logger.debug("%s", steam_libraries)
