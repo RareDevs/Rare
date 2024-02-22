@@ -105,7 +105,8 @@ QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
 QPushButton {
-    min-height: 1.30em;
+    /* min-height: 1.30em; */
+    min-height: 18px;
 }
 QLineEdit,
 QTextEdit
@@ -115,10 +116,12 @@ QDateTimeEdit,
 QSpinBox,
 QDoubleSpinBox,
 QProgressBar {
-    max-height: 1.30em;
+    /* max-height: 1.30em; */
+    max-height: 18px;
 }
 QToolButton {
-    min-height: 1.10em;
+    /* min-height: 1.10em; */
+    min-height: 15px;
 }
 
 QFrame[frameShape="0"] {
