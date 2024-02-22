@@ -271,6 +271,12 @@ QTableView {
     alternate-background-color: rgb( 40,  42,  46);
 }
 
+QListView QLineEdit,
+QTreeView QLineEdit,
+QTableView QLineEdit {
+    padding: 0px;
+}
+
 QListView::item,
 QTreeView::item {
     margin-right: 1px;
