@@ -15,13 +15,12 @@ from PyQt5.QtWidgets import (
     QWidget,
     QScrollArea,
     QAction,
-    QToolButton,
     QMenu, QStackedWidget, QPushButton, QLineEdit, QVBoxLayout, QComboBox,
 )
 
 from rare.models.wrapper import Wrapper
 from rare.shared import RareCore
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title
 
 if pf.system() in {"Linux", "FreeBSD"}:
@@ -45,7 +44,7 @@ class WrapperEditDialog(ButtonDialog):
         self.setCentralLayout(self.widget_layout)
 
         self.accept_button.setText(self.tr("Save"))
-        self.accept_button.setIcon(icon("fa.edit"))
+        self.accept_button.setIcon(qta_icon("fa.edit"))
         self.accept_button.setEnabled(False)
 
         self.result: Tuple = ()
@@ -108,7 +107,7 @@ class WrapperWidget(QFrame):
         text_lbl.setEnabled(wrapper.is_editable)
 
         image_lbl = QLabel(parent=self)
-        image_lbl.setPixmap(icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
+        image_lbl.setPixmap(qta_icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
 
         edit_action = QAction("Edit", parent=self)
         edit_action.triggered.connect(self.__on_edit)
@@ -118,10 +117,9 @@ class WrapperWidget(QFrame):
         manage_menu = QMenu(parent=self)
         manage_menu.addActions([edit_action, delete_action])
 
-        manage_button = QToolButton(parent=self)
-        manage_button.setIcon(icon("mdi.menu"))
+        manage_button = QPushButton(parent=self)
+        manage_button.setIcon(qta_icon("mdi.menu", fallback="fa.align-justify"))
         manage_button.setMenu(manage_menu)
-        manage_button.setPopupMode(QToolButton.InstantPopup)
         manage_button.setEnabled(wrapper.is_editable)
         if not wrapper.is_editable:
             manage_button.setToolTip(self.tr("Manage through settings"))

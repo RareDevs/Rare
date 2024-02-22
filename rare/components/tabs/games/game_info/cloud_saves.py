@@ -22,7 +22,7 @@ from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineSavePathResolver
 from rare.ui.components.tabs.games.game_info.cloud_settings_widget import Ui_CloudSettingsWidget
 from rare.ui.components.tabs.games.game_info.cloud_sync_widget import Ui_CloudSyncWidget
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.utils.metrics import timelogger
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 from rare.widgets.loading_widget import LoadingWidget
@@ -45,8 +45,8 @@ class CloudSaves(QWidget, SideTabContents):
         self.core = RareCore.instance().core()
         self.settings = QSettings()
 
-        self.sync_ui.icon_local.setPixmap(icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
-        self.sync_ui.icon_remote.setPixmap(icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))
+        self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
+        self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))
 
         self.sync_ui.upload_button.clicked.connect(self.upload)
         self.sync_ui.download_button.clicked.connect(self.download)
@@ -73,7 +73,7 @@ class CloudSaves(QWidget, SideTabContents):
             self.cloud_save_path_edit
         )
 
-        self.compute_save_path_button = QPushButton(icon("fa.magic"), self.tr("Calculate path"))
+        self.compute_save_path_button = QPushButton(qta_icon("fa.magic"), self.tr("Calculate path"))
         self.compute_save_path_button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         self.compute_save_path_button.clicked.connect(self.compute_save_path)
         self.cloud_ui.main_layout.addRow(None, self.compute_save_path_button)

@@ -5,7 +5,7 @@ from rare.components.tabs.store import ShopApiCore
 from rare.components.tabs.store.game_widgets import WishlistWidget
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
 from rare.utils.extra_widgets import WaitingSpinner
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon as icon
 
 
 class Wishlist(QStackedWidget, Ui_Wishlist):

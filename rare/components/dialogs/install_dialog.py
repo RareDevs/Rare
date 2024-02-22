@@ -13,7 +13,7 @@ from rare.models.install import InstallDownloadModel, InstallQueueItemModel, Ins
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
-from rare.utils.misc import format_size, icon
+from rare.utils.misc import format_size, qta_icon
 from rare.widgets.collapsible_widget import CollapsibleFrame
 from rare.widgets.dialogs import ActionDialog, game_title
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
@@ -63,17 +63,17 @@ class InstallDialog(ActionDialog):
         super(InstallDialog, self).__init__(parent=parent)
 
         header = self.tr("Install")
-        bicon = icon("ri.install-line")
+        bicon = qta_icon("ri.install-line")
         if options.repair_mode:
             header = self.tr("Repair")
-            bicon = icon("fa.wrench")
+            bicon = qta_icon("fa.wrench")
             if options.repair_and_update:
                 header = self.tr("Repair and update")
         elif options.update:
             header = self.tr("Update")
         elif options.reset_sdl:
             header = self.tr("Modify")
-            bicon = icon("fa.gear")
+            bicon = qta_icon("fa.gear")
         self.setWindowTitle(game_title(header, rgame.app_title))
         self.setSubtitle(game_title(header, rgame.app_title))
 
@@ -198,7 +198,7 @@ class InstallDialog(ActionDialog):
         self.accept_button.setObjectName("InstallButton")
 
         self.action_button.setText(self.tr("Verify"))
-        self.action_button.setIcon(icon("fa.check"))
+        self.action_button.setIcon(qta_icon("fa.check"))
 
         self.setCentralWidget(install_widget)
 

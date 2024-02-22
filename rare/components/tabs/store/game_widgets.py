@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 from rare.components.tabs.store.shop_models import ImageUrlModel
 from rare.ui.components.tabs.store.wishlist_widget import Ui_WishlistWidget
 from rare.utils.extra_widgets import ImageLabel
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon as icon
 
 logger = logging.getLogger("GameWidgets")
 

@@ -54,7 +54,7 @@ class ImportLogin(QFrame):
             else:
                 self.ui.status_label.setText(self.text_egl_notfound)
 
-        self.ui.prefix_tool.clicked.connect(self.prefix_path)
+        self.ui.prefix_button.clicked.connect(self.prefix_path)
         self.ui.prefix_combo.editTextChanged.connect(self.changed.emit)
 
     def get_wine_prefixes(self):

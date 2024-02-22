@@ -9,10 +9,9 @@ from PyQt5.QtWidgets import (
     QWidget,
     QPushButton,
     QLineEdit,
-    QToolButton,
 )
 
-from rare.utils.misc import icon as qta_icon
+from rare.utils.misc import qta_icon
 from rare.utils.paths import cache_dir
 from rare.utils.qt_requests import QtRequests
 
@@ -117,14 +116,12 @@ class ButtonLineEdit(QLineEdit):
         super(ButtonLineEdit, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
 
-        self.button = QToolButton(self)
+        self.button = QPushButton(self)
         self.button.setObjectName(f"{type(self).__name__}Button")
-        self.button.setIcon(qta_icon(icon_name, color="white"))
-        self.button.setStyleSheet(
-            f"QToolButton#{self.button.objectName()} {{border: 0px; padding: 0px;}}"
-        )
+        self.button.setIcon(qta_icon(icon_name))
         self.button.setCursor(Qt.ArrowCursor)
         self.button.clicked.connect(self.buttonClicked.emit)
+
         self.setPlaceholderText(placeholder_text)
         frame_width = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
         button_size = self.button.sizeHint()

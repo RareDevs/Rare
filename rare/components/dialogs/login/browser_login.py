@@ -9,7 +9,7 @@ from legendary.utils import webview_login
 
 from rare.lgndr.core import LegendaryCore
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.utils.paths import get_rare_executable
 from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon
 
@@ -34,7 +34,7 @@ class BrowserLogin(QFrame):
         )
         self.sid_edit.line_edit.setEchoMode(QLineEdit.Password)
         self.ui.link_text.setText(self.login_url)
-        self.ui.copy_button.setIcon(icon("mdi.content-copy", "fa.copy"))
+        self.ui.copy_button.setIcon(qta_icon("mdi.content-copy", "fa.copy"))
         self.ui.copy_button.clicked.connect(self.copy_link)
         self.ui.form_layout.setWidget(
             self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0],

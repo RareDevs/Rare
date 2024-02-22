@@ -46,7 +46,6 @@ class EGLSyncGroup(QGroupBox):
         )
 
         self.egl_path_info = ElideLabel(parent=self)
-        self.egl_path_info.setProperty("infoLabel", 1)
         self.ui.egl_sync_layout.setWidget(
             self.ui.egl_sync_layout.getWidgetPosition(self.ui.egl_path_info_label)[0],
             QFormLayout.FieldRole, self.egl_path_info

@@ -20,7 +20,7 @@ from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.shared.workers import VerifyWorker, MoveWorker
 from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
-from rare.utils.misc import format_size, icon, style_hyperlink
+from rare.utils.misc import format_size, qta_icon, style_hyperlink
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
 from rare.components.dialogs.move_dialog import MoveDialog, is_game_dir
@@ -41,14 +41,14 @@ class GameInfo(QWidget, SideTabContents):
         self.ui.modify_button.setObjectName("InstallButton")
         self.ui.uninstall_button.setObjectName("UninstallButton")
 
-        self.ui.install_button.setIcon(icon("ri.install-line"))
-        self.ui.import_button.setIcon(icon("mdi.application-import"))
+        self.ui.install_button.setIcon(qta_icon("ri.install-line"))
+        self.ui.import_button.setIcon(qta_icon("mdi.application-import"))
 
-        self.ui.modify_button.setIcon(icon("fa.gear"))
-        self.ui.verify_button.setIcon(icon("fa.check"))
-        self.ui.repair_button.setIcon(icon("fa.wrench"))
-        self.ui.move_button.setIcon(icon("mdi.folder-move-outline"))
-        self.ui.uninstall_button.setIcon(icon("ri.uninstall-line"))
+        self.ui.modify_button.setIcon(qta_icon("fa.gear"))
+        self.ui.verify_button.setIcon(qta_icon("fa.check"))
+        self.ui.repair_button.setIcon(qta_icon("fa.wrench"))
+        self.ui.move_button.setIcon(qta_icon("mdi.folder-move-outline"))
+        self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
 
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()

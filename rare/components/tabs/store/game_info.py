@@ -17,7 +17,7 @@ from rare.components.tabs.store.shop_models import ShopGame
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.store.shop_game_info import Ui_shop_info
 from rare.utils.extra_widgets import ImageLabel
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon as icon
 from rare.widgets.loading_widget import LoadingWidget
 
 logger = logging.getLogger("ShopInfo")

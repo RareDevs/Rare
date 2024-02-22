@@ -20,7 +20,6 @@ disabled:  #43474d #767778     -- border for disabled widgets
 alternate: #3c3f41 #A3DAAA     -- border color for gradient backgrounds on widgets like Tabs and Popups
 
 [Special]
-info-normal:        #bbb #4D5059   -- infoLabel
 install-normal:     #070 #F9A7FF   -- install
 install-hover:      #050 #BB7DBF   -- install
 install-disabled:   #020 #7D5380   -- install
@@ -48,12 +47,6 @@ QLabel:disabled {
     padding: 0px;
     selection-background-color: #71DA7E;
 }
-QLabel[infoLabel="1"] {
-    color: #4D5059;
-    font-style: italic;
-    font-weight: normal;
-}
-
 
 QMenu,
 QListView,
@@ -101,6 +94,7 @@ QScrollBar {
     background-color: #DADDDE;
     selection-background-color: #71DA7E;
 }
+
 QLineEdit,
 QTextEdit,
 QTimeEdit,
@@ -111,11 +105,22 @@ QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
 QPushButton {
-    height: 1.30em;
+    min-height: 1.30em;
+}
+QLineEdit,
+QTextEdit
+QTimeEdit,
+QDateEdit,
+QDateTimeEdit,
+QSpinBox,
+QDoubleSpinBox,
+QProgressBar {
+    max-height: 1.30em;
 }
 QToolButton {
-    height: 1.10em;
+    min-height: 1.10em;
 }
+
 QFrame[frameShape="0"] {
     border-width: 0px;
 }
@@ -314,12 +319,15 @@ QToolButton {
     padding-left: 6px;
     padding-right: 6px;
 }
-QPushButton::menu-indicator {
+/*
+QPushButton::menu-indicator,
+QToolButton::menu-indicator {
     subcontrol-position: right center;
     subcontrol-origin: padding;
     left: -2px;
     border-style: none;
 }
+*/
 
 QGroupBox,
 QCheckBox,
@@ -449,12 +457,6 @@ QSizeGrip {
     image: none;
     width: 4px;
     height: 4px;
-}
-
-QLineEdit#SearchBar {
-    padding: 3px;
-    border-radius: 5px;
-    background-color: #DADDDE;
 }
 
 QTabWidget::pane {
@@ -610,6 +612,39 @@ QTabBar::tab:right:selected:disabled {
     border-left-color: transparent;
 }
 
+QStatusBar {
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: #5CD3FF;
+    border-bottom-color: #A3DAAA;
+    background: qlineargradient(
+        x1: 0, y1: 3,
+        x2: 0, y2: 0,
+        stop: 0 #A3DAAA,
+        stop: 1 #C2C4C5);
+}
+
+QToolTip {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #5CD3FF;
+    border-radius: 4px;
+    padding: 1px;
+    opacity: 200;
+}
+
+QBalloonTip {
+    color: #36393F;
+    background-color: #C2C4C5;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #5CD3FF;
+    border-radius: 4px;
+    padding: 1px;
+}
+
+/* Main tab bar styling */
 QTabBar#MainTabBar {
     border-width: 1px;
     border-style: solid;
@@ -651,6 +686,17 @@ QTabBar#MainTabBar::tab:top:selected {
     border-color: #5CD3FF;
     border-bottom-color: #C2C4C5;
 }
+QPushButton#TabButtonWidget,
+QToolButton#TabButtonWidget {
+    padding: 0px;
+    border-color: rgb( 51, 54, 59);
+}
+QPushButton#TabButtonWidget:disabled,
+QToolButton#TabButtonWidget:disabled {
+    border-color: rgb( 41, 43, 47);
+}
+
+/* Side tab bar styling */
 QTabBar#SideTabBar {
     border-width: 1px;
     border-style: solid;
@@ -688,36 +734,10 @@ QTabBar#SideTabBar::tab:disabled {
     background-color: transparent;
 }
 
-QStatusBar {
-    border-width: 1px;
-    border-style: solid;
-    border-color: transparent;
-    border-top-color: #5CD3FF;
-    border-bottom-color: #A3DAAA;
-    background: qlineargradient(
-        x1: 0, y1: 3,
-        x2: 0, y2: 0,
-        stop: 0 #A3DAAA,
-        stop: 1 #C2C4C5);
-}
-
-QToolTip {
-    border-width: 1px;
-    border-style: solid;
-    border-color: #5CD3FF;
-    border-radius: 4px;
-    padding: 1px;
-    opacity: 200;
-}
-
-QBalloonTip {
-    color: #36393F;
-    background-color: #C2C4C5;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #5CD3FF;
-    border-radius: 4px;
-    padding: 1px;
+/* Search bar styling */
+QLineEdit#SearchBar {
+    border-radius: 5px;
+    background-color: #DADDDE;
 }
 
 /* Wrapper settings styling */
@@ -744,4 +764,8 @@ QLabel#WrapperSettingsLabel {
     color: #999;
     border-color: #71DA7E;
     background-color: #BCBEBF;
+}
+QLabel#WrapperSettingsLabel:disabled {
+    border-color: rgb( 67,  71,  77);
+    background-color: rgb( 32,  34,  37);
 }

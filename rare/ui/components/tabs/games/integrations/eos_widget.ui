@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>464</width>
+    <width>465</width>
     <height>98</height>
    </rect>
   </property>
@@ -42,15 +42,15 @@
        <item>
         <layout class="QFormLayout" name="install_label_layout">
          <property name="labelAlignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
          </property>
          <property name="formAlignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
          </property>
          <item row="0" column="0">
           <widget class="QLabel" name="install_label">
            <property name="text">
-            <string>Status:</string>
+            <string>Version</string>
            </property>
           </widget>
          </item>
@@ -68,7 +68,7 @@
          <property name="rightMargin">
           <number>0</number>
          </property>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="install_button">
            <property name="minimumSize">
             <size>
@@ -102,15 +102,15 @@
        <item>
         <layout class="QFormLayout" name="info_label_layout">
          <property name="labelAlignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
          </property>
          <property name="formAlignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
          </property>
          <item row="0" column="0">
           <widget class="QLabel" name="version_label">
            <property name="text">
-            <string>Version:</string>
+            <string>Version</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -120,7 +120,7 @@
          <item row="1" column="0">
           <widget class="QLabel" name="path_label">
            <property name="text">
-            <string>Path:</string>
+            <string>Install folder</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -131,7 +131,7 @@
        </item>
        <item>
         <layout class="QVBoxLayout" name="info_button_layout">
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="update_button">
            <property name="minimumSize">
             <size>
@@ -144,7 +144,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="uninstall_button">
            <property name="minimumSize">
             <size>

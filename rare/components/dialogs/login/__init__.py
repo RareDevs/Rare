@@ -7,7 +7,7 @@ from legendary.core import LegendaryCore
 from rare.shared import ArgumentsSingleton
 from rare.ui.components.dialogs.login.landing_page import Ui_LandingPage
 from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import BaseDialog
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .browser_login import BrowserLogin
@@ -99,9 +99,9 @@ class LoginDialog(BaseDialog):
 
         self.login_stack.setCurrentWidget(self.landing_page)
 
-        self.ui.exit_button.setIcon(icon("fa.remove"))
-        self.ui.back_button.setIcon(icon("fa.chevron-left"))
-        self.ui.next_button.setIcon(icon("fa.chevron-right"))
+        self.ui.exit_button.setIcon(qta_icon("fa.remove"))
+        self.ui.back_button.setIcon(qta_icon("fa.chevron-left"))
+        self.ui.next_button.setIcon(qta_icon("fa.chevron-right"))
 
         # lk: Set next as the default button only to stop closing the dialog when pressing enter
         self.ui.exit_button.setAutoDefault(False)

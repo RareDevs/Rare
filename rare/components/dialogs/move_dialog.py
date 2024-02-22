@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QLayo
 from rare.models.install import MoveGameModel
 from rare.models.game import RareGame
 from rare.shared import RareCore
-from rare.utils.misc import path_size, format_size, icon
+from rare.utils.misc import path_size, format_size, qta_icon
 from rare.widgets.dialogs import ActionDialog, game_title
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasons, IndicatorReasonsCommon
@@ -76,7 +76,7 @@ class MoveDialog(ActionDialog):
         self.setCentralLayout(layout)
 
         self.accept_button.setText(self.tr("Move"))
-        self.accept_button.setIcon(icon("mdi.folder-move-outline"))
+        self.accept_button.setIcon(qta_icon("mdi.folder-move-outline"))
 
         self.action_button.setHidden(True)
 

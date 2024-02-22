@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QGroupBox
 
 from rare.models.game import RareGame
 from rare.models.install import SelectiveDownloadsModel
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title
 from rare.widgets.selective_widget import SelectiveWidget
 
@@ -31,7 +31,7 @@ class SelectiveDialog(ButtonDialog):
         self.setCentralLayout(layout)
 
         self.accept_button.setText(self.tr("Verify"))
-        self.accept_button.setIcon(icon("fa.check"))
+        self.accept_button.setIcon(qta_icon("fa.check"))
 
         self.options: SelectiveDownloadsModel = SelectiveDownloadsModel(rgame.app_name)
 

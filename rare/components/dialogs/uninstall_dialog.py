@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 
 from rare.models.game import RareGame
 from rare.models.install import UninstallOptionsModel
-from rare.utils.misc import icon
+from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title
 
 
@@ -39,7 +39,7 @@ class UninstallDialog(ButtonDialog):
         self.setCentralLayout(layout)
 
         self.accept_button.setText(self.tr("Uninstall"))
-        self.accept_button.setIcon(icon("ri.uninstall-line"))
+        self.accept_button.setIcon(qta_icon("ri.uninstall-line"))
         self.accept_button.setObjectName("UninstallButton")
 
         if rgame.sdl_name is not None:
