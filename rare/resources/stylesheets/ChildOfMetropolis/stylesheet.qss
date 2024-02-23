@@ -106,12 +106,14 @@ QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
 QPushButton {
+    min-height: 3.00ex;
     /* min-height: 1.30em; */
-    min-height: 18px;
+    /* min-height: 18px; */
 }
 QToolButton {
+    min-height: 3.00ex;
     /* min-height: 1.10em; */
-    min-height: 15px;
+    /* min-height: 15px; */
 }
 
 QFrame[frameShape="0"] {
@@ -181,15 +183,19 @@ QComboBox QAbstractItemView {
     border-top-width: 1;
     image: url(":/stylesheets/ChildOfMetropolis/sort-down.svg");
 }
+
 QProgressBar {
     padding: 0px;
     text-align: center;
 }
 QProgressBar::chunk {
+    padding: 0px;
+    border-width: 0px;
     width: 2%;
-    margin: 0%;
+    margin: 0px;
     background-color: #71DA7E;
 }
+
 QScrollBar {
     border-radius: 4px;
     padding: 1px;
