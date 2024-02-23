@@ -258,10 +258,12 @@ class InstallDialog(ActionDialog):
     def action_handler(self):
         self.error_box()
         message = self.tr("Updating...")
+        font = self.font()
+        font.setItalic(True)
         self.ui.download_size_text.setText(message)
-        self.ui.download_size_text.setStyleSheet("font-style: italic; font-weight: normal")
+        self.ui.download_size_text.setFont(font)
         self.ui.install_size_text.setText(message)
-        self.ui.install_size_text.setStyleSheet("font-style: italic; font-weight: normal")
+        self.ui.install_size_text.setFont(font)
         self.setActive(True)
         self.options_changed = False
         self.get_options()
@@ -309,15 +311,19 @@ class InstallDialog(ActionDialog):
         download_size = download.analysis.dl_size
         install_size = download.analysis.install_size
         # install_size = self.dl_item.download.analysis.disk_space_delta
+        bold_font = self.font()
+        bold_font.setBold(True)
+        italic_font = self.font()
+        italic_font.setItalic(True)
         if download_size or (not download_size and (download.game.is_dlc or download.repair)):
             self.ui.download_size_text.setText(format_size(download_size))
-            self.ui.download_size_text.setStyleSheet("font-style: normal; font-weight: bold")
+            self.ui.download_size_text.setFont(bold_font)
             self.accept_button.setEnabled(not self.options_changed)
         else:
-            self.ui.install_size_text.setText(self.tr("Game already installed"))
-            self.ui.install_size_text.setStyleSheet("font-style: italics; font-weight: normal")
+            self.ui.download_size_text.setText(self.tr("Game already installed"))
+            self.ui.download_size_text.setFont(italic_font)
         self.ui.install_size_text.setText(format_size(install_size))
-        self.ui.install_size_text.setStyleSheet("font-style: normal; font-weight: bold")
+        self.ui.install_size_text.setFont(bold_font)
         self.action_button.setEnabled(self.options_changed)
         has_prereqs = bool(download.igame.prereq_info) and not download.igame.prereq_info.get("installed", False)
         if has_prereqs:
