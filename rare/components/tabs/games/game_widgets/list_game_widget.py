@@ -99,7 +99,7 @@ class ListGameWidget(GameWidget):
 
     def paint_image_cover(self, painter: QPainter, a0: QPaintEvent) -> None:
         painter.setOpacity(self._opacity)
-        color = self.palette().color(QPalette.Background).darker(75)
+        color = self.palette().color(QPalette.Window).darker(75)
         painter.fillRect(self.rect(), color)
         brush = QBrush(self._pixmap)
         brush.setTransform(self._transform)

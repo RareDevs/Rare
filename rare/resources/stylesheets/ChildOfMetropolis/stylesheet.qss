@@ -77,6 +77,7 @@ QScrollBar {
     border-radius: 2px;
     padding: 2px;
 }
+
 QHeaderView::section,
 QTableView QTableCornerButton::section,
 QLineEdit,
@@ -104,21 +105,16 @@ QComboBox,
 QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
+QScrollArea,
 QPushButton {
-    min-height: 1.30em;
-}
-QLineEdit,
-QTextEdit
-QTimeEdit,
-QDateEdit,
-QDateTimeEdit,
-QSpinBox,
-QDoubleSpinBox,
-QProgressBar {
-    max-height: 1.30em;
+    min-height: 3.00ex;
+    /* min-height: 1.30em; */
+    /* min-height: 18px; */
 }
 QToolButton {
-    min-height: 1.10em;
+    min-height: 3.00ex;
+    /* min-height: 1.10em; */
+    /* min-height: 15px; */
 }
 
 QFrame[frameShape="0"] {
@@ -188,14 +184,19 @@ QComboBox QAbstractItemView {
     border-top-width: 1;
     image: url(":/stylesheets/ChildOfMetropolis/sort-down.svg");
 }
+
 QProgressBar {
+    padding: 0px;
     text-align: center;
 }
 QProgressBar::chunk {
+    padding: 0px;
+    border-width: 0px;
     width: 2%;
-    margin: 0%;
+    margin: 0px;
     background-color: #71DA7E;
 }
+
 QScrollBar {
     border-radius: 4px;
     padding: 1px;
@@ -673,7 +674,7 @@ QTabBar#MainTabBar::tab {
     margin-right: 3px;
     border-top-color: transparent;
     border-bottom-color: #5CD3FF;
-    padding: 5px;
+    padding: 3px 5px;
 }/*
 QTabBar#MainTabBar::tab:top:first,
 QTabBar#MainTabBar::tab:bottom:first {
@@ -749,6 +750,7 @@ QLineEdit#SearchBar {
 /* Wrapper settings styling */
 QPushButton#WrapperWidgetButton,
 QToolButton#WrapperWidgetButton {
+    padding: 0px;
     border-color: #DADDDE;
 }
 QPushButton#WrapperWidgetButton:disabled,
@@ -762,6 +764,7 @@ QScrollArea#WrapperSettingsScroll {
 QScrollBar#WrapperSettingsScrollBar {
     background-color: #BCBEBF;
 }
+/*
 QLabel#WrapperSettingsLabel {
     border-width: 1px;
     border-style: solid;
@@ -775,3 +778,4 @@ QLabel#WrapperSettingsLabel:disabled {
     border-color: rgb( 67,  71,  77);
     background-color: rgb( 32,  34,  37);
 }
+*/

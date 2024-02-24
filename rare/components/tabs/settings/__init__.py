@@ -22,12 +22,14 @@ class SettingsTab(SideTabWidget):
         self.settings_index = self.addTab(game_settings, self.tr("Defaults"))
 
         self.about = About(self)
-        self.about_index = self.addTab(self.about, "About", "About")
+        title = self.tr("About")
+        self.about_index = self.addTab(self.about, title, title)
         self.about.update_available_ready.connect(
             lambda: self.tabBar().setTabText(self.about_index, "About (!)")
         )
 
         if self.args.debug:
-            self.debug_index = self.addTab(DebugSettings(self), "Debug")
+            title = self.tr("Debug")
+            self.debug_index = self.addTab(DebugSettings(self), title, title)
 
         self.setCurrentIndex(self.rare_index)

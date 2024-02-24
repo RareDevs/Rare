@@ -123,19 +123,19 @@ class ButtonLineEdit(QLineEdit):
         self.button.clicked.connect(self.buttonClicked.emit)
 
         self.setPlaceholderText(placeholder_text)
-        frame_width = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
-        button_size = self.button.sizeHint()
-
-        self.setStyleSheet(
-            f"QLineEdit#{self.objectName()} {{padding-right: {(button_size.width() + frame_width + 1)}px; }}"
-        )
-        self.setMinimumSize(
-            max(self.minimumSizeHint().width(), button_size.width() + frame_width * 2 + 2),
-            max(
-                self.minimumSizeHint().height(),
-                button_size.height() + frame_width * 2 + 2,
-            ),
-        )
+        # frame_width = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
+        # button_size = self.button.sizeHint()
+        #
+        # self.setStyleSheet(
+        #     f"QLineEdit#{self.objectName()} {{padding-right: {(button_size.width() + frame_width + 1)}px; }}"
+        # )
+        # self.setMinimumSize(
+        #     max(self.minimumSizeHint().width(), button_size.width() + frame_width * 2 + 2),
+        #     max(
+        #         self.minimumSizeHint().height(),
+        #         button_size.height() + frame_width * 2 + 2,
+        #     ),
+        # )
 
     def resizeEvent(self, event):
         frame_width = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)

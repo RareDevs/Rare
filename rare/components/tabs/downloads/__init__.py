@@ -61,6 +61,8 @@ class DownloadsTab(QWidget):
         queue_contents = QWidget(self.queue_scrollarea)
         queue_contents.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.queue_scrollarea.setWidget(queue_contents)
+        self.queue_scrollarea.widget().setAutoFillBackground(False)
+        self.queue_scrollarea.viewport().setAutoFillBackground(False)
 
         queue_contents_layout = QVBoxLayout(queue_contents)
         queue_contents_layout.setContentsMargins(0, 0, 3, 0)

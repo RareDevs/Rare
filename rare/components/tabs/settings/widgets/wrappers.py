@@ -4,8 +4,17 @@ import shutil
 from logging import getLogger
 from typing import Optional, Tuple, Iterable
 
-from PyQt5.QtCore import pyqtSignal, QSize, Qt, QMimeData, pyqtSlot
-from PyQt5.QtGui import QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent, QFont, QMouseEvent, QShowEvent
+from PyQt5.QtCore import pyqtSignal, QSize, Qt, QMimeData, pyqtSlot, QObject, QEvent
+from PyQt5.QtGui import (
+    QDrag,
+    QDropEvent,
+    QDragEnterEvent,
+    QDragMoveEvent,
+    QFont,
+    QMouseEvent,
+    QShowEvent,
+    QResizeEvent,
+)
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -15,7 +24,11 @@ from PyQt5.QtWidgets import (
     QWidget,
     QScrollArea,
     QAction,
-    QMenu, QStackedWidget, QPushButton, QLineEdit, QVBoxLayout, QComboBox,
+    QMenu,
+    QPushButton,
+    QLineEdit,
+    QVBoxLayout,
+    QComboBox,
 )
 
 from rare.models.wrapper import Wrapper
@@ -172,46 +185,75 @@ class WrapperWidget(QFrame):
             drag.exec_(Qt.MoveAction)
 
 
+class WrapperSettingsScroll(QScrollArea):
+    def __init__(self, parent=None):
+        super(WrapperSettingsScroll, self).__init__(parent=parent)
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.setWidgetResizable(True)
+        self.setProperty("no_kinetic_scroll", True)
+
+        self.setObjectName(type(self).__name__)
+        self.horizontalScrollBar().setObjectName(f"{self.objectName()}Bar")
+        self.verticalScrollBar().setObjectName(f"{self.objectName()}Bar")
+
+    def setWidget(self, w):
+        super().setWidget(w)
+        w.installEventFilter(self)
+
+    def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
+        if a0 is self.widget() and a1.type() == QEvent.Resize:
+            self.__resize(a0)
+            return a0.event(a1)
+        return False
+
+    def __resize(self, e: QResizeEvent):
+        minh = self.horizontalScrollBar().minimum()
+        maxh = self.horizontalScrollBar().maximum()
+        # lk: when the scrollbar is not visible, min and max are 0
+        if maxh > minh:
+            height = (
+                e.size().height()
+                + self.rect().height() // 2
+                - self.contentsRect().height() // 2
+                + self.widget().layout().spacing()
+                + self.horizontalScrollBar().sizeHint().height()
+            )
+        else:
+            height = e.size().height() + self.rect().height() - self.contentsRect().height()
+        self.setMaximumHeight(max(height, self.minimumHeight()))
+
+
 class WrapperSettings(QWidget):
     def __init__(self, parent=None):
         super(WrapperSettings, self).__init__(parent=parent)
-        self.widget_stack = QStackedWidget(self)
 
-        self.wrapper_scroll = QScrollArea(self.widget_stack)
-        self.wrapper_scroll.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
-        self.wrapper_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.wrapper_scroll.setWidgetResizable(True)
-        self.wrapper_scroll.setProperty("no_kinetic_scroll", True)
-        self.wrapper_container = WrapperContainer(parent=self.wrapper_scroll)
-        self.wrapper_container.orderChanged.connect(self.__on_order_changed)
-        self.wrapper_scroll.setWidget(self.wrapper_container)
-
-        self.no_wrapper_label = QLabel(self.tr("No wrappers defined"), self.widget_stack)
-
-        self.widget_stack.addWidget(self.wrapper_scroll)
-        self.widget_stack.addWidget(self.no_wrapper_label)
+        self.wrapper_label = QLabel(self.tr("No wrappers defined"), self)
+        self.wrapper_label.setFrameStyle(QLabel.StyledPanel | QLabel.Plain)
+        self.wrapper_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.add_button = QPushButton(self.tr("Add wrapper"), self)
         self.add_button.clicked.connect(self.__on_add)
 
-        self.wrapper_scroll.horizontalScrollBar().rangeChanged.connect(self.adjust_scrollarea)
+        self.wrapper_scroll = WrapperSettingsScroll(self)
+        self.wrapper_scroll.setMinimumHeight(self.add_button.minimumSizeHint().height())
+
+        self.wrapper_container = WrapperContainer(self.wrapper_label, self.wrapper_scroll)
+        self.wrapper_container.orderChanged.connect(self.__on_order_changed)
+        self.wrapper_scroll.setWidget(self.wrapper_container)
 
         # lk: set object names for the stylesheet
         self.setObjectName("WrapperSettings")
-        self.no_wrapper_label.setObjectName(f"{self.objectName()}Label")
-        self.wrapper_scroll.setObjectName(f"{self.objectName()}Scroll")
-        self.wrapper_scroll.horizontalScrollBar().setObjectName(
-            f"{self.wrapper_scroll.objectName()}Bar")
-        self.wrapper_scroll.verticalScrollBar().setObjectName(
-            f"{self.wrapper_scroll.objectName()}Bar")
+        self.wrapper_label.setObjectName(f"{self.objectName()}Label")
 
         main_layout = QHBoxLayout(self)
-        main_layout.addWidget(self.widget_stack)
-        main_layout.addWidget(self.add_button, alignment=Qt.AlignTop)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addWidget(self.wrapper_scroll, alignment=Qt.AlignTop)
+        main_layout.addWidget(self.add_button, alignment=Qt.AlignTop)
 
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         self.app_name: str = "default"
         self.core = RareCore.instance().core()
@@ -222,27 +264,6 @@ class WrapperSettings(QWidget):
             return super().showEvent(a0)
         self.update_state()
         return super().showEvent(a0)
-
-    @pyqtSlot(int, int)
-    def adjust_scrollarea(self, minh: int, maxh: int):
-        wrapper_widget = self.wrapper_container.findChild(WrapperWidget)
-        if not wrapper_widget:
-            return
-        # lk: when the scrollbar is not visible, min and max are 0
-        if maxh > minh:
-            self.wrapper_scroll.setMaximumHeight(
-                wrapper_widget.sizeHint().height()
-                + self.wrapper_scroll.rect().height() // 2
-                - self.wrapper_scroll.contentsRect().height() // 2
-                + self.wrapper_container.layout().spacing()
-                + self.wrapper_scroll.horizontalScrollBar().sizeHint().height()
-            )
-        else:
-            self.wrapper_scroll.setMaximumHeight(
-                wrapper_widget.sizeHint().height()
-                + self.wrapper_scroll.rect().height()
-                - self.wrapper_scroll.contentsRect().height()
-            )
 
     @pyqtSlot(QWidget, int)
     def __on_order_changed(self, widget: WrapperWidget, new_index: int):
@@ -266,16 +287,12 @@ class WrapperSettings(QWidget):
             self.add_user_wrapper(wrapper)
 
     def __add_wrapper(self, wrapper: Wrapper, position: int = -1):
-        self.widget_stack.setCurrentWidget(self.wrapper_scroll)
+        self.wrapper_label.setVisible(False)
         widget = WrapperWidget(wrapper, self.wrapper_container)
         if position < 0:
             self.wrapper_container.addWidget(widget)
         else:
             self.wrapper_container.insertWidget(position, widget)
-        self.adjust_scrollarea(
-            self.wrapper_scroll.horizontalScrollBar().minimum(),
-            self.wrapper_scroll.horizontalScrollBar().maximum(),
-        )
         widget.update_wrapper.connect(self.__update_wrapper)
         widget.delete_wrapper.connect(self.__delete_wrapper)
 
@@ -304,7 +321,9 @@ class WrapperSettings(QWidget):
 
         if wrapper.checksum in self.wrappers.get_game_md5sum_list(self.app_name):
             QMessageBox.warning(
-                self, self.tr("Warning"), self.tr("Wrapper <b>{0}</b> is already in the list").format(wrapper.as_str)
+                self,
+                self.tr("Warning"),
+                self.tr("Wrapper <b>{0}</b> is already in the list").format(wrapper.as_str),
             )
             return
 
@@ -314,7 +333,7 @@ class WrapperSettings(QWidget):
                 self.tr("Warning"),
                 self.tr("Wrapper <b>{0}</b> is not in $PATH. Add it anyway?").format(wrapper.executable),
                 QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No
+                QMessageBox.No,
             )
             if ans == QMessageBox.No:
                 return
@@ -327,8 +346,7 @@ class WrapperSettings(QWidget):
         wrappers.remove(wrapper)
         self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
         if not wrappers:
-            self.wrapper_scroll.setMaximumHeight(self.no_wrapper_label.sizeHint().height())
-            self.widget_stack.setCurrentWidget(self.no_wrapper_label)
+            self.wrapper_label.setVisible(True)
 
     @pyqtSlot(object, object)
     def __update_wrapper(self, old: Wrapper, new: Wrapper):
@@ -345,10 +363,7 @@ class WrapperSettings(QWidget):
             w.deleteLater()
         wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
         if not wrappers:
-            self.wrapper_scroll.setMaximumHeight(self.no_wrapper_label.sizeHint().height())
-            self.widget_stack.setCurrentWidget(self.no_wrapper_label)
-        else:
-            self.widget_stack.setCurrentWidget(self.wrapper_scroll)
+            self.wrapper_label.setVisible(True)
         for wrapper in wrappers:
             self.__add_wrapper(wrapper)
 
@@ -357,14 +372,18 @@ class WrapperContainer(QWidget):
     # QWidget: moving widget, int: new index
     orderChanged: pyqtSignal = pyqtSignal(QWidget, int)
 
-    def __init__(self, parent=None):
+    def __init__(self, label: QLabel, parent=None):
         super(WrapperContainer, self).__init__(parent=parent)
         self.setAcceptDrops(True)
-        self.__layout = QHBoxLayout(self)
-        self.__layout.setContentsMargins(0, 0, 0, 0)
-        self.__layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-
+        self.__layout = QHBoxLayout()
         self.__drag_widget: Optional[QWidget] = None
+
+        main_layout = QHBoxLayout(self)
+        main_layout.addWidget(label)
+        main_layout.addLayout(self.__layout)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        main_layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)

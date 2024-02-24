@@ -136,7 +136,7 @@ class ImageWidget(QWidget):
         painter.setOpacity(1.0)
         painter.setCompositionMode(QPainter.CompositionMode_Source)
         overlay, _ = self._generate_rounded_overlay()
-        painter.fillPath(overlay, self.palette().color(QPalette.Background))
+        painter.fillPath(overlay, self.palette().color(QPalette.Window))
 
     def paint_overlay_squared(self, painter: QPainter, a0: QPaintEvent) -> None:
         painter.setRenderHint(QPainter.Antialiasing, False)

@@ -8,7 +8,7 @@ disabled:  #43474d rgb( 67,  71,  77)     -- disabled font color
 normal:    #202225 rgb( 32,  34,  37)     -- main background color
 editable:  #272733 rgb( 38,  38,  51)     -- background color for reactive/editable widgets (TextEdits, ProgressBars etc)
 hover:     #222233 rgb( 34,  34,  51)     -- background color when hovering over reactive widgets (Buttons, Headers)
-selection: #2f4f4f rgb( 47,  79,  79)     -- background color for selectable widgets
+selection: #274242 rgb( 39,  66,  66)     -- background color for selectable widgets
 alternate: #282a2e rgb( 40,  42,  46)     -- background color for alternating rows in List/Tree/TableViews and for ScrollBars
 
 [Border]
@@ -45,7 +45,7 @@ QLabel:disabled {
     border-width: 0px;
     background-color: transparent;
     padding: 0px;
-    selection-background-color: rgb( 47,  79,  79);
+    selection-background-color: rgb( 39,  66,  66);
 }
 
 QMenu,
@@ -77,6 +77,7 @@ QScrollBar {
     border-radius: 2px;
     padding: 2px;
 }
+
 QHeaderView::section,
 QTableView QTableCornerButton::section,
 QLineEdit,
@@ -92,7 +93,7 @@ QProgressBar,
 QScrollBar {
     border-color: rgb( 47,  79,  79);
     background-color: rgb( 38,  38,  51);
-    selection-background-color: rgb( 47,  79,  79);
+    selection-background-color: rgb( 39,  66,  66);
 }
 
 QLineEdit,
@@ -104,24 +105,16 @@ QComboBox,
 QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
+QScrollArea,
 QPushButton {
+    min-height: 3.00ex;
     /* min-height: 1.30em; */
-    min-height: 18px;
-}
-QLineEdit,
-QTextEdit
-QTimeEdit,
-QDateEdit,
-QDateTimeEdit,
-QSpinBox,
-QDoubleSpinBox,
-QProgressBar {
-    /* max-height: 1.30em; */
-    max-height: 18px;
+    /* min-height: 18px; */
 }
 QToolButton {
+    min-height: 3.00ex;
     /* min-height: 1.10em; */
-    min-height: 15px;
+    /* min-height: 15px; */
 }
 
 QFrame[frameShape="0"] {
@@ -141,7 +134,7 @@ QComboBox:!editable:hover {
 }
 *::item:selected,
 QComboBox QAbstractItemView {
-    selection-background-color: rgb( 47,  79,  79);
+    selection-background-color: rgb( 39,  66,  66);
 }
 *::drop-down,
 *::drop-down:editable,
@@ -191,14 +184,19 @@ QComboBox QAbstractItemView {
     border-top-width: 1;
     image: url(":/stylesheets/RareStyle/sort-down.svg");
 }
+
 QProgressBar {
+    padding: 0px;
     text-align: center;
 }
 QProgressBar::chunk {
+    padding: 0px;
+    border-width: 0px;
     width: 2%;
-    margin: 0%;
-    background-color: rgb( 47,  79,  79);
+    margin: 0px;
+    background-color: rgb( 39,  66,  66);
 }
+
 QScrollBar {
     border-radius: 4px;
     padding: 1px;
@@ -303,7 +301,7 @@ QListView::item:selected,
 QTreeView::item:selected,
 QTableView::item:selected {
     border-color: rgb( 72,  61, 139);
-    background-color: rgb( 47,  79,  79);
+    background-color: rgb( 39,  66,  66);
 }
 
 QPushButton,
@@ -766,6 +764,7 @@ QScrollArea#WrapperSettingsScroll {
 QScrollBar#WrapperSettingsScrollBar {
     background-color: rgb( 40,  42,  46);
 }
+/*
 QLabel#WrapperSettingsLabel {
     border-width: 1px;
     border-style: solid;
@@ -779,3 +778,4 @@ QLabel#WrapperSettingsLabel:disabled {
     border-color: rgb( 67,  71,  77);
     background-color: rgb( 32,  34,  37);
 }
+*/
