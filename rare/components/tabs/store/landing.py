@@ -41,6 +41,8 @@ class LandingPage(SlidingStackedWidget, SideTabContents):
         self.landing_scroll.setWidgetResizable(True)
         self.landing_scroll.setFrameStyle(QFrame.NoFrame | QFrame.Plain)
         self.landing_scroll.setWidget(self.landing_widget)
+        self.landing_scroll.widget().setAutoFillBackground(False)
+        self.landing_scroll.viewport().setAutoFillBackground(False)
 
         self.details_widget = DetailsWidget([], store_api, parent=self)
         self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)

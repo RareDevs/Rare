@@ -65,6 +65,9 @@ class SearchWidget(QWidget, SideTabContents):
         self.ui.setupUi(self)
         self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
 
+        self.ui.filter_scrollarea.widget().setAutoFillBackground(False)
+        self.ui.filter_scrollarea.viewport().setAutoFillBackground(False)
+
         self.store_api = store_api
         self.price = ""
         self.tags = []
@@ -75,7 +78,7 @@ class SearchWidget(QWidget, SideTabContents):
         self.next_search = ""
         self.wishlist: List = []
 
-        self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search Games"))
+        self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search"))
         self.results_scrollarea = ResultsWidget(self.store_api, self)
         self.results_scrollarea.show_details.connect(self.show_details)
 
