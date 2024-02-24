@@ -99,17 +99,19 @@ class SideTabContainer(QWidget):
         layout.addWidget(self.title)
 
         if not hasattr(widget, "implements_scrollarea") or not widget.implements_scrollarea:
-            self.scrollarea = QScrollArea(self)
-            self.scrollarea.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
-            self.scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-            self.scrollarea.setFrameStyle(QScrollArea.NoFrame)
-            self.scrollarea.setMinimumWidth(
-                widget.sizeHint().width() + self.scrollarea.verticalScrollBar().sizeHint().width()
+            scrollarea = QScrollArea(self)
+            scrollarea.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
+            scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            scrollarea.setFrameStyle(QScrollArea.NoFrame)
+            scrollarea.setMinimumWidth(
+                widget.sizeHint().width() + scrollarea.verticalScrollBar().sizeHint().width()
             )
-            self.scrollarea.setWidgetResizable(True)
+            scrollarea.setWidgetResizable(True)
             widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-            self.scrollarea.setWidget(widget)
-            layout.addWidget(self.scrollarea)
+            scrollarea.setWidget(widget)
+            scrollarea.widget().setAutoFillBackground(False)
+            scrollarea.viewport().setAutoFillBackground(False)
+            layout.addWidget(scrollarea)
         else:
             layout.addWidget(widget)
 
