@@ -59,11 +59,11 @@ class DownloadWidget(ImageWidget):
     def paint_image_empty(self, painter: QPainter, a0: QPaintEvent) -> None:
         # when pixmap object is not available yet, show a gray rectangle
         painter.setOpacity(0.5 * self._opacity)
-        painter.fillRect(a0.rect(), self.palette().color(QPalette.Background))
+        painter.fillRect(a0.rect(), self.palette().color(QPalette.Window))
 
     def paint_image_cover(self, painter: QPainter, a0: QPaintEvent) -> None:
         painter.setOpacity(self._opacity)
-        color = self.palette().color(QPalette.Background).darker(75)
+        color = self.palette().color(QPalette.Window).darker(75)
         painter.fillRect(self.rect(), color)
         brush = QBrush(self._pixmap)
         brush.setTransform(self._transform)
