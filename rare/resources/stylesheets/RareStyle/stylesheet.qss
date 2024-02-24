@@ -105,6 +105,7 @@ QComboBox,
 QSpinBox,
 QDoubleSpinBox,
 QProgressBar,
+QScrollArea,
 QPushButton {
     min-height: 3.00ex;
     /* min-height: 1.30em; */
@@ -763,6 +764,7 @@ QScrollArea#WrapperSettingsScroll {
 QScrollBar#WrapperSettingsScrollBar {
     background-color: rgb( 40,  42,  46);
 }
+/*
 QLabel#WrapperSettingsLabel {
     border-width: 1px;
     border-style: solid;
@@ -776,3 +778,4 @@ QLabel#WrapperSettingsLabel:disabled {
     border-color: rgb( 67,  71,  77);
     background-color: rgb( 32,  34,  37);
 }
+*/
