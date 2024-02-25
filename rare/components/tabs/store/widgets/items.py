@@ -4,7 +4,6 @@ from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QPushButton
 
-from rare.components.tabs.store.api.debug import DebugDialog
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.models.image import ImageSize
 from rare.utils.misc import qta_icon
@@ -27,9 +26,6 @@ class ItemWidget(LoadingImageWidget):
             self.show_details.emit(self.catalog_game)
         if a0.button() == Qt.RightButton:
             a0.accept()
-            print(self.catalog_game.__dict__)
-            dialog = DebugDialog(self.catalog_game.__dict__, self)
-            dialog.show()
 
 
 class StoreItemWidget(ItemWidget):

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>423</width>
-    <height>153</height>
+    <width>489</width>
+    <height>165</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <layout class="QHBoxLayout" name="tool_layout">
      <item>
-      <widget class="QLabel" name="sort_label">
+      <widget class="QLabel" name="order_label">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -30,38 +30,17 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="sort_cb">
-       <item>
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Price</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Developer</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Discount</string>
-        </property>
-       </item>
-      </widget>
+      <widget class="QComboBox" name="order_combo"/>
      </item>
      <item>
-      <widget class="QCheckBox" name="reverse">
+      <widget class="QCheckBox" name="reverse_check">
        <property name="text">
         <string>Reverse</string>
        </property>
       </widget>
      </item>
      <item>
-      <spacer name="tool_hspacer_1">
+      <spacer name="hspacer_left">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -76,26 +55,15 @@
      <item>
       <widget class="QLabel" name="filter_label">
        <property name="text">
-        <string>Filter:</string>
+        <string>Filter by</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="filter_cb">
-       <item>
-        <property name="text">
-         <string>None</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Discount</string>
-        </property>
-       </item>
-      </widget>
+      <widget class="QComboBox" name="filter_combo"/>
      </item>
      <item>
-      <spacer name="tool_hspacer_2">
+      <spacer name="hspacer_right">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -123,26 +91,31 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="no_games_label">
-     <property name="text">
-      <string>No games matching your filter</string>
+    <widget class="QScrollArea" name="scrollarea">
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContents</enum>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QScrollArea" name="list_scrollarea">
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="list_container">
+     <widget class="QWidget" name="container">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>407</width>
-        <height>83</height>
+        <width>473</width>
+        <height>115</height>
        </rect>
       </property>
+      <layout class="QVBoxLayout" name="container_layout">
+       <item alignment="Qt::AlignTop">
+        <widget class="QLabel" name="no_games_label">
+         <property name="text">
+          <string>No games matching your filter</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

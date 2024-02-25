@@ -2,8 +2,8 @@ import datetime
 import logging
 from typing import List
 
-from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
-from PyQt5.QtGui import QShowEvent, QHideEvent
+from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal, QObject, QEvent
+from PyQt5.QtGui import QShowEvent, QHideEvent, QResizeEvent
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QWidget,
@@ -63,6 +63,38 @@ class LandingPage(SlidingStackedWidget, SideTabContents):
         self.slideInWidget(self.details_widget)
 
 
+class FreeGamesScroll(QScrollArea):
+    def __init__(self, parent=None):
+        super(FreeGamesScroll, self).__init__(parent=parent)
+        self.setObjectName(type(self).__name__)
+
+    def setWidget(self, w):
+        super().setWidget(w)
+        w.installEventFilter(self)
+
+    def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
+        if a0 is self.widget() and a1.type() == QEvent.Resize:
+            self.__resize(a0)
+            return a0.event(a1)
+        return False
+
+    def __resize(self, e: QResizeEvent):
+        minh = self.horizontalScrollBar().minimum()
+        maxh = self.horizontalScrollBar().maximum()
+        # lk: when the scrollbar is not visible, min and max are 0
+        if maxh > minh:
+            height = (
+                e.size().height()
+                + self.rect().height() // 2
+                - self.contentsRect().height() // 2
+                + self.widget().layout().spacing()
+                + self.horizontalScrollBar().sizeHint().height()
+            )
+        else:
+            height = e.size().height() + self.rect().height() - self.contentsRect().height()
+        self.setMinimumHeight(max(height, self.minimumHeight()))
+
+
 class LandingWidget(QWidget, SideTabContents):
     show_details = pyqtSignal(CatalogOfferModel)
 
@@ -76,10 +108,12 @@ class LandingWidget(QWidget, SideTabContents):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         self.free_games_now = StoreGroup(self.tr("Free now"), layout=QHBoxLayout, parent=self)
-        self.free_games_now.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.free_games_now.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.free_games_now.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.free_games_next = StoreGroup(self.tr("Free next week"), layout=QHBoxLayout, parent=self)
-        self.free_games_next.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.free_games_next.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.free_games_next.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.discounts_group = StoreGroup(self.tr("Wishlist discounts"), layout=FlowLayout, parent=self)
         self.discounts_group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -87,10 +121,30 @@ class LandingWidget(QWidget, SideTabContents):
         self.games_group = StoreGroup(self.tr("Free to play"), FlowLayout, self)
         self.games_group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.games_group.loading(False)
-        self.games_group.setVisible(True)
+        self.games_group.setVisible(False)
 
-        layout.addWidget(self.free_games_now, alignment=Qt.AlignTop)
-        layout.addWidget(self.free_games_next, alignment=Qt.AlignTop)
+        free_scroll = FreeGamesScroll(self)
+        free_container = QWidget(free_scroll)
+        free_scroll.setWidget(free_container)
+        free_container_layout = QHBoxLayout(free_container)
+
+        free_scroll.setWidgetResizable(True)
+        free_scroll.setFrameShape(QScrollArea.NoFrame)
+        free_scroll.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
+        free_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        free_container_layout.setContentsMargins(0, 0, 0, 0)
+        free_container_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        free_container_layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
+        free_container_layout.addWidget(self.free_games_now)
+        free_container_layout.addWidget(self.free_games_next)
+
+        free_scroll.widget().setAutoFillBackground(False)
+        free_scroll.viewport().setAutoFillBackground(False)
+
+        # layout.addWidget(self.free_games_now, alignment=Qt.AlignTop)
+        # layout.addWidget(self.free_games_next, alignment=Qt.AlignTop)
+        layout.addWidget(free_scroll, alignment=Qt.AlignTop)
         layout.addWidget(self.discounts_group, alignment=Qt.AlignTop)
         layout.addWidget(self.games_group, alignment=Qt.AlignTop)
         layout.addItem(QSpacerItem(0, 0, QSizePolicy.Fixed, QSizePolicy.Expanding))
@@ -113,12 +167,12 @@ class LandingWidget(QWidget, SideTabContents):
             self.discounts_group.layout().removeWidget(w)
             w.deleteLater()
 
-        for item in wishlist:
-            if item.offer.price.totalPrice.discount > 0:
-                w = StoreItemWidget(self.api.cached_manager, item.offer)
-                w.show_details.connect(self.show_details)
-                self.discounts_group.layout().addWidget(w)
-        self.discounts_group.setVisible(bool(wishlist))
+        for item in filter(lambda x: bool(x.offer.price.totalPrice.discount), wishlist):
+            w = StoreItemWidget(self.api.cached_manager, item.offer)
+            w.show_details.connect(self.show_details)
+            self.discounts_group.layout().addWidget(w)
+        have_discounts = any(map(lambda x: bool(x.offer.price.totalPrice.discount), wishlist))
+        self.discounts_group.setVisible(have_discounts)
         self.discounts_group.loading(False)
 
     def __update_free_games(self, free_games: List[CatalogOfferModel]):
@@ -171,13 +225,15 @@ class LandingWidget(QWidget, SideTabContents):
         self.free_games_next.loading(False)
 
     def show_games(self, data):
+        if not data:
+            return
+
         for w in self.games_group.findChildren(StoreItemWidget, options=Qt.FindDirectChildrenOnly):
             self.games_group.layout().removeWidget(w)
             w.deleteLater()
 
-        if data:
-            for game in data:
-                w = StoreItemWidget(self.api.cached_manager, game)
-                w.show_details.connect(self.show_details)
-                self.games_group.layout().addWidget(w)
+        for game in data:
+            w = StoreItemWidget(self.api.cached_manager, game)
+            w.show_details.connect(self.show_details)
+            self.games_group.layout().addWidget(w)
         self.games_group.loading(False)

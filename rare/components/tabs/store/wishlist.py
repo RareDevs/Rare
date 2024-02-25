@@ -1,3 +1,4 @@
+from enum import IntEnum
 from typing import List
 
 from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot
@@ -44,6 +45,18 @@ class WishlistPage(SlidingStackedWidget, SideTabContents):
         self.slideInWidget(self.details_widget)
 
 
+class WishlistOrder(IntEnum):
+    NAME = 1
+    PRICE = 2
+    DISCOUNT = 3
+    DEVELOPER = 4
+
+
+class WishlistFilter(IntEnum):
+    NONE = 0
+    DISCOUNT = 1
+
+
 class WishlistWidget(QWidget, SideTabContents):
     show_details = pyqtSignal(CatalogOfferModel)
     update_wishlist_signal = pyqtSignal()
@@ -55,20 +68,36 @@ class WishlistWidget(QWidget, SideTabContents):
         self.ui = Ui_Wishlist()
         self.ui.setupUi(self)
         self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
-        self.setEnabled(False)
-        self.wishlist = []
-        self.widgets = []
 
-        self.list_layout = FlowLayout(self.ui.list_container)
+        self.wishlist_layout = FlowLayout()
+        self.ui.container_layout.addLayout(self.wishlist_layout, stretch=1)
 
-        self.ui.sort_cb.currentIndexChanged.connect(self.sort_wishlist)
-        self.ui.filter_cb.currentIndexChanged.connect(self.set_filter)
-        self.ui.reload_button.clicked.connect(self.update_wishlist)
+        sortings = {
+            WishlistOrder.NAME: self.tr("Name"),
+            WishlistOrder.PRICE: self.tr("Price"),
+            WishlistOrder.DISCOUNT: self.tr("Discount"),
+            WishlistOrder.DEVELOPER: self.tr("Developer"),
+        }
+        for data, text in sortings.items():
+            self.ui.order_combo.addItem(text, data)
+        self.ui.order_combo.currentIndexChanged.connect(self.order_wishlist)
+
+        filters = {
+            WishlistFilter.NONE: self.tr("None"),
+            WishlistFilter.DISCOUNT: self.tr("Discount"),
+        }
+        for data, text in filters.items():
+            self.ui.filter_combo.addItem(text, data)
+        self.ui.filter_combo.currentIndexChanged.connect(self.filter_wishlist)
+
         self.ui.reload_button.setIcon(qta_icon("fa.refresh", color="white"))
+        self.ui.reload_button.clicked.connect(self.update_wishlist)
 
-        self.ui.reverse.stateChanged.connect(
-            lambda: self.sort_wishlist(sort=self.ui.sort_cb.currentIndex())
+        self.ui.reverse_check.stateChanged.connect(
+            lambda: self.order_wishlist(self.ui.order_combo.currentIndex())
         )
+
+        self.setEnabled(False)
 
     def showEvent(self, a0: QShowEvent) -> None:
         self.update_wishlist()
@@ -90,70 +119,68 @@ class WishlistWidget(QWidget, SideTabContents):
         )
         self.update_wishlist_signal.emit()
 
-    def set_filter(self, i):
-        count = 0
-        for w in self.widgets:
-            if i == 1 and not w.discount:
-                w.setVisible(False)
+    @pyqtSlot(int)
+    def filter_wishlist(self, index: int = int(WishlistFilter.NONE)):
+        list_filter = self.ui.filter_combo.itemData(index, Qt.UserRole)
+        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindDirectChildrenOnly)
+        for w in widgets:
+            if list_filter == WishlistFilter.NONE:
+                w.setVisible(True)
+            elif list_filter == WishlistFilter.DISCOUNT:
+                w.setVisible(bool(w.catalog_game.price.totalPrice.discount))
             else:
                 w.setVisible(True)
-                count += 1
+        have_visible = any(map(lambda x: x.isVisible(), widgets))
+        self.ui.no_games_label.setVisible(not have_visible)
 
-            if i == 0:
-                w.setVisible(True)
-
-        if count == 0:
-            self.ui.no_games_label.setVisible(True)
-        else:
-            self.ui.no_games_label.setVisible(False)
-
-    def sort_wishlist(self, sort=0):
-        widgets = self.ui.list_container.findChildren(WishlistItemWidget, options=Qt.FindDirectChildrenOnly)
+    @pyqtSlot(int)
+    def order_wishlist(self, index: int = int(WishlistOrder.NAME)):
+        list_order = self.ui.order_combo.itemData(index, Qt.UserRole)
+        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindDirectChildrenOnly)
         for w in widgets:
-            self.ui.list_container.layout().removeWidget(w)
+            self.wishlist_layout.removeWidget(w)
 
-        if sort == 0:
-            func = lambda x: x.catalog_game.title
-            reverse = self.ui.reverse.isChecked()
-        elif sort == 1:
-            func = lambda x: x.catalog_game.price.totalPrice["fmtPrice"]["discountPrice"]
-            reverse = self.ui.reverse.isChecked()
-        elif sort == 2:
-            func = lambda x: x.catalog_game.seller["name"]
-            reverse = self.ui.reverse.isChecked()
-        elif sort == 3:
-            func = lambda x: 1 - (x.catalog_game.price.totalPrice["discountPrice"] / x.catalog_game.price.totalPrice["originalPrice"])
-            reverse = not self.ui.reverse.isChecked()
+        if list_order == WishlistOrder.NAME:
+            def func(x: WishlistItemWidget):
+                return x.catalog_game.title
+        elif list_order == WishlistOrder.PRICE:
+            def func(x: WishlistItemWidget):
+                return x.catalog_game.price.totalPrice.discountPrice
+        elif list_order == WishlistOrder.DEVELOPER:
+            def func(x: WishlistItemWidget):
+                return x.catalog_game.seller["name"]
+        elif list_order == WishlistOrder.DISCOUNT:
+            def func(x: WishlistItemWidget):
+                discount = x.catalog_game.price.totalPrice.discountPrice
+                original = x.catalog_game.price.totalPrice.originalPrice
+                return 1 - (discount / original)
         else:
-            func = lambda x: x.catalog_game.title
-            reverse = self.ui.reverse.isChecked()
+            def func(x: WishlistItemWidget):
+                return x.catalog_game.title
 
+        reverse = self.ui.reverse_check.isChecked()
         widgets = sorted(widgets, key=func, reverse=reverse)
         for w in widgets:
-            self.ui.list_container.layout().addWidget(w)
+            self.wishlist_layout.addWidget(w)
 
-    def set_wishlist(self, wishlist: List[WishlistItemModel] = None, sort=0):
+    def set_wishlist(self, wishlist: List[WishlistItemModel] = None):
         if wishlist and wishlist[0] == "error":
             return
 
-        if wishlist is not None:
-            self.wishlist = wishlist
+        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindDirectChildrenOnly)
+        for w in widgets:
+            self.wishlist_layout.removeWidget(w)
+            w.deleteLater()
 
-        for i in self.widgets:
-            i.deleteLater()
-
-        self.widgets.clear()
-
-        if len(wishlist) == 0:
-            self.ui.no_games_label.setVisible(True)
-        else:
-            self.ui.no_games_label.setVisible(False)
+        self.ui.no_games_label.setVisible(bool(wishlist))
 
         for game in wishlist:
-            w = WishlistItemWidget(self.api.cached_manager, game.offer, self.ui.list_container)
+            w = WishlistItemWidget(self.api.cached_manager, game.offer, self.ui.container)
             w.show_details.connect(self.show_details)
             w.delete_from_wishlist.connect(self.delete_from_wishlist)
-            self.widgets.append(w)
-            self.list_layout.addWidget(w)
-        self.list_layout.update()
+            self.wishlist_layout.addWidget(w)
+
+        self.order_wishlist(self.ui.order_combo.currentIndex())
+        self.filter_wishlist(self.ui.filter_combo.currentIndex())
+
         self.setEnabled(True)

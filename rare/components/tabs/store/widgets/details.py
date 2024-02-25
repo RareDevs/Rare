@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
 )
 
-from rare.components.tabs.store.api.debug import DebugDialog
 from rare.components.tabs.store.api.models.diesel import DieselProduct, DieselProductDetail, DieselSystemDetail
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.components.tabs.store.store_api import StoreAPI
@@ -72,8 +71,6 @@ class DetailsWidget(QWidget, SideTabContents):
             self.in_wishlist = False
 
     def update_game(self, offer: CatalogOfferModel):
-        debug = DebugDialog(offer.__dict__, None)
-        debug.exec()
         self.ui.title.setText(offer.title)
         self.title_str = offer.title
         self.id_str = offer.id

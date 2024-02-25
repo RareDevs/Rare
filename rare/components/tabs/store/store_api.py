@@ -4,7 +4,6 @@ from typing import List, Callable
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QApplication
 
-from rare.components.tabs.store.api.debug import DebugDialog
 from rare.components.tabs.store.constants import (
     wishlist_query,
     search_query,
@@ -154,13 +153,9 @@ class StoreAPI(QObject):
             "query": search_query,
             "variables": browse_model.to_dict()
         }
-        # debug = DebugDialog(payload["variables"], None)
-        # debug.exec()
         self.manager.post(graphql_url, lambda data: self.__handle_browse_games(data, handle_func), payload)
 
     def __handle_browse_games(self, data, handle_func):
-        # debug = DebugDialog(data, None)
-        # debug.exec()
         self.browse_active = False
         if data is None:
             data = {}
@@ -204,8 +199,6 @@ class StoreAPI(QObject):
 
     @staticmethod
     def __handle_get_game(data, handle_func):
-        # debug = DebugDialog(data, None)
-        # debug.exec()
         try:
             product = DieselProduct.from_dict(data)
             handle_func(product)
@@ -229,8 +222,6 @@ class StoreAPI(QObject):
         self.authed_manager.post(graphql_url, lambda data: self._handle_add_to_wishlist(data, handle_func), payload)
 
     def _handle_add_to_wishlist(self, data, handle_func):
-        # debug = DebugDialog(data, None)
-        # debug.exec()
         try:
             response = ResponseModel.from_dict(data)
             data = response.data.wishlist.addToWishlist
@@ -255,8 +246,6 @@ class StoreAPI(QObject):
                                  payload)
 
     def _handle_remove_from_wishlist(self, data, handle_func):
-        # debug = DebugDialog(data, None)
-        # debug.exec()
         try:
             response = ResponseModel.from_dict(data)
             data = response.data.wishlist.removeFromWishlist
