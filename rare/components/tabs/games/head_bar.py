@@ -33,7 +33,7 @@ class GameListHeadBar(QWidget):
             LibraryFilter.ALL: self.tr("All games"),
             LibraryFilter.INSTALLED: self.tr("Installed"),
             LibraryFilter.OFFLINE: self.tr("Offline"),
-            # int(LibraryFilter.HIDDEN): self.tr("Hidden"),
+            # LibraryFilter.HIDDEN: self.tr("Hidden"),
         }
         for data, text in filters.items():
             self.filter.addItem(text, data)
