@@ -17,17 +17,7 @@
    <item>
     <layout class="QHBoxLayout" name="tool_layout">
      <item>
-      <widget class="QLabel" name="order_label">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Sort by</string>
-       </property>
-      </widget>
+      <widget class="QComboBox" name="filter_combo"/>
      </item>
      <item>
       <widget class="QComboBox" name="order_combo"/>
@@ -41,29 +31,6 @@
      </item>
      <item>
       <spacer name="hspacer_left">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="filter_label">
-       <property name="text">
-        <string>Filter by</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="filter_combo"/>
-     </item>
-     <item>
-      <spacer name="hspacer_right">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>

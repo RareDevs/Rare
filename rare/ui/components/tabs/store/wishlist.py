@@ -20,14 +20,9 @@ class Ui_Wishlist(object):
         self.main_layout.setObjectName("main_layout")
         self.tool_layout = QtWidgets.QHBoxLayout()
         self.tool_layout.setObjectName("tool_layout")
-        self.order_label = QtWidgets.QLabel(Wishlist)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.order_label.sizePolicy().hasHeightForWidth())
-        self.order_label.setSizePolicy(sizePolicy)
-        self.order_label.setObjectName("order_label")
-        self.tool_layout.addWidget(self.order_label)
+        self.filter_combo = QtWidgets.QComboBox(Wishlist)
+        self.filter_combo.setObjectName("filter_combo")
+        self.tool_layout.addWidget(self.filter_combo)
         self.order_combo = QtWidgets.QComboBox(Wishlist)
         self.order_combo.setObjectName("order_combo")
         self.tool_layout.addWidget(self.order_combo)
@@ -36,14 +31,6 @@ class Ui_Wishlist(object):
         self.tool_layout.addWidget(self.reverse_check)
         spacerItem = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.tool_layout.addItem(spacerItem)
-        self.filter_label = QtWidgets.QLabel(Wishlist)
-        self.filter_label.setObjectName("filter_label")
-        self.tool_layout.addWidget(self.filter_label)
-        self.filter_combo = QtWidgets.QComboBox(Wishlist)
-        self.filter_combo.setObjectName("filter_combo")
-        self.tool_layout.addWidget(self.filter_combo)
-        spacerItem1 = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.tool_layout.addItem(spacerItem1)
         self.reload_button = QtWidgets.QPushButton(Wishlist)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -73,9 +60,7 @@ class Ui_Wishlist(object):
 
     def retranslateUi(self, Wishlist):
         _translate = QtCore.QCoreApplication.translate
-        self.order_label.setText(_translate("Wishlist", "Sort by"))
         self.reverse_check.setText(_translate("Wishlist", "Reverse"))
-        self.filter_label.setText(_translate("Wishlist", "Filter by"))
         self.no_games_label.setText(_translate("Wishlist", "No games matching your filter"))
 
 

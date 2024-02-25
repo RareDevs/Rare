@@ -72,6 +72,14 @@ class WishlistWidget(QWidget, SideTabContents):
         self.wishlist_layout = FlowLayout()
         self.ui.container_layout.addLayout(self.wishlist_layout, stretch=1)
 
+        filters = {
+            WishlistFilter.NONE: self.tr("All items"),
+            WishlistFilter.DISCOUNT: self.tr("Discount"),
+        }
+        for data, text in filters.items():
+            self.ui.filter_combo.addItem(text, data)
+        self.ui.filter_combo.currentIndexChanged.connect(self.filter_wishlist)
+
         sortings = {
             WishlistOrder.NAME: self.tr("Name"),
             WishlistOrder.PRICE: self.tr("Price"),
@@ -81,14 +89,6 @@ class WishlistWidget(QWidget, SideTabContents):
         for data, text in sortings.items():
             self.ui.order_combo.addItem(text, data)
         self.ui.order_combo.currentIndexChanged.connect(self.order_wishlist)
-
-        filters = {
-            WishlistFilter.NONE: self.tr("None"),
-            WishlistFilter.DISCOUNT: self.tr("Discount"),
-        }
-        for data, text in filters.items():
-            self.ui.filter_combo.addItem(text, data)
-        self.ui.filter_combo.currentIndexChanged.connect(self.filter_wishlist)
 
         self.ui.reload_button.setIcon(qta_icon("fa.refresh", color="white"))
         self.ui.reload_button.clicked.connect(self.update_wishlist)
