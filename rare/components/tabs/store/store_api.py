@@ -178,13 +178,13 @@ class StoreAPI(QObject):
             self.browse_games(*self.next_browse_request)  # pylint: disable=E1120
             self.next_browse_request = tuple(())
 
-    def get_game_config_graphql(self, namespace: str, handle_func):
-        payload = {
-            "query": config_query,
-            "variables": {
-                "namespace": namespace
-            }
-        }
+    # def get_game_config_graphql(self, namespace: str, handle_func):
+    #     payload = {
+    #         "query": config_query,
+    #         "variables": {
+    #             "namespace": namespace
+    #         }
+    #     }
 
     def __make_graphql_query(self):
         pass
