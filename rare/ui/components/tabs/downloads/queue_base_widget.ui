@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>354</width>
-    <height>72</height>
+    <width>380</width>
+    <height>62</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -104,7 +104,7 @@
         </property>
        </widget>
       </item>
-      <item alignment="Qt::AlignTop">
+      <item alignment="Qt::AlignBottom">
        <widget class="QPushButton" name="remove_button">
         <property name="text">
          <string>Remove from queue</string>
@@ -129,14 +129,14 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item alignment="Qt::AlignTop">
+      <item>
        <widget class="QPushButton" name="update_button">
         <property name="text">
          <string>Update game</string>
         </property>
        </widget>
       </item>
-      <item alignment="Qt::AlignTop">
+      <item alignment="Qt::AlignBottom">
        <widget class="QPushButton" name="settings_button">
         <property name="text">
          <string>Update with settings</string>
