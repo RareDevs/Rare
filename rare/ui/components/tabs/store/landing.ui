@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LandingWidget</class>
+ <widget class="QWidget" name="LandingWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>788</width>
+    <height>662</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">LandingWidget</string>
+  </property>
+  <layout class="QHBoxLayout" name="main_layout" stretch="1,0">
+   <item>
+    <layout class="QVBoxLayout" name="left_layout"/>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="right_layout">
+     <item>
+      <widget class="QPushButton" name="reset_button">
+       <property name="text">
+        <string>Reset filters</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QScrollArea" name="filter_scrollarea">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustToContents</enum>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="filter_container">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>142</width>
+          <height>390</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QVBoxLayout" name="filter_container_layout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>3</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QGroupBox" name="price_group">
+           <property name="title">
+            <string>Price</string>
+           </property>
+           <layout class="QVBoxLayout" name="price_layout">
+            <item>
+             <widget class="QRadioButton" name="none_price">
+              <property name="text">
+               <string>None</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="free_button">
+              <property name="text">
+               <string>Free</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="under10">
+              <property name="text">
+               <string>Under 10</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="under20">
+              <property name="text">
+               <string>Under 20</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="under30">
+              <property name="text">
+               <string>Under 30</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="above">
+              <property name="text">
+               <string>14.99 and above</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="on_discount">
+              <property name="text">
+               <string>Discount</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="platform_group">
+           <property name="title">
+            <string>Platform</string>
+           </property>
+           <layout class="QVBoxLayout" name="platfrom_layout"/>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="genre_group">
+           <property name="title">
+            <string>Genre</string>
+           </property>
+           <layout class="QVBoxLayout" name="genre_layout"/>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="type_group">
+           <property name="title">
+            <string>Type</string>
+           </property>
+           <layout class="QVBoxLayout" name="type_layout"/>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="others_group">
+           <property name="title">
+            <string>Other tags</string>
+           </property>
+           <layout class="QVBoxLayout" name="others_layout"/>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

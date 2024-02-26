@@ -1,184 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Wishlist</class>
- <widget class="QStackedWidget" name="Wishlist">
+ <widget class="QWidget" name="Wishlist">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>736</width>
-    <height>398</height>
+    <width>489</width>
+    <height>165</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">StackedWidget</string>
+   <string notr="true">Wishlist</string>
   </property>
-  <widget class="QWidget" name="page">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QScrollArea" name="scroll_area">
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="scroll_widget">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>716</width>
-         <height>378</height>
-        </rect>
+  <layout class="QVBoxLayout" name="main_layout">
+   <item>
+    <layout class="QHBoxLayout" name="tool_layout">
+     <item>
+      <widget class="QComboBox" name="filter_combo"/>
+     </item>
+     <item>
+      <widget class="QComboBox" name="order_combo"/>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="reverse_check">
+       <property name="text">
+        <string>Reverse</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QLabel" name="title_label">
-          <property name="font">
-           <font>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Wishlist</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="sort_label">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Sort by</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="sort_cb">
-            <item>
-             <property name="text">
-              <string>Name</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Price</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Developer</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Discount</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="reverse">
-            <property name="text">
-             <string>Reverse</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="filter_label">
-            <property name="text">
-             <string>Filter:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="filter_cb">
-            <item>
-             <property name="text">
-              <string>None</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Discount</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="reload_button">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="list_layout"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="no_games_label">
-          <property name="text">
-           <string>No games matching your filter</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>379</width>
-            <height>218</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
       </widget>
+     </item>
+     <item>
+      <spacer name="hspacer_left">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="reload_button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="scrollarea">
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContents</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="container">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>473</width>
+        <height>115</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="container_layout">
+       <item alignment="Qt::AlignTop">
+        <widget class="QLabel" name="no_games_label">
+         <property name="text">
+          <string>No games matching your filter</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
-    </item>
-   </layout>
-  </widget>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

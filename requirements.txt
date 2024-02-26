@@ -7,3 +7,4 @@ legendary-gl @ git+https://github.com/derrod/legendary@96e07ff ; platform_system
 orjson
 vdf; platform_system == "Linux" or platform_system == "FreeBSD"
 pywin32; platform_system == "Windows"
+

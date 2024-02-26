@@ -5,7 +5,7 @@ from typing import Callable, Dict, TypeVar, List, Tuple
 from typing import Union
 
 import orjson
-from PyQt5.QtCore import QObject, pyqtSignal, QUrl, QUrlQuery, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSignal, QUrl, QUrlQuery, pyqtSlot, QJsonDocument
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QNetworkDiskCache
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
@@ -66,7 +66,7 @@ class QtRequests(QObject):
 
     def __post(self, item: RequestQueueItem):
         request = self.__prepare_request(item)
-        payload = orjson.dumps(item.payload)  # pylint: disable=maybe-no-member
+        payload = orjson.dumps(item.payload)
         reply = self.manager.post(request, payload)
         reply.errorOccurred.connect(self.__on_error)
         self.__active_requests[reply] = item

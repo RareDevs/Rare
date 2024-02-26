@@ -1,0 +1,76 @@
+scalar Date
+
+type Currency {
+    decimals: Int
+    symbol: String
+}
+
+type FormattedPrice {
+    originalPrice: String
+    discountPrice: String
+    intermediatePrice: String
+}
+
+type TotalPrice {
+    discountPrice: Int
+    originalPrice: Int
+    voucherDiscount: Int
+    discount: Int
+    currencyCode: String
+    currencyInfo: Currency
+    fmtPrice(locale: String): FormattedPrice
+}
+
+type DiscountSetting {
+    discountType: String
+}
+
+type AppliedRules {
+    id: ID
+    endDate: Date
+    discountSetting: DiscountSetting
+}
+
+type LineOfferRes {
+    appliedRules: [AppliedRules]
+}
+
+type GetPriceRes {
+    totalPrice: TotalPrice
+    lineOffers: [LineOfferRes]
+}
+
+type Image {
+    type: String
+    url: String
+    alt: String
+}
+
+type StorePageMapping {
+    cmsSlug: String
+    offerId: ID
+    prePurchaseOfferId: ID
+}
+
+type PageSandboxModel {
+    pageSlug: String
+    pageType: String
+    productId: ID
+    sandboxId: ID
+    createdDate: Date
+    updatedDate: Date
+    deletedDate: Date
+    mappings: [StorePageMapping]
+}
+
+type CatalogNamespace {
+    parent: ID
+    displayName: String
+    store: String
+    mappings: [PageSandboxModel]
+}
+
+type CatalogItem {
+    id: ID
+    namespace: ID
+}
