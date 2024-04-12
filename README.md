@@ -23,7 +23,7 @@ Rare is a graphical interface for Legendary, a command line alternative to Epic 
 - Packages, packages everywhere
 
 
-## Reporing issues
+## Reporting issues
 
 If you run into any issues, you can report them by creating an issue on GitHub: https://github.com/RareDevs/Rare/issues/new/choose
 
