@@ -61,7 +61,7 @@ def execute_subprocess(command: List[str], arguments: List[str], environment: Ma
     out, err = out.decode("utf-8", "ignore") if out else "", err.decode("utf-8", "ignore") if err else ""
 
     # lk: the following is a work-around for wineserver sometimes hanging around after
-    proc = get_configured_subprocess(command + ["wineboot", "-k"], environment)
+    proc = get_configured_subprocess(command + ["wineboot", "-e"], environment)
     _, _ = proc.communicate()
     return out, err
 
@@ -77,7 +77,7 @@ def execute_qprocess(command: List[str], arguments: List[str], environment: Mapp
     proc.deleteLater()
 
     # lk: the following is a work-around for wineserver sometimes hanging around after
-    proc = get_configured_qprocess(command + ["wineboot", "-k"], environment)
+    proc = get_configured_qprocess(command + ["wineboot", "-e"], environment)
     proc.start()
     proc.waitForFinished(-1)
     proc.deleteLater()
@@ -166,5 +166,5 @@ def get_host_environment(app_environment: Dict, silent: bool = True) -> Dict:
         _environ["WINEDEBUG"] = "-all"
         _environ["WINEDLLOVERRIDES"] = "winemenubuilder=d;mscoree=d;mshtml=d;"
         # lk: pressure-vessel complains about this but it doesn't fail due to it
-        _environ["DISPLAY"] = ""
+        #_environ["DISPLAY"] = ""
     return _environ
