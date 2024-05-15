@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 
 from PyQt5.QtCore import Qt, QSettings, QTimer, QSize, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor, QShowEvent
+from PyQt5.QtGui import QCloseEvent, QCursor
 from PyQt5.QtWidgets import (
     QMainWindow,
     QApplication,

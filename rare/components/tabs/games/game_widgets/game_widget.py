@@ -111,7 +111,6 @@ class GameWidget(LibraryWidget):
             self.startTimer(random.randrange(42, 2361, 129), Qt.CoarseTimer)
             # self.startTimer(random.randrange(42, 2361, 363), Qt.VeryCoarseTimer)
             # self.rgame.load_pixmap()
-            # QTimer.singleShot(random.randrange(42, 2361, 7), Qt.VeryCoarseTimer, self.rgame.load_pixmap)
         super().paintEvent(a0)
 
     def timerEvent(self, a0):

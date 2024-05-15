@@ -14,8 +14,7 @@ class LoadingWidget(QLabel):
         self.setMovie(self.movie)
         if self.parent() is not None:
             self.parent().installEventFilter(self)
-        if autostart:
-            self.movie.start()
+        self.autostart = autostart
 
     def __center_on_parent(self):
         rect = self.rect()
@@ -34,6 +33,9 @@ class LoadingWidget(QLabel):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
+        if self.autostart:
+            self.movie.start()
+            self.autostart = False
         self.__center_on_parent()
         super().showEvent(a0)
 
@@ -45,7 +47,8 @@ class LoadingWidget(QLabel):
 
     def start(self):
         self.setVisible(True)
-        self.movie.start()
+        if not self.autostart:
+            self.movie.start()
 
     def stop(self):
         self.setVisible(False)
