@@ -41,11 +41,11 @@ class RareGame(RareGameSlim):
             return cls(
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
-                last_played=datetime.fromisoformat(x) if (x := data.get("last_played", None)) else datetime.min,
-                grant_date=datetime.fromisoformat(x) if (x := data.get("grant_date", None)) else datetime.min,
+                last_played=datetime.fromisoformat(x) if (x := data.get("last_played", "")) else datetime.min,
+                grant_date=datetime.fromisoformat(x) if (x := data.get("grant_date", "")) else datetime.min,
                 steam_appid=data.get("steam_appid", None),
                 steam_grade=data.get("steam_grade", None),
-                steam_date=datetime.fromisoformat(x) if (x := data.get("steam_date", None)) else datetime.min,
+                steam_date=datetime.fromisoformat(x) if (x := data.get("steam_date", "")) else datetime.min,
                 tags=data.get("tags", []),
             )
 
@@ -432,10 +432,13 @@ class RareGame(RareGameSlim):
         if self.metadata.steam_grade != "pending":
             elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
 
-            if elapsed_time.days > 3 and (self.metadata.steam_grade is None or self.metadata.steam_appid is None):
+            if elapsed_time.days > 3:
+                logger.info("Refreshing ProtonDB grade for %s", self.app_title)
+
                 def _set_steam_grade():
                     appid, rating = get_rating(self.core, self.app_name)
                     self.set_steam_grade(appid, rating)
+
                 worker = QRunnable.create(_set_steam_grade)
                 QThreadPool.globalInstance().start(worker)
                 self.metadata.steam_grade = "pending"
@@ -445,12 +448,15 @@ class RareGame(RareGameSlim):
     def steam_appid(self) -> Optional[int]:
         return self.metadata.steam_appid
 
+    def set_steam_appid(self, appid: int):
+        set_envvar(self.app_name, "SteamAppId", str(appid))
+        set_envvar(self.app_name, "SteamGameId", str(appid))
+        set_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
+        self.metadata.steam_appid = appid
+
     def set_steam_grade(self, appid: int, grade: str) -> None:
         if appid and self.steam_appid is None:
-            set_envvar(self.app_name, "SteamAppId", str(appid))
-            set_envvar(self.app_name, "SteamGameId", str(appid))
-            set_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
-            self.metadata.steam_appid = appid
+            self.set_steam_appid(appid)
         self.metadata.steam_grade = grade
         self.metadata.steam_date = datetime.utcnow()
         self.__save_metadata()
