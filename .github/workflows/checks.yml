@@ -23,6 +23,7 @@ on:
 jobs:
   pylint:
     strategy:
+      fail-fast: false
       matrix:
         os: ['macos-latest', 'windows-latest', 'ubuntu-latest']
         version: ['3.9', '3.10', '3.11', '3.12']
