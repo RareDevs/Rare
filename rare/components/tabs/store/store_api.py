@@ -97,13 +97,13 @@ class StoreAPI(QObject):
         except KeyError as e:
             if DEBUG():
                 raise e
-            logger.error("Free games Api request failed")
+            logger.exception("Free games API request failed")
             handle_func(["error", "Key error"])
             return
         except Exception as e:
             if DEBUG():
                 raise e
-            logger.error(f"Free games Api request failed: {e}")
+            logger.exception(f"Free games API request failed")
             handle_func(["error", e])
             return
 
