@@ -1,7 +1,8 @@
 import difflib
 import os
 from datetime import datetime
-from enum import StrEnum, Enum
+from enum import Enum
+from logging import getLogger
 from typing import Tuple
 
 import orjson
@@ -9,6 +10,8 @@ import requests
 
 from rare.lgndr.core import LegendaryCore
 from rare.utils.paths import cache_dir
+
+logger = getLogger("SteamGrades")
 
 replace_chars = ",;.:-_ "
 steamapi_url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
@@ -52,6 +55,7 @@ def get_rating(core: LegendaryCore, app_name: str) -> Tuple[int, str]:
             raise Exception
         grade = get_grade(steam_id)
     except Exception as e:
+        logger.exception(e)
         return 0, "fail"
     else:
         return steam_id, grade
@@ -64,28 +68,31 @@ def get_grade(steam_code):
     steam_code = str(steam_code)
     res = requests.get(f"{protondb_url}{steam_code}.json")
     try:
-        lista = orjson.loads(res.text)
-    except orjson.JSONDecodeError:
+        app = orjson.loads(res.text)
+    except orjson.JSONDecodeError as e:
+        logger.exception(e)
         return "fail"
 
-    return lista["tier"]
+    return app.get("tier", "fail")
 
 
 def load_json() -> dict:
-    file = os.path.join(cache_dir(), "game_list.json")
-    mod_time = datetime.fromtimestamp(os.path.getmtime(file))
-    elapsed_time = abs(datetime.now() - mod_time)
     global __active_download
     if __active_download:
         return {}
-    if not os.path.exists(file) or elapsed_time.days > 7:
+    file = os.path.join(cache_dir(), "steam_appids.json")
+    elapsed_days = 0
+    if os.path.exists(file):
+        mod_time = datetime.fromtimestamp(os.path.getmtime(file))
+        elapsed_days = abs(datetime.now() - mod_time).days
+    if not os.path.exists(file) or elapsed_days > 7:
         __active_download = True
         response = requests.get(steamapi_url)
         __active_download = False
-        steam_ids = orjson.loads(response.text)["applist"]["apps"]
+        apps = orjson.loads(response.text).get("applist", {}).get("apps", {})
         ids = {}
-        for game in steam_ids:
-            ids[game["name"]] = game["appid"]
+        for app in apps:
+            ids[app["name"]] = app["appid"]
         with open(file, "w") as f:
             f.write(orjson.dumps(ids).decode("utf-8"))
         return ids
