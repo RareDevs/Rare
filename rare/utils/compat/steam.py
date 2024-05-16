@@ -1,4 +1,3 @@
-import platform as pf
 import os
 import shlex
 from dataclasses import dataclass
@@ -7,11 +6,9 @@ from hashlib import md5
 from logging import getLogger
 from typing import Optional, Union, List, Dict, Set
 
-if pf.system() in {"Linux", "FreeBSD"}:
-    # noinspection PyUnresolvedReferences
-    import vdf  # pylint: disable=E0401
+import vdf
 
-logger = getLogger("Proton")
+logger = getLogger("SteamTools")
 
 steam_compat_client_install_paths = [os.path.expanduser("~/.local/share/Steam")]
 
@@ -149,6 +146,32 @@ def find_appmanifests(library: str) -> List[dict]:
     return appmanifests
 
 
+def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
+    runtimes = {}
+    appmanifests = find_appmanifests(library)
+    common = os.path.join(library, "common")
+    for appmanifest in appmanifests:
+        folder = appmanifest["AppState"]["installdir"]
+        tool_path = os.path.join(common, folder)
+        if os.path.isfile(vdf_file := os.path.join(tool_path, "toolmanifest.vdf")):
+            with open(vdf_file, "r") as f:
+                toolmanifest = vdf.load(f)
+                if toolmanifest["manifest"]["compatmanager_layer_name"] == "container-runtime":
+                    print(toolmanifest["manifest"])
+                    runtimes.update(
+                        {
+                            appmanifest["AppState"]["appid"]: SteamRuntime(
+                                steam_path=steam_path,
+                                steam_library=library,
+                                appmanifest=appmanifest,
+                                tool_path=tool_path,
+                                toolmanifest=toolmanifest["manifest"],
+                            )
+                        }
+                    )
+    return runtimes
+
+
 def find_protons(steam_path: str, library: str) -> List[ProtonTool]:
     protons = []
     appmanifests = find_appmanifests(library)
@@ -225,33 +248,7 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
     return tools
 
 
-def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
-    runtimes = {}
-    appmanifests = find_appmanifests(library)
-    common = os.path.join(library, "common")
-    for appmanifest in appmanifests:
-        folder = appmanifest["AppState"]["installdir"]
-        tool_path = os.path.join(common, folder)
-        if os.path.isfile(vdf_file := os.path.join(tool_path, "toolmanifest.vdf")):
-            with open(vdf_file, "r") as f:
-                toolmanifest = vdf.load(f)
-                if toolmanifest["manifest"]["compatmanager_layer_name"] == "container-runtime":
-                    print(toolmanifest["manifest"])
-                    runtimes.update(
-                        {
-                            appmanifest["AppState"]["appid"]: SteamRuntime(
-                                steam_path=steam_path,
-                                steam_library=library,
-                                appmanifest=appmanifest,
-                                tool_path=tool_path,
-                                toolmanifest=toolmanifest["manifest"],
-                            )
-                        }
-                    )
-    return runtimes
-
-
-def find_runtime(
+def get_runtime(
     tool: Union[ProtonTool, CompatibilityTool], runtimes: Dict[str, SteamRuntime]
 ) -> Optional[SteamRuntime]:
     required_tool = tool.required_tool
@@ -305,7 +302,7 @@ def get_steam_environment(
     return environ
 
 
-def find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
+def _find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     steam_path = find_steam()
     if steam_path is None:
         logger.info("Steam could not be found")
@@ -326,7 +323,7 @@ def find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     tools.extend(find_compatibility_tools(steam_path))
 
     for tool in tools:
-        runtime = find_runtime(tool, runtimes)
+        runtime = get_runtime(tool, runtimes)
         tool.runtime = runtime
 
     tools = list(filter(lambda t: bool(t), tools))
@@ -334,14 +331,34 @@ def find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     return tools
 
 
+_tools: Optional[List[Union[ProtonTool, CompatibilityTool]]] = None
+
+
+def find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
+    global _tools
+    if _tools is None:
+        _tools = _find_tools()
+    return list(filter(lambda t: t.layer != "umu-launcher", _tools))
+
+
+def find_umu_launcher() -> Optional[CompatibilityTool]:
+    global _tools
+    if _tools is None:
+        _tools = _find_tools()
+    _umu = list(filter(lambda t: t.layer == "umu-launcher",  _tools))
+    return _umu[0] if _umu else None
+
+
 if __name__ == "__main__":
     from pprint import pprint
 
-    _tools = find_tools()
-    pprint(_tools)
+    tools = find_tools()
+    pprint(tools)
+    umu = find_umu_launcher()
+    pprint(umu)
 
-    for _tool in _tools:
-        print(get_steam_environment(_tool))
-        print(_tool.name)
-        print(_tool.command(SteamVerb.RUN))
-        print(" ".join(_tool.command(SteamVerb.RUN_IN_PREFIX)))
+    for tool in tools:
+        print(get_steam_environment(tool))
+        print(tool.name)
+        print(tool.command(SteamVerb.RUN))
+        print(" ".join(tool.command(SteamVerb.RUN_IN_PREFIX)))
