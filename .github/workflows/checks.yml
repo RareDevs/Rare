@@ -47,4 +47,4 @@ jobs:
           pip3 install qstylizer
       - name: Analysis with pylint
         run: |
-          python3 -m pylint -E rare --jobs=3 --disable=E0611,E1123,E1120 --ignore=ui,singleton.py --extension-pkg-whitelist=PyQt5 --generated-members=PyQt5.*,orjson.*
+          python3 -m pylint rare
