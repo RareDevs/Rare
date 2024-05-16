@@ -55,6 +55,7 @@ class WinePathResolver(Worker):
             disable_wine=config.get_boolean(app_name, "no_wine")
         )
         env = core.get_app_environment(app_name, disable_wine=config.get_boolean(app_name, "no_wine"))
+        # pylint: disable=E0606
         env = compat_utils.get_host_environment(env, silent=True)
 
         return cmd, env
