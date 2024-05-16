@@ -54,8 +54,8 @@ def get_rating(core: LegendaryCore, app_name: str) -> Tuple[int, str]:
         if not steam_id:
             raise Exception
         grade = get_grade(steam_id)
-    except Exception as e:
-        logger.exception(e)
+    except Exception:
+        logger.error("Failed to get ProtonDB rating for %s", game.app_title)
         return 0, "fail"
     else:
         return steam_id, grade
@@ -70,7 +70,7 @@ def get_grade(steam_code):
     try:
         app = orjson.loads(res.text)
     except orjson.JSONDecodeError as e:
-        logger.exception(e)
+        logger.error("Failed to get ProtonDB response for %s", steam_code)
         return "fail"
 
     return app.get("tier", "fail")
