@@ -571,8 +571,8 @@ class RareGame(RareGameSlim):
         if wine_pfx:
             args.extend(["--wine-prefix", wine_pfx])
 
+        logger.info(f"Starting game process: ({executable} {' '.join(args)})")
         QProcess.startDetached(executable, args)
-        logger.info(f"Start new Process: ({executable} {' '.join(args)})")
         self.game_process.connect_to_server(on_startup=False)
         return True
 
