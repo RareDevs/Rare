@@ -76,7 +76,9 @@ class PreLaunchThread(QRunnable):
             proc = get_configured_process()
             proc.setProcessEnvironment(launch_args.environment)
             self.signals.started_pre_launch_command.emit()
-            proc.start(launch_args.pre_launch_command[0], launch_args.pre_launch_command[1:])
+            pre_launch_command = launch_args.pre_launch_command.split()
+            # self.logger.debug("Executing prelaunch command %s, %s", pre_launch_command[0], pre_launch_command[1:])
+            proc.start(pre_launch_command[0], pre_launch_command[1:])
             if launch_args.pre_launch_wait:
                 proc.waitForFinished(-1)
         return launch_args
@@ -310,6 +312,7 @@ class RareLauncher(RareApp):
             print(args.executable, " ".join(args.arguments))
             self.stop()
             return
+        # self.logger.debug("Executing prelaunch command %s, %s", args.executable, args.arguments)
         self.game_process.start(args.executable, args.arguments)
 
     def error_occurred(self, error_str: str):
