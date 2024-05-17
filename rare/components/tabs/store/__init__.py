@@ -6,7 +6,6 @@ from .api.models.response import CatalogOfferModel
 from .landing import LandingWidget, LandingPage
 from .search import SearchPage
 from .store_api import StoreAPI
-from .widgets.details import DetailsWidget
 from .wishlist import WishlistPage
 
 

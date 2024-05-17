@@ -12,7 +12,7 @@ from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .api.models.response import WishlistItemModel, CatalogOfferModel
 from .store_api import StoreAPI
-from .widgets.details import DetailsWidget
+from .widgets.details import StoreDetailsWidget
 from .widgets.items import WishlistItemWidget
 
 
@@ -26,7 +26,7 @@ class WishlistPage(SlidingStackedWidget, SideTabContents):
         self.wishlist_widget.set_title.connect(self.set_title)
         self.wishlist_widget.show_details.connect(self.show_details)
 
-        self.details_widget = DetailsWidget([], api, parent=self)
+        self.details_widget = StoreDetailsWidget([], api, parent=self)
         self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)

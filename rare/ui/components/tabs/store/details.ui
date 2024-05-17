@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DetailsWidget</class>
- <widget class="QWidget" name="DetailsWidget">
+ <class>StoreDetailsWidget</class>
+ <widget class="QWidget" name="StoreDetailsWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>630</width>
-    <height>371</height>
+    <height>382</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">DetailsWidget</string>
+   <string notr="true">StoreDetailsWidget</string>
   </property>
   <layout class="QHBoxLayout" name="main_layout" stretch="0,1">
    <item>
