@@ -19,7 +19,7 @@ from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .store_api import StoreAPI
-from .widgets.details import DetailsWidget
+from .widgets.details import StoreDetailsWidget
 from .widgets.groups import StoreGroup
 from .widgets.items import StoreItemWidget
 
@@ -44,7 +44,7 @@ class LandingPage(SlidingStackedWidget, SideTabContents):
         self.landing_scroll.widget().setAutoFillBackground(False)
         self.landing_scroll.viewport().setAutoFillBackground(False)
 
-        self.details_widget = DetailsWidget([], store_api, parent=self)
+        self.details_widget = StoreDetailsWidget([], store_api, parent=self)
         self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)

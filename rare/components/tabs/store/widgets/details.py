@@ -15,7 +15,7 @@ from rare.components.tabs.store.api.models.diesel import DieselProduct, DieselPr
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.components.tabs.store.store_api import StoreAPI
 from rare.models.image import ImageSize
-from rare.ui.components.tabs.store.details import Ui_DetailsWidget
+from rare.ui.components.tabs.store.details import Ui_StoreDetailsWidget
 from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.side_tab import SideTabWidget, SideTabContents
@@ -24,15 +24,15 @@ from .image import LoadingImageWidget
 logger = logging.getLogger("StoreDetails")
 
 
-class DetailsWidget(QWidget, SideTabContents):
+class StoreDetailsWidget(QWidget, SideTabContents):
     back_clicked: pyqtSignal = pyqtSignal()
 
     # TODO Design
     def __init__(self, installed: List, store_api: StoreAPI, parent=None):
-        super(DetailsWidget, self).__init__(parent=parent)
+        super(StoreDetailsWidget, self).__init__(parent=parent)
         self.implements_scrollarea = True
 
-        self.ui = Ui_DetailsWidget()
+        self.ui = Ui_StoreDetailsWidget()
         self.ui.setupUi(self)
         self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
 

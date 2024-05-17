@@ -8,9 +8,9 @@ from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils.json_formatter import QJsonModel
 from rare.widgets.side_tab import SideTabWidget, SideTabContents
-from .game_dlc import GameDlc
-from .game_info import GameInfo
-from .game_settings import GameSettings
+from .dlcs import GameDlcs
+from .details import GameDetails
+from .settings import GameSettings
 from .cloud_saves import CloudSaves
 
 
@@ -24,9 +24,9 @@ class GameInfoTabs(SideTabWidget):
         self.signals = GlobalSignalsSingleton()
         self.args = ArgumentsSingleton()
 
-        self.info_tab = GameInfo(self)
-        self.info_tab.import_clicked.connect(self.import_clicked)
-        self.info_index = self.addTab(self.info_tab, self.tr("Information"))
+        self.details_tab = GameDetails(self)
+        self.details_tab.import_clicked.connect(self.import_clicked)
+        self.details_index = self.addTab(self.details_tab, self.tr("Information"))
 
         self.settings_tab = GameSettings(self)
         self.settings_index = self.addTab(self.settings_tab, self.tr("Settings"))
@@ -34,8 +34,8 @@ class GameInfoTabs(SideTabWidget):
         self.cloud_saves_tab = CloudSaves(self)
         self.cloud_saves_index = self.addTab(self.cloud_saves_tab, self.tr("Cloud Saves"))
 
-        self.dlc_tab = GameDlc(self)
-        self.dlc_index = self.addTab(self.dlc_tab, self.tr("Downloadable Content"))
+        self.dlcs_tab = GameDlcs(self)
+        self.dlcs_index = self.addTab(self.dlcs_tab, self.tr("Downloadable Content"))
 
         # FIXME: Hiding didn't work, so don't add these tabs in normal mode. Fix this properly later
         if self.args.debug:
@@ -43,17 +43,19 @@ class GameInfoTabs(SideTabWidget):
             self.game_meta_index = self.addTab(self.game_meta_view, self.tr("Game Metadata"))
             self.igame_meta_view = GameMetadataView(self)
             self.igame_meta_index = self.addTab(self.igame_meta_view, self.tr("InstalledGame Metadata"))
+            self.rgame_meta_view = GameMetadataView(self)
+            self.rgame_meta_index = self.addTab(self.rgame_meta_view, self.tr("RareGame Metadata"))
 
-        self.setCurrentIndex(self.info_index)
+        self.setCurrentIndex(self.details_index)
 
     def update_game(self, rgame: RareGame):
-        self.info_tab.update_game(rgame)
+        self.details_tab.update_game(rgame)
 
         self.settings_tab.load_settings(rgame)
         self.settings_tab.setEnabled(rgame.is_installed or rgame.is_origin)
 
-        self.dlc_tab.update_dlcs(rgame)
-        self.dlc_tab.setEnabled(rgame.is_installed and bool(rgame.owned_dlcs))
+        self.dlcs_tab.update_dlcs(rgame)
+        self.dlcs_tab.setEnabled(rgame.is_installed and bool(rgame.owned_dlcs))
 
         self.cloud_saves_tab.update_game(rgame)
         # self.cloud_saves_tab.setEnabled(rgame.game.supports_cloud_saves or rgame.game.supports_mac_cloud_saves)
@@ -61,8 +63,9 @@ class GameInfoTabs(SideTabWidget):
         if self.args.debug:
             self.game_meta_view.update_game(rgame, rgame.game)
             self.igame_meta_view.update_game(rgame, rgame.igame)
+            self.rgame_meta_view.update_game(rgame, rgame.metadata)
 
-        self.setCurrentIndex(self.info_index)
+        self.setCurrentIndex(self.details_index)
 
     def keyPressEvent(self, a0: QKeyEvent):
         if a0.key() == Qt.Key_Escape:
@@ -75,6 +78,7 @@ class GameMetadataView(QTreeView, SideTabContents):
         self.implements_scrollarea = True
         self.setColumnWidth(0, 300)
         self.setWordWrap(True)
+        self.setEditTriggers(QTreeView.NoEditTriggers)
         self.model = QJsonModel()
         self.setModel(self.model)
         self.rgame: Optional[RareGame] = None

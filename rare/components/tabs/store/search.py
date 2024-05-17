@@ -20,7 +20,7 @@ from .api.models.response import CatalogOfferModel
 from .constants import Constants
 from .results import ResultsWidget
 from .store_api import StoreAPI
-from .widgets.details import DetailsWidget
+from .widgets.details import StoreDetailsWidget
 
 logger = logging.getLogger("Shop")
 
@@ -35,7 +35,7 @@ class SearchPage(SlidingStackedWidget, SideTabContents):
         self.search_widget.set_title.connect(self.set_title)
         self.search_widget.show_details.connect(self.show_details)
 
-        self.details_widget = DetailsWidget([], store_api, parent=self)
+        self.details_widget = StoreDetailsWidget([], store_api, parent=self)
         self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)

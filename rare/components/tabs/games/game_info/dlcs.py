@@ -6,8 +6,8 @@ from PyQt5.QtWidgets import QFrame, QMessageBox, QToolBox
 
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.ui.components.tabs.games.game_info.game_dlc import Ui_GameDlc
-from rare.ui.components.tabs.games.game_info.game_dlc_widget import Ui_GameDlcWidget
+from rare.ui.components.tabs.games.game_info.dlcs import Ui_GameDlcs
+from rare.ui.components.tabs.games.game_info.dlc_widget import Ui_GameDlcWidget
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
 from rare.utils.misc import widget_object_name, qta_icon
@@ -98,12 +98,12 @@ class AvailableGameDlcWidget(GameDlcWidget):
         self.rdlc.install()
 
 
-class GameDlc(QToolBox, SideTabContents):
+class GameDlcs(QToolBox, SideTabContents):
 
     def __init__(self, parent=None):
-        super(GameDlc, self).__init__(parent=parent)
+        super(GameDlcs, self).__init__(parent=parent)
         self.implements_scrollarea = True
-        self.ui = Ui_GameDlc()
+        self.ui = Ui_GameDlcs()
         self.ui.setupUi(self)
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
