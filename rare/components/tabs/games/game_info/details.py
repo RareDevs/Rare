@@ -19,7 +19,7 @@ from rare.components.dialogs.selective_dialog import SelectiveDialog
 from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.shared.workers import VerifyWorker, MoveWorker
-from rare.ui.components.tabs.games.game_info.game_info import Ui_GameInfo
+from rare.ui.components.tabs.games.game_info.details import Ui_GameDetails
 from rare.utils.misc import format_size, qta_icon, style_hyperlink
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
@@ -28,13 +28,13 @@ from rare.components.dialogs.move_dialog import MoveDialog, is_game_dir
 logger = getLogger("GameInfo")
 
 
-class GameInfo(QWidget, SideTabContents):
+class GameDetails(QWidget, SideTabContents):
     # str: app_name
     import_clicked = pyqtSignal(str)
 
     def __init__(self, parent=None):
-        super(GameInfo, self).__init__(parent=parent)
-        self.ui = Ui_GameInfo()
+        super(GameDetails, self).__init__(parent=parent)
+        self.ui = Ui_GameDetails()
         self.ui.setupUi(self)
         # lk: set object names for CSS properties
         self.ui.install_button.setObjectName("InstallButton")

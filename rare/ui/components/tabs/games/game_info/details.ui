@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GameInfo</class>
- <widget class="QWidget" name="GameInfo">
+ <class>GameDetails</class>
+ <widget class="QWidget" name="GameDetails">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>404</height>
+    <width>814</width>
+    <height>470</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Game Info</string>
+   <string notr="true">GameDetails</string>
   </property>
   <layout class="QHBoxLayout" name="main_layout" stretch="0,1">
    <item>
@@ -87,7 +87,13 @@
    <item>
     <layout class="QVBoxLayout" name="right_layout">
      <item>
-      <layout class="QFormLayout" name="info_layout">
+      <layout class="QFormLayout" name="details_layout">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetFixedSize</enum>
+       </property>
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+       </property>
        <property name="labelAlignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>

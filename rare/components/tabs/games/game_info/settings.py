@@ -19,10 +19,9 @@ from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 if pf.system() != "Windows":
     from rare.components.tabs.settings.widgets.wine import WineSettings
-
-if pf.system() in {"Linux", "FreeBSD"}:
-    from rare.components.tabs.settings.widgets.proton import ProtonSettings
-    from rare.components.tabs.settings.widgets.overlay import MangoHudSettings
+    if pf.system() in {"Linux", "FreeBSD"}:
+        from rare.components.tabs.settings.widgets.proton import ProtonSettings
+        from rare.components.tabs.settings.widgets.overlay import MangoHudSettings
 
 logger = getLogger("GameSettings")
 
@@ -140,21 +139,18 @@ class GameLaunchSettings(LaunchSettingsBase):
 
 
 if pf.system() != "Windows":
-
     class GameWineSettings(WineSettings):
         def load_settings(self, app_name):
             self.app_name = app_name
 
+    if pf.system() in {"Linux", "FreeBSD"}:
+        class GameProtonSettings(ProtonSettings):
+            def load_settings(self, app_name: str):
+                self.app_name = app_name
 
-if pf.system() in {"Linux", "FreeBSD"}:
-
-    class GameProtonSettings(ProtonSettings):
-        def load_settings(self, app_name: str):
-            self.app_name = app_name
-
-    class GameMangoHudSettings(MangoHudSettings):
-        def load_settings(self, app_name: str):
-            self.app_name = app_name
+        class GameMangoHudSettings(MangoHudSettings):
+            def load_settings(self, app_name: str):
+                self.app_name = app_name
 
 
 class GameDxvkSettings(DxvkSettings):
@@ -169,18 +165,19 @@ class GameEnvVars(EnvVars):
 
 class GameSettings(GameSettingsBase):
     def __init__(self, parent=None):
-        if pf.system() in {"Linux", "FreeBSD"}:
-            super(GameSettings, self).__init__(
-                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
-                GameWineSettings, GameProtonSettings, GameMangoHudSettings,
-                parent=parent
-            )
-        elif pf.system() != "Windows":
-            super(GameSettings, self).__init__(
-                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
-                GameWineSettings,
-                parent=parent
-            )
+        if pf.system() != "Windows":
+            if pf.system() in {"Linux", "FreeBSD"}:
+                super(GameSettings, self).__init__(
+                    GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                    GameWineSettings, GameProtonSettings, GameMangoHudSettings,
+                    parent=parent
+                )
+            else:
+                super(GameSettings, self).__init__(
+                    GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                    GameWineSettings,
+                    parent=parent
+                )
         else:
             super(GameSettings, self).__init__(
                 GameLaunchSettings, GameDxvkSettings, GameEnvVars,
@@ -193,8 +190,8 @@ class GameSettings(GameSettingsBase):
         self.launch.load_settings(rgame)
         if pf.system() != "Windows":
             self.wine.load_settings(rgame.app_name)
-        if pf.system() in {"Linux", "FreeBSD"}:
-            self.proton_tool.load_settings(rgame.app_name)
-            self.mangohud.load_settings(rgame.app_name)
+            if pf.system() in {"Linux", "FreeBSD"}:
+                self.proton_tool.load_settings(rgame.app_name)
+                self.mangohud.load_settings(rgame.app_name)
         self.dxvk.load_settings(rgame.app_name)
         self.env_vars.load_settings(rgame.app_name)
