@@ -1,5 +1,6 @@
 import json
 import platform
+import shlex
 import subprocess
 import time
 import traceback
@@ -76,7 +77,7 @@ class PreLaunchThread(QRunnable):
             proc = get_configured_process()
             proc.setProcessEnvironment(launch_args.environment)
             self.signals.started_pre_launch_command.emit()
-            pre_launch_command = launch_args.pre_launch_command.split()
+            pre_launch_command = shlex.split(launch_args.pre_launch_command)
             # self.logger.debug("Executing prelaunch command %s, %s", pre_launch_command[0], pre_launch_command[1:])
             proc.start(pre_launch_command[0], pre_launch_command[1:])
             if launch_args.pre_launch_wait:
