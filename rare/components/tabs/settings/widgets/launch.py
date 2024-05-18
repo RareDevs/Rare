@@ -1,4 +1,5 @@
 import os
+import shlex
 import shutil
 from typing import Tuple, Type, TypeVar
 
@@ -73,7 +74,11 @@ class LaunchSettingsBase(QGroupBox):
     def __prelaunch_edit_callback(text: str) -> Tuple[bool, str, int]:
         if not text.strip():
             return True, text, IndicatorReasonsCommon.VALID
-        if not os.path.isfile(text.split()[0]) and not shutil.which(text.split()[0]):
+        try:
+            command = shlex.split(text)[0]
+        except ValueError:
+            return False, text, IndicatorReasonsCommon.WRONG_FORMAT
+        if not os.path.isfile(command) and not shutil.which(command):
             return False, text, IndicatorReasonsCommon.FILE_NOT_EXISTS
         else:
             return True, text, IndicatorReasonsCommon.VALID
