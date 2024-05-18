@@ -1,6 +1,7 @@
 import os
 from enum import IntEnum
 from logging import getLogger
+import shlex
 from typing import Callable, Tuple, Optional, Dict, List
 
 from PyQt5.QtCore import (
@@ -336,6 +337,8 @@ class PathEdit(IndicatorLineEdit):
         if self.__name_filter:
             dlg.setNameFilter(" ".join(self.__name_filter))
         if dlg.exec_():
-            names = dlg.selectedFiles()
-            self.line_edit.setText(names[0])
-            self.__completer_model.setRootPath(names[0])
+            name = dlg.selectedFiles()[0]
+            if " " in name:
+                name = shlex.quote(name)
+            self.line_edit.setText(name)
+            self.__completer_model.setRootPath(name)
