@@ -92,7 +92,7 @@
         <enum>QLayout::SetFixedSize</enum>
        </property>
        <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
        </property>
        <property name="labelAlignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -162,7 +162,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Application Name</string>
+          <string>Application name</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -226,7 +226,7 @@
           </font>
          </property>
          <property name="text">
-          <string>ProtonDB Grade</string>
+          <string>ProtonDB grade</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -261,7 +261,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Installation Size</string>
+          <string>Installation size</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -293,7 +293,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Installation Path</string>
+          <string>Installation path</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

@@ -11,7 +11,7 @@ from legendary.models.game import LaunchParameters
 
 from rare.models.base_game import RareGameSlim
 
-logger = getLogger("Helper")
+logger = getLogger("RareLauncherHelper")
 
 
 class GameArgsError(Exception):
@@ -156,7 +156,7 @@ def get_launch_args(rgame: RareGameSlim, init_args: InitArgs = None) -> LaunchAr
         if not rgame.is_installed:
             raise GameArgsError("Game is not installed or has unsupported format")
 
-        if rgame.is_dlc:
+        if rgame.is_dlc and not rgame.is_launchable_addon:
             raise GameArgsError("Game is a DLC")
         if not os.path.exists(rgame.install_path):
             raise GameArgsError("Game path does not exist")

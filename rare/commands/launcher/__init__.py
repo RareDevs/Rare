@@ -35,15 +35,15 @@ DETACHED_APP_NAMES = {
 }
 
 
-class PreLaunchThread(QRunnable):
+class PreLaunch(QRunnable):
     class Signals(QObject):
         ready_to_launch = pyqtSignal(LaunchArgs)
-        started_pre_launch_command = pyqtSignal()
+        pre_launch_command_started = pyqtSignal()
         pre_launch_command_finished = pyqtSignal(int)  # exit_code
         error_occurred = pyqtSignal(str)
 
     def __init__(self, args: InitArgs, rgame: RareGameSlim, sync_action=None):
-        super(PreLaunchThread, self).__init__()
+        super(PreLaunch, self).__init__()
         self.signals = self.Signals()
         self.logger = getLogger(type(self).__name__)
         self.args = args
@@ -76,7 +76,7 @@ class PreLaunchThread(QRunnable):
         if launch_args.pre_launch_command:
             proc = get_configured_process()
             proc.setProcessEnvironment(launch_args.environment)
-            self.signals.started_pre_launch_command.emit()
+            self.signals.pre_launch_command_started.emit()
             pre_launch_command = shlex.split(launch_args.pre_launch_command)
             # self.logger.debug("Executing prelaunch command %s, %s", pre_launch_command[0], pre_launch_command[1:])
             proc.start(pre_launch_command[0], pre_launch_command[1:])
@@ -174,13 +174,13 @@ class RareLauncher(RareApp):
 
     @pyqtSlot()
     def __proc_log_stdout(self):
-        self.console.log(
+        self.console.log_stdout(
             self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
         )
 
     @pyqtSlot()
     def __proc_log_stderr(self):
-        self.console.error(
+        self.console.log_stderr(
             self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
         )
 
@@ -327,7 +327,7 @@ class RareLauncher(RareApp):
         self.stop()
 
     def start_prepare(self, sync_action=None):
-        worker = PreLaunchThread(self.args, self.rgame, sync_action)
+        worker = PreLaunch(self.args, self.rgame, sync_action)
         worker.signals.ready_to_launch.connect(self.launch_game)
         worker.signals.error_occurred.connect(self.error_occurred)
         # worker.signals.started_pre_launch_command(None)
