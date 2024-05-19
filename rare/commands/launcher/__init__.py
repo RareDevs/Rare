@@ -151,7 +151,10 @@ class RareLauncher(RareApp):
         language = self.settings.value(*options.language)
         self.load_translator(language)
 
-        if QSettings(self).value(*options.log_games):
+        if (
+            QSettings(self).value(*options.log_games)
+            or (game.app_name in DETACHED_APP_NAMES and platform.system() == "Windows")
+        ):
             self.console = ConsoleDialog(game.app_title)
             self.console.show()
 
