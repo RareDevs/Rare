@@ -174,13 +174,13 @@ class RareLauncher(RareApp):
 
     @pyqtSlot()
     def __proc_log_stdout(self):
-        self.console.log(
+        self.console.log_stdout(
             self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
         )
 
     @pyqtSlot()
     def __proc_log_stderr(self):
-        self.console.error(
+        self.console.log_stderr(
             self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
         )
 

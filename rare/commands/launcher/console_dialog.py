@@ -1,3 +1,4 @@
+import os
 from typing import Union
 
 from PyQt5.QtCore import QProcessEnvironment, pyqtSignal, QSize, Qt
@@ -31,8 +32,8 @@ class ConsoleDialog(QDialog):
         self.setGeometry(0, 0, 640, 480)
         layout = QVBoxLayout()
 
-        self.console = ConsoleEdit(self)
-        layout.addWidget(self.console)
+        self.console_edit = ConsoleEdit(self)
+        layout.addWidget(self.console_edit)
 
         button_layout = QHBoxLayout()
 
@@ -46,7 +47,7 @@ class ConsoleDialog(QDialog):
 
         self.clear_button = QPushButton(self.tr("Clear console"))
         button_layout.addWidget(self.clear_button)
-        self.clear_button.clicked.connect(self.console.clear)
+        self.clear_button.clicked.connect(self.console_edit.clear)
 
         button_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
 
@@ -102,7 +103,7 @@ class ConsoleDialog(QDialog):
             if "." not in file:
                 file += ".log"
             with open(file, "w") as f:
-                f.write(self.console.toPlainText())
+                f.write(self.console_edit.toPlainText())
                 f.close()
                 self.save_button.setText(self.tr("Saved"))
 
@@ -113,15 +114,21 @@ class ConsoleDialog(QDialog):
         self.env_variables.setTable(self.env)
         self.env_variables.show()
 
-    def log(self, text: str, end: str = "\n"):
-        self.console.log(text + end)
+    def log(self, text: str):
+        self.console_edit.log(f"Rare: {text}")
 
-    def error(self, text, end: str = "\n"):
-        self.console.error(text + end)
+    def log_stdout(self, text: str):
+        self.console_edit.log(text)
+
+    def error(self, text):
+        self.console_edit.error(f"Rare: {text}")
+
+    def log_stderr(self, text):
+        self.console_edit.error(text)
 
     def on_process_exit(self, app_title: str, status: Union[int, str]):
         self.error(
-            self.tr("Application \"{}\" finished with \"{}\"\n").format(app_title, status)
+            self.tr("Application finished with exit code \"{}\"").format(status)
         )
         self.accept_close = True
 
@@ -170,17 +177,6 @@ class ConsoleEdit(QPlainTextEdit):
         font = QFont("Monospace")
         font.setStyleHint(QFont.Monospace)
         self.setFont(font)
-        self._cursor_output = self.textCursor()
-
-    def log(self, text):
-        html = f"<p style=\"color:#aaa;white-space:pre\">{text}</p>"
-        self._cursor_output.insertHtml(html)
-        self.scroll_to_last_line()
-
-    def error(self, text):
-        html = f"<p style=\"color:#a33;white-space:pre\">{text}</p>"
-        self._cursor_output.insertHtml(html)
-        self.scroll_to_last_line()
 
     def scroll_to_last_line(self):
         cursor = self.textCursor()
@@ -189,3 +185,14 @@ class ConsoleEdit(QPlainTextEdit):
             QTextCursor.Up if cursor.atBlockStart() else QTextCursor.StartOfLine
         )
         self.setTextCursor(cursor)
+
+    def print_to_console(self, text: str, color: str):
+        html = f"<p style=\"color:{color};white-space:pre\">{text}</p>"
+        self.appendHtml(html)
+        self.scroll_to_last_line()
+
+    def log(self, text):
+        self.print_to_console(text, "#aaa")
+
+    def error(self, text):
+        self.print_to_console(text, "#a33")
