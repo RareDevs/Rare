@@ -78,9 +78,10 @@ class PreLaunch(QRunnable):
             proc.setProcessEnvironment(launch_args.environment)
             self.signals.pre_launch_command_started.emit()
             pre_launch_command = shlex.split(launch_args.pre_launch_command)
-            # self.logger.debug("Executing prelaunch command %s, %s", pre_launch_command[0], pre_launch_command[1:])
+            self.logger.debug("Running pre-launch command %s, %s", pre_launch_command[0], pre_launch_command[1:])
             if launch_args.pre_launch_wait:
                 proc.start(pre_launch_command[0], pre_launch_command[1:])
+                self.logger.debug("Waiting for pre-launch command to finish")
                 proc.waitForFinished(-1)
             else:
                 proc.startDetached(pre_launch_command[0], pre_launch_command[1:])
