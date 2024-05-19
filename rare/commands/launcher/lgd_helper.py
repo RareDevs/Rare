@@ -2,7 +2,7 @@ import os
 import platform
 import shutil
 from argparse import Namespace
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from logging import getLogger
 from typing import List
 
@@ -43,8 +43,8 @@ class InitArgs(Namespace):
 @dataclass
 class LaunchArgs:
     executable: str = ""
-    arguments: List[str] = None
-    working_directory: str = None
+    arguments: List[str] = field(default_factory=list)
+    working_directory: str = ""
     environment: QProcessEnvironment = None
     pre_launch_command: str = ""
     pre_launch_wait: bool = False
@@ -129,9 +129,7 @@ def get_game_params(rgame: RareGameSlim, args: InitArgs, launch_args: LaunchArgs
             launch_args.environment.insert(name, value)
 
     full_params.extend(params.launch_command)
-    full_params.append(
-        os.path.join(params.game_directory, params.game_executable)
-    )
+    full_params.append(os.path.join(params.game_directory, params.game_executable))
     full_params.extend(params.game_parameters)
     full_params.extend(params.egl_parameters)
     full_params.extend(params.user_parameters)
