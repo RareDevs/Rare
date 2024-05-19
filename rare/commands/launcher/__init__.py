@@ -281,6 +281,16 @@ class RareLauncher(RareApp):
             self.console.set_env(args.environment)
         self.start_time = time.time()
 
+        if self.args.dry_run:
+            self.logger.info("Dry run activated")
+            if self.console:
+                self.console.log(f"{args.executable} {' '.join(args.arguments)}")
+                self.console.log(f"Do not start {self.rgame.app_name}")
+                self.console.accept_close = True
+            print(args.executable, " ".join(args.arguments))
+            self.stop()
+            return
+
         if args.is_origin_game:
             QDesktopServices.openUrl(QUrl(args.executable))
             self.stop()  # stop because it is no subprocess
@@ -304,15 +314,7 @@ class RareLauncher(RareApp):
                              env={i: args.environment.value(i) for i in args.environment.keys()})
             self.stop()
             return
-        if self.args.dry_run:
-            self.logger.info("Dry run activated")
-            if self.console:
-                self.console.log(f"{args.executable} {' '.join(args.arguments)}")
-                self.console.log(f"Do not start {self.rgame.app_name}")
-                self.console.accept_close = True
-            print(args.executable, " ".join(args.arguments))
-            self.stop()
-            return
+
         # self.logger.debug("Executing prelaunch command %s, %s", args.executable, args.arguments)
         self.game_process.start(args.executable, args.arguments)
 
