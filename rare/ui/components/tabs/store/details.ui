@@ -48,7 +48,7 @@
         <enum>QLayout::SetFixedSize</enum>
        </property>
        <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
        </property>
        <property name="labelAlignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -310,6 +310,12 @@
        </item>
        <item row="4" column="1">
         <widget class="QWidget" name="price" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <layout class="QHBoxLayout" name="price_layout">
           <property name="sizeConstraint">
            <enum>QLayout::SetFixedSize</enum>
