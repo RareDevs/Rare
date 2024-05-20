@@ -205,7 +205,7 @@ css.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
 
 
 # ButtonLineEdit
-from rare.utils.extra_widgets import ButtonLineEdit
+from rare.widgets.button_edit import ButtonLineEdit
 css.QPushButton[css_name(ButtonLineEdit, "Button")].setValues(
     backgroundColor="transparent",
     border="0px",

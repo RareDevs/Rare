@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 
 from rare.models.options import options, LibraryFilter, LibraryOrder
 from rare.shared import RareCore
-from rare.utils.extra_widgets import ButtonLineEdit
+from rare.widgets.button_edit import ButtonLineEdit
 from rare.utils.misc import qta_icon
 
 

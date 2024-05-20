@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
 from legendary.core import LegendaryCore
 
 from rare.ui.components.tabs.store.search import Ui_SearchWidget
-from rare.utils.extra_widgets import ButtonLineEdit
+from rare.widgets.button_edit import ButtonLineEdit
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .api.models.query import SearchStoreQuery
