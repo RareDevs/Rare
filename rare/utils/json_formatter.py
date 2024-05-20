@@ -280,29 +280,29 @@ if __name__ == "__main__":
     view.setModel(model)
 
     document = json.loads(
-        """\
-    {
-        "firstName": "John",
-        "lastName": "Smith",
-        "age": 25,
-        "address": {
-            "streetAddress": "21 2nd Street",
-            "city": "New York",
-            "state": "NY",
-            "postalCode": "10021"
-        },
-        "phoneNumber": [
-            {
-                "type": "home",
-                "number": "212 555-1234"
+        """
+        {
+            "firstName": "John",
+            "lastName": "Smith",
+            "age": 25,
+            "address": {
+                "streetAddress": "21 2nd Street",
+                "city": "New York",
+                "state": "NY",
+                "postalCode": "10021"
             },
-            {
-                "type": "fax",
-                "number": "646 555-4567"
-            }
-        ]
-    }
-    """
+            "phoneNumber": [
+                {
+                    "type": "home",
+                    "number": "212 555-1234"
+                },
+                {
+                    "type": "fax",
+                    "number": "646 555-4567"
+                }
+            ]
+        }
+        """
     )
 
     model.load(document)
@@ -310,9 +310,7 @@ if __name__ == "__main__":
     model.load(document)
 
     # Sanity check
-    assert json.dumps(model.json(), sort_keys=True) == json.dumps(
-        document, sort_keys=True
-    )
+    assert json.dumps(model.json(), sort_keys=True) == json.dumps(document, sort_keys=True)
 
     view.show()
     view.resize(500, 300)
