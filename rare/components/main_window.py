@@ -101,9 +101,9 @@ class MainWindow(QMainWindow):
 
         if not self.args.offline:
             try:
-                from rare.utils.rpc import DiscordRPC
+                from rare.utils.discord_rpc import DiscordRPC
 
-                self.rpc = DiscordRPC()
+                self.discord_rpc = DiscordRPC()
             except ModuleNotFoundError:
                 logger.warning("Discord RPC module not found")
 

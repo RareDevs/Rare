@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string notr="true">RareSettings</string>
   </property>
-  <layout class="QHBoxLayout" name="rare_layout">
+  <layout class="QHBoxLayout" name="main_layout">
    <item>
     <layout class="QVBoxLayout" name="left_layout">
      <item>

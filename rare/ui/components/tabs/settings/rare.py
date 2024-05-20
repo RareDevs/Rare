@@ -16,8 +16,8 @@ class Ui_RareSettings(object):
         RareSettings.setObjectName("RareSettings")
         RareSettings.resize(629, 447)
         RareSettings.setWindowTitle("RareSettings")
-        self.rare_layout = QtWidgets.QHBoxLayout(RareSettings)
-        self.rare_layout.setObjectName("rare_layout")
+        self.main_layout = QtWidgets.QHBoxLayout(RareSettings)
+        self.main_layout.setObjectName("main_layout")
         self.left_layout = QtWidgets.QVBoxLayout()
         self.left_layout.setObjectName("left_layout")
         self.interface_group = QtWidgets.QGroupBox(RareSettings)
@@ -93,7 +93,7 @@ class Ui_RareSettings(object):
         self.left_layout.addWidget(self.settings_group)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.left_layout.addItem(spacerItem1)
-        self.rare_layout.addLayout(self.left_layout)
+        self.main_layout.addLayout(self.left_layout)
         self.right_layout = QtWidgets.QVBoxLayout()
         self.right_layout.setObjectName("right_layout")
         self.log_dir_group = QtWidgets.QGroupBox(RareSettings)
@@ -130,7 +130,7 @@ class Ui_RareSettings(object):
         self.right_layout.addWidget(self.groupBox)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.right_layout.addItem(spacerItem2)
-        self.rare_layout.addLayout(self.right_layout)
+        self.main_layout.addLayout(self.right_layout)
 
         self.retranslateUi(RareSettings)
 

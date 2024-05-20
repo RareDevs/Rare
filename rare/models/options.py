@@ -45,10 +45,10 @@ class Defaults(Namespace):
     )
     library_order = Value(key="library_order", default=int(LibraryOrder.TITLE), dtype=int)
 
-    rpc_enable = Value(key="rpc_enable", default=0, dtype=int)
-    rpc_name = Value(key="rpc_game", default=True, dtype=bool)
-    rpc_time = Value(key="rpc_time", default=True, dtype=bool)
-    rpc_os = Value(key="rpc_os", default=True, dtype=bool)
+    discord_rpc_mode = Value(key="discord_rpc_mode", default=0, dtype=int)
+    discord_rpc_game = Value(key="discord_rpc_game", default=True, dtype=bool)
+    discord_rpc_time = Value(key="discord_rpc_time", default=True, dtype=bool)
+    discord_rpc_os = Value(key="discord_rpc_os", default=True, dtype=bool)
 
 
 options = Defaults()

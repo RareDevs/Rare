@@ -6,7 +6,7 @@ from PyQt5.QtCore import QSettings, Qt, pyqtSlot, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QWidget, QMessageBox
 
-from rare.components.tabs.settings.widgets.rpc import RPCSettings
+from rare.components.tabs.settings.widgets.discord_rpc import DiscordRPCSettings
 from rare.models.options import options, LibraryView
 from rare.shared import LegendaryCoreSingleton
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
@@ -75,8 +75,8 @@ class RareSettings(QWidget):
             self.ui.view_combo.setCurrentIndex(0)
         self.ui.view_combo.currentIndexChanged.connect(self.on_view_combo_changed)
 
-        self.rpc = RPCSettings(self)
-        self.ui.right_layout.insertWidget(1, self.rpc, alignment=Qt.AlignTop)
+        self.discord_rpc_settings = DiscordRPCSettings(self)
+        self.ui.right_layout.insertWidget(1, self.discord_rpc_settings, alignment=Qt.AlignTop)
 
         self.ui.sys_tray.setChecked(self.settings.value(*options.sys_tray))
         self.ui.sys_tray.stateChanged.connect(
