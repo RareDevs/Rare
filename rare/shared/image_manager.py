@@ -67,7 +67,7 @@ class ImageManager(QObject):
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
         # lk: the ordering in __img_types matters for the order of fallbacks
         # self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "DieselGameBox", "OfferImageTall")
-        self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "OfferImageTall")
+        self.__img_card_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "OfferImageTall")
         self.__dl_retries = 1
         self.__worker_app_names: Set[str] = set()
         super(QObject, self).__init__()
@@ -99,20 +99,26 @@ class ImageManager(QObject):
     def __img_card_gray(self, app_name: str) -> Path:
         return self.__img_dir(app_name).joinpath("card_uninstalled.png")
 
+    def __img_wide_color(self, app_name: str) -> Path:
+        return self.__img_dir(app_name).joinpath("wide_installed.png")
+
+    def __img_wide_gray(self, app_name: str) -> Path:
+        return self.__img_dir(app_name).joinpath("wide_uninstalled.png")
+
     def __img_desktop_icon(self, app_name: str) -> Path:
         return self.__img_dir(app_name).joinpath(f"icon.{desktop_icon_suffix()}")
 
     def __prepare_download(self, game: Game, force: bool = False) -> Tuple[List, Dict]:
         if force and self.__img_dir(game.app_name).exists():
+            self.__img_desktop_icon(game.app_name).unlink(missing_ok=True)
             self.__img_card_color(game.app_name).unlink(missing_ok=True)
             self.__img_card_gray(game.app_name).unlink(missing_ok=True)
-            self.__img_desktop_icon(game.app_name).unlink(missing_ok=True)
         if not self.__img_dir(game.app_name).is_dir():
             self.__img_dir(game.app_name).mkdir()
 
         # Load image checksums
         if not self.__img_json(game.app_name).is_file():
-            json_data: Dict = dict(zip(self.__img_types, [None] * len(self.__img_types)))
+            json_data: Dict = dict(zip(self.__img_card_types, [None] * len(self.__img_card_types)))
         else:
             json_data = json.load(open(self.__img_json(game.app_name), "r"))
 
@@ -121,13 +127,13 @@ class ImageManager(QObject):
         # lk: so everything below it is skipped
         updates = []
         if not (
-            self.__img_card_color(game.app_name).is_file()
+            self.__img_desktop_icon(game.app_name).is_file()
+            and self.__img_card_color(game.app_name).is_file()
             and self.__img_card_gray(game.app_name).is_file()
-            and self.__img_desktop_icon(game.app_name).is_file()
         ):
             # lk: fast path for games without images, convert Rare's logo
             if not game.metadata.get("keyImages", []):
-                cache_data: Dict = dict(zip(self.__img_types, [None] * len(self.__img_types)))
+                cache_data: Dict = dict(zip(self.__img_card_types, [None] * len(self.__img_card_types)))
                 cache_data["DieselGameBoxTall"] = open(
                     resources_path.joinpath("images", "cover.png"), "rb"
                 ).read()
@@ -139,10 +145,10 @@ class ImageManager(QObject):
                 json_data["size"] = ImageSize.Image.size.__str__()
                 json.dump(json_data, open(self.__img_json(game.app_name), "w"))
             else:
-                updates = [image for image in game.metadata["keyImages"] if image["type"] in self.__img_types]
+                updates = [image for image in game.metadata["keyImages"] if image["type"] in self.__img_card_types]
         else:
             for image in game.metadata.get("keyImages", []):
-                if image["type"] in self.__img_types:
+                if image["type"] in self.__img_card_types:
                     if image["type"] not in json_data.keys() or json_data[image["type"]] != image["md5"]:
                         updates.append(image)
 
@@ -151,7 +157,7 @@ class ImageManager(QObject):
     def __download(self, updates, json_data, game, use_async: bool = False) -> bool:
         # Decompress existing image.cache
         if not self.__img_cache(game.app_name).is_file():
-            cache_data = dict(zip(self.__img_types, [None] * len(self.__img_types)))
+            cache_data = dict(zip(self.__img_card_types, [None] * len(self.__img_card_types)))
         else:
             cache_data = self.__decompress(game)
 
@@ -261,7 +267,7 @@ class ImageManager(QObject):
                 image.unlink(missing_ok=True)
 
         cover_data = None
-        for image_type in self.__img_types:
+        for image_type in self.__img_card_types:
             if images[image_type] is not None:
                 cover_data = images[image_type]
                 break
@@ -315,7 +321,7 @@ class ImageManager(QObject):
             data = zlib.decompress(archive.read())
             data = pickle.loads(data)
         except zlib.error:
-            data = dict(zip(self.__img_types, [None] * len(self.__img_types)))
+            data = dict(zip(self.__img_card_types, [None] * len(self.__img_card_types)))
         finally:
             archive.close()
         return data
