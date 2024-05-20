@@ -93,19 +93,19 @@ class ImageManager(QObject):
     def __img_cache(self, app_name: str) -> Path:
         return self.__img_dir(app_name).joinpath("image.cache")
 
-    def __img_color(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("installed.png")
+    def __img_card_color(self, app_name: str) -> Path:
+        return self.__img_dir(app_name).joinpath("card_installed.png")
 
-    def __img_gray(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("uninstalled.png")
+    def __img_card_gray(self, app_name: str) -> Path:
+        return self.__img_dir(app_name).joinpath("card_uninstalled.png")
 
     def __img_desktop_icon(self, app_name: str) -> Path:
         return self.__img_dir(app_name).joinpath(f"icon.{desktop_icon_suffix()}")
 
     def __prepare_download(self, game: Game, force: bool = False) -> Tuple[List, Dict]:
         if force and self.__img_dir(game.app_name).exists():
-            self.__img_color(game.app_name).unlink(missing_ok=True)
-            self.__img_gray(game.app_name).unlink(missing_ok=True)
+            self.__img_card_color(game.app_name).unlink(missing_ok=True)
+            self.__img_card_gray(game.app_name).unlink(missing_ok=True)
             self.__img_desktop_icon(game.app_name).unlink(missing_ok=True)
         if not self.__img_dir(game.app_name).is_dir():
             self.__img_dir(game.app_name).mkdir()
@@ -121,8 +121,8 @@ class ImageManager(QObject):
         # lk: so everything below it is skipped
         updates = []
         if not (
-            self.__img_color(game.app_name).is_file()
-            and self.__img_gray(game.app_name).is_file()
+            self.__img_card_color(game.app_name).is_file()
+            and self.__img_card_gray(game.app_name).is_file()
             and self.__img_desktop_icon(game.app_name).is_file()
         ):
             # lk: fast path for games without images, convert Rare's logo
@@ -202,13 +202,14 @@ class ImageManager(QObject):
         except FileNotFoundError:
             archive_hash = None
 
-        json_data["cache"] = archive_hash
-        json_data["scale"] = ImageSize.Image.pixel_ratio
-        json_data["size"] = {"w": ImageSize.Image.size.width(), "h": ImageSize.Image.size.height()}
+        _json_data = json_data.copy()
+        _json_data["cache"] = archive_hash
+        _json_data["scale"] = ImageSize.Image.pixel_ratio
+        _json_data["size"] = {"w": ImageSize.Image.size.width(), "h": ImageSize.Image.size.height()}
 
         # write image.json
         with open(self.__img_json(game.app_name), "w") as file:
-            json.dump(json_data, file)
+            json.dump(_json_data, file)
 
         return bool(updates)
 
@@ -255,7 +256,7 @@ class ImageManager(QObject):
         return icon
 
     def __convert(self, game, images, force=False) -> None:
-        for image in [self.__img_color(game.app_name), self.__img_gray(game.app_name)]:
+        for image in [self.__img_card_color(game.app_name), self.__img_card_gray(game.app_name)]:
             if force and image.exists():
                 image.unlink(missing_ok=True)
 
@@ -295,12 +296,12 @@ class ImageManager(QObject):
         # add the alpha channel back to the cover
         cover = cover.convertToFormat(QImage.Format_ARGB32_Premultiplied)
 
-        cover.save(str(self.__img_color(game.app_name)), format="PNG")
+        cover.save(str(self.__img_card_color(game.app_name)), format="PNG")
         # quick way to convert to grayscale
         cover = cover.convertToFormat(QImage.Format_Grayscale8)
         # add the alpha channel back to the grayscale cover
         cover = cover.convertToFormat(QImage.Format_ARGB32_Premultiplied)
-        cover.save(str(self.__img_gray(game.app_name)), format="PNG")
+        cover.save(str(self.__img_card_gray(game.app_name)), format="PNG")
 
     def __compress(self, game: Game, data: Dict) -> None:
         archive = open(self.__img_cache(game.app_name), "wb")
@@ -349,11 +350,11 @@ class ImageManager(QObject):
         if not app_name:
             raise RuntimeError("app_name is an empty string")
         if color:
-            if self.__img_color(app_name).is_file():
-                ret.load(str(self.__img_color(app_name)))
+            if self.__img_card_color(app_name).is_file():
+                ret.load(str(self.__img_card_color(app_name)))
         else:
-            if self.__img_gray(app_name).is_file():
-                ret.load(str(self.__img_gray(app_name)))
+            if self.__img_card_gray(app_name).is_file():
+                ret.load(str(self.__img_card_gray(app_name)))
         if not ret.isNull():
             ret.setDevicePixelRatio(ImageSize.Image.pixel_ratio)
             # lk: Scaling happens at painting. It might be inefficient so leave this here as an alternative
