@@ -197,7 +197,7 @@ css.QLabel[css_name(ListWidget, "InfoLabel")].color.setValue("#999")
 
 
 # SelectViewWidget
-from rare.utils.extra_widgets import SelectViewWidget
+from rare.components.tabs.games.head_bar import SelectViewWidget
 css.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
     border="none",
     backgroundColor="transparent",
