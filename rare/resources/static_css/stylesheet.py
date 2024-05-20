@@ -196,14 +196,6 @@ css.QPushButton[css_name(ListWidget, "Button")].textAlign.setValue("left")
 css.QLabel[css_name(ListWidget, "InfoLabel")].color.setValue("#999")
 
 
-# WaitingSpinner
-from rare.utils.extra_widgets import WaitingSpinner
-css.QLabel[css_name(WaitingSpinner)].setValues(
-    marginLeft="auto",
-    marginRight="auto",
-)
-
-
 # SelectViewWidget
 from rare.utils.extra_widgets import SelectViewWidget
 css.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
