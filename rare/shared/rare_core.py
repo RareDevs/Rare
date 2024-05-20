@@ -282,12 +282,19 @@ class RareCore(QObject):
     def __add_game(self, rgame: RareGame) -> None:
         rgame.signals.download.enqueue.connect(self.__signals.download.enqueue)
         rgame.signals.download.dequeue.connect(self.__signals.download.dequeue)
+
         rgame.signals.game.install.connect(self.__signals.game.install)
         rgame.signals.game.installed.connect(self.__signals.game.installed)
+
         rgame.signals.game.uninstall.connect(self.__signals.game.uninstall)
         rgame.signals.game.uninstalled.connect(self.__signals.game.uninstalled)
+
+        rgame.signals.game.launched.connect(self.__signals.application.update_tray)
+        rgame.signals.game.launched.connect(self.__signals.discord_rpc.update_presence)
+
         rgame.signals.game.finished.connect(self.__signals.application.update_tray)
-        rgame.signals.game.finished.connect(lambda: self.__signals.discord_rpc.set_title.emit(""))
+        rgame.signals.game.finished.connect(self.__signals.discord_rpc.remove_presence)
+
         self.__library[rgame.app_name] = rgame
 
     def __filter_games(self, condition: Callable[[RareGame], bool]) -> Iterator[RareGame]:

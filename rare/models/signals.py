@@ -37,10 +37,12 @@ class GlobalSignals:
         dequeue = pyqtSignal(str)
 
     class DiscordRPCSignals(QObject):
-        # str: app_title
-        set_title = pyqtSignal(str)
+        # str: app_name
+        update_presence = pyqtSignal(str)
+        # str: app_name
+        remove_presence = pyqtSignal(str)
         # none
-        apply_settings = pyqtSignal()
+        update_settings = pyqtSignal()
 
     def __init__(self):
         self.application = GlobalSignals.ApplicationSignals()

@@ -1,13 +1,13 @@
 import platform
 import time
 from logging import getLogger
+from typing import List
 
-import pypresence.exceptions
-from PyQt5.QtCore import QObject, QSettings
-from pypresence import Presence
+from PyQt5.QtCore import QObject, QSettings, pyqtSlot
+from pypresence import Presence, exceptions
 
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.models.options import options
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 
 client_id = "830732538225360908"
 logger = getLogger("DiscordRPC")
@@ -26,13 +26,21 @@ class DiscordRPC(QObject):
             self.state = 2
             self.set_discord_rpc()
 
-        self.signals.discord_rpc.set_title.connect(self.update_presence)
-        self.signals.discord_rpc.apply_settings.connect(self.changed_settings)
+        self.signals.discord_rpc.update_presence.connect(self.update_presence)
+        self.signals.discord_rpc.remove_presence.connect(self.remove_presence)
+        self.signals.discord_rpc.update_settings.connect(self.update_settings)
 
-    def update_presence(self, app_name):
+    @pyqtSlot(str)
+    def update_presence(self, app_name: str):
         self.set_discord_rpc(app_name)
 
-    def changed_settings(self, game_running: list = None):
+    @pyqtSlot(str)
+    def remove_presence(self, app_name: str):
+        self.set_discord_rpc(None)
+
+    @pyqtSlot()
+    @pyqtSlot(list)
+    def update_settings(self, game_running: List = None):
         value = self.settings.value(*options.discord_rpc_mode)
         if value == 2:
             self.remove_rpc()
@@ -63,9 +71,7 @@ class DiscordRPC(QObject):
     def set_discord_rpc(self, app_name=None):
         if not self.rpc:
             try:
-                self.rpc = Presence(
-                    client_id
-                )  # Rare app: https://discord.com/developers/applications
+                self.rpc = Presence(client_id)  # Rare app: https://discord.com/developers/applications
                 self.rpc.connect()
             except ConnectionRefusedError as e:
                 logger.warning(f"Discord is not active\n{e}")
@@ -75,7 +81,7 @@ class DiscordRPC(QObject):
                 logger.warning(f"File not found error\n{e}")
                 self.rpc = None
                 return
-            except pypresence.exceptions.InvalidPipe as e:
+            except exceptions.InvalidPipe as e:
                 logger.error(f"Is Discord running? \n{e}")
                 self.rpc = None
                 return
@@ -87,15 +93,13 @@ class DiscordRPC(QObject):
 
     def update_rpc(self, app_name=None):
         if self.settings.value(*options.discord_rpc_mode) == 2 or (
-                not app_name and self.settings.value(*options.discord_rpc_mode) == 0
+            not app_name and self.settings.value(*options.discord_rpc_mode) == 0
         ):
             self.remove_rpc()
             return
         title = None
         if not app_name:
-            self.rpc.update(
-                large_image="logo", details="https://github.com/RareDevs/Rare"
-            )
+            self.rpc.update(large_image="logo", details="https://github.com/RareDevs/Rare")
             return
         if self.settings.value(*options.discord_rpc_game):
             try:
@@ -110,7 +114,5 @@ class DiscordRPC(QObject):
         if self.settings.value(*options.discord_rpc_os):
             os = f"via Rare on {platform.system()}"
 
-        self.rpc.update(
-            large_image="logo", details=title, large_text=title, state=os, start=start
-        )
+        self.rpc.update(large_image="logo", details=title, large_text=title, state=os, start=start)
         self.state = 0

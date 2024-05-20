@@ -41,4 +41,4 @@ class DiscordRPCSettings(QGroupBox):
 
     def __enable_changed(self, i):
         self.settings.setValue(options.discord_rpc_mode.key, i)
-        self.signals.discord_rpc.apply_settings.emit()
+        self.signals.discord_rpc.update_settings.emit()
