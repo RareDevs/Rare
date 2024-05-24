@@ -67,7 +67,7 @@ class ImageManager(QObject):
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
         # lk: the ordering in __img_types matters for the order of fallbacks
         # self.__img_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "DieselGameBox", "OfferImageTall")
-        self.__img_card_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "OfferImageTall")
+        self.__img_tall_types: Tuple = ("DieselGameBoxTall", "Thumbnail", "DieselGameBoxLogo", "OfferImageTall")
         self.__dl_retries = 1
         self.__worker_app_names: Set[str] = set()
         super(QObject, self).__init__()
@@ -93,11 +93,11 @@ class ImageManager(QObject):
     def __img_cache(self, app_name: str) -> Path:
         return self.__img_dir(app_name).joinpath("image.cache")
 
-    def __img_card_color(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("card_installed.png")
+    def __img_tall_color(self, app_name: str) -> Path:
+        return self.__img_dir(app_name).joinpath("tall_installed.png")
 
-    def __img_card_gray(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("card_uninstalled.png")
+    def __img_tall_gray(self, app_name: str) -> Path:
+        return self.__img_dir(app_name).joinpath("tall_uninstalled.png")
 
     def __img_wide_color(self, app_name: str) -> Path:
         return self.__img_dir(app_name).joinpath("wide_installed.png")
@@ -111,14 +111,14 @@ class ImageManager(QObject):
     def __prepare_download(self, game: Game, force: bool = False) -> Tuple[List, Dict]:
         if force and self.__img_dir(game.app_name).exists():
             self.__img_desktop_icon(game.app_name).unlink(missing_ok=True)
-            self.__img_card_color(game.app_name).unlink(missing_ok=True)
-            self.__img_card_gray(game.app_name).unlink(missing_ok=True)
+            self.__img_tall_color(game.app_name).unlink(missing_ok=True)
+            self.__img_tall_gray(game.app_name).unlink(missing_ok=True)
         if not self.__img_dir(game.app_name).is_dir():
             self.__img_dir(game.app_name).mkdir()
 
         # Load image checksums
         if not self.__img_json(game.app_name).is_file():
-            json_data: Dict = dict(zip(self.__img_card_types, [None] * len(self.__img_card_types)))
+            json_data: Dict = dict(zip(self.__img_tall_types, [None] * len(self.__img_tall_types)))
         else:
             json_data = json.load(open(self.__img_json(game.app_name), "r"))
 
@@ -128,12 +128,12 @@ class ImageManager(QObject):
         updates = []
         if not (
             self.__img_desktop_icon(game.app_name).is_file()
-            and self.__img_card_color(game.app_name).is_file()
-            and self.__img_card_gray(game.app_name).is_file()
+            and self.__img_tall_color(game.app_name).is_file()
+            and self.__img_tall_gray(game.app_name).is_file()
         ):
             # lk: fast path for games without images, convert Rare's logo
             if not game.metadata.get("keyImages", []):
-                cache_data: Dict = dict(zip(self.__img_card_types, [None] * len(self.__img_card_types)))
+                cache_data: Dict = dict(zip(self.__img_tall_types, [None] * len(self.__img_tall_types)))
                 cache_data["DieselGameBoxTall"] = open(
                     resources_path.joinpath("images", "cover.png"), "rb"
                 ).read()
@@ -145,10 +145,10 @@ class ImageManager(QObject):
                 json_data["size"] = ImageSize.Image.size.__str__()
                 json.dump(json_data, open(self.__img_json(game.app_name), "w"))
             else:
-                updates = [image for image in game.metadata["keyImages"] if image["type"] in self.__img_card_types]
+                updates = [image for image in game.metadata["keyImages"] if image["type"] in self.__img_tall_types]
         else:
             for image in game.metadata.get("keyImages", []):
-                if image["type"] in self.__img_card_types:
+                if image["type"] in self.__img_tall_types:
                     if image["type"] not in json_data.keys() or json_data[image["type"]] != image["md5"]:
                         updates.append(image)
 
@@ -157,7 +157,7 @@ class ImageManager(QObject):
     def __download(self, updates, json_data, game, use_async: bool = False) -> bool:
         # Decompress existing image.cache
         if not self.__img_cache(game.app_name).is_file():
-            cache_data = dict(zip(self.__img_card_types, [None] * len(self.__img_card_types)))
+            cache_data = dict(zip(self.__img_tall_types, [None] * len(self.__img_tall_types)))
         else:
             cache_data = self.__decompress(game)
 
@@ -262,12 +262,12 @@ class ImageManager(QObject):
         return icon
 
     def __convert(self, game, images, force=False) -> None:
-        for image in [self.__img_card_color(game.app_name), self.__img_card_gray(game.app_name)]:
+        for image in [self.__img_tall_color(game.app_name), self.__img_tall_gray(game.app_name)]:
             if force and image.exists():
                 image.unlink(missing_ok=True)
 
         cover_data = None
-        for image_type in self.__img_card_types:
+        for image_type in self.__img_tall_types:
             if images[image_type] is not None:
                 cover_data = images[image_type]
                 break
@@ -302,12 +302,12 @@ class ImageManager(QObject):
         # add the alpha channel back to the cover
         cover = cover.convertToFormat(QImage.Format_ARGB32_Premultiplied)
 
-        cover.save(str(self.__img_card_color(game.app_name)), format="PNG")
+        cover.save(str(self.__img_tall_color(game.app_name)), format="PNG")
         # quick way to convert to grayscale
         cover = cover.convertToFormat(QImage.Format_Grayscale8)
         # add the alpha channel back to the grayscale cover
         cover = cover.convertToFormat(QImage.Format_ARGB32_Premultiplied)
-        cover.save(str(self.__img_card_gray(game.app_name)), format="PNG")
+        cover.save(str(self.__img_tall_gray(game.app_name)), format="PNG")
 
     def __compress(self, game: Game, data: Dict) -> None:
         archive = open(self.__img_cache(game.app_name), "wb")
@@ -321,7 +321,7 @@ class ImageManager(QObject):
             data = zlib.decompress(archive.read())
             data = pickle.loads(data)
         except zlib.error:
-            data = dict(zip(self.__img_card_types, [None] * len(self.__img_card_types)))
+            data = dict(zip(self.__img_tall_types, [None] * len(self.__img_tall_types)))
         finally:
             archive.close()
         return data
@@ -356,11 +356,11 @@ class ImageManager(QObject):
         if not app_name:
             raise RuntimeError("app_name is an empty string")
         if color:
-            if self.__img_card_color(app_name).is_file():
-                ret.load(str(self.__img_card_color(app_name)))
+            if self.__img_tall_color(app_name).is_file():
+                ret.load(str(self.__img_tall_color(app_name)))
         else:
-            if self.__img_card_gray(app_name).is_file():
-                ret.load(str(self.__img_card_gray(app_name)))
+            if self.__img_tall_gray(app_name).is_file():
+                ret.load(str(self.__img_tall_gray(app_name)))
         if not ret.isNull():
             ret.setDevicePixelRatio(ImageSize.Image.pixel_ratio)
             # lk: Scaling happens at painting. It might be inefficient so leave this here as an alternative
