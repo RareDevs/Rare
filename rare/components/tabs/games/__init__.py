@@ -17,15 +17,15 @@ from .game_info import GameInfoTabs
 from .game_widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
 from .game_widgets.icon_game_widget import IconGameWidget
 from .game_widgets.list_game_widget import ListGameWidget
-from .head_bar import GameListHeadBar
+from .head_bar import LibraryHeadBar
 from .integrations import IntegrationsTabs
 
-logger = getLogger("GamesTab")
+logger = getLogger("GamesLibrary")
 
 
-class GamesTab(QStackedWidget):
+class GamesLibrary(QStackedWidget):
     def __init__(self, parent=None):
-        super(GamesTab, self).__init__(parent=parent)
+        super(GamesLibrary, self).__init__(parent=parent)
         self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
@@ -37,7 +37,7 @@ class GamesTab(QStackedWidget):
         games_page_layout = QVBoxLayout(self.games_page)
         self.addWidget(self.games_page)
 
-        self.head_bar = GameListHeadBar(parent=self.games_page)
+        self.head_bar = LibraryHeadBar(parent=self.games_page)
         self.head_bar.goto_import.connect(self.show_import)
         self.head_bar.goto_egl_sync.connect(self.show_egl_sync)
         self.head_bar.goto_eos_ubisoft.connect(self.show_eos_ubisoft)
@@ -123,6 +123,7 @@ class GamesTab(QStackedWidget):
                 logger.warning("Excluding %s from the game list", rgame.app_title)
                 continue
         self.filter_games(self.head_bar.current_filter())
+        self.order_games(self.head_bar.current_order())
         self.update_count_games_label()
 
     def add_library_widget(self, rgame: RareGame):
