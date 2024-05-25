@@ -1,5 +1,5 @@
 import os
-import platform
+import platform as pf
 import subprocess
 from configparser import ConfigParser
 from logging import getLogger
@@ -8,9 +8,9 @@ from typing import Mapping, Dict, List, Tuple
 from PyQt5.QtCore import QProcess, QProcessEnvironment
 
 from rare.utils import config_helper as config
-if platform.system() != "Windows":
+if pf.system() != "Windows":
     from . import wine
-    if platform.system() != "Darwin":
+    if pf.system() in {"Linux", "FreeBSD"}:
         from . import steam
 
 logger = getLogger("CompatUtils")
@@ -90,8 +90,7 @@ def execute(command: List[str], arguments: List[str], environment: Mapping) -> T
     # In flatpak our environment is passed through `flatpak-spawn` arguments
     if os.environ.get("container") == "flatpak":
         flatpak_command = ["flatpak-spawn", "--host"]
-        for name, value in environment.items():
-            flatpak_command.append(f"--env={name}={value}")
+        flatpak_command.extend(f"--env={name}={value}" for name, value in environment.items())
         _command = flatpak_command + command
         _environment = os.environ.copy()
     else:
