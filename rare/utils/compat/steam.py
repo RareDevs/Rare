@@ -10,19 +10,19 @@ import vdf
 
 logger = getLogger("SteamTools")
 
-steam_compat_client_install_paths = [os.path.expanduser("~/.local/share/Steam")]
+steam_client_install_paths = [os.path.expanduser("~/.local/share/Steam")]
 
 
 def find_steam() -> Optional[str]:
     # return the first valid path
-    for path in steam_compat_client_install_paths:
+    for path in steam_client_install_paths:
         if os.path.isdir(path) and os.path.isfile(os.path.join(path, "steam.sh")):
             return path
     return None
 
 
 def find_libraries(steam_path: str) -> Set[str]:
-    vdf_path = os.path.join(steam_path, "steamapps", "libraryfolders.vdf")
+    vdf_path = os.path.join(steam_path, "config", "libraryfolders.vdf")
     with open(vdf_path, "r") as f:
         libraryfolders = vdf.load(f)["libraryfolders"]
     # libraries = [os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()]
@@ -157,7 +157,6 @@ def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
             with open(vdf_file, "r") as f:
                 toolmanifest = vdf.load(f)
                 if toolmanifest["manifest"]["compatmanager_layer_name"] == "container-runtime":
-                    print(toolmanifest["manifest"])
                     runtimes.update(
                         {
                             appmanifest["AppState"]["appid"]: SteamRuntime(
