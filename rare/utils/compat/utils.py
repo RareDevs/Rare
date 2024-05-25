@@ -29,7 +29,7 @@ def read_registry(registry: str, prefix: str) -> ConfigParser:
 
 
 def get_configured_qprocess(command: List[str], environment: Mapping) -> QProcess:
-    logger.debug("Executing command:  %s", command)
+    logger.debug("Executing command: %s", command)
     proc = QProcess()
     proc.setProcessChannelMode(QProcess.SeparateChannels)
     penv = QProcessEnvironment()
@@ -42,7 +42,7 @@ def get_configured_qprocess(command: List[str], environment: Mapping) -> QProces
 
 
 def get_configured_subprocess(command: List[str], environment: Mapping) -> subprocess.Popen:
-    logger.debug("Executing command:  %s", command)
+    logger.debug("Executing command: %s", command)
     return subprocess.Popen(
         command,
         stdin=None,
