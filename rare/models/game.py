@@ -34,6 +34,7 @@ class RareGame(RareGameSlim):
         steam_appid: Optional[int] = None
         steam_grade: Optional[str] = None
         steam_date: datetime = datetime.min
+        steam_shortcut: Optional[int] = None
         tags: List[str] = field(default_factory=list)
 
         @classmethod
@@ -46,6 +47,7 @@ class RareGame(RareGameSlim):
                 steam_appid=data.get("steam_appid", None),
                 steam_grade=data.get("steam_grade", None),
                 steam_date=datetime.fromisoformat(x) if (x := data.get("steam_date", "")) else datetime.min,
+                steam_shortcut=data.get("steam_shortcut", None),
                 tags=data.get("tags", []),
             )
 
@@ -59,6 +61,7 @@ class RareGame(RareGameSlim):
                 steam_appid=self.steam_appid,
                 steam_grade=self.steam_grade,
                 steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min,
+                steam_shortcut=self.steam_shortcut,
                 tags=self.tags,
             )
 
@@ -118,7 +121,7 @@ class RareGame(RareGameSlim):
     @pyqtSlot(int)
     def __game_launched(self, code: int):
         self.state = RareGame.State.RUNNING
-        self.metadata.last_played = datetime.now()
+        self.metadata.last_played = datetime.now(UTC)
         if code == GameProcess.Code.ON_STARTUP:
             return
         self.__save_metadata()
@@ -430,7 +433,7 @@ class RareGame(RareGameSlim):
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
         if self.metadata.steam_grade != "pending":
-            elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
+            elapsed_time = abs(datetime.now(UTC) - self.metadata.steam_date)
 
             if elapsed_time.days > 3:
                 logger.info("Refreshing ProtonDB grade for %s", self.app_title)
@@ -458,7 +461,7 @@ class RareGame(RareGameSlim):
         if appid and self.steam_appid is None:
             self.set_steam_appid(appid)
         self.metadata.steam_grade = grade
-        self.metadata.steam_date = datetime.utcnow()
+        self.metadata.steam_date = datetime.now(UTC)
         self.__save_metadata()
         self.signals.widget.update.emit()
 
@@ -499,6 +502,7 @@ class RareGame(RareGameSlim):
         QPixmapCache.clear()
         return self.image_manager.get_pixmap(self.app_name, color)
 
+    @pyqtSlot(object)
     def set_pixmap(self):
         self.pixmap = self.image_manager.get_pixmap(self.app_name, self.is_installed)
         QPixmapCache.clear()

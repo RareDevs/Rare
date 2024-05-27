@@ -1,7 +1,7 @@
 import os
 import shutil
 from argparse import Namespace
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import Optional
 
 import requests.exceptions
@@ -60,7 +60,7 @@ class Rare(RareApp):
 
     def poke_timer(self):
         dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1]).replace(tzinfo=timezone.utc)
-        dt_now = datetime.utcnow().replace(tzinfo=timezone.utc)
+        dt_now = datetime.now(UTC)
         td = abs(dt_exp - dt_now)
         self.relogin_timer.start(int(td.total_seconds() - 60) * 1000)
         self.logger.info(f"Renewed session expires at {self.core.lgd.userdata['expires_at']}")
