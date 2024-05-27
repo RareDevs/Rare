@@ -23,7 +23,7 @@ class GameDlcWidget(QFrame):
         self.rdlc = rdlc
 
         self.image = ImageWidget(self)
-        self.image.setFixedSize(ImageSize.Icon)
+        self.image.setFixedSize(ImageSize.Smallest)
         self.ui.dlc_layout.insertWidget(0, self.image)
 
         self.ui.dlc_name.setText(rdlc.app_title)

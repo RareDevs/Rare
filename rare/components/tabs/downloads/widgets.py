@@ -34,7 +34,7 @@ class QueueInfoWidget(QWidget):
         self.image_manager = ImageManagerSingleton()
 
         self.image = ImageWidget(self)
-        self.image.setFixedSize(ImageSize.Icon)
+        self.image.setFixedSize(ImageSize.Smallest)
         self.ui.image_layout.addWidget(self.image)
 
         self.ui.queue_info_layout.setAlignment(Qt.AlignTop)

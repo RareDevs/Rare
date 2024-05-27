@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Tuple
 
 from PyQt5.QtCore import QSize
 
@@ -6,6 +7,8 @@ from PyQt5.QtCore import QSize
 class Orientation(Enum):
     Tall = 0
     Wide = 1
+    Icon = 3
+    Logo = 2
 
 
 class ImageSize:
@@ -17,9 +20,13 @@ class ImageSize:
             if orientation == Orientation.Tall:
                 self.__img_factor = 67
                 self.__size = QSize(self.__img_factor * 3, self.__img_factor * 4) * pixel_ratio / divisor
-            else:
-                self.__img_factor = 17
+            if orientation == Orientation.Wide:
+                self.__img_factor = 34
                 self.__size = QSize(self.__img_factor * 16, self.__img_factor * 9) * pixel_ratio / divisor
+            if orientation == Orientation.Icon:
+                self.__img_factor = 128
+                self.__size = QSize(self.__img_factor * 1, self.__img_factor * 1) * pixel_ratio / divisor
+            self.__orientation = orientation
             # lk: for prettier images set this to true
             # self.__smooth_transform: bool = True
             self.__smooth_transform = divisor <= 2
@@ -50,6 +57,19 @@ class ImageSize:
             return self.__pixel_ratio
 
         @property
+        def orientation(self) -> Orientation:
+            return self.__orientation
+
+        @property
+        def aspect_ratio(self) -> Tuple[int, int]:
+            if self.__orientation == Orientation.Tall:
+                return 3, 4
+            elif self.__orientation == Orientation.Wide:
+                return 16, 9
+            else:
+                return 0, 0
+
+        @property
         def base(self) -> 'ImageSize.Preset':
             return self.__base
 
@@ -62,10 +82,10 @@ class ImageSize:
     Display = Preset(1, 1, base=Image)
     """! @brief Size and pixel ratio for displaying"""
 
-    DisplayWide = Preset(1, 1, Orientation.Wide, base=ImageWide)
+    DisplayWide = Preset(2, 1, Orientation.Wide, base=ImageWide)
     """! @brief Size and pixel ratio for wide 16/9 image display"""
 
-    LibraryWide = Preset(1.21, 1, Orientation.Wide, base=ImageWide)
+    LibraryWide = Preset(2.41, 1, Orientation.Wide, base=ImageWide)
 
     Library = Preset(1.21, 1, base=Image)
     """! @brief Same as Display"""
@@ -73,14 +93,14 @@ class ImageSize:
     Small = Preset(3, 1, base=Image)
     """! @brief Small image size for displaying"""
 
-    SmallWide = Preset(3, 1, Orientation.Wide, base=ImageWide)
+    SmallWide = Preset(6, 1, Orientation.Wide, base=ImageWide)
     """! @brief Small image size for displaying"""
 
     Smaller = Preset(4, 1, base=Image)
     """! @brief Smaller image size for displaying"""
 
-    SmallerWide = Preset(4, 1, Orientation.Wide, base=ImageWide)
+    SmallerWide = Preset(8, 1, Orientation.Wide, base=ImageWide)
     """! @brief Smaller image size for displaying"""
 
-    Icon = Preset(5, 1, base=Image)
+    Smallest = Preset(5, 1, base=Image)
     """! @brief Smaller image size for UI icons"""
