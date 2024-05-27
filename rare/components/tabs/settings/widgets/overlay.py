@@ -45,11 +45,11 @@ class OverlayComboBox(QComboBox):
         self.setCurrentIndex(0)
 
     def getValue(self) -> Optional[str]:
-        return f"{self.option}={self.currentText()}" if self.currentIndex() > 0 else None
+        return f"{self.option}={self.currentData(Qt.UserRole)}" if self.currentIndex() > 0 else None
 
     def setValue(self, options: Dict[str, str]):
         if (value := options.get(self.option, None)) is not None:
-            self.setCurrentText(value)
+            self.setCurrentIndex(self.findData(value, Qt.UserRole))
             options.pop(self.option)
         else:
             self.setDefault()
@@ -93,10 +93,13 @@ class OverlayNumberInput(OverlayLineEdit):
 
 
 class OverlaySelectInput(OverlayComboBox):
-    def __init__(self, option: str, values: List, parent=None):
+    def __init__(self, option: str, values: Tuple, parent=None):
         super().__init__(option, parent=parent)
+        for item in values:
+            text, data = item
+            self.addItem(text, data)
         # self.addItems([str(v) for v in values])
-        self.addItems(map(str, values))
+        # self.addItems(map(str, values))
 
 
 class ActivationStates(IntEnum):
@@ -241,23 +244,42 @@ class DxvkSettings(OverlaySettings):
             OverlayCheckBox("api", self.tr("D3D feature level")),
             OverlayCheckBox("compiler", self.tr("Compiler activity")),
         ]
-        form = [(OverlayNumberInput("scale", 1.0), self.tr("Scale"))]
+        form = [
+            (OverlayNumberInput("scale", 1.0), self.tr("Scale"))
+        ]
         self.setupWidget(grid, form, "DXVK_HUD", "0", "1")
 
     def update_settings_override(self, state: ActivationStates):
         pass
 
 
-mangohud_position = [
-    "default",
-    "top-left",
-    "top-right",
-    "middle-left",
-    "middle-right",
-    "bottom-left",
-    "bottom-right",
-    "top-center",
-]
+mangohud_position = (
+    ("default", "default"),
+    ("top-left", "top-left"),
+    ("top-right", "top-right"),
+    ("middle-left", "middle-left"),
+    ("middle-right", "middle-right"),
+    ("bottom-left", "bottom-left"),
+    ("bottom-right", "bottom-right"),
+    ("top-center", "top-center"),
+)
+
+mangohud_vsync = (
+    ("config", None),
+    ("adaptive", "0"),
+    ("off", "1"),
+    ("mailbox", "2"),
+    ("on", "3"),
+)
+
+mangohud_gl_vsync = (
+    ("config", None),
+    ("off", "0"),
+    ("on", "1"),
+    ("half", "2"),
+    ("third", "3"),
+    ("quarter", "4"),
+)
 
 
 class MangoHudSettings(OverlaySettings):
@@ -283,6 +305,9 @@ class MangoHudSettings(OverlaySettings):
             OverlayCheckBox("gpu_power", self.tr("GPU power consumption")),
         ]
         form = [
+            (OverlayNumberInput("fps_limit", 0), self.tr("FPS Limit")),
+            (OverlaySelectInput("vsync", mangohud_vsync), self.tr("Vulkan VSync")),
+            (OverlaySelectInput("gl_vsync", mangohud_gl_vsync), self.tr("OpenGL VSync")),
             (OverlayNumberInput("font_size", 24), self.tr("Font size")),
             (OverlaySelectInput("position", mangohud_position), self.tr("Position")),
         ]
