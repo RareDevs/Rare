@@ -37,16 +37,22 @@ class RareGame(RareGameSlim):
         steam_shortcut: Optional[int] = None
         tags: List[str] = field(default_factory=list)
 
+        # For compatibility with previously created game metadata
+        @staticmethod
+        def parse_date(strdate: str):
+            dt = datetime.fromisoformat(strdate) if strdate else datetime.min
+            return dt.replace(tzinfo=UTC)
+
         @classmethod
         def from_dict(cls, data: Dict):
             return cls(
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
-                last_played=datetime.fromisoformat(x) if (x := data.get("last_played", "")) else datetime.min,
-                grant_date=datetime.fromisoformat(x) if (x := data.get("grant_date", "")) else datetime.min,
+                last_played=RareGame.Metadata.parse_date(data.get("last_played", "")),
+                grant_date=RareGame.Metadata.parse_date(data.get("grant_date", "")),
                 steam_appid=data.get("steam_appid", None),
                 steam_grade=data.get("steam_grade", None),
-                steam_date=datetime.fromisoformat(x) if (x := data.get("steam_date", "")) else datetime.min,
+                steam_date=RareGame.Metadata.parse_date(data.get("steam_date", "")),
                 steam_shortcut=data.get("steam_shortcut", None),
                 tags=data.get("tags", []),
             )
@@ -56,11 +62,11 @@ class RareGame(RareGameSlim):
             return dict(
                 queued=self.queued,
                 queue_pos=self.queue_pos,
-                last_played=self.last_played.isoformat() if self.last_played else datetime.min,
-                grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min,
+                last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=UTC),
+                grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=UTC),
                 steam_appid=self.steam_appid,
                 steam_grade=self.steam_grade,
-                steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min,
+                steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min.replace(tzinfo=UTC),
                 steam_shortcut=self.steam_shortcut,
                 tags=self.tags,
             )
@@ -467,7 +473,7 @@ class RareGame(RareGameSlim):
 
     def grant_date(self, force=False) -> datetime:
         if (entitlements := self.core.lgd.entitlements) is None:
-            return self.metadata.grant_date.replace(tzinfo=UTC)
+            return self.metadata.grant_date
         if self.metadata.grant_date == datetime.min.replace(tzinfo=UTC) or force:
             logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
@@ -477,7 +483,7 @@ class RareGame(RareGameSlim):
             ) if entitlement else datetime.min.replace(tzinfo=UTC)
             self.metadata.grant_date = grant_date
             self.__save_metadata()
-        return self.metadata.grant_date.replace(tzinfo=UTC)
+        return self.metadata.grant_date
 
     def set_origin_attributes(self, path: str, size: int = 0) -> None:
         self.__origin_install_path = path
