@@ -122,7 +122,7 @@ class IconViewContainer(ViewContainer):
             elif order_by == LibraryOrder.RECENT:
                 # Sort by recently played
                 self.layout().sort(
-                    key=lambda x: (not x.widget().rgame.is_installed, x.widget().rgame.is_non_asset, x.widget().rgame.metadata.last_played),
+                    key=lambda x: (x.widget().rgame.is_installed, not x.widget().rgame.is_non_asset, x.widget().rgame.metadata.last_played),
                     reverse=True,
                 )
             else:
@@ -164,7 +164,7 @@ class ListViewContainer(ViewContainer):
                 )
             elif order_by == LibraryOrder.RECENT:
                 list_widgets.sort(
-                    key=lambda x: (not x.rgame.is_installed, x.rgame.is_non_asset, x.rgame.metadata.last_played),
+                    key=lambda x: (x.rgame.is_installed, not x.rgame.is_non_asset, x.rgame.metadata.last_played),
                     reverse=True,
                 )
             else:
