@@ -7,9 +7,9 @@
 Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, based on PyQt5
 
 <div align="center">
-    <img src="https://github.com/Dummerle/Rare/blob/main/rare/resources/images/Rare_nonsquared.png?raw=true" alt="Logo" width="200"/>
+    <img src="https://github.com/RareDevs/Rare/blob/main/rare/resources/images/Rare_nonsquared.png?raw=true" alt="Logo" width="200"/>
     <p><i>Logo by <a href="https://github.com/MultisampledNight">@MultisampledNight</a> available
-        <a href="https://github.com/Dummerle/Rare/blob/main/rare/resources/images/">here</a>,
+        <a href="https://github.com/RareDevs/Rare/blob/main/rare/resources/images/">here</a>,
         licensed under CC BY-SA 4.0</i></p>
 </div>
 
@@ -76,7 +76,7 @@ There are some AUR packages available:
 #### Debian based
 
 - DUR package: [rare](https://mpr.hunterwittenborn.com/packages/rare)
-- `.deb` file in [releases page](https://github.com/Dummerle/Rare/releases)
+- `.deb` file in [releases page](https://github.com/RareDevs/Rare/releases)
 
 **Note**:
 - pypresence is an optional package. You can install it from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip.
@@ -85,7 +85,7 @@ There are some AUR packages available:
 
 ### macOS
 
-There is a `.dmg` file available in [releases page](https://github.com/Dummerle/Rare/releases).
+There is a `.dmg` file available in [releases page](https://github.com/RareDevs/Rare/releases).
 
 **Note**: When you launch it, you will see an error, that the package is from an unknown source. You have to enable it  manually in `Settings -> Security and Privacy`. Otherwise, Gatekeeper will block Rare from running.
 
@@ -94,9 +94,9 @@ You can also use `pip`.
 
 ### Windows
 
-There is an `.msi` installer available in [releases page](https://github.com/Dummerle/Rare/releases).
+There is an `.msi` installer available in [releases page](https://github.com/RareDevs/Rare/releases).
 
-There is also a semi-portable `.zip` archive in [releases page](https://github.com/Dummerle/Rare/releases) that lets you run Rare without installing it.
+There is also a semi-portable `.zip` archive in [releases page](https://github.com/RareDevs/Rare/releases) that lets you run Rare without installing it.
 
 **Important**: On recent version of Windows you should have MSVC 2015 installed, you can get it from [here](https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2015-2017-2019-and-2022)
 
@@ -116,12 +116,12 @@ You can install Rare with the following one-liner:
 
 ### Packages
 
-In [releases page](https://github.com/Dummerle/Rare/releases), AppImages are available for Linux, a .msi file for windows and a .dmg
+In [releases page](https://github.com/RareDevs/Rare/releases), AppImages are available for Linux, a .msi file for windows and a .dmg
 file for macOS.
 
 ### Latest development version
 
-In the [actions](https://github.com/Dummerle/Rare/actions) tab you can find packages for the latest commits.
+In the [actions](https://github.com/RareDevs/Rare/actions) tab you can find packages for the latest commits.
 
 **Note**: They might be unstable and likely broken.
 
