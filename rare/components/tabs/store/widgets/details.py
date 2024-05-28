@@ -176,7 +176,9 @@ class StoreDetailsWidget(QWidget, SideTabContents):
 
         key_images = self.catalog_offer.keyImages
         img_url = key_images.for_dimensions(self.image.size().width(), self.image.size().height())
-        self.image.fetchPixmap(img_url.url)
+        # FIXME: check why there was no tall image
+        if img_url:
+            self.image.fetchPixmap(img_url.url)
 
         # self.image_stack.setCurrentIndex(0)
         about = product_data.about

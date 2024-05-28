@@ -45,8 +45,8 @@ class ImageUrlModel:
 @dataclass
 class KeyImagesModel:
     key_images: Optional[List[ImageUrlModel]] = None
-    tall_types = ("DieselStoreFrontTall", "OfferImageTall", "Thumbnail", "ProductLogo", "DieselGameBoxLogo")
-    wide_types = ("DieselStoreFrontWide", "OfferImageWide", "VaultClosed", "ProductLogo")
+    tall_types = ("DieselGameBoxTall", "DieselStoreFrontTall", "OfferImageTall", "DieselGameBoxLogo", "Thumbnail", "ProductLogo")
+    wide_types = ("DieselGameBoxwide", "DieselStoreFrontWide", "OfferImageWide", "DieselGameBox", "VaultClosed", "ProductLogo")
 
     def __getitem__(self, item):
         return self.key_images[item]
