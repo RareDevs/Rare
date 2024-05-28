@@ -29,11 +29,11 @@ class RareGame(RareGameSlim):
     class Metadata:
         queued: bool = False
         queue_pos: Optional[int] = None
-        last_played: datetime = datetime.min
-        grant_date: datetime = datetime.min
+        last_played: datetime = datetime.min.replace(tzinfo=UTC)
+        grant_date: datetime = datetime.min.replace(tzinfo=UTC)
         steam_appid: Optional[int] = None
         steam_grade: Optional[str] = None
-        steam_date: datetime = datetime.min
+        steam_date: datetime = datetime.min.replace(tzinfo=UTC)
         steam_shortcut: Optional[int] = None
         tags: List[str] = field(default_factory=list)
 
