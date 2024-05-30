@@ -58,7 +58,7 @@ class GameDetails(QWidget, SideTabContents):
         self.rgame: Optional[RareGame] = None
 
         self.image = ImageWidget(self)
-        self.image.setFixedSize(ImageSize.Display)
+        self.image.setFixedSize(ImageSize.DisplayTall)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
 
         self.ui.install_button.clicked.connect(self.__on_install)
@@ -270,7 +270,7 @@ class GameDetails(QWidget, SideTabContents):
     @pyqtSlot()
     def __update_widget(self):
         """ React to state updates from RareGame """
-        self.image.setPixmap(self.rgame.get_pixmap(True))
+        self.image.setPixmap(self.rgame.get_pixmap(ImageSize.DisplayTall, True))
 
         self.ui.lbl_version.setDisabled(self.rgame.is_non_asset)
         self.ui.version.setDisabled(self.rgame.is_non_asset)

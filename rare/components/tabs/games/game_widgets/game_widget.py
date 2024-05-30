@@ -58,18 +58,13 @@ class GameWidget(LibraryWidget):
         self.update_actions()
 
         # signals
-        self.rgame.signals.widget.update.connect(lambda: self.setPixmap(self.rgame.pixmap))
+        self.rgame.signals.widget.update.connect(self.update_pixmap)
         self.rgame.signals.widget.update.connect(self.update_buttons)
         self.rgame.signals.widget.update.connect(self.update_state)
         self.rgame.signals.game.installed.connect(self.update_actions)
         self.rgame.signals.game.uninstalled.connect(self.update_actions)
 
-        self.rgame.signals.progress.start.connect(
-            lambda: self.showProgress(
-                self.image_manager.get_pixmap(self.rgame.app_name, True),
-                self.image_manager.get_pixmap(self.rgame.app_name, False)
-            )
-        )
+        self.rgame.signals.progress.start.connect(self.start_progress)
         self.rgame.signals.progress.update.connect(
             lambda p: self.updateProgress(p)
         )
@@ -104,10 +99,10 @@ class GameWidget(LibraryWidget):
     # lk: abstract class for typing, the `self.ui` attribute should be used
     # lk: by the Ui class in the children. It must contain at least the same
     # lk: attributes as `GameWidgetUi` class
-    __slots__ = "ui"
+    __slots__ = "ui", "update_pixmap", "start_progress"
 
     def paintEvent(self, a0: QPaintEvent) -> None:
-        if not self.visibleRegion().isNull() and self.rgame.pixmap.isNull():
+        if not self.visibleRegion().isNull() and not self.rgame.has_pixmap:
             self.startTimer(random.randrange(42, 2361, 129), Qt.CoarseTimer)
             # self.startTimer(random.randrange(42, 2361, 363), Qt.VeryCoarseTimer)
             # self.rgame.load_pixmap()
@@ -115,7 +110,7 @@ class GameWidget(LibraryWidget):
 
     def timerEvent(self, a0):
         self.killTimer(a0.timerId())
-        self.rgame.load_pixmap()
+        self.rgame.load_pixmaps()
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():

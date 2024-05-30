@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import Optional
 
-from PyQt5.QtCore import QEvent
+from PyQt5.QtCore import QEvent, pyqtSlot
 
 from rare.models.game import RareGame
 from rare.models.image import ImageSize
@@ -15,7 +15,7 @@ class IconGameWidget(GameWidget):
     def __init__(self, rgame: RareGame, parent=None):
         super().__init__(rgame, parent)
         self.setObjectName(f"{rgame.app_name}")
-        self.setFixedSize(ImageSize.Library)
+        self.setFixedSize(ImageSize.LibraryTall)
         self.ui = IconWidget()
         self.ui.setupUi(self)
 
@@ -33,6 +33,17 @@ class IconGameWidget(GameWidget):
         self.installEventFilter(self)
         self.ui.launch_btn.installEventFilter(self)
         self.ui.install_btn.installEventFilter(self)
+
+    @pyqtSlot()
+    def update_pixmap(self):
+        self.setPixmap(self.rgame.get_pixmap(ImageSize.LibraryTall, self.rgame.is_installed))
+
+    @pyqtSlot()
+    def start_progress(self):
+        self.showProgress(
+            self.rgame.get_pixmap(ImageSize.LibraryTall, True),
+            self.rgame.get_pixmap(ImageSize.LibraryTall, False)
+        )
 
     def enterEvent(self, a0: Optional[QEvent] = None) -> None:
         if a0 is not None:

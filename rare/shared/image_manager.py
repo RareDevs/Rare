@@ -16,9 +16,18 @@ from PyQt5.QtWidgets import QApplication
 from legendary.models.game import Game
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.image import ImageSize
+from rare.models.image import ImageSize, ImageType
 from rare.models.signals import GlobalSignals
-from rare.utils.paths import image_dir, resources_path, desktop_icon_suffix
+from rare.utils.paths import (
+    image_dir,
+    image_dir_game,
+    image_tall_path,
+    image_wide_path,
+    image_icon_path,
+    resources_path,
+    desktop_icon_suffix,
+    desktop_icon_path,
+)
 
 # from requests_futures.sessions import FuturesSession
 
@@ -67,53 +76,35 @@ class ImageManager(QObject):
             self.image_dir.mkdir()
             logger.info(f"Created image directory at {self.image_dir}")
 
-        self.device = ImageSize.Preset(1, QApplication.instance().devicePixelRatio())
-
         self.threadpool = QThreadPool()
         self.threadpool.setMaxThreadCount(6)
 
-    def __img_dir(self, app_name: str) -> Path:
-        return self.image_dir.joinpath(app_name)
+    @staticmethod
+    def __img_json(app_name: str) -> Path:
+        return image_dir_game(app_name).joinpath("image.json")
 
-    def __img_json(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("image.json")
+    @staticmethod
+    def __img_cache(app_name: str) -> Path:
+        return image_dir_game(app_name).joinpath("image.cache")
 
-    def __img_cache(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("image.cache")
-
-    def __img_tall_color(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("tall.png")
-
-    def __img_tall_gray(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("tall_uninstalled.png")
-
-    def __img_wide_color(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("wide.png")
-
-    def __img_wide_gray(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("wide_uninstalled.png")
-
-    def __img_logo(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath("logo.png")
-
-    def __img_icon(self, app_name: str) -> Path:
-        return self.__img_dir(app_name).joinpath(f"icon.{desktop_icon_suffix()}")
-
-    def __img_all(self, app_name: str) -> Tuple:
+    @staticmethod
+    def __img_all(app_name: str) -> Tuple:
         return (
-            self.__img_icon(app_name),
-            self.__img_tall_color(app_name),
-            self.__img_tall_gray(app_name),
-            self.__img_wide_color(app_name),
-            self.__img_tall_gray(app_name),
+            image_tall_path(app_name),
+            image_tall_path(app_name, color=False),
+            image_wide_path(app_name),
+            image_wide_path(app_name, color=False),
+            image_icon_path(app_name),
+            image_icon_path(app_name, color=False),
+            desktop_icon_path(app_name),
         )
 
     def __prepare_download(self, game: Game, force: bool = False) -> Tuple[List, Dict]:
-        if force and self.__img_dir(game.app_name).exists():
+        if force and image_dir_game(game.app_name).exists():
             for file in self.__img_all(game.app_name):
                 file.unlink(missing_ok=True)
-        if not self.__img_dir(game.app_name).is_dir():
-            self.__img_dir(game.app_name).mkdir()
+        if not image_dir_game(game.app_name).is_dir():
+            image_dir_game(game.app_name).mkdir()
 
         # Load image checksums
         if not self.__img_json(game.app_name).is_file():
@@ -160,8 +151,8 @@ class ImageManager(QObject):
                 #         resources_path.joinpath("images", "Rare_nonsquared.png"), "rb").read()
                 self.__convert(game, cache_data)
                 json_data["cache"] = None
-                json_data["scale"] = ImageSize.Image.pixel_ratio
-                json_data["size"] = {"w": ImageSize.Image.size.width(), "h": ImageSize.Image.size.height()}
+                json_data["scale"] = ImageSize.Tall.pixel_ratio
+                json_data["size"] = {"w": ImageSize.Tall.size.width(), "h": ImageSize.Tall.size.height()}
                 json.dump(json_data, open(self.__img_json(game.app_name), "w"))
             else:
                 updates = [image for image in candidates if image["type"] in self.__img_types]
@@ -214,12 +205,12 @@ class ImageManager(QObject):
             logger.info(f"Downloading {image['type']} for {game.app_name} ({game.app_title})")
             json_data[image["type"]] = image["md5"]
             if image["type"] in self.__img_tall_types:
-                payload = {"resize": 1, "w": ImageSize.Image.size.width(), "h": ImageSize.Image.size.height()}
+                payload = {"resize": 1, "w": ImageSize.Tall.size.width(), "h": ImageSize.Tall.size.height()}
             elif image["type"] in self.__img_wide_types:
-                payload = {"resize": 1, "w": ImageSize.ImageWide.size.width(), "h": ImageSize.ImageWide.size.height()}
+                payload = {"resize": 1, "w": ImageSize.Wide.size.width(), "h": ImageSize.Wide.size.height()}
             else:
                 # Set the larger of the sizes for everything else
-                payload = {"resize": 1, "w": ImageSize.ImageWide.size.width(), "h": ImageSize.ImageWide.size.height()}
+                payload = {"resize": 1, "w": ImageSize.Wide.size.width(), "h": ImageSize.Wide.size.height()}
             try:
                 # cache_data[image["type"]] = requests.get(image["url"], params=payload).content
                 cache_data[image["type"]] = requests.get(image["url"], params=payload, timeout=10).content
@@ -241,8 +232,8 @@ class ImageManager(QObject):
             archive_hash = None
 
         json_data["cache"] = archive_hash
-        json_data["scale"] = ImageSize.Image.pixel_ratio
-        json_data["size"] = {"w": ImageSize.Image.size.width(), "h": ImageSize.Image.size.height()}
+        json_data["scale"] = ImageSize.Tall.pixel_ratio
+        json_data["size"] = {"w": ImageSize.Tall.size.width(), "h": ImageSize.Tall.size.height()}
 
         # write image.json
         with open(self.__img_json(game.app_name), "w") as file:
@@ -332,11 +323,11 @@ class ImageManager(QObject):
 
             return image.scaled(preset.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-        tall = convert_image(tall_data, logo_data, ImageSize.Image)
-        wide = convert_image(wide_data, logo_data, ImageSize.ImageWide)
+        tall = convert_image(tall_data, logo_data, ImageSize.Tall)
+        wide = convert_image(wide_data, logo_data, ImageSize.Wide)
 
         icon = self.__convert_icon(tall)
-        icon.save(str(self.__img_icon(game.app_name)), format=desktop_icon_suffix().upper())
+        icon.save(desktop_icon_path(game.app_name).as_posix(), format=desktop_icon_suffix().upper())
 
         def save_image(image: QImage, color_path: Path, gray_path: Path):
             # this is not required if we ever want to re-apply the alpha channel
@@ -344,14 +335,17 @@ class ImageManager(QObject):
             # add the alpha channel back to the cover
             image = image.convertToFormat(QImage.Format_ARGB32_Premultiplied)
             image.save(color_path.as_posix(), format="PNG")
-            # quick way to convert to grayscale
+            # quick way to convert to grayscale, but keep the alpha channel
+            alpha = image.convertToFormat(QImage.Format_Alpha8)
             image = image.convertToFormat(QImage.Format_Grayscale8)
             # add the alpha channel back to the grayscale cover
             image = image.convertToFormat(QImage.Format_ARGB32_Premultiplied)
+            image.setAlphaChannel(alpha)
             image.save(gray_path.as_posix(), format="PNG")
 
-        save_image(tall, self.__img_tall_color(game.app_name), self.__img_tall_gray(game.app_name))
-        save_image(wide, self.__img_wide_color(game.app_name), self.__img_wide_gray(game.app_name))
+        save_image(icon, image_icon_path(game.app_name), image_icon_path(game.app_name, color=False))
+        save_image(tall, image_tall_path(game.app_name), image_tall_path(game.app_name, color=False))
+        save_image(wide, image_wide_path(game.app_name), image_wide_path(game.app_name, color=False))
 
     def __compress(self, game: Game, data: Dict) -> None:
         archive = open(self.__img_cache(game.app_name), "wb")
@@ -395,11 +389,15 @@ class ImageManager(QObject):
             self.threadpool.start(image_worker, priority)
 
     def download_image_launch(
-            self, game: Game, callback: Callable[[], None], priority: int, force: bool = False
+            self, game: Game, callback: Callable[[Game], None], priority: int, force: bool = False
     ) -> None:
         if self.__img_cache(game.app_name).is_file() and not force:
             return
-        self.download_image(game, callback, priority, force)
+
+        def _callback():
+            callback(game)
+
+        self.download_image(game, _callback, priority, force)
 
     def download_image_blocking(self, game: Game, force: bool = False) -> None:
         updates, json_data = self.__prepare_download(game, force)
@@ -408,44 +406,56 @@ class ImageManager(QObject):
         if updates:
             self.__download(updates, json_data, game, use_async=True)
 
+    @staticmethod
     def __get_cover(
-        self, container: Union[Type[QPixmap], Type[QImage]], app_name: str, color: bool
+            container: Union[Type[QPixmap], Type[QImage]], app_name: str, preset: ImageSize.Preset, color: bool,
     ) -> Union[QPixmap, QImage]:
         ret = container()
-        if not app_name:
-            raise RuntimeError("app_name is an empty string")
-        if color:
-            if self.__img_tall_color(app_name).is_file():
-                ret.load(self.__img_tall_color(app_name).as_posix())
+        if preset.orientation == ImageType.Icon:
+            if image_icon_path(app_name, color).is_file():
+                ret.load(image_icon_path(app_name, color).as_posix())
+        elif preset.orientation == ImageType.Tall:
+            if image_tall_path(app_name, color).is_file():
+                ret.load(image_tall_path(app_name, color).as_posix())
+        elif preset.orientation == ImageType.Wide:
+            if image_wide_path(app_name, color).is_file():
+                ret.load(image_wide_path(app_name, color).as_posix())
         else:
-            if self.__img_tall_gray(app_name).is_file():
-                ret.load(self.__img_tall_gray(app_name).as_posix())
+            raise RuntimeError("Unknown image preset")
         if not ret.isNull():
-            ret.setDevicePixelRatio(ImageSize.Image.pixel_ratio)
+            device = ImageSize.Preset(
+                divisor=preset.base.divisor,
+                pixel_ratio=QApplication.instance().devicePixelRatio(),
+                orientation=preset.base.orientation,
+                base=preset
+            )
+            ret.setDevicePixelRatio(preset.pixel_ratio)
             # lk: Scaling happens at painting. It might be inefficient so leave this here as an alternative
             # lk: If this is uncommented, the transformation in ImageWidget should be adjusted also
-            ret = ret.scaled(self.device.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            ret.setDevicePixelRatio(self.device.pixel_ratio)
+            ret = ret.scaled(device.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            ret.setDevicePixelRatio(device.pixel_ratio)
         return ret
 
-    def get_pixmap(self, app_name: str, color: bool = True) -> QPixmap:
+    def get_pixmap(self, app_name: str, preset: ImageSize.Preset, color: bool = True) -> QPixmap:
         """
         Use when the image is to be presented directly on the screen.
 
         @param app_name: The RareGame object for this game
+        @param preset:
         @param color: True to load the colored pixmap, False to load the grayscale
         @return: QPixmap
         """
-        pixmap: QPixmap = self.__get_cover(QPixmap, app_name, color)
+        pixmap: QPixmap = self.__get_cover(QPixmap, app_name, preset, color)
         return pixmap
 
-    def get_image(self, app_name: str, color: bool = True) -> QImage:
+    def get_image(self, app_name: str, preset: ImageSize.Preset, color: bool = True) -> QImage:
         """
         Use when the image has to be manipulated before being rendered.
 
         @param app_name: The RareGame object for this game
+        @param preset:
         @param color: True to load the colored image, False to load the grayscale
         @return: QImage
         """
-        image: QImage = self.__get_cover(QImage, app_name, color)
+        image: QImage = self.__get_cover(QImage, app_name, preset, color)
         return image

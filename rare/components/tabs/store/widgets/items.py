@@ -76,7 +76,7 @@ class StoreItemWidget(ItemWidget):
 class ResultsItemWidget(ItemWidget):
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
         super(ResultsItemWidget, self).__init__(manager, catalog_game, parent=parent)
-        self.setFixedSize(ImageSize.Display)
+        self.setFixedSize(ImageSize.DisplayTall)
         self.ui.setupUi(self)
 
         key_images = catalog_game.keyImages

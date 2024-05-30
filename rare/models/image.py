@@ -4,7 +4,7 @@ from typing import Tuple
 from PyQt5.QtCore import QSize
 
 
-class Orientation(Enum):
+class ImageType(Enum):
     Tall = 0
     Wide = 1
     Icon = 3
@@ -13,17 +13,17 @@ class Orientation(Enum):
 
 class ImageSize:
     class Preset:
-        def __init__(self, divisor: float, pixel_ratio: float, orientation: Orientation = Orientation.Tall,
+        def __init__(self, divisor: float, pixel_ratio: float, orientation: ImageType = ImageType.Tall,
                      base: 'ImageSize.Preset' = None):
             self.__divisor = divisor
             self.__pixel_ratio = pixel_ratio
-            if orientation == Orientation.Tall:
+            if orientation == ImageType.Tall:
                 self.__img_factor = 67
                 self.__size = QSize(self.__img_factor * 3, self.__img_factor * 4) * pixel_ratio / divisor
-            if orientation == Orientation.Wide:
+            if orientation == ImageType.Wide:
                 self.__img_factor = 34
                 self.__size = QSize(self.__img_factor * 16, self.__img_factor * 9) * pixel_ratio / divisor
-            if orientation == Orientation.Icon:
+            if orientation == ImageType.Icon:
                 self.__img_factor = 128
                 self.__size = QSize(self.__img_factor * 1, self.__img_factor * 1) * pixel_ratio / divisor
             self.__orientation = orientation
@@ -57,14 +57,14 @@ class ImageSize:
             return self.__pixel_ratio
 
         @property
-        def orientation(self) -> Orientation:
+        def orientation(self) -> ImageType:
             return self.__orientation
 
         @property
         def aspect_ratio(self) -> Tuple[int, int]:
-            if self.__orientation == Orientation.Tall:
+            if self.__orientation == ImageType.Tall:
                 return 3, 4
-            elif self.__orientation == Orientation.Wide:
+            elif self.__orientation == ImageType.Wide:
                 return 16, 9
             else:
                 return 0, 0
@@ -73,34 +73,28 @@ class ImageSize:
         def base(self) -> 'ImageSize.Preset':
             return self.__base
 
-    Image = Preset(1, 1)
+    Tall = Preset(1, 1)
     """! @brief Size and pixel ratio of the image on disk"""
 
-    ImageWide = Preset(1, 1, Orientation.Wide)
-    """! @brief Size and pixel ratio for wide 16/9 image on disk"""
-
-    Display = Preset(1, 1, base=Image)
+    DisplayTall = Preset(1, 1, base=Tall)
     """! @brief Size and pixel ratio for displaying"""
 
-    DisplayWide = Preset(2, 1, Orientation.Wide, base=ImageWide)
-    """! @brief Size and pixel ratio for wide 16/9 image display"""
-
-    LibraryWide = Preset(2.41, 1, Orientation.Wide, base=ImageWide)
-
-    Library = Preset(1.21, 1, base=Image)
+    LibraryTall = Preset(1.21, 1, base=Tall)
     """! @brief Same as Display"""
 
-    Small = Preset(3, 1, base=Image)
-    """! @brief Small image size for displaying"""
+    Wide = Preset(1, 1, ImageType.Wide)
+    """! @brief Size and pixel ratio for wide 16/9 image on disk"""
 
-    SmallWide = Preset(6, 1, Orientation.Wide, base=ImageWide)
-    """! @brief Small image size for displaying"""
+    DisplayWide = Preset(2, 1, ImageType.Wide, base=Wide)
+    """! @brief Size and pixel ratio for wide 16/9 image display"""
 
-    Smaller = Preset(4, 1, base=Image)
-    """! @brief Smaller image size for displaying"""
+    LibraryWide = Preset(2.41, 1, ImageType.Wide, base=Wide)
 
-    SmallerWide = Preset(8, 1, Orientation.Wide, base=ImageWide)
-    """! @brief Smaller image size for displaying"""
+    Icon = Preset(1, 1, ImageType.Icon)
+    """! @brief Size and pixel ratio of the icon on disk"""
 
-    Smallest = Preset(5, 1, base=Image)
-    """! @brief Smaller image size for UI icons"""
+    DisplayIcon = Preset(1, 1, ImageType.Icon, base=Icon)
+    """! @brief Size and pixel ratio of the icon on disk"""
+
+    LibraryIcon = Preset(2.2, 1, ImageType.Icon, base=Icon)
+    """! @brief Size and pixel ratio of the icon on disk"""

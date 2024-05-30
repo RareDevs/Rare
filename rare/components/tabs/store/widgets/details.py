@@ -41,7 +41,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.catalog_offer: CatalogOfferModel = None
 
         self.image = LoadingImageWidget(store_api.cached_manager, self)
-        self.image.setFixedSize(ImageSize.Display)
+        self.image.setFixedSize(ImageSize.DisplayTall)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
         self.ui.left_layout.setAlignment(Qt.AlignTop)
 

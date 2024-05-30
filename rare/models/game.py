@@ -8,10 +8,11 @@ from threading import Lock
 from typing import List, Optional, Dict, Set
 
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
-from PyQt5.QtGui import QPixmap, QPixmapCache
+from PyQt5.QtGui import QPixmap
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
 
+from rare.models.image import ImageSize
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameBase, RareGameSlim
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
@@ -85,7 +86,7 @@ class RareGame(RareGameSlim):
         if self.game.app_title == "Unreal Engine":
             self.game.app_title += f" {self.game.app_name.split('_')[-1]}"
 
-        self.pixmap: QPixmap = QPixmap()
+        self.has_pixmap: bool = False
         self.metadata: RareGame.Metadata = RareGame.Metadata()
         self.__load_metadata()
         self.grant_date()
@@ -444,11 +445,11 @@ class RareGame(RareGameSlim):
             if elapsed_time.days > 3:
                 logger.info("Refreshing ProtonDB grade for %s", self.app_title)
 
-                def _set_steam_grade():
+                def set_steam_grade():
                     appid, rating = get_rating(self.core, self.app_name)
                     self.set_steam_grade(appid, rating)
 
-                worker = QRunnable.create(_set_steam_grade)
+                worker = QRunnable.create(set_steam_grade)
                 QThreadPool.globalInstance().start(worker)
                 self.metadata.steam_grade = "pending"
         return self.metadata.steam_grade
@@ -504,20 +505,19 @@ class RareGame(RareGameSlim):
             return bool(not self.is_foreign or self.can_run_offline)
         return False
 
-    def get_pixmap(self, color=True) -> QPixmap:
-        QPixmapCache.clear()
-        return self.image_manager.get_pixmap(self.app_name, color)
+    def get_pixmap(self, preset: ImageSize.Preset, color=True) -> QPixmap:
+        return self.image_manager.get_pixmap(self.app_name, preset, color)
 
     @pyqtSlot(object)
     def set_pixmap(self):
-        self.pixmap = self.image_manager.get_pixmap(self.app_name, self.is_installed)
-        QPixmapCache.clear()
-        if not self.pixmap.isNull():
+        # self.pixmap = not self.image_manager.get_pixmap(self.app_name, self.is_installed).isNull()
+        self.has_pixmap = True
+        if self.has_pixmap:
             self.signals.widget.update.emit()
 
-    def load_pixmap(self):
-        """ Do not call this function, call set_pixmap instead. This is only used for startup image loading """
-        if self.pixmap.isNull():
+    def load_pixmaps(self):
+        """ Do not call this function, call set_pixmap instead. This is only used for initial image loading """
+        if not self.has_pixmap:
             self.image_manager.download_image(self.game, self.set_pixmap, 0, False)
 
     def refresh_pixmap(self):
