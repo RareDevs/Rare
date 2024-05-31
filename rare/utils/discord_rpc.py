@@ -1,39 +1,47 @@
 import platform
 import time
 from logging import getLogger
+from typing import List
 
-import pypresence.exceptions
-from PyQt5.QtCore import QObject, QSettings
-from pypresence import Presence
+from PyQt5.QtCore import QObject, QSettings, pyqtSlot
+from pypresence import Presence, exceptions
 
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.models.options import options
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 
 client_id = "830732538225360908"
-logger = getLogger("RPC")
+logger = getLogger("DiscordRPC")
 
 
 class DiscordRPC(QObject):
     def __init__(self):
         super(DiscordRPC, self).__init__()
-        self.RPC = None
+        self.rpc = None
         self.state = 1  # 0: game, 1: always active, 2: off
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
 
         self.settings = QSettings()
-        if self.settings.value(*options.rpc_enable) == 1:  # show always
+        if self.settings.value(*options.discord_rpc_mode) == 1:  # show always
             self.state = 2
             self.set_discord_rpc()
 
-        self.signals.discord_rpc.set_title.connect(self.update_presence)
-        self.signals.discord_rpc.apply_settings.connect(self.changed_settings)
+        self.signals.discord_rpc.update_presence.connect(self.update_presence)
+        self.signals.discord_rpc.remove_presence.connect(self.remove_presence)
+        self.signals.discord_rpc.update_settings.connect(self.update_settings)
 
-    def update_presence(self, app_name):
+    @pyqtSlot(str)
+    def update_presence(self, app_name: str):
         self.set_discord_rpc(app_name)
 
-    def changed_settings(self, game_running: list = None):
-        value = self.settings.value(*options.rpc_enable)
+    @pyqtSlot(str)
+    def remove_presence(self, app_name: str):
+        self.set_discord_rpc(None)
+
+    @pyqtSlot()
+    @pyqtSlot(list)
+    def update_settings(self, game_running: List = None):
+        value = self.settings.value(*options.discord_rpc_mode)
         if value == 2:
             self.remove_rpc()
             return
@@ -45,15 +53,15 @@ class DiscordRPC(QObject):
             self.set_discord_rpc(game_running[0])
 
     def remove_rpc(self):
-        if self.settings.value(*options.rpc_enable) != 1:
-            if not self.RPC:
+        if self.settings.value(*options.discord_rpc_mode) != 1:
+            if not self.rpc:
                 return
             try:
-                self.RPC.close()
+                self.rpc.close()
             except Exception:
                 logger.warning("Already closed")
-            del self.RPC
-            self.RPC = None
+            del self.rpc
+            self.rpc = None
             logger.info("Remove RPC")
             self.state = 2
         else:
@@ -61,56 +69,50 @@ class DiscordRPC(QObject):
             self.set_discord_rpc()
 
     def set_discord_rpc(self, app_name=None):
-        if not self.RPC:
+        if not self.rpc:
             try:
-                self.RPC = Presence(
-                    client_id
-                )  # Rare app: https://discord.com/developers/applications
-                self.RPC.connect()
+                self.rpc = Presence(client_id)  # Rare app: https://discord.com/developers/applications
+                self.rpc.connect()
             except ConnectionRefusedError as e:
                 logger.warning(f"Discord is not active\n{e}")
-                self.RPC = None
+                self.rpc = None
                 return
             except FileNotFoundError as e:
                 logger.warning(f"File not found error\n{e}")
-                self.RPC = None
+                self.rpc = None
                 return
-            except pypresence.exceptions.InvalidPipe as e:
+            except exceptions.InvalidPipe as e:
                 logger.error(f"Is Discord running? \n{e}")
-                self.RPC = None
+                self.rpc = None
                 return
             except Exception as e:
                 logger.error(str(e))
-                self.RPC = None
+                self.rpc = None
                 return
         self.update_rpc(app_name)
 
     def update_rpc(self, app_name=None):
-        if self.settings.value(*options.rpc_enable) == 2 or (
-                not app_name and self.settings.value(*options.rpc_enable) == 0
+        if self.settings.value(*options.discord_rpc_mode) == 2 or (
+            not app_name and self.settings.value(*options.discord_rpc_mode) == 0
         ):
             self.remove_rpc()
             return
         title = None
         if not app_name:
-            self.RPC.update(
-                large_image="logo", details="https://github.com/RareDevs/Rare"
-            )
+            self.rpc.update(large_image="logo", details="https://github.com/RareDevs/Rare")
             return
-        if self.settings.value(*options.rpc_name):
+        if self.settings.value(*options.discord_rpc_game):
             try:
                 title = self.core.get_installed_game(app_name).title
             except AttributeError:
                 logger.error(f"Could not get title of game: {app_name}")
                 title = app_name
         start = None
-        if self.settings.value(*options.rpc_time):
+        if self.settings.value(*options.discord_rpc_time):
             start = str(time.time()).split(".")[0]
         os = None
-        if self.settings.value(*options.rpc_os):
+        if self.settings.value(*options.discord_rpc_os):
             os = f"via Rare on {platform.system()}"
 
-        self.RPC.update(
-            large_image="logo", details=title, large_text=title, state=os, start=start
-        )
+        self.rpc.update(large_image="logo", details=title, large_text=title, state=os, start=start)
         self.state = 0

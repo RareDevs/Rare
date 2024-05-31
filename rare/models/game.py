@@ -8,10 +8,11 @@ from threading import Lock
 from typing import List, Optional, Dict, Set
 
 from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
-from PyQt5.QtGui import QPixmap, QPixmapCache
+from PyQt5.QtGui import QPixmap
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
 
+from rare.models.image import ImageSize
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameBase, RareGameSlim
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
@@ -29,23 +30,31 @@ class RareGame(RareGameSlim):
     class Metadata:
         queued: bool = False
         queue_pos: Optional[int] = None
-        last_played: datetime = datetime.min
-        grant_date: datetime = datetime.min
+        last_played: datetime = datetime.min.replace(tzinfo=UTC)
+        grant_date: datetime = datetime.min.replace(tzinfo=UTC)
         steam_appid: Optional[int] = None
         steam_grade: Optional[str] = None
-        steam_date: datetime = datetime.min
+        steam_date: datetime = datetime.min.replace(tzinfo=UTC)
+        steam_shortcut: Optional[int] = None
         tags: List[str] = field(default_factory=list)
+
+        # For compatibility with previously created game metadata
+        @staticmethod
+        def parse_date(strdate: str):
+            dt = datetime.fromisoformat(strdate) if strdate else datetime.min
+            return dt.replace(tzinfo=UTC)
 
         @classmethod
         def from_dict(cls, data: Dict):
             return cls(
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
-                last_played=datetime.fromisoformat(x) if (x := data.get("last_played", "")) else datetime.min,
-                grant_date=datetime.fromisoformat(x) if (x := data.get("grant_date", "")) else datetime.min,
+                last_played=RareGame.Metadata.parse_date(data.get("last_played", "")),
+                grant_date=RareGame.Metadata.parse_date(data.get("grant_date", "")),
                 steam_appid=data.get("steam_appid", None),
                 steam_grade=data.get("steam_grade", None),
-                steam_date=datetime.fromisoformat(x) if (x := data.get("steam_date", "")) else datetime.min,
+                steam_date=RareGame.Metadata.parse_date(data.get("steam_date", "")),
+                steam_shortcut=data.get("steam_shortcut", None),
                 tags=data.get("tags", []),
             )
 
@@ -54,11 +63,12 @@ class RareGame(RareGameSlim):
             return dict(
                 queued=self.queued,
                 queue_pos=self.queue_pos,
-                last_played=self.last_played.isoformat() if self.last_played else datetime.min,
-                grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min,
+                last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=UTC),
+                grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=UTC),
                 steam_appid=self.steam_appid,
                 steam_grade=self.steam_grade,
-                steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min,
+                steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min.replace(tzinfo=UTC),
+                steam_shortcut=self.steam_shortcut,
                 tags=self.tags,
             )
 
@@ -76,7 +86,7 @@ class RareGame(RareGameSlim):
         if self.game.app_title == "Unreal Engine":
             self.game.app_title += f" {self.game.app_name.split('_')[-1]}"
 
-        self.pixmap: QPixmap = QPixmap()
+        self.has_pixmap: bool = False
         self.metadata: RareGame.Metadata = RareGame.Metadata()
         self.__load_metadata()
         self.grant_date()
@@ -118,7 +128,7 @@ class RareGame(RareGameSlim):
     @pyqtSlot(int)
     def __game_launched(self, code: int):
         self.state = RareGame.State.RUNNING
-        self.metadata.last_played = datetime.now()
+        self.metadata.last_played = datetime.now(UTC)
         if code == GameProcess.Code.ON_STARTUP:
             return
         self.__save_metadata()
@@ -430,16 +440,16 @@ class RareGame(RareGameSlim):
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
         if self.metadata.steam_grade != "pending":
-            elapsed_time = abs(datetime.utcnow() - self.metadata.steam_date)
+            elapsed_time = abs(datetime.now(UTC) - self.metadata.steam_date)
 
             if elapsed_time.days > 3:
                 logger.info("Refreshing ProtonDB grade for %s", self.app_title)
 
-                def _set_steam_grade():
+                def set_steam_grade():
                     appid, rating = get_rating(self.core, self.app_name)
                     self.set_steam_grade(appid, rating)
 
-                worker = QRunnable.create(_set_steam_grade)
+                worker = QRunnable.create(set_steam_grade)
                 QThreadPool.globalInstance().start(worker)
                 self.metadata.steam_grade = "pending"
         return self.metadata.steam_grade
@@ -458,13 +468,13 @@ class RareGame(RareGameSlim):
         if appid and self.steam_appid is None:
             self.set_steam_appid(appid)
         self.metadata.steam_grade = grade
-        self.metadata.steam_date = datetime.utcnow()
+        self.metadata.steam_date = datetime.now(UTC)
         self.__save_metadata()
         self.signals.widget.update.emit()
 
     def grant_date(self, force=False) -> datetime:
         if (entitlements := self.core.lgd.entitlements) is None:
-            return self.metadata.grant_date.replace(tzinfo=UTC)
+            return self.metadata.grant_date
         if self.metadata.grant_date == datetime.min.replace(tzinfo=UTC) or force:
             logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
@@ -474,7 +484,7 @@ class RareGame(RareGameSlim):
             ) if entitlement else datetime.min.replace(tzinfo=UTC)
             self.metadata.grant_date = grant_date
             self.__save_metadata()
-        return self.metadata.grant_date.replace(tzinfo=UTC)
+        return self.metadata.grant_date
 
     def set_origin_attributes(self, path: str, size: int = 0) -> None:
         self.__origin_install_path = path
@@ -495,19 +505,19 @@ class RareGame(RareGameSlim):
             return bool(not self.is_foreign or self.can_run_offline)
         return False
 
-    def get_pixmap(self, color=True) -> QPixmap:
-        QPixmapCache.clear()
-        return self.image_manager.get_pixmap(self.app_name, color)
+    def get_pixmap(self, preset: ImageSize.Preset, color=True) -> QPixmap:
+        return self.image_manager.get_pixmap(self.app_name, preset, color)
 
+    @pyqtSlot(object)
     def set_pixmap(self):
-        self.pixmap = self.image_manager.get_pixmap(self.app_name, self.is_installed)
-        QPixmapCache.clear()
-        if not self.pixmap.isNull():
+        # self.pixmap = not self.image_manager.get_pixmap(self.app_name, self.is_installed).isNull()
+        self.has_pixmap = True
+        if self.has_pixmap:
             self.signals.widget.update.emit()
 
-    def load_pixmap(self):
-        """ Do not call this function, call set_pixmap instead. This is only used for startup image loading """
-        if self.pixmap.isNull():
+    def load_pixmaps(self):
+        """ Do not call this function, call set_pixmap instead. This is only used for initial image loading """
+        if not self.has_pixmap:
             self.image_manager.download_image(self.game, self.set_pixmap, 0, False)
 
     def refresh_pixmap(self):

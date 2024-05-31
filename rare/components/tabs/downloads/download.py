@@ -29,7 +29,7 @@ class DownloadWidget(ImageWidget):
 
     def prepare_pixmap(self, pixmap: QPixmap) -> QPixmap:
         device: QImage = QImage(
-            pixmap.size().width() * 3,
+            pixmap.size().width() * 1,
             int(self.sizeHint().height() * pixmap.devicePixelRatioF()) + 1,
             QImage.Format_ARGB32_Premultiplied,
         )
@@ -38,9 +38,9 @@ class DownloadWidget(ImageWidget):
         painter.fillRect(device.rect(), brush)
         # the gradient could be cached and reused as it is expensive
         gradient = QLinearGradient(0, 0, device.width(), 0)
-        gradient.setColorAt(0.15, Qt.transparent)
+        gradient.setColorAt(0.02, Qt.transparent)
         gradient.setColorAt(0.5, Qt.black)
-        gradient.setColorAt(0.85, Qt.transparent)
+        gradient.setColorAt(0.98, Qt.transparent)
         painter.setCompositionMode(QPainter.CompositionMode_DestinationIn)
         painter.fillRect(device.rect(), gradient)
         painter.end()

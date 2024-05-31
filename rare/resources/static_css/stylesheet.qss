@@ -108,10 +108,6 @@ QPushButton#ListWidgetButton {
 QLabel#ListWidgetInfoLabel {
     color: #999;
 }
-QLabel#WaitingSpinner {
-    margin-left: auto;
-    margin-right: auto;
-}
 QPushButton#SelectViewWidgetButton {
     border: none;
     background-color: transparent;

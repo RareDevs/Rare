@@ -2,18 +2,22 @@ import platform
 import random
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent, QTimer
+from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent
 from PyQt5.QtGui import QMouseEvent, QShowEvent, QPaintEvent
 from PyQt5.QtWidgets import QMessageBox, QAction
 
 from rare.models.game import RareGame
-from rare.shared import (
-    LegendaryCoreSingleton,
-    GlobalSignalsSingleton,
-    ArgumentsSingleton,
-    ImageManagerSingleton,
-)
+from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton, ImageManagerSingleton
 from rare.utils.paths import desktop_links_supported, desktop_link_path, create_desktop_link
+from rare.utils.steam_shortcuts import (
+    steam_shortcuts_supported,
+    steam_shortcut_exists,
+    remove_steam_shortcut,
+    remove_steam_coverart,
+    add_steam_shortcut,
+    add_steam_coverart,
+    save_steam_shortcuts,
+)
 from .library_widget import LibraryWidget
 
 logger = getLogger("GameWidget")
@@ -40,13 +44,14 @@ class GameWidget(LibraryWidget):
         self.install_action.triggered.connect(self._install)
 
         self.desktop_link_action = QAction(self)
-        self.desktop_link_action.triggered.connect(
-            lambda: self._create_link(self.rgame.folder_name, "desktop")
-        )
+        self.desktop_link_action.triggered.connect(lambda: self._create_link(self.rgame.folder_name, "desktop"))
 
         self.menu_link_action = QAction(self)
-        self.menu_link_action.triggered.connect(
-            lambda: self._create_link(self.rgame.folder_name, "start_menu")
+        self.menu_link_action.triggered.connect(lambda: self._create_link(self.rgame.folder_name, "start_menu"))
+
+        self.steam_shortcut_action = QAction(self)
+        self.steam_shortcut_action.triggered.connect(
+            lambda: self._create_steam_shortcut(self.rgame.app_name, self.rgame.app_title)
         )
 
         self.reload_action = QAction(self.tr("Reload Image"), self)
@@ -58,24 +63,15 @@ class GameWidget(LibraryWidget):
         self.update_actions()
 
         # signals
-        self.rgame.signals.widget.update.connect(lambda: self.setPixmap(self.rgame.pixmap))
+        self.rgame.signals.widget.update.connect(self.update_pixmap)
         self.rgame.signals.widget.update.connect(self.update_buttons)
         self.rgame.signals.widget.update.connect(self.update_state)
         self.rgame.signals.game.installed.connect(self.update_actions)
         self.rgame.signals.game.uninstalled.connect(self.update_actions)
 
-        self.rgame.signals.progress.start.connect(
-            lambda: self.showProgress(
-                self.image_manager.get_pixmap(self.rgame.app_name, True),
-                self.image_manager.get_pixmap(self.rgame.app_name, False)
-            )
-        )
-        self.rgame.signals.progress.update.connect(
-            lambda p: self.updateProgress(p)
-        )
-        self.rgame.signals.progress.finish.connect(
-            lambda e: self.hideProgress(e)
-        )
+        self.rgame.signals.progress.start.connect(self.start_progress)
+        self.rgame.signals.progress.update.connect(lambda p: self.updateProgress(p))
+        self.rgame.signals.progress.finish.connect(lambda e: self.hideProgress(e))
 
         self.state_strings = {
             RareGame.State.IDLE: "",
@@ -88,7 +84,7 @@ class GameWidget(LibraryWidget):
             "has_update": self.tr("Update available"),
             "needs_verification": self.tr("Needs verification"),
             "not_can_launch": self.tr("Can't launch"),
-            "save_not_up_to_date": self.tr("Save is not up-to-date")
+            "save_not_up_to_date": self.tr("Save is not up-to-date"),
         }
 
         self.hover_strings = {
@@ -104,10 +100,10 @@ class GameWidget(LibraryWidget):
     # lk: abstract class for typing, the `self.ui` attribute should be used
     # lk: by the Ui class in the children. It must contain at least the same
     # lk: attributes as `GameWidgetUi` class
-    __slots__ = "ui"
+    __slots__ = "ui", "update_pixmap", "start_progress"
 
     def paintEvent(self, a0: QPaintEvent) -> None:
-        if not self.visibleRegion().isNull() and self.rgame.pixmap.isNull():
+        if not self.visibleRegion().isNull() and not self.rgame.has_pixmap:
             self.startTimer(random.randrange(42, 2361, 129), Qt.CoarseTimer)
             # self.startTimer(random.randrange(42, 2361, 363), Qt.VeryCoarseTimer)
             # self.rgame.load_pixmap()
@@ -115,7 +111,7 @@ class GameWidget(LibraryWidget):
 
     def timerEvent(self, a0):
         self.killTimer(a0.timerId())
-        self.rgame.load_pixmap()
+        self.rgame.load_pixmaps()
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
@@ -131,9 +127,11 @@ class GameWidget(LibraryWidget):
                 self.ui.status_label.setText(self.state_strings["needs_verification"])
             elif not self.rgame.can_launch and self.rgame.is_installed:
                 self.ui.status_label.setText(self.state_strings["not_can_launch"])
-            elif self.rgame.igame and (
-                    self.rgame.game.supports_cloud_saves or self.rgame.game.supports_mac_cloud_saves
-            ) and not self.rgame.is_save_up_to_date:
+            elif (
+                self.rgame.igame
+                and (self.rgame.game.supports_cloud_saves or self.rgame.game.supports_mac_cloud_saves)
+                and not self.rgame.is_save_up_to_date
+            ):
                 self.ui.status_label.setText(self.state_strings["save_not_up_to_date"])
             else:
                 self.ui.status_label.setText(self.state_strings[self.rgame.state])
@@ -147,6 +145,8 @@ class GameWidget(LibraryWidget):
         self.ui.install_btn.setEnabled(not self.rgame.is_installed)
         self.ui.launch_btn.setVisible(self.rgame.is_installed)
         self.ui.launch_btn.setEnabled(self.rgame.can_launch)
+
+        self.steam_shortcut_action.setEnabled(self.rgame.has_pixmap)
 
     @pyqtSlot()
     def update_actions(self):
@@ -169,6 +169,13 @@ class GameWidget(LibraryWidget):
             else:
                 self.menu_link_action.setText(self.tr("Create Start Menu link"))
             self.addAction(self.menu_link_action)
+
+        if steam_shortcuts_supported() and self.rgame.is_installed:
+            if steam_shortcut_exists(self.rgame.app_name):
+                self.steam_shortcut_action.setText(self.tr("Remove from Steam"))
+            else:
+                self.steam_shortcut_action.setText(self.tr("Add to Steam"))
+            self.addAction(self.steam_shortcut_action)
 
         self.addAction(self.reload_action)
         if self.rgame.is_installed and not self.rgame.is_origin:
@@ -222,9 +229,7 @@ class GameWidget(LibraryWidget):
             offline = True
         if self.rgame.has_update:
             skip_version_check = True
-        self.rgame.launch(
-            offline=offline, skip_update_check=skip_version_check
-        )
+        self.rgame.launch(offline=offline, skip_update_check=skip_version_check)
 
     @pyqtSlot()
     def _install(self):
@@ -234,7 +239,8 @@ class GameWidget(LibraryWidget):
     def _uninstall(self):
         self.show_info.emit(self.rgame)
 
-    def _create_link(self, name, link_type):
+    @pyqtSlot(str, str)
+    def _create_link(self, name: str, link_type: str):
         if not desktop_links_supported():
             QMessageBox.warning(
                 self,
@@ -257,16 +263,18 @@ class GameWidget(LibraryWidget):
             except PermissionError:
                 QMessageBox.warning(self, "Error", "Could not create shortcut.")
                 return
-
-            if link_type == "desktop":
-                self.desktop_link_action.setText(self.tr("Remove Desktop link"))
-            elif link_type == "start_menu":
-                self.menu_link_action.setText(self.tr("Remove Start Menu link"))
         else:
             if shortcut_path.exists():
                 shortcut_path.unlink(missing_ok=True)
+        self.update_actions()
 
-            if link_type == "desktop":
-                self.desktop_link_action.setText(self.tr("Create Desktop link"))
-            elif link_type == "start_menu":
-                self.menu_link_action.setText(self.tr("Create Start Menu link"))
+    @pyqtSlot(str, str)
+    def _create_steam_shortcut(self, app_name: str, app_title: str):
+        if steam_shortcut_exists(app_name):
+            if shortcut := remove_steam_shortcut(app_name):
+                remove_steam_coverart(shortcut)
+        else:
+            if shortcut := add_steam_shortcut(app_name, app_title):
+                add_steam_coverart(app_name, shortcut)
+        save_steam_shortcuts()
+        self.update_actions()

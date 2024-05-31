@@ -41,7 +41,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.catalog_offer: CatalogOfferModel = None
 
         self.image = LoadingImageWidget(store_api.cached_manager, self)
-        self.image.setFixedSize(ImageSize.Display)
+        self.image.setFixedSize(ImageSize.DisplayTall)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
         self.ui.left_layout.setAlignment(Qt.AlignTop)
 
@@ -176,7 +176,9 @@ class StoreDetailsWidget(QWidget, SideTabContents):
 
         key_images = self.catalog_offer.keyImages
         img_url = key_images.for_dimensions(self.image.size().width(), self.image.size().height())
-        self.image.fetchPixmap(img_url.url)
+        # FIXME: check why there was no tall image
+        if img_url:
+            self.image.fetchPixmap(img_url.url)
 
         # self.image_stack.setCurrentIndex(0)
         about = product_data.about

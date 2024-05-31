@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QEvent, QRect
+from PyQt5.QtCore import Qt, QEvent, QRect, pyqtSlot
 from PyQt5.QtGui import (
     QPalette,
     QBrush,
@@ -12,6 +12,7 @@ from PyQt5.QtGui import (
 )
 
 from rare.models.game import RareGame
+from rare.models.image import ImageSize
 from rare.utils.misc import format_size
 from .game_widget import GameWidget
 from .list_widget import ListWidget
@@ -50,6 +51,17 @@ class ListGameWidget(GameWidget):
         self.ui.launch_btn.installEventFilter(self)
         self.ui.install_btn.installEventFilter(self)
 
+    @pyqtSlot()
+    def update_pixmap(self):
+        self.setPixmap(self.rgame.get_pixmap(ImageSize.LibraryWide, self.rgame.is_installed))
+
+    @pyqtSlot()
+    def start_progress(self):
+        self.showProgress(
+            self.rgame.get_pixmap(ImageSize.LibraryWide, True),
+            self.rgame.get_pixmap(ImageSize.LibraryWide, False)
+        )
+
     def enterEvent(self, a0: QEvent = None) -> None:
         if a0 is not None:
             a0.accept()
@@ -70,7 +82,7 @@ class ListGameWidget(GameWidget):
 
     def prepare_pixmap(self, pixmap: QPixmap) -> QPixmap:
         device: QImage = QImage(
-            pixmap.size().width() * 3,
+            pixmap.size().width() * 1,
             int(self.sizeHint().height() * pixmap.devicePixelRatioF()) + 1,
             QImage.Format_ARGB32_Premultiplied
         )
@@ -79,9 +91,9 @@ class ListGameWidget(GameWidget):
         painter.fillRect(device.rect(), brush)
         # the gradient could be cached and reused as it is expensive
         gradient = QLinearGradient(0, 0, device.width(), 0)
-        gradient.setColorAt(0.15, Qt.transparent)
+        gradient.setColorAt(0.02, Qt.transparent)
         gradient.setColorAt(0.5, Qt.black)
-        gradient.setColorAt(0.85, Qt.transparent)
+        gradient.setColorAt(0.98, Qt.transparent)
         painter.setCompositionMode(QPainter.CompositionMode_DestinationIn)
         painter.fillRect(device.rect(), gradient)
         painter.end()
@@ -104,7 +116,7 @@ class ListGameWidget(GameWidget):
         brush = QBrush(self._pixmap)
         brush.setTransform(self._transform)
         width = int(self._pixmap.width() / self._pixmap.devicePixelRatioF())
-        origin = self.width() - width
+        origin = self.width() // 2
         painter.setBrushOrigin(origin, 0)
         fill_rect = QRect(origin, 0, width, self.height())
         painter.fillRect(fill_rect, brush)

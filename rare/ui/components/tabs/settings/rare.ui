@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string notr="true">RareSettings</string>
   </property>
-  <layout class="QHBoxLayout" name="rare_layout">
+  <layout class="QHBoxLayout" name="main_layout">
    <item>
     <layout class="QVBoxLayout" name="left_layout">
      <item>
@@ -115,7 +115,7 @@
         <item row="6" column="0">
          <widget class="QCheckBox" name="log_games">
           <property name="text">
-           <string>Show console windows when launching games</string>
+           <string>Show console window when launching games</string>
           </property>
          </widget>
         </item>

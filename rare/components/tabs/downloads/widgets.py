@@ -34,7 +34,7 @@ class QueueInfoWidget(QWidget):
         self.image_manager = ImageManagerSingleton()
 
         self.image = ImageWidget(self)
-        self.image.setFixedSize(ImageSize.Icon)
+        self.image.setFixedSize(ImageSize.LibraryIcon)
         self.ui.image_layout.addWidget(self.image)
 
         self.ui.queue_info_layout.setAlignment(Qt.AlignTop)
@@ -50,7 +50,7 @@ class QueueInfoWidget(QWidget):
 
         if old_igame:
             self.ui.title.setText(old_igame.title)
-            self.image.setPixmap(self.image_manager.get_pixmap(old_igame.app_name, color=True))
+            self.image.setPixmap(self.image_manager.get_pixmap(old_igame.app_name, ImageSize.LibraryIcon))
 
     def update_information(self, game, igame, analysis, old_igame):
         self.ui.title.setText(game.app_title)
@@ -60,7 +60,7 @@ class QueueInfoWidget(QWidget):
         self.ui.local_version.setText(elide_text(self.ui.local_version, igame.version))
         self.ui.dl_size.setText(format_size(analysis.dl_size) if analysis else "")
         self.ui.install_size.setText(format_size(analysis.install_size) if analysis else "")
-        self.image.setPixmap(self.image_manager.get_pixmap(game.app_name, color=True))
+        self.image.setPixmap(self.image_manager.get_pixmap(game.app_name, ImageSize.LibraryIcon))
 
 
 class UpdateWidget(QFrame):

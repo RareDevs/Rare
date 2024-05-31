@@ -55,6 +55,22 @@ def image_dir() -> Path:
     return data_dir().joinpath("images")
 
 
+def image_dir_game(app_name: str) -> Path:
+    return image_dir().joinpath(app_name)
+
+
+def image_tall_path(app_name: str, color: bool = True) -> Path:
+    return image_dir_game(app_name).joinpath("tall.png" if color else "tall_gray.png")
+
+
+def image_wide_path(app_name: str, color: bool = True) -> Path:
+    return image_dir_game(app_name).joinpath("wide.png" if color else "wide_gray.png")
+
+
+def image_icon_path(app_name: str, color: bool = True) -> Path:
+    return image_dir_game(app_name).joinpath("icon.png" if color else "icon_gray.png")
+
+
 def log_dir() -> Path:
     return cache_dir().joinpath("logs")
 
@@ -105,17 +121,23 @@ __link_suffix = {
         "icon": "png",
     },
     "Darwin": {
-         "link": "",
-         "icon": "icns",
+        "link": "",
+        "icon": "icns",
     },
 }
+
 
 def desktop_links_supported() -> bool:
     supported_systems = [k for (k, v) in __link_suffix.items() if v["link"]]
     return platform.system() in supported_systems
 
+
 def desktop_icon_suffix() -> str:
     return __link_suffix[platform.system()]["icon"]
+
+
+def desktop_icon_path(app_name: str) -> Path:
+    return image_dir_game(app_name).joinpath(f"desktop_icon.{desktop_icon_suffix()}")
 
 
 __link_type = {
@@ -125,8 +147,11 @@ __link_type = {
     "start_menu": applications_dir().parent if platform.system() == "Windows" else applications_dir(),
 }
 
+
 def desktop_link_types() -> List:
     return list(__link_type.keys())
+
+
 # fmt: on
 
 
@@ -212,7 +237,7 @@ def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "",
         app_title = "Rare"
         link_name = "Rare"
     else:
-        icon_path = image_dir().joinpath(app_name, f"icon.{desktop_icon_suffix()}")
+        icon_path = desktop_icon_path(app_name)
         if not app_title or not link_name:
             logger.error("Missing app_title or link_name")
             return False

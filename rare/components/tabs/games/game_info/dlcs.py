@@ -23,28 +23,28 @@ class GameDlcWidget(QFrame):
         self.rdlc = rdlc
 
         self.image = ImageWidget(self)
-        self.image.setFixedSize(ImageSize.Icon)
+        self.image.setFixedSize(ImageSize.LibraryIcon)
         self.ui.dlc_layout.insertWidget(0, self.image)
 
         self.ui.dlc_name.setText(rdlc.app_title)
         self.ui.version.setText(rdlc.version)
         self.ui.app_name.setText(rdlc.app_name)
 
-        self.image.setPixmap(rdlc.pixmap)
-
+        # self.image.setPixmap(rdlc.get_pixmap_icon(rdlc.is_installed))
         self.__update()
+
         rdlc.signals.widget.update.connect(self.__update)
 
     @pyqtSlot()
     def __update(self):
         self.ui.action_button.setEnabled(self.rdlc.is_idle)
-        self.image.setPixmap(self.rdlc.pixmap)
+        self.image.setPixmap(self.rdlc.get_pixmap(ImageSize.LibraryIcon, self.rdlc.is_installed))
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        if self.rdlc.pixmap.isNull():
-            self.rdlc.load_pixmap()
+        if not self.rdlc.has_pixmap:
+            self.rdlc.load_pixmaps()
         super().showEvent(a0)
 
 

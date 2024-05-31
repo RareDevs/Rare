@@ -14,6 +14,7 @@ from rare.components.dialogs.install_dialog import InstallDialog
 from rare.components.dialogs.uninstall_dialog import UninstallDialog
 from rare.lgndr.models.downloading import UIUpdate
 from rare.models.game import RareGame
+from rare.models.image import ImageSize
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel, UninstallOptionsModel
 from rare.models.options import options
 from rare.shared import RareCore
@@ -209,9 +210,9 @@ class DownloadsTab(QWidget):
         self.__thread = dl_thread
         self.download_widget.ui.kill_button.setDisabled(False)
         self.download_widget.ui.dl_name.setText(item.download.game.app_title)
-        self.download_widget.setPixmap(
-            RareCore.instance().image_manager().get_pixmap(rgame.app_name, True)
-        )
+        self.download_widget.setPixmap(self.rcore.image_manager().get_pixmap(
+            rgame.app_name, ImageSize.Wide, True
+        ))
 
         self.signals.application.notify.emit(
             self.tr("Downloads"),

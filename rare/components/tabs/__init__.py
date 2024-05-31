@@ -5,7 +5,7 @@ from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.utils.misc import qta_icon, ExitCodes
 from .account import AccountWidget
 from .downloads import DownloadsTab
-from .games import GamesTab
+from .games import GamesLibrary
 from .settings import SettingsTab
 from .settings.debug import DebugSettings
 from .store import StoreTab
@@ -28,7 +28,7 @@ class MainTabWidget(QTabWidget):
         self.setTabBar(self.tab_bar)
 
         # Generate Tabs
-        self.games_tab = GamesTab(self)
+        self.games_tab = GamesLibrary(self)
         self.games_index = self.addTab(self.games_tab, self.tr("Games"))
 
         # Downloads Tab after Games Tab to use populated RareCore games list

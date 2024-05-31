@@ -17,6 +17,7 @@ from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
 from rare.utils.metrics import timelogger
 from rare.utils import config_helper
+from rare.utils.steam_shortcuts import load_steam_shortcuts
 from .image_manager import ImageManager
 from .workers import (
     QueueWorker,
@@ -282,12 +283,19 @@ class RareCore(QObject):
     def __add_game(self, rgame: RareGame) -> None:
         rgame.signals.download.enqueue.connect(self.__signals.download.enqueue)
         rgame.signals.download.dequeue.connect(self.__signals.download.dequeue)
+
         rgame.signals.game.install.connect(self.__signals.game.install)
         rgame.signals.game.installed.connect(self.__signals.game.installed)
+
         rgame.signals.game.uninstall.connect(self.__signals.game.uninstall)
         rgame.signals.game.uninstalled.connect(self.__signals.game.uninstalled)
+
+        rgame.signals.game.launched.connect(self.__signals.application.update_tray)
+        rgame.signals.game.launched.connect(self.__signals.discord_rpc.update_presence)
+
         rgame.signals.game.finished.connect(self.__signals.application.update_tray)
-        rgame.signals.game.finished.connect(lambda: self.__signals.discord_rpc.set_title.emit(""))
+        rgame.signals.game.finished.connect(self.__signals.discord_rpc.remove_presence)
+
         self.__library[rgame.app_name] = rgame
 
     def __filter_games(self, condition: Callable[[RareGame], bool]) -> Iterator[RareGame]:
@@ -347,6 +355,7 @@ class RareCore(QObject):
             self.__wrappers.import_wrappers(
                 self.__core, self.__settings, [rgame.app_name for rgame in self.games]
             )
+            load_steam_shortcuts()
             self.progress.emit(100, self.tr("Launching Rare"))
             self.completed.emit()
             QTimer.singleShot(100, self.__post_init)
