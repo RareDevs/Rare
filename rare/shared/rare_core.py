@@ -17,6 +17,7 @@ from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
 from rare.utils.metrics import timelogger
 from rare.utils import config_helper
+from rare.utils.steam_shortcuts import load_steam_shortcuts
 from .image_manager import ImageManager
 from .workers import (
     QueueWorker,
@@ -354,6 +355,7 @@ class RareCore(QObject):
             self.__wrappers.import_wrappers(
                 self.__core, self.__settings, [rgame.app_name for rgame in self.games]
             )
+            load_steam_shortcuts()
             self.progress.emit(100, self.tr("Launching Rare"))
             self.completed.emit()
             QTimer.singleShot(100, self.__post_init)

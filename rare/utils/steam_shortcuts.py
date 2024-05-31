@@ -2,11 +2,17 @@ import os
 import platform
 import shutil
 from logging import getLogger
+from pathlib import Path
 from typing import Optional, List, Dict
+from dataclasses import asdict
 
 import vdf
 
+from rare.utils.paths import image_icon_path, image_wide_path, image_tall_path, desktop_icon_path, get_rare_executable
 from rare.models.steam import SteamUser, SteamShortcut
+
+if platform.system() == "Windows":
+    import winreg
 
 logger = getLogger("SteamShortcuts")
 
@@ -14,15 +20,25 @@ steam_client_install_paths = [os.path.expanduser("~/.local/share/Steam")]
 
 
 def find_steam() -> Optional[str]:
+    if platform.system() == "Windows":
+        # Find the Steam install directory or raise an error
+        try:  # 32-bit
+            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Valve\\Steams")
+        except FileNotFoundError:
+            try:  # 64-bit
+                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Valve\\Steam")
+            except FileNotFoundError as e:
+                return None
+        return winreg.QueryValueEx(key, "InstallPath")[0]
     # return the first valid path
-    if platform.system() in {"Linux", "FreeBSD"}:
+    elif platform.system() in {"Linux", "FreeBSD"}:
         for path in steam_client_install_paths:
             if os.path.isdir(path) and os.path.isfile(os.path.join(path, "steam.sh")):
                 return path
     return None
 
 
-def find_users(steam_path: str) -> List[SteamUser]:
+def find_steam_users(steam_path: str) -> List[SteamUser]:
     _users = []
     vdf_path = os.path.join(steam_path, "config", "loginusers.vdf")
     with open(vdf_path, 'r') as f:
@@ -32,7 +48,7 @@ def find_users(steam_path: str) -> List[SteamUser]:
     return _users
 
 
-def load_shortcuts(steam_path: str, user: SteamUser) -> Dict[str, SteamShortcut]:
+def _load_shortcuts(steam_path: str, user: SteamUser) -> Dict[str, SteamShortcut]:
     _shortcuts = {}
     vdf_path = os.path.join(steam_path, "userdata", str(user.short_id), "config", "shortcuts.vdf")
     with open(vdf_path, 'rb') as f:
@@ -42,67 +58,136 @@ def load_shortcuts(steam_path: str, user: SteamUser) -> Dict[str, SteamShortcut]
     return _shortcuts
 
 
-def save_shortcuts(steam_path: str, user: SteamUser, shortcuts: Dict[str, Dict]) -> None:
+def _save_shortcuts(steam_path: str, user: SteamUser, shortcuts: Dict[str, SteamShortcut]) -> None:
+    _shortcuts = {k: asdict(v) for k, v in shortcuts.items()}
     vdf_path = os.path.join(steam_path, "userdata", str(user.short_id), "config", "shortcuts.vdf")
     with open(vdf_path, 'wb') as f:
-        vdf.binary_dump({"shortcuts": shortcuts}, f)
+        vdf.binary_dump({"shortcuts": _shortcuts}, f)
+
+
+__steam_dir: Optional[str] = None
+__steam_user: Optional[SteamUser] = None
+__steam_shortcuts: Optional[Dict] = None
+
+
+def steam_shortcuts_supported() -> bool:
+    return __steam_dir is not None and __steam_user is not None and __steam_shortcuts is not None
+
+
+def load_steam_shortcuts():
+    global __steam_shortcuts, __steam_dir, __steam_user
+
+    if __steam_shortcuts is not None:
+        return
+
+    steam_dir = find_steam()
+    if not steam_dir:
+        logger.error("Failed to find Steam install directory")
+        return
+    __steam_dir = steam_dir
+
+    steam_users = find_steam_users(steam_dir)
+    if not steam_users:
+        logger.error("Failed to find any Steam users")
+        return
+    else:
+        steam_user = next(filter(lambda x: x.most_recent, steam_users))
+        logger.info("Found most recently logged-in user %s(%s)", steam_user.account_name, steam_user.persona_name)
+    __steam_user = steam_user
+
+    __steam_shortcuts = _load_shortcuts(steam_dir, steam_user)
+
+
+def save_steam_shortcuts():
+    if __steam_shortcuts:
+        _save_shortcuts(__steam_dir, __steam_user, __steam_shortcuts)
+        logger.info("Saved Steam shortcuts for user %s(%s)", __steam_user.account_name, __steam_user.persona_name)
+    else:
+        logger.error("Failed to save Steam shortcuts")
+
+
+def steam_shortcut_exists(app_name: str) -> bool:
+    return SteamShortcut.calculate_appid(app_name) in {s.appid for s in __steam_shortcuts.values()}
+
+
+def remove_steam_shortcut(app_name: str) -> Optional[SteamShortcut]:
+    global __steam_shortcuts
+
+    if not steam_shortcut_exists(app_name):
+        logger.error("Game %s doesn't have an associated Steam shortcut", app_name)
+        return None
+
+    appid = SteamShortcut.calculate_appid(app_name)
+    removed = next(filter(lambda item: item[1].appid == appid, __steam_shortcuts.items()))
+    shortcuts = dict(filter(lambda item: item[1].appid != appid, __steam_shortcuts.items()))
+    __steam_shortcuts = shortcuts
+    return removed[1]
+
+
+def add_steam_shortcut(app_name: str, app_title: str) -> SteamShortcut:
+    global __steam_shortcuts
+
+    if steam_shortcut_exists(app_name):
+        logger.info("Removing old Steam shortcut for %s", app_name)
+        remove_steam_shortcut(app_name)
+
+    command = get_rare_executable()
+    arguments = ["launch", app_name]
+    if len(command) > 1:
+        arguments = command[1:] + arguments
+    shortcut = SteamShortcut.create(
+        app_name=app_name,
+        app_title=f"{app_title} (Rare)",
+        executable=command[0],
+        start_dir=os.path.dirname(command[0]),
+        icon=desktop_icon_path(app_name).as_posix(),
+        launch_options=arguments,
+    )
+
+    key = int(max(__steam_shortcuts.keys(), default="0"))
+    __steam_shortcuts[str(key+1)] = shortcut
+    return shortcut
+
+
+def add_steam_coverart(app_name: str, shortcut: SteamShortcut):
+    steam_grid_dir = os.path.join(__steam_dir, "userdata", str(__steam_user.short_id), "config", "grid")
+    shutil.copy(image_wide_path(app_name), os.path.join(steam_grid_dir, shortcut.game_hero))
+    shutil.copy(image_icon_path(app_name), os.path.join(steam_grid_dir, shortcut.game_logo))
+    shutil.copy(image_wide_path(app_name), os.path.join(steam_grid_dir, shortcut.grid_wide))
+    shutil.copy(image_tall_path(app_name), os.path.join(steam_grid_dir, shortcut.grid_tall))
+
+
+def remove_steam_coverart(shortcut: SteamShortcut):
+    steam_grid_dir = os.path.join(__steam_dir, "userdata", str(__steam_user.short_id), "config", "grid")
+    Path(steam_grid_dir).joinpath(shortcut.game_hero).unlink(missing_ok=True)
+    Path(steam_grid_dir).joinpath(shortcut.game_logo).unlink(missing_ok=True)
+    Path(steam_grid_dir).joinpath(shortcut.grid_wide).unlink(missing_ok=True)
+    Path(steam_grid_dir).joinpath(shortcut.grid_tall).unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
 
     from pprint import pprint
-    from dataclasses import asdict
 
-    steam_dir = find_steam()
+    load_steam_shortcuts()
 
-    users = find_users(steam_dir)
-    print(users)
+    print(__steam_dir)
+    print(__steam_user)
+    print(__steam_shortcuts)
 
-    user = next(filter(lambda x: x.most_recent, users))
-    print(user)
-    print()
-
-    shortcuts = load_shortcuts(steam_dir, user)
-    for k, s in shortcuts.items():
-        print(asdict(s))
-        print(vars(s))
+    def print_shortcuts():
+        for k, s in __steam_shortcuts.items():
+            print({k: asdict(s)})
+            print(vars(s))
         print()
 
-    def image_path(app_name: str, image: str) -> str:
-        return f"/home/loathingkernel/.local/share/Rare/Rare/images/{app_name}/{image}"
+    print_shortcuts()
 
-    test_shc = SteamShortcut.create(
-        app_name="18fafa2d70d64831ab500a9d65ba9ab8",
-        app_title="Crying Suns (Rare Test)",
-        executable="/usr/bin/rare",
-        start_dir="/usr/bin",
-        icon=image_path("18fafa2d70d64831ab500a9d65ba9ab8", "icon.png"),
-        launch_options=["launch", "18fafa2d70d64831ab500a9d65ba9ab8"]
-    )
-    print(asdict(test_shc))
-    print(vars(test_shc))
-    test_vdf = vdf.binary_dumps(asdict(test_shc))
-    print(vdf.binary_loads(test_vdf))
+    add_steam_shortcut("test1", "Test1")
+    add_steam_shortcut("test2", "Test2")
+    add_steam_shortcut("test3", "Test3")
+    add_steam_shortcut("test1", "Test1")
 
-    save_shortcuts(steam_dir, user, {"0": asdict(test_shc)})
+    remove_steam_shortcut("test2")
 
-    steam_grid_dir = os.path.join(steam_dir, "userdata", str(user.short_id), "config", "grid")
-    shutil.copy(
-        image_path("18fafa2d70d64831ab500a9d65ba9ab8", "card_installed.png"),
-        os.path.join(steam_grid_dir, test_shc.game_hero)
-    )
-    shutil.copy(
-        image_path("18fafa2d70d64831ab500a9d65ba9ab8", "icon.png"),
-        os.path.join(steam_grid_dir, test_shc.game_logo)
-    )
-    shutil.copy(
-        image_path("18fafa2d70d64831ab500a9d65ba9ab8", "card_installed.png"),
-        os.path.join(steam_grid_dir, test_shc.grid_wide)
-    )
-    shutil.copy(
-        image_path("18fafa2d70d64831ab500a9d65ba9ab8", "card_installed.png"),
-        os.path.join(steam_grid_dir, test_shc.grid_tall)
-    )
-
-    shortcuts = load_shortcuts(steam_dir, user)
-    print(shortcuts)
+    print_shortcuts()
