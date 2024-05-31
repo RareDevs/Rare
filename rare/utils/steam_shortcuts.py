@@ -12,7 +12,8 @@ from rare.utils.paths import image_icon_path, image_wide_path, image_tall_path, 
 from rare.models.steam import SteamUser, SteamShortcut
 
 if platform.system() == "Windows":
-    import winreg
+    # noinspection PyUnresolvedReferences
+    import winreg  # pylint: disable=E0401
 
 logger = getLogger("SteamShortcuts")
 
