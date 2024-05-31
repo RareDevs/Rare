@@ -9,7 +9,8 @@ from logging import getLogger
 from signal import signal, SIGINT, SIGTERM, strsignal
 from typing import Optional
 
-from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings, Qt, pyqtSlot
+from PyQt5 import sip
+from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings, Qt, pyqtSlot, QTimer
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtNetwork import QLocalServer, QLocalSocket
 from PyQt5.QtWidgets import QApplication
@@ -178,6 +179,10 @@ class RareLauncher(RareApp):
         self.success = True
         self.start_time = time.time()
 
+        # This launches the application after it has been instantiated.
+        # The timer's signal will be serviced once we call `exec()` on the application
+        QTimer.singleShot(0, self.start)
+
     @pyqtSlot()
     def __proc_log_stdout(self):
         self.console.log_stdout(
@@ -288,18 +293,30 @@ class RareLauncher(RareApp):
         self.start_time = time.time()
 
         if self.args.dry_run:
-            self.logger.info("Dry run activated")
+            self.logger.info("Dry run %s (%s)", self.rgame.app_title, self.rgame.app_name)
+            self.logger.info("%s %s", args.executable, " ".join(args.arguments))
             if self.console:
-                self.console.log(f"{args.executable} {' '.join(args.arguments)}")
-                self.console.log(f"Do not start {self.rgame.app_name}")
+                self.console.log(f"Dry run {self.rgame.app_title} ({self.rgame.app_name})")
+                self.console.log(f"{shlex.join([args.executable] + args.arguments)}")
                 self.console.accept_close = True
-            print(args.executable, " ".join(args.arguments))
+            print(shlex.join([args.executable] + args.arguments))
             self.stop()
             return
 
         if args.is_origin_game:
             QDesktopServices.openUrl(QUrl(args.executable))
-            self.stop()  # stop because it is no subprocess
+            self.stop()  # stop because it is not a subprocess
+            return
+
+        self.logger.debug("Launch command %s, %s", args.executable, " ".join(args.arguments))
+        self.logger.debug("Working directory %s", args.working_directory)
+
+        if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
+            if self.console:
+                self.console.log(f"Launching as a detached process")
+            subprocess.Popen([args.executable] + args.arguments, cwd=args.working_directory,
+                             env={i: args.environment.value(i) for i in args.environment.keys()})
+            self.stop()  # stop because we do not attach to the output
             return
 
         if args.working_directory:
@@ -312,15 +329,6 @@ class RareLauncher(RareApp):
                 new_state=StateChangedModel.States.started
             )
         ))
-        if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
-            self.game_process.deleteLater()
-            if self.console:
-                self.console.log("Launching game as a detached process")
-            subprocess.Popen([args.executable] + args.arguments, cwd=args.working_directory,
-                             env={i: args.environment.value(i) for i in args.environment.keys()})
-            self.stop()
-            return
-
         # self.logger.debug("Executing prelaunch command %s, %s", args.executable, args.arguments)
         self.game_process.start(args.executable, args.arguments)
 
@@ -367,23 +375,22 @@ class RareLauncher(RareApp):
                 self.console.log("Uploading saves...")
         self.start_prepare(action)
 
-    def start(self, args: InitArgs):
-        if not args.offline:
+    def start(self):
+        if not self.args.offline:
             try:
                 if not self.core.login():
                     raise ValueError("You are not logged in")
             except ValueError:
                 # automatically launch offline if available
                 self.logger.error("Not logged in. Trying to launch the game in offline mode")
-                args.offline = True
+                self.args.offline = True
 
-        if not args.offline and self.rgame.auto_sync_saves:
+        if not self.args.offline and self.rgame.auto_sync_saves:
             self.logger.info("Start sync worker")
             worker = SyncCheckWorker(self.core, self.rgame)
             worker.signals.error_occurred.connect(self.error_occurred)
             worker.signals.sync_state_ready.connect(self.sync_ready)
             QThreadPool.globalInstance().start(worker)
-            return
         else:
             self.start_prepare()
 
@@ -396,20 +403,26 @@ class RareLauncher(RareApp):
                 self.game_process.finished.disconnect()
             if self.game_process.receivers(self.game_process.errorOccurred):
                 self.game_process.errorOccurred.disconnect()
-        except TypeError as e:
-            self.logger.error(f"Failed to disconnect process signals: {e}")
+        except (TypeError, RuntimeError) as e:
+            self.logger.error("Failed to disconnect process signals: %s", e)
 
-        self.logger.info("Stopping server")
+        if self.game_process.state() != QProcess.NotRunning:
+            self.game_process.kill()
+        exit_code = self.game_process.exitCode()
+        self.game_process.deleteLater()
+
+        self.logger.info("Stopping server %s", self.server.socketDescriptor())
         try:
             self.server.close()
             self.server.deleteLater()
-        except RuntimeError:
-            pass
+        except RuntimeError as e:
+            self.logger.error("Error occured while stopping server: %s", e)
+
         self.processEvents()
         if not self.console:
-            self.exit()
+            self.exit(exit_code)
         else:
-            self.console.on_process_exit(self.rgame.app_name, 0)
+            self.console.on_process_exit(self.rgame.app_title, exit_code)
 
 
 def launch(args: Namespace) -> int:
@@ -424,7 +437,7 @@ def launch(args: Namespace) -> int:
     # This prevents ghost QLocalSockets, which block the name, which makes it unable to start
     # No handling for SIGKILL
     def sighandler(s, frame):
-        app.logger.info(f"{strsignal(s)} received. Stopping")
+        app.logger.info("%s received. Stopping", strsignal(s))
         app.stop()
         app.exit(1)
     signal(SIGINT, sighandler)
@@ -434,7 +447,13 @@ def launch(args: Namespace) -> int:
         app.stop()
         app.exit(1)
         return 1
-    app.start(args)
-    # app.exit_app.connect(lambda: app.exit(0))
 
-    return app.exec_()
+    try:
+        exit_code = app.exec()
+    except Exception as e:
+        app.logger.error("Unhandled error %s", e)
+        exit_code = 1
+    finally:
+        if not sip.isdeleted(app.server):
+            app.server.close()
+    return exit_code
