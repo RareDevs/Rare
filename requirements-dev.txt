@@ -1,5 +1,7 @@
 build
 wheel
+pylint
+mypy
 black[d]
 toml
 cx-freeze

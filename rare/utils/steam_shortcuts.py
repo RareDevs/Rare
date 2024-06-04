@@ -52,6 +52,8 @@ def find_steam_users(steam_path: str) -> List[SteamUser]:
 def _load_shortcuts(steam_path: str, user: SteamUser) -> Dict[str, SteamShortcut]:
     _shortcuts = {}
     vdf_path = os.path.join(steam_path, "userdata", str(user.short_id), "config", "shortcuts.vdf")
+    if not os.path.exists(vdf_path):
+        return _shortcuts
     with open(vdf_path, 'rb') as f:
         shortcuts = vdf.binary_load(f).get("shortcuts", {})
     for idx, shortcut in shortcuts.items():
@@ -100,11 +102,13 @@ def load_steam_shortcuts():
 
 
 def save_steam_shortcuts():
-    if __steam_shortcuts:
-        _save_shortcuts(__steam_dir, __steam_user, __steam_shortcuts)
-        logger.info("Saved Steam shortcuts for user %s(%s)", __steam_user.account_name, __steam_user.persona_name)
-    else:
-        logger.error("Failed to save Steam shortcuts")
+    logger.info(
+        "%s Steam shortcuts for user %s(%s)",
+        "Saving" if __steam_shortcuts else "Removing",
+        __steam_user.account_name,
+        __steam_user.persona_name
+    )
+    _save_shortcuts(__steam_dir, __steam_user, __steam_shortcuts)
 
 
 def steam_shortcut_exists(app_name: str) -> bool:
@@ -152,6 +156,8 @@ def add_steam_shortcut(app_name: str, app_title: str) -> SteamShortcut:
 
 def add_steam_coverart(app_name: str, shortcut: SteamShortcut):
     steam_grid_dir = os.path.join(__steam_dir, "userdata", str(__steam_user.short_id), "config", "grid")
+    if not os.path.exists(steam_grid_dir):
+        os.mkdir(steam_grid_dir)
     shutil.copy(image_wide_path(app_name), os.path.join(steam_grid_dir, shortcut.game_hero))
     shutil.copy(image_icon_path(app_name), os.path.join(steam_grid_dir, shortcut.game_logo))
     shutil.copy(image_wide_path(app_name), os.path.join(steam_grid_dir, shortcut.grid_wide))
@@ -160,6 +166,9 @@ def add_steam_coverart(app_name: str, shortcut: SteamShortcut):
 
 def remove_steam_coverart(shortcut: SteamShortcut):
     steam_grid_dir = os.path.join(__steam_dir, "userdata", str(__steam_user.short_id), "config", "grid")
+    if not os.path.exists(steam_grid_dir):
+        logger.warning("Path does not exist %s", steam_grid_dir)
+        return
     Path(steam_grid_dir).joinpath(shortcut.game_hero).unlink(missing_ok=True)
     Path(steam_grid_dir).joinpath(shortcut.game_logo).unlink(missing_ok=True)
     Path(steam_grid_dir).joinpath(shortcut.grid_wide).unlink(missing_ok=True)

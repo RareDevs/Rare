@@ -172,9 +172,9 @@ class GameWidget(LibraryWidget):
 
         if steam_shortcuts_supported() and self.rgame.is_installed:
             if steam_shortcut_exists(self.rgame.app_name):
-                self.steam_shortcut_action.setText(self.tr("Remove from Steam"))
+                self.steam_shortcut_action.setText(self.tr("Remove Steam shortcut"))
             else:
-                self.steam_shortcut_action.setText(self.tr("Add to Steam"))
+                self.steam_shortcut_action.setText(self.tr("Create Steam shortcut"))
             self.addAction(self.steam_shortcut_action)
 
         self.addAction(self.reload_action)
