@@ -85,41 +85,29 @@ class UninstallOptionsModel:
     app_name: str
     accepted: bool = None
     keep_files: bool = None
+    keep_folder: bool = True
     keep_config: bool = None
     keep_overlay_keys: bool = None
 
-    def __bool__(self):
-        return (
-            bool(self.app_name)
-            and (self.accepted is not None)
-            and (self.keep_files is not None)
-            and (self.keep_config is not None)
-            and (self.keep_overlay_keys is not None)
-        )
-
     @property
-    def values(self) -> Tuple[bool, bool, bool, bool]:
-        """
-        This model's options
+    def __values(self) -> Tuple[bool, bool, bool, bool, bool]:
+        return self.accepted, self.keep_config, self.keep_folder, self.keep_files, self.keep_overlay_keys
 
-        :return:
-            Tuple of `accepted` `keep_files` `keep_config` `keep_overlay_keys`
-        """
-        return self.accepted, self.keep_config, self.keep_files, self.keep_overlay_keys
+    @__values.setter
+    def __values(self, values: Tuple[bool, bool, bool, bool, bool]):
+        self.accepted, self.keep_files, self.keep_folder, self.keep_config, self.keep_overlay_keys = values
 
-    @values.setter
-    def values(self, values: Tuple[bool, bool, bool, bool]):
-        """
-        Set this model's options
+    def __bool__(self):
+        return bool(self.app_name) and all(map(lambda x: x is not None, self.__values))
 
-        :param values:
-            Tuple of `accepted` `keep_files` `keep_config` `keep_overlay_keys`
-        :return:
-        """
-        self.accepted = values[0]
-        self.keep_files = values[1]
-        self.keep_config = values[2]
-        self.keep_overlay_keys = values[3]
+    def __iter__(self):
+        return iter(self.__values)
+
+    def set_accepted(self, keep_config, keep_folder, keep_files, keep_overlay_keys):
+        self.__values = True, keep_config, keep_folder, keep_files, keep_overlay_keys
+
+    def set_rejected(self):
+        self.__values = False, None, None, None, None
 
 
 @dataclass

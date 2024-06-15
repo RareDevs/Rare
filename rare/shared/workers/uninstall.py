@@ -1,4 +1,5 @@
 import platform
+import shutil
 from logging import getLogger
 from typing import Tuple
 
@@ -20,7 +21,7 @@ logger = getLogger("UninstallWorker")
 
 # TODO: You can use RareGame directly here once this is called inside RareCore and skip metadata fetch
 def uninstall_game(
-    core: LegendaryCore, rgame: RareGame, keep_files=False, keep_config=False, keep_overlay_keys=False
+    core: LegendaryCore, rgame: RareGame, keep_files=False, keep_folder=True, keep_config=False, keep_overlay_keys=False
 ) -> Tuple[bool, str]:
     if rgame.is_overlay:
         logger.info('Deleting overlay installation...')
@@ -53,6 +54,8 @@ def uninstall_game(
             if link_path.exists():
                 link_path.unlink(missing_ok=True)
 
+    install_path = rgame.igame.install_path
+
     status = LgndrIndirectStatus()
     LegendaryCLI(core).uninstall_game(
         LgndrUninstallGameArgs(
@@ -63,6 +66,12 @@ def uninstall_game(
             indirect_status=status,
         )
     )
+
+    keep_folder = keep_files if keep_files else keep_folder
+    if not keep_folder:
+        logger.info("Removing game install directory")
+        shutil.rmtree(install_path, ignore_errors=True)
+
     if not keep_config:
         logger.info("Removing sections in config file")
         config.remove_section(rgame.app_name)
@@ -89,9 +98,10 @@ class UninstallWorker(Worker):
         success, message = uninstall_game(
             self.core,
             self.rgame,
-            self.options.keep_files,
-            self.options.keep_config,
-            self.options.keep_overlay_keys,
+            keep_files=self.options.keep_files,
+            keep_folder=self.options.keep_folder,
+            keep_config=self.options.keep_config,
+            keep_overlay_keys=self.options.keep_overlay_keys,
         )
         self.rgame.state = RareGame.State.IDLE
         self.signals.result.emit(self.rgame, success, message)
