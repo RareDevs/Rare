@@ -305,9 +305,9 @@ class MangoHudSettings(OverlaySettings):
             OverlayCheckBox("gpu_power", self.tr("GPU power consumption")),
         ]
         form = [
-            (OverlayNumberInput("fps_limit", 0), self.tr("FPS Limit")),
-            (OverlaySelectInput("vsync", mangohud_vsync), self.tr("Vulkan VSync")),
-            (OverlaySelectInput("gl_vsync", mangohud_gl_vsync), self.tr("OpenGL VSync")),
+            (OverlayNumberInput("fps_limit", 0), self.tr("FPS limit")),
+            (OverlaySelectInput("vsync", mangohud_vsync), self.tr("Vulkan vsync")),
+            (OverlaySelectInput("gl_vsync", mangohud_gl_vsync), self.tr("OpenGL vsync")),
             (OverlayNumberInput("font_size", 24), self.tr("Font size")),
             (OverlaySelectInput("position", mangohud_position), self.tr("Position")),
         ]
