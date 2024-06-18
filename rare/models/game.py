@@ -441,15 +441,9 @@ class RareGame(RareGameSlim):
             return "na"
         if self.metadata.steam_grade != "pending":
             elapsed_time = abs(datetime.now(UTC) - self.metadata.steam_date)
-
             if elapsed_time.days > 3:
                 logger.info("Refreshing ProtonDB grade for %s", self.app_title)
-
-                def set_steam_grade():
-                    appid, rating = get_rating(self.core, self.app_name)
-                    self.set_steam_grade(appid, rating)
-
-                worker = QRunnable.create(set_steam_grade)
+                worker = QRunnable.create(self.set_steam_grade)
                 QThreadPool.globalInstance().start(worker)
                 self.metadata.steam_grade = "pending"
         return self.metadata.steam_grade
@@ -464,7 +458,8 @@ class RareGame(RareGameSlim):
         set_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
         self.metadata.steam_appid = appid
 
-    def set_steam_grade(self, appid: int, grade: str) -> None:
+    def set_steam_grade(self) -> None:
+        appid, grade = get_rating(self.core, self.app_name)
         if appid and self.steam_appid is None:
             self.set_steam_appid(appid)
         self.metadata.steam_grade = grade
