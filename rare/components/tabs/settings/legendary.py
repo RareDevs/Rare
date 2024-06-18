@@ -3,7 +3,7 @@ import re
 from logging import getLogger
 from typing import Tuple, Set
 
-from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings
+from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings, pyqtSlot
 from PyQt5.QtGui import QShowEvent, QHideEvent
 from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
@@ -65,31 +65,32 @@ class LegendarySettings(QWidget):
         self.ui.install_dir_layout.addWidget(self.install_dir)
 
         # Max Workers
-        max_workers = self.core.lgd.config["Legendary"].getint(
-            "max_workers", fallback=0
+        self.ui.max_worker_spin.setValue(
+            self.core.lgd.config["Legendary"].getint("max_workers", fallback=0)
         )
-        self.ui.max_worker_spin.setValue(max_workers)
         self.ui.max_worker_spin.valueChanged.connect(self.max_worker_save)
+
         # Max memory
-        max_memory = self.core.lgd.config["Legendary"].getint("max_memory", fallback=0)
-        self.ui.max_memory_spin.setValue(max_memory)
+        self.ui.max_memory_spin.setValue(
+            self.core.lgd.config["Legendary"].getint("max_memory", fallback=0)
+        )
         self.ui.max_memory_spin.valueChanged.connect(self.max_memory_save)
+
         # Preferred CDN
-        preferred_cdn = self.core.lgd.config["Legendary"].get(
-            "preferred_cdn", fallback=""
+        self.ui.preferred_cdn_line.setText(
+            self.core.lgd.config["Legendary"].get("preferred_cdn", fallback="")
         )
-        self.ui.preferred_cdn_line.setText(preferred_cdn)
         self.ui.preferred_cdn_line.textChanged.connect(self.preferred_cdn_save)
+
         # Disable HTTPS
-        disable_https = self.core.lgd.config["Legendary"].getboolean(
-            "disable_https", fallback=False
+        self.ui.disable_https_check.setChecked(
+            self.core.lgd.config["Legendary"].getboolean("disable_https", fallback=False)
         )
-        self.ui.disable_https_check.setChecked(disable_https)
         self.ui.disable_https_check.stateChanged.connect(self.disable_https_save)
 
-        # Cleanup
-        self.ui.clean_button.clicked.connect(lambda: self.cleanup(False))
-        self.ui.clean_keep_manifests_button.clicked.connect(lambda: self.cleanup(True))
+        # Clean metadata
+        self.ui.clean_button.clicked.connect(lambda: self.clean_metadata(keep_manifests=False))
+        self.ui.clean_keep_manifests_button.clicked.connect(lambda: self.clean_metadata(keep_manifests=True))
 
         self.locale_edit = IndicatorLineEdit(
             f"{self.core.language_code}-{self.core.country_code}",
@@ -170,48 +171,53 @@ class LegendarySettings(QWidget):
         if text:
             self.core.egs.language_code, self.core.egs.country_code = text.split("-")
             self.core.lgd.config.set("Legendary", "locale", text)
-        elif self.core.lgd.config.has_option("Legendary", "locale"):
+        else:
             self.core.lgd.config.remove_option("Legendary", "locale")
 
+    @pyqtSlot(str)
     def __mac_path_save(self, text: str) -> None:
         self.__path_save(text, "mac_install_dir")
 
+    @pyqtSlot(str)
     def __win_path_save(self, text: str) -> None:
         self.__path_save(text, "install_dir")
         if pf.system() != "Darwin":
             self.__mac_path_save(text)
 
-    def __path_save(self, text: str, option: str = "Windows"):
-        self.core.lgd.config["Legendary"][option] = text
-        if not text and option in self.core.lgd.config["Legendary"].keys():
-            self.core.lgd.config["Legendary"].pop(option)
+    def __path_save(self, text: str, option: str):
+        if text:
+            self.core.lgd.config.set("Legendary", option, text)
         else:
-            logger.debug("Set %s option in config to %s", option, text)
+            self.core.lgd.config.remove_option("Legendary", option)
 
-    def max_worker_save(self, workers: str):
-        if workers := int(workers):
+    @pyqtSlot(int)
+    def max_worker_save(self, workers: int):
+        if workers:
             self.core.lgd.config.set("Legendary", "max_workers", str(workers))
         else:
             self.core.lgd.config.remove_option("Legendary", "max_workers")
 
-    def max_memory_save(self, memory: str):
-        if memory := int(memory):
+    @pyqtSlot(int)
+    def max_memory_save(self, memory: int):
+        if memory:
             self.core.lgd.config.set("Legendary", "max_memory", str(memory))
         else:
             self.core.lgd.config.remove_option("Legendary", "max_memory")
 
+    @pyqtSlot(str)
     def preferred_cdn_save(self, cdn: str):
         if cdn:
             self.core.lgd.config.set("Legendary", "preferred_cdn", cdn.strip())
         else:
             self.core.lgd.config.remove_option("Legendary", "preferred_cdn")
 
+    @pyqtSlot(int)
     def disable_https_save(self, checked: int):
         self.core.lgd.config.set(
             "Legendary", "disable_https", str(bool(checked)).lower()
         )
 
-    def cleanup(self, keep_manifests: bool):
+    def clean_metadata(self, keep_manifests: bool):
         before = self.core.lgd.get_dir_size()
         logger.debug("Removing app metadata...")
         app_names = {g.app_name for g in self.core.get_assets(update_assets=False)}
