@@ -1,4 +1,4 @@
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QVBoxLayout,
     QCheckBox,
@@ -23,6 +23,10 @@ class UninstallDialog(ButtonDialog):
         self.keep_files.setChecked(bool(options.keep_files))
         self.keep_files.setEnabled(not rgame.is_overlay)
 
+        self.keep_folder = QCheckBox(self.tr("Keep game folder"))
+        self.keep_folder.setChecked(bool(options.keep_folder))
+        self.keep_folder.setEnabled(not rgame.is_overlay)
+
         self.keep_config = QCheckBox(self.tr("Keep configuation"))
         self.keep_config.setChecked(bool(options.keep_config))
         self.keep_config.setEnabled(not rgame.is_overlay)
@@ -33,6 +37,7 @@ class UninstallDialog(ButtonDialog):
 
         layout = QVBoxLayout()
         layout.addWidget(self.keep_files)
+        layout.addWidget(self.keep_folder)
         layout.addWidget(self.keep_config)
         layout.addWidget(self.keep_overlay_keys)
 
@@ -42,21 +47,25 @@ class UninstallDialog(ButtonDialog):
         self.accept_button.setIcon(qta_icon("ri.uninstall-line"))
         self.accept_button.setObjectName("UninstallButton")
 
-        if rgame.sdl_name is not None:
-            self.keep_config.setChecked(True)
+        self.keep_files.stateChanged.connect(self.__on_keep_files_changed)
 
         self.options: UninstallOptionsModel = options
+
+    @pyqtSlot(int)
+    def __on_keep_files_changed(self, state: int):
+        self.keep_folder.setCheckState(state if state else Qt.Checked)
+        self.keep_folder.setEnabled(not state)
 
     def done_handler(self) -> None:
         self.result_ready.emit(self.options)
 
     def accept_handler(self):
-        self.options.values = (
-            True,
-            self.keep_files.isChecked(),
-            self.keep_config.isChecked(),
-            self.keep_overlay_keys.isChecked(),
+        self.options.set_accepted(
+            keep_files=self.keep_files.isChecked(),
+            keep_folder=self.keep_folder.isChecked(),
+            keep_config=self.keep_config.isChecked(),
+            keep_overlay_keys=self.keep_overlay_keys.isChecked(),
         )
 
     def reject_handler(self):
-        self.options.values = (None, None, None, None)
+        self.options.set_rejected()

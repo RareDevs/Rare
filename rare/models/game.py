@@ -555,7 +555,7 @@ class RareGame(RareGameSlim):
         if not self.is_idle:
             return False
         self.signals.game.uninstall.emit(
-            UninstallOptionsModel(app_name=self.app_name)
+            UninstallOptionsModel(app_name=self.app_name, keep_config=self.sdl_name is not None)
         )
         return True
 

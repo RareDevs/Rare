@@ -138,6 +138,7 @@ class ImageManager(QObject):
         # lk: Find updates or initialize if images are missing.
         # lk: `updates` will be empty for games without images
         # lk: so everything below it is skipped
+        # TODO: Move this into the thread, maybe, concurrency could help here too
         updates = []
         if not all(file.is_file() for file in self.__img_all(game.app_name)):
             # lk: fast path for games without images, convert Rare's logo
