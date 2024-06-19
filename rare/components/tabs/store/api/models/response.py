@@ -314,7 +314,7 @@ class PagingModel:
 
 @dataclass
 class SearchStoreModel:
-    elements: Optional[List[CatalogOfferModel]] = None
+    elements: Optional[Tuple[CatalogOfferModel, ...]] = None
     paging: Optional[PagingModel] = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
 
@@ -322,13 +322,9 @@ class SearchStoreModel:
     def from_dict(cls: Type["SearchStoreModel"], src: Dict[str, Any]) -> "SearchStoreModel":
         d = src.copy()
         _elements = d.pop("elements", [])
-        elements = [] if _elements else None
-        for item in _elements:
-            elem = CatalogOfferModel.from_dict(item)
-            elements.append(elem)
+        elements = tuple(map(CatalogOfferModel.from_dict, _elements))
         paging = PagingModel.from_dict(x) if (x := d.pop("paging", {})) else None
-        tmp = cls(elements=elements, paging=paging)
-        tmp.unmapped = d
+        tmp = cls(elements=elements, paging=paging, unmapped=d)
         return tmp
 
 
@@ -348,7 +344,7 @@ class CatalogModel:
 
 @dataclass
 class WishlistItemsModel:
-    elements: Optional[List[WishlistItemModel]] = None
+    elements: Optional[Tuple[WishlistItemModel, ...]] = None
     paging: Optional[PagingModel] = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
 
@@ -356,13 +352,9 @@ class WishlistItemsModel:
     def from_dict(cls: Type["WishlistItemsModel"], src: Dict[str, Any]) -> "WishlistItemsModel":
         d = src.copy()
         _elements = d.pop("elements", [])
-        elements = [] if _elements else None
-        for item in _elements:
-            elem = WishlistItemModel.from_dict(item)
-            elements.append(elem)
+        elements = tuple(map(WishlistItemModel.from_dict, _elements))
         paging = PagingModel.from_dict(x) if (x := d.pop("paging", {})) else None
-        tmp = cls(elements=elements, paging=paging)
-        tmp.unmapped = d
+        tmp = cls(elements=elements, paging=paging, unmapped=d)
         return tmp
 
 
