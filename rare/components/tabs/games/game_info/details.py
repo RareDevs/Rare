@@ -4,12 +4,12 @@ import shutil
 from logging import getLogger
 from typing import Optional
 
-from PyQt5.QtCore import (
+from PySide6.QtCore import (
     Qt,
-    pyqtSlot,
-    pyqtSignal,
+    Slot,
+    Signal,
 )
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget,
     QMessageBox,
 )
@@ -30,7 +30,7 @@ logger = getLogger("GameInfo")
 
 class GameDetails(QWidget, SideTabContents):
     # str: app_name
-    import_clicked = pyqtSignal(str)
+    import_clicked = Signal(str)
 
     def __init__(self, parent=None):
         super(GameDetails, self).__init__(parent=parent)
@@ -84,28 +84,28 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.tags_group.setVisible(False)
         self.ui.requirements_group.setVisible(False)
 
-    @pyqtSlot()
+    @Slot()
     def __on_install(self):
         if self.rgame.is_non_asset:
             self.rgame.launch()
         else:
             self.rgame.install()
 
-    @pyqtSlot()
+    @Slot()
     def __on_import(self):
         self.import_clicked.emit(self.rgame.app_name)
 
-    @pyqtSlot()
+    @Slot()
     def __on_uninstall(self):
         """ This method is to be called from the button only """
         self.rgame.uninstall()
 
-    @pyqtSlot()
+    @Slot()
     def __on_modify(self):
         """ This method is to be called from the button only """
         self.rgame.modify()
 
-    @pyqtSlot()
+    @Slot()
     def __on_repair(self):
         """ This method is to be called from the button only """
         repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.rgame.app_name}.repair")
@@ -134,7 +134,7 @@ class GameDetails(QWidget, SideTabContents):
             ) == QMessageBox.StandardButton.Yes
         rgame.repair(repair_and_update=ans)
 
-    @pyqtSlot(RareGame, str)
+    @Slot(RareGame, str)
     def __on_worker_error(self, rgame: RareGame, message: str):
         QMessageBox.warning(
             self,
@@ -142,7 +142,7 @@ class GameDetails(QWidget, SideTabContents):
             message
         )
 
-    @pyqtSlot()
+    @Slot()
     def __on_verify(self):
         """ This method is to be called from the button only """
         if not os.path.exists(self.rgame.igame.install_path):
@@ -162,7 +162,7 @@ class GameDetails(QWidget, SideTabContents):
         else:
             self.verify_game(self.rgame)
 
-    @pyqtSlot(RareGame, SelectiveDownloadsModel)
+    @Slot(RareGame, SelectiveDownloadsModel)
     def verify_game(self, rgame: RareGame, sdl_model: SelectiveDownloadsModel = None):
         if sdl_model is not None:
             if not sdl_model.accepted or sdl_model.install_tag is None:
@@ -175,14 +175,14 @@ class GameDetails(QWidget, SideTabContents):
         worker.signals.error.connect(self.__on_worker_error)
         self.rcore.enqueue_worker(rgame, worker)
 
-    @pyqtSlot(RareGame, int, int, float, float)
+    @Slot(RareGame, int, int, float, float)
     def __on_verify_progress(self, rgame: RareGame, num, total, percentage, speed):
         # lk: the check is NOT REQUIRED because signals are disconnected but protect against it anyway
         if rgame is not self.rgame:
             return
         self.ui.verify_progress.setValue(num * 100 // total)
 
-    @pyqtSlot(RareGame, bool, int, int)
+    @Slot(RareGame, bool, int, int)
     def __on_verify_result(self, rgame: RareGame, success, failed, missing):
         self.ui.repair_button.setDisabled(success)
         if success:
@@ -206,7 +206,7 @@ class GameDetails(QWidget, SideTabContents):
             if ans == QMessageBox.StandardButton.Yes:
                 self.repair_game(rgame)
 
-    @pyqtSlot()
+    @Slot()
     def __on_move(self):
         """ This method is to be called from the button only """
         move_dialog = MoveDialog(self.rgame, parent=self)
@@ -252,14 +252,14 @@ class GameDetails(QWidget, SideTabContents):
         worker.signals.error.connect(self.__on_worker_error)
         self.rcore.enqueue_worker(self.rgame, worker)
 
-    @pyqtSlot(RareGame, int, object, object)
+    @Slot(RareGame, int, object, object)
     def __on_move_progress(self, rgame: RareGame, progress: int, total_size: int, copied_size: int):
         # lk: the check is NOT REQUIRED because signals are disconnected but protect against it anyway
         if rgame is not self.rgame:
             return
         self.ui.move_progress.setValue(progress)
 
-    @pyqtSlot(RareGame, str)
+    @Slot(RareGame, str)
     def __on_move_result(self, rgame: RareGame, dst_path: str):
         QMessageBox.information(
             self,
@@ -267,7 +267,7 @@ class GameDetails(QWidget, SideTabContents):
             self.tr("<b>{}</b> successfully moved to <b>{}<b>.").format(rgame.app_title, dst_path),
         )
 
-    @pyqtSlot()
+    @Slot()
     def __update_widget(self):
         """ React to state updates from RareGame """
         self.image.setPixmap(self.rgame.get_pixmap(ImageSize.DisplayTall, True))
@@ -357,7 +357,7 @@ class GameDetails(QWidget, SideTabContents):
         else:
             self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
 
-    @pyqtSlot(RareGame)
+    @Slot(RareGame)
     def update_game(self, rgame: RareGame):
         if self.rgame is not None:
             if (worker := self.rgame.worker()) is not None:

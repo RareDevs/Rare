@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import Tuple, Optional, Union
 
-from PyQt5.QtCore import Qt, QRectF, QSize
-from PyQt5.QtGui import (
+from PySide6.QtCore import Qt, QRectF, QSize
+from PySide6.QtGui import (
     QPaintEvent,
     QPainter,
     QPixmap,
@@ -13,7 +13,7 @@ from PyQt5.QtGui import (
     QLinearGradient,
     QColor,
 )
-from PyQt5.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget
 
 from rare.models.image import ImageSize
 

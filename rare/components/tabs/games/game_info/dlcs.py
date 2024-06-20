@@ -1,8 +1,8 @@
 from typing import Optional, List
 
-from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QFrame, QMessageBox, QToolBox
+from PySide6.QtCore import Qt, Slot, Signal
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QFrame, QMessageBox, QToolBox
 
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
@@ -35,7 +35,7 @@ class GameDlcWidget(QFrame):
 
         rdlc.signals.widget.update.connect(self.__update)
 
-    @pyqtSlot()
+    @Slot()
     def __update(self):
         self.ui.action_button.setEnabled(self.rdlc.is_idle)
         self.image.setPixmap(self.rdlc.get_pixmap(ImageSize.LibraryIcon, self.rdlc.is_installed))
@@ -49,7 +49,7 @@ class GameDlcWidget(QFrame):
 
 
 class InstalledGameDlcWidget(GameDlcWidget):
-    uninstalled = pyqtSignal(RareGame)
+    uninstalled = Signal(RareGame)
 
     def __init__(self, rgame: RareGame, rdlc: RareGame, parent=None):
         super(InstalledGameDlcWidget, self).__init__(rgame=rgame, rdlc=rdlc, parent=parent)
@@ -61,7 +61,7 @@ class InstalledGameDlcWidget(GameDlcWidget):
         # lk: don't reference `self.rdlc` here because the object has been deleted
         rdlc.signals.game.uninstalled.connect(self.__uninstalled)
 
-    @pyqtSlot()
+    @Slot()
     def __uninstalled(self):
         self.uninstalled.emit(self.rdlc)
 
@@ -70,7 +70,7 @@ class InstalledGameDlcWidget(GameDlcWidget):
 
 
 class AvailableGameDlcWidget(GameDlcWidget):
-    installed = pyqtSignal(RareGame)
+    installed = Signal(RareGame)
 
     def __init__(self, rgame: RareGame, rdlc: RareGame, parent=None):
         super(AvailableGameDlcWidget, self).__init__(rgame=rgame, rdlc=rdlc, parent=parent)
@@ -83,7 +83,7 @@ class AvailableGameDlcWidget(GameDlcWidget):
         # lk: don't reference `self.rdlc` here because the object has been deleted
         rdlc.signals.game.installed.connect(self.__installed)
 
-    @pyqtSlot()
+    @Slot()
     def __installed(self):
         self.installed.emit(self.rdlc)
 

@@ -4,18 +4,19 @@ import shutil
 from logging import getLogger
 from typing import Optional, Tuple, Iterable
 
-from PyQt5.QtCore import pyqtSignal, QSize, Qt, QMimeData, pyqtSlot, QObject, QEvent
-from PyQt5.QtGui import (
+from PySide6.QtCore import Signal, QSize, Qt, QMimeData, Slot, QObject, QEvent
+from PySide6.QtGui import (
     QDrag,
     QDropEvent,
     QDragEnterEvent,
     QDragMoveEvent,
     QFont,
+    QAction,
     QMouseEvent,
     QShowEvent,
     QResizeEvent,
 )
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QFrame,
@@ -23,7 +24,6 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
     QWidget,
     QScrollArea,
-    QAction,
     QMenu,
     QPushButton,
     QLineEdit,
@@ -43,7 +43,7 @@ logger = getLogger("WrapperSettings")
 
 
 class WrapperEditDialog(ButtonDialog):
-    result_ready = pyqtSignal(bool, str)
+    result_ready = Signal(bool, str)
 
     def __init__(self, parent=None):
         super(WrapperEditDialog, self).__init__(parent=parent)
@@ -68,7 +68,7 @@ class WrapperEditDialog(ButtonDialog):
         self.setSubtitle(game_title(header, wrapper.name))
         self.line_edit.setText(wrapper.as_str)
 
-    @pyqtSlot(str)
+    @Slot(str)
     def __on_text_changed(self, text: str):
         self.accept_button.setEnabled(bool(text))
 
@@ -97,7 +97,7 @@ class WrapperAddDialog(WrapperEditDialog):
         for wrapper in wrappers:
             self.combo_box.addItem(f"{wrapper.name} ({wrapper.as_str})", wrapper.as_str)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __on_index_changed(self, index: int):
         command = self.combo_box.itemData(index, Qt.ItemDataRole.UserRole)
         self.line_edit.setText(command)
@@ -105,9 +105,9 @@ class WrapperAddDialog(WrapperEditDialog):
 
 class WrapperWidget(QFrame):
     # object: current, object: new
-    update_wrapper = pyqtSignal(object, object)
+    update_wrapper = Signal(object, object)
     # object: current
-    delete_wrapper = pyqtSignal(object)
+    delete_wrapper = Signal(object)
 
     def __init__(self, wrapper: Wrapper, parent=None):
         super(WrapperWidget, self).__init__(parent=parent)
@@ -155,19 +155,19 @@ class WrapperWidget(QFrame):
     def data(self) -> Wrapper:
         return self.wrapper
 
-    @pyqtSlot()
+    @Slot()
     def __on_delete(self) -> None:
         self.delete_wrapper.emit(self.wrapper)
         self.deleteLater()
 
-    @pyqtSlot()
+    @Slot()
     def __on_edit(self) -> None:
         dialog = WrapperEditDialog(self)
         dialog.setup(self.wrapper)
         dialog.result_ready.connect(self.__on_edit_result)
         dialog.show()
 
-    @pyqtSlot(bool, str)
+    @Slot(bool, str)
     def __on_edit_result(self, accepted: bool, command: str):
         if accepted and command:
             new_wrapper = Wrapper(command=shlex.split(command))
@@ -265,7 +265,7 @@ class WrapperSettings(QWidget):
         self.update_state()
         return super().showEvent(a0)
 
-    @pyqtSlot(QWidget, int)
+    @Slot(QWidget, int)
     def __on_order_changed(self, widget: WrapperWidget, new_index: int):
         wrapper = widget.data()
         wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
@@ -273,14 +273,14 @@ class WrapperSettings(QWidget):
         wrappers.insert(new_index, wrapper)
         self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
 
-    @pyqtSlot()
+    @Slot()
     def __on_add(self) -> None:
         dialog = WrapperAddDialog(self)
         dialog.setup(self.wrappers.user_wrappers)
         dialog.result_ready.connect(self.__on_add_result)
         dialog.show()
 
-    @pyqtSlot(bool, str)
+    @Slot(bool, str)
     def __on_add_result(self, accepted: bool, command: str):
         if accepted and command:
             wrapper = Wrapper(shlex.split(command))
@@ -340,7 +340,7 @@ class WrapperSettings(QWidget):
 
         self.add_wrapper(wrapper, position)
 
-    @pyqtSlot(object)
+    @Slot(object)
     def __delete_wrapper(self, wrapper: Wrapper):
         wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
         wrappers.remove(wrapper)
@@ -348,7 +348,7 @@ class WrapperSettings(QWidget):
         if not wrappers:
             self.wrapper_label.setVisible(True)
 
-    @pyqtSlot(object, object)
+    @Slot(object, object)
     def __update_wrapper(self, old: Wrapper, new: Wrapper):
         wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
         index = wrappers.index(old)
@@ -357,7 +357,7 @@ class WrapperSettings(QWidget):
         self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
         self.__add_wrapper(new, index)
 
-    @pyqtSlot()
+    @Slot()
     def update_state(self):
         for w in self.wrapper_container.findChildren(WrapperWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             w.deleteLater()
@@ -370,7 +370,7 @@ class WrapperSettings(QWidget):
 
 class WrapperContainer(QWidget):
     # QWidget: moving widget, int: new index
-    orderChanged: pyqtSignal = pyqtSignal(QWidget, int)
+    orderChanged: Signal = Signal(QWidget, int)
 
     def __init__(self, label: QLabel, parent=None):
         super(WrapperContainer, self).__init__(parent=parent)

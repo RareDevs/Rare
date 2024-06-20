@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QGroupBox
+from PySide6.QtCore import QSettings
+from PySide6.QtWidgets import QGroupBox
 
 from rare.shared import GlobalSignalsSingleton
 from rare.models.options import options

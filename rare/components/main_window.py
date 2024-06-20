@@ -1,9 +1,9 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QSettings, QTimer, QSize, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QCloseEvent, QCursor
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Qt, QSettings, QTimer, QSize, Signal, Slot
+from PySide6.QtGui import QCloseEvent, QCursor
+from PySide6.QtWidgets import (
     QMainWindow,
     QApplication,
     QStatusBar,
@@ -30,7 +30,7 @@ logger = getLogger("MainWindow")
 
 class MainWindow(QMainWindow):
     # int: exit code
-    exit_app: pyqtSignal = pyqtSignal(int)
+    exit_app: Signal = Signal(int)
 
     def __init__(self, parent=None):
         self.__exit_code = 0
@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
         self.resize(window_size)
         self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
 
-    @pyqtSlot()
+    @Slot()
     def show(self) -> None:
         super(MainWindow, self).show()
         if not self._window_launched:
@@ -166,7 +166,7 @@ class MainWindow(QMainWindow):
         else:
             self.hide()
 
-    @pyqtSlot()
+    @Slot()
     def update_statusbar(self):
         self.active_label.setVisible(False)
         self.active_container.setVisible(False)
@@ -204,8 +204,8 @@ class MainWindow(QMainWindow):
             os.remove(file_path)
         self.singleton_timer.start()
 
-    @pyqtSlot()
-    @pyqtSlot(int)
+    @Slot()
+    @Slot(int)
     def __on_exit_app(self, exit_code=0) -> None:
         self.__exit_code = exit_code
         self.close()

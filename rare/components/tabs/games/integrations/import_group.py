@@ -6,9 +6,9 @@ from logging import getLogger
 from pathlib import Path
 from typing import List, Tuple, Optional, Set, Dict
 
-from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, pyqtSlot
-from PyQt5.QtGui import QStandardItemModel, QShowEvent
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Qt, Signal, QRunnable, QObject, QThreadPool, Slot
+from PySide6.QtGui import QStandardItemModel, QShowEvent
+from PySide6.QtWidgets import (
     QFileDialog,
     QGroupBox,
     QCompleter,
@@ -67,8 +67,8 @@ class ImportedGame:
 
 class ImportWorker(QRunnable):
     class Signals(QObject):
-        progress = pyqtSignal(ImportedGame, int)
-        result = pyqtSignal(list)
+        progress = Signal(ImportedGame, int)
+        result = Signal(list)
 
     def __init__(
             self,
@@ -254,7 +254,7 @@ class ImportGroup(QGroupBox):
             return True, path, IndicatorReasonsCommon.VALID
         return False, path, IndicatorReasonsCommon.UNDEFINED
 
-    @pyqtSlot(str)
+    @Slot(str)
     def path_changed(self, path: str):
         self.info_label.setText("")
         self.ui.import_folder_check.setCheckState(Qt.CheckState.Unchecked)
@@ -280,7 +280,7 @@ class ImportGroup(QGroupBox):
         self.ui.platform_combo.addItems(rgame.platforms)
         self.ui.platform_combo.setCurrentText(rgame.default_platform)
 
-    @pyqtSlot(str)
+    @Slot(str)
     def app_name_changed(self, app_name: str):
         self.info_label.setText("")
         self.ui.import_dlcs_check.setCheckState(Qt.CheckState.Unchecked)
@@ -292,7 +292,7 @@ class ImportGroup(QGroupBox):
             not bool(self.worker) and (self.app_name_edit.is_valid and self.path_edit.is_valid)
         )
 
-    @pyqtSlot(int)
+    @Slot(int)
     def import_folder_changed(self, state: Qt.CheckState):
         self.app_name_edit.setEnabled(not state)
         self.ui.platform_combo.setEnabled(not state)
@@ -313,13 +313,13 @@ class ImportGroup(QGroupBox):
             not bool(self.worker) and (state or (not state and self.app_name_edit.is_valid))
         )
 
-    @pyqtSlot(int)
+    @Slot(int)
     def import_dlcs_changed(self, state: Qt.CheckState):
         self.ui.import_button.setEnabled(
             not bool(self.worker) and (self.ui.import_folder_check.isChecked() or self.app_name_edit.is_valid)
         )
 
-    @pyqtSlot(str)
+    @Slot(str)
     def __import(self, path: Optional[str] = None):
         self.ui.import_button.setDisabled(True)
         self.info_label.setText(self.tr("Status: Importing games"))
@@ -341,7 +341,7 @@ class ImportGroup(QGroupBox):
         self.worker.signals.result.connect(self.__on_import_result)
         self.threadpool.start(self.worker)
 
-    @pyqtSlot(ImportedGame, int)
+    @Slot(ImportedGame, int)
     def __on_import_progress(self, imported: ImportedGame, progress: int):
         self.info_progress.setValue(progress)
         if imported.result == ImportResult.SUCCESS:
@@ -351,7 +351,7 @@ class ImportGroup(QGroupBox):
         )
         logger.info(f"Import {status}: {imported.app_title}: {imported.path} ({imported.message})")
 
-    @pyqtSlot(list)
+    @Slot(list)
     def __on_import_result(self, result: List[ImportedGame]):
         self.worker = None
         self.button_info_stack.setCurrentWidget(self.info_label)

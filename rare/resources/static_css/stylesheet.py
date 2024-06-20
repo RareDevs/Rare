@@ -3,58 +3,16 @@ import sys
 from typing import Union, Type
 
 import qstylizer.style
-from PyQt5.QtCore import QDir, QObject
-from PyQt5.QtGui import QColor
-from PyQt5.pyrcc import RCCResourceLibrary, CONSTANT_COMPRESSTHRESHOLD_DEFAULT
-from PyQt5.sip import wrappertype
+from PySide6.QtCore import QDir, QObject
+from PySide6.QtGui import QColor
+from PySide6.scripts.pyside_tool import qt_tool_wrapper
+from shiboken6.Shiboken import Object as wrappertype
 
 from rare.utils.misc import widget_object_name
 
 verbose = True
 compressLevel = 6
-compressThreshold = CONSTANT_COMPRESSTHRESHOLD_DEFAULT
-resourceRoot = ''
-
-
-def processResourceFile(filenamesIn, filenameOut, listFiles):
-    if verbose:
-        sys.stderr.write("PyQt5 resource compiler\n")
-
-    # Setup.
-    library = RCCResourceLibrary()
-    library.setInputFiles(filenamesIn)
-    library.setVerbose(verbose)
-    library.setCompressLevel(compressLevel)
-    library.setCompressThreshold(compressThreshold)
-    library.setResourceRoot(resourceRoot)
-
-    if not library.readFiles():
-        return False
-
-    if filenameOut == '-':
-        filenameOut = ''
-
-    if listFiles:
-        # Open the output file or use stdout if not specified.
-        if filenameOut:
-            try:
-                out_fd = open(filenameOut, 'w')
-            except Exception:
-                sys.stderr.write(
-                        "Unable to open %s for writing\n" % filenameOut)
-                return False
-        else:
-            out_fd = sys.stdout
-
-        for df in library.dataFiles():
-            out_fd.write("%s\n" % QDir.cleanPath(df))
-
-        if out_fd is not sys.stdout:
-            out_fd.close()
-
-        return True
-
-    return library.output(filenameOut)
+compressThreshold = 0
 
 
 def css_name(widget: Union[wrappertype, QObject, Type], subwidget: str = ""):
@@ -218,8 +176,15 @@ if __name__ == "__main__":
         qss.write(f'\n/* This file is auto-generated from "{os.path.basename(__file__)}". DO NOT EDIT!!! */\n\n')
         qss.write(css.toString())
 
-    if not processResourceFile(["stylesheet.qrc"], "__init__.py", False):
-        print("Error while creating compiled resources")
-        sys.exit(1)
-
-    sys.exit(0)
+    qt_tool_wrapper(
+        "rcc",
+        [
+            "-g", "python",
+            "--compress", str(compressLevel),
+            "--threshold", str(compressThreshold),
+            "--verbose" if verbose else "",
+            "stylesheet.qrc",
+            "-o", "__init__.py",
+        ],
+        True
+    )

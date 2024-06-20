@@ -7,8 +7,8 @@ from logging import getLogger
 from threading import Lock
 from typing import List, Optional, Dict, Set
 
-from PyQt5.QtCore import QRunnable, pyqtSlot, QProcess, QThreadPool
-from PyQt5.QtGui import QPixmap
+from PySide6.QtCore import QRunnable, Slot, QProcess, QThreadPool
+from PySide6.QtGui import QPixmap
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
 
@@ -125,7 +125,7 @@ class RareGame(RareGameSlim):
         if worker is None:
             self.state = RareGame.State.IDLE
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __game_launched(self, code: int):
         self.state = RareGame.State.RUNNING
         self.metadata.last_played = datetime.now(UTC)
@@ -134,7 +134,7 @@ class RareGame(RareGameSlim):
         self.__save_metadata()
         self.signals.game.launched.emit(self.app_name)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __game_finished(self, exit_code: int):
         if exit_code == GameProcess.Code.ON_STARTUP:
             return
@@ -503,7 +503,7 @@ class RareGame(RareGameSlim):
     def get_pixmap(self, preset: ImageSize.Preset, color=True) -> QPixmap:
         return self.image_manager.get_pixmap(self.app_name, preset, color)
 
-    @pyqtSlot(object)
+    @Slot(object)
     def set_pixmap(self):
         # self.pixmap = not self.image_manager.get_pixmap(self.app_name, self.is_installed).isNull()
         self.has_pixmap = True

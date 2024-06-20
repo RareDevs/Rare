@@ -1,8 +1,8 @@
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, Qt, pyqtSlot
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
+from PySide6.QtCore import QSettings, Slot
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
 
 from rare.models.game import RareGame
 from rare.shared import (
@@ -82,34 +82,34 @@ class GamesLibrary(QStackedWidget):
         self.init = False
         return super().showEvent(a0)
 
-    @pyqtSlot()
+    @Slot()
     def scroll_to_top(self):
         self.view_scroll.verticalScrollBar().setSliderPosition(
             self.view_scroll.verticalScrollBar().minimum()
         )
 
-    @pyqtSlot()
-    @pyqtSlot(str)
+    @Slot()
+    @Slot(str)
     def show_import(self, app_name: str = None):
         self.setCurrentWidget(self.integrations_page)
         self.integrations_page.show_import(app_name)
 
-    @pyqtSlot()
+    @Slot()
     def show_egl_sync(self):
         self.setCurrentWidget(self.integrations_page)
         self.integrations_page.show_egl_sync()
 
-    @pyqtSlot()
+    @Slot()
     def show_eos_ubisoft(self):
         self.setCurrentWidget(self.integrations_page)
         self.integrations_page.show_eos_ubisoft()
 
-    @pyqtSlot(RareGame)
+    @Slot(RareGame)
     def show_game_info(self, rgame):
         self.game_info_page.update_game(rgame)
         self.setCurrentWidget(self.game_info_page)
 
-    @pyqtSlot()
+    @Slot()
     def update_count_games_label(self):
         self.head_bar.set_games_count(
             len([game for game in self.rcore.games if game.is_installed]),
@@ -135,20 +135,20 @@ class GamesLibrary(QStackedWidget):
         widget.show_info.connect(self.show_game_info)
         return widget
 
-    @pyqtSlot(str)
+    @Slot(str)
     def search_games(self, search_text: str = ""):
         self.filter_games(self.head_bar.current_filter(), search_text)
 
-    @pyqtSlot(object)
-    @pyqtSlot(object, str)
+    @Slot(object)
+    @Slot(object, str)
     def filter_games(self, library_filter: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
 
         self.library_controller.filter_game_views(library_filter, search_text.lower())
 
-    @pyqtSlot(object)
-    @pyqtSlot(object, str)
+    @Slot(object)
+    @Slot(object, str)
     def order_games(self, library_order: LibraryOrder = LibraryFilter.ALL, search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t

@@ -1,7 +1,7 @@
 from typing import List, Union
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QCheckBox, QWidget, QVBoxLayout
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QCheckBox, QWidget, QVBoxLayout
 from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.models.game import RareGame
@@ -19,7 +19,7 @@ class TagCheckBox(QCheckBox):
 
 
 class SelectiveWidget(QWidget):
-    stateChanged: pyqtSignal = pyqtSignal()
+    stateChanged: Signal = Signal()
 
     def __init__(self, rgame: RareGame, platform: str, parent=None):
         super().__init__(parent=parent)

@@ -2,9 +2,9 @@ import os
 from logging import getLogger
 from typing import Optional
 
-from PyQt5.QtCore import pyqtSignal, Qt, QSignalBlocker
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QFileDialog, QFormLayout, QGroupBox
+from PySide6.QtCore import Signal, Qt, QSignalBlocker
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QFileDialog, QFormLayout, QGroupBox
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.utils import config_helper as config
@@ -15,7 +15,7 @@ logger = getLogger("WineSettings")
 
 class WineSettings(QGroupBox):
     # str: option key
-    environ_changed = pyqtSignal(str)
+    environ_changed = Signal(str)
 
     def __init__(self, parent=None):
         super(WineSettings, self).__init__(parent=parent)

@@ -1,9 +1,9 @@
 from logging import getLogger
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSettings
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction, QApplication
+from PySide6.QtCore import Signal, Slot, QSettings
+from PySide6.QtGui import QIcon, QAction
+from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
 
 from rare.models.options import options
 from rare.shared import RareCore
@@ -13,9 +13,9 @@ logger = getLogger("TrayIcon")
 
 class TrayIcon(QSystemTrayIcon):
     # none:
-    show_app: pyqtSignal = pyqtSignal()
+    show_app: Signal = Signal()
     # int: exit code
-    exit_app: pyqtSignal = pyqtSignal(int)
+    exit_app: Signal = Signal(int)
 
     def __init__(self, parent=None):
         super(TrayIcon, self).__init__(parent=parent)
@@ -60,14 +60,14 @@ class TrayIcon(QSystemTrayIcon):
         last_played.sort(key=lambda g: g.metadata.last_played, reverse=True)
         return last_played[:5]
 
-    @pyqtSlot(str, str)
+    @Slot(str, str)
     def notify(self, title: str, body: str):
         if self.settings.value(*options.notification):
             self.showMessage(
                 f"{title} - {QApplication.applicationName()}", body, QSystemTrayIcon.MessageIcon.Information, 4000
             )
 
-    @pyqtSlot()
+    @Slot()
     def update_actions(self):
         for action in self.game_actions:
             action.deleteLater()
@@ -77,7 +77,7 @@ class TrayIcon(QSystemTrayIcon):
             self.menu.insertAction(self.separator, a)
             self.game_actions.append(a)
 
-    @pyqtSlot(str)
+    @Slot(str)
     def remove_button(self, app_name: str):
         if action := next((i for i in self.game_actions if i.property("app_name") == app_name), None):
             self.game_actions.remove(action)

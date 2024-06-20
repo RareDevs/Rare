@@ -11,6 +11,10 @@ resources=(
 )
 
 resources_changed=0
+if [[ "$1" == "force" ]]
+then
+  resources_changed=1
+fi
 
 for r in "${resources[@]}"
 do

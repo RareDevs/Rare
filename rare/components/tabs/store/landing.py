@@ -2,9 +2,9 @@ import logging
 from datetime import datetime, UTC
 from typing import List
 
-from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal, QObject, QEvent
-from PyQt5.QtGui import QShowEvent, QHideEvent, QResizeEvent
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Qt, Slot, Signal, QObject, QEvent
+from PySide6.QtGui import QShowEvent, QHideEvent, QResizeEvent
+from PySide6.QtWidgets import (
     QHBoxLayout,
     QWidget,
     QSizePolicy,
@@ -53,11 +53,11 @@ class LandingPage(SlidingStackedWidget, SideTabContents):
         self.addWidget(self.landing_scroll)
         self.addWidget(self.details_widget)
 
-    @pyqtSlot()
+    @Slot()
     def show_main(self):
         self.slideInWidget(self.landing_scroll)
 
-    @pyqtSlot(object)
+    @Slot(object)
     def show_details(self, game: CatalogOfferModel):
         self.details_widget.update_game(game)
         self.slideInWidget(self.details_widget)
@@ -96,7 +96,7 @@ class FreeGamesScroll(QScrollArea):
 
 
 class LandingWidget(QWidget, SideTabContents):
-    show_details = pyqtSignal(CatalogOfferModel)
+    show_details = Signal(CatalogOfferModel)
 
     def __init__(self, api: StoreAPI, parent=None):
         super(LandingWidget, self).__init__(parent=parent)

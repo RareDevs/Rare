@@ -7,7 +7,7 @@ from enum import IntEnum
 from logging import getLogger
 from typing import List, Optional, Dict
 
-from PyQt5.QtCore import QThread, pyqtSignal, QProcess
+from PySide6.QtCore import QThread, Signal, QProcess
 
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
@@ -39,8 +39,8 @@ class DlResultModel:
 
 
 class DlThread(QThread):
-    result = pyqtSignal(DlResultModel)
-    progress = pyqtSignal(UIUpdate, object)
+    result = Signal(DlResultModel)
+    progress = Signal(UIUpdate, object)
 
     def __init__(self, item: InstallQueueItemModel, rgame: RareGame, core: LegendaryCore, debug: bool = False):
         super(DlThread, self).__init__()

@@ -1,14 +1,14 @@
 import logging
 
-from PyQt5.QtCore import QSettings, pyqtSignal, pyqtSlot, QSize, Qt
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QSettings, Signal, Slot, QSize, Qt
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import (
     QHBoxLayout,
     QWidget,
     QPushButton,
     QLabel,
     QComboBox,
     QMenu,
-    QAction,
     QSpacerItem,
     QSizePolicy,
 )
@@ -20,12 +20,12 @@ from rare.widgets.button_edit import ButtonLineEdit
 
 
 class LibraryHeadBar(QWidget):
-    filterChanged = pyqtSignal(object)
-    orderChanged = pyqtSignal(object)
-    viewChanged = pyqtSignal(object)
-    goto_import = pyqtSignal()
-    goto_egl_sync = pyqtSignal()
-    goto_eos_ubisoft = pyqtSignal()
+    filterChanged = Signal(object)
+    orderChanged = Signal(object)
+    viewChanged = Signal(object)
+    goto_import = Signal()
+    goto_egl_sync = Signal()
+    goto_eos_ubisoft = Signal()
 
     def __init__(self, parent=None):
         super(LibraryHeadBar, self).__init__(parent=parent)
@@ -153,14 +153,14 @@ class LibraryHeadBar(QWidget):
         self.installed_label.setText(str(inst))
         self.available_label.setText(str(avail))
 
-    @pyqtSlot()
+    @Slot()
     def __refresh_clicked(self):
         self.rcore.fetch()
 
     def current_filter(self) -> LibraryFilter:
         return self.filter.currentData(Qt.ItemDataRole.UserRole)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __filter_changed(self, index: int):
         data = self.filter.itemData(index, Qt.ItemDataRole.UserRole)
         self.filterChanged.emit(data)
@@ -169,7 +169,7 @@ class LibraryHeadBar(QWidget):
     def current_order(self) -> LibraryOrder:
         return self.order.currentData(Qt.ItemDataRole.UserRole)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __order_changed(self, index: int):
         data = self.order.itemData(index, Qt.ItemDataRole.UserRole)
         self.orderChanged.emit(data)
@@ -177,7 +177,7 @@ class LibraryHeadBar(QWidget):
 
 
 class SelectViewWidget(QWidget):
-    toggled = pyqtSignal(bool)
+    toggled = Signal(bool)
 
     def __init__(self, icon_view: bool, parent=None):
         super(SelectViewWidget, self).__init__(parent=parent)

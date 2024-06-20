@@ -5,7 +5,7 @@ from configparser import ConfigParser
 from logging import getLogger
 from typing import Union, Iterable, List, Tuple, Dict
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PySide6.QtCore import Signal, QObject
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
@@ -27,7 +27,7 @@ logger = getLogger("WineResolver")
 
 class WinePathResolver(Worker):
     class Signals(QObject):
-        result_ready = pyqtSignal(str, str)
+        result_ready = Signal(str, str)
 
     def __init__(self, core: LegendaryCore, app_name: str, path: str):
         super(WinePathResolver, self). __init__()

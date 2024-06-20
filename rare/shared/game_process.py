@@ -2,9 +2,9 @@ import json
 import logging
 from enum import IntEnum
 
-from PyQt5.QtCore import QObject, pyqtSignal, QTimer, pyqtSlot, Qt
-from PyQt5.QtNetwork import QLocalSocket
-from PyQt5.QtWidgets import QMessageBox
+from PySide6.QtCore import QObject, Signal, QTimer, Slot, Qt
+from PySide6.QtNetwork import QLocalSocket
+from PySide6.QtWidgets import QMessageBox
 from legendary.models.game import Game
 
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, StateChangedModel
@@ -14,9 +14,9 @@ logger = logging.getLogger("GameProcess")
 
 class GameProcess(QObject):
     # int: code
-    launched = pyqtSignal(int)
+    launched = Signal(int)
     # int: code
-    finished = pyqtSignal(int)
+    finished = Signal(int)
 
     class Code(IntEnum):
         SUCCESS = 0
@@ -51,14 +51,14 @@ class GameProcess(QObject):
         self.on_startup = on_startup
         self.timer.start(200)
 
-    @pyqtSlot()
+    @Slot()
     def __close(self):
         try:
             self.socket.close()
         except RuntimeError:
             pass
 
-    @pyqtSlot()
+    @Slot()
     def __connect(self):
         self.socket.connectToServer(self.socket_name)
         self.tried_connections += 1
@@ -76,7 +76,7 @@ class GameProcess(QObject):
             self.tried_connections = 0
             self.finished.emit(GameProcess.Code.TIMEOUT)
 
-    @pyqtSlot()
+    @Slot()
     def __on_message(self):
         message = self.socket.readAll().data()
         if not message.startswith(b"{"):
@@ -111,7 +111,7 @@ class GameProcess(QObject):
                 logger.info("Launched Game")
                 self.launched.emit(GameProcess.Code.SUCCESS)
 
-    @pyqtSlot()
+    @Slot()
     def __on_connected(self):
         self.timer.stop()
         logger.info(f"Connection established for {self.game.app_name} ({self.game.app_title})")
@@ -119,7 +119,7 @@ class GameProcess(QObject):
             logger.info(f"Found {self.game.app_name} ({self.game.app_title}) running at startup")
             self.launched.emit(GameProcess.Code.ON_STARTUP)
 
-    @pyqtSlot(QLocalSocket.LocalSocketError)
+    @Slot(QLocalSocket.LocalSocketError)
     def __on_error(self, _: QLocalSocket.LocalSocketError):
         if self.on_startup:
             self.timer.stop()

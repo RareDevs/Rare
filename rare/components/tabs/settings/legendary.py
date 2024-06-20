@@ -3,9 +3,9 @@ import re
 from logging import getLogger
 from typing import Tuple, Set
 
-from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSettings, pyqtSlot
-from PyQt5.QtGui import QShowEvent, QHideEvent
-from PyQt5.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
+from PySide6.QtCore import QObject, Signal, QThreadPool, QSettings, Slot
+from PySide6.QtGui import QShowEvent, QHideEvent
+from PySide6.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 from rare.models.options import options
 from rare.shared import LegendaryCoreSingleton
@@ -19,7 +19,7 @@ logger = getLogger("LegendarySettings")
 
 class RefreshGameMetaWorker(Worker):
     class Signals(QObject):
-        finished = pyqtSignal()
+        finished = Signal()
 
     def __init__(self, platforms: Set[str], include_unreal: bool):
         super(RefreshGameMetaWorker, self).__init__()
@@ -174,11 +174,11 @@ class LegendarySettings(QWidget):
         else:
             self.core.lgd.config.remove_option("Legendary", "locale")
 
-    @pyqtSlot(str)
+    @Slot(str)
     def __mac_path_save(self, text: str) -> None:
         self.__path_save(text, "mac_install_dir")
 
-    @pyqtSlot(str)
+    @Slot(str)
     def __win_path_save(self, text: str) -> None:
         self.__path_save(text, "install_dir")
         if pf.system() != "Darwin":
@@ -190,28 +190,28 @@ class LegendarySettings(QWidget):
         else:
             self.core.lgd.config.remove_option("Legendary", option)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def max_worker_save(self, workers: int):
         if workers:
             self.core.lgd.config.set("Legendary", "max_workers", str(workers))
         else:
             self.core.lgd.config.remove_option("Legendary", "max_workers")
 
-    @pyqtSlot(int)
+    @Slot(int)
     def max_memory_save(self, memory: int):
         if memory:
             self.core.lgd.config.set("Legendary", "max_memory", str(memory))
         else:
             self.core.lgd.config.remove_option("Legendary", "max_memory")
 
-    @pyqtSlot(str)
+    @Slot(str)
     def preferred_cdn_save(self, cdn: str):
         if cdn:
             self.core.lgd.config.set("Legendary", "preferred_cdn", cdn.strip())
         else:
             self.core.lgd.config.remove_option("Legendary", "preferred_cdn")
 
-    @pyqtSlot(int)
+    @Slot(int)
     def disable_https_save(self, checked: int):
         self.core.lgd.config.set(
             "Legendary", "disable_https", str(bool(checked)).lower()

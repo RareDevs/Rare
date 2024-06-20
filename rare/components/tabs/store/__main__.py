@@ -1,7 +1,7 @@
 import sys
 
-from PyQt5.QtCore import QSize
-from PyQt5.QtWidgets import QDialog, QApplication, QVBoxLayout
+from PySide6.QtCore import QSize
+from PySide6.QtWidgets import QDialog, QApplication, QVBoxLayout
 from legendary.core import LegendaryCore
 
 from . import StoreTab

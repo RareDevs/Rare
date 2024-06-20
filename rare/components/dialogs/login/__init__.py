@@ -1,7 +1,7 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLayout, QMessageBox, QFrame
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLayout, QMessageBox, QFrame
 from legendary.core import LegendaryCore
 
 from rare.shared import ArgumentsSingleton

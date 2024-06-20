@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from logging import getLogger
 from typing import List
 
-from PyQt5.QtCore import QProcess, QProcessEnvironment
+from PySide6.QtCore import QProcess, QProcessEnvironment
 from legendary.models.game import LaunchParameters
 
 from rare.models.base_game import RareGameSlim

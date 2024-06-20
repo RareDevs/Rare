@@ -1,9 +1,9 @@
 import os
 from typing import Union
 
-from PyQt5.QtCore import QProcessEnvironment, pyqtSignal, QSize, Qt
-from PyQt5.QtGui import QTextCursor, QFont, QCursor, QCloseEvent
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QProcessEnvironment, Signal, QSize, Qt
+from PySide6.QtGui import QTextCursor, QFont, QCursor, QCloseEvent
+from PySide6.QtWidgets import (
     QPlainTextEdit,
     QDialog,
     QPushButton,
@@ -19,8 +19,8 @@ from rare.widgets.dialogs import dialog_title, game_title
 
 
 class ConsoleDialog(QDialog):
-    term = pyqtSignal()
-    kill = pyqtSignal()
+    term = Signal()
+    kill = Signal()
     env: QProcessEnvironment
 
     def __init__(self, app_title: str, parent=None):

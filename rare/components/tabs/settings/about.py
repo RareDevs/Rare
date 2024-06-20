@@ -1,9 +1,9 @@
 import webbrowser
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QWidget
+from PySide6.QtCore import Signal
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QWidget
 
 from rare import __version__, __codename__
 from rare.ui.components.tabs.settings.about import Ui_About
@@ -20,7 +20,7 @@ def versiontuple(v):
 
 
 class About(QWidget):
-    update_available_ready = pyqtSignal()
+    update_available_ready = Signal()
 
     def __init__(self, parent=None):
         super(About, self).__init__(parent=parent)

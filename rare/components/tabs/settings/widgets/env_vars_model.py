@@ -4,8 +4,8 @@ import sys
 from collections import ChainMap
 from typing import Any, Union
 
-from PyQt5.QtCore import Qt, QModelIndex, QAbstractTableModel, pyqtSlot
-from PyQt5.QtGui import QFont
+from PySide6.QtCore import Qt, QModelIndex, QAbstractTableModel, Slot
+from PySide6.QtGui import QFont
 
 from rare.lgndr.core import LegendaryCore
 from rare.utils.misc import qta_icon
@@ -41,7 +41,7 @@ class EnvVarsTableModel(QAbstractTableModel):
         self.__default: str = "default"
         self.__appname: str = None
 
-    @pyqtSlot(str)
+    @Slot(str)
     def reset(self):
         if not self.__appname:
             return
@@ -256,7 +256,7 @@ class EnvVarsTableModel(QAbstractTableModel):
 
 
 if __name__ == "__main__":
-    from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout, QTableView, QHeaderView
+    from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout, QTableView, QHeaderView
 
     from rare.utils.misc import set_style_sheet
     from legendary.core import LegendaryCore

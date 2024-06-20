@@ -2,9 +2,9 @@ import json
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import pyqtSignal, QUrl, QProcess, pyqtSlot
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QFrame, QApplication, QFormLayout, QLineEdit
+from PySide6.QtCore import Signal, QUrl, QProcess, Slot
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QFrame, QApplication, QFormLayout, QLineEdit
 from legendary.utils import webview_login
 
 from rare.lgndr.core import LegendaryCore
@@ -17,8 +17,8 @@ logger = getLogger("BrowserLogin")
 
 
 class BrowserLogin(QFrame):
-    success = pyqtSignal()
-    changed = pyqtSignal()
+    success = Signal()
+    changed = Signal()
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(BrowserLogin, self).__init__(parent=parent)
@@ -44,7 +44,7 @@ class BrowserLogin(QFrame):
         self.ui.open_button.clicked.connect(self.open_browser)
         self.sid_edit.textChanged.connect(self.changed.emit)
 
-    @pyqtSlot()
+    @Slot()
     def copy_link(self):
         clipboard = QApplication.instance().clipboard()
         clipboard.setText(self.login_url)
@@ -81,7 +81,7 @@ class BrowserLogin(QFrame):
         except Exception as e:
             logger.warning(e)
 
-    @pyqtSlot()
+    @Slot()
     def open_browser(self):
         if not webview_login.webview_available:
             logger.warning("You don't have webengine installed, you will need to manually copy the authorizationCode.")

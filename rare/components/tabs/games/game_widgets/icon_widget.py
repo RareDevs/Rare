@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
+from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QGraphicsOpacityEffect,
