@@ -428,8 +428,8 @@ class RareLauncher(RareApp):
 def launch(args: Namespace) -> int:
     args = InitArgs.from_argparse(args)
 
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
 
     app = RareLauncher(args)
     app.setQuitOnLastWindowClosed(True)

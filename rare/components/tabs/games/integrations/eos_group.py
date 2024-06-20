@@ -46,11 +46,11 @@ class CheckForUpdateWorker(QRunnable):
 class EosPrefixWidget(QFrame):
     def __init__(self, overlay: RareEosOverlay, prefix: Optional[str], parent=None):
         super(EosPrefixWidget, self).__init__(parent=parent)
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self.indicator = QLabel(parent=self)
-        self.indicator.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        self.indicator.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
 
         self.prefix_label = ElideLabel(
             prefix.replace(os.path.expanduser("~"), "~") if prefix is not None else overlay.app_title,
@@ -86,7 +86,7 @@ class EosPrefixWidget(QFrame):
 
     @pyqtSlot(int)
     def path_changed(self, index: int) -> None:
-        path = self.path_select.itemData(index, Qt.UserRole)
+        path = self.path_select.itemData(index, Qt.ItemDataRole.UserRole)
         active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
         if self.overlay.is_enabled(self.prefix) and (path == active_path):
             self.button.setText(self.tr("Disable overlay"))
@@ -115,18 +115,18 @@ class EosPrefixWidget(QFrame):
         install_path = os.path.normpath(p) if (p := self.overlay.install_path) else ""
 
         self.path_select.addItem("Auto-detect", "")
-        self.path_select.setItemData(0, "Auto-detect", Qt.ToolTipRole)
+        self.path_select.setItemData(0, "Auto-detect", Qt.ItemDataRole.ToolTipRole)
         for path in self.overlay.available_paths(self.prefix):
             path = os.path.normpath(path)
             self.path_select.addItem("Legendary-managed" if path == install_path else "EGL-managed", path)
-            self.path_select.setItemData(self.path_select.findData(path), path, Qt.ToolTipRole)
+            self.path_select.setItemData(self.path_select.findData(path), path, Qt.ItemDataRole.ToolTipRole)
         self.path_select.setCurrentIndex(self.path_select.findData(active_path))
 
         self.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
 
     @pyqtSlot()
     def action(self) -> None:
-        path = self.path_select.currentData(Qt.UserRole)
+        path = self.path_select.currentData(Qt.ItemDataRole.UserRole)
         active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
         install_path = os.path.normpath(p) if (p := self.overlay.install_path) else ""
         if self.overlay.is_enabled(self.prefix) and (path == active_path):
@@ -168,8 +168,8 @@ class EosGroup(QGroupBox):
         self.ui.install_button.setObjectName("InstallButton")
         self.ui.uninstall_button.setObjectName("UninstallButton")
 
-        self.ui.install_page_layout.setAlignment(Qt.AlignTop)
-        self.ui.info_page_layout.setAlignment(Qt.AlignTop)
+        self.ui.install_page_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.ui.info_page_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.ui.install_button.setIcon(qta_icon("ri.install-line"))
         self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
@@ -177,8 +177,8 @@ class EosGroup(QGroupBox):
         self.installed_path_label = ElideLabel(parent=self)
         self.installed_version_label = ElideLabel(parent=self)
 
-        self.ui.info_label_layout.setWidget(0, QFormLayout.FieldRole, self.installed_version_label)
-        self.ui.info_label_layout.setWidget(1, QFormLayout.FieldRole, self.installed_path_label)
+        self.ui.info_label_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.installed_version_label)
+        self.ui.info_label_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.installed_path_label)
 
         self.rcore = RareCore.instance()
         self.core = self.rcore.core()
@@ -219,7 +219,7 @@ class EosGroup(QGroupBox):
         self.ui.uninstall_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
 
     def update_prefixes(self):
-        for widget in self.findChildren(EosPrefixWidget, options=Qt.FindDirectChildrenOnly):
+        for widget in self.findChildren(EosPrefixWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             widget.deleteLater()
 
         if platform.system() != "Windows":

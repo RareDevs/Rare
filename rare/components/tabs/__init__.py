@@ -60,7 +60,7 @@ class MainTabWidget(QTabWidget):
         account_menu.addAction(account_action)
         account_button.setMenu(account_menu)
         self.tab_bar.setTabButton(
-            button_index, MainTabBar.RightSide, account_button
+            button_index, MainTabBar.ButtonPosition.RightSide, account_button
         )
 
         self.settings_tab = SettingsTab(self)
@@ -107,11 +107,11 @@ class MainTabWidget(QTabWidget):
                 self,
                 self.tr("Logout"),
                 self.tr("Do you really want to logout <b>{}</b>?").format(self.core.lgd.userdata.get("display_name")),
-                buttons=(QMessageBox.Yes | QMessageBox.No),
-                defaultButton=QMessageBox.No,
+                buttons=(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No),
+                defaultButton=QMessageBox.StandardButton.No,
             )
 
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 self.core.lgd.invalidate_userdata()
             else:
                 return

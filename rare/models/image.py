@@ -19,13 +19,13 @@ class ImageSize:
             self.__pixel_ratio = pixel_ratio
             if orientation == ImageType.Tall:
                 self.__img_factor = 67
-                self.__size = QSize(self.__img_factor * 3, self.__img_factor * 4) * pixel_ratio / divisor
+                self.__size = QSize(self.__img_factor * 3, self.__img_factor * 4) * (pixel_ratio / divisor)
             if orientation == ImageType.Wide:
                 self.__img_factor = 34
-                self.__size = QSize(self.__img_factor * 16, self.__img_factor * 9) * pixel_ratio / divisor
+                self.__size = QSize(self.__img_factor * 16, self.__img_factor * 9) * (pixel_ratio / divisor)
             if orientation == ImageType.Icon:
                 self.__img_factor = 128
-                self.__size = QSize(self.__img_factor * 1, self.__img_factor * 1) * pixel_ratio / divisor
+                self.__size = QSize(self.__img_factor * 1, self.__img_factor * 1) * (pixel_ratio / divisor)
             self.__orientation = orientation
             # lk: for prettier images set this to true
             # self.__smooth_transform: bool = True

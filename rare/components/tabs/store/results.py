@@ -20,7 +20,7 @@ class ResultsWidget(QScrollArea):
         self.store_api = store_api
 
         self.results_container = QWidget(self)
-        self.results_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.results_container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.results_layout = FlowLayout(self.results_container)
         self.setWidget(self.results_container)
         self.setWidgetResizable(True)
@@ -37,10 +37,10 @@ class ResultsWidget(QScrollArea):
             self.store_api.search_game(text, self.show_results)
 
     def show_results(self, results: dict):
-        for w in self.results_container.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
+        for w in self.results_container.findChildren(QLabel, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.results_layout.removeWidget(w)
             w.deleteLater()
-        for w in self.results_container.findChildren(ResultsItemWidget, options=Qt.FindDirectChildrenOnly):
+        for w in self.results_container.findChildren(ResultsItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.results_layout.removeWidget(w)
             w.deleteLater()
 

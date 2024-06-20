@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import List, Callable
+from typing import List, Callable, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QApplication
@@ -58,7 +58,7 @@ class StoreAPI(QObject):
     def __handle_free_games(data, handle_func):
         try:
             response = ResponseModel.from_dict(data)
-            results: List[CatalogOfferModel] = response.data.catalog.searchStore.elements
+            results: Tuple[CatalogOfferModel, ...] = response.data.catalog.searchStore.elements
             handle_func(results)
         except KeyError as e:
             if DEBUG():

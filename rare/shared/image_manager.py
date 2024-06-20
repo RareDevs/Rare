@@ -266,19 +266,19 @@ class ImageManager(QObject):
     @staticmethod
     def __convert_icon(cover: QImage) -> QImage:
         icon_size = QSize(128, 128)
-        icon = QImage(icon_size, QImage.Format_ARGB32_Premultiplied)
+        icon = QImage(icon_size, QImage.Format.Format_ARGB32_Premultiplied)
         painter = QPainter(icon)
-        painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
-        painter.setRenderHint(QPainter.Antialiasing, True)
-        painter.setCompositionMode(QPainter.CompositionMode_Source)
-        painter.fillRect(icon.rect(), Qt.transparent)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
+        painter.fillRect(icon.rect(), Qt.GlobalColor.transparent)
         overlay = ImageManager.__generate_icon_overlay(icon.rect())
         brush = QBrush(cover)
         scale = max(icon.width() / cover.width(), icon.height() / cover.height())
         transform = QTransform().scale(scale, scale)
         brush.setTransform(transform)
         painter.fillPath(overlay, brush)
-        pen = QPen(Qt.black, 2)
+        pen = QPen(Qt.GlobalColor.black, 2)
         painter.setPen(pen)
         painter.drawPath(overlay)
         painter.end()
@@ -304,7 +304,7 @@ class ImageManager(QObject):
         def convert_image(image_data, logo_data, preset: ImageSize.Preset) -> QImage:
             image = QImage()
             image.loadFromData(image_data)
-            image.convertToFormat(QImage.Format_ARGB32_Premultiplied)
+            image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
             # lk: Images are not always at the correct aspect ratio, so crop them to size
             wr, hr = preset.aspect_ratio
             factor = min(image.width() // wr, image.height() // hr)
@@ -315,14 +315,23 @@ class ImageManager(QObject):
             if logo_data is not None:
                 logo = QImage()
                 logo.loadFromData(logo_data)
-                logo.convertToFormat(QImage.Format_ARGB32_Premultiplied)
+                logo.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
                 if logo.width() > image.width():
-                    logo = logo.scaled(image.width(), image.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    logo = logo.scaled(
+                        image.width(),
+                        image.height(),
+                        Qt.AspectRatioMode.KeepAspectRatio,
+                        Qt.TransformationMode.SmoothTransformation
+                    )
                 painter = QPainter(image)
                 painter.drawImage((image.width() - logo.width()) // 2, image.height() - logo.height(), logo)
                 painter.end()
 
-            return image.scaled(preset.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            return image.scaled(
+                preset.size,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
 
         tall = convert_image(tall_data, logo_data, ImageSize.Tall)
         wide = convert_image(wide_data, logo_data, ImageSize.Wide)
@@ -334,13 +343,13 @@ class ImageManager(QObject):
             # this is not required if we ever want to re-apply the alpha channel
             # image = image.convertToFormat(QImage.Format_Indexed8)
             # add the alpha channel back to the cover
-            image = image.convertToFormat(QImage.Format_ARGB32_Premultiplied)
+            image = image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
             image.save(color_path.as_posix(), format="PNG")
             # quick way to convert to grayscale, but keep the alpha channel
-            alpha = image.convertToFormat(QImage.Format_Alpha8)
-            image = image.convertToFormat(QImage.Format_Grayscale8)
+            alpha = image.convertToFormat(QImage.Format.Format_Alpha8)
+            image = image.convertToFormat(QImage.Format.Format_Grayscale8)
             # add the alpha channel back to the grayscale cover
-            image = image.convertToFormat(QImage.Format_ARGB32_Premultiplied)
+            image = image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
             image.setAlphaChannel(alpha)
             image.save(gray_path.as_posix(), format="PNG")
 
@@ -433,7 +442,11 @@ class ImageManager(QObject):
             ret.setDevicePixelRatio(preset.pixel_ratio)
             # lk: Scaling happens at painting. It might be inefficient so leave this here as an alternative
             # lk: If this is uncommented, the transformation in ImageWidget should be adjusted also
-            ret = ret.scaled(device.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            ret = ret.scaled(
+                device.size,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
             ret.setDevicePixelRatio(device.pixel_ratio)
         return ret
 

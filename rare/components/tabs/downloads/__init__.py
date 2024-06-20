@@ -55,12 +55,12 @@ class DownloadsTab(QWidget):
 
         self.queue_scrollarea = QScrollArea(self)
         self.queue_scrollarea.setWidgetResizable(True)
-        self.queue_scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.queue_scrollarea.setFrameStyle(QScrollArea.Plain | QScrollArea.NoFrame)
+        self.queue_scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.queue_scrollarea.setFrameStyle(QScrollArea.Shadow.Plain | QScrollArea.Shape.NoFrame)
         layout.addWidget(self.queue_scrollarea)
 
         queue_contents = QWidget(self.queue_scrollarea)
-        queue_contents.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        queue_contents.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.queue_scrollarea.setWidget(queue_contents)
         self.queue_scrollarea.widget().setAutoFillBackground(False)
         self.queue_scrollarea.viewport().setAutoFillBackground(False)

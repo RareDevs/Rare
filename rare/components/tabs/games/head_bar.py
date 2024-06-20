@@ -6,12 +6,12 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QWidget,
     QPushButton,
-)
-from PyQt5.QtWidgets import (
     QLabel,
     QComboBox,
     QMenu,
-    QAction, QSpacerItem, QSizePolicy,
+    QAction,
+    QSpacerItem,
+    QSizePolicy,
 )
 
 from rare.models.options import options, LibraryFilter, LibraryOrder
@@ -54,7 +54,7 @@ class LibraryHeadBar(QWidget):
 
         try:
             _filter = LibraryFilter(self.settings.value(*options.library_filter))
-            if (index := self.filter.findData(_filter, Qt.UserRole)) < 0:
+            if (index := self.filter.findData(_filter, Qt.ItemDataRole.UserRole)) < 0:
                 raise ValueError(f"Filter '{_filter}' is not available")
             else:
                 self.filter.setCurrentIndex(index)
@@ -62,7 +62,7 @@ class LibraryHeadBar(QWidget):
             self.logger.error("Error while loading library: %s", e)
             self.settings.setValue(options.library_filter.key, options.library_filter.default)
             _filter = LibraryFilter(options.library_filter.default)
-            self.filter.setCurrentIndex(self.filter.findData(_filter, Qt.UserRole))
+            self.filter.setCurrentIndex(self.filter.findData(_filter, Qt.ItemDataRole.UserRole))
         self.filter.currentIndexChanged.connect(self.__filter_changed)
 
         self.order = QComboBox(parent=self)
@@ -77,7 +77,7 @@ class LibraryHeadBar(QWidget):
 
         try:
             _order = LibraryOrder(self.settings.value(*options.library_order))
-            if (index := self.order.findData(_order, Qt.UserRole)) < 0:
+            if (index := self.order.findData(_order, Qt.ItemDataRole.UserRole)) < 0:
                 raise ValueError(f"Order '{_order}' is not available")
             else:
                 self.order.setCurrentIndex(index)
@@ -85,7 +85,7 @@ class LibraryHeadBar(QWidget):
             self.logger.error("Error while loading library: %s", e)
             self.settings.setValue(options.library_order.key, options.library_order.default)
             _order = LibraryOrder(options.library_order.default)
-            self.order.setCurrentIndex(self.order.findData(_order, Qt.UserRole))
+            self.order.setCurrentIndex(self.order.findData(_order, Qt.ItemDataRole.UserRole))
         self.order.currentIndexChanged.connect(self.__order_changed)
 
         integrations_menu = QMenu(parent=self)
@@ -111,7 +111,7 @@ class LibraryHeadBar(QWidget):
         integrations.setMenu(integrations_menu)
 
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search"))
-        self.search_bar.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        self.search_bar.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         self.search_bar.setObjectName("SearchBar")
         self.search_bar.setMinimumWidth(250)
 
@@ -139,13 +139,13 @@ class LibraryHeadBar(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.filter)
         layout.addWidget(self.order)
-        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
         layout.addWidget(self.search_bar)
         layout.addWidget(self.installed_icon)
         layout.addWidget(self.installed_label)
         layout.addWidget(self.available_icon)
         layout.addWidget(self.available_label)
-        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
         layout.addWidget(integrations)
         layout.addWidget(self.refresh_list)
 
@@ -158,20 +158,20 @@ class LibraryHeadBar(QWidget):
         self.rcore.fetch()
 
     def current_filter(self) -> LibraryFilter:
-        return self.filter.currentData(Qt.UserRole)
+        return self.filter.currentData(Qt.ItemDataRole.UserRole)
 
     @pyqtSlot(int)
     def __filter_changed(self, index: int):
-        data = self.filter.itemData(index, Qt.UserRole)
+        data = self.filter.itemData(index, Qt.ItemDataRole.UserRole)
         self.filterChanged.emit(data)
         self.settings.setValue(options.library_filter.key, int(data))
 
     def current_order(self) -> LibraryOrder:
-        return self.order.currentData(Qt.UserRole)
+        return self.order.currentData(Qt.ItemDataRole.UserRole)
 
     @pyqtSlot(int)
     def __order_changed(self, index: int):
-        data = self.order.itemData(index, Qt.UserRole)
+        data = self.order.itemData(index, Qt.ItemDataRole.UserRole)
         self.orderChanged.emit(data)
         self.settings.setValue(options.library_order.key, int(data))
 

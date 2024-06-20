@@ -35,7 +35,7 @@ class GameWidget(LibraryWidget):
 
         self.rgame: RareGame = rgame
 
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
         self.launch_action = QAction(self.tr("Launch"), self)
         self.launch_action.triggered.connect(self._launch)
@@ -104,7 +104,7 @@ class GameWidget(LibraryWidget):
 
     def paintEvent(self, a0: QPaintEvent) -> None:
         if not self.visibleRegion().isNull() and not self.rgame.has_pixmap:
-            self.startTimer(random.randrange(42, 2361, 129), Qt.CoarseTimer)
+            self.startTimer(random.randrange(42, 2361, 129), Qt.TimerType.CoarseTimer)
             # self.startTimer(random.randrange(42, 2361, 363), Qt.VeryCoarseTimer)
             # self.rgame.load_pixmap()
         super().paintEvent(a0)
@@ -183,7 +183,7 @@ class GameWidget(LibraryWidget):
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
         if a0 is self.ui.launch_btn:
-            if a1.type() == QEvent.Enter:
+            if a1.type() == QEvent.Type.Enter:
                 if not self.rgame.can_launch:
                     self.ui.tooltip_label.setText(self.hover_strings["not_can_launch"])
                 elif self.rgame.is_origin:
@@ -195,18 +195,18 @@ class GameWidget(LibraryWidget):
                 elif self.rgame.can_launch:
                     self.ui.tooltip_label.setText(self.hover_strings["can_launch"])
                 return True
-            if a1.type() == QEvent.Leave:
+            if a1.type() == QEvent.Type.Leave:
                 self.ui.tooltip_label.setText(self.hover_strings["info"])
                 # return True
         if a0 is self.ui.install_btn:
-            if a1.type() == QEvent.Enter:
+            if a1.type() == QEvent.Type.Enter:
                 self.ui.tooltip_label.setText(self.hover_strings["install"])
                 return True
-            if a1.type() == QEvent.Leave:
+            if a1.type() == QEvent.Type.Leave:
                 self.ui.tooltip_label.setText(self.hover_strings["info"])
                 # return True
         if a0 is self:
-            if a1.type() == QEvent.Enter:
+            if a1.type() == QEvent.Type.Enter:
                 self.ui.tooltip_label.setText(self.hover_strings["info"])
         return super(GameWidget, self).eventFilter(a0, a1)
 

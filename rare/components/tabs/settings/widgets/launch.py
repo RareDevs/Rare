@@ -29,7 +29,7 @@ class LaunchSettingsBase(QGroupBox):
         self.prelaunch_edit = PathEdit(
             path="",
             placeholder=self.tr("Path to script or program to run before the game launches"),
-            file_mode=QFileDialog.ExistingFile,
+            file_mode=QFileDialog.FileMode.ExistingFile,
             edit_func=self.__prelaunch_edit_callback,
             save_func=self.__prelaunch_save_callback,
         )
@@ -47,9 +47,9 @@ class LaunchSettingsBase(QGroupBox):
         prelaunch_layout.addWidget(self.prelaunch_check)
 
         self.main_layout = QFormLayout(self)
-        self.main_layout.setFieldGrowthPolicy(QFormLayout.ExpandingFieldsGrow)
-        self.main_layout.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.main_layout.setFormAlignment(Qt.AlignLeading | Qt.AlignTop)
+        self.main_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        self.main_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self.main_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
 
         self.main_layout.addRow(self.tr("Wrappers"), self.wrappers_widget)
         self.main_layout.addRow(self.tr("Prelaunch"), prelaunch_layout)

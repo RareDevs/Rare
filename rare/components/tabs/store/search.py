@@ -31,16 +31,16 @@ class SearchPage(SlidingStackedWidget, SideTabContents):
         self.implements_scrollarea = True
 
         self.search_widget = SearchWidget(store_api, parent=self)
-        self.search_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.search_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.search_widget.set_title.connect(self.set_title)
         self.search_widget.show_details.connect(self.show_details)
 
         self.details_widget = StoreDetailsWidget([], store_api, parent=self)
-        self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.details_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)
 
-        self.setDirection(Qt.Horizontal)
+        self.setDirection(Qt.Orientation.Horizontal)
         self.addWidget(self.search_widget)
         self.addWidget(self.details_widget)
 

@@ -11,7 +11,7 @@ class DebugView(QTreeView):
         self.setWordWrap(True)
         self.model = QJsonModel(self)
         self.setModel(self.model)
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         try:
             self.model.load(data)
         except Exception as e:

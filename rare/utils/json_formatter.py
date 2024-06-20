@@ -170,34 +170,34 @@ class QJsonModel(QtCore.QAbstractItemModel):
 
         item = index.internalPointer()
 
-        if role == QtCore.Qt.DisplayRole:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:
             if index.column() == 0:
                 return item.key
 
             if index.column() == 1:
                 return item.value
 
-        elif role == QtCore.Qt.EditRole:
+        elif role == QtCore.Qt.ItemDataRole.EditRole:
             if index.column() == 1:
                 return item.value
 
     def setData(self, index, value, role):
-        if role == QtCore.Qt.EditRole:
+        if role == QtCore.Qt.ItemDataRole.EditRole:
             if index.column() == 1:
                 item = index.internalPointer()
                 item.value = str(value)
 
-                self.dataChanged.emit(index, index, [QtCore.Qt.EditRole])
+                self.dataChanged.emit(index, index, [QtCore.Qt.ItemDataRole.EditRole])
 
                 return True
 
         return False
 
     def headerData(self, section, orientation, role):
-        if role != QtCore.Qt.DisplayRole:
+        if role != QtCore.Qt.ItemDataRole.DisplayRole:
             return None
 
-        if orientation == QtCore.Qt.Horizontal:
+        if orientation == QtCore.Qt.Orientation.Horizontal:
             return self._headers[section]
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
@@ -245,7 +245,7 @@ class QJsonModel(QtCore.QAbstractItemModel):
         flags = super(QJsonModel, self).flags(index)
 
         if index.column() == 1:
-            return QtCore.Qt.ItemIsEditable | flags
+            return QtCore.Qt.ItemFlag.ItemIsEditable | flags
         else:
             return flags
 

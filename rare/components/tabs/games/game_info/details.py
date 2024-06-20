@@ -59,7 +59,7 @@ class GameDetails(QWidget, SideTabContents):
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.DisplayTall)
-        self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
+        self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignmentFlag.AlignTop)
 
         self.ui.install_button.clicked.connect(self.__on_install)
         self.ui.import_button.clicked.connect(self.__on_import)

@@ -42,8 +42,8 @@ class StoreDetailsWidget(QWidget, SideTabContents):
 
         self.image = LoadingImageWidget(store_api.cached_manager, self)
         self.image.setFixedSize(ImageSize.DisplayTall)
-        self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
-        self.ui.left_layout.setAlignment(Qt.AlignTop)
+        self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignmentFlag.AlignTop)
+        self.ui.left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.ui.wishlist_button.clicked.connect(self.add_to_wishlist)
         self.ui.store_button.clicked.connect(self.button_clicked)
@@ -52,7 +52,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.wishlist = []
 
         self.requirements_tabs = SideTabWidget(parent=self.ui.requirements_frame)
-        self.requirements_tabs.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.requirements_tabs.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.ui.requirements_layout.addWidget(self.requirements_tabs)
 
         self.ui.back_button.setIcon(qta_icon("fa.chevron-left"))
@@ -195,7 +195,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.ui.tags.setText(", ".join(tags))
 
         # clear Layout
-        for b in self.ui.social_links.findChildren(SocialButton, options=Qt.FindDirectChildrenOnly):
+        for b in self.ui.social_links.findChildren(SocialButton, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.ui.social_links_layout.removeWidget(b)
             b.deleteLater()
 
@@ -231,14 +231,14 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         QDesktopServices.openUrl(QUrl(f"https://www.epicgames.com/store/{self.store_api.language_code}/p/{self.slug}"))
 
     def keyPressEvent(self, a0: QKeyEvent):
-        if a0.key() == Qt.Key_Escape:
+        if a0.key() == Qt.Key.Key_Escape:
             self.back_clicked.emit()
 
 
 class SocialButton(QPushButton):
     def __init__(self, icn, url, parent=None):
         super(SocialButton, self).__init__(icn, "", parent=parent)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.url = url
         self.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(url)))
         self.setToolTip(url)
@@ -267,5 +267,5 @@ class RequirementsWidget(QWidget, SideTabContents):
             req_layout.addWidget(min_label, i + 1, 1)
             rec_label = ElideLabel(detail.recommended, parent=self)
             req_layout.addWidget(rec_label, i + 1, 2)
-        req_layout.setAlignment(Qt.AlignTop)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        req_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)

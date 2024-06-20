@@ -29,7 +29,7 @@ class EnvVars(QGroupBox):
         self.table_view.verticalHeader().sectionPressed.disconnect()
         self.table_view.horizontalHeader().sectionPressed.disconnect()
         self.table_view.verticalHeader().sectionClicked.connect(self.table_model.removeRow)
-        self.table_view.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.table_view.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table_view.horizontalHeader().setStretchLastSection(True)
         self.table_view.setCornerButtonEnabled(False)
 
@@ -53,7 +53,7 @@ class EnvVars(QGroupBox):
         return super().showEvent(a0)
 
     def keyPressEvent(self, a0):
-        if a0.key() in {Qt.Key_Delete, Qt.Key_Backspace}:
+        if a0.key() in {Qt.Key.Key_Delete, Qt.Key.Key_Backspace}:
             indexes = self.table_view.selectedIndexes()
             if not len(indexes):
                 return
@@ -61,8 +61,8 @@ class EnvVars(QGroupBox):
                 if idx.column() == 0:
                     self.table_view.model().removeRow(idx.row())
                 elif idx.column() == 1:
-                    self.table_view.model().setData(idx, "", Qt.EditRole)
-        elif a0.key() == Qt.Key_Escape:
+                    self.table_view.model().setData(idx, "", Qt.ItemDataRole.EditRole)
+        elif a0.key() == Qt.Key.Key_Escape:
             a0.ignore()
 
     def reset_model(self):

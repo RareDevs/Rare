@@ -40,7 +40,7 @@ class MoveDialog(ActionDialog):
         self.core = RareCore.instance().core()
         self.rgame: Optional[RareGame] = None
 
-        self.path_edit = PathEdit("", QFileDialog.Directory, edit_func=self.path_edit_callback)
+        self.path_edit = PathEdit("", QFileDialog.FileMode.Directory, edit_func=self.path_edit_callback)
         self.path_edit.extend_reasons({
             MovePathEditReasons.DST_MISSING: self.tr("You need to provide the destination directory."),
             MovePathEditReasons.NO_WRITE_PERM: self.tr("No write permission on destination."),
@@ -68,7 +68,7 @@ class MoveDialog(ActionDialog):
         bottom_layout.addWidget(self.avail_space, stretch=1)
 
         layout = QVBoxLayout()
-        layout.setSizeConstraint(QLayout.SetFixedSize)
+        layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         layout.addWidget(self.path_edit)
         layout.addWidget(self.warn_label)
         layout.addLayout(bottom_layout)

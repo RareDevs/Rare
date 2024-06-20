@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QWidget,
     QHBoxLayout,
+    QSystemTrayIcon,
 )
 
 from rare.models.options import options
@@ -36,7 +37,7 @@ class MainWindow(QMainWindow):
         self.__accept_close = False
         self._window_launched = False
         super(MainWindow, self).__init__(parent=parent)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
         self.signals = RareCore.instance().signals()
@@ -60,7 +61,7 @@ class MainWindow(QMainWindow):
         self.active_container = QWidget(self.status_bar)
         active_layout = QHBoxLayout(self.active_container)
         active_layout.setContentsMargins(0, 0, 0, 0)
-        active_layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
+        active_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
         self.status_bar.addWidget(self.active_container, stretch=0)
 
         self.queued_label = QLabel(self.tr("Queued:"), self.status_bar)
@@ -69,17 +70,17 @@ class MainWindow(QMainWindow):
         self.status_bar.addPermanentWidget(self.queued_label)
 
         self.queued_scroll = QScrollArea(self.status_bar)
-        self.queued_scroll.setFrameStyle(QScrollArea.NoFrame)
+        self.queued_scroll.setFrameStyle(QScrollArea.Shape.NoFrame)
         self.queued_scroll.setWidgetResizable(True)
-        self.queued_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.queued_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.queued_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.queued_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.queued_scroll.setFixedHeight(self.queued_label.sizeHint().height())
         self.status_bar.addPermanentWidget(self.queued_scroll, stretch=1)
 
         self.queued_container = QWidget(self.queued_scroll)
         queued_layout = QHBoxLayout(self.queued_container)
         queued_layout.setContentsMargins(0, 0, 0, 0)
-        queued_layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
+        queued_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
 
         self.active_label.setVisible(False)
         self.active_container.setVisible(False)
@@ -115,12 +116,14 @@ class MainWindow(QMainWindow):
         self.tray_icon: TrayIcon = TrayIcon(self)
         self.tray_icon.exit_app.connect(self.__on_exit_app)
         self.tray_icon.show_app.connect(self.show)
-        self.tray_icon.activated.connect(lambda r: self.toggle() if r == self.tray_icon.DoubleClick else None)
+        self.tray_icon.activated.connect(
+            lambda r: self.toggle() if r == QSystemTrayIcon.ActivationReason.DoubleClick else None
+        )
 
         # enable kinetic scrolling
         for scroll_area in self.findChildren(QScrollArea):
             if not scroll_area.property("no_kinetic_scroll"):
-                QScroller.grabGesture(scroll_area.viewport(), QScroller.LeftMouseButtonGesture)
+                QScroller.grabGesture(scroll_area.viewport(), QScroller.ScrollerGestureType.LeftMouseButtonGesture)
 
             # fix scrolling
             for combo_box in scroll_area.findChildren(QComboBox):
@@ -169,10 +172,10 @@ class MainWindow(QMainWindow):
         self.active_container.setVisible(False)
         self.queued_label.setVisible(False)
         self.queued_scroll.setVisible(False)
-        for label in self.active_container.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
+        for label in self.active_container.findChildren(QLabel, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.active_container.layout().removeWidget(label)
             label.deleteLater()
-        for label in self.queued_container.findChildren(QLabel, options=Qt.FindDirectChildrenOnly):
+        for label in self.queued_container.findChildren(QLabel, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.queued_container.layout().removeWidget(label)
             label.deleteLater()
         for info in self.rcore.queue_info():
@@ -230,10 +233,10 @@ class MainWindow(QMainWindow):
                     "Rare cannot exit until they are completed.\n\n"
                     "Do you want to clear the queue?"
                 ),
-                buttons=(QMessageBox.Yes | QMessageBox.No),
-                defaultButton=QMessageBox.No,
+                buttons=(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No),
+                defaultButton=QMessageBox.StandardButton.No,
             )
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 self.rcore.queue_threadpool.clear()
                 for qw in self.rcore.queued_workers():
                     self.rcore.dequeue_worker(qw)
@@ -249,10 +252,10 @@ class MainWindow(QMainWindow):
                     "Quitting Rare now will stop the download.\n\n"
                     "Are you sure you want to quit?"
                 ),
-                buttons=(QMessageBox.Yes | QMessageBox.No),
-                defaultButton=QMessageBox.No,
+                buttons=(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No),
+                defaultButton=QMessageBox.StandardButton.No,
             )
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 self.tab_widget.downloads_tab.stop_download(omit_queue=True)
             else:
                 e.ignore()

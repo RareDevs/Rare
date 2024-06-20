@@ -12,7 +12,7 @@ from PyQt5.QtCore import (
     Qt, QLocale,
 )
 from PyQt5.QtGui import QPalette, QColor, QFontMetrics
-from PyQt5.QtWidgets import qApp, QStyleFactory, QLabel
+from PyQt5.QtWidgets import QApplication, QStyleFactory, QLabel
 from PyQt5.sip import wrappertype
 
 from rare.utils.paths import resources_path
@@ -59,7 +59,7 @@ color_group_map: Dict[int, str] = {
 
 def load_color_scheme(path: str) -> QPalette:
     palette = QPalette()
-    scheme = QSettings(path, QSettings.IniFormat)
+    scheme = QSettings(path, QSettings.Format.IniFormat)
     try:
         scheme.beginGroup("ColorScheme")
         for g in color_group_map:
@@ -71,7 +71,7 @@ def load_color_scheme(path: str) -> QPalette:
                 if color is not None:
                     palette.setColor(group, role, QColor(color))
                 else:
-                    palette.setColor(group, role, palette.color(QPalette.Active, role))
+                    palette.setColor(group, role, palette.color(QPalette.ColorGroup.Active, role))
             scheme.endGroup()
         scheme.endGroup()
     except:
@@ -81,7 +81,7 @@ def load_color_scheme(path: str) -> QPalette:
 
 def get_static_style() -> str:
     file = QFile(":/static_css/stylesheet.qss")
-    file.open(QFile.ReadOnly)
+    file.open(QFile.OpenModeFlag.ReadOnly)
     static = file.readAll().data().decode("utf-8")
     file.close()
     return static
@@ -89,6 +89,7 @@ def get_static_style() -> str:
 
 def set_color_pallete(color_scheme: str) -> None:
     static = get_static_style()
+    qApp: QApplication = QApplication.instance()
 
     if not color_scheme:
         qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
@@ -101,8 +102,8 @@ def set_color_pallete(color_scheme: str) -> None:
     if custom_palette is not None:
         qApp.setPalette(custom_palette)
         qApp.setStyleSheet(static)
-        icon_color_normal = qApp.palette().color(QPalette.Foreground).name()
-        icon_color_disabled = qApp.palette().color(QPalette.Foreground).name()
+        icon_color_normal = qApp.palette().color(QPalette.ColorRole.WindowText).name()
+        icon_color_disabled = qApp.palette().color(QPalette.ColorRole.WindowText).name()
         qtawesome.set_defaults(color=icon_color_normal, color_disabled=icon_color_disabled)
 
 
@@ -112,6 +113,7 @@ def get_color_schemes() -> Iterable[str]:
 
 def set_style_sheet(style_sheet: str) -> None:
     static = get_static_style()
+    qApp: QApplication = QApplication.instance()
 
     if not style_sheet:
         qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
@@ -120,13 +122,13 @@ def set_style_sheet(style_sheet: str) -> None:
 
     qApp.setStyle(QStyleFactory.create("Fusion"))
     file = QFile(f":/stylesheets/{style_sheet}/stylesheet.qss")
-    file.open(QFile.ReadOnly)
+    file.open(QFile.OpenModeFlag.ReadOnly)
     stylesheet = file.readAll().data().decode("utf-8")
     file.close()
     qApp.setStyleSheet(stylesheet + static)
 
-    icon_color_normal = qApp.palette().color(QPalette.Text).name()
-    icon_color_disabled = qApp.palette().color(QPalette.Text).name()
+    icon_color_normal = qApp.palette().color(QPalette.ColorRole.Text).name()
+    icon_color_disabled = qApp.palette().color(QPalette.ColorRole.Text).name()
     qtawesome.set_defaults(color="#eee", color_disabled="#eee")
 
 
@@ -187,7 +189,7 @@ def widget_object_name(widget: Union[QObject, wrappertype, Type], suffix: str) -
 
 def elide_text(label: QLabel, text: str) -> str:
     metrics = QFontMetrics(label.font())
-    return metrics.elidedText(text, Qt.ElideRight, label.sizeHint().width())
+    return metrics.elidedText(text, Qt.TextElideMode.ElideRight, label.sizeHint().width())
 
 
 def style_hyperlink(link: str, title: str) -> str:

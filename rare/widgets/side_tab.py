@@ -47,7 +47,7 @@ class SideTabBar(QTabBar):
 
         for i in range(self.count()):
             self.initStyleOption(opt, i)
-            painter.drawControl(QStyle.CE_TabBarTabShape, opt)
+            painter.drawControl(QStyle.ControlElement.CE_TabBarTabShape, opt)
             painter.save()
 
             s = opt.rect.size()
@@ -60,7 +60,7 @@ class SideTabBar(QTabBar):
             painter.translate(c)
             painter.rotate(90)
             painter.translate(-c)
-            painter.drawControl(QStyle.CE_TabBarTabLabel, opt)
+            painter.drawControl(QStyle.ControlElement.CE_TabBarTabLabel, opt)
             painter.restore()
 
 
@@ -90,7 +90,7 @@ class SideTabContainer(QWidget):
         self.setTitle(title)
 
         if widget.layout():
-            widget.layout().setAlignment(Qt.AlignTop)
+            widget.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
             widget.layout().setContentsMargins(0, 0, 3, 0)
         if hasattr(widget, "set_title"):
             widget.set_title.connect(self.setTitle)
@@ -100,14 +100,14 @@ class SideTabContainer(QWidget):
 
         if not hasattr(widget, "implements_scrollarea") or not widget.implements_scrollarea:
             scrollarea = QScrollArea(self)
-            scrollarea.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
-            scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-            scrollarea.setFrameStyle(QScrollArea.NoFrame)
+            scrollarea.setSizeAdjustPolicy(QScrollArea.SizeAdjustPolicy.AdjustToContents)
+            scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            scrollarea.setFrameStyle(QScrollArea.Shape.NoFrame)
             scrollarea.setMinimumWidth(
                 widget.sizeHint().width() + scrollarea.verticalScrollBar().sizeHint().width()
             )
             scrollarea.setWidgetResizable(True)
-            widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
             scrollarea.setWidget(widget)
             scrollarea.widget().setAutoFillBackground(False)
             scrollarea.viewport().setAutoFillBackground(False)
@@ -115,7 +115,7 @@ class SideTabContainer(QWidget):
         else:
             layout.addWidget(widget)
 
-        layout.setAlignment(Qt.AlignTop)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
     def setTitle(self, text: str) -> None:
         self.title.setText(f"<h2>{text}</h2>")
@@ -129,7 +129,7 @@ class SideTabWidget(QTabWidget):
         super(SideTabWidget, self).__init__(parent=parent)
         self.setTabBar(SideTabBar(padding=padding, parent=self))
         self.setDocumentMode(True)
-        self.setTabPosition(QTabWidget.West)
+        self.setTabPosition(QTabWidget.TabPosition.West)
         if show_back:
             super(SideTabWidget, self).addTab(
                 QWidget(self), qta_icon("mdi.keyboard-backspace", "ei.backward"), self.tr("Back")

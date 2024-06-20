@@ -98,8 +98,8 @@ class EnvVarsTableModel(QAbstractTableModel):
             return False
         return value == match.group(0)
 
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> Any:
-        if role in {Qt.DisplayRole, Qt.EditRole}:
+    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+        if role in {Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole}:
             if index.row() == self.__data_length():
                 return ""
             if index.column() == 0:
@@ -107,22 +107,22 @@ class EnvVarsTableModel(QAbstractTableModel):
             else:
                 return self.__value(index)
 
-        if role == Qt.TextAlignmentRole:
+        if role == Qt.ItemDataRole.TextAlignmentRole:
             if index.column() == 0:
-                return Qt.AlignVCenter + Qt.AlignRight
+                return Qt.AlignmentFlag.AlignVCenter + Qt.AlignmentFlag.AlignRight
             else:
-                return Qt.AlignVCenter + Qt.AlignLeft
+                return Qt.AlignmentFlag.AlignVCenter + Qt.AlignmentFlag.AlignLeft
 
-        if role == Qt.FontRole:
+        if role == Qt.ItemDataRole.FontRole:
             font = QFont("Monospace")
-            font.setStyleHint(QFont.Monospace)
+            font.setStyleHint(QFont.StyleHint.Monospace)
             if index.row() < self.__data_length() and not self.__is_local(index):
-                font.setWeight(QFont.Bold)
+                font.setWeight(QFont.Weight.Bold)
             else:
-                font.setWeight(QFont.Normal)
+                font.setWeight(QFont.Weight.Normal)
             return font
 
-        if role == Qt.ToolTipRole:
+        if role == Qt.ItemDataRole.ToolTipRole:
             if index.row() == self.__data_length():
                 if index.column() == 1:
                     return self.tr("Disabled, please set the variable name first.")
@@ -131,12 +131,12 @@ class EnvVarsTableModel(QAbstractTableModel):
             if self.__key(index) in self.__readonly:
                 return self.tr("Readonly, please edit this via setting the appropriate setting.")
 
-    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.DisplayRole) -> Any:
-        if role == Qt.DisplayRole:
-            if orientation == Qt.Horizontal:
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+        if role == Qt.ItemDataRole.DisplayRole:
+            if orientation == Qt.Orientation.Horizontal:
                 return self.__title(section)
-        if role == Qt.DecorationRole:
-            if orientation == Qt.Vertical:
+        if role == Qt.ItemDataRole.DecorationRole:
+            if orientation == Qt.Orientation.Vertical:
                 if section < self.__data_length():
                     if self.__is_readonly(section) or not self.__is_local(section):
                         return qta_icon("mdi.lock", "ei.lock")
@@ -145,23 +145,23 @@ class EnvVarsTableModel(QAbstractTableModel):
                     if self.__is_local(section):
                         return qta_icon("mdi.delete", "ei.remove-sign")
                 return qta_icon("mdi.plus", "ei.plus-sign")
-        if role == Qt.TextAlignmentRole:
-            return Qt.AlignVCenter + Qt.AlignHCenter
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignVCenter + Qt.AlignmentFlag.AlignHCenter
         return None
 
     def flags(self, index: QModelIndex):
         # Disable the value cell on rows without a name
         if index.row() == self.__data_length():
             if index.column() == 1:
-                return super().flags(index) ^ Qt.ItemIsEnabled
+                return super().flags(index) ^ Qt.ItemFlag.ItemIsEnabled
             else:
-                return Qt.ItemIsEditable | super().flags(index)
+                return Qt.ItemFlag.ItemIsEditable | super().flags(index)
 
         # Disable readonly variables
         if self.__is_readonly(index):
-            return super().flags(index) ^ Qt.ItemIsEnabled
+            return super().flags(index) ^ Qt.ItemFlag.ItemIsEnabled
 
-        return Qt.ItemIsEditable | super().flags(index)
+        return Qt.ItemFlag.ItemIsEditable | super().flags(index)
 
     def rowCount(self, parent: QModelIndex = None) -> int:
         parent = parent if parent else QModelIndex()
@@ -172,8 +172,8 @@ class EnvVarsTableModel(QAbstractTableModel):
         parent = parent if parent else QModelIndex()
         return 2
 
-    def setData(self, index: QModelIndex, value: Any, role: int = Qt.DisplayRole) -> bool:
-        if role != Qt.EditRole:
+    def setData(self, index: QModelIndex, value: Any, role: int = Qt.ItemDataRole.DisplayRole) -> bool:
+        if role != Qt.ItemDataRole.EditRole:
             return False
 
         if index.column() == 0:
@@ -190,7 +190,7 @@ class EnvVarsTableModel(QAbstractTableModel):
                 self.__data_map[value] = ""
                 self.core.lgd.save_config()
                 self.dataChanged.emit(index, index, [])
-                self.headerDataChanged.emit(Qt.Vertical, index.row(), index.row())
+                self.headerDataChanged.emit(Qt.Orientation.Vertical, index.row(), index.row())
                 # if we are on the last row, add a new last row to the table when setting the variable name
             else:
                 # if we are not in the last row, we have to update an existing variable name
@@ -214,8 +214,8 @@ class EnvVarsTableModel(QAbstractTableModel):
                     self.endInsertRows()
                 self.dataChanged.emit(index, self.index(index.row(), 1), [])
                 self.dataChanged.emit(self.index(self.__data_length() - 1, 0), self.index(self.__data_length() - 1, 1), [])
-                self.headerDataChanged.emit(Qt.Vertical, index.row(), index.row())
-                self.headerDataChanged.emit(Qt.Vertical, self.__data_length() - 1, self.__data_length() - 1)
+                self.headerDataChanged.emit(Qt.Orientation.Vertical, index.row(), index.row())
+                self.headerDataChanged.emit(Qt.Orientation.Vertical, self.__data_length() - 1, self.__data_length() - 1)
 
         else:
             # lk: the check for key existance before assigning a value is ommitted
@@ -228,7 +228,7 @@ class EnvVarsTableModel(QAbstractTableModel):
             self.__data_map[self.__key(index)] = value
             self.core.lgd.save_config()
             self.dataChanged.emit(self.index(index.row(), 0), index, [])
-            self.headerDataChanged.emit(Qt.Vertical, index.row(), index.row())
+            self.headerDataChanged.emit(Qt.Orientation.Vertical, index.row(), index.row())
         return True
 
     def removeRow(self, row: int, parent: QModelIndex = None) -> bool:
@@ -246,7 +246,7 @@ class EnvVarsTableModel(QAbstractTableModel):
             del self.__data_map[self.__key(row)]
             self.core.lgd.save_config()
             self.dataChanged.emit(self.index(row, 0), self.index(row, 1), [])
-            self.headerDataChanged.emit(Qt.Vertical, row, row)
+            self.headerDataChanged.emit(Qt.Orientation.Vertical, row, row)
         else:
             self.beginRemoveRows(QModelIndex(), row, row)
             del self.__data_map[self.__key(row)]
@@ -273,7 +273,7 @@ if __name__ == "__main__":
             self.table.verticalHeader().sectionPressed.disconnect()
             self.table.horizontalHeader().sectionPressed.disconnect()
             self.table.verticalHeader().sectionClicked.connect(self.model.removeRow)
-            self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+            self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
             self.table.horizontalHeader().setStretchLastSection(True)
             self.table.setCornerButtonEnabled(False)
 

@@ -108,14 +108,14 @@ class InstallDialog(ActionDialog):
 
         self.install_dir_edit = PathEdit(
             path=base_path,
-            file_mode=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.FileMode.Directory,
             edit_func=self.install_dir_edit_callback,
             save_func=self.install_dir_save_callback,
             parent=self,
         )
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)[0],
-            QFormLayout.FieldRole,
+            QFormLayout.ItemRole.FieldRole,
             self.install_dir_edit,
         )
 

@@ -50,7 +50,7 @@ class LegendarySettings(QWidget):
             self.mac_install_dir = PathEdit(
                 self.core.get_default_install_dir("Mac"),
                 placeholder=self.tr("Default installation folder for macOS games"),
-                file_mode=QFileDialog.DirectoryOnly,
+                file_mode=QFileDialog.FileMode.Directory,
                 save_func=self.__mac_path_save,
             )
             self.ui.install_dir_layout.addWidget(self.mac_install_dir)
@@ -59,7 +59,7 @@ class LegendarySettings(QWidget):
         self.install_dir = PathEdit(
             self.core.get_default_install_dir(),
             placeholder=self.tr("Default installation folder for Windows games"),
-            file_mode=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.FileMode.Directory,
             save_func=self.__win_path_save,
         )
         self.ui.install_dir_layout.addWidget(self.install_dir)
@@ -96,7 +96,7 @@ class LegendarySettings(QWidget):
             f"{self.core.language_code}-{self.core.country_code}",
             edit_func=self.locale_edit_cb,
             save_func=self.locale_save_cb,
-            horiz_policy=QSizePolicy.Minimum,
+            horiz_policy=QSizePolicy.Policy.Minimum,
             parent=self,
         )
         self.ui.locale_layout.addWidget(self.locale_edit)
