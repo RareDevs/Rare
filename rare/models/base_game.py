@@ -37,7 +37,7 @@ class RareGameBase(QObject):
         UNINSTALLING = 5
         SYNCING = 6
 
-    class Signals:
+    class Signals(QObject):
         class Progress(QObject):
             start = pyqtSignal()
             update = pyqtSignal(int)
@@ -81,6 +81,7 @@ class RareGameBase(QObject):
         self._state = RareGameBase.State.IDLE
 
     def __del__(self):
+        self.signals.deleteLater()
         del self.signals
 
     @property

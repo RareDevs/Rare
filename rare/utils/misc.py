@@ -8,8 +8,9 @@ from PyQt5.QtCore import (
     QObject,
     QSettings,
     QFile,
-    QDir,
-    Qt, QLocale,
+    Qt,
+    QLocale,
+    QDirIterator,
 )
 from PyQt5.QtGui import QPalette, QColor, QFontMetrics
 from PyQt5.QtWidgets import QApplication, QStyleFactory, QLabel
@@ -108,7 +109,10 @@ def set_color_pallete(color_scheme: str) -> None:
 
 
 def get_color_schemes() -> Iterable[str]:
-    yield from QDir(":/schemes")
+    it = QDirIterator(":/schemes/")
+    while it.hasNext():
+        it.next()
+        yield it.fileName()
 
 
 def set_style_sheet(style_sheet: str) -> None:
@@ -133,7 +137,10 @@ def set_style_sheet(style_sheet: str) -> None:
 
 
 def get_style_sheets() -> Iterable[str]:
-    yield from QDir(":/stylesheets/")
+    it = QDirIterator(":/stylesheets/")
+    while it.hasNext():
+        it.next()
+        yield it.fileName()
 
 
 def get_translations() -> Tuple[Tuple[str, str], ...]:

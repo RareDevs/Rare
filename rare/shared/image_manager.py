@@ -67,7 +67,7 @@ class ImageManager(QObject):
         self.__img_types: Tuple = self.__img_tall_types + self.__img_wide_types + self.__img_logo_types
         self.__dl_retries = 1
         self.__worker_app_names: Set[str] = set()
-        super(QObject, self).__init__()
+        super(ImageManager, self).__init__()
         self.signals = signals
         self.core = core
 

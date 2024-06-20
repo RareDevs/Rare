@@ -124,4 +124,10 @@ class LibraryLayout(FlowLayout):
 
     def sort(self, key: Callable, reverse=False) -> None:
         self._items.sort(key=key, reverse=reverse)
-        self.setGeometry(self.parent().contentsRect().adjusted(*self.parent().getContentsMargins()))
+        margins = (
+            self.parent().contentsMargins().left(),
+            self.parent().contentsMargins().top(),
+            self.parent().contentsMargins().right(),
+            self.parent().contentsMargins().bottom(),
+        )
+        self.setGeometry(self.parent().contentsRect().adjusted(*margins))
