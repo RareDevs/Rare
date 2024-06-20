@@ -3,9 +3,9 @@ import platform
 from logging import getLogger
 from typing import Optional
 
-from PyQt5.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool, Qt, pyqtSlot, QSize
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QRunnable, QObject, Signal, QThreadPool, Qt, Slot, QSize
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import (
     QGroupBox,
     QMessageBox,
     QFrame,
@@ -30,7 +30,7 @@ logger = getLogger("EpicOverlay")
 
 class CheckForUpdateWorker(QRunnable):
     class CheckForUpdateSignals(QObject):
-        update_available = pyqtSignal(bool)
+        update_available = Signal(bool)
 
     def __init__(self, core: LegendaryCore):
         super(CheckForUpdateWorker, self).__init__()
@@ -84,7 +84,7 @@ class EosPrefixWidget(QFrame):
 
         self.update_state()
 
-    @pyqtSlot(int)
+    @Slot(int)
     def path_changed(self, index: int) -> None:
         path = self.path_select.itemData(index, Qt.ItemDataRole.UserRole)
         active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
@@ -93,7 +93,7 @@ class EosPrefixWidget(QFrame):
         else:
             self.button.setText(self.tr("Enable overlay"))
 
-    @pyqtSlot()
+    @Slot()
     def update_state(self) -> None:
         active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
 
@@ -124,7 +124,7 @@ class EosPrefixWidget(QFrame):
 
         self.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
 
-    @pyqtSlot()
+    @Slot()
     def action(self) -> None:
         path = self.path_select.currentData(Qt.ItemDataRole.UserRole)
         active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
@@ -212,7 +212,7 @@ class EosGroup(QGroupBox):
         self.update_state()
         super().showEvent(a0)
 
-    @pyqtSlot()
+    @Slot()
     def update_state(self):
         self.ui.install_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
         self.ui.update_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE and self.overlay.has_update)
@@ -236,7 +236,7 @@ class EosGroup(QGroupBox):
             widget = EosPrefixWidget(self.overlay, None)
             self.ui.eos_layout.addWidget(widget)
 
-    @pyqtSlot(bool)
+    @Slot(bool)
     def check_for_update_finished(self, update_available: bool):
         self.worker = None
         self.ui.update_button.setEnabled(update_available)
@@ -253,7 +253,7 @@ class EosGroup(QGroupBox):
         self.worker.signals.update_available.connect(self.check_for_update_finished)
         QThreadPool.globalInstance().start(self.worker)
 
-    @pyqtSlot()
+    @Slot()
     def install_finished(self):
         if not self.overlay.is_installed:
             logger.error("Something went wrong while installing overlay")
@@ -264,11 +264,11 @@ class EosGroup(QGroupBox):
         self.installed_path_label.setText(self.overlay.install_path)
         self.ui.update_button.setEnabled(False)
 
-    @pyqtSlot()
+    @Slot()
     def uninstall_finished(self):
         self.ui.overlay_stack.setCurrentWidget(self.ui.install_page)
 
-    @pyqtSlot()
+    @Slot()
     def install_overlay(self):
         self.overlay.install()
 

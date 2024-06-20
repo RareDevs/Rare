@@ -1,5 +1,6 @@
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtGui import QShortcut
+from PySide6.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QMessageBox
 
 from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils.misc import qta_icon, ExitCodes
@@ -13,7 +14,7 @@ from .tab_widgets import MainTabBar, TabButtonWidget
 
 class MainTabWidget(QTabWidget):
     # int: exit code
-    exit_app: pyqtSignal = pyqtSignal(int)
+    exit_app: Signal = Signal(int)
 
     def __init__(self, parent):
         super(MainTabWidget, self).__init__(parent=parent)
@@ -75,7 +76,7 @@ class MainTabWidget(QTabWidget):
             QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(self.store_index))
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __on_downloads_update_title(self, num_downloads: int):
         self.setTabText(self.indexOf(self.downloads_tab), self.tr("Downloads ({})").format(num_downloads))
 
@@ -87,7 +88,7 @@ class MainTabWidget(QTabWidget):
         self.tab_bar.setMinimumWidth(self.width())
         super(MainTabWidget, self).resizeEvent(event)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __on_exit_app(self, exit_code: int):
         # FIXME: Don't allow logging out if there are active downloads
         if self.downloads_tab.is_download_active:

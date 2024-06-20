@@ -3,7 +3,7 @@ import time
 from logging import getLogger
 from typing import List
 
-from PyQt5.QtCore import QObject, QSettings, pyqtSlot
+from PySide6.QtCore import QObject, QSettings, Slot
 from pypresence import Presence, exceptions
 
 from rare.models.options import options
@@ -30,16 +30,16 @@ class DiscordRPC(QObject):
         self.signals.discord_rpc.remove_presence.connect(self.remove_presence)
         self.signals.discord_rpc.update_settings.connect(self.update_settings)
 
-    @pyqtSlot(str)
+    @Slot(str)
     def update_presence(self, app_name: str):
         self.set_discord_rpc(app_name)
 
-    @pyqtSlot(str)
+    @Slot(str)
     def remove_presence(self, app_name: str):
         self.set_discord_rpc(None)
 
-    @pyqtSlot()
-    @pyqtSlot(list)
+    @Slot()
+    @Slot(list)
     def update_settings(self, game_running: List = None):
         value = self.settings.value(*options.discord_rpc_mode)
         if value == 2:

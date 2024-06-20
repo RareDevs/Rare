@@ -1,9 +1,9 @@
 import platform as pf
 from typing import Type
 
-from PyQt5.QtCore import QSettings, Qt
-from PyQt5.QtGui import QHideEvent
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtGui import QHideEvent
+from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout
 )

@@ -1,8 +1,8 @@
 from logging import getLogger
 from typing import Callable, Tuple
 
-from PyQt5.QtCore import pyqtSignal, QObject
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtCore import Signal, QObject
+from PySide6.QtWidgets import QApplication
 
 from rare.components.tabs.store.constants import (
     wishlist_query,
@@ -27,7 +27,7 @@ DEBUG: Callable[[], bool] = lambda: "--debug" in QApplication.arguments()
 
 
 class StoreAPI(QObject):
-    update_wishlist = pyqtSignal()
+    update_wishlist = Signal()
 
     def __init__(self, token, language: str, country: str, installed):
         super(StoreAPI, self).__init__()

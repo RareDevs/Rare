@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Optional
 
-from PyQt5.QtCore import QParallelAnimationGroup, Qt, QPropertyAnimation, QAbstractAnimation, QSize
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QParallelAnimationGroup, Qt, QPropertyAnimation, QAbstractAnimation, QSize
+from PySide6.QtWidgets import (
     QWidget,
     QFrame,
     QToolButton,
@@ -185,7 +185,7 @@ class CollapsibleGroupBox(QGroupBox, CollapsibleBase):
 
 if __name__ == "__main__":
     import sys
-    from PyQt5.QtWidgets import QApplication, QDialog
+    from PySide6.QtWidgets import QApplication, QDialog
     from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
     from rare.utils.misc import set_style_sheet
     from rare.resources.stylesheets import RareStyle

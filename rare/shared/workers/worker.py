@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Optional
 
-from PyQt5.QtCore import QRunnable, QObject, pyqtSlot, pyqtSignal
+from PySide6.QtCore import QRunnable, QObject, Slot, Signal
 
 
 class Worker(QRunnable):
@@ -36,7 +36,7 @@ class Worker(QRunnable):
     def run_real(self):
         pass
 
-    @pyqtSlot()
+    @Slot()
     def run(self):
         self.run_real()
         self.signals.deleteLater()
@@ -69,8 +69,8 @@ class QueueWorker(Worker):
     """
 
     class Signals(QObject):
-        started = pyqtSignal()
-        finished = pyqtSignal()
+        started = Signal()
+        finished = Signal()
 
     def __init__(self):
         super(QueueWorker, self).__init__()
@@ -78,7 +78,7 @@ class QueueWorker(Worker):
         self.state = QueueWorkerState.QUEUED
         self._kill = False
 
-    @pyqtSlot()
+    @Slot()
     def run(self):
         self.state = QueueWorkerState.ACTIVE
         self.feedback.started.emit()

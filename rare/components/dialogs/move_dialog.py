@@ -4,8 +4,8 @@ from enum import auto
 from logging import getLogger
 from typing import Tuple, Optional
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QLayout
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QLayout
 
 from rare.models.install import MoveGameModel
 from rare.models.game import RareGame
@@ -28,7 +28,7 @@ class MovePathEditReasons(IndicatorReasons):
 
 
 class MoveDialog(ActionDialog):
-    result_ready = pyqtSignal(RareGame, MoveGameModel)
+    result_ready = Signal(RareGame, MoveGameModel)
 
     def __init__(self, rgame: RareGame, parent=None):
         super(MoveDialog, self).__init__(parent=parent)
@@ -166,7 +166,7 @@ class MoveDialog(ActionDialog):
         self.accept_button.setEnabled(True)
         return True, path, IndicatorReasonsCommon.VALID
 
-    @pyqtSlot()
+    @Slot()
     def __update_widget(self):
         """ React to state updates from RareGame """
         if not self.rgame.is_installed or self.rgame.is_non_asset:

@@ -4,17 +4,17 @@ from logging import getLogger
 import shlex
 from typing import Callable, Tuple, Optional, Dict, List
 
-from PyQt5.QtCore import (
+from PySide6.QtCore import (
     QSize,
-    pyqtSignal,
+    Signal,
     QFileInfo,
     QRunnable,
     QObject,
     QThreadPool,
-    pyqtSlot,
+    Slot,
     QDir,
 )
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QSizePolicy,
     QLabel,
     QFileDialog,
@@ -94,7 +94,7 @@ class IndicatorReasonsStrings(QObject):
 
 class EditFuncRunnable(QRunnable):
     class Signals(QObject):
-        result = pyqtSignal(bool, str, int)
+        result = Signal(bool, str, int)
 
     def __init__(self, func: Callable[[str], Tuple[bool, str, int]], args: str):
         super(EditFuncRunnable, self).__init__()
@@ -117,7 +117,7 @@ class EditFuncRunnable(QRunnable):
 
 
 class IndicatorLineEdit(QWidget):
-    textChanged = pyqtSignal(str)
+    textChanged = Signal(str)
 
     def __init__(
         self,
@@ -205,7 +205,7 @@ class IndicatorLineEdit(QWidget):
         else:
             self.indicator_label.setToolTip(self.__reasons[IndicatorReasonsCommon.VALID])
 
-    @pyqtSlot(bool, str, int)
+    @Slot(bool, str, int)
     def __edit_handler(self, is_valid: bool, text: str, reason: int):
         self.__thread = None
         self.line_edit.blockSignals(True)

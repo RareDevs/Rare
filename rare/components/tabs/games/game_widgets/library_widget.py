@@ -1,8 +1,8 @@
 from typing import Optional, Tuple, List
 
-from PyQt5.QtCore import Qt, QEvent, QObject
-from PyQt5.QtGui import QPainter, QPixmap, QFontMetrics, QImage, QBrush, QColor, QShowEvent
-from PyQt5.QtWidgets import QLabel
+from PySide6.QtCore import Qt, QEvent, QObject
+from PySide6.QtGui import QPainter, QPixmap, QFontMetrics, QImage, QBrush, QColor, QShowEvent
+from PySide6.QtWidgets import QLabel
 
 from rare.widgets.image_widget import ImageWidget
 

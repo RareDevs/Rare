@@ -3,9 +3,9 @@ import platform
 from logging import getLogger
 from typing import Union, Optional
 
-from PyQt5.QtCore import pyqtSignal, QSettings, pyqtSlot, QThreadPool, Qt
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Signal, QSettings, Slot, QThreadPool, Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import (
     QWidget,
     QMessageBox, QScrollArea, QVBoxLayout, QSizePolicy,
 )
@@ -36,7 +36,7 @@ def get_time(seconds: Union[int, float]) -> str:
 
 class DownloadsTab(QWidget):
     # int: number of updates
-    update_title = pyqtSignal(int)
+    update_title = Signal(int)
 
     def __init__(self, parent=None):
         super(DownloadsTab, self).__init__(parent=parent)
@@ -90,8 +90,8 @@ class DownloadsTab(QWidget):
         self.__forced_item: Optional[InstallQueueItemModel] = None
         self.__omit_requeue = False
 
-    @pyqtSlot()
-    @pyqtSlot(int)
+    @Slot()
+    @Slot(int)
     def update_queues_count(self):
         count = self.updates_group.count() + self.queue_group.count() + (1 if self.is_download_active else 0)
         self.update_title.emit(count)
@@ -104,8 +104,8 @@ class DownloadsTab(QWidget):
         for rgame in self.rcore.updates:
             self.__add_update(rgame)
 
-    @pyqtSlot(str)
-    @pyqtSlot(RareGame)
+    @Slot(str)
+    @Slot(RareGame)
     def __add_update(self, update: Union[str, RareGame]):
         if isinstance(update, str):
             update = self.rcore.get_game(update)
@@ -123,7 +123,7 @@ class DownloadsTab(QWidget):
             self.updates_group.append(update.game, update.igame)
         self.update_queues_count()
 
-    @pyqtSlot(str)
+    @Slot(str)
     def __remove_update(self, app_name):
         if self.__thread and self.__thread.item.options.app_name == app_name:
             self.stop_download(omit_queue=True)
@@ -132,7 +132,7 @@ class DownloadsTab(QWidget):
         if self.updates_group.contains(app_name):
             self.updates_group.remove(app_name)
 
-    @pyqtSlot(str)
+    @Slot(str)
     def __on_queue_removed(self, app_name: str):
         """
         Handle removing a queued item.
@@ -149,7 +149,7 @@ class DownloadsTab(QWidget):
             if rgame.is_installed and rgame.has_update:
                 self.__add_update(app_name)
 
-    @pyqtSlot(InstallQueueItemModel)
+    @Slot(InstallQueueItemModel)
     def __on_queue_force(self, item: InstallQueueItemModel):
         if self.__thread:
             self.stop_download()
@@ -219,7 +219,7 @@ class DownloadsTab(QWidget):
             self.tr("Starting: \"{}\" is now downloading.").format(rgame.app_title)
         )
 
-    @pyqtSlot(UIUpdate, object)
+    @Slot(UIUpdate, object)
     def __on_download_progress(self, ui_update: UIUpdate, dl_size: int):
         self.download_widget.ui.progress_bar.setValue(int(ui_update.progress))
         self.download_widget.ui.dl_speed.setText(f"{format_size(ui_update.download_compressed_speed)}/s")
@@ -237,7 +237,7 @@ class DownloadsTab(QWidget):
         self.queue_group.push_front(item, rgame.igame)
         logger.info(f"Re-queued download for {rgame.app_name} ({rgame.app_title})")
 
-    @pyqtSlot(DlResultModel)
+    @Slot(DlResultModel)
     def __on_download_result(self, result: DlResultModel):
         if result.code == DlResultCode.FINISHED:
             logger.info(f"Download finished: {result.options.app_name}")
@@ -295,7 +295,7 @@ class DownloadsTab(QWidget):
         self.download_widget.ui.downloaded.setText("...")
         self.__thread = None
 
-    @pyqtSlot(InstallOptionsModel)
+    @Slot(InstallOptionsModel)
     def __get_install_options(self, options: InstallOptionsModel):
         rgame = self.rcore.get_game(options.app_name)
         rgame.state = RareGame.State.DOWNLOADING
@@ -307,7 +307,7 @@ class DownloadsTab(QWidget):
         install_dialog.result_ready.connect(self.__on_install_dialog_closed)
         install_dialog.execute()
 
-    @pyqtSlot(InstallQueueItemModel)
+    @Slot(InstallQueueItemModel)
     def __on_install_dialog_closed(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
         if item and not item.download.game.is_dlc and not item.download.analysis.dl_size:
@@ -336,7 +336,7 @@ class DownloadsTab(QWidget):
             rgame.state = RareGame.State.IDLE
         self.update_queues_count()
 
-    @pyqtSlot(UninstallOptionsModel)
+    @Slot(UninstallOptionsModel)
     def __get_uninstall_options(self, options: UninstallOptionsModel):
         rgame = self.rcore.get_game(options.app_name)
         rgame.state = RareGame.State.UNINSTALLING
@@ -348,7 +348,7 @@ class DownloadsTab(QWidget):
         uninstall_dialog.result_ready.connect(self.__on_uninstall_dialog_closed)
         uninstall_dialog.open()
 
-    @pyqtSlot(UninstallOptionsModel)
+    @Slot(UninstallOptionsModel)
     def __on_uninstall_dialog_closed(self, options: UninstallOptionsModel):
         rgame = self.rcore.get_game(options.app_name)
         if options and options.accepted:
@@ -358,7 +358,7 @@ class DownloadsTab(QWidget):
         else:
             rgame.state = RareGame.State.IDLE
 
-    @pyqtSlot(RareGame, bool, str)
+    @Slot(RareGame, bool, str)
     def __on_uninstall_worker_result(self, rgame: RareGame, success: bool, message: str):
         if success:
             rgame.set_installed(False)

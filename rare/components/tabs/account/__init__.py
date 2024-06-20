@@ -1,15 +1,15 @@
 import webbrowser
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.utils.misc import qta_icon, ExitCodes
 
 
 class AccountWidget(QWidget):
-    exit_app: pyqtSignal = pyqtSignal(int)
-    logout: pyqtSignal = pyqtSignal()
+    exit_app: Signal = Signal(int)
+    logout: Signal = Signal()
 
     def __init__(self, parent):
         super(AccountWidget, self).__init__(parent=parent)
@@ -38,10 +38,10 @@ class AccountWidget(QWidget):
         layout.addWidget(self.logout_button)
         layout.addWidget(self.quit_button)
 
-    @pyqtSlot()
+    @Slot()
     def __on_quit(self):
         self.exit_app.emit(ExitCodes.EXIT)
 
-    @pyqtSlot()
+    @Slot()
     def __on_logout(self):
         self.exit_app.emit(ExitCodes.LOGOUT)

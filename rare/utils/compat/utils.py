@@ -5,7 +5,7 @@ from configparser import ConfigParser
 from logging import getLogger
 from typing import Mapping, Dict, List, Tuple
 
-from PyQt5.QtCore import QProcess, QProcessEnvironment
+from PySide6.QtCore import QProcess, QProcessEnvironment
 
 from rare.utils import config_helper as config
 if pf.system() != "Windows":

@@ -2,9 +2,9 @@ import os
 import locale
 from logging import getLogger
 
-from PyQt5.QtCore import QSettings, Qt, pyqtSlot, QUrl
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QWidget, QMessageBox
+from PySide6.QtCore import QSettings, Qt, Slot, QUrl
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QWidget, QMessageBox
 
 from rare.components.tabs.settings.widgets.discord_rpc import DiscordRPCSettings
 from rare.models.options import options, LibraryView
@@ -144,7 +144,7 @@ class RareSettings(QWidget):
         # self.log_dir_clean_button.setVisible(False)
         # self.log_dir_size_label.setVisible(False)
 
-    @pyqtSlot()
+    @Slot()
     def clean_logdir(self):
         for f in log_dir().iterdir():
             try:
@@ -159,7 +159,7 @@ class RareSettings(QWidget):
         )
         self.ui.log_dir_size_label.setText(format_size(size))
 
-    @pyqtSlot()
+    @Slot()
     def create_start_menu_link(self):
         try:
             if not os.path.exists(self.start_menu_link):
@@ -177,7 +177,7 @@ class RareSettings(QWidget):
                 self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
             )
 
-    @pyqtSlot()
+    @Slot()
     def create_desktop_link(self):
         try:
             if not os.path.exists(self.desktop_link):
@@ -195,7 +195,7 @@ class RareSettings(QWidget):
                 self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
             )
 
-    @pyqtSlot(int)
+    @Slot(int)
     def on_color_select_changed(self, index: int):
         scheme = self.ui.color_select.itemData(index, Qt.ItemDataRole.UserRole)
         if scheme:
@@ -206,7 +206,7 @@ class RareSettings(QWidget):
         self.settings.setValue("color_scheme", scheme)
         set_color_pallete(scheme)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def on_style_select_changed(self, index: int):
         style = self.ui.style_select.itemData(index, Qt.ItemDataRole.UserRole)
         if style:
@@ -217,21 +217,21 @@ class RareSettings(QWidget):
         self.settings.setValue("style_sheet", style)
         set_style_sheet(style)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def on_view_combo_changed(self, index: int):
         view = LibraryView(self.ui.view_combo.itemData(index, Qt.ItemDataRole.UserRole))
         self.settings.setValue(options.library_view.key, int(view))
 
-    @pyqtSlot()
+    @Slot()
     def open_directory(self):
         QDesktopServices.openUrl(QUrl(f"file://{log_dir()}"))
 
-    @pyqtSlot()
+    @Slot()
     def save_window_size(self):
         self.settings.setValue(options.save_size.key, self.ui.save_size.isChecked())
         self.settings.remove(options.window_size.key)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def on_lang_changed(self, index: int):
         lang_code = self.ui.lang_select.itemData(index, Qt.ItemDataRole.UserRole)
         if lang_code == locale.getlocale()[0]:

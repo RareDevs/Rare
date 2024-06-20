@@ -7,20 +7,20 @@ import traceback
 from argparse import Namespace
 
 import legendary
-from PyQt5.QtCore import (
+from PySide6 import __version__ as PYQT_VERSION_STR
+from PySide6.QtCore import __version__ as QT_VERSION_STR
+from PySide6.QtCore import (
     QSettings,
     QTranslator,
-    QT_VERSION_STR,
-    PYQT_VERSION_STR,
     QObject,
-    pyqtSignal,
-    pyqtSlot,
+    Signal,
+    Slot,
     Qt,
     QLibraryInfo,
     QLocale,
 )
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 import rare.resources.resources
 from rare.models.options import options
@@ -29,7 +29,7 @@ from rare.utils.misc import set_color_pallete, set_style_sheet, get_static_style
 
 
 class RareAppException(QObject):
-    exception = pyqtSignal(object, object, object)
+    exception = Signal(object, object, object)
 
     def __init__(self, parent=None):
         super(RareAppException, self).__init__(parent=parent)
@@ -43,7 +43,7 @@ class RareAppException(QObject):
     def _handler(self, exc_type, exc_value, exc_tb) -> bool:
         return False
 
-    @pyqtSlot(object, object, object)
+    @Slot(object, object, object)
     def _on_exception(self, exc_type, exc_value, exc_tb):
         message = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
         if self._handler(exc_type, exc_value, exc_tb):

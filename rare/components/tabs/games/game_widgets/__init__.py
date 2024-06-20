@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Tuple, List, Union, Type, TypeVar
 
-from PyQt5.QtCore import QObject, pyqtSlot, Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtCore import QObject, Slot, Qt
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
@@ -201,12 +201,12 @@ class LibraryWidgetController(QObject):
         self._container.filter_view(filter_by, search_text)
         self.order_game_views(search_text=search_text)
 
-    @pyqtSlot()
+    @Slot()
     def order_game_views(self, order_by: LibraryOrder = LibraryOrder.TITLE, search_text: str = ""):
         self._container.order_view(order_by, search_text)
 
-    @pyqtSlot()
-    @pyqtSlot(list)
+    @Slot()
+    @Slot(list)
     def update_game_views(self, app_names: List[str] = None):
         if app_names:
             return

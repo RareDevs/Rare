@@ -9,11 +9,11 @@ from logging import getLogger
 from signal import signal, SIGINT, SIGTERM, strsignal
 from typing import Optional
 
-from PyQt5 import sip
-from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QUrl, QRunnable, QThreadPool, QSettings, Qt, pyqtSlot, QTimer
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtNetwork import QLocalServer, QLocalSocket
-from PyQt5.QtWidgets import QApplication
+# from PySide6.import sip
+from PySide6.QtCore import QObject, QProcess, Signal, QUrl, QRunnable, QThreadPool, QSettings, Qt, Slot, QTimer
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtNetwork import QLocalServer, QLocalSocket
+from PySide6.QtWidgets import QApplication
 from legendary.models.game import SaveGameStatus
 
 from rare.lgndr.core import LegendaryCore
@@ -38,10 +38,10 @@ DETACHED_APP_NAMES = {
 
 class PreLaunch(QRunnable):
     class Signals(QObject):
-        ready_to_launch = pyqtSignal(LaunchArgs)
-        pre_launch_command_started = pyqtSignal()
-        pre_launch_command_finished = pyqtSignal(int)  # exit_code
-        error_occurred = pyqtSignal(str)
+        ready_to_launch = Signal(LaunchArgs)
+        pre_launch_command_started = Signal()
+        pre_launch_command_finished = Signal(int)  # exit_code
+        error_occurred = Signal(str)
 
     def __init__(self, args: InitArgs, rgame: RareGameSlim, sync_action=None):
         super(PreLaunch, self).__init__()
@@ -91,8 +91,8 @@ class PreLaunch(QRunnable):
 
 class SyncCheckWorker(QRunnable):
     class Signals(QObject):
-        sync_state_ready = pyqtSignal()
-        error_occurred = pyqtSignal(str)
+        sync_state_ready = Signal()
+        error_occurred = Signal(str)
 
     def __init__(self, core: LegendaryCore, rgame: RareGameSlim):
         super().__init__()
@@ -128,7 +128,7 @@ class RareLauncherException(RareAppException):
 
 
 class RareLauncher(RareApp):
-    exit_app = pyqtSignal()
+    exit_app = Signal()
 
     def __init__(self, args: InitArgs):
         super(RareLauncher, self).__init__(args, f"{type(self).__name__}_{args.app_name}_{{0}}.log")
@@ -183,23 +183,23 @@ class RareLauncher(RareApp):
         # The timer's signal will be serviced once we call `exec()` on the application
         QTimer.singleShot(0, self.start)
 
-    @pyqtSlot()
+    @Slot()
     def __proc_log_stdout(self):
         self.console.log_stdout(
             self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
         )
 
-    @pyqtSlot()
+    @Slot()
     def __proc_log_stderr(self):
         self.console.log_stderr(
             self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
         )
 
-    @pyqtSlot()
+    @Slot()
     def __proc_term(self):
         self.game_process.terminate()
 
-    @pyqtSlot()
+    @Slot()
     def __proc_kill(self):
         self.game_process.kill()
 
@@ -239,8 +239,8 @@ class RareLauncher(RareApp):
             sync_dialog.result_ready.connect(lambda a: self.__check_saved_finished(exit_code, a))
             sync_dialog.open()
 
-    @pyqtSlot(int, int)
-    @pyqtSlot(int, CloudSyncDialogResult)
+    @Slot(int, int)
+    @Slot(int, CloudSyncDialogResult)
     def __check_saved_finished(self, exit_code, action):
         action = CloudSyncDialogResult(action)
         if action == CloudSyncDialogResult.UPLOAD:
@@ -254,7 +254,7 @@ class RareLauncher(RareApp):
         else:
             self.on_exit(exit_code)
 
-    @pyqtSlot(int, QProcess.ExitStatus)
+    @Slot(int, QProcess.ExitStatus)
     def __process_finished(self, exit_code: int, exit_status: QProcess.ExitStatus):
         self.logger.info("Game finished")
 
@@ -263,7 +263,7 @@ class RareLauncher(RareApp):
         else:
             self.on_exit(exit_code)
 
-    @pyqtSlot(QProcess.ProcessError)
+    @Slot(QProcess.ProcessError)
     def __process_errored(self, error: QProcess.ProcessError):
         self.error_occurred(self.game_process.errorString())
 
@@ -279,7 +279,7 @@ class RareLauncher(RareApp):
         ))
         self.stop()
 
-    @pyqtSlot(object)
+    @Slot(object)
     def launch_game(self, args: LaunchArgs):
         # should never happen
         if not args:
@@ -357,8 +357,8 @@ class RareLauncher(RareApp):
         sync_dialog.result_ready.connect(self.__sync_ready)
         sync_dialog.open()
 
-    @pyqtSlot(int)
-    @pyqtSlot(CloudSyncDialogResult)
+    @Slot(int)
+    @Slot(CloudSyncDialogResult)
     def __sync_ready(self, action: CloudSyncDialogResult):
         action = CloudSyncDialogResult(action)
         if action == CloudSyncDialogResult.CANCEL:
@@ -449,6 +449,7 @@ def launch(args: Namespace) -> int:
         app.logger.error("Unhandled error %s", e)
         exit_code = 1
     finally:
-        if not sip.isdeleted(app.server):
-            app.server.close()
+        pass
+        # if not sip.isdeleted(app.server):
+        #     app.server.close()
     return exit_code

@@ -3,8 +3,8 @@ import platform
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import QThreadPool, QSettings, pyqtSlot
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QThreadPool, QSettings, Slot
+from PySide6.QtWidgets import (
     QWidget,
     QFileDialog,
     QLabel,
@@ -138,7 +138,7 @@ class CloudSaves(QWidget, SideTabContents):
             else:
                 self.cloud_save_path_edit.setText(new_path)
 
-    @pyqtSlot(str, str)
+    @Slot(str, str)
     def __on_wine_resolver_result(self, path, app_name):
         logger.info("Wine resolver finished for %s", app_name)
         logger.info("Computed save path: %s", path)

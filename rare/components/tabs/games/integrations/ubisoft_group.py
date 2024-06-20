@@ -3,9 +3,9 @@ import webbrowser
 from logging import getLogger
 from typing import Optional
 
-from PyQt5.QtCore import QObject, pyqtSignal, QThreadPool, QSize, pyqtSlot, Qt
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QObject, Signal, QThreadPool, QSize, Slot, Qt
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import (
     QFrame,
     QLabel,
     QHBoxLayout,
@@ -29,7 +29,7 @@ logger = getLogger("Ubisoft")
 
 class UbiGetInfoWorker(Worker):
     class Signals(QObject):
-        worker_finished = pyqtSignal(set, set, str)
+        worker_finished = Signal(set, set, str)
 
     def __init__(self, core: LegendaryCore):
         super(UbiGetInfoWorker, self).__init__()
@@ -73,7 +73,7 @@ class UbiGetInfoWorker(Worker):
 
 class UbiConnectWorker(Worker):
     class Signals(QObject):
-        linked = pyqtSignal(str)
+        linked = Signal(str)
 
     def __init__(self, core: LegendaryCore, ubi_account_id, partner_link_id):
         super(UbiConnectWorker, self).__init__()
@@ -201,7 +201,7 @@ class UbisoftGroup(QGroupBox):
         self.thread_pool.start(self.worker)
         super().showEvent(a0)
 
-    @pyqtSlot(set, set, str)
+    @Slot(set, set, str)
     def show_ubi_games(self, redeemed: set, entitlements: set, ubi_account_id: str):
         self.worker = None
         if not redeemed and ubi_account_id != "error":

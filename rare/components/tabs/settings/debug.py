@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 
 from rare.shared import GlobalSignalsSingleton
 from rare.utils.misc import ExitCodes
