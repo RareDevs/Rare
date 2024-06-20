@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QGroupBox, QLayout
+from PySide6.QtWidgets import QGroupBox, QLayout
 
 from rare.widgets.loading_widget import LoadingWidget
 

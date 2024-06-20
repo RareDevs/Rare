@@ -3,10 +3,10 @@ import platform as pf
 import shutil
 from typing import Tuple, List, Union, Optional
 
-from PyQt5.QtCore import QThreadPool, QSettings
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QFileDialog, QCheckBox, QWidget, QFormLayout
+from PySide6.QtCore import QThreadPool, QSettings
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QFileDialog, QCheckBox, QWidget, QFormLayout
 
 from rare.models.game import RareGame
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel, InstallOptionsModel
@@ -34,7 +34,7 @@ class InstallDialogAdvanced(CollapsibleFrame):
 
 
 class InstallDialogSelective(CollapsibleFrame):
-    stateChanged: pyqtSignal = pyqtSignal()
+    stateChanged: Signal = Signal()
 
     def __init__(self, rgame: RareGame, parent=None):
         super(InstallDialogSelective, self).__init__(parent=parent)
@@ -57,7 +57,7 @@ class InstallDialogSelective(CollapsibleFrame):
 
 
 class InstallDialog(ActionDialog):
-    result_ready = pyqtSignal(InstallQueueItemModel)
+    result_ready = Signal(InstallQueueItemModel)
 
     def __init__(self, rgame: RareGame, options: InstallOptionsModel, parent=None):
         super(InstallDialog, self).__init__(parent=parent)
@@ -215,14 +215,14 @@ class InstallDialog(ActionDialog):
             self.action_handler()
             self.open()
 
-    @pyqtSlot(int)
+    @Slot(int)
     def reset_install_dir(self, index: int):
         if not self.rgame.is_installed:
             platform = self.ui.platform_combo.itemText(index)
             default_dir = self.core.get_default_install_dir(platform)
             self.install_dir_edit.setText(default_dir)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def check_incompatible_platform(self, index: int):
         platform = self.ui.platform_combo.itemText(index)
         if platform == "Mac" and pf.system() != "Darwin":
@@ -269,7 +269,7 @@ class InstallDialog(ActionDialog):
         self.get_options()
         self.get_download_info()
 
-    @pyqtSlot()
+    @Slot()
     def option_changed(self):
         self.options_changed = True
         self.accept_button.setEnabled(False)
@@ -304,7 +304,7 @@ class InstallDialog(ActionDialog):
         else:
             return False
 
-    @pyqtSlot(InstallDownloadModel)
+    @Slot(InstallDownloadModel)
     def on_worker_result(self, download: InstallDownloadModel):
         self.setActive(False)
         self.__download = download

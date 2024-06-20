@@ -1,5 +1,5 @@
-from PyQt5.QtCore import (
-    pyqtSlot,
+from PySide6.QtCore import (
+    Slot,
     QEvent,
     QEasingCurve,
     QParallelAnimationGroup,
@@ -8,7 +8,7 @@ from PyQt5.QtCore import (
     Qt,
     QPoint,
 )
-from PyQt5.QtWidgets import QStackedWidget, QGestureEvent, QSwipeGesture
+from PySide6.QtWidgets import QStackedWidget, QGestureEvent, QSwipeGesture
 
 
 class SlidingStackedWidget(QStackedWidget):
@@ -40,13 +40,13 @@ class SlidingStackedWidget(QStackedWidget):
     def setWrap(self, wrap: bool) -> None:
         self.m_wrap = wrap
 
-    @pyqtSlot()
+    @Slot()
     def slideInPrev(self):
         now = self.currentIndex()
         if self.m_wrap or now > 0:
             self.slideInIndex(now - 1)
 
-    @pyqtSlot()
+    @Slot()
     def slideInNext(self):
         now = self.currentIndex()
         if self.m_wrap or now < (self.count() - 1):
@@ -113,7 +113,7 @@ class SlidingStackedWidget(QStackedWidget):
         self.m_active = True
         animgroup.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
 
-    @pyqtSlot()
+    @Slot()
     def animationDoneSlot(self):
         self.setCurrentIndex(self.m_next)
         self.widget(self.m_now).hide()

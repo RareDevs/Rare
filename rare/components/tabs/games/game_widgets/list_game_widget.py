@@ -1,7 +1,7 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, QEvent, QRect, pyqtSlot
-from PyQt5.QtGui import (
+from PySide6.QtCore import Qt, QEvent, QRect, Slot
+from PySide6.QtGui import (
     QPalette,
     QBrush,
     QPaintEvent,
@@ -51,11 +51,11 @@ class ListGameWidget(GameWidget):
         self.ui.launch_btn.installEventFilter(self)
         self.ui.install_btn.installEventFilter(self)
 
-    @pyqtSlot()
+    @Slot()
     def update_pixmap(self):
         self.setPixmap(self.rgame.get_pixmap(ImageSize.LibraryWide, self.rgame.is_installed))
 
-    @pyqtSlot()
+    @Slot()
     def start_progress(self):
         self.showProgress(
             self.rgame.get_pixmap(ImageSize.LibraryWide, True),

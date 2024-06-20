@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtWidgets import (
     QVBoxLayout,
     QCheckBox,
 )
@@ -11,7 +11,7 @@ from rare.widgets.dialogs import ButtonDialog, game_title
 
 
 class UninstallDialog(ButtonDialog):
-    result_ready = pyqtSignal(UninstallOptionsModel)
+    result_ready = Signal(UninstallOptionsModel)
 
     def __init__(self, rgame: RareGame, options: UninstallOptionsModel, parent=None):
         super(UninstallDialog, self).__init__(parent=parent)
@@ -51,7 +51,7 @@ class UninstallDialog(ButtonDialog):
 
         self.options: UninstallOptionsModel = options
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __on_keep_files_changed(self, state: int):
         self.keep_folder.setCheckState(state if state else Qt.CheckState.Checked)
         self.keep_folder.setEnabled(not state)

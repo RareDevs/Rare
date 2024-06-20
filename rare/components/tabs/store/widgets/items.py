@@ -1,8 +1,8 @@
 import logging
 
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import QPushButton
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QMouseEvent
+from PySide6.QtWidgets import QPushButton
 
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.models.image import ImageSize
@@ -14,7 +14,7 @@ logger = logging.getLogger("StoreWidgets")
 
 
 class ItemWidget(LoadingImageWidget):
-    show_details = pyqtSignal(CatalogOfferModel)
+    show_details = Signal(CatalogOfferModel)
 
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel = None, parent=None):
         super(ItemWidget, self).__init__(manager, parent=parent)
@@ -97,7 +97,7 @@ class SearchItemWidget(ItemWidget):
 
 
 class WishlistItemWidget(ItemWidget):
-    delete_from_wishlist = pyqtSignal(CatalogOfferModel)
+    delete_from_wishlist = Signal(CatalogOfferModel)
 
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
         super(WishlistItemWidget, self).__init__(manager, catalog_game, parent=parent)

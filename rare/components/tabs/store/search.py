@@ -1,8 +1,8 @@
 import logging
 from typing import List
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtWidgets import (
     QCheckBox,
     QWidget,
     QSizePolicy,
@@ -44,11 +44,11 @@ class SearchPage(SlidingStackedWidget, SideTabContents):
         self.addWidget(self.search_widget)
         self.addWidget(self.details_widget)
 
-    @pyqtSlot()
+    @Slot()
     def show_main(self):
         self.slideInWidget(self.search_widget)
 
-    @pyqtSlot(object)
+    @Slot(object)
     def show_details(self, game: CatalogOfferModel):
         self.details_widget.update_game(game)
         self.slideInWidget(self.details_widget)
@@ -56,7 +56,7 @@ class SearchPage(SlidingStackedWidget, SideTabContents):
 
 # noinspection PyAttributeOutsideInit,PyBroadException
 class SearchWidget(QWidget, SideTabContents):
-    show_details = pyqtSignal(CatalogOfferModel)
+    show_details = Signal(CatalogOfferModel)
 
     def __init__(self, store_api: StoreAPI, parent=None):
         super(SearchWidget, self).__init__(parent=parent)
@@ -205,8 +205,8 @@ class SearchWidget(QWidget, SideTabContents):
 
 
 class CheckBox(QCheckBox):
-    activated = pyqtSignal(str)
-    deactivated = pyqtSignal(str)
+    activated = Signal(str)
+    deactivated = Signal(str)
 
     def __init__(self, text, tag):
         super(CheckBox, self).__init__(text)
@@ -222,7 +222,7 @@ class CheckBox(QCheckBox):
 
 
 class ResultsWidget(QScrollArea):
-    show_details = pyqtSignal(CatalogOfferModel)
+    show_details = Signal(CatalogOfferModel)
 
     def __init__(self, store_api, parent=None):
         super(ResultsWidget, self).__init__(parent=parent)

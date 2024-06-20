@@ -2,9 +2,9 @@ import os
 from logging import getLogger
 from typing import Tuple, Union, Optional
 
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox
 
 from rare.models.wrapper import Wrapper, WrapperType
 from rare.shared import RareCore
@@ -19,9 +19,9 @@ logger = getLogger("ProtonSettings")
 
 class ProtonSettings(QGroupBox):
     # str: option key
-    environ_changed: pyqtSignal = pyqtSignal(str)
+    environ_changed: Signal = Signal(str)
     # bool: state
-    tool_enabled: pyqtSignal = pyqtSignal(bool)
+    tool_enabled: Signal = Signal(bool)
 
     def __init__(self, parent=None):
         super(ProtonSettings, self).__init__(parent=parent)

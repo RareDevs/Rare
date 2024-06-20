@@ -3,9 +3,9 @@ import platform as pf
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QFileDialog, QComboBox, QLineEdit
+from PySide6.QtCore import Qt, Slot
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QFileDialog, QComboBox, QLineEdit
 from legendary.models.game import Game, InstalledGame
 
 from rare.components.tabs.settings.widgets.env_vars import EnvVars
@@ -97,7 +97,7 @@ class GameLaunchSettings(LaunchSettingsBase):
 
         return super().showEvent(a0)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __skip_update_changed(self, index):
         data = self.skip_update_combo.itemData(index, Qt.ItemDataRole.UserRole)
         config.save_option(self.app_name, "skip_update_check", data)
@@ -123,7 +123,7 @@ class GameLaunchSettings(LaunchSettingsBase):
     def __override_exe_save_callback(self, path: str):
         config.save_option(self.app_name, "override_exe", path)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __offline_changed(self, index):
         data = self.skip_update_combo.itemData(index, Qt.ItemDataRole.UserRole)
         config.save_option(self.app_name, "offline", data)

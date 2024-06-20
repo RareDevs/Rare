@@ -7,7 +7,7 @@ from logging import getLogger
 from pathlib import Path
 from typing import List
 
-from PyQt5.QtCore import QStandardPaths
+from PySide6.QtCore import QStandardPaths
 
 if platform.system() == "Windows":
     # noinspection PyUnresolvedReferences

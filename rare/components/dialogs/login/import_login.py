@@ -2,8 +2,8 @@ import os
 from getpass import getuser
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QFrame, QFileDialog
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QFrame, QFileDialog
 from legendary.core import LegendaryCore
 from legendary.lfs.wine_helpers import get_shell_folders, read_registry
 
@@ -13,8 +13,8 @@ logger = getLogger("ImportLogin")
 
 
 class ImportLogin(QFrame):
-    success = pyqtSignal()
-    changed = pyqtSignal()
+    success = Signal()
+    changed = Signal()
 
     # FIXME: Use pathspec instead of duplicated code
     if os.name == "nt":

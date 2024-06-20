@@ -3,9 +3,9 @@ from enum import IntEnum
 from logging import getLogger
 from typing import List, Dict, Tuple, Union, Optional
 
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QIntValidator, QDoubleValidator, QShowEvent
-from PyQt5.QtWidgets import QGroupBox, QCheckBox, QLineEdit, QComboBox
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QIntValidator, QDoubleValidator, QShowEvent
+from PySide6.QtWidgets import QGroupBox, QCheckBox, QLineEdit, QComboBox
 
 from rare.ui.components.tabs.settings.widgets.overlay import Ui_OverlaySettings
 from rare.utils import config_helper as config
@@ -111,7 +111,7 @@ class ActivationStates(IntEnum):
 
 class OverlaySettings(QGroupBox):
     # str: option key
-    environ_changed = pyqtSignal(str)
+    environ_changed = Signal(str)
 
     def __init__(self, parent=None):
         super(OverlaySettings, self).__init__(parent=parent)
@@ -339,7 +339,7 @@ class MangoHudSettings(OverlaySettings):
 
 if __name__ == "__main__":
     import sys
-    from PyQt5.QtWidgets import QApplication, QDialog, QVBoxLayout
+    from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout
 
     from legendary.core import LegendaryCore
 

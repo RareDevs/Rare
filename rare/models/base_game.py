@@ -5,7 +5,7 @@ from enum import IntEnum
 from logging import getLogger
 from typing import Optional, List, Tuple
 
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSettings
+from PySide6.QtCore import QObject, Signal, QRunnable, QThreadPool, QSettings
 from legendary.lfs import eos
 from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
 from legendary.utils.selective_dl import get_sdl_appname
@@ -39,24 +39,24 @@ class RareGameBase(QObject):
 
     class Signals(QObject):
         class Progress(QObject):
-            start = pyqtSignal()
-            update = pyqtSignal(int)
-            finish = pyqtSignal(bool)
+            start = Signal()
+            update = Signal(int)
+            finish = Signal(bool)
 
         class Widget(QObject):
-            update = pyqtSignal()
+            update = Signal()
 
         class Download(QObject):
-            enqueue = pyqtSignal(str)
-            dequeue = pyqtSignal(str)
+            enqueue = Signal(str)
+            dequeue = Signal(str)
 
         class Game(QObject):
-            install = pyqtSignal(InstallOptionsModel)
-            installed = pyqtSignal(str)
-            uninstall = pyqtSignal(UninstallOptionsModel)
-            uninstalled = pyqtSignal(str)
-            launched = pyqtSignal(str)
-            finished = pyqtSignal(str)
+            install = Signal(InstallOptionsModel)
+            installed = Signal(str)
+            uninstall = Signal(UninstallOptionsModel)
+            uninstalled = Signal(str)
+            launched = Signal(str)
+            finished = Signal(str)
 
         def __init__(self, parent=None):
             super(RareGameBase.Signals, self).__init__(parent=parent)

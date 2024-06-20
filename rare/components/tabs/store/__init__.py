@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QShowEvent, QHideEvent
+from PySide6.QtGui import QShowEvent, QHideEvent
 from legendary.core import LegendaryCore
 
 from rare.widgets.side_tab import SideTabWidget

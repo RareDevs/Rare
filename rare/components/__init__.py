@@ -5,8 +5,8 @@ from datetime import datetime, timezone, UTC
 from typing import Optional
 
 import requests.exceptions
-from PyQt5.QtCore import QThreadPool, QTimer, pyqtSlot, Qt
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PySide6.QtCore import QThreadPool, QTimer, Slot, Qt
+from PySide6.QtWidgets import QApplication, QMessageBox
 from requests import HTTPError
 
 from rare.models.options import options
@@ -74,7 +74,7 @@ class Rare(RareApp):
             return
         self.poke_timer()
 
-    @pyqtSlot()
+    @Slot()
     def launch_app(self):
         self.launch_dialog = LaunchDialog(parent=None)
         self.launch_dialog.rejected.connect(self.__on_exit_app)
@@ -84,7 +84,7 @@ class Rare(RareApp):
         self.launch_dialog.start_app.connect(self.launch_dialog.accept)
         self.launch_dialog.login()
 
-    @pyqtSlot()
+    @Slot()
     def __on_start_app(self):
         self.relogin_timer = QTimer(self)
         self.relogin_timer.setTimerType(Qt.TimerType.VeryCoarseTimer)
@@ -102,8 +102,8 @@ class Rare(RareApp):
             self.main_window = None
             self.__on_exit_app(0)
 
-    @pyqtSlot()
-    @pyqtSlot(int)
+    @Slot()
+    @Slot(int)
     def __on_exit_app(self, exit_code=0):
         threadpool = QThreadPool.globalInstance()
         threadpool.waitForDone()

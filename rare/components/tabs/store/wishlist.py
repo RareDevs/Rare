@@ -1,9 +1,9 @@
 from enum import IntEnum
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QMessageBox, QWidget, QSizePolicy
+from PySide6.QtCore import Signal, Qt, Slot
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QMessageBox, QWidget, QSizePolicy
 
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
 from rare.utils.misc import qta_icon
@@ -35,11 +35,11 @@ class WishlistPage(SlidingStackedWidget, SideTabContents):
         self.addWidget(self.wishlist_widget)
         self.addWidget(self.details_widget)
 
-    @pyqtSlot()
+    @Slot()
     def show_main(self):
         self.slideInWidget(self.wishlist_widget)
 
-    @pyqtSlot(object)
+    @Slot(object)
     def show_details(self, game: CatalogOfferModel):
         self.details_widget.update_game(game)
         self.slideInWidget(self.details_widget)
@@ -58,8 +58,8 @@ class WishlistFilter(IntEnum):
 
 
 class WishlistWidget(QWidget, SideTabContents):
-    show_details = pyqtSignal(CatalogOfferModel)
-    update_wishlist_signal = pyqtSignal()
+    show_details = Signal(CatalogOfferModel)
+    update_wishlist_signal = Signal()
 
     def __init__(self, api: StoreAPI, parent=None):
         super(WishlistWidget, self).__init__(parent=parent)
@@ -119,7 +119,7 @@ class WishlistWidget(QWidget, SideTabContents):
         )
         self.update_wishlist_signal.emit()
 
-    @pyqtSlot(int)
+    @Slot(int)
     def filter_wishlist(self, index: int = int(WishlistFilter.NONE)):
         list_filter = self.ui.filter_combo.itemData(index, Qt.ItemDataRole.UserRole)
         widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
@@ -133,7 +133,7 @@ class WishlistWidget(QWidget, SideTabContents):
         have_visible = any(map(lambda x: x.isVisible(), widgets))
         self.ui.no_games_label.setVisible(not have_visible)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def order_wishlist(self, index: int = int(WishlistOrder.NAME)):
         list_order = self.ui.order_combo.itemData(index, Qt.ItemDataRole.UserRole)
         widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)

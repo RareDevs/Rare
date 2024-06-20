@@ -3,9 +3,9 @@ import random
 from abc import abstractmethod
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent
-from PyQt5.QtGui import QMouseEvent, QShowEvent, QPaintEvent
-from PyQt5.QtWidgets import QMessageBox, QAction
+from PySide6.QtCore import Signal, Qt, Slot, QObject, QEvent
+from PySide6.QtGui import QMouseEvent, QShowEvent, QPaintEvent, QAction
+from PySide6.QtWidgets import QMessageBox
 
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton, ImageManagerSingleton
@@ -25,7 +25,7 @@ logger = getLogger("GameWidget")
 
 
 class GameWidget(LibraryWidget):
-    show_info = pyqtSignal(RareGame)
+    show_info = Signal(RareGame)
 
     def __init__(self, rgame: RareGame, parent=None):
         super(GameWidget, self).__init__(parent=parent)
@@ -136,7 +136,7 @@ class GameWidget(LibraryWidget):
             return super().showEvent(a0)
         super().showEvent(a0)
 
-    @pyqtSlot()
+    @Slot()
     def update_state(self):
         if self.rgame.is_idle:
             if self.rgame.has_update:
@@ -157,7 +157,7 @@ class GameWidget(LibraryWidget):
             self.ui.status_label.setText(self.state_strings[self.rgame.state])
         self.ui.status_label.setVisible(bool(self.ui.status_label.text()))
 
-    @pyqtSlot()
+    @Slot()
     def update_buttons(self):
         self.ui.install_btn.setVisible(not self.rgame.is_installed)
         self.ui.install_btn.setEnabled(not self.rgame.is_installed)
@@ -166,7 +166,7 @@ class GameWidget(LibraryWidget):
 
         self.steam_shortcut_action.setEnabled(self.rgame.has_pixmap)
 
-    @pyqtSlot()
+    @Slot()
     def update_actions(self):
         for action in self.actions():
             self.removeAction(action)
@@ -241,12 +241,12 @@ class GameWidget(LibraryWidget):
         elif e.button() == Qt.MouseButton.RightButton:
             super(GameWidget, self).mousePressEvent(e)
 
-    @pyqtSlot()
+    @Slot()
     def _on_reload_image(self) -> None:
         self.rgame.refresh_pixmap()
 
-    @pyqtSlot()
-    @pyqtSlot(bool, bool)
+    @Slot()
+    @Slot(bool, bool)
     def _launch(self, offline=False, skip_version_check=False):
         if offline or (self.rgame.is_foreign and self.rgame.can_run_offline):
             offline = True
@@ -254,15 +254,15 @@ class GameWidget(LibraryWidget):
             skip_version_check = True
         self.rgame.launch(offline=offline, skip_update_check=skip_version_check)
 
-    @pyqtSlot()
+    @Slot()
     def _install(self):
         self.show_info.emit(self.rgame)
 
-    @pyqtSlot()
+    @Slot()
     def _uninstall(self):
         self.show_info.emit(self.rgame)
 
-    @pyqtSlot(str, str)
+    @Slot(str, str)
     def _create_link(self, name: str, link_type: str):
         if not desktop_links_supported():
             QMessageBox.warning(
@@ -291,7 +291,7 @@ class GameWidget(LibraryWidget):
                 shortcut_path.unlink(missing_ok=True)
         self.update_actions()
 
-    @pyqtSlot(str, str)
+    @Slot(str, str)
     def _create_steam_shortcut(self, app_name: str, app_title: str):
         if steam_shortcut_exists(app_name):
             if shortcut := remove_steam_shortcut(app_name):

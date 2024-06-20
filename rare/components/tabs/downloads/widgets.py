@@ -1,8 +1,8 @@
 from logging import getLogger
 from typing import Optional
 
-from PyQt5.QtCore import pyqtSignal, Qt, QThreadPool, pyqtSlot
-from PyQt5.QtWidgets import QWidget, QFrame
+from PySide6.QtCore import Signal, Qt, QThreadPool, Slot
+from PySide6.QtWidgets import QWidget, QFrame
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
 from qtawesome import icon
@@ -64,7 +64,7 @@ class QueueInfoWidget(QWidget):
 
 
 class UpdateWidget(QFrame):
-    enqueue = pyqtSignal(InstallOptionsModel)
+    enqueue = Signal(InstallOptionsModel)
 
     def __init__(self, game: Game, igame: InstalledGame, parent=None):
         super(UpdateWidget, self).__init__(parent=parent)
@@ -100,13 +100,13 @@ class UpdateWidget(QFrame):
 
 class QueueWidget(QFrame):
     # str: app_name
-    move_up = pyqtSignal(str)
+    move_up = Signal(str)
     # str: app_name
-    move_down = pyqtSignal(str)
+    move_down = Signal(str)
     # str: app_name
-    remove = pyqtSignal(str)
+    remove = Signal(str)
     # InstallQueueItemModel
-    force = pyqtSignal(InstallQueueItemModel)
+    force = Signal(InstallQueueItemModel)
 
     def __init__(self, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None):
         super(QueueWidget, self).__init__(parent=parent)
@@ -151,7 +151,7 @@ class QueueWidget(QFrame):
         self.ui.remove_button.clicked.connect(lambda: self.remove.emit(self.item.options.app_name))
         self.ui.force_button.clicked.connect(lambda: self.force.emit(self.item))
 
-    @pyqtSlot(InstallDownloadModel)
+    @Slot(InstallDownloadModel)
     def __update_info(self, download: InstallDownloadModel):
         self.item.download = download
         if self.item:

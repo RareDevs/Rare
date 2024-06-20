@@ -10,9 +10,9 @@ from typing import TYPE_CHECKING, Optional, Set
 from typing import Tuple, Dict, Union, Type, List, Callable
 
 import requests
-from PyQt5.QtCore import Qt, pyqtSignal, QObject, QSize, QThreadPool, QRunnable, QRect, QRectF, pyqtSlot
-from PyQt5.QtGui import QPixmap, QImage, QPainter, QPainterPath, QBrush, QTransform, QPen
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtCore import Qt, Signal, QObject, QSize, QThreadPool, QRunnable, QRect, QRectF, Slot
+from PySide6.QtGui import QPixmap, QImage, QPainter, QPainterPath, QBrush, QTransform, QPen
+from PySide6.QtWidgets import QApplication
 from legendary.models.game import Game
 
 from rare.lgndr.core import LegendaryCore
@@ -41,7 +41,7 @@ class ImageManager(QObject):
     class Worker(QRunnable):
         class Signals(QObject):
             # object: Game
-            completed = pyqtSignal(object)
+            completed = Signal(object)
 
         def __init__(self, func: Callable, updates: List, json_data: Dict, game: Game):
             super(ImageManager.Worker, self).__init__()
@@ -377,7 +377,7 @@ class ImageManager(QObject):
     def __append_to_queue(self, game: Game):
         self.__worker_app_names.add(game.app_name)
 
-    @pyqtSlot(object)
+    @Slot(object)
     def __remove_from_queue(self, game: Game):
         self.__worker_app_names.remove(game.app_name)
 
