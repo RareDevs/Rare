@@ -73,10 +73,10 @@ class StoreItemWidget(ItemWidget):
         #     logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
 
 
-class ResultsItemWidget(ItemWidget):
+class SearchItemWidget(ItemWidget):
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
-        super(ResultsItemWidget, self).__init__(manager, catalog_game, parent=parent)
-        self.setFixedSize(ImageSize.DisplayTall)
+        super(SearchItemWidget, self).__init__(manager, catalog_game, parent=parent)
+        self.setFixedSize(ImageSize.LibraryTall)
         self.ui.setupUi(self)
 
         key_images = catalog_game.keyImages
