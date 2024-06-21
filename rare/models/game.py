@@ -468,7 +468,7 @@ class RareGame(RareGameSlim):
         self.signals.widget.update.emit()
 
     def grant_date(self, force=False) -> datetime:
-        if (entitlements := self.core.lgd.entitlements) is None:
+        if not (entitlements := self.core.lgd.entitlements):
             return self.metadata.grant_date
         if self.metadata.grant_date == datetime.min.replace(tzinfo=UTC) or force:
             logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
