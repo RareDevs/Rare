@@ -42,7 +42,8 @@ class IndicatorReasonsCommon(IntEnum):
     DIR_NOT_EMPTY = 5
     DIR_NOT_EXISTS = 6
     FILE_NOT_EXISTS = 7
-    NOT_INSTALLED = 8
+    GAME_NOT_INSTALLED = 8
+    GAME_NOT_EXISTS = 9
 
 
 class IndicatorReasons(IntEnum):
@@ -74,7 +75,8 @@ class IndicatorReasonsStrings(QObject):
             IndicatorReasonsCommon.DIR_NOT_EMPTY: self.tr("Directory is not empty"),
             IndicatorReasonsCommon.DIR_NOT_EXISTS: self.tr("Directory does not exist"),
             IndicatorReasonsCommon.FILE_NOT_EXISTS: self.tr("File does not exist"),
-            IndicatorReasonsCommon.NOT_INSTALLED: self.tr("Game is not installed or does not exist"),
+            IndicatorReasonsCommon.GAME_NOT_INSTALLED: self.tr("Game is not installed"),
+            IndicatorReasonsCommon.GAME_NOT_EXISTS: self.tr("Game does not exist"),
         }
 
     def __getitem__(self, item: int) -> str:
