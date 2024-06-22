@@ -1,5 +1,6 @@
 import platform
 import random
+from abc import abstractmethod
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent
@@ -97,10 +98,27 @@ class GameWidget(LibraryWidget):
             "not_can_launch": self.tr("Can't launch"),
         }
 
+        self._ui = None
+
     # lk: abstract class for typing, the `self.ui` attribute should be used
     # lk: by the Ui class in the children. It must contain at least the same
     # lk: attributes as `GameWidgetUi` class
-    __slots__ = "ui", "update_pixmap", "start_progress"
+
+    @property
+    def ui(self):
+        return self._ui
+
+    @ui.setter
+    def ui(self, arg):
+        self._ui = arg
+
+    @abstractmethod
+    def update_pixmap(self):
+        pass
+
+    @abstractmethod
+    def start_progress(self):
+        pass
 
     def paintEvent(self, a0: QPaintEvent) -> None:
         if not self.visibleRegion().isNull() and not self.rgame.has_pixmap:
@@ -212,10 +230,10 @@ class GameWidget(LibraryWidget):
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
         # left button
-        if e.button() == 1:
+        if e.button() == Qt.MouseButton.LeftButton:
             self.show_info.emit(self.rgame)
         # right
-        elif e.button() == 2:
+        elif e.button() == Qt.MouseButton.RightButton:
             super(GameWidget, self).mousePressEvent(e)
 
     @pyqtSlot()
