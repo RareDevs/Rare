@@ -693,9 +693,9 @@ QTabBar#MainTabBar::tab:top:selected {
     border-color: rgb( 72,  61, 139);
     border-bottom-color: rgb( 32,  34,  37);
 }
+
 QPushButton#TabButtonWidget,
 QToolButton#TabButtonWidget {
-    padding: 0px;
     border-color: rgb( 51, 54, 59);
 }
 QPushButton#TabButtonWidget:disabled,
