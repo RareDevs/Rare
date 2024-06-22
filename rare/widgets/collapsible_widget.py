@@ -24,7 +24,7 @@ class CollapsibleBase(object):
         # Adapted from python version
         https://newbedev.com/how-to-make-an-expandable-collapsable-section-widget-in-qt
     """
-    def __init__(self):
+    def __init__(self, parent=None):
         self.animation_duration = None
         self.toggle_animation = None
         self.content_area = None
