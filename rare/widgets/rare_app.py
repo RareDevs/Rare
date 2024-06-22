@@ -116,10 +116,6 @@ class RareApp(QApplication):
 
         self.settings = QSettings(self)
 
-        # # Translator
-        # self.translator = QTranslator(self)
-        # self.qt_translator = QTranslator(self)
-
         # Style
         # lk: this is a bit silly but serves well until we have a class
         # lk: store the default qt style name from the system on startup as a property for later reference
