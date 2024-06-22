@@ -106,7 +106,6 @@ class MoveDialog(ActionDialog):
 
     def path_edit_callback(self, path: str) -> Tuple[bool, str, int]:
         self.accept_button.setEnabled(True)
-        self.warn_label.setHidden(False)
         self.req_space.setText("...")
         self.avail_space.setText("...")
 
@@ -177,10 +176,11 @@ class MoveDialog(ActionDialog):
         self.path_edit.setText(self.rgame.install_path)
         # FIXME: Make edit_func lighter instead of blocking signals
         # self.path_edit.line_edit.blockSignals(False)
-        self.setActive(False)
         self.warn_label.setText(
-            self.tr("Moving here will overwrite <b>{}</b>").format(os.path.basename(self.rgame.install_path))
+            self.warn_label.tr("Moving here will overwrite <b>{}</b>").format(os.path.basename(self.rgame.install_path))
         )
+        self.warn_label.setHidden(False)
+        self.setActive(False)
         self.refresh_indicator()
 
     def update_game(self, rgame: RareGame):
