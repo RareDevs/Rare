@@ -75,8 +75,8 @@ class RareGame(RareGameSlim):
         def __bool__(self):
             return self.queued or self.queue_pos is not None or self.last_played is not None
 
-    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
-        super(RareGame, self).__init__(legendary_core, game)
+    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game, parent=None):
+        super(RareGame, self).__init__(legendary_core, game, parent=parent)
         self.__origin_install_path: Optional[str] = None
         self.__origin_install_size: Optional[int] = None
 
@@ -583,8 +583,8 @@ class RareGame(RareGameSlim):
 
 
 class RareEosOverlay(RareGameBase):
-    def __init__(self, legendary_core: LegendaryCore, game: Game):
-        super(RareEosOverlay, self).__init__(legendary_core, game)
+    def __init__(self, legendary_core: LegendaryCore, game: Game, parent=None):
+        super(RareEosOverlay, self).__init__(legendary_core, game, parent=parent)
         self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
 
     @property

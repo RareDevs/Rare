@@ -148,7 +148,7 @@ class RareLauncher(RareApp):
         if not game:
             self.logger.error(f"Game {args.app_name} not found. Exiting")
             return
-        self.rgame = RareGameSlim(self.core, game)
+        self.rgame = RareGameSlim(self.core, game, self)
 
         language = self.settings.value(*options.language)
         self.load_translator(language)
