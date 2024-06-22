@@ -23,8 +23,8 @@ python -m nuitka \
 --prefer-source-code \
 --include-package=pypresence \
 --include-package-data=qtawesome \
---include-data-dir=rare/resources/images=rare/resources/images \
---include-data-files=rare/resources/languages=rare/resources/languages="*.qm" \
+--include-data-dir=rare/resources/images/=rare/resources/images/ \
+--include-data-files=rare/resources/languages/=rare/resources/languages/="rare_*.qm" \
 --windows-icon-from-ico=rare/resources/images/Rare.ico \
 --windows-company-name=Rare \
 --windows-product-name=Rare \
