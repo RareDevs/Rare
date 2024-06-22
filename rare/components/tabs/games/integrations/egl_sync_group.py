@@ -188,9 +188,9 @@ class EGLSyncGroup(QGroupBox):
 
 
 class EGLSyncListItem(QListWidgetItem):
-    def __init__(self, game: Union[EGLManifest,InstalledGame], parent=None):
-        super(EGLSyncListItem, self).__init__(parent=parent)
-        self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
+    def __init__(self, game: Union[EGLManifest, InstalledGame]):
+        super(EGLSyncListItem, self).__init__()
+        self.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsUserCheckable)
         self.setCheckState(Qt.CheckState.Unchecked)
         self.core = RareCore.instance().core()
         self.game = game
@@ -214,8 +214,8 @@ class EGLSyncListItem(QListWidgetItem):
 
 
 class EGLSyncExportItem(EGLSyncListItem):
-    def __init__(self, game: InstalledGame, parent=None):
-        super(EGLSyncExportItem, self).__init__(game=game, parent=parent)
+    def __init__(self, game: InstalledGame):
+        super(EGLSyncExportItem, self).__init__(game=game)
 
     def action(self) -> Union[str,bool]:
         error = False
@@ -231,8 +231,8 @@ class EGLSyncExportItem(EGLSyncListItem):
 
 
 class EGLSyncImportItem(EGLSyncListItem):
-    def __init__(self, game: EGLManifest, parent=None):
-        super(EGLSyncImportItem, self).__init__(game=game, parent=parent)
+    def __init__(self, game: EGLManifest):
+        super(EGLSyncImportItem, self).__init__(game=game)
 
     def action(self) -> Union[str,bool]:
         error = False
@@ -317,9 +317,9 @@ class EGLSyncExportGroup(EGLSyncListGroup):
             self.ui.list.clear()
             for item in self.core.egl_get_exportable():
                 try:
-                    i = EGLSyncExportItem(item, self.ui.list)
-                except AttributeError:
-                    logger.error(f"{item.app_name} does not work. Ignoring")
+                    i = EGLSyncExportItem(item)
+                except AttributeError as e:
+                    logger.error("%s(%s) constructor failed with %s", type(self).__name__, item.app_name, e)
                 else:
                     self.ui.list.addItem(i)
         super(EGLSyncExportGroup, self).populate(enabled)
@@ -356,9 +356,9 @@ class EGLSyncImportGroup(EGLSyncListGroup):
             self.ui.list.clear()
             for item in self.core.egl_get_importable():
                 try:
-                    i = EGLSyncImportItem(item, self.ui.list)
-                except AttributeError:
-                    logger.error(f"{item.app_name} does not work. Ignoring")
+                    i = EGLSyncImportItem(item)
+                except AttributeError as e:
+                    logger.error("%s(%s) constructor failed with %s", type(self).__name__, item.app_name, e)
                 else:
                     self.ui.list.addItem(i)
         super(EGLSyncImportGroup, self).populate(enabled)
