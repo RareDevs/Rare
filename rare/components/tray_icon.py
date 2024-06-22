@@ -73,11 +73,7 @@ class TrayIcon(QSystemTrayIcon):
             action.deleteLater()
         self.game_actions.clear()
         for rgame in self.last_played():
-            a = QAction(rgame.app_title)
-            a.setProperty("app_name", rgame.app_name)
-            a.triggered.connect(
-                lambda: self.rcore.get_game(self.sender().property("app_name")).launch()
-            )
+            a = TrayAction(self.rcore, rgame.app_title, rgame.app_name)
             self.menu.insertAction(self.separator, a)
             self.game_actions.append(a)
 
@@ -86,3 +82,14 @@ class TrayIcon(QSystemTrayIcon):
         if action := next((i for i in self.game_actions if i.property("app_name") == app_name), None):
             self.game_actions.remove(action)
             action.deleteLater()
+
+
+class TrayAction(QAction):
+    def __init__(self, rcore: RareCore, text: str, app_name: str):
+        super(TrayAction, self).__init__(text=text)
+        self.rcore = rcore
+        self.app_name = app_name
+        self.triggered.connect(self.__on_triggered)
+
+    def __on_triggered(self):
+        self.rcore.get_game(self.app_name).launch()
