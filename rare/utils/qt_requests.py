@@ -107,7 +107,7 @@ class QtRequests(QObject):
             self.log.error("QNetworkReply: %s without associated item", reply.url().toString())
             reply.deleteLater()
             return
-        if reply.error():
+        if reply.error() != QNetworkReply.NetworkError.NoError:
             self.log.error(reply.errorString())
         else:
             mimetype, charset = self.__parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))

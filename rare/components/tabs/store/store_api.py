@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import List, Callable, Tuple
+from typing import Callable, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QApplication
@@ -97,13 +97,13 @@ class StoreAPI(QObject):
         except KeyError as e:
             if DEBUG():
                 raise e
-            logger.exception("Free games API request failed")
+            logger.error("Free games API request failed")
             handle_func(["error", "Key error"])
             return
         except Exception as e:
             if DEBUG():
                 raise e
-            logger.exception(f"Free games API request failed")
+            logger.error(f"Free games API request failed")
             handle_func(["error", e])
             return
 
@@ -133,14 +133,14 @@ class StoreAPI(QObject):
             response = ResponseModel.from_dict(data)
             handler(response.data.catalog.searchStore.elements)
         except KeyError as e:
-            logger.error(str(e))
             if DEBUG():
                 raise e
+            logger.error(str(e))
             handler([])
         except Exception as e:
-            logger.error(f"Search Api request failed: {e}")
             if DEBUG():
                 raise e
+            logger.error(f"Search Api request failed: {e}")
             handler([])
             return
 
