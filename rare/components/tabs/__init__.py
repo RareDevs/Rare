@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
 
 from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
@@ -29,28 +29,33 @@ class MainTabWidget(QTabWidget):
 
         # Generate Tabs
         self.games_tab = GamesLibrary(self)
-        self.games_index = self.addTab(self.games_tab, self.tr("Games"))
+        self.games_index = self.addTab(self.games_tab, qta_icon("mdi.gamepad-circle"), self.tr("Games"))
 
         # Downloads Tab after Games Tab to use populated RareCore games list
         self.downloads_tab = DownloadsTab(self)
-        self.downloads_index = self.addTab(self.downloads_tab, "")
+        self.downloads_index = self.addTab(self.downloads_tab, qta_icon("mdi.download-circle"), "")
         self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
         self.downloads_tab.update_queues_count()
         self.setTabEnabled(self.downloads_index, not self.args.offline)
 
         if not self.args.offline:
             self.store_tab = StoreTab(self.core, parent=self)
-            self.store_index = self.addTab(self.store_tab, self.tr("Store (Beta)"))
+            self.store_index = self.addTab(self.store_tab, qta_icon("mdi.storefront"), self.tr("Store (Beta)"))
             self.setTabEnabled(self.store_index, not self.args.offline)
 
         # Space Tab
         space_index = self.addTab(QWidget(self), "")
         self.setTabEnabled(space_index, False)
         self.tab_bar.expanded = space_index
-        # Button
-        button_index = self.addTab(QWidget(self), "")
-        self.setTabEnabled(button_index, False)
 
+        # Settings Tab
+        self.settings_tab = SettingsTab(self)
+        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear"), "")
+        self.settings_tab.about.update_available_ready.connect(
+            lambda: self.tab_bar.setTabText(self.settings_index, "(!)")
+        )
+
+        # Account Button
         self.account_widget = AccountWidget(self)
         self.account_widget.exit_app.connect(self.__on_exit_app)
         account_action = QWidgetAction(self)
@@ -59,15 +64,7 @@ class MainTabWidget(QTabWidget):
         account_menu = QMenu(account_button)
         account_menu.addAction(account_action)
         account_button.setMenu(account_menu)
-        self.tab_bar.setTabButton(
-            button_index, MainTabBar.ButtonPosition.RightSide, account_button
-        )
-
-        self.settings_tab = SettingsTab(self)
-        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear"), "")
-        self.settings_tab.about.update_available_ready.connect(
-            lambda: self.tab_bar.setTabText(self.settings_index, "(!)")
-        )
+        self.tab_bar.setButton(account_button)
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
