@@ -193,15 +193,15 @@ More information is available in CONTRIBUTING.md.
 
 ## Screenshots
 
-| Game covers                                  | Vertical list                                |
-|----------------------------------------------|----------------------------------------------|
-| ![alt text](Screenshots/RareLibraryIcon.png) | ![alt text](Screenshots/RareLibraryList.png) |
+| Game covers                                   | Vertical list                                |
+|-----------------------------------------------|----------------------------------------------|
+| ![alt text](/docs/assets/RareLibraryIcon.png) | ![alt text](/docs/assets/RareLibraryList.png) |
 
 | Game details                              | Game settings                                 |
 |-------------------------------------------|-----------------------------------------------|
-| ![alt text](Screenshots/RareGameInfo.png) | ![alt text](Screenshots/RareGameSettings.png) |
+| ![alt text](/docs/assets/RareGameInfo.png) | ![alt text](/docs/assets/RareGameSettings.png) |
 
 | Downloads                                  | Application settings                      |
 |--------------------------------------------|-------------------------------------------|
-| ![alt text](Screenshots/RareDownloads.png) | ![alt text](Screenshots/RareSettings.png) |
+| ![alt text](/docs/assets/RareDownloads.png) | ![alt text](/docs/assets/RareSettings.png) |
 

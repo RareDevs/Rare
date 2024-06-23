@@ -29,17 +29,17 @@ Rare is a graphical interface for Legendary, a command line alternative to Epic 
 
 ## Screenshots
 
-| Game covers                                     | Vertical list                                   |
-|-------------------------------------------------|-------------------------------------------------|
-| ![alt text](../Screenshots/RareLibraryIcon.png) | ![alt text](../Screenshots/RareLibraryList.png) |
+| Game covers                                   | Vertical list                                 |
+|-----------------------------------------------|-----------------------------------------------|
+| ![alt text](/Rare/assets/RareLibraryIcon.png) | ![alt text](/Rare/assets/RareLibraryList.png) |
 
-| Game details                              | Game settings                                 |
-|-------------------------------------------|-----------------------------------------------|
-| ![alt text](../Screenshots/RareGameInfo.png) | ![alt text](../Screenshots/RareGameSettings.png) |
+| Game details                               | Game settings                                  |
+|--------------------------------------------|------------------------------------------------|
+| ![alt text](/Rare/assets/RareGameInfo.png) | ![alt text](/Rare/assets/RareGameSettings.png) |
 
-| Downloads                                  | Application settings                      |
-|--------------------------------------------|-------------------------------------------|
-| ![alt text](../Screenshots/RareDownloads.png) | ![alt text](../Screenshots/RareSettings.png) |
+| Downloads                                   | Application settings                       |
+|---------------------------------------------|--------------------------------------------|
+| ![alt text](/Rare/assets/RareDownloads.png) | ![alt text](/Rare/assets/RareSettings.png) |
 
 
 
