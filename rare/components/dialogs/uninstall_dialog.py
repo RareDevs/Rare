@@ -47,14 +47,15 @@ class UninstallDialog(ButtonDialog):
         self.accept_button.setIcon(qta_icon("ri.uninstall-line"))
         self.accept_button.setObjectName("UninstallButton")
 
-        self.keep_files.stateChanged.connect(self.__on_keep_files_changed)
+        self.keep_files.checkStateChanged.connect(self.__on_keep_files_changed)
 
         self.options: UninstallOptionsModel = options
 
-    @Slot(int)
-    def __on_keep_files_changed(self, state: int):
-        self.keep_folder.setCheckState(state if state else Qt.CheckState.Checked)
-        self.keep_folder.setEnabled(not state)
+    @Slot(Qt.CheckState)
+    def __on_keep_files_changed(self, state: Qt.CheckState):
+        enabled = state != Qt.CheckState.Unchecked
+        self.keep_folder.setCheckState(state if enabled else Qt.CheckState.Checked)
+        self.keep_folder.setDisabled(enabled)
 
     def done_handler(self) -> None:
         self.result_ready.emit(self.options)
