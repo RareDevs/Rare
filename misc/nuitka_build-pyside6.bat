@@ -31,5 +31,3 @@ python -m nuitka ^
 --windows-product-version=0.0.0.0 ^
 --enable-console ^
 rare
-copy rare.dist\libcrypto-1_1.dll rare.dist\libcrypto-1_1-x64.dll
-copy rare.dist\libssl-1_1.dll rare.dist\libssl-1_1-x64.dll
