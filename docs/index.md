@@ -27,33 +27,20 @@ Rare is a graphical interface for Legendary, a command line alternative to Epic 
 
 
 
-## Reporting issues
+## Screenshots
 
-If you run into any issues, you can report them by creating an issue on GitHub:
-https://github.com/RareDevs/Rare/issues/new/choose
+| Game covers                                     | Vertical list                                   |
+|-------------------------------------------------|-------------------------------------------------|
+| ![alt text](../Screenshots/RareLibraryIcon.png) | ![alt text](../Screenshots/RareLibraryList.png) |
 
-When reporting issues, it is helpful to also include the logs with your issue.
-You can find the longs in the following locations depending on your operating system
+| Game details                              | Game settings                                 |
+|-------------------------------------------|-----------------------------------------------|
+| ![alt text](../Screenshots/RareGameInfo.png) | ![alt text](../Screenshots/RareGameSettings.png) |
 
-| OS      | Path                                                     |
-|---------|----------------------------------------------------------|
-| Windows | `C:\Users\<username>\AppData\Local\Rare\Rare\cache\logs` |
-| Linux   | `/home/<username>/.cache/Rare/Rare/logs`                 |
-| masOS   | `/Users/<username>/Library/Caches/Rare/Rare/logs`        |
+| Downloads                                  | Application settings                      |
+|--------------------------------------------|-------------------------------------------|
+| ![alt text](../Screenshots/RareDownloads.png) | ![alt text](../Screenshots/RareSettings.png) |
 
-In these folders you will find files named like below
-
-- `Rare_23-12-19--11-14.log`
-
-These are the logs for the main Rare application. As such are importand when Rare itself is crashing.
- 
-- `RareLauncher_f4e0c1dff48749fa9145c1585699e276_23-12-17--19-53.log`
-
-These are the logs for each of the games you run through Rare. Rare uses a separate instance of itself
-to launch games, and these are the logs of that instance.
-
-If you don't have a GitHub account or you just want to chat, you also can contact us on Discord:
-https://discord.gg/YvmABK9YSk
 
 
 
@@ -180,6 +167,36 @@ environment's `PATH`
 
 
 
+## Reporting issues
+
+If you run into any issues, you can report them by creating an issue on GitHub:
+https://github.com/RareDevs/Rare/issues/new/choose
+
+When reporting issues, it is helpful to also include the logs with your issue.
+You can find the longs in the following locations depending on your operating system
+
+| OS      | Path                                                     |
+|---------|----------------------------------------------------------|
+| Windows | `C:\Users\<username>\AppData\Local\Rare\Rare\cache\logs` |
+| Linux   | `/home/<username>/.cache/Rare/Rare/logs`                 |
+| masOS   | `/Users/<username>/Library/Caches/Rare/Rare/logs`        |
+
+In these folders you will find files named like below
+
+- `Rare_23-12-19--11-14.log`
+
+These are the logs for the main Rare application. As such are importand when Rare itself is crashing.
+ 
+- `RareLauncher_f4e0c1dff48749fa9145c1585699e276_23-12-17--19-53.log`
+
+These are the logs for each of the games you run through Rare. Rare uses a separate instance of itself
+to launch games, and these are the logs of that instance.
+
+If you don't have a GitHub account or you just want to chat, you also can contact us on Discord:
+https://discord.gg/YvmABK9YSk
+
+
+
 ## Contributing
 
 There are several options to contribute.
@@ -190,18 +207,4 @@ There are several options to contribute.
 More information is available in CONTRIBUTING.md.
 
 
-
-## Screenshots
-
-| Game covers                                  | Vertical list                                |
-|----------------------------------------------|----------------------------------------------|
-| ![alt text](Screenshots/RareLibraryIcon.png) | ![alt text](Screenshots/RareLibraryList.png) |
-
-| Game details                              | Game settings                                 |
-|-------------------------------------------|-----------------------------------------------|
-| ![alt text](Screenshots/RareGameInfo.png) | ![alt text](Screenshots/RareGameSettings.png) |
-
-| Downloads                                  | Application settings                      |
-|--------------------------------------------|-------------------------------------------|
-| ![alt text](Screenshots/RareDownloads.png) | ![alt text](Screenshots/RareSettings.png) |
 
