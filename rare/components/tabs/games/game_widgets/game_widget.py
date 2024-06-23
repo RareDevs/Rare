@@ -200,6 +200,10 @@ class GameWidget(LibraryWidget):
             self.addAction(self.uninstall_action)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
+        if not isinstance(a1, QEvent):
+            # FIXME: investigate why this happens
+            logger.error("Supplied arg1 %s with target %s is not a QEvent object", type(a1), type(a0))
+            return True
         if a0 is self.ui.launch_btn:
             if a1.type() == QEvent.Type.Enter:
                 if not self.rgame.can_launch:
