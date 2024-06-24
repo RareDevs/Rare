@@ -236,6 +236,7 @@ class GameWidget(LibraryWidget):
         # left button
         if e.button() == Qt.MouseButton.LeftButton:
             self.show_info.emit(self.rgame)
+            e.accept()
         # right
         elif e.button() == Qt.MouseButton.RightButton:
             super(GameWidget, self).mousePressEvent(e)
