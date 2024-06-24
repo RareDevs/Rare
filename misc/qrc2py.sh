@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-_rcc_cmd="pyrcc5 -compress 6 -threshold 0"
+_rcc_cmd="pyside6-rcc --compress 6 --threshold 0"
 
 cwd="$(pwd)"
 cd "$(dirname "${0}")"/../ || exit

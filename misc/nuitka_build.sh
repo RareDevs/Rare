@@ -8,7 +8,7 @@ python -m nuitka \
 --static-libpython=no \
 --standalone \
 --enable-plugin=anti-bloat \
---enable-plugin=pyqt5 \
+--enable-plugin=pyside6 \
 --show-modules \
 --show-anti-bloat-changes \
 --follow-stdlib \
