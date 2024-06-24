@@ -33,6 +33,8 @@ class SideTabBar(QTabBar):
         self.padding = padding
         self.fm = QFontMetrics(self.font())
 
+    # NOTE: if we ever implement a QProxyStyle, this is likely to conflict
+
     def tabSizeHint(self, index):
         width = QTabBar.tabSizeHint(self, index).height()
         if self.padding < 0:
@@ -47,19 +49,9 @@ class SideTabBar(QTabBar):
 
         for i in range(self.count()):
             self.initStyleOption(opt, i)
-            painter.drawControl(QStyle.ControlElement.CE_TabBarTabShape, opt)
             painter.save()
-
-            s = opt.rect.size()
-            s.transpose()
-            r = QRect(QPoint(), s)
-            r.moveCenter(opt.rect.center())
-            opt.rect = r
-
-            c = self.tabRect(i).center()
-            painter.translate(c)
-            painter.rotate(90)
-            painter.translate(-c)
+            painter.drawControl(QStyle.ControlElement.CE_TabBarTabShape, opt)
+            opt.shape = QTabBar.Shape.RoundedNorth
             painter.drawControl(QStyle.ControlElement.CE_TabBarTabLabel, opt)
             painter.restore()
 
