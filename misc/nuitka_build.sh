@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 python -m nuitka \
 --assume-yes-for-downloads \
 --mingw64 \

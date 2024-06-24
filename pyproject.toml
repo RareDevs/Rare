@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 120
-target-version = ['py39', 'py310', 'py311']
+target-version = ['py39', 'py310', 'py311', 'py312']
 include = '\.py$'
 force-exclude = '''
 /(
@@ -13,27 +13,27 @@ force-exclude = '''
 [tool.poetry]
 name = "rare"
 version = "1.10.11"
-description = "A GUI for Legendary"
-authors = ["Dummerle"]
+description = "A gui for legendary"
+authors = ["RareDevs"]
 license = "GPL3"
 readme = "README.md"
 repository = "https://github.com/RareDevs/Rare"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-PyQt5 = "^5.15.7"
 requests = "^2.28.1"
+PyQt5 = "^5.15.7"
 QtAwesome = "^1.1.1"
-pypresence = { version = "^4.2.1", optional = true }
-pywin32 = { version = "^304", markers = "platform_system == 'Windows'" }
+legendary-gl = "^0.20.34"
 pywebview = [
     { version = "^3.6.3", extras = ["cef"], platform = "windows", optional = true },
     { version = "^3.6.3", extras = ["gtk"], platform = "linux", optional = true },
     { version = "^3.6.3", extras = ["gtk"], platform = "freebsd", optional = true },
 ]
-legendary-gl = "^0.20.34"
 orjson = "^3.8.0"
 vdf = "^4.3"
+pywin32 = { version = "^304", markers = "platform_system == 'Windows'" }
+pypresence = { version = "^4.2.1", optional = true }
 
 [tool.poetry.scripts]
 start = "rare.main:main"
@@ -50,22 +50,26 @@ PyQt5-stubs = "^5.15.6.0"
 
 [nuitka]
 assume-yes-for-downloads = true
-follow-imports = true
 prefer-source-code = true
 mingw64 = true
-lto = true
+lto = false
+jobs = 4
 static-libpython = false
 standalone = true
 show-scons = false
 enable-plugin = ["anti-bloat", "pyqt5"]
 show-anti-bloat-changes = true
-nofollow-import-to = ["*.tests", "*.distutils"]
+follow-stdlib = true
+follow-imports = true
+nofollow-import-to = ["*.tests", "*.distutils", "distutils", "unittest", "pydoc", "tkinter", "test"]
+prefer-source-code = true
+include-package = "pypresence"
 include-package-data = "qtawesome"
-include-data-dir = "rare/resources/images=rare/resources/images"
-include-data-files = "rare/resources/languages=rare/resources/laguanges=*.qm"
+include-data-dir = "rare/resources/images/=rare/resources/images/"
+include-data-files = "rare/resources/languages/=rare/resources/laguanges/=rare_*.qm"
 windows-icon-from-ico = "rare/resources/images/Rare.ico"
 windows-company-name = "Rare"
 windows-product-name = "Rare"
-windows-file-version = "1.9.0"
-windows-product-version = "1.9.0"
+windows-file-version = "1.10.11.0"
+windows-product-version = "1.10.11.0"
 windows-disable-console = true
