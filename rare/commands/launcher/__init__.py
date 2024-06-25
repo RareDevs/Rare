@@ -313,7 +313,7 @@ class RareLauncher(RareApp):
 
         if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
             if self.console:
-                self.console.log(f"Launching as a detached process")
+                self.console.log("Launching as a detached process")
             subprocess.Popen([args.executable] + args.arguments, cwd=args.working_directory,
                              env={i: args.environment.value(i) for i in args.environment.keys()})
             self.stop()  # stop because we do not attach to the output
