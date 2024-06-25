@@ -50,7 +50,6 @@ PyQt5-stubs = "^5.15.6.0"
 
 [nuitka]
 assume-yes-for-downloads = true
-prefer-source-code = true
 mingw64 = true
 lto = false
 jobs = 4
