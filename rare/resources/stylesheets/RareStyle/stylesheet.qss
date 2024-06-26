@@ -96,27 +96,6 @@ QScrollBar {
     selection-background-color: rgb( 39,  66,  66);
 }
 
-QLineEdit,
-QTextEdit,
-QTimeEdit,
-QDateEdit,
-QDateTimeEdit,
-QComboBox,
-QSpinBox,
-QDoubleSpinBox,
-QProgressBar,
-QScrollArea,
-QPushButton {
-    min-height: 3.00ex;
-    /* min-height: 1.30em; */
-    /* min-height: 18px; */
-}
-QToolButton {
-    min-height: 3.00ex;
-    /* min-height: 1.10em; */
-    /* min-height: 15px; */
-}
-
 QFrame[frameShape="0"] {
     border-width: 0px;
 }
@@ -322,7 +301,7 @@ QToolButton {
     border-width: 1px;
     border-style: solid;
     border-radius: 2px;
-    padding: 2px;
+    padding: 3px;
     padding-left: 6px;
     padding-right: 6px;
 }
