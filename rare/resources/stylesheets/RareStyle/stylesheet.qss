@@ -26,6 +26,9 @@ install-disabled:   #020 rgb(  0,  34,   0)   -- install
 uninstall-normal:   #700 rgb(119,   0,   0)   -- uninstall
 uninstall-hover:    #500 rgb( 85,   0,   0)   -- uninstall
 uninstall-disabled: #200 rgb( 34,   0,   0)   -- uninstall
+
+If you want to regenerate the file without any change, increase the following value
+Version iterator: 1
 */
 
 * {

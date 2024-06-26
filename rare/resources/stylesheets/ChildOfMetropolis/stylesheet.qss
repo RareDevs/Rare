@@ -26,6 +26,9 @@ install-disabled:   #020 #7D5380   -- install
 uninstall-normal:   #700 #FFB085   -- uninstall
 uninstall-hover:    #500 #BF8464   -- uninstall
 uninstall-disabled: #200 #805843   -- uninstall
+
+If you want to regenerate the file without any change, increase the following value
+Version iterator: 1
 */
 
 * {
