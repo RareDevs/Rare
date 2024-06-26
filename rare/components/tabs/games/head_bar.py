@@ -1,7 +1,6 @@
 import logging
 
-from PyQt5.QtCore import QSettings, pyqtSlot, QSize, Qt
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import QSettings, pyqtSignal, pyqtSlot, QSize, Qt
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QWidget,
@@ -108,6 +107,7 @@ class LibraryHeadBar(QWidget):
 
         integrations = QPushButton(parent=self)
         integrations.setText(self.tr("Integrations"))
+        integrations.setIcon(qta_icon("mdi.tools"))
         integrations.setMenu(integrations_menu)
 
         self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search"))

@@ -7,7 +7,6 @@ from .account import AccountWidget
 from .downloads import DownloadsTab
 from .games import GamesLibrary
 from .settings import SettingsTab
-from .settings.debug import DebugSettings
 from .store import StoreTab
 from .tab_widgets import MainTabBar, TabButtonWidget
 
@@ -29,18 +28,18 @@ class MainTabWidget(QTabWidget):
 
         # Generate Tabs
         self.games_tab = GamesLibrary(self)
-        self.games_index = self.addTab(self.games_tab, qta_icon("mdi.gamepad-circle"), self.tr("Games"))
+        self.games_index = self.addTab(self.games_tab, self.tr("Games"))
 
         # Downloads Tab after Games Tab to use populated RareCore games list
         self.downloads_tab = DownloadsTab(self)
-        self.downloads_index = self.addTab(self.downloads_tab, qta_icon("mdi.download-circle"), "")
+        self.downloads_index = self.addTab(self.downloads_tab, "")
         self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
         self.downloads_tab.update_queues_count()
         self.setTabEnabled(self.downloads_index, not self.args.offline)
 
         if not self.args.offline:
             self.store_tab = StoreTab(self.core, parent=self)
-            self.store_index = self.addTab(self.store_tab, qta_icon("mdi.storefront"), self.tr("Store (Beta)"))
+            self.store_index = self.addTab(self.store_tab, self.tr("Store (Beta)"))
             self.setTabEnabled(self.store_index, not self.args.offline)
 
         # Space Tab
