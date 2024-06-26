@@ -10,7 +10,19 @@ from signal import signal, SIGINT, SIGTERM, strsignal
 from typing import Optional
 
 # from PySide6.import sip
-from PySide6.QtCore import QObject, QProcess, Signal, QUrl, QRunnable, QThreadPool, QSettings, Qt, Slot, QTimer
+from PySide6.QtCore import (
+    QObject,
+    QProcess,
+    Signal,
+    QUrl,
+    QRunnable,
+    QThreadPool,
+    QSettings,
+    Qt,
+    Slot,
+    QTimer,
+    QMetaMethod,
+)
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
 from PySide6.QtWidgets import QApplication
@@ -394,14 +406,14 @@ class RareLauncher(RareApp):
             if self.console:
                 self.game_process.readyReadStandardOutput.disconnect()
                 self.game_process.readyReadStandardError.disconnect()
-            if self.game_process.receivers(self.game_process.finished):
+            if self.game_process.isSignalConnected(QMetaMethod.fromSignal(self.game_process.finished)):
                 self.game_process.finished.disconnect()
-            if self.game_process.receivers(self.game_process.errorOccurred):
+            if self.game_process.isSignalConnected(QMetaMethod.fromSignal(self.game_process.errorOccurred)):
                 self.game_process.errorOccurred.disconnect()
         except (TypeError, RuntimeError) as e:
             self.logger.error("Failed to disconnect process signals: %s", e)
 
-        if self.game_process.state() != QProcess.NotRunning:
+        if self.game_process.state() != QProcess.ProcessState.NotRunning:
             self.game_process.kill()
         exit_code = self.game_process.exitCode()
         self.game_process.deleteLater()
@@ -435,6 +447,7 @@ def launch(args: Namespace) -> int:
         app.logger.info("%s received. Stopping", strsignal(s))
         app.stop()
         app.exit(1)
+
     signal(SIGINT, sighandler)
     signal(SIGTERM, sighandler)
 
