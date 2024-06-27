@@ -1,7 +1,7 @@
 python -m nuitka ^
 --assume-yes-for-downloads ^
 --mingw64 ^
---lto=no ^
+--lto=yes ^
 --jobs=2 ^
 --static-libpython=no ^
 --standalone ^
