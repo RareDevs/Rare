@@ -227,7 +227,6 @@ class RareLauncher(RareApp):
 
     def socket_disconnected(self):
         self.logger.info("Server disconnected")
-        self.socket.deleteLater()
         self.socket = None
 
     def send_message(self, message: BaseModel):
