@@ -166,8 +166,8 @@ class DlThread(QThread):
                 req_path, req_exec = os.path.split(postinstall["path"])
                 work_dir = os.path.join(igame.install_path, req_path)
                 fullpath = os.path.join(work_dir, req_exec)
-                proc = QProcess()
-                proc.setProcessChannelMode(QProcess.MergedChannels)
+                proc = QProcess(self)
+                proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
                 proc.readyReadStandardOutput.connect(
                     lambda: logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
                 )
