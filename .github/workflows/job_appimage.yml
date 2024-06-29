@@ -24,7 +24,7 @@ jobs:
           sudo pip3 install appimage-builder
       - name: Build
         run: |
-          appimage-builder --skip-test
+          appimage-builder --recipe misc/AppImageBuilder.yml --skip-test
           mv Rare-*.AppImage Rare.AppImage
           mv Rare-*.AppImage.zsync Rare.AppImage.zsync
 

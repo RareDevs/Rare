@@ -25,6 +25,7 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
+          pip3 install -r requirements-webview.txt
       - name: Build
         run: |
           python freeze.py bdist_msi
