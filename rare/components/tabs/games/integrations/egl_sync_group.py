@@ -35,20 +35,20 @@ class EGLSyncGroup(QGroupBox):
             placeholder=self.tr(
                 "Path to the Wine prefix where EGL is installed, or the Manifests folder"
             ),
-            file_mode=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.FileMode.Directory,
             edit_func=self.egl_path_edit_edit_cb,
             save_func=self.egl_path_edit_save_cb,
             parent=self,
         )
         self.ui.egl_sync_layout.setWidget(
             self.ui.egl_sync_layout.getWidgetPosition(self.ui.egl_path_edit_label)[0],
-            QFormLayout.FieldRole, self.egl_path_edit
+            QFormLayout.ItemRole.FieldRole, self.egl_path_edit
         )
 
         self.egl_path_info = ElideLabel(parent=self)
         self.ui.egl_sync_layout.setWidget(
             self.ui.egl_sync_layout.getWidgetPosition(self.ui.egl_path_info_label)[0],
-            QFormLayout.FieldRole, self.egl_path_info
+            QFormLayout.ItemRole.FieldRole, self.egl_path_info
         )
 
         if platform.system() == "Windows":
@@ -145,21 +145,21 @@ class EGLSyncGroup(QGroupBox):
     def egl_path_changed(self, path):
         if self.egl_path_edit.is_valid:
             self.ui.egl_sync_check.setEnabled(bool(path))
-        self.ui.egl_sync_check.setCheckState(Qt.Unchecked)
+        self.ui.egl_sync_check.setCheckState(Qt.CheckState.Unchecked)
         # self.egl_watcher.removePaths([p for p in self.egl_watcher.directories()])
         # self.egl_watcher.addPaths([path])
         self.update_lists()
 
     def egl_sync_changed(self, state):
-        if state == Qt.Unchecked:
+        if state == Qt.CheckState.Unchecked:
             self.import_list.setEnabled(bool(self.import_list.items))
             self.export_list.setEnabled(bool(self.export_list.items))
             self.core.lgd.config.remove_option("Legendary", "egl_sync")
         else:
             self.core.lgd.config.set("Legendary", "egl_sync", str(True))
             # lk: do import/export here since automatic sync was selected
-            self.import_list.mark(Qt.Checked)
-            self.export_list.mark(Qt.Checked)
+            self.import_list.mark(Qt.CheckState.Checked)
+            self.export_list.mark(Qt.CheckState.Checked)
             sync_worker = EGLSyncWorker(self.import_list, self.export_list)
             QThreadPool.globalInstance().start(sync_worker)
             self.import_list.setEnabled(False)
@@ -188,16 +188,16 @@ class EGLSyncGroup(QGroupBox):
 
 
 class EGLSyncListItem(QListWidgetItem):
-    def __init__(self, game: Union[EGLManifest,InstalledGame], parent=None):
-        super(EGLSyncListItem, self).__init__(parent=parent)
-        self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
-        self.setCheckState(Qt.Unchecked)
+    def __init__(self, game: Union[EGLManifest, InstalledGame]):
+        super(EGLSyncListItem, self).__init__()
+        self.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsUserCheckable)
+        self.setCheckState(Qt.CheckState.Unchecked)
         self.core = RareCore.instance().core()
         self.game = game
         self.setText(self.app_title)
 
     def is_checked(self) -> bool:
-        return self.checkState() == Qt.Checked
+        return self.checkState() == Qt.CheckState.Checked
 
     @abstractmethod
     def action(self) -> Union[str, bool]:
@@ -214,8 +214,8 @@ class EGLSyncListItem(QListWidgetItem):
 
 
 class EGLSyncExportItem(EGLSyncListItem):
-    def __init__(self, game: InstalledGame, parent=None):
-        super(EGLSyncExportItem, self).__init__(game=game, parent=parent)
+    def __init__(self, game: InstalledGame):
+        super(EGLSyncExportItem, self).__init__(game=game)
 
     def action(self) -> Union[str,bool]:
         error = False
@@ -231,8 +231,8 @@ class EGLSyncExportItem(EGLSyncListItem):
 
 
 class EGLSyncImportItem(EGLSyncListItem):
-    def __init__(self, game: EGLManifest, parent=None):
-        super(EGLSyncImportItem, self).__init__(game=game, parent=parent)
+    def __init__(self, game: EGLManifest):
+        super(EGLSyncImportItem, self).__init__(game=game)
 
     def action(self) -> Union[str,bool]:
         error = False
@@ -254,19 +254,19 @@ class EGLSyncListGroup(QGroupBox):
         super(EGLSyncListGroup, self).__init__(parent=parent)
         self.ui = Ui_EGLSyncListGroup()
         self.ui.setupUi(self)
-        self.ui.list.setFrameShape(QFrame.NoFrame)
+        self.ui.list.setFrameShape(QFrame.Shape.NoFrame)
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
 
         self.ui.list.itemDoubleClicked.connect(
-            lambda item: item.setCheckState(Qt.Unchecked)
-            if item.checkState() != Qt.Unchecked
-            else item.setCheckState(Qt.Checked)
+            lambda item: item.setCheckState(Qt.CheckState.Unchecked)
+            if item.checkState() != Qt.CheckState.Unchecked
+            else item.setCheckState(Qt.CheckState.Checked)
         )
         self.ui.list.itemChanged.connect(self.has_selected)
 
-        self.ui.select_all_button.clicked.connect(lambda: self.mark(Qt.Checked))
-        self.ui.select_none_button.clicked.connect(lambda: self.mark(Qt.Unchecked))
+        self.ui.select_all_button.clicked.connect(lambda: self.mark(Qt.CheckState.Checked))
+        self.ui.select_none_button.clicked.connect(lambda: self.mark(Qt.CheckState.Unchecked))
 
         self.ui.action_button.clicked.connect(self.action)
 
@@ -317,9 +317,9 @@ class EGLSyncExportGroup(EGLSyncListGroup):
             self.ui.list.clear()
             for item in self.core.egl_get_exportable():
                 try:
-                    i = EGLSyncExportItem(item, self.ui.list)
-                except AttributeError:
-                    logger.error(f"{item.app_name} does not work. Ignoring")
+                    i = EGLSyncExportItem(item)
+                except AttributeError as e:
+                    logger.error("%s(%s) constructor failed with %s", type(self).__name__, item.app_name, e)
                 else:
                     self.ui.list.addItem(i)
         super(EGLSyncExportGroup, self).populate(enabled)
@@ -356,9 +356,9 @@ class EGLSyncImportGroup(EGLSyncListGroup):
             self.ui.list.clear()
             for item in self.core.egl_get_importable():
                 try:
-                    i = EGLSyncImportItem(item, self.ui.list)
-                except AttributeError:
-                    logger.error(f"{item.app_name} does not work. Ignoring")
+                    i = EGLSyncImportItem(item)
+                except AttributeError as e:
+                    logger.error("%s(%s) constructor failed with %s", type(self).__name__, item.app_name, e)
                 else:
                     self.ui.list.addItem(i)
         super(EGLSyncImportGroup, self).populate(enabled)

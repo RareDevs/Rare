@@ -36,7 +36,7 @@ class RareSettings(QWidget):
         for lang_code, title in get_translations():
             self.ui.lang_select.addItem(title, lang_code)
         language = self.settings.value(*options.language)
-        if (index := self.ui.lang_select.findData(language, Qt.UserRole)) > 0:
+        if (index := self.ui.lang_select.findData(language, Qt.ItemDataRole.UserRole)) > 0:
             self.ui.lang_select.setCurrentIndex(index)
         else:
             self.ui.lang_select.setCurrentIndex(0)
@@ -46,7 +46,7 @@ class RareSettings(QWidget):
         for item in get_color_schemes():
             self.ui.color_select.addItem(item, item)
         color = self.settings.value(*options.color_scheme)
-        if (index := self.ui.color_select.findData(color, Qt.UserRole)) > 0:
+        if (index := self.ui.color_select.findData(color, Qt.ItemDataRole.UserRole)) > 0:
             self.ui.color_select.setCurrentIndex(index)
             self.ui.color_select.setDisabled(False)
             self.ui.style_select.setDisabled(True)
@@ -58,7 +58,7 @@ class RareSettings(QWidget):
         for item in get_style_sheets():
             self.ui.style_select.addItem(item, item)
         style = self.settings.value(*options.style_sheet)
-        if (index := self.ui.style_select.findData(style, Qt.UserRole)) > 0:
+        if (index := self.ui.style_select.findData(style, Qt.ItemDataRole.UserRole)) > 0:
             self.ui.style_select.setCurrentIndex(index)
             self.ui.style_select.setDisabled(False)
             self.ui.color_select.setDisabled(True)
@@ -76,7 +76,7 @@ class RareSettings(QWidget):
         self.ui.view_combo.currentIndexChanged.connect(self.on_view_combo_changed)
 
         self.discord_rpc_settings = DiscordRPCSettings(self)
-        self.ui.right_layout.insertWidget(1, self.discord_rpc_settings, alignment=Qt.AlignTop)
+        self.ui.right_layout.insertWidget(1, self.discord_rpc_settings, alignment=Qt.AlignmentFlag.AlignTop)
 
         self.ui.sys_tray.setChecked(self.settings.value(*options.sys_tray))
         self.ui.sys_tray.stateChanged.connect(
@@ -197,7 +197,7 @@ class RareSettings(QWidget):
 
     @pyqtSlot(int)
     def on_color_select_changed(self, index: int):
-        scheme = self.ui.color_select.itemData(index, Qt.UserRole)
+        scheme = self.ui.color_select.itemData(index, Qt.ItemDataRole.UserRole)
         if scheme:
             self.ui.style_select.setCurrentIndex(0)
             self.ui.style_select.setDisabled(True)
@@ -208,7 +208,7 @@ class RareSettings(QWidget):
 
     @pyqtSlot(int)
     def on_style_select_changed(self, index: int):
-        style = self.ui.style_select.itemData(index, Qt.UserRole)
+        style = self.ui.style_select.itemData(index, Qt.ItemDataRole.UserRole)
         if style:
             self.ui.color_select.setCurrentIndex(0)
             self.ui.color_select.setDisabled(True)
@@ -219,7 +219,7 @@ class RareSettings(QWidget):
 
     @pyqtSlot(int)
     def on_view_combo_changed(self, index: int):
-        view = LibraryView(self.ui.view_combo.itemData(index, Qt.UserRole))
+        view = LibraryView(self.ui.view_combo.itemData(index, Qt.ItemDataRole.UserRole))
         self.settings.setValue(options.library_view.key, int(view))
 
     @pyqtSlot()
@@ -233,7 +233,7 @@ class RareSettings(QWidget):
 
     @pyqtSlot(int)
     def on_lang_changed(self, index: int):
-        lang_code = self.ui.lang_select.itemData(index, Qt.UserRole)
+        lang_code = self.ui.lang_select.itemData(index, Qt.ItemDataRole.UserRole)
         if lang_code == locale.getlocale()[0]:
             self.settings.remove(options.language.key)
         else:

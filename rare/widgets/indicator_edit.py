@@ -42,7 +42,8 @@ class IndicatorReasonsCommon(IntEnum):
     DIR_NOT_EMPTY = 5
     DIR_NOT_EXISTS = 6
     FILE_NOT_EXISTS = 7
-    NOT_INSTALLED = 8
+    GAME_NOT_INSTALLED = 8
+    GAME_NOT_EXISTS = 9
 
 
 class IndicatorReasons(IntEnum):
@@ -74,7 +75,8 @@ class IndicatorReasonsStrings(QObject):
             IndicatorReasonsCommon.DIR_NOT_EMPTY: self.tr("Directory is not empty"),
             IndicatorReasonsCommon.DIR_NOT_EXISTS: self.tr("Directory does not exist"),
             IndicatorReasonsCommon.FILE_NOT_EXISTS: self.tr("File does not exist"),
-            IndicatorReasonsCommon.NOT_INSTALLED: self.tr("Game is not installed or does not exist"),
+            IndicatorReasonsCommon.GAME_NOT_INSTALLED: self.tr("Game is not installed"),
+            IndicatorReasonsCommon.GAME_NOT_EXISTS: self.tr("Game does not exist"),
         }
 
     def __getitem__(self, item: int) -> str:
@@ -124,7 +126,7 @@ class IndicatorLineEdit(QWidget):
         completer: QCompleter = None,
         edit_func: Callable[[str], Tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
-        horiz_policy: QSizePolicy.Policy = QSizePolicy.Expanding,
+        horiz_policy: QSizePolicy.Policy = QSizePolicy.Policy.Expanding,
         parent=None,
     ):
         super(IndicatorLineEdit, self).__init__(parent=parent)
@@ -137,14 +139,14 @@ class IndicatorLineEdit(QWidget):
         self.line_edit.setObjectName(f"{type(self).__name__}Edit")
         self.line_edit.setPlaceholderText(placeholder if placeholder else self.tr("Use global/default settings"))
         self.line_edit.setToolTip(placeholder if placeholder else "")
-        self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Fixed)
+        self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Policy.Fixed)
         # Add completer
         self.setCompleter(completer)
         layout.addWidget(self.line_edit)
         if edit_func is not None:
             self.indicator_label = QLabel(self)
             self.indicator_label.setPixmap(qta_icon("ei.info-circle", color="gray").pixmap(16, 16))
-            self.indicator_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            self.indicator_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             layout.addWidget(self.indicator_label)
 
         self.__reasons = IndicatorReasonsStrings(self)
@@ -266,13 +268,13 @@ class PathEdit(IndicatorLineEdit):
     def __init__(
         self,
         path: str = "",
-        file_mode: QFileDialog.FileMode = QFileDialog.AnyFile,
-        file_filter: QDir.Filters = 0,
+        file_mode: QFileDialog.FileMode = QFileDialog.FileMode.AnyFile,
+        file_filter: QDir.Filter = 0,
         name_filters: List[str] = None,
         placeholder: str = "",
         edit_func: Callable[[str], Tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
-        horiz_policy: QSizePolicy.Policy = QSizePolicy.Expanding,
+        horiz_policy: QSizePolicy.Policy = QSizePolicy.Policy.Expanding,
         parent=None,
     ):
         self.__root_path = path if path else os.path.expanduser("~/")
@@ -280,9 +282,9 @@ class PathEdit(IndicatorLineEdit):
         self.__completer_model = QFileSystemModel(self.__completer)
         try:
             self.__completer_model.setOptions(
-                QFileSystemModel.DontWatchForChanges
-                | QFileSystemModel.DontResolveSymlinks
-                | QFileSystemModel.DontUseCustomDirectoryIcons
+                QFileSystemModel.Option.DontWatchForChanges
+                | QFileSystemModel.Option.DontResolveSymlinks
+                | QFileSystemModel.Option.DontUseCustomDirectoryIcons
             )
         except AttributeError as e:  # Error on Ubuntu
             logger.warning(e)
@@ -327,11 +329,11 @@ class PathEdit(IndicatorLineEdit):
         if not dlg_path or not os.path.isabs(dlg_path):
             dlg_path = self.__root_path
         dlg = QFileDialog(self, self.tr("Choose path"), dlg_path)
-        dlg.setOption(QFileDialog.DontUseCustomDirectoryIcons)
+        dlg.setOption(QFileDialog.Option.DontUseCustomDirectoryIcons)
         dlg.setIconProvider(PathEditIconProvider())
         dlg.setFileMode(self.__file_mode)
-        if self.__file_mode == QFileDialog.Directory:
-            dlg.setOption(QFileDialog.ShowDirsOnly, True)
+        if self.__file_mode == QFileDialog.FileMode.Directory:
+            dlg.setOption(QFileDialog.Option.ShowDirsOnly, True)
         if self.__file_filter:
             dlg.setFilter(self.__file_filter)
         if self.__name_filter:

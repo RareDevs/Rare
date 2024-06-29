@@ -20,10 +20,10 @@ resources_path = Path(__file__).absolute().parent.parent.joinpath("resources")
 
 # lk: delete old Rare directories
 for old_dir in [
-    Path(QStandardPaths.writableLocation(QStandardPaths.CacheLocation), "rare").joinpath("tmp"),
-    Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation), "rare").joinpath("images"),
-    Path(QStandardPaths.writableLocation(QStandardPaths.CacheLocation), "rare"),
-    Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation), "rare"),
+    Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation), "rare").joinpath("tmp"),
+    Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation), "rare").joinpath("images"),
+    Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation), "rare"),
+    Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation), "rare"),
 ]:
     if old_dir.exists():
         # lk: case-sensitive matching on Winblows
@@ -34,21 +34,21 @@ for old_dir in [
 # lk: TempLocation doesn't depend on OrganizationName or ApplicationName
 # lk: so it is fine to use it before initializing the QApplication
 def lock_file() -> Path:
-    return Path(QStandardPaths.writableLocation(QStandardPaths.TempLocation), "Rare.lock")
+    return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.TempLocation), "Rare.lock")
 
 
 def config_dir() -> Path:
     # FIXME: This returns ~/.config/Rare/Rare/ for some reason while the settings are in ~/.config/Rare/Rare.conf
     # Take the parent for now, but this should be investigated
-    return Path(QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation)).parent
+    return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppConfigLocation)).parent
 
 
 def data_dir() -> Path:
-    return Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation))
+    return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation))
 
 
 def cache_dir() -> Path:
-    return Path(QStandardPaths.writableLocation(QStandardPaths.CacheLocation))
+    return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation))
 
 
 def image_dir() -> Path:
@@ -87,15 +87,15 @@ def create_dirs() -> None:
 
 
 def home_dir() -> Path:
-    return Path(QStandardPaths.writableLocation(QStandardPaths.HomeLocation))
+    return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation))
 
 
 def desktop_dir() -> Path:
-    return Path(QStandardPaths.writableLocation(QStandardPaths.DesktopLocation))
+    return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DesktopLocation))
 
 
 def applications_dir() -> Path:
-    return Path(QStandardPaths.writableLocation(QStandardPaths.ApplicationsLocation))
+    return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.ApplicationsLocation))
 
 
 def proton_compat_dir(app_name: str) -> Path:

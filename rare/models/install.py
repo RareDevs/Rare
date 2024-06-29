@@ -91,7 +91,7 @@ class UninstallOptionsModel:
 
     @property
     def __values(self) -> Tuple[bool, bool, bool, bool, bool]:
-        return self.accepted, self.keep_config, self.keep_folder, self.keep_files, self.keep_overlay_keys
+        return self.accepted, self.keep_files, self.keep_folder, self.keep_config, self.keep_overlay_keys
 
     @__values.setter
     def __values(self, values: Tuple[bool, bool, bool, bool, bool]):
@@ -103,8 +103,8 @@ class UninstallOptionsModel:
     def __iter__(self):
         return iter(self.__values)
 
-    def set_accepted(self, keep_config, keep_folder, keep_files, keep_overlay_keys):
-        self.__values = True, keep_config, keep_folder, keep_files, keep_overlay_keys
+    def set_accepted(self, keep_files, keep_folder, keep_config, keep_overlay_keys):
+        self.__values = True, keep_files, keep_folder, keep_config, keep_overlay_keys
 
     def set_rejected(self):
         self.__values = False, None, None, None, None

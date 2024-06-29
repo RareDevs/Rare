@@ -62,19 +62,19 @@ class CloudSaves(QWidget, SideTabContents):
 
         self.cloud_save_path_edit = PathEdit(
             "",
-            file_mode=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.FileMode.Directory,
             placeholder=self.tr('Use "Calculate path" or "Browse" ...'),
             edit_func=self.edit_save_path,
             save_func=self.save_save_path,
         )
         self.cloud_ui.main_layout.setWidget(
             self.cloud_ui.main_layout.getWidgetPosition(self.cloud_ui.path_label)[0],
-            QFormLayout.FieldRole,
+            QFormLayout.ItemRole.FieldRole,
             self.cloud_save_path_edit
         )
 
         self.compute_save_path_button = QPushButton(qta_icon("fa.magic"), self.tr("Calculate path"))
-        self.compute_save_path_button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        self.compute_save_path_button.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         self.compute_save_path_button.clicked.connect(self.compute_save_path)
         self.cloud_ui.main_layout.addRow(None, self.compute_save_path_button)
 
@@ -88,9 +88,10 @@ class CloudSaves(QWidget, SideTabContents):
         layout.addWidget(self.sync_widget)
         layout.addWidget(self.cloud_widget)
         layout.addWidget(self.info_label)
-        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Fixed, QSizePolicy.Expanding))
+        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding))
 
-    def edit_save_path(self, text: str) -> Tuple[bool, str, int]:
+    @staticmethod
+    def edit_save_path(text: str) -> Tuple[bool, str, int]:
         if platform.system() != "Windows":
             if os.path.exists(text):
                 return True, text, IndicatorReasonsCommon.VALID

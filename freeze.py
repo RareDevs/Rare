@@ -3,8 +3,8 @@ from cx_Freeze import setup, Executable
 from rare import __version__
 
 name = 'Rare'
-author = 'Dummerle'
-description = 'A GUI for Legendary'
+author = 'RareDevs'
+description = 'A gui for legendary'
 
 shortcut_table = [
     ("DesktopShortcut",  # Shortcut

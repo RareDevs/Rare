@@ -34,25 +34,25 @@ class IconWidget(object):
         # game title
         self.title_label = QLabel(parent=self.mini_widget)
         self.title_label.setObjectName(f"{type(self).__name__}TitleLabel")
-        self.title_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.title_label.setAlignment(Qt.AlignTop)
+        self.title_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.title_label.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.title_label.setAutoFillBackground(False)
         self.title_label.setWordWrap(True)
 
         # information below title
         self.developer_label = QLabel(parent=self.mini_widget)
         self.developer_label.setObjectName(f"{type(self).__name__}TooltipLabel")
-        self.developer_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.developer_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         self.developer_label.setAutoFillBackground(False)
 
         self.price_label = QLabel(parent=self.mini_widget)
         self.price_label.setObjectName(f"{type(self).__name__}TooltipLabel")
-        self.price_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.price_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.price_label.setAutoFillBackground(False)
 
         self.discount_label = QLabel(parent=self.mini_widget)
         self.discount_label.setObjectName(f"{type(self).__name__}TooltipLabel")
-        self.discount_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.discount_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.discount_label.setAutoFillBackground(False)
 
         # Create layouts
@@ -67,7 +67,7 @@ class IconWidget(object):
         # layout for the top row, holds the title and the launch button
         row_layout = QHBoxLayout()
         row_layout.setSpacing(6)
-        row_layout.setAlignment(Qt.AlignBottom)
+        row_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
 
         # Layout the widgets
         # (from inner to outer)
@@ -78,7 +78,7 @@ class IconWidget(object):
         mini_layout.addLayout(row_layout)
         self.mini_widget.setLayout(mini_layout)
 
-        image_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Expanding))
+        image_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding))
         image_layout.addWidget(self.mini_widget)
         widget.setLayout(image_layout)
 
@@ -106,7 +106,7 @@ class LoadingImageWidget(ImageWidget):
         cover.loadFromData(data)
         # cover = cover.scaled(self._image_size.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         cover.setDevicePixelRatio(self._image_size.base.pixel_ratio)
-        cover = cover.convertToFormat(QImage.Format_ARGB32_Premultiplied)
+        cover = cover.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
         cover = QPixmap(cover)
         self.setPixmap(cover)
         self.spinner.stop()

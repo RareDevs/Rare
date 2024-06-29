@@ -53,7 +53,7 @@ class UninstallDialog(ButtonDialog):
 
     @pyqtSlot(int)
     def __on_keep_files_changed(self, state: int):
-        self.keep_folder.setCheckState(state if state else Qt.Checked)
+        self.keep_folder.setCheckState(state if state else Qt.CheckState.Checked)
         self.keep_folder.setEnabled(not state)
 
     def done_handler(self) -> None:

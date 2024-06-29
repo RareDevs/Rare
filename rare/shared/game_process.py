@@ -68,9 +68,9 @@ class GameProcess(QObject):
                 None,
                 self.tr("Error - {}").format(self.game.app_title),
                 self.tr(
-                    "Connection to game launcher for <b>{}</b> failed due to timeout.\n"
-                    "This is usually do it the game or Rare's game launcher already running"
-                ).format(self.game.app_name)
+                    "Connection to game launcher failed for <b>{}</b>.\n"
+                    "This normally means that the game is already running."
+                ).format(self.game.app_title)
             )
             self.timer.stop()
             self.tried_connections = 0

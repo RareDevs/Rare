@@ -111,23 +111,23 @@ class GameDlcs(QToolBox, SideTabContents):
         self.rgame: Optional[RareGame] = None
 
     def list_installed(self) -> List[InstalledGameDlcWidget]:
-        return self.ui.installed_dlc_container.findChildren(InstalledGameDlcWidget, options=Qt.FindDirectChildrenOnly)
+        return self.ui.installed_dlc_container.findChildren(InstalledGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
 
     def list_available(self) -> List[AvailableGameDlcWidget]:
-        return self.ui.available_dlc_container.findChildren(AvailableGameDlcWidget, options=Qt.FindDirectChildrenOnly)
+        return self.ui.available_dlc_container.findChildren(AvailableGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
 
     def get_installed(self, app_name: str) -> Optional[InstalledGameDlcWidget]:
         return self.ui.installed_dlc_container.findChild(
             InstalledGameDlcWidget,
             name=widget_object_name(InstalledGameDlcWidget, app_name),
-            options=Qt.FindDirectChildrenOnly
+            options=Qt.FindChildOption.FindDirectChildrenOnly
         )
 
     def get_available(self, app_name: str) -> Optional[AvailableGameDlcWidget]:
         return self.ui.available_dlc_container.findChild(
             AvailableGameDlcWidget,
             name=widget_object_name(AvailableGameDlcWidget, app_name),
-            options=Qt.FindDirectChildrenOnly
+            options=Qt.FindChildOption.FindDirectChildrenOnly
         )
 
     def update_installed_page(self):

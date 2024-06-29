@@ -19,9 +19,9 @@ class SlidingStackedWidget(QStackedWidget):
     def __init__(self, parent=None):
         super(SlidingStackedWidget, self).__init__(parent)
 
-        self.m_direction = Qt.Horizontal
+        self.m_direction = Qt.Orientation.Horizontal
         self.m_speed = 500
-        self.m_animationtype = QEasingCurve.OutBack
+        self.m_animationtype = QEasingCurve.Type.OutBack
         self.m_now = 0
         self.m_next = 0
         self.m_wrap = False
@@ -75,7 +75,7 @@ class SlidingStackedWidget(QStackedWidget):
         offsetx, offsety = self.frameRect().width(), self.frameRect().height()
         self.widget(_next).setGeometry(self.frameRect())
 
-        if not self.m_direction == Qt.Horizontal:
+        if not self.m_direction == Qt.Orientation.Horizontal:
             if _now < _next:
                 offsetx, offsety = 0, -offsety
             else:
@@ -111,7 +111,7 @@ class SlidingStackedWidget(QStackedWidget):
         self.m_next = _next
         self.m_now = _now
         self.m_active = True
-        animgroup.start(QAbstractAnimation.DeleteWhenStopped)
+        animgroup.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
 
     @pyqtSlot()
     def animationDoneSlot(self):
@@ -121,18 +121,18 @@ class SlidingStackedWidget(QStackedWidget):
         self.m_active = False
 
     def event(self, e: QEvent):
-        if e.type() == QEvent.Gesture:
+        if e.type() == QEvent.Type.Gesture:
             return self.gestureEvent(QGestureEvent(e))
         return super(SlidingStackedWidget, self).event(e)
 
     def gestureEvent(self, e: QGestureEvent):
-        if swipe := e.gesture(Qt.SwipeGesture):
+        if swipe := e.gesture(Qt.GestureType.SwipeGesture):
             self.swipeTriggered(swipe)
         return True
 
     def swipeTriggered(self, g: QSwipeGesture):
-        if g.state() == Qt.GestureFinished:
-            if g.horizontalDirection() == QSwipeGesture.Left:
+        if g.state() == Qt.GestureState.GestureFinished:
+            if g.horizontalDirection() == QSwipeGesture.SwipeDirection.Left:
                 self.slideInPrev()
             else:
                 self.slideInNext()

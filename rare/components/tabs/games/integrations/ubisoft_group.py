@@ -96,8 +96,8 @@ class UbiConnectWorker(Worker):
 class UbiLinkWidget(QFrame):
     def __init__(self, game: Game, ubi_account_id, activated: bool = False, parent=None):
         super(UbiLinkWidget, self).__init__(parent=parent)
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self.args = RareCore.instance().args()
         self.game = game
@@ -105,7 +105,7 @@ class UbiLinkWidget(QFrame):
 
         self.ok_indicator = QLabel(parent=self)
         self.ok_indicator.setPixmap(qta_icon("fa.circle-o", color="grey").pixmap(20, 20))
-        self.ok_indicator.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        self.ok_indicator.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
 
         self.title_label = ElideLabel(game.app_title, parent=self)
 
@@ -188,7 +188,7 @@ class UbisoftGroup(QGroupBox):
         if self.worker is not None:
             return
 
-        for widget in self.findChildren(UbiLinkWidget, options=Qt.FindDirectChildrenOnly):
+        for widget in self.findChildren(UbiLinkWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             widget.deleteLater()
         self.loading_widget.start()
 

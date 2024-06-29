@@ -51,7 +51,7 @@ class SelectiveWidget(QWidget):
 
     def install_tags(self):
         install_tags = [""]
-        for cb in self.findChildren(TagCheckBox, options=Qt.FindDirectChildrenOnly):
+        for cb in self.findChildren(TagCheckBox, options=Qt.FindChildOption.FindDirectChildrenOnly):
             if data := cb.isChecked():
                 # noinspection PyTypeChecker
                 install_tags.extend(data)

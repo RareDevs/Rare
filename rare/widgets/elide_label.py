@@ -22,7 +22,7 @@ class ElideLabel(QLabel):
 
     def __setElideText(self, a0: str):
         elided_text = self.__fm.elidedText(
-            a0, Qt.ElideRight,
+            a0, Qt.TextElideMode.ElideRight,
             self.width() - (self.contentsMargins().left() + self.contentsMargins().right())
         )
         if not self.__tooltip:

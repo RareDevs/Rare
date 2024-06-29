@@ -75,8 +75,8 @@ class RareGame(RareGameSlim):
         def __bool__(self):
             return self.queued or self.queue_pos is not None or self.last_played is not None
 
-    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game):
-        super(RareGame, self).__init__(legendary_core, game)
+    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game, parent=None):
+        super(RareGame, self).__init__(legendary_core, game, parent=parent)
         self.__origin_install_path: Optional[str] = None
         self.__origin_install_size: Optional[int] = None
 
@@ -441,15 +441,9 @@ class RareGame(RareGameSlim):
             return "na"
         if self.metadata.steam_grade != "pending":
             elapsed_time = abs(datetime.now(UTC) - self.metadata.steam_date)
-
             if elapsed_time.days > 3:
                 logger.info("Refreshing ProtonDB grade for %s", self.app_title)
-
-                def set_steam_grade():
-                    appid, rating = get_rating(self.core, self.app_name)
-                    self.set_steam_grade(appid, rating)
-
-                worker = QRunnable.create(set_steam_grade)
+                worker = QRunnable.create(self.set_steam_grade)
                 QThreadPool.globalInstance().start(worker)
                 self.metadata.steam_grade = "pending"
         return self.metadata.steam_grade
@@ -464,7 +458,8 @@ class RareGame(RareGameSlim):
         set_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
         self.metadata.steam_appid = appid
 
-    def set_steam_grade(self, appid: int, grade: str) -> None:
+    def set_steam_grade(self) -> None:
+        appid, grade = get_rating(self.core, self.app_name)
         if appid and self.steam_appid is None:
             self.set_steam_appid(appid)
         self.metadata.steam_grade = grade
@@ -473,7 +468,7 @@ class RareGame(RareGameSlim):
         self.signals.widget.update.emit()
 
     def grant_date(self, force=False) -> datetime:
-        if (entitlements := self.core.lgd.entitlements) is None:
+        if not (entitlements := self.core.lgd.entitlements):
             return self.metadata.grant_date
         if self.metadata.grant_date == datetime.min.replace(tzinfo=UTC) or force:
             logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
@@ -588,8 +583,8 @@ class RareGame(RareGameSlim):
 
 
 class RareEosOverlay(RareGameBase):
-    def __init__(self, legendary_core: LegendaryCore, game: Game):
-        super(RareEosOverlay, self).__init__(legendary_core, game)
+    def __init__(self, legendary_core: LegendaryCore, game: Game, parent=None):
+        super(RareEosOverlay, self).__init__(legendary_core, game, parent=parent)
         self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
 
     @property

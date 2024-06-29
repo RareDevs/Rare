@@ -37,7 +37,7 @@ class RareGameBase(QObject):
         UNINSTALLING = 5
         SYNCING = 6
 
-    class Signals:
+    class Signals(QObject):
         class Progress(QObject):
             start = pyqtSignal()
             update = pyqtSignal(int)
@@ -58,30 +58,20 @@ class RareGameBase(QObject):
             launched = pyqtSignal(str)
             finished = pyqtSignal(str)
 
-        def __init__(self):
-            super(RareGameBase.Signals, self).__init__()
-            self.progress = RareGameBase.Signals.Progress()
-            self.widget = RareGameBase.Signals.Widget()
-            self.download = RareGameBase.Signals.Download()
-            self.game = RareGameBase.Signals.Game()
+        def __init__(self, parent=None):
+            super(RareGameBase.Signals, self).__init__(parent=parent)
+            self.progress = RareGameBase.Signals.Progress(self)
+            self.widget = RareGameBase.Signals.Widget(self)
+            self.download = RareGameBase.Signals.Download(self)
+            self.game = RareGameBase.Signals.Game(self)
 
-        def __del__(self):
-            self.progress.deleteLater()
-            self.widget.deleteLater()
-            self.download.deleteLater()
-            self.game.deleteLater()
-
-    __slots__ = "igame"
-
-    def __init__(self, legendary_core: LegendaryCore, game: Game):
-        super(RareGameBase, self).__init__()
-        self.signals = RareGameBase.Signals()
+    def __init__(self, legendary_core: LegendaryCore, game: Game, parent=None):
+        super(RareGameBase, self).__init__(parent=parent)
+        self.signals = RareGameBase.Signals(self)
         self.core = legendary_core
         self.game: Game = game
+        self.igame: InstalledGame = None
         self._state = RareGameBase.State.IDLE
-
-    def __del__(self):
-        del self.signals
 
     @property
     def state(self) -> 'RareGameBase.State':
@@ -206,8 +196,8 @@ class RareGameBase(QObject):
 
 class RareGameSlim(RareGameBase):
 
-    def __init__(self, legendary_core: LegendaryCore, game: Game):
-        super(RareGameSlim, self).__init__(legendary_core, game)
+    def __init__(self, legendary_core: LegendaryCore, game: Game, parent=None):
+        super(RareGameSlim, self).__init__(legendary_core, game, parent=parent)
         # None if origin or not installed
         self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
         self.saves: List[RareSaveGame] = []

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 if [ -n "${1}" ]; then
     if [ ! -f "${1}" ]; then

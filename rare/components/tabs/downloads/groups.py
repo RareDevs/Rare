@@ -29,7 +29,7 @@ class UpdateGroup(QGroupBox):
         self.setObjectName(type(self).__name__)
         self.setTitle(self.tr("Updates"))
         self.__text = QLabel(self.tr("No updates available"))
-        self.__text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.__text.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         # lk: For findChildren to work, the update's layout has to be in a widget
         self.__container = QWidget(self)
@@ -45,7 +45,7 @@ class UpdateGroup(QGroupBox):
         return self.__container.findChild(UpdateWidget, name=widget_object_name(UpdateWidget, app_name))
 
     def count(self) -> int:
-        return len(self.__container.findChildren(UpdateWidget, options=Qt.FindDirectChildrenOnly))
+        return len(self.__container.findChildren(UpdateWidget, options=Qt.FindChildOption.FindDirectChildrenOnly))
 
     def contains(self, app_name: str) -> bool:
         return self.__find_widget(app_name) is not None
@@ -92,7 +92,7 @@ class QueueGroup(QGroupBox):
         self.setObjectName(type(self).__name__)
         self.setTitle(self.tr("Queue"))
         self.__text = QLabel(self.tr("No downloads in queue"), self)
-        self.__text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.__text.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         # lk: For findChildren to work, the queue's layout has to be in a widget
         self.__container = QWidget(self)

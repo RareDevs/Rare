@@ -45,11 +45,11 @@ class OverlayComboBox(QComboBox):
         self.setCurrentIndex(0)
 
     def getValue(self) -> Optional[str]:
-        return f"{self.option}={self.currentData(Qt.UserRole)}" if self.currentIndex() > 0 else None
+        return f"{self.option}={self.currentData(Qt.ItemDataRole.UserRole)}" if self.currentIndex() > 0 else None
 
     def setValue(self, options: Dict[str, str]):
         if (value := options.get(self.option, None)) is not None:
-            self.setCurrentIndex(self.findData(value, Qt.UserRole))
+            self.setCurrentIndex(self.findData(value, Qt.ItemDataRole.UserRole))
             options.pop(self.option)
         else:
             self.setDefault()
@@ -166,7 +166,7 @@ class OverlaySettings(QGroupBox):
         raise NotImplementedError
 
     def update_settings(self):
-        current_state = self.ui.show_overlay_combo.currentData(Qt.UserRole)
+        current_state = self.ui.show_overlay_combo.currentData(Qt.ItemDataRole.UserRole)
         self.ui.options_group.setEnabled(current_state == ActivationStates.CUSTOM)
 
         if current_state == ActivationStates.GLOBAL:
@@ -191,7 +191,7 @@ class OverlaySettings(QGroupBox):
         self.update_settings_override(current_state)
 
     def setCurrentState(self, state: ActivationStates):
-        self.ui.show_overlay_combo.setCurrentIndex(self.ui.show_overlay_combo.findData(state, Qt.UserRole))
+        self.ui.show_overlay_combo.setCurrentIndex(self.ui.show_overlay_combo.findData(state, Qt.ItemDataRole.UserRole))
         self.ui.options_group.setEnabled(state == ActivationStates.CUSTOM)
 
     def showEvent(self, a0: QShowEvent):

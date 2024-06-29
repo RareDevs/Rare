@@ -24,7 +24,7 @@ class CollapsibleBase(object):
         # Adapted from python version
         https://newbedev.com/how-to-make-an-expandable-collapsable-section-widget-in-qt
     """
-    def __init__(self):
+    def __init__(self, parent=None):
         self.animation_duration = None
         self.toggle_animation = None
         self.content_area = None
@@ -57,7 +57,7 @@ class CollapsibleBase(object):
         pass
 
     def animationStart(self, checked):
-        direction = QAbstractAnimation.Forward if checked else QAbstractAnimation.Backward
+        direction = QAbstractAnimation.Direction.Forward if checked else QAbstractAnimation.Direction.Backward
         self.toggle_animation.setDirection(direction)
         self.toggle_animation.start()
 
@@ -75,7 +75,7 @@ class CollapsibleBase(object):
 
         self.content_area = widget
         self.content_area.setParent(self)
-        self.content_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.content_area.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         # start out collapsed
         if not is_checked:
@@ -104,10 +104,10 @@ class CollapsibleFrame(QFrame, CollapsibleBase):
     def __init__(self, animation_duration: int = 200, parent=None):
         super(CollapsibleFrame, self).__init__(parent=parent)
         self.setup(animation_duration)
-        self.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
+        self.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Sunken)
 
         self.toggle_button = QToolButton(self)
-        self.toggle_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.toggle_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.toggle_button.setIcon(qta_icon("fa.arrow-right"))
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(False)
@@ -116,13 +116,13 @@ class CollapsibleFrame(QFrame, CollapsibleBase):
         font = self.title_label.font()
         font.setBold(True)
         self.title_label.setFont(font)
-        self.title_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.title_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         # don't waste space
         self.main_layout = QGridLayout(self)
         self.main_layout.setVerticalSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.addWidget(self.toggle_button, 0, 0, 1, 1, Qt.AlignLeft)
+        self.main_layout.addWidget(self.toggle_button, 0, 0, 1, 1, Qt.AlignmentFlag.AlignLeft)
         self.main_layout.addWidget(self.title_label, 0, 1, 1, 1)
         self.main_layout.setColumnStretch(1, 1)
         self.main_layout.setRowStretch(0, 0)
@@ -239,7 +239,7 @@ if __name__ == "__main__":
     dialog.layout().addWidget(replace_button)
     dialog.layout().addWidget(collapsible_frame)
     dialog.layout().addWidget(collapsible_group)
-    dialog.layout().setSizeConstraint(QVBoxLayout.SetFixedSize)
+    dialog.layout().setSizeConstraint(QVBoxLayout.SizeConstraint.SetFixedSize)
     dialog.show()
     sys.exit(app.exec_())
 

@@ -10,9 +10,9 @@ class LibraryLayout(FlowLayout):
     def __init__(self, parent=None):
         super(LibraryLayout, self).__init__(parent)
 
-    def expandingDirections(self) -> Qt.Orientations:
-        return Qt.Orientations(Qt.Orientation(0))
-        # return Qt.Horizontal | Qt.Vertical
+    def expandingDirections(self) -> Qt.Orientation:
+        return Qt.Orientation(Qt.Orientation(0))
+        # return Qt.Orientation.Horizontal | Qt.Orientation.Vertical
 
     def setGeometry(self, a0: QRect) -> None:
         super(FlowLayout, self).setGeometry(a0)
@@ -75,11 +75,13 @@ class LibraryLayout(FlowLayout):
         hspace = self.horizontalSpacing()
         if hspace == -1:
             hspace = widget.style().layoutSpacing(
-                QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Horizontal
+                QSizePolicy.ControlType.PushButton, QSizePolicy.ControlType.PushButton, Qt.Orientation.Horizontal
             )
         vspace = self.verticalSpacing()
         if vspace == -1:
-            vspace = widget.style().layoutSpacing(QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Vertical)
+            vspace = widget.style().layoutSpacing(
+                QSizePolicy.ControlType.PushButton, QSizePolicy.ControlType.PushButton, Qt.Orientation.Vertical
+            )
 
         # lk: get the remaining space after subtracting the space required for each widget and its static padding
         # lk: also reserve space for the leading static padding
@@ -122,4 +124,10 @@ class LibraryLayout(FlowLayout):
 
     def sort(self, key: Callable, reverse=False) -> None:
         self._items.sort(key=key, reverse=reverse)
-        self.setGeometry(self.parent().contentsRect().adjusted(*self.parent().getContentsMargins()))
+        margins = (
+            self.parent().contentsMargins().left(),
+            self.parent().contentsMargins().top(),
+            self.parent().contentsMargins().right(),
+            self.parent().contentsMargins().bottom(),
+        )
+        self.setGeometry(self.parent().contentsRect().adjusted(*margins))

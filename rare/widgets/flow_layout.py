@@ -55,7 +55,7 @@ class FlowLayout(QLayout):
         if self._hspacing >= 0:
             return self._hspacing
         else:
-            return self.smartSpacing(QStyle.PM_LayoutHorizontalSpacing)
+            return self.smartSpacing(QStyle.PixelMetric.PM_LayoutHorizontalSpacing)
 
     def setVerticalSpacing(self, a0:  int) -> None:
         self._vspacing = a0
@@ -65,7 +65,7 @@ class FlowLayout(QLayout):
         if self._vspacing >= 0:
             return self._vspacing
         else:
-            return self.smartSpacing(QStyle.PM_LayoutVerticalSpacing)
+            return self.smartSpacing(QStyle.PixelMetric.PM_LayoutVerticalSpacing)
 
     def count(self) -> int:
         return len(self._items)
@@ -82,9 +82,9 @@ class FlowLayout(QLayout):
             return item
         return None
 
-    def expandingDirections(self) -> Qt.Orientations:
-        return Qt.Orientations(Qt.Orientation(0))
-        # return Qt.Horizontal | Qt.Vertical
+    def expandingDirections(self) -> Qt.Orientation:
+        return Qt.Orientation(Qt.Orientation(0))
+        # return Qt.Orientation.Horizontal | Qt.Orientation.Vertical
 
     def hasHeightForWidth(self) -> bool:
         return True
@@ -125,12 +125,12 @@ class FlowLayout(QLayout):
             hspace = self.horizontalSpacing()
             if hspace == -1:
                 hspace = widget.style().layoutSpacing(
-                    QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Horizontal
+                    QSizePolicy.ControlType.PushButton, QSizePolicy.ControlType.PushButton, Qt.Orientation.Horizontal
                 )
             vspace = self.verticalSpacing()
             if vspace == -1:
                 vspace = widget.style().layoutSpacing(
-                    QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Vertical
+                    QSizePolicy.ControlType.PushButton, QSizePolicy.ControlType.PushButton, Qt.Orientation.Vertical
                 )
             nextX = x + item.sizeHint().width() + hspace
             if nextX - hspace > effective.right() and lineheight > 0:

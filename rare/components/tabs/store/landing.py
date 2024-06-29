@@ -33,23 +33,23 @@ class LandingPage(SlidingStackedWidget, SideTabContents):
         self.implements_scrollarea = True
 
         self.landing_widget = LandingWidget(store_api, parent=self)
-        self.landing_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.landing_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.landing_widget.set_title.connect(self.set_title)
         self.landing_widget.show_details.connect(self.show_details)
 
         self.landing_scroll = QScrollArea(self)
         self.landing_scroll.setWidgetResizable(True)
-        self.landing_scroll.setFrameStyle(QFrame.NoFrame | QFrame.Plain)
+        self.landing_scroll.setFrameStyle(QFrame.Shape.NoFrame | QFrame.Shadow.Plain)
         self.landing_scroll.setWidget(self.landing_widget)
         self.landing_scroll.widget().setAutoFillBackground(False)
         self.landing_scroll.viewport().setAutoFillBackground(False)
 
         self.details_widget = StoreDetailsWidget([], store_api, parent=self)
-        self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.details_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)
 
-        self.setDirection(Qt.Horizontal)
+        self.setDirection(Qt.Orientation.Horizontal)
         self.addWidget(self.landing_scroll)
         self.addWidget(self.details_widget)
 
@@ -73,7 +73,7 @@ class FreeGamesScroll(QScrollArea):
         w.installEventFilter(self)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
-        if a0 is self.widget() and a1.type() == QEvent.Resize:
+        if a0 is self.widget() and a1.type() == QEvent.Type.Resize:
             self.__resize(a0)
             return a0.event(a1)
         return False
@@ -105,21 +105,21 @@ class LandingWidget(QWidget, SideTabContents):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 3, 0)
         self.setLayout(layout)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self.free_games_now = StoreGroup(self.tr("Free now"), layout=QHBoxLayout, parent=self)
-        self.free_games_now.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        self.free_games_now.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.free_games_now.main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        self.free_games_now.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         self.free_games_next = StoreGroup(self.tr("Free next week"), layout=QHBoxLayout, parent=self)
-        self.free_games_next.main_layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        self.free_games_next.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.free_games_next.main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        self.free_games_next.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         self.discounts_group = StoreGroup(self.tr("Wishlist discounts"), layout=FlowLayout, parent=self)
-        self.discounts_group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.discounts_group.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         self.games_group = StoreGroup(self.tr("Free to play"), FlowLayout, self)
-        self.games_group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.games_group.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.games_group.loading(False)
         self.games_group.setVisible(False)
 
@@ -129,25 +129,25 @@ class LandingWidget(QWidget, SideTabContents):
         free_container_layout = QHBoxLayout(free_container)
 
         free_scroll.setWidgetResizable(True)
-        free_scroll.setFrameShape(QScrollArea.NoFrame)
-        free_scroll.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
-        free_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        free_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        free_scroll.setSizeAdjustPolicy(QScrollArea.SizeAdjustPolicy.AdjustToContents)
+        free_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         free_container_layout.setContentsMargins(0, 0, 0, 0)
-        free_container_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        free_container_layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
+        free_container_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        free_container_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
         free_container_layout.addWidget(self.free_games_now)
         free_container_layout.addWidget(self.free_games_next)
 
         free_scroll.widget().setAutoFillBackground(False)
         free_scroll.viewport().setAutoFillBackground(False)
 
-        # layout.addWidget(self.free_games_now, alignment=Qt.AlignTop)
-        # layout.addWidget(self.free_games_next, alignment=Qt.AlignTop)
-        layout.addWidget(free_scroll, alignment=Qt.AlignTop)
-        layout.addWidget(self.discounts_group, alignment=Qt.AlignTop)
-        layout.addWidget(self.games_group, alignment=Qt.AlignTop)
-        layout.addItem(QSpacerItem(0, 0, QSizePolicy.Fixed, QSizePolicy.Expanding))
+        # layout.addWidget(self.free_games_now, alignment=Qt.AlignmentFlag.AlignTop)
+        # layout.addWidget(self.free_games_next, alignment=Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(free_scroll, alignment=Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.discounts_group, alignment=Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.games_group, alignment=Qt.AlignmentFlag.AlignTop)
+        layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding))
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
@@ -163,7 +163,7 @@ class LandingWidget(QWidget, SideTabContents):
         return super().hideEvent(a0)
 
     def __update_wishlist_discounts(self, wishlist: List[WishlistItemModel]):
-        for w in self.discounts_group.findChildren(StoreItemWidget, options=Qt.FindDirectChildrenOnly):
+        for w in self.discounts_group.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.discounts_group.layout().removeWidget(w)
             w.deleteLater()
 
@@ -176,11 +176,11 @@ class LandingWidget(QWidget, SideTabContents):
         self.discounts_group.loading(False)
 
     def __update_free_games(self, free_games: List[CatalogOfferModel]):
-        for w in self.free_games_now.findChildren(StoreItemWidget, options=Qt.FindDirectChildrenOnly):
+        for w in self.free_games_now.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.free_games_now.layout().removeWidget(w)
             w.deleteLater()
 
-        for w in self.free_games_next.findChildren(StoreItemWidget, options=Qt.FindDirectChildrenOnly):
+        for w in self.free_games_next.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.free_games_next.layout().removeWidget(w)
             w.deleteLater()
 
@@ -228,7 +228,7 @@ class LandingWidget(QWidget, SideTabContents):
         if not data:
             return
 
-        for w in self.games_group.findChildren(StoreItemWidget, options=Qt.FindDirectChildrenOnly):
+        for w in self.games_group.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.games_group.layout().removeWidget(w)
             w.deleteLater()
 

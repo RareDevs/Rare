@@ -25,7 +25,7 @@ class ConsoleDialog(QDialog):
 
     def __init__(self, app_title: str, parent=None):
         super(ConsoleDialog, self).__init__(parent=parent)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
         self.setWindowTitle(
             dialog_title(game_title(self.tr("Console"), app_title))
         )
@@ -49,7 +49,7 @@ class ConsoleDialog(QDialog):
         button_layout.addWidget(self.clear_button)
         self.clear_button.clicked.connect(self.console_edit.clear)
 
-        button_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        button_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
 
         self.terminate_button = QPushButton(self.tr("Terminate"))
         # self.terminate_button.setVisible(platform.system() == "Windows")
@@ -151,7 +151,7 @@ class ConsoleEnv(QDialog):
 
     def __init__(self, app_title: str, parent=None):
         super(ConsoleEnv, self).__init__(parent=parent)
-        self.setAttribute(Qt.WA_DeleteOnClose, False)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, False)
         self.ui = Ui_ConsoleEnv()
         self.ui.setupUi(self)
         self.setWindowTitle(
@@ -166,7 +166,7 @@ class ConsoleEnv(QDialog):
             self.ui.table.setItem(idx, 0, QTableWidgetItem(env.keys()[idx]))
             self.ui.table.setItem(idx, 1, QTableWidgetItem(env.value(env.keys()[idx])))
 
-        self.ui.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.ui.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
 
 class ConsoleEdit(QPlainTextEdit):
@@ -175,14 +175,14 @@ class ConsoleEdit(QPlainTextEdit):
         super(ConsoleEdit, self).__init__(parent=parent)
         self.setReadOnly(True)
         font = QFont("Monospace")
-        font.setStyleHint(QFont.Monospace)
+        font.setStyleHint(QFont.StyleHint.Monospace)
         self.setFont(font)
 
     def scroll_to_last_line(self):
         cursor = self.textCursor()
-        cursor.movePosition(QTextCursor.End)
+        cursor.movePosition(QTextCursor.MoveOperation.End)
         cursor.movePosition(
-            QTextCursor.Up if cursor.atBlockStart() else QTextCursor.StartOfLine
+            QTextCursor.MoveOperation.Up if cursor.atBlockStart() else QTextCursor.MoveOperation.StartOfLine
         )
         self.setTextCursor(cursor)
 

@@ -73,11 +73,11 @@ class CloudSyncDialog(ButtonDialog):
 
     def __on_upload(self):
         self.status = CloudSyncDialogResult.UPLOAD
-        self.done(QDialog.Accepted)
+        self.done(QDialog.DialogCode.Accepted)
 
     def __on_download(self):
         self.status = CloudSyncDialogResult.DOWNLOAD
-        self.done(QDialog.Accepted)
+        self.done(QDialog.DialogCode.Accepted)
 
     def done_handler(self):
         self.result_ready.emit(self.status)

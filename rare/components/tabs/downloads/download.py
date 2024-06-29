@@ -31,17 +31,17 @@ class DownloadWidget(ImageWidget):
         device: QImage = QImage(
             pixmap.size().width() * 1,
             int(self.sizeHint().height() * pixmap.devicePixelRatioF()) + 1,
-            QImage.Format_ARGB32_Premultiplied,
+            QImage.Format.Format_ARGB32_Premultiplied,
         )
         painter = QPainter(device)
         brush = QBrush(pixmap)
         painter.fillRect(device.rect(), brush)
         # the gradient could be cached and reused as it is expensive
         gradient = QLinearGradient(0, 0, device.width(), 0)
-        gradient.setColorAt(0.02, Qt.transparent)
-        gradient.setColorAt(0.5, Qt.black)
-        gradient.setColorAt(0.98, Qt.transparent)
-        painter.setCompositionMode(QPainter.CompositionMode_DestinationIn)
+        gradient.setColorAt(0.02, Qt.GlobalColor.transparent)
+        gradient.setColorAt(0.5, Qt.GlobalColor.black)
+        gradient.setColorAt(0.98, Qt.GlobalColor.transparent)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_DestinationIn)
         painter.fillRect(device.rect(), gradient)
         painter.end()
         ret = QPixmap.fromImage(device)
@@ -59,11 +59,11 @@ class DownloadWidget(ImageWidget):
     def paint_image_empty(self, painter: QPainter, a0: QPaintEvent) -> None:
         # when pixmap object is not available yet, show a gray rectangle
         painter.setOpacity(0.5 * self._opacity)
-        painter.fillRect(a0.rect(), self.palette().color(QPalette.Window))
+        painter.fillRect(a0.rect(), self.palette().color(QPalette.ColorRole.Window))
 
     def paint_image_cover(self, painter: QPainter, a0: QPaintEvent) -> None:
         painter.setOpacity(self._opacity)
-        color = self.palette().color(QPalette.Window).darker(75)
+        color = self.palette().color(QPalette.ColorRole.Window).darker(75)
         painter.fillRect(self.rect(), color)
         brush = QBrush(self._pixmap)
         brush.setTransform(self._transform)

@@ -110,7 +110,7 @@ class SyncCheckWorker(QRunnable):
 
 
 class RareLauncherException(RareAppException):
-    def __init__(self, app: 'RareLauncher', args: Namespace, parent=None):
+    def __init__(self, app: "RareLauncher", args: Namespace, parent=None):
         super(RareLauncherException, self).__init__(parent=parent)
         self.__app = app
         self.__args = args
@@ -148,14 +148,13 @@ class RareLauncher(RareApp):
         if not game:
             self.logger.error(f"Game {args.app_name} not found. Exiting")
             return
-        self.rgame = RareGameSlim(self.core, game)
+        self.rgame = RareGameSlim(self.core, game, self)
 
         language = self.settings.value(*options.language)
         self.load_translator(language)
 
-        if (
-            QSettings(self).value(*options.log_games)
-            or (game.app_name in DETACHED_APP_NAMES and platform.system() == "Windows")
+        if QSettings(self).value(*options.log_games) or (
+            game.app_name in DETACHED_APP_NAMES and platform.system() == "Windows"
         ):
             self.console = ConsoleDialog(game.app_title)
             self.console.show()
@@ -271,15 +270,12 @@ class RareLauncher(RareApp):
         if self.console:
             self.console.on_process_exit(self.core.get_game(self.rgame.app_name).app_title, exit_code)
 
-        self.send_message(
-            FinishedModel(
-                action=Actions.finished,
-                app_name=self.rgame.app_name,
-                exit_code=exit_code,
-                playtime=int(time.time() - self.start_time)
-            )
-
-        )
+        self.send_message(FinishedModel(
+            action=Actions.finished,
+            app_name=self.rgame.app_name,
+            exit_code=exit_code,
+            playtime=int(time.time() - self.start_time),
+        ))
         self.stop()
 
     @pyqtSlot(object)
@@ -313,7 +309,7 @@ class RareLauncher(RareApp):
 
         if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
             if self.console:
-                self.console.log(f"Launching as a detached process")
+                self.console.log("Launching as a detached process")
             subprocess.Popen([args.executable] + args.arguments, cwd=args.working_directory,
                              env={i: args.environment.value(i) for i in args.environment.keys()})
             self.stop()  # stop because we do not attach to the output
@@ -323,12 +319,10 @@ class RareLauncher(RareApp):
             self.game_process.setWorkingDirectory(args.working_directory)
         self.game_process.setProcessEnvironment(args.environment)
         # send start message after process started
-        self.game_process.started.connect(lambda: self.send_message(
-            StateChangedModel(
-                action=Actions.state_update, app_name=self.rgame.app_name,
-                new_state=StateChangedModel.States.started
-            )
-        ))
+        self.game_process.started.connect(lambda: self.send_message(StateChangedModel(
+            action=Actions.state_update, app_name=self.rgame.app_name,
+            new_state=StateChangedModel.States.started
+        )))
         # self.logger.debug("Executing prelaunch command %s, %s", args.executable, args.arguments)
         self.game_process.start(args.executable, args.arguments)
 
@@ -338,8 +332,8 @@ class RareLauncher(RareApp):
             self.console.on_process_exit(self.core.get_game(self.rgame.app_name).app_title, error_str)
         self.send_message(ErrorModel(
             error_string=error_str, app_name=self.rgame.app_name,
-            action=Actions.error)
-        )
+            action=Actions.error
+        ))
         self.stop()
 
     def start_prepare(self, sync_action=None):
@@ -428,8 +422,8 @@ class RareLauncher(RareApp):
 def launch(args: Namespace) -> int:
     args = InitArgs.from_argparse(args)
 
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
 
     app = RareLauncher(args)
     app.setQuitOnLastWindowClosed(True)

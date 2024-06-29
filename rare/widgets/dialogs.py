@@ -29,9 +29,9 @@ class BaseDialog(QDialog):
 
     def __init__(self, parent=None):
         super(BaseDialog, self).__init__(parent=parent)
-        self.setAttribute(Qt.WA_DeleteOnClose, True)
-        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
-        self.setWindowModality(Qt.WindowModal)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
+        self.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.CustomizeWindowHint | Qt.WindowType.WindowTitleHint)
+        self.setWindowModality(Qt.WindowModality.WindowModal)
 
     def setWindowTitle(self, a0):
         super().setWindowTitle(dialog_title(a0))
@@ -52,10 +52,10 @@ class BaseDialog(QDialog):
     # from QDialog if required, not this one.
     # `super(BaseDialog, self).keyPressEvent(a0)`
     def keyPressEvent(self, a0: QKeyEvent) -> None:
-        if a0.matches(QKeySequence.Cancel):
+        if a0.matches(QKeySequence.StandardKey.Cancel):
             a0.ignore()
             return
-        if a0.key() == Qt.Key_Enter or a0.key() == Qt.Key_Return:
+        if a0.key() == Qt.Key.Key_Enter or a0.key() == Qt.Key.Key_Return:
             a0.ignore()
             return
         super().keyPressEvent(a0)
@@ -98,12 +98,12 @@ class ButtonDialog(BaseDialog):
         # lk: dirty way to set a minimum width with fixed size constraint
         spacer = QSpacerItem(
             480, self.main_layout.spacing(),
-            QSizePolicy.Expanding, QSizePolicy.Fixed
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
         )
         self.main_layout.addItem(spacer)
         self.main_layout.addLayout(self.button_layout)
-        self.main_layout.setSizeConstraint(QLayout.SetFixedSize)
-        self.main_layout.setAlignment(Qt.AlignVCenter)
+        self.main_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
     def close(self):
         raise RuntimeError(f"Don't use `close()` with {type(self).__name__}")
@@ -118,7 +118,7 @@ class ButtonDialog(BaseDialog):
             self.main_layout.indexOf(self.subtitle_label) + 1,
             widget
         )
-        widget.layout().setAlignment(Qt.AlignTop)
+        widget.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
 
     def setCentralLayout(self, layout: QLayout):
         layout.setContentsMargins(0, 0, 0, 0)
@@ -126,7 +126,7 @@ class ButtonDialog(BaseDialog):
             self.main_layout.indexOf(self.subtitle_label) + 1,
             layout
         )
-        layout.setAlignment(Qt.AlignTop)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
     @abstractmethod
     def accept_handler(self):
@@ -223,10 +223,10 @@ class TestDialog(BaseDialog):
         self.accept_button = QPushButton("accept", self)
         self.reject_button = QPushButton("reject", self)
         self.action_button = QPushButton("action", self)
-        self.button_box = QDialogButtonBox(Qt.Horizontal, self)
-        self.button_box.addButton(self.accept_button, QDialogButtonBox.AcceptRole)
-        self.button_box.addButton(self.reject_button, QDialogButtonBox.RejectRole)
-        self.button_box.addButton(self.action_button, QDialogButtonBox.ActionRole)
+        self.button_box = QDialogButtonBox(Qt.Orientation.Horizontal, self)
+        self.button_box.addButton(self.accept_button, QDialogButtonBox.ButtonRole.AcceptRole)
+        self.button_box.addButton(self.reject_button, QDialogButtonBox.ButtonRole.RejectRole)
+        self.button_box.addButton(self.action_button, QDialogButtonBox.ButtonRole.ActionRole)
 
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)

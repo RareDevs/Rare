@@ -54,7 +54,7 @@ class GamesLibrary(QStackedWidget):
 
         self.view_scroll = QScrollArea(self.games_page)
         self.view_scroll.setWidgetResizable(True)
-        self.view_scroll.setFrameShape(QFrame.StyledPanel)
+        self.view_scroll.setFrameShape(QFrame.Shape.StyledPanel)
         self.view_scroll.horizontalScrollBar().setDisabled(True)
 
         library_view = LibraryView(self.settings.value(*options.library_view))

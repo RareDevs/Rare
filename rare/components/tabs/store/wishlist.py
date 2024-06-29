@@ -22,16 +22,16 @@ class WishlistPage(SlidingStackedWidget, SideTabContents):
         self.implements_scrollarea = True
 
         self.wishlist_widget = WishlistWidget(api, parent=self)
-        self.wishlist_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.wishlist_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.wishlist_widget.set_title.connect(self.set_title)
         self.wishlist_widget.show_details.connect(self.show_details)
 
         self.details_widget = StoreDetailsWidget([], api, parent=self)
-        self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.details_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)
 
-        self.setDirection(Qt.Horizontal)
+        self.setDirection(Qt.Orientation.Horizontal)
         self.addWidget(self.wishlist_widget)
         self.addWidget(self.details_widget)
 
@@ -121,8 +121,8 @@ class WishlistWidget(QWidget, SideTabContents):
 
     @pyqtSlot(int)
     def filter_wishlist(self, index: int = int(WishlistFilter.NONE)):
-        list_filter = self.ui.filter_combo.itemData(index, Qt.UserRole)
-        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindDirectChildrenOnly)
+        list_filter = self.ui.filter_combo.itemData(index, Qt.ItemDataRole.UserRole)
+        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
         for w in widgets:
             if list_filter == WishlistFilter.NONE:
                 w.setVisible(True)
@@ -135,8 +135,8 @@ class WishlistWidget(QWidget, SideTabContents):
 
     @pyqtSlot(int)
     def order_wishlist(self, index: int = int(WishlistOrder.NAME)):
-        list_order = self.ui.order_combo.itemData(index, Qt.UserRole)
-        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindDirectChildrenOnly)
+        list_order = self.ui.order_combo.itemData(index, Qt.ItemDataRole.UserRole)
+        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
         for w in widgets:
             self.wishlist_layout.removeWidget(w)
 
@@ -167,7 +167,7 @@ class WishlistWidget(QWidget, SideTabContents):
         if wishlist and wishlist[0] == "error":
             return
 
-        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindDirectChildrenOnly)
+        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
         for w in widgets:
             self.wishlist_layout.removeWidget(w)
             w.deleteLater()

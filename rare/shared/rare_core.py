@@ -72,7 +72,7 @@ class RareCore(QObject):
         self.queue_threadpool.setMaxThreadCount(2)
 
         self.__library: Dict[str, RareGame] = {}
-        self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp)
+        self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp, self)
         self.__eos_overlay.signals.game.install.connect(self.__signals.game.install)
         self.__eos_overlay.signals.game.uninstall.connect(self.__signals.game.uninstall)
 
@@ -307,7 +307,7 @@ class RareCore(QObject):
             logger.info(f"Updating Game for {rgame.app_name}")
             rgame.update_rgame()
         else:
-            rgame = RareGame(self.__core, self.__image_manager, game)
+            rgame = RareGame(self.__core, self.__image_manager, game, self)
             self.__add_game(rgame)
         return rgame
 
@@ -350,15 +350,18 @@ class RareCore(QObject):
 
         logger.info("Acquired data from %s worker", FetchWorker.Result(result_type).name)
 
-        if all([self.__fetched_games_dlcs, self.__fetched_entitlements]):
-            logger.debug("Fetch time %s seconds", time.perf_counter() - self.__start_time)
-            self.__wrappers.import_wrappers(
-                self.__core, self.__settings, [rgame.app_name for rgame in self.games]
-            )
-            load_steam_shortcuts()
-            self.progress.emit(100, self.tr("Launching Rare"))
-            self.completed.emit()
-            QTimer.singleShot(100, self.__post_init)
+        # Return early if there are still things to fetch
+        if not all({self.__fetched_games_dlcs, self.__fetched_entitlements}):
+            return
+
+        logger.debug("Fetch time %s seconds", time.perf_counter() - self.__start_time)
+        self.__wrappers.import_wrappers(
+            self.__core, self.__settings, [rgame.app_name for rgame in self.games]
+        )
+        load_steam_shortcuts()
+        self.progress.emit(100, self.tr("Launching Rare"))
+        self.completed.emit()
+        QTimer.singleShot(100, self.__post_init)
 
     def fetch(self):
         self.__start_time = time.perf_counter()

@@ -59,7 +59,7 @@ class GameDetails(QWidget, SideTabContents):
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.DisplayTall)
-        self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignTop)
+        self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignmentFlag.AlignTop)
 
         self.ui.install_button.clicked.connect(self.__on_install)
         self.ui.import_button.clicked.connect(self.__on_import)
@@ -131,7 +131,7 @@ class GameDetails(QWidget, SideTabContents):
                     "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. "
                     "Do you want to update the game while repairing it?"
                 ).format(rgame.app_title, rgame.version, rgame.remote_version),
-            ) == QMessageBox.Yes
+            ) == QMessageBox.StandardButton.Yes
         rgame.repair(repair_and_update=ans)
 
     @pyqtSlot(RareGame, str)
@@ -200,10 +200,10 @@ class GameDetails(QWidget, SideTabContents):
                     "<b>{}</b> failed verification, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. "
                     "Do you want to repair them?"
                 ).format(rgame.app_title, failed, missing),
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.Yes,
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.Yes,
             )
-            if ans == QMessageBox.Yes:
+            if ans == QMessageBox.StandardButton.Yes:
                 self.repair_game(rgame)
 
     @pyqtSlot()
@@ -232,11 +232,11 @@ class GameDetails(QWidget, SideTabContents):
                             "Destination <b>{}</b> already exists. "
                             "Are you sure you want to overwrite it?"
                         ).format(new_install_path),
-                        QMessageBox.Yes | QMessageBox.No,
-                        QMessageBox.Yes,
+                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                        QMessageBox.StandardButton.Yes,
                     )
 
-                    if ans == QMessageBox.Yes:
+                    if ans == QMessageBox.StandardButton.Yes:
                         if os.path.isdir(new_install_path):
                             shutil.rmtree(new_install_path)
                         else:

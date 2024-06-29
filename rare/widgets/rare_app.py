@@ -51,10 +51,10 @@ class RareAppException(QObject):
         self.logger.fatal(message)
         action = QMessageBox.warning(
             None, exc_type.__name__, message,
-            buttons=QMessageBox.Ignore | QMessageBox.Abort,
-            defaultButton=QMessageBox.Abort
+            buttons=QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Abort,
+            defaultButton=QMessageBox.StandardButton.Abort
         )
-        if action == QMessageBox.Abort:
+        if action == QMessageBox.StandardButton.Abort:
             QApplication.instance().quit()
 
 
@@ -64,7 +64,7 @@ class RareApp(QApplication):
         self.logger = logging.getLogger(type(self).__name__)
         self._hook = RareAppException(self)
         self.setQuitOnLastWindowClosed(False)
-        self.setAttribute(Qt.AA_DontUseNativeDialogs, True)
+        self.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, True)
 
         self.setDesktopFileName("rare")
         self.setApplicationName("Rare")
@@ -116,10 +116,6 @@ class RareApp(QApplication):
 
         self.settings = QSettings(self)
 
-        # # Translator
-        # self.translator = QTranslator(self)
-        # self.qt_translator = QTranslator(self)
-
         # Style
         # lk: this is a bit silly but serves well until we have a class
         # lk: store the default qt style name from the system on startup as a property for later reference
@@ -146,7 +142,7 @@ class RareApp(QApplication):
         locale = QLocale(lang)
         self.logger.info("Using locale: %s", locale.name())
         translations = {
-            "qtbase": QLibraryInfo.location(QLibraryInfo.TranslationsPath),
+            "qtbase": QLibraryInfo.location(QLibraryInfo.LibraryPath.TranslationsPath),
             "rare": os.path.join(paths.resources_path, "languages"),
         }
         for filename, path in translations.items():

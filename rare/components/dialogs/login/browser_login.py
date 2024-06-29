@@ -4,7 +4,7 @@ from typing import Tuple
 
 from PyQt5.QtCore import pyqtSignal, QUrl, QProcess, pyqtSlot
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QFrame, qApp, QFormLayout, QLineEdit
+from PyQt5.QtWidgets import QFrame, QApplication, QFormLayout, QLineEdit
 from legendary.utils import webview_login
 
 from rare.lgndr.core import LegendaryCore
@@ -22,7 +22,7 @@ class BrowserLogin(QFrame):
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(BrowserLogin, self).__init__(parent=parent)
-        self.setFrameStyle(self.StyledPanel)
+        self.setFrameStyle(QFrame.Shape.StyledPanel)
         self.ui = Ui_BrowserLogin()
         self.ui.setupUi(self)
 
@@ -32,13 +32,13 @@ class BrowserLogin(QFrame):
         self.sid_edit = IndicatorLineEdit(
             placeholder=self.tr("Insert authorizationCode here"), edit_func=self.text_changed, parent=self
         )
-        self.sid_edit.line_edit.setEchoMode(QLineEdit.Password)
+        self.sid_edit.line_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.ui.link_text.setText(self.login_url)
         self.ui.copy_button.setIcon(qta_icon("mdi.content-copy", "fa.copy"))
         self.ui.copy_button.clicked.connect(self.copy_link)
         self.ui.form_layout.setWidget(
             self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0],
-            QFormLayout.FieldRole, self.sid_edit
+            QFormLayout.ItemRole.FieldRole, self.sid_edit
         )
 
         self.ui.open_button.clicked.connect(self.open_browser)
@@ -46,7 +46,7 @@ class BrowserLogin(QFrame):
 
     @pyqtSlot()
     def copy_link(self):
-        clipboard = qApp.clipboard()
+        clipboard = QApplication.instance().clipboard()
         clipboard.setText(self.login_url)
         self.ui.status_label.setText(self.tr("Copied to clipboard"))
 

@@ -1,26 +1,26 @@
 import logging
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
     QCheckBox,
     QWidget,
     QSizePolicy,
     QScrollArea,
-    QFrame,
+    QLabel,
 )
-from legendary.core import LegendaryCore
 
 from rare.ui.components.tabs.store.search import Ui_SearchWidget
 from rare.widgets.button_edit import ButtonLineEdit
+from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .api.models.query import SearchStoreQuery
 from .api.models.response import CatalogOfferModel
 from .constants import Constants
-from .results import ResultsWidget
 from .store_api import StoreAPI
 from .widgets.details import StoreDetailsWidget
+from .widgets.items import SearchItemWidget
 
 logger = logging.getLogger("Shop")
 
@@ -31,16 +31,16 @@ class SearchPage(SlidingStackedWidget, SideTabContents):
         self.implements_scrollarea = True
 
         self.search_widget = SearchWidget(store_api, parent=self)
-        self.search_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.search_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.search_widget.set_title.connect(self.set_title)
         self.search_widget.show_details.connect(self.show_details)
 
         self.details_widget = StoreDetailsWidget([], store_api, parent=self)
-        self.details_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.details_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)
 
-        self.setDirection(Qt.Horizontal)
+        self.setDirection(Qt.Orientation.Horizontal)
         self.addWidget(self.search_widget)
         self.addWidget(self.details_widget)
 
@@ -118,7 +118,9 @@ class SearchWidget(QWidget, SideTabContents):
         self.ui.above.toggled.connect(
             lambda: self.prepare_request("<price>[1499,]") if self.ui.above.isChecked() else None
         )
-        # self.on_discount.toggled.connect(lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None)
+        # self.on_discount.toggled.connect(
+        #     lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None
+        # )
         self.ui.on_discount.toggled.connect(lambda: self.prepare_request())
         constants = Constants()
 
@@ -217,3 +219,46 @@ class CheckBox(QCheckBox):
             self.activated.emit(self.tag)
         else:
             self.deactivated.emit(self.tag)
+
+
+class ResultsWidget(QScrollArea):
+    show_details = pyqtSignal(CatalogOfferModel)
+
+    def __init__(self, store_api, parent=None):
+        super(ResultsWidget, self).__init__(parent=parent)
+        self.store_api = store_api
+
+        self.results_container = QWidget(self)
+        self.results_container.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.results_layout = FlowLayout(self.results_container)
+        self.setWidget(self.results_container)
+        self.setWidgetResizable(True)
+
+        # self.main_layout = QVBoxLayout(self)
+        # self.main_layout.setContentsMargins(0, 0, 0, 0)
+        # self.main_layout.addWidget(self.results_scrollarea)
+
+        self.setEnabled(False)
+
+    def load_results(self, text: str):
+        self.setEnabled(False)
+        if text != "":
+            self.store_api.search_game(text, self.show_results)
+
+    def show_results(self, results: dict):
+        for w in self.results_container.findChildren(QLabel, options=Qt.FindChildOption.FindDirectChildrenOnly):
+            self.results_layout.removeWidget(w)
+            w.deleteLater()
+        for w in self.results_container.findChildren(SearchItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
+            self.results_layout.removeWidget(w)
+            w.deleteLater()
+
+        if not results:
+            self.results_layout.addWidget(QLabel(self.tr("No results found")))
+        else:
+            for res in results:
+                w = SearchItemWidget(self.store_api.cached_manager, res, parent=self.results_container)
+                w.show_details.connect(self.show_details.emit)
+                self.results_layout.addWidget(w)
+        self.results_layout.update()
+        self.setEnabled(True)

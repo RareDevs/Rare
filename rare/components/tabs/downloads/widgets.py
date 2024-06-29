@@ -37,7 +37,7 @@ class QueueInfoWidget(QWidget):
         self.image.setFixedSize(ImageSize.LibraryIcon)
         self.ui.image_layout.addWidget(self.image)
 
-        self.ui.queue_info_layout.setAlignment(Qt.AlignTop)
+        self.ui.queue_info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         if game and igame:
             self.update_information(game, igame, analysis, old_igame)

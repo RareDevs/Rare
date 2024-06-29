@@ -29,7 +29,7 @@ class WineSettings(QGroupBox):
         # Wine prefix
         self.wine_prefix = PathEdit(
             path="",
-            file_mode=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.FileMode.Directory,
             edit_func=lambda path: (os.path.isdir(path) or not path, path, IndicatorReasonsCommon.DIR_NOT_EXISTS),
             save_func=self.save_prefix,
         )
@@ -37,7 +37,7 @@ class WineSettings(QGroupBox):
         # Wine executable
         self.wine_exec = PathEdit(
             path="",
-            file_mode=QFileDialog.ExistingFile,
+            file_mode=QFileDialog.FileMode.ExistingFile,
             name_filters=["wine", "wine64"],
             edit_func=lambda text: (os.path.exists(text) or not text, text, IndicatorReasonsCommon.DIR_NOT_EXISTS),
             save_func=self.save_exec,
@@ -46,9 +46,9 @@ class WineSettings(QGroupBox):
         layout = QFormLayout(self)
         layout.addRow(self.tr("Executable"), self.wine_exec)
         layout.addRow(self.tr("Prefix"), self.wine_prefix)
-        layout.setFieldGrowthPolicy(QFormLayout.ExpandingFieldsGrow)
-        layout.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        layout.setFormAlignment(Qt.AlignLeading | Qt.AlignTop)
+        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():

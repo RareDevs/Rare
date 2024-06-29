@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QSize, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QShortcut, QMessageBox
 
 from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
@@ -7,7 +7,6 @@ from .account import AccountWidget
 from .downloads import DownloadsTab
 from .games import GamesLibrary
 from .settings import SettingsTab
-from .settings.debug import DebugSettings
 from .store import StoreTab
 from .tab_widgets import MainTabBar, TabButtonWidget
 
@@ -47,10 +46,15 @@ class MainTabWidget(QTabWidget):
         space_index = self.addTab(QWidget(self), "")
         self.setTabEnabled(space_index, False)
         self.tab_bar.expanded = space_index
-        # Button
-        button_index = self.addTab(QWidget(self), "")
-        self.setTabEnabled(button_index, False)
 
+        # Settings Tab
+        self.settings_tab = SettingsTab(self)
+        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear"), "")
+        self.settings_tab.about.update_available_ready.connect(
+            lambda: self.tab_bar.setTabText(self.settings_index, "(!)")
+        )
+
+        # Account Button
         self.account_widget = AccountWidget(self)
         self.account_widget.exit_app.connect(self.__on_exit_app)
         account_action = QWidgetAction(self)
@@ -59,15 +63,7 @@ class MainTabWidget(QTabWidget):
         account_menu = QMenu(account_button)
         account_menu.addAction(account_action)
         account_button.setMenu(account_menu)
-        self.tab_bar.setTabButton(
-            button_index, MainTabBar.RightSide, account_button
-        )
-
-        self.settings_tab = SettingsTab(self)
-        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear"), "")
-        self.settings_tab.about.update_available_ready.connect(
-            lambda: self.tab_bar.setTabText(self.settings_index, "(!)")
-        )
+        self.tab_bar.setButton(account_button)
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
@@ -107,11 +103,11 @@ class MainTabWidget(QTabWidget):
                 self,
                 self.tr("Logout"),
                 self.tr("Do you really want to logout <b>{}</b>?").format(self.core.lgd.userdata.get("display_name")),
-                buttons=(QMessageBox.Yes | QMessageBox.No),
-                defaultButton=QMessageBox.No,
+                buttons=(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No),
+                defaultButton=QMessageBox.StandardButton.No,
             )
 
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 self.core.lgd.invalidate_userdata()
             else:
                 return

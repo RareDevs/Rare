@@ -20,13 +20,13 @@ class LaunchDialog(BaseDialog):
     def __init__(self, parent=None):
         super(LaunchDialog, self).__init__(parent=parent)
         self.setWindowFlags(
-            Qt.Window
-            | Qt.Dialog
-            | Qt.CustomizeWindowHint
-            | Qt.WindowSystemMenuHint
-            | Qt.WindowTitleHint
-            | Qt.WindowMinimizeButtonHint
-            | Qt.MSWindowsFixedSizeDialogHint
+            Qt.WindowType.Window
+            | Qt.WindowType.Dialog
+            | Qt.WindowType.CustomizeWindowHint
+            | Qt.WindowType.WindowSystemMenuHint
+            | Qt.WindowType.WindowTitleHint
+            | Qt.WindowType.WindowMinimizeButtonHint
+            | Qt.WindowType.MSWindowsFixedSizeDialogHint
         )
 
         self.ui = Ui_LaunchDialog()

@@ -98,8 +98,8 @@ class ImageWidget(QWidget):
             )
         )
         gradient = QLinearGradient(0, 0, 0, self.height())
-        gradient.setColorAt(0.0, Qt.black)
-        gradient.setColorAt(1.0, Qt.transparent)
+        gradient.setColorAt(0.0, Qt.GlobalColor.black)
+        gradient.setColorAt(1.0, Qt.GlobalColor.transparent)
         self._squared_overlay = path.subtracted(inner_path), gradient
         return self._squared_overlay
 
@@ -122,7 +122,7 @@ class ImageWidget(QWidget):
     def paint_image_empty(self, painter: QPainter, a0: QPaintEvent) -> None:
         # when pixmap object is not available yet, show a gray rectangle
         painter.setOpacity(0.5 * self._opacity)
-        painter.fillRect(a0.rect(), Qt.darkGray)
+        painter.fillRect(a0.rect(), Qt.GlobalColor.darkGray)
 
     def paint_image_cover(self, painter: QPainter, a0: QPaintEvent) -> None:
         painter.setOpacity(self._opacity)
@@ -132,14 +132,14 @@ class ImageWidget(QWidget):
         painter.fillRect(a0.rect(), brush)
 
     def paint_overlay_rounded(self, painter: QPainter, a0: QPaintEvent) -> None:
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setOpacity(1.0)
-        painter.setCompositionMode(QPainter.CompositionMode_Source)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
         overlay, _ = self._generate_rounded_overlay()
-        painter.fillPath(overlay, self.palette().color(QPalette.Window))
+        painter.fillPath(overlay, self.palette().color(QPalette.ColorRole.Window))
 
     def paint_overlay_squared(self, painter: QPainter, a0: QPaintEvent) -> None:
-        painter.setRenderHint(QPainter.Antialiasing, False)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
         painter.setOpacity(self._opacity)
         painter.fillPath(*self._generate_squared_overlay())
 
@@ -148,7 +148,7 @@ class ImageWidget(QWidget):
         if not painter.paintEngine().isActive():
             return
         # helps with better image quality
-        painter.setRenderHint(QPainter.SmoothPixmapTransform, self._smooth_transform)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, self._smooth_transform)
         self.paint_image(painter, a0)
         self.paint_overlay(painter, a0)
         painter.end()

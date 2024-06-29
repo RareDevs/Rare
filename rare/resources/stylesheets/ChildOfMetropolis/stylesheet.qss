@@ -26,6 +26,9 @@ install-disabled:   #020 #7D5380   -- install
 uninstall-normal:   #700 #FFB085   -- uninstall
 uninstall-hover:    #500 #BF8464   -- uninstall
 uninstall-disabled: #200 #805843   -- uninstall
+
+If you want to regenerate the file without any change, increase the following value
+Version iterator: 1
 */
 
 * {
@@ -94,27 +97,6 @@ QScrollBar {
     border-color: #71DA7E;
     background-color: #DADDDE;
     selection-background-color: #71DA7E;
-}
-
-QLineEdit,
-QTextEdit,
-QTimeEdit,
-QDateEdit,
-QDateTimeEdit,
-QComboBox,
-QSpinBox,
-QDoubleSpinBox,
-QProgressBar,
-QScrollArea,
-QPushButton {
-    min-height: 3.00ex;
-    /* min-height: 1.30em; */
-    /* min-height: 18px; */
-}
-QToolButton {
-    min-height: 3.00ex;
-    /* min-height: 1.10em; */
-    /* min-height: 15px; */
 }
 
 QFrame[frameShape="0"] {
@@ -322,7 +304,7 @@ QToolButton {
     border-width: 1px;
     border-style: solid;
     border-radius: 2px;
-    padding: 2px;
+    padding: 3px;
     padding-left: 6px;
     padding-right: 6px;
 }
@@ -693,9 +675,9 @@ QTabBar#MainTabBar::tab:top:selected {
     border-color: #5CD3FF;
     border-bottom-color: #C2C4C5;
 }
+
 QPushButton#TabButtonWidget,
 QToolButton#TabButtonWidget {
-    padding: 0px;
     border-color: rgb( 51, 54, 59);
 }
 QPushButton#TabButtonWidget:disabled,

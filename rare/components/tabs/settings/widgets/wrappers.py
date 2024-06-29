@@ -99,7 +99,7 @@ class WrapperAddDialog(WrapperEditDialog):
 
     @pyqtSlot(int)
     def __on_index_changed(self, index: int):
-        command = self.combo_box.itemData(index, Qt.UserRole)
+        command = self.combo_box.itemData(index, Qt.ItemDataRole.UserRole)
         self.line_edit.setText(command)
 
 
@@ -111,8 +111,8 @@ class WrapperWidget(QFrame):
 
     def __init__(self, wrapper: Wrapper, parent=None):
         super(WrapperWidget, self).__init__(parent=parent)
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         self.setToolTip(wrapper.as_str)
 
         text_lbl = QLabel(wrapper.name, parent=self)
@@ -175,23 +175,23 @@ class WrapperWidget(QFrame):
             self.deleteLater()
 
     def mouseMoveEvent(self, a0: QMouseEvent) -> None:
-        if a0.buttons() == Qt.LeftButton:
+        if a0.buttons() == Qt.MouseButton.LeftButton:
             a0.accept()
             if self.wrapper.is_compat_tool:
                 return
             drag = QDrag(self)
             mime = QMimeData()
             drag.setMimeData(mime)
-            drag.exec_(Qt.MoveAction)
+            drag.exec_(Qt.DropAction.MoveAction)
 
 
 class WrapperSettingsScroll(QScrollArea):
     def __init__(self, parent=None):
         super(WrapperSettingsScroll, self).__init__(parent=parent)
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setSizeAdjustPolicy(QScrollArea.AdjustToContents)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setSizeAdjustPolicy(QScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         self.setWidgetResizable(True)
         self.setProperty("no_kinetic_scroll", True)
 
@@ -204,7 +204,7 @@ class WrapperSettingsScroll(QScrollArea):
         w.installEventFilter(self)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
-        if a0 is self.widget() and a1.type() == QEvent.Resize:
+        if a0 is self.widget() and a1.type() == QEvent.Type.Resize:
             self.__resize(a0)
             return a0.event(a1)
         return False
@@ -231,8 +231,8 @@ class WrapperSettings(QWidget):
         super(WrapperSettings, self).__init__(parent=parent)
 
         self.wrapper_label = QLabel(self.tr("No wrappers defined"), self)
-        self.wrapper_label.setFrameStyle(QLabel.StyledPanel | QLabel.Plain)
-        self.wrapper_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.wrapper_label.setFrameStyle(QLabel.Shape.StyledPanel | QLabel.Shadow.Plain)
+        self.wrapper_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         self.add_button = QPushButton(self.tr("Add wrapper"), self)
         self.add_button.clicked.connect(self.__on_add)
@@ -250,10 +250,10 @@ class WrapperSettings(QWidget):
 
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.addWidget(self.wrapper_scroll, alignment=Qt.AlignTop)
-        main_layout.addWidget(self.add_button, alignment=Qt.AlignTop)
+        main_layout.addWidget(self.wrapper_scroll, alignment=Qt.AlignmentFlag.AlignTop)
+        main_layout.addWidget(self.add_button, alignment=Qt.AlignmentFlag.AlignTop)
 
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self.app_name: str = "default"
         self.core = RareCore.instance().core()
@@ -332,10 +332,10 @@ class WrapperSettings(QWidget):
                 self,
                 self.tr("Warning"),
                 self.tr("Wrapper <b>{0}</b> is not in $PATH. Add it anyway?").format(wrapper.executable),
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
             )
-            if ans == QMessageBox.No:
+            if ans == QMessageBox.StandardButton.No:
                 return
 
         self.add_wrapper(wrapper, position)
@@ -359,7 +359,7 @@ class WrapperSettings(QWidget):
 
     @pyqtSlot()
     def update_state(self):
-        for w in self.wrapper_container.findChildren(WrapperWidget, options=Qt.FindDirectChildrenOnly):
+        for w in self.wrapper_container.findChildren(WrapperWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             w.deleteLater()
         wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
         if not wrappers:
@@ -382,8 +382,8 @@ class WrapperContainer(QWidget):
         main_layout.addWidget(label)
         main_layout.addLayout(self.__layout)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        main_layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        main_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 
 for f in os.listdir(os.path.join(os.path.dirname(__file__), "../rare/resources/languages/")):

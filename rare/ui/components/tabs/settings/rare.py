@@ -146,7 +146,7 @@ class Ui_RareSettings(object):
         self.save_size.setText(_translate("RareSettings", "Restore window size on application startup"))
         self.notification.setText(_translate("RareSettings", "Show notifications when downloads complete"))
         self.log_games.setText(_translate("RareSettings", "Show console window when launching games"))
-        self.sys_tray.setText(_translate("RareSettings", "Exit to system tray"))
+        self.sys_tray.setText(_translate("RareSettings", "Close to system tray"))
         self.auto_update.setText(_translate("RareSettings", "Queue game updates on application startup"))
         self.confirm_start.setText(_translate("RareSettings", "Confirm before launching games"))
         self.auto_sync_cloud.setText(_translate("RareSettings", "Automatically upload/download cloud saves"))

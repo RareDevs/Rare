@@ -27,6 +27,7 @@ def find_libraries(steam_path: str) -> Set[str]:
         libraryfolders = vdf.load(f)["libraryfolders"]
     # libraries = [os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()]
     libraries = {os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()}
+    libraries = set(filter(lambda x: os.path.isdir(x), libraries))
     return libraries
 
 

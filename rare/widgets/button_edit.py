@@ -14,7 +14,7 @@ class ButtonLineEdit(QLineEdit):
         self.button = QPushButton(self)
         self.button.setObjectName(f"{type(self).__name__}Button")
         self.button.setIcon(qta_icon(icon_name))
-        self.button.setCursor(Qt.ArrowCursor)
+        self.button.setCursor(Qt.CursorShape.ArrowCursor)
         self.button.clicked.connect(self.buttonClicked.emit)
 
         self.setPlaceholderText(placeholder_text)
@@ -33,7 +33,7 @@ class ButtonLineEdit(QLineEdit):
         # )
 
     def resizeEvent(self, event):
-        frame_width = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
+        frame_width = self.style().pixelMetric(QStyle.PixelMetric.PM_DefaultFrameWidth)
         button_size = self.button.sizeHint()
         self.button.move(
             self.rect().right() - frame_width - button_size.width(),

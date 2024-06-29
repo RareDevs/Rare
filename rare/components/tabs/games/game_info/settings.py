@@ -55,7 +55,7 @@ class GameLaunchSettings(LaunchSettingsBase):
         self.offline_combo.currentIndexChanged.connect(self.__offline_changed)
 
         self.override_exe_edit = PathEdit(
-            file_mode=QFileDialog.ExistingFile,
+            file_mode=QFileDialog.FileMode.ExistingFile,
             name_filters=["*.exe", "*.app"],
             placeholder=self.tr("Relative path to the replacement executable"),
             edit_func=self.__override_exe_edit_callback,
@@ -77,10 +77,10 @@ class GameLaunchSettings(LaunchSettingsBase):
             return super().showEvent(a0)
 
         skip_update = config.get_option(self.app_name, "skip_update_check", fallback=None)
-        self.skip_update_combo.setCurrentIndex(self.offline_combo.findData(skip_update, Qt.UserRole))
+        self.skip_update_combo.setCurrentIndex(self.offline_combo.findData(skip_update, Qt.ItemDataRole.UserRole))
 
         offline = config.get_option(self.app_name, "offline", fallback=None)
-        self.offline_combo.setCurrentIndex(self.offline_combo.findData(offline, Qt.UserRole))
+        self.offline_combo.setCurrentIndex(self.offline_combo.findData(offline, Qt.ItemDataRole.UserRole))
 
         if self.igame:
             self.offline_combo.setEnabled(self.igame.can_run_offline)
@@ -99,7 +99,7 @@ class GameLaunchSettings(LaunchSettingsBase):
 
     @pyqtSlot(int)
     def __skip_update_changed(self, index):
-        data = self.skip_update_combo.itemData(index, Qt.UserRole)
+        data = self.skip_update_combo.itemData(index, Qt.ItemDataRole.UserRole)
         config.save_option(self.app_name, "skip_update_check", data)
 
     def __override_exe_edit_callback(self, path: str) -> Tuple[bool, str, int]:
@@ -125,7 +125,7 @@ class GameLaunchSettings(LaunchSettingsBase):
 
     @pyqtSlot(int)
     def __offline_changed(self, index):
-        data = self.skip_update_combo.itemData(index, Qt.UserRole)
+        data = self.skip_update_combo.itemData(index, Qt.ItemDataRole.UserRole)
         config.save_option(self.app_name, "offline", data)
 
     def __launch_params_changed(self, value) -> None:
