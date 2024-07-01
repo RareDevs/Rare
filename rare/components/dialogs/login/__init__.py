@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import QLayout, QMessageBox, QFrame
 from legendary.core import LegendaryCore
 
@@ -108,21 +108,25 @@ class LoginDialog(BaseDialog):
 
         self.ui.main_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
 
-    def back_clicked(self):
-        self.ui.back_button.setEnabled(False)
-        self.ui.next_button.setEnabled(True)
-        self.login_stack.slideInWidget(self.landing_page)
-
+    @Slot()
     def browser_radio_clicked(self):
         self.login_stack.slideInWidget(self.browser_page)
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(False)
 
+    @Slot()
     def import_radio_clicked(self):
         self.login_stack.slideInWidget(self.import_page)
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(self.import_page.is_valid())
 
+    @Slot()
+    def back_clicked(self):
+        self.ui.back_button.setEnabled(False)
+        self.ui.next_button.setEnabled(True)
+        self.login_stack.slideInWidget(self.landing_page)
+
+    @Slot()
     def next_clicked(self):
         if self.login_stack.currentWidget() is self.landing_page:
             if self.landing_page.ui.login_browser_radio.isChecked():
@@ -139,6 +143,7 @@ class LoginDialog(BaseDialog):
             self.reject()
         self.open()
 
+    @Slot()
     def login_successful(self):
         try:
             if not self.core.login():
