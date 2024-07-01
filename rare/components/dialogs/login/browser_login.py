@@ -30,7 +30,7 @@ class BrowserLogin(QFrame):
         self.login_url = self.core.egs.get_auth_url()
 
         self.sid_edit = IndicatorLineEdit(
-            placeholder=self.tr("Insert authorizationCode here"), edit_func=self.text_changed, parent=self
+            placeholder=self.tr("Insert authorizationCode here"), edit_func=self.sid_edit_callback, parent=self
         )
         self.sid_edit.line_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.ui.link_text.setText(self.login_url)
@@ -54,7 +54,7 @@ class BrowserLogin(QFrame):
         return self.sid_edit.is_valid
 
     @staticmethod
-    def text_changed(text) -> Tuple[bool, str, int]:
+    def sid_edit_callback(text) -> Tuple[bool, str, int]:
         if text:
             text = text.strip()
             if text.startswith("{") and text.endswith("}"):

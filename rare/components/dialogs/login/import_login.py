@@ -2,7 +2,7 @@ import os
 from getpass import getuser
 from logging import getLogger
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import QFrame, QFileDialog
 from legendary.core import LegendaryCore
 from legendary.lfs.wine_helpers import get_shell_folders, read_registry
@@ -68,6 +68,7 @@ class ImportLogin(QFrame):
                 prefixes.append(prefix)
         return prefixes
 
+    @Slot()
     def prefix_path(self):
         prefix_dialog = QFileDialog(self, self.tr("Choose path"), os.path.expanduser("~/"))
         prefix_dialog.setFileMode(QFileDialog.FileMode.Directory)
