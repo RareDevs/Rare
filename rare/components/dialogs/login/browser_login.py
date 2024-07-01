@@ -18,7 +18,7 @@ logger = getLogger("BrowserLogin")
 
 class BrowserLogin(QFrame):
     success = Signal()
-    changed = Signal()
+    isValid = Signal(bool)
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(BrowserLogin, self).__init__(parent=parent)
@@ -42,7 +42,7 @@ class BrowserLogin(QFrame):
         )
 
         self.ui.open_button.clicked.connect(self.open_browser)
-        self.sid_edit.textChanged.connect(self.changed.emit)
+        self.sid_edit.textChanged.connect(lambda _: self.isValid.emit(self.is_valid()))
 
     @Slot()
     def copy_link(self):
