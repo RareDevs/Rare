@@ -126,6 +126,7 @@ def start(args) -> int:
         QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
         app = Rare(args)
         exit_code = app.exec()
+        app.shutdown()
         del app
         if exit_code != ExitCodes.LOGOUT:
             break
