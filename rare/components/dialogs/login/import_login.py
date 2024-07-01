@@ -14,7 +14,7 @@ logger = getLogger("ImportLogin")
 
 class ImportLogin(QFrame):
     success = Signal()
-    changed = Signal()
+    isValid = Signal(bool)
 
     # FIXME: Use pathspec instead of duplicated code
     if os.name == "nt":
@@ -55,7 +55,7 @@ class ImportLogin(QFrame):
                 self.ui.status_label.setText(self.text_egl_notfound)
 
         self.ui.prefix_button.clicked.connect(self.prefix_path)
-        self.ui.prefix_combo.editTextChanged.connect(self.changed.emit)
+        self.ui.prefix_combo.editTextChanged.connect(lambda _: self.isValid.emit(self.is_valid()))
 
     def get_wine_prefixes(self):
         possible_prefixes = [

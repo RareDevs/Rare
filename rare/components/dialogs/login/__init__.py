@@ -57,13 +57,11 @@ class LoginDialog(BaseDialog):
         self.browser_page = BrowserLogin(self.core, self.login_stack)
         self.login_stack.insertWidget(1, self.browser_page)
         self.browser_page.success.connect(self.login_successful)
-        self.browser_page.changed.connect(
-            lambda: self.ui.next_button.setEnabled(self.browser_page.is_valid())
-        )
+        self.browser_page.isValid.connect(lambda x: self.ui.next_button.setEnabled(x))
         self.import_page = ImportLogin(self.core, self.login_stack)
         self.login_stack.insertWidget(2, self.import_page)
         self.import_page.success.connect(self.login_successful)
-        self.import_page.changed.connect(lambda: self.ui.next_button.setEnabled(self.import_page.is_valid()))
+        self.import_page.isValid.connect(lambda x: self.ui.next_button.setEnabled(x))
 
         # # NOTE: The real problem is that the BrowserLogin page has a huge QLabel with word-wrapping enabled.
         # # That forces the whole form to vertically expand instead of horizontally. Since the form is not shown
