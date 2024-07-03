@@ -1,6 +1,7 @@
 # pywebview with QtWebEngine backend has issues with EGS login form, so use GTK
 pywebview[gtk]; platform_system == "Linux"
 pywebview[gtk]; platform_system == "FreeBSD"
-pythonnet>=3.0.0rc4; platform_system == "Windows"
-cefpython3; platform_system == "Windows"
-pywebview[cef]; platform_system == "Windows"
+pythonnet; platform_system == "Windows"
+pywebview; platform_system == "Windows"
+pyobjc; platform_system == "Darwin"
+pywebview; platform_system == "Darwin"
