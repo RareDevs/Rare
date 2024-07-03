@@ -13,7 +13,7 @@ requirements = [
     "setuptools",
     "legendary-gl>=0.20.34",
     "orjson",
-    "vdf"
+    "vdf",
     'pywin32; platform_system == "Windows"',
 ]
 
