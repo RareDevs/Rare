@@ -4,7 +4,7 @@ nuitka_opts=(
     '--assume-yes-for-downloads'
     '--mingw64'
     '--lto=no'
-    '--jobs=2'
+    '--jobs=3'
     '--static-libpython=no'
     '--standalone'
     '--enable-plugin=anti-bloat'
