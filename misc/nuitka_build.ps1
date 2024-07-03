@@ -1,14 +1,14 @@
 
-
 $nuitka_opts = @(
     '--assume-yes-for-downloads'
     '--mingw64'
-    '--lto=yes'
-    '--jobs=2'
+    '--lto=no'
+    '--jobs=3'
     '--static-libpython=no'
     '--standalone'
     '--enable-plugin=anti-bloat'
     '--enable-plugin=pyside6'
+    '--enable-plugin=pywebview'
     '--show-modules'
     '--show-anti-bloat-changes'
     '--follow-stdlib'
