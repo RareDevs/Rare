@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         self.args = RareCore.instance().args()
         self.settings = QSettings()
 
-        self.setWindowTitle("Rare - GUI for legendary")
+        self.setWindowTitle(QApplication.applicationName())
         self.tab_widget = MainTabWidget(self)
         self.tab_widget.exit_app.connect(self.__on_exit_app)
         self.setCentralWidget(self.tab_widget)
