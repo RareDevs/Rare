@@ -7,7 +7,7 @@ import traceback
 from argparse import Namespace
 
 import legendary
-from PySide6 import __version__ as PYQT_VERSION_STR
+from PySide6 import __version__ as PYSIDE_VERSION_STR
 from PySide6.QtCore import __version__ as QT_VERSION_STR
 from PySide6.QtCore import (
     QSettings,
@@ -111,7 +111,7 @@ class RareApp(QApplication):
             f" - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
             f" - Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
             f" - Running {sys.executable} {' '.join(sys.argv)}\n"
-            f" - Qt version: {QT_VERSION_STR}, PyQt version: {PYQT_VERSION_STR}"
+            f" - Qt version: {QT_VERSION_STR}, PySide6 version: {PYSIDE_VERSION_STR}"
         )
 
         self.settings = QSettings(self)
