@@ -31,7 +31,7 @@ class ProtonSettings(QGroupBox):
         self.tool_combo.currentIndexChanged.connect(self.__on_proton_changed)
 
         self.tool_prefix = PathEdit(
-            file_mode=QFileDialog.DirectoryOnly,
+            file_mode=QFileDialog.FileMode.Directory,
             edit_func=self.proton_prefix_edit,
             save_func=self.proton_prefix_save,
             placeholder=self.tr("Please select path for proton prefix"),
@@ -41,9 +41,9 @@ class ProtonSettings(QGroupBox):
         layout = QFormLayout(self)
         layout.addRow(self.tr("Proton tool"), self.tool_combo)
         layout.addRow(self.tr("Compat data"), self.tool_prefix)
-        layout.setFieldGrowthPolicy(QFormLayout.ExpandingFieldsGrow)
-        layout.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        layout.setFormAlignment(Qt.AlignLeading | Qt.AlignTop)
+        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
 
         self.app_name: str = "default"
         self.core = RareCore.instance().core()
@@ -72,7 +72,7 @@ class ProtonSettings(QGroupBox):
         self.tool_combo.setCurrentIndex(index)
         self.tool_combo.blockSignals(False)
 
-        enabled = bool(self.tool_combo.currentData(Qt.UserRole))
+        enabled = bool(self.tool_combo.currentData(Qt.ItemDataRole.UserRole))
         self.tool_prefix.blockSignals(True)
         self.tool_prefix.setText(config.get_proton_compatdata(self.app_name, fallback=""))
         self.tool_prefix.setEnabled(enabled)

@@ -72,7 +72,7 @@ class GameSettingsBase(QWidget, SideTabContents):
             self.main_layout.addWidget(self.mangohud)
         self.main_layout.addWidget(self.env_vars)
 
-        self.main_layout.setAlignment(Qt.AlignTop)
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
     def hideEvent(self, a0: QHideEvent):
         if a0.spontaneous():

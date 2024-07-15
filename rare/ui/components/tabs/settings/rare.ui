@@ -122,7 +122,7 @@
         <item row="0" column="0">
          <widget class="QCheckBox" name="sys_tray">
           <property name="text">
-           <string>Exit to system tray</string>
+           <string>Close to system tray</string>
           </property>
          </widget>
         </item>

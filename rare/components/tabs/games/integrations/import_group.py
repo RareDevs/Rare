@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from enum import IntEnum
 from logging import getLogger
 from pathlib import Path
-from typing import List, Tuple, Optional, Set
+from typing import List, Tuple, Optional, Set, Dict
 
-from PyQt5.QtCore import Qt, QModelIndex, pyqtSignal, QRunnable, QObject, QThreadPool, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal, QRunnable, QObject, QThreadPool, pyqtSlot
 from PyQt5.QtGui import QStandardItemModel, QShowEvent
 from PyQt5.QtWidgets import (
     QFileDialog,
@@ -145,14 +145,11 @@ class ImportWorker(QRunnable):
 
 
 class AppNameCompleter(QCompleter):
-    activated = pyqtSignal(str)
 
     def __init__(self, app_names: Set[Tuple[str, str]], parent=None):
         super(AppNameCompleter, self).__init__(parent)
-        # pylint: disable=E1136
-        super(AppNameCompleter, self).activated[QModelIndex].connect(self.__activated_idx)
 
-        model = QStandardItemModel(len(app_names), 2)
+        model = QStandardItemModel(len(app_names), 2, self)
         for idx, game in enumerate(app_names):
             app_name, app_title = game
             model.setData(model.index(idx, 0), app_title)
@@ -163,26 +160,12 @@ class AppNameCompleter(QCompleter):
         self.setPopup(treeview)
         treeview.setRootIsDecorated(False)
         treeview.header().hide()
-        treeview.header().setSectionResizeMode(0, QHeaderView.Stretch)
-        treeview.header().setSectionResizeMode(1, QHeaderView.Stretch)
+        treeview.header().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        treeview.header().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
 
-        # listview = QListView()
-        # self.setPopup(listview)
-        # # listview.setModelColumn(1)
-
-        self.setFilterMode(Qt.MatchContains)
-        self.setCaseSensitivity(Qt.CaseInsensitive)
+        self.setFilterMode(Qt.MatchFlag.MatchContains)
+        self.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         # self.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
-
-    def __activated_idx(self, idx):
-        # lk: don't even look at this in a funny way, it will die of shame
-        # lk: Note to self, the completer and popup models are different.
-        # lk: Getting the index from the popup and trying to use it in the completer will return invalid results
-        if isinstance(idx, QModelIndex):
-            self.activated.emit(self.popup().model().data(self.popup().model().index(idx.row(), 1)))
-        # TODO: implement conversion from app_name to app_title (signal loop here)
-        # if isinstance(idx_str, str):
-        #     self.activated.emit(idx_str)
 
 
 class ImportGroup(QGroupBox):
@@ -196,19 +179,19 @@ class ImportGroup(QGroupBox):
         self.worker: Optional[ImportWorker] = None
         self.threadpool = QThreadPool.globalInstance()
 
-        self.__app_names: Set[str] = set()
+        self.__app_names: Dict[str, str] = dict()
         self.__install_dirs: Set[str] = set()
 
         self.path_edit = PathEdit(
             self.core.get_default_install_dir(self.core.default_platform),
-            QFileDialog.DirectoryOnly,
+            QFileDialog.FileMode.Directory,
             edit_func=self.path_edit_callback,
             parent=self,
         )
         self.path_edit.textChanged.connect(self.path_changed)
         self.ui.import_layout.setWidget(
             self.ui.import_layout.getWidgetPosition(self.ui.path_edit_label)[0],
-            QFormLayout.FieldRole, self.path_edit
+            QFormLayout.ItemRole.FieldRole, self.path_edit
         )
 
         self.app_name_edit = IndicatorLineEdit(
@@ -220,7 +203,7 @@ class ImportGroup(QGroupBox):
         self.app_name_edit.textChanged.connect(self.app_name_changed)
         self.ui.import_layout.setWidget(
             self.ui.import_layout.getWidgetPosition(self.ui.app_name_label)[0],
-            QFormLayout.FieldRole, self.app_name_edit
+            QFormLayout.ItemRole.FieldRole, self.app_name_edit
         )
 
         self.ui.import_folder_check.stateChanged.connect(self.import_folder_changed)
@@ -234,11 +217,11 @@ class ImportGroup(QGroupBox):
         )
 
         self.button_info_stack = QStackedWidget(self)
-        self.button_info_stack.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.button_info_stack.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.button_info_stack.setFixedHeight(self.ui.import_button.sizeHint().height())
         self.info_label = ElideLabel(text="", parent=self.button_info_stack)
         self.info_label.setFixedHeight(False)
-        self.info_label.setAlignment(Qt.AlignVCenter)
+        self.info_label.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         self.info_progress = QProgressBar(self.button_info_stack)
         self.button_info_stack.addWidget(self.info_label)
         self.button_info_stack.addWidget(self.info_progress)
@@ -247,7 +230,7 @@ class ImportGroup(QGroupBox):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        self.__app_names = {rgame.app_name for rgame in self.rcore.games}
+        self.__app_names = {rgame.app_title: rgame.app_name for rgame in self.rcore.games}
         self.__install_dirs = {rgame.folder_name for rgame in self.rcore.games if not rgame.is_dlc}
         self.app_name_edit.setCompleter(
             AppNameCompleter(app_names={(rgame.app_name, rgame.app_title) for rgame in self.rcore.games})
@@ -274,8 +257,8 @@ class ImportGroup(QGroupBox):
     @pyqtSlot(str)
     def path_changed(self, path: str):
         self.info_label.setText("")
-        self.ui.import_folder_check.setCheckState(Qt.Unchecked)
-        self.ui.import_force_check.setCheckState(Qt.Unchecked)
+        self.ui.import_folder_check.setCheckState(Qt.CheckState.Unchecked)
+        self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
         if self.path_edit.is_valid:
             self.app_name_edit.setText(find_app_name(path, self.core))
         else:
@@ -284,10 +267,12 @@ class ImportGroup(QGroupBox):
     def app_name_edit_callback(self, text) -> Tuple[bool, str, int]:
         if not text:
             return False, text, IndicatorReasonsCommon.UNDEFINED
-        if text in self.__app_names:
+        if text in self.__app_names.keys():
+            return True, self.__app_names[text], IndicatorReasonsCommon.VALID
+        if text in self.__app_names.values():
             return True, text, IndicatorReasonsCommon.VALID
         else:
-            return False, text, IndicatorReasonsCommon.NOT_INSTALLED
+            return False, text, IndicatorReasonsCommon.GAME_NOT_EXISTS
 
     def app_name_save_callback(self, text) -> None:
         rgame = self.rcore.get_game(text)
@@ -298,8 +283,8 @@ class ImportGroup(QGroupBox):
     @pyqtSlot(str)
     def app_name_changed(self, app_name: str):
         self.info_label.setText("")
-        self.ui.import_dlcs_check.setCheckState(Qt.Unchecked)
-        self.ui.import_force_check.setCheckState(Qt.Unchecked)
+        self.ui.import_dlcs_check.setCheckState(Qt.CheckState.Unchecked)
+        self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_dlcs_check.setEnabled(
             self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(app_name))
         )
@@ -318,8 +303,8 @@ class ImportGroup(QGroupBox):
                 " will be imported."
             ) if state else ""
         )
-        self.ui.import_dlcs_check.setCheckState(Qt.Unchecked)
-        self.ui.import_force_check.setCheckState(Qt.Unchecked)
+        self.ui.import_dlcs_check.setCheckState(Qt.CheckState.Unchecked)
+        self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_dlcs_check.setEnabled(
             state
             or (self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(self.app_name_edit.text())))
@@ -391,7 +376,7 @@ class ImportGroup(QGroupBox):
             errored = [r for r in result if r.result == ImportResult.ERROR]
             # pylint: disable=E1101
             messagebox = QMessageBox(
-                QMessageBox.Information,
+                QMessageBox.Icon.Information,
                 self.tr("Import summary"),
                 self.tr(
                     "Tried to import {} folders.\n\n"
@@ -400,7 +385,7 @@ class ImportGroup(QGroupBox):
                 buttons=QMessageBox.StandardButton.Close,
                 parent=self,
             )
-            messagebox.setWindowModality(Qt.NonModal)
+            messagebox.setWindowModality(Qt.WindowModality.NonModal)
             details: List = []
             for res in success:
                 details.append(

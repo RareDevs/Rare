@@ -55,11 +55,15 @@ class QtRequests(QObject):
 
     def __prepare_request(self, item: RequestQueueItem) -> QNetworkRequest:
         request = QNetworkRequest(item.url)
-        request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json; charset=UTF-8")
-        request.setHeader(QNetworkRequest.UserAgentHeader, USER_AGENT)
-        request.setAttribute(QNetworkRequest.RedirectPolicyAttribute, QNetworkRequest.NoLessSafeRedirectPolicy)
+        request.setHeader(QNetworkRequest.KnownHeaders.ContentTypeHeader, "application/json; charset=UTF-8")
+        request.setHeader(QNetworkRequest.KnownHeaders.UserAgentHeader, USER_AGENT)
+        request.setAttribute(
+            QNetworkRequest.Attribute.RedirectPolicyAttribute, QNetworkRequest.RedirectPolicy.NoLessSafeRedirectPolicy
+        )
         if self.cache is not None:
-            request.setAttribute(QNetworkRequest.CacheLoadControlAttribute, QNetworkRequest.PreferCache)
+            request.setAttribute(
+                QNetworkRequest.Attribute.CacheLoadControlAttribute, QNetworkRequest.CacheLoadControl.PreferCache
+            )
         if self.token is not None:
             request.setRawHeader(b"Authorization", self.token.encode())
         return request
@@ -103,10 +107,10 @@ class QtRequests(QObject):
             self.log.error("QNetworkReply: %s without associated item", reply.url().toString())
             reply.deleteLater()
             return
-        if reply.error():
+        if reply.error() != QNetworkReply.NetworkError.NoError:
             self.log.error(reply.errorString())
         else:
-            mimetype, charset = self.__parse_content_type(reply.header(QNetworkRequest.ContentTypeHeader))
+            mimetype, charset = self.__parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))
             maintype, subtype = mimetype.split("/")
             bin_data = reply.readAll().data()
             if mimetype == "application/json":

@@ -92,7 +92,7 @@ class IconViewContainer(ViewContainer):
         view_layout = LibraryLayout(self)
         view_layout.setSpacing(9)
         view_layout.setContentsMargins(0, 13, 0, 13)
-        view_layout.setAlignment(Qt.AlignTop)
+        view_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setLayout(view_layout)
 
     def add_widget(self, rgame: RareGame) -> IconGameWidget:
@@ -137,7 +137,7 @@ class ListViewContainer(ViewContainer):
         super().__init__(rcore, parent=parent)
         view_layout = QVBoxLayout(self)
         view_layout.setContentsMargins(3, 3, 9, 3)
-        view_layout.setAlignment(Qt.AlignTop)
+        view_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setLayout(view_layout)
 
     def add_widget(self, rgame: RareGame) -> ListGameWidget:

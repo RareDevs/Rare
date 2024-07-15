@@ -23,12 +23,13 @@ jobs:
       - name: Install Target Dependencies
         run: |
           pip install -r requirements.txt
+          pip install -r requirements-presence.txt
       - name: Move files
         run: mv rare/__main__.py __main__.py
       - name: Build
         run: >-
           pyinstaller -F --name Rare
-          --add-data "rare/resources/languages/*:rare/resources/languages"
+          --add-data "rare/resources/languages/rare_*.qm:rare/resources/languages/"
           --add-data "rare/resources/images/*:rare/resources/images/"
           --windowed
           --icon rare/resources/images/Rare.icns

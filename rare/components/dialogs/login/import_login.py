@@ -26,7 +26,7 @@ class ImportLogin(QFrame):
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(ImportLogin, self).__init__(parent=parent)
-        self.setFrameStyle(self.StyledPanel)
+        self.setFrameStyle(QFrame.Shape.StyledPanel)
         self.ui = Ui_ImportLogin()
         self.ui.setupUi(self)
 
@@ -70,7 +70,8 @@ class ImportLogin(QFrame):
 
     def prefix_path(self):
         prefix_dialog = QFileDialog(self, self.tr("Choose path"), os.path.expanduser("~/"))
-        prefix_dialog.setFileMode(QFileDialog.DirectoryOnly)
+        prefix_dialog.setFileMode(QFileDialog.FileMode.Directory)
+        prefix_dialog.setOption(QFileDialog.Option.ShowDirsOnly)
         if prefix_dialog.exec_():
             names = prefix_dialog.selectedFiles()
             self.ui.prefix_combo.setCurrentText(names[0])

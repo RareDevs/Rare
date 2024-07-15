@@ -68,7 +68,7 @@ class GameInfoTabs(SideTabWidget):
         self.setCurrentIndex(self.details_index)
 
     def keyPressEvent(self, a0: QKeyEvent):
-        if a0.key() == Qt.Key_Escape:
+        if a0.key() == Qt.Key.Key_Escape:
             self.back_clicked.emit()
 
 
@@ -78,7 +78,7 @@ class GameMetadataView(QTreeView, SideTabContents):
         self.implements_scrollarea = True
         self.setColumnWidth(0, 300)
         self.setWordWrap(True)
-        self.setEditTriggers(QTreeView.NoEditTriggers)
+        self.setEditTriggers(QTreeView.EditTrigger.NoEditTriggers)
         self.model = QJsonModel()
         self.setModel(self.model)
         self.rgame: Optional[RareGame] = None

@@ -87,7 +87,7 @@ class Rare(RareApp):
     @pyqtSlot()
     def __on_start_app(self):
         self.relogin_timer = QTimer(self)
-        self.relogin_timer.setTimerType(Qt.VeryCoarseTimer)
+        self.relogin_timer.setTimerType(Qt.TimerType.VeryCoarseTimer)
         self.relogin_timer.timeout.connect(self.relogin)
         self.poke_timer()
 
@@ -122,8 +122,8 @@ class Rare(RareApp):
 
 def start(args) -> int:
     while True:
-        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+        QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
+        QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
         app = Rare(args)
         exit_code = app.exec()
         del app

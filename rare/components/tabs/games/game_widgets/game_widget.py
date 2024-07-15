@@ -1,5 +1,6 @@
 import platform
 import random
+from abc import abstractmethod
 from logging import getLogger
 
 from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot, QObject, QEvent
@@ -35,7 +36,7 @@ class GameWidget(LibraryWidget):
 
         self.rgame: RareGame = rgame
 
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
         self.launch_action = QAction(self.tr("Launch"), self)
         self.launch_action.triggered.connect(self._launch)
@@ -97,14 +98,31 @@ class GameWidget(LibraryWidget):
             "not_can_launch": self.tr("Can't launch"),
         }
 
+        self._ui = None
+
     # lk: abstract class for typing, the `self.ui` attribute should be used
     # lk: by the Ui class in the children. It must contain at least the same
     # lk: attributes as `GameWidgetUi` class
-    __slots__ = "ui", "update_pixmap", "start_progress"
+
+    @property
+    def ui(self):
+        return self._ui
+
+    @ui.setter
+    def ui(self, arg):
+        self._ui = arg
+
+    @abstractmethod
+    def update_pixmap(self):
+        pass
+
+    @abstractmethod
+    def start_progress(self):
+        pass
 
     def paintEvent(self, a0: QPaintEvent) -> None:
         if not self.visibleRegion().isNull() and not self.rgame.has_pixmap:
-            self.startTimer(random.randrange(42, 2361, 129), Qt.CoarseTimer)
+            self.startTimer(random.randrange(42, 2361, 129), Qt.TimerType.CoarseTimer)
             # self.startTimer(random.randrange(42, 2361, 363), Qt.VeryCoarseTimer)
             # self.rgame.load_pixmap()
         super().paintEvent(a0)
@@ -182,8 +200,12 @@ class GameWidget(LibraryWidget):
             self.addAction(self.uninstall_action)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
+        if not isinstance(a1, QEvent):
+            # FIXME: investigate why this happens
+            logger.error("Supplied arg1 %s with target %s is not a QEvent object", type(a1), type(a0))
+            return True
         if a0 is self.ui.launch_btn:
-            if a1.type() == QEvent.Enter:
+            if a1.type() == QEvent.Type.Enter:
                 if not self.rgame.can_launch:
                     self.ui.tooltip_label.setText(self.hover_strings["not_can_launch"])
                 elif self.rgame.is_origin:
@@ -195,27 +217,28 @@ class GameWidget(LibraryWidget):
                 elif self.rgame.can_launch:
                     self.ui.tooltip_label.setText(self.hover_strings["can_launch"])
                 return True
-            if a1.type() == QEvent.Leave:
+            if a1.type() == QEvent.Type.Leave:
                 self.ui.tooltip_label.setText(self.hover_strings["info"])
                 # return True
         if a0 is self.ui.install_btn:
-            if a1.type() == QEvent.Enter:
+            if a1.type() == QEvent.Type.Enter:
                 self.ui.tooltip_label.setText(self.hover_strings["install"])
                 return True
-            if a1.type() == QEvent.Leave:
+            if a1.type() == QEvent.Type.Leave:
                 self.ui.tooltip_label.setText(self.hover_strings["info"])
                 # return True
         if a0 is self:
-            if a1.type() == QEvent.Enter:
+            if a1.type() == QEvent.Type.Enter:
                 self.ui.tooltip_label.setText(self.hover_strings["info"])
         return super(GameWidget, self).eventFilter(a0, a1)
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
         # left button
-        if e.button() == 1:
+        if e.button() == Qt.MouseButton.LeftButton:
             self.show_info.emit(self.rgame)
+            e.accept()
         # right
-        elif e.button() == 2:
+        elif e.button() == Qt.MouseButton.RightButton:
             super(GameWidget, self).mousePressEvent(e)
 
     @pyqtSlot()

@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           cache: pip
-          python-version: '3.9'
+          python-version: '3.12'
           check-latest: true
           architecture: x64
       - name: Install build dependencies
@@ -31,7 +31,7 @@ jobs:
           --assume-yes-for-downloads
           --msvc=latest
           --lto=yes
-          --jobs=2
+          --jobs=4
           --static-libpython=no
           --standalone
           --enable-plugin=anti-bloat
@@ -42,18 +42,23 @@ jobs:
           --follow-imports
           --nofollow-import-to="*.tests"
           --nofollow-import-to="*.distutils"
+          --nofollow-import-to="distutils"
+          --nofollow-import-to="unittest"
+          --nofollow-import-to="pydoc"
+          --nofollow-import-to="tkinter"
+          --nofollow-import-to="test"
           --prefer-source-code
           --include-package=pypresence
           --include-package-data=qtawesome
-          --include-data-dir=rare\resources\images=rare\resources\images
-          --include-data-files=rare\resources\languages=rare\resources\languages="*.qm"
+          --include-data-dir=rare\resources\images\=rare\resources\images\
+          --include-data-files=rare\resources\languages\=rare\resources\languages\="rare_*.qm"
           --windows-icon-from-ico=rare\resources\images\Rare.ico
-          --windows-company-name=Rare
+          --windows-company-name=RareDevs
           --windows-product-name=Rare
           --windows-file-description=rare.exe
           --windows-file-version=${{ inputs.version }}
           --windows-product-version=${{ inputs.version }}
-          --disable-console
+          --windows-console-mode=disable
           rare
       - name: Fix QtNetwork SSL
         run: |

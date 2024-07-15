@@ -21,10 +21,10 @@ class ItemWidget(LoadingImageWidget):
         self.catalog_game = catalog_game
 
     def mousePressEvent(self, a0: QMouseEvent) -> None:
-        if a0.button() == Qt.LeftButton:
+        if a0.button() == Qt.MouseButton.LeftButton:
             a0.accept()
             self.show_details.emit(self.catalog_game)
-        if a0.button() == Qt.RightButton:
+        if a0.button() == Qt.MouseButton.RightButton:
             a0.accept()
 
 
@@ -73,10 +73,10 @@ class StoreItemWidget(ItemWidget):
         #     logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
 
 
-class ResultsItemWidget(ItemWidget):
+class SearchItemWidget(ItemWidget):
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
-        super(ResultsItemWidget, self).__init__(manager, catalog_game, parent=parent)
-        self.setFixedSize(ImageSize.DisplayTall)
+        super(SearchItemWidget, self).__init__(manager, catalog_game, parent=parent)
+        self.setFixedSize(ImageSize.LibraryTall)
         self.ui.setupUi(self)
 
         key_images = catalog_game.keyImages
@@ -132,5 +132,5 @@ class WishlistItemWidget(ItemWidget):
         self.delete_button.clicked.connect(
             lambda: self.delete_from_wishlist.emit(self.catalog_game)
         )
-        self.layout().insertWidget(0, self.delete_button, alignment=Qt.AlignRight)
+        self.layout().insertWidget(0, self.delete_button, alignment=Qt.AlignmentFlag.AlignRight)
 

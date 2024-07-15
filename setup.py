@@ -7,12 +7,13 @@ with open("README.md", "r") as fh:
 
 requirements = [
     "requests<3.0",
-    "legendary-gl>=0.20.34",
-    "orjson",
-    "setuptools",
-    "wheel",
     "PyQt5",
     "QtAwesome",
+    "wheel",
+    "setuptools",
+    "legendary-gl>=0.20.34",
+    "orjson",
+    "vdf",
     'pywin32; platform_system == "Windows"',
 ]
 
@@ -28,9 +29,9 @@ optional_reqs = dict(
 setuptools.setup(
     name="Rare",
     version=version,
-    author="Dummerle",
+    author="RareDevs",
     license="GPL-3",
-    description="A gui for Legendary",
+    description="A gui for legendary",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Dummerle/Rare",
@@ -40,6 +41,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         "Operating System :: OS Independent"
     ],

@@ -19,12 +19,12 @@ logger = getLogger("MoveGame")
 
 
 class MovePathEditReasons(IndicatorReasons):
-    DST_MISSING = auto()
-    NO_WRITE_PERM = auto()
-    SAME_DIR = auto()
-    DST_IN_SRC = auto()
-    NESTED_DIR = auto()
-    NO_SPACE = auto()
+    MOVEDIALOG_DST_MISSING = auto()
+    MOVEDIALOG_NO_WRITE_PERM = auto()
+    MOVEDIALOG_SAME_DIR = auto()
+    MOVEDIALOG_DST_IN_SRC = auto()
+    MOVEDIALOG_NESTED_DIR = auto()
+    MOVEDIALOG_NO_SPACE = auto()
 
 
 class MoveDialog(ActionDialog):
@@ -40,14 +40,14 @@ class MoveDialog(ActionDialog):
         self.core = RareCore.instance().core()
         self.rgame: Optional[RareGame] = None
 
-        self.path_edit = PathEdit("", QFileDialog.Directory, edit_func=self.path_edit_callback)
+        self.path_edit = PathEdit("", QFileDialog.FileMode.Directory, edit_func=self.path_edit_callback)
         self.path_edit.extend_reasons({
-            MovePathEditReasons.DST_MISSING: self.tr("You need to provide the destination directory."),
-            MovePathEditReasons.NO_WRITE_PERM: self.tr("No write permission on destination."),
-            MovePathEditReasons.SAME_DIR: self.tr("Same directory or subdirectory selected."),
-            MovePathEditReasons.DST_IN_SRC: self.tr("Destination is inside source directory"),
-            MovePathEditReasons.NESTED_DIR: self.tr("Game install directories cannot be nested."),
-            MovePathEditReasons.NO_SPACE: self.tr("Not enough space available on drive."),
+            MovePathEditReasons.MOVEDIALOG_DST_MISSING: self.tr("You need to provide the destination directory."),
+            MovePathEditReasons.MOVEDIALOG_NO_WRITE_PERM: self.tr("No write permission on destination."),
+            MovePathEditReasons.MOVEDIALOG_SAME_DIR: self.tr("Same directory or subdirectory selected."),
+            MovePathEditReasons.MOVEDIALOG_DST_IN_SRC: self.tr("Destination is inside source directory"),
+            MovePathEditReasons.MOVEDIALOG_NESTED_DIR: self.tr("Game install directories cannot be nested."),
+            MovePathEditReasons.MOVEDIALOG_NO_SPACE: self.tr("Not enough space available on drive."),
         })
 
         self.warn_label = ElideLabel("", parent=self)
@@ -68,7 +68,7 @@ class MoveDialog(ActionDialog):
         bottom_layout.addWidget(self.avail_space, stretch=1)
 
         layout = QVBoxLayout()
-        layout.setSizeConstraint(QLayout.SetFixedSize)
+        layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         layout.addWidget(self.path_edit)
         layout.addWidget(self.warn_label)
         layout.addLayout(bottom_layout)
@@ -105,17 +105,17 @@ class MoveDialog(ActionDialog):
         self.path_edit.setText(text)
 
     def path_edit_callback(self, path: str) -> Tuple[bool, str, int]:
-        self.accept_button.setEnabled(True)
-        self.warn_label.setHidden(False)
+        self.setActive(True)
         self.req_space.setText("...")
         self.avail_space.setText("...")
 
         def helper_func(reason: int) -> Tuple[bool, str, int]:
+            self.setActive(False)
             self.accept_button.setEnabled(False)
             return False, path, reason
 
         if not self.rgame.install_path or not path:
-            return helper_func(MovePathEditReasons.DST_MISSING)
+            return helper_func(MovePathEditReasons.MOVEDIALOG_DST_MISSING)
 
         src_path = os.path.realpath(self.rgame.install_path)
         dst_path = os.path.realpath(path)
@@ -133,20 +133,20 @@ class MoveDialog(ActionDialog):
         self.avail_space.setText(format_size(free_space))
 
         if not os.access(path, os.W_OK) or not os.access(self.rgame.install_path, os.W_OK):
-            return helper_func(MovePathEditReasons.NO_WRITE_PERM)
+            return helper_func(MovePathEditReasons.MOVEDIALOG_NO_WRITE_PERM)
 
         if src_path in {dst_path, dst_install_path}:
-            return helper_func(MovePathEditReasons.SAME_DIR)
+            return helper_func(MovePathEditReasons.MOVEDIALOG_SAME_DIR)
 
         if str(src_path) in str(dst_path):
-            return helper_func(MovePathEditReasons.DST_IN_SRC)
+            return helper_func(MovePathEditReasons.MOVEDIALOG_DST_IN_SRC)
 
         if str(dst_install_path) in str(src_path):
-            return helper_func(MovePathEditReasons.DST_IN_SRC)
+            return helper_func(MovePathEditReasons.MOVEDIALOG_DST_IN_SRC)
 
         for rgame in self.rcore.installed_games:
             if not rgame.is_non_asset and rgame.install_path in path:
-                return helper_func(MovePathEditReasons.NESTED_DIR)
+                return helper_func(MovePathEditReasons.MOVEDIALOG_NESTED_DIR)
 
         is_existing_dir = is_game_dir(src_path, dst_install_path)
 
@@ -159,9 +159,10 @@ class MoveDialog(ActionDialog):
                     self.warn_label.setHidden(False)
 
         if free_space <= source_size and not is_existing_dir:
-            return helper_func(MovePathEditReasons.NO_SPACE)
+            return helper_func(MovePathEditReasons.MOVEDIALOG_NO_SPACE)
 
         # Fallback
+        self.setActive(False)
         self.accept_button.setEnabled(True)
         return True, path, IndicatorReasonsCommon.VALID
 
@@ -174,14 +175,15 @@ class MoveDialog(ActionDialog):
         # FIXME: Make edit_func lighter instead of blocking signals
         # self.path_edit.line_edit.blockSignals(True)
         self.setActive(True)
+        self.warn_label.setText(
+            self.warn_label.tr("Moving here will overwrite <b>{}</b>").format(os.path.basename(self.rgame.install_path))
+        )
+        self.warn_label.setHidden(False)
         self.path_edit.setText(self.rgame.install_path)
         # FIXME: Make edit_func lighter instead of blocking signals
         # self.path_edit.line_edit.blockSignals(False)
         self.setActive(False)
-        self.warn_label.setText(
-            self.tr("Moving here will overwrite <b>{}</b>").format(os.path.basename(self.rgame.install_path))
-        )
-        self.refresh_indicator()
+        # self.refresh_indicator()
 
     def update_game(self, rgame: RareGame):
         self.rgame = rgame

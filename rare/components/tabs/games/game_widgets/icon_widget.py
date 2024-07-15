@@ -46,8 +46,8 @@ class IconWidget(object):
         # game title
         self.title_label = QLabel(parent=self.mini_widget)
         self.title_label.setObjectName(f"{type(self).__name__}TitleLabel")
-        self.title_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.title_label.setAlignment(Qt.AlignVCenter)
+        self.title_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.title_label.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         self.title_label.setAutoFillBackground(False)
         self.title_label.setWordWrap(True)
 
@@ -73,8 +73,8 @@ class IconWidget(object):
         # When the button gets clicked on, it receives keyboard focus. Disabling the button
         # afterwards leads to `focusNextChild` getting called. This makes the scrollarea
         # trying to ensure that `nextChild` is visible, essentially scrolling to a random widget
-        self.launch_btn.setFocusPolicy(Qt.NoFocus)
-        self.install_btn.setFocusPolicy(Qt.NoFocus)
+        self.launch_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.install_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
         # Create layouts
         # layout on top of the image, holds the status label, a spacer item and the mini widget
@@ -88,7 +88,7 @@ class IconWidget(object):
         # layout for the top row, holds the title and the launch button
         row_layout = QHBoxLayout()
         row_layout.setSpacing(0)
-        row_layout.setAlignment(Qt.AlignTop)
+        row_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # Layout the widgets
         # (from inner to outer)
@@ -100,11 +100,11 @@ class IconWidget(object):
         self.mini_widget.setLayout(mini_layout)
 
         image_layout.addWidget(self.status_label)
-        image_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Expanding))
+        image_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding))
         image_layout.addWidget(self.mini_widget)
         widget.setLayout(image_layout)
 
-        widget.setContextMenuPolicy(Qt.ActionsContextMenu)
+        widget.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         widget.leaveEvent(None)
 
         self.translateUi(widget)
@@ -117,13 +117,13 @@ class IconWidget(object):
         self._animation.setDuration(250)
         self._animation.setStartValue(0)
         self._animation.setEndValue(1)
-        self._animation.setEasingCurve(QEasingCurve.InSine)
-        self._animation.start(QPropertyAnimation.DeleteWhenStopped)
+        self._animation.setEasingCurve(QEasingCurve.Type.InSine)
+        self._animation.start(QPropertyAnimation.DeletionPolicy.DeleteWhenStopped)
 
     def leaveAnimation(self, widget: QWidget):
         self._animation = QPropertyAnimation(self.mini_effect, b"opacity")
         self._animation.setDuration(150)
         self._animation.setStartValue(1)
         self._animation.setEndValue(0)
-        self._animation.setEasingCurve(QEasingCurve.OutSine)
-        self._animation.start(QPropertyAnimation.DeleteWhenStopped)
+        self._animation.setEasingCurve(QEasingCurve.Type.OutSine)
+        self._animation.start(QPropertyAnimation.DeletionPolicy.DeleteWhenStopped)

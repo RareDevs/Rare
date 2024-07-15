@@ -19,7 +19,7 @@ logger = getLogger("LoginDialog")
 class LandingPage(QFrame):
     def __init__(self, parent=None):
         super(LandingPage, self).__init__(parent=parent)
-        self.setFrameStyle(self.StyledPanel)
+        self.setFrameStyle(QFrame.Shape.StyledPanel)
         self.ui = Ui_LandingPage()
         self.ui.setupUi(self)
 
@@ -29,14 +29,14 @@ class LoginDialog(BaseDialog):
     def __init__(self, core: LegendaryCore, parent=None):
         super(LoginDialog, self).__init__(parent=parent)
         self.setWindowFlags(
-            Qt.Window
-            | Qt.Dialog
-            | Qt.CustomizeWindowHint
-            | Qt.WindowSystemMenuHint
-            | Qt.WindowTitleHint
-            | Qt.WindowMinimizeButtonHint
-            | Qt.WindowCloseButtonHint
-            | Qt.MSWindowsFixedSizeDialogHint
+            Qt.WindowType.Window
+            | Qt.WindowType.Dialog
+            | Qt.WindowType.CustomizeWindowHint
+            | Qt.WindowType.WindowSystemMenuHint
+            | Qt.WindowType.WindowTitleHint
+            | Qt.WindowType.WindowMinimizeButtonHint
+            | Qt.WindowType.WindowCloseButtonHint
+            | Qt.WindowType.MSWindowsFixedSizeDialogHint
         )
 
         self.ui = Ui_LoginDialog()
@@ -108,7 +108,7 @@ class LoginDialog(BaseDialog):
         self.ui.back_button.setAutoDefault(False)
         self.ui.next_button.setAutoDefault(True)
 
-        self.ui.main_layout.setSizeConstraint(QLayout.SetFixedSize)
+        self.ui.main_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
 
     def back_clicked(self):
         self.ui.back_button.setEnabled(False)

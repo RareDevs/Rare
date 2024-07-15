@@ -62,7 +62,8 @@ class IntegrationsWidget(QWidget):
         if widget is not None:
             self.__layout.addWidget(widget)
         self.__layout.addWidget(self.info)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
-    def addWidget(self, widget: QWidget, stretch: int = 0, alignment: Qt.AlignmentFlag = Qt.Alignment()):
+    def addWidget(self, widget: QWidget, stretch: int = 0, alignment: Qt.AlignmentFlag = None):
+        alignment = alignment if alignment is not None else Qt.AlignmentFlag(0)
         self.__layout.insertWidget(self.layout().count() - 1, widget, stretch, alignment)

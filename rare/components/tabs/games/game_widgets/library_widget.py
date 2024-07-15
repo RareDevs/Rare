@@ -13,8 +13,8 @@ class ProgressLabel(QLabel):
         if self.parent() is not None:
             self.parent().installEventFilter(self)
         self.setObjectName(type(self).__name__)
-        self.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        self.setFrameStyle(QLabel.StyledPanel)
+        self.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+        self.setFrameStyle(QLabel.Shape.StyledPanel)
 
     def __center_on_parent(self):
         fm = QFontMetrics(self.font())
@@ -23,10 +23,10 @@ class ProgressLabel(QLabel):
         self.setGeometry(rect)
 
     def event(self, e: QEvent) -> bool:
-        if e.type() == QEvent.ParentAboutToChange:
+        if e.type() == QEvent.Type.ParentAboutToChange:
             if self.parent() is not None:
                 self.parent().removeEventFilter(self)
-        if e.type() == QEvent.ParentChange:
+        if e.type() == QEvent.Type.ParentChange:
             if self.parent() is not None:
                 self.parent().installEventFilter(self)
         return super().event(e)
@@ -38,7 +38,7 @@ class ProgressLabel(QLabel):
         super().showEvent(a0)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
-        if a0 is self.parent() and a1.type() == QEvent.Resize:
+        if a0 is self.parent() and a1.type() == QEvent.Type.Resize:
             self.__center_on_parent()
             return a0.event(a1)
         return False
@@ -92,8 +92,8 @@ class LibraryWidget(ImageWidget):
 
         device = QPixmap(color.size())
         painter = QPainter(device)
-        painter.setRenderHint(QPainter.SmoothPixmapTransform, self._smooth_transform)
-        painter.setCompositionMode(QPainter.CompositionMode_Source)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, self._smooth_transform)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
         # lk: Vertical loading
         # prog_h = (device.height() * progress // 100)
         # brush = QBrush(gray)
