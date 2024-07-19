@@ -1,6 +1,6 @@
 import binascii
 import shlex
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from datetime import datetime, UTC
 from typing import Dict, List, Type, Any
 

@@ -94,8 +94,14 @@ def load_steam_shortcuts():
         logger.error("Failed to find any Steam users")
         return
     else:
-        steam_user = next(filter(lambda x: x.most_recent, steam_users))
-        logger.info("Found most recently logged-in user %s(%s)", steam_user.account_name, steam_user.persona_name)
+        steam_user = next(
+            filter(lambda x: x.most_recent, steam_users),
+            sorted(steam_users, key=lambda x: x.last_login, reverse=True)[0]
+        )
+        logger.info(
+            "Found most recently logged-in user %s(%s) (%s)",
+            steam_user.account_name, steam_user.persona_name, steam_user.last_login
+        )
     __steam_user = steam_user
 
     __steam_shortcuts = _load_shortcuts(steam_dir, steam_user)
