@@ -108,9 +108,9 @@ class SteamShortcut:
         shortcut = cls.from_dict({})
         shortcut.appid = cls.calculate_appid(app_name)
         shortcut.AppName = app_title
-        shortcut.Exe = shlex.quote(executable)
-        shortcut.StartDir = shlex.quote(start_dir)
-        shortcut.icon = shlex.quote(icon)
+        shortcut.Exe = executable
+        shortcut.StartDir = start_dir
+        shortcut.icon = icon
         shortcut.LaunchOptions = shlex.join(launch_options)
         return shortcut
 
