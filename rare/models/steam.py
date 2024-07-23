@@ -1,3 +1,4 @@
+import platform
 import binascii
 import shlex
 from dataclasses import dataclass, field
@@ -108,7 +109,7 @@ class SteamShortcut:
         shortcut = cls.from_dict({})
         shortcut.appid = cls.calculate_appid(app_name)
         shortcut.AppName = app_title
-        shortcut.Exe = shlex.quote(executable)
+        shortcut.Exe = executable if platform.system() == "Windows" else shlex.quote(executable)
         shortcut.StartDir = start_dir
         shortcut.icon = icon
         shortcut.LaunchOptions = shlex.join(launch_options)
