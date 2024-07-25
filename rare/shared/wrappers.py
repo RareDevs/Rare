@@ -5,7 +5,7 @@ import shlex
 from typing import List, Dict, Iterable
 from rare.utils import config_helper as config
 
-from PyQt5.QtCore import QSettings
+from PySide6.QtCore import QSettings
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.wrapper import Wrapper, WrapperType

@@ -1,8 +1,8 @@
 from typing import Optional
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QKeyEvent
-from PyQt5.QtWidgets import QTreeView
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QKeyEvent
+from PySide6.QtWidgets import QTreeView
 
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
@@ -16,7 +16,7 @@ from .cloud_saves import CloudSaves
 
 class GameInfoTabs(SideTabWidget):
     # str: app_name
-    import_clicked = pyqtSignal(str)
+    import_clicked = Signal(str)
 
     def __init__(self, parent=None):
         super(GameInfoTabs, self).__init__(show_back=True, parent=parent)

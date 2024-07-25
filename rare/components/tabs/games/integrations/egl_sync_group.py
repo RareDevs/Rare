@@ -4,9 +4,9 @@ from abc import abstractmethod
 from logging import getLogger
 from typing import Tuple, Iterable, List, Union
 
-from PyQt5.QtCore import Qt, QThreadPool, QRunnable, pyqtSlot, pyqtSignal
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame, QFormLayout
+from PySide6.QtCore import Qt, QThreadPool, QRunnable, Slot, Signal
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame, QFormLayout
 from legendary.models.egl import EGLManifest
 from legendary.models.game import InstalledGame
 
@@ -248,7 +248,7 @@ class EGLSyncImportItem(EGLSyncListItem):
 
 
 class EGLSyncListGroup(QGroupBox):
-    action_errors = pyqtSignal(list)
+    action_errors = Signal(list)
 
     def __init__(self, parent=None):
         super(EGLSyncListGroup, self).__init__(parent=parent)
@@ -292,7 +292,7 @@ class EGLSyncListGroup(QGroupBox):
     def action(self):
         pass
 
-    @pyqtSlot(list)
+    @Slot(list)
     @abstractmethod
     def show_errors(self, errors: List):
         pass
@@ -324,7 +324,7 @@ class EGLSyncExportGroup(EGLSyncListGroup):
                     self.ui.list.addItem(i)
         super(EGLSyncExportGroup, self).populate(enabled)
 
-    @pyqtSlot(list)
+    @Slot(list)
     def show_errors(self, errors: List):
         QMessageBox.warning(
             self.parent(),
@@ -363,7 +363,7 @@ class EGLSyncImportGroup(EGLSyncListGroup):
                     self.ui.list.addItem(i)
         super(EGLSyncImportGroup, self).populate(enabled)
 
-    @pyqtSlot(list)
+    @Slot(list)
     def show_errors(self, errors: List):
         QMessageBox.warning(
             self.parent(),
@@ -391,7 +391,7 @@ class EGLSyncWorker(QRunnable):
         self.import_list = import_list
         self.export_list = export_list
 
-    @pyqtSlot()
+    @Slot()
     def run(self):
         self.import_list.action()
         self.export_list.action()

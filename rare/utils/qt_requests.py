@@ -5,8 +5,8 @@ from typing import Callable, Dict, TypeVar, List, Tuple
 from typing import Union
 
 import orjson
-from PyQt5.QtCore import QObject, pyqtSignal, QUrl, QUrlQuery, pyqtSlot, QJsonDocument
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QNetworkDiskCache
+from PySide6.QtCore import QObject, Signal, QUrl, QUrlQuery, Slot, QJsonDocument
+from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QNetworkDiskCache
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
 RequestHandler = TypeVar("RequestHandler", bound=Callable[[Union[Dict, bytes]], None])
@@ -25,7 +25,7 @@ class RequestQueueItem:
 
 
 class QtRequests(QObject):
-    data_ready = pyqtSignal(object)
+    data_ready = Signal(object)
 
     def __init__(self, cache: str = None, token: str = None, parent=None):
         super(QtRequests, self).__init__(parent=parent)
@@ -100,7 +100,7 @@ class QtRequests(QObject):
         m["content-type"] = header
         return m.get_content_type(), m.get_content_charset()
 
-    @pyqtSlot(QNetworkReply)
+    @Slot(QNetworkReply)
     def __on_finished(self, reply: QNetworkReply):
         item = self.__active_requests.pop(reply, None)
         if item is None:

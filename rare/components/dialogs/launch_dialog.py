@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PySide6.QtCore import Qt, Signal, Slot
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.components.dialogs.login import LoginDialog
@@ -15,7 +15,7 @@ logger = getLogger("LaunchDialog")
 class LaunchDialog(BaseDialog):
     # lk: the reason we use the `start_app` signal here instead of accepted, is to keep the dialog
     # until the main window has been created, then we call `accept()` to close the dialog
-    start_app = pyqtSignal()
+    start_app = Signal()
 
     def __init__(self, parent=None):
         super(LaunchDialog, self).__init__(parent=parent)
@@ -70,7 +70,7 @@ class LaunchDialog(BaseDialog):
             if can_launch:
                 self.do_launch()
 
-    @pyqtSlot()
+    @Slot()
     def do_launch(self):
         if not self.args.silent:
             self.open()
@@ -80,7 +80,7 @@ class LaunchDialog(BaseDialog):
         self.progress_info.setText(self.tr("Preparing Rare"))
         self.rcore.fetch()
 
-    @pyqtSlot(int, str)
+    @Slot(int, str)
     def __on_progress(self, i: int, m: str):
         self.ui.progress_bar.setValue(i)
         self.progress_info.setText(m)

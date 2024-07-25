@@ -7,7 +7,7 @@ from enum import IntEnum
 from logging import getLogger
 from typing import List, Optional, Dict
 
-from PyQt5.QtCore import QThread, pyqtSignal, QProcess
+from PySide6.QtCore import QThread, Signal, QProcess
 
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
@@ -39,8 +39,8 @@ class DlResultModel:
 
 
 class DlThread(QThread):
-    result = pyqtSignal(DlResultModel)
-    progress = pyqtSignal(UIUpdate, object)
+    result = Signal(DlResultModel)
+    progress = Signal(UIUpdate, object)
 
     def __init__(self, item: InstallQueueItemModel, rgame: RareGame, core: LegendaryCore, debug: bool = False):
         super(DlThread, self).__init__()
@@ -166,8 +166,8 @@ class DlThread(QThread):
                 req_path, req_exec = os.path.split(postinstall["path"])
                 work_dir = os.path.join(igame.install_path, req_path)
                 fullpath = os.path.join(work_dir, req_exec)
-                proc = QProcess()
-                proc.setProcessChannelMode(QProcess.MergedChannels)
+                proc = QProcess(self)
+                proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
                 proc.readyReadStandardOutput.connect(
                     lambda: logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
                 )

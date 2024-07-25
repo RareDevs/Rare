@@ -3,8 +3,8 @@ from enum import IntEnum
 from logging import getLogger
 from typing import Optional, Deque
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Signal, Slot, Qt
+from PySide6.QtWidgets import (
     QWidget,
     QGroupBox,
     QVBoxLayout,
@@ -21,8 +21,8 @@ logger = getLogger("QueueGroup")
 
 
 class UpdateGroup(QGroupBox):
-    update_count = pyqtSignal(int)
-    enqueue = pyqtSignal(InstallOptionsModel)
+    update_count = Signal(int)
+    enqueue = Signal(InstallOptionsModel)
 
     def __init__(self, parent=None):
         super(UpdateGroup, self).__init__(parent=parent)
@@ -83,9 +83,9 @@ class UpdateGroup(QGroupBox):
 
 
 class QueueGroup(QGroupBox):
-    update_count = pyqtSignal(int)
-    removed = pyqtSignal(str)
-    force = pyqtSignal(InstallQueueItemModel)
+    update_count = Signal(int)
+    removed = Signal(str)
+    force = Signal(InstallQueueItemModel)
 
     def __init__(self, parent=None):
         super(QueueGroup, self).__init__(parent=parent)
@@ -187,12 +187,12 @@ class QueueGroup(QGroupBox):
         self.__container.layout().removeWidget(widget)
         widget.deleteLater()
 
-    @pyqtSlot(str)
+    @Slot(str)
     def remove(self, app_name: str):
         self.__remove(app_name)
         self.removed.emit(app_name)
 
-    @pyqtSlot(InstallQueueItemModel)
+    @Slot(InstallQueueItemModel)
     def __on_force(self, item: InstallQueueItemModel):
         self.__remove(item.options.app_name)
         self.force.emit(item)
@@ -215,10 +215,10 @@ class QueueGroup(QGroupBox):
         self.__container.layout().insertWidget(index + int(direction), widget)
         self.__update_arrows()
 
-    @pyqtSlot(str)
+    @Slot(str)
     def __on_move_up(self, app_name: str):
         self.__move(app_name, QueueGroup.MoveDirection.UP)
 
-    @pyqtSlot(str)
+    @Slot(str)
     def __on_move_down(self, app_name: str):
         self.__move(app_name, QueueGroup.MoveDirection.DOWN)

@@ -1,7 +1,7 @@
 from typing import Optional
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QSizePolicy
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel, QSizePolicy
 
 from rare.widgets.side_tab import SideTabWidget
 from .egl_sync_group import EGLSyncGroup

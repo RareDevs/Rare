@@ -2,8 +2,8 @@ import os
 from getpass import getuser
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QFrame, QFileDialog
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtWidgets import QFrame, QFileDialog
 from legendary.core import LegendaryCore
 from legendary.lfs.wine_helpers import get_shell_folders, read_registry
 
@@ -13,8 +13,8 @@ logger = getLogger("ImportLogin")
 
 
 class ImportLogin(QFrame):
-    success = pyqtSignal()
-    changed = pyqtSignal()
+    success = Signal()
+    isValid = Signal(bool)
 
     # FIXME: Use pathspec instead of duplicated code
     if os.name == "nt":
@@ -55,7 +55,7 @@ class ImportLogin(QFrame):
                 self.ui.status_label.setText(self.text_egl_notfound)
 
         self.ui.prefix_button.clicked.connect(self.prefix_path)
-        self.ui.prefix_combo.editTextChanged.connect(self.changed.emit)
+        self.ui.prefix_combo.editTextChanged.connect(lambda _: self.isValid.emit(self.is_valid()))
 
     def get_wine_prefixes(self):
         possible_prefixes = [
@@ -68,6 +68,7 @@ class ImportLogin(QFrame):
                 prefixes.append(prefix)
         return prefixes
 
+    @Slot()
     def prefix_path(self):
         prefix_dialog = QFileDialog(self, self.tr("Choose path"), os.path.expanduser("~/"))
         prefix_dialog.setFileMode(QFileDialog.FileMode.Directory)

@@ -2,7 +2,7 @@ import os
 from argparse import Namespace
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PySide6.QtCore import Signal, QObject
 
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
@@ -16,9 +16,9 @@ logger = getLogger("VerifyWorker")
 
 class VerifyWorker(QueueWorker):
     class Signals(QObject):
-        progress = pyqtSignal(RareGame, int, int, float, float)
-        result = pyqtSignal(RareGame, bool, int, int)
-        error = pyqtSignal(RareGame, str)
+        progress = Signal(RareGame, int, int, float, float)
+        result = Signal(RareGame, bool, int, int)
+        error = Signal(RareGame, str)
 
     # num: int = 0
     # total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized

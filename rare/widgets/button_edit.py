@@ -1,11 +1,11 @@
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QStyle, QPushButton, QLineEdit
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QStyle, QPushButton, QLineEdit
 
 from rare.utils.misc import qta_icon
 
 
 class ButtonLineEdit(QLineEdit):
-    buttonClicked = pyqtSignal()
+    buttonClicked = Signal()
 
     def __init__(self, icon_name, placeholder_text: str, parent=None):
         super(ButtonLineEdit, self).__init__(parent=parent)

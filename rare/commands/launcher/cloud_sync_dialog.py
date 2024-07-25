@@ -3,8 +3,8 @@ from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QDialog
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QDialog
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
 
@@ -23,7 +23,7 @@ class CloudSyncDialogResult(IntEnum):
 
 
 class CloudSyncDialog(ButtonDialog):
-    result_ready: pyqtSignal = pyqtSignal(CloudSyncDialogResult)
+    result_ready: Signal = Signal(CloudSyncDialogResult)
 
     def __init__(self, igame: InstalledGame, dt_local: datetime, dt_remote: datetime, parent=None):
         super(CloudSyncDialog, self).__init__(parent=parent)
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     core = LegendaryCore()
 
-    @pyqtSlot(int)
+    @Slot(int)
     def __callback(status: int):
         print(repr(CloudSyncDialogResult(status)))
 

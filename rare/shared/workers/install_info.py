@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject, Signal
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.downloading import ConditionCheckResult
 
@@ -18,9 +18,9 @@ logger = getLogger("InstallInfoWorker")
 
 class InstallInfoWorker(Worker):
     class Signals(QObject):
-        result = pyqtSignal(InstallDownloadModel)
-        failed = pyqtSignal(str)
-        finished = pyqtSignal()
+        result = Signal(InstallDownloadModel)
+        failed = Signal(str)
+        finished = Signal()
 
     def __init__(self, core: LegendaryCore, options: InstallOptionsModel):
         super(InstallInfoWorker, self).__init__()

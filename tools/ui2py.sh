@@ -6,8 +6,7 @@ if [ -n "${1}" ]; then
       exit 0
     fi
     echo "Generating python file for ${1}"
-    pyuic5 "${1}" -x -o "${1%.ui}.py"
-    sed '/QtCore.QMetaObject.connectSlotsByName/d' -i "${1%.ui}.py"
+    pyside6-uic "${1}" -a -o "${1%.ui}.py"
     exit 0
 fi
 
@@ -22,8 +21,7 @@ for ui in $changed; do
       continue
     fi
     echo "Generating python file for ${ui}"
-    pyuic5 "${ui}" -x -o "${ui%.ui}.py"
-    sed '/QtCore.QMetaObject.connectSlotsByName/d' -i "${ui%.ui}.py"
+    pyside6-uic "${ui}" -a -o "${ui%.ui}.py"
 done
 
 cd "$cwd" || exit

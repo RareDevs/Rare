@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
 
-nuitka_opts=(
+$nuitka_opts = @(
     '--assume-yes-for-downloads'
     '--mingw64'
     '--lto=no'
@@ -9,6 +8,7 @@ nuitka_opts=(
     '--standalone'
     '--enable-plugin=anti-bloat'
     '--enable-plugin=pyside6'
+    '--enable-plugin=pywebview'
     '--show-modules'
     '--show-anti-bloat-changes'
     '--follow-stdlib'
@@ -23,9 +23,9 @@ nuitka_opts=(
     '--prefer-source-code'
     '--include-package=pypresence'
     '--include-package-data=qtawesome'
-    '--include-data-dir=rare/resources/images/=rare/resources/images/'
-    '--include-data-files=rare/resources/languages/=rare/resources/languages/="rare_*.qm"'
-    '--windows-icon-from-ico=rare/resources/images/Rare.ico'
+    '--include-data-dir=rare\resources\images\=rare\resources\images\'
+    '--include-data-files=rare\resources\languages\=rare\resources\languages\="rare_*.qm"'
+    '--windows-icon-from-ico=rare\resources\images\Rare.ico'
     '--windows-company-name=RareDevs'
     '--windows-product-name=Rare'
     '--windows-file-description=rare.exe'
@@ -34,4 +34,4 @@ nuitka_opts=(
     '--windows-console-mode=force'
 )
 
-python -m nuitka "${nuitka_opts[@]}" rare
+python -m nuitka $nuitka_opts rare
