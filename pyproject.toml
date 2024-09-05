@@ -39,7 +39,7 @@ pypresence = { version = "^4.2.1", optional = true }
 start = "rare.main:main"
 
 [tool.poetry.dev-dependencies]
-Nuitka = "^1.0.6"
+Nuitka = "^2.4.8"
 pylint = "^3.2.7"
 black = "^24.3.0"
 PyQt5-stubs = "^5.15.6.0"
