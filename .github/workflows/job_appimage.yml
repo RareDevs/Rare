@@ -29,12 +29,12 @@ jobs:
           mv Rare-*.AppImage.zsync Rare.AppImage.zsync
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Rare-${{ inputs.version }}.AppImage
           path: Rare.AppImage
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Rare-${{ inputs.version }}.AppImage.zsync
           path: Rare.AppImage.zsync

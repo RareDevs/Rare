@@ -33,7 +33,7 @@ jobs:
           python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Rare-Windows-${{ inputs.version }}.zip
           path: Rare-Windows.zip
