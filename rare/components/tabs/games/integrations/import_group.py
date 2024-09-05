@@ -40,7 +40,7 @@ def find_app_name(path: str, core) -> Optional[str]:
                 with open(os.path.join(path, ".egstore", i)) as file:
                     app_name = json.load(file).get("AppName")
                 return app_name
-    elif app_name := LegendaryCLI(core).resolve_aliases(os.path.basename(os.path.normpath(path))):
+    elif app_name := LegendaryCLI(core)._resolve_aliases(os.path.basename(os.path.normpath(path))):
         # return None if game does not exist (Workaround for overlay)
         if not core.get_game(app_name):
             return None
