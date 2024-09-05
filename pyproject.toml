@@ -41,7 +41,7 @@ start = "rare.main:main"
 [tool.poetry.dev-dependencies]
 Nuitka = "^1.0.6"
 pylint = "^2.15.0"
-black = "^22.6.0"
+black = "^24.3.0"
 PyQt5-stubs = "^5.15.6.0"
 
 #[build-system]
