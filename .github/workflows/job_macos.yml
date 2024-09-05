@@ -41,7 +41,7 @@ jobs:
           create-dmg/create-dmg Rare.dmg dist/Rare.App --volname Rare --volicon rare/resources/images/Rare.icns
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Rare-${{ inputs.version }}.dmg
           path: Rare.dmg
