@@ -56,8 +56,9 @@ class LegendaryCLI(LegendaryCLIReal):
             return ret
         return unlock
 
-    def resolve_aliases(self, name):
-        return super(LegendaryCLI, self)._resolve_aliases(name)
+    @staticmethod
+    def _print_json(data, pretty=False):
+        return data
 
     @unlock_installed.__func__
     def install_game(self, args: LgndrInstallGameArgs) -> Optional[Tuple[DLManager, AnalysisResult, InstalledGame, Game, bool, Optional[str], ConditionCheckResult]]:
