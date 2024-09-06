@@ -57,7 +57,11 @@ class UbiGetInfoWorker(Worker):
 
             if (entitlements := self.core.lgd.entitlements) is None:
                 with timelogger(logger, "Request entitlements"):
-                    entitlements = self.core.egs.get_user_entitlements()
+                    try:
+                        entitlements = self.core.egs.get_user_entitlements_full()
+                    except AttributeError as e:
+                        logger.warning(e)
+                        entitlements = self.core.egs.get_user_entitlements()
                 self.core.lgd.entitlements = entitlements
             entitlements = {i["entitlementName"] for i in entitlements}
 

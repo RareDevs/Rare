@@ -43,7 +43,11 @@ class EntitlementsWorker(FetchWorker):
             # Get entitlements, Ubisoft integration also uses them
             self.signals.progress.emit(0, self.signals.tr("Updating entitlements"))
             with timelogger(logger, "Request entitlements"):
-                entitlements = self.core.egs.get_user_entitlements()
+                try:
+                    entitlements = self.core.egs.get_user_entitlements_full()
+                except AttributeError as e:
+                    logger.warning(e)
+                    entitlements = self.core.egs.get_user_entitlements()
             self.core.lgd.entitlements = entitlements
             logger.info(f"Entitlements: %s", len(list(entitlements)))
         self.signals.result.emit(entitlements, FetchWorker.Result.ENTITLEMENTS)
