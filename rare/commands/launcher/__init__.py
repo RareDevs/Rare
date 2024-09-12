@@ -172,6 +172,8 @@ class RareLauncher(RareApp):
             self.console = ConsoleDialog(game.app_title)
             self.console.show()
 
+        self.sync_dialog: Optional[CloudSyncDialog] = None
+
         self.game_process.finished.connect(self.__process_finished)
         self.game_process.errorOccurred.connect(self.__process_errored)
         if self.console:
@@ -244,15 +246,16 @@ class RareLauncher(RareApp):
 
         if state == SaveGameStatus.LOCAL_NEWER and not self.no_sync_on_exit:
             action = CloudSyncDialogResult.UPLOAD
-            self.__check_saved_finished(exit_code, action)
+            self.__check_saves_finished(exit_code, action)
         else:
-            sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
-            sync_dialog.result_ready.connect(lambda a: self.__check_saved_finished(exit_code, a))
-            sync_dialog.open()
+            self.sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
+            self.sync_dialog.result_ready.connect(lambda a: self.__check_saves_finished(exit_code, a))
+            self.sync_dialog.open()
 
     @Slot(int, int)
     @Slot(int, CloudSyncDialogResult)
-    def __check_saved_finished(self, exit_code, action):
+    def __check_saves_finished(self, exit_code, action):
+        self.sync_dialog.deleteLater()
         action = CloudSyncDialogResult(action)
         if action == CloudSyncDialogResult.UPLOAD:
             if self.console:
@@ -364,13 +367,14 @@ class RareLauncher(RareApp):
             return
 
         _, (dt_local, dt_remote) = self.rgame.save_game_state
-        sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
-        sync_dialog.result_ready.connect(self.__sync_ready)
-        sync_dialog.open()
+        self.sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
+        self.sync_dialog.result_ready.connect(self.__sync_ready)
+        self.sync_dialog.open()
 
     @Slot(int)
     @Slot(CloudSyncDialogResult)
     def __sync_ready(self, action: CloudSyncDialogResult):
+        self.sync_dialog.deleteLater()
         action = CloudSyncDialogResult(action)
         if action == CloudSyncDialogResult.CANCEL:
             self.no_sync_on_exit = True
