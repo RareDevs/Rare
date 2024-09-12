@@ -19,7 +19,7 @@ logger = getLogger("RareGameBase")
 
 @dataclass
 class RareSaveGame:
-    file: SaveGameFile
+    file: Optional[SaveGameFile]
     status: SaveGameStatus = SaveGameStatus.NO_SAVE
     dt_local: Optional[datetime] = None
     dt_remote: Optional[datetime] = None
@@ -236,8 +236,8 @@ class RareGameSlim(RareGameBase):
 
     @property
     def save_game_state(self) -> Tuple[SaveGameStatus, Tuple[Optional[datetime], Optional[datetime]]]:
-        if self.saves and self.save_path:
-            latest = self.latest_save
+        if self.save_path:
+            latest = s if (s := self.latest_save) is not None else RareSaveGame(None)
             # lk: if the save path wasn't known at startup, dt_local will be None
             # In that case resolve the save again before returning
             latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
