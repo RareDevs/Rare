@@ -228,16 +228,16 @@ class RareGameSlim(RareGameBase):
         return None
 
     @property
-    def latest_save(self) -> Optional[RareSaveGame]:
+    def latest_save(self) -> RareSaveGame:
         if self.saves:
             saves = sorted(self.saves, key=lambda s: s.file.datetime, reverse=True)
             return saves[0]
-        return None
+        return RareSaveGame(None)
 
     @property
     def save_game_state(self) -> Tuple[SaveGameStatus, Tuple[Optional[datetime], Optional[datetime]]]:
         if self.save_path:
-            latest = s if (s := self.latest_save) is not None else RareSaveGame(None)
+            latest = self.latest_save
             # lk: if the save path wasn't known at startup, dt_local will be None
             # In that case resolve the save again before returning
             latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
