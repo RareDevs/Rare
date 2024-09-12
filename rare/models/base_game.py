@@ -315,6 +315,8 @@ class RareGameSlim(RareGameBase):
 
     @property
     def is_save_up_to_date(self):
+        if not self.saves:
+            return True
         status, (_, _) = self.save_game_state
         return status in {SaveGameStatus.SAME_AGE, SaveGameStatus.NO_SAVE}
 
