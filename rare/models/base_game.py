@@ -247,7 +247,16 @@ class RareGameSlim(RareGameBase):
         return SaveGameStatus.NO_SAVE, (None, None)
 
     def upload_saves(self, thread=True):
+        if not self.supports_cloud_saves:
+            return
+        if self.state == RareGameSlim.State.SYNCING:
+            logger.error(f"{self.app_title} is already syncing")
+            return
+
         status, (dt_local, dt_remote) = self.save_game_state
+        if status == SaveGameStatus.NO_SAVE or not dt_local:
+            logger.warning("Can't upload non existing save")
+            return
 
         def _upload():
             logger.info(f"Uploading save for {self.app_title}")
@@ -256,15 +265,6 @@ class RareGameSlim(RareGameBase):
             self.state = RareGameSlim.State.IDLE
             self.update_saves()
 
-        if not self.supports_cloud_saves:
-            return
-        if status == SaveGameStatus.NO_SAVE or not dt_local:
-            logger.warning("Can't upload non existing save")
-            return
-        if self.state == RareGameSlim.State.SYNCING:
-            logger.error(f"{self.app_title} is already syncing")
-            return
-
         if thread:
             worker = QRunnable.create(_upload)
             QThreadPool.globalInstance().start(worker)
@@ -272,7 +272,16 @@ class RareGameSlim(RareGameBase):
             _upload()
 
     def download_saves(self, thread=True):
+        if not self.supports_cloud_saves:
+            return
+        if self.state == RareGameSlim.State.SYNCING:
+            logger.error(f"{self.app_title} is already syncing")
+            return
+
         status, (dt_local, dt_remote) = self.save_game_state
+        if status == SaveGameStatus.NO_SAVE or not dt_remote:
+            logger.error("Can't download non existing save")
+            return
 
         def _download():
             logger.info(f"Downloading save for {self.app_title}")
@@ -280,15 +289,6 @@ class RareGameSlim(RareGameBase):
             self.core.download_saves(self.app_name, self.latest_save.file.manifest_name, self.save_path)
             self.state = RareGameSlim.State.IDLE
             self.update_saves()
-
-        if not self.supports_cloud_saves:
-            return
-        if status == SaveGameStatus.NO_SAVE or not dt_remote:
-            logger.error("Can't download non existing save")
-            return
-        if self.state == RareGameSlim.State.SYNCING:
-            logger.error(f"{self.app_title} is already syncing")
-            return
 
         if thread:
             worker = QRunnable.create(_download)
