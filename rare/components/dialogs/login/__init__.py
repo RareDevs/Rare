@@ -1,7 +1,7 @@
 from logging import getLogger
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLayout, QMessageBox, QFrame
+from PySide6.QtCore import Qt, Slot
+from PySide6.QtWidgets import QLayout, QMessageBox, QFrame
 from legendary.core import LegendaryCore
 
 from rare.shared import ArgumentsSingleton
@@ -57,13 +57,11 @@ class LoginDialog(BaseDialog):
         self.browser_page = BrowserLogin(self.core, self.login_stack)
         self.login_stack.insertWidget(1, self.browser_page)
         self.browser_page.success.connect(self.login_successful)
-        self.browser_page.changed.connect(
-            lambda: self.ui.next_button.setEnabled(self.browser_page.is_valid())
-        )
+        self.browser_page.isValid.connect(lambda x: self.ui.next_button.setEnabled(x))
         self.import_page = ImportLogin(self.core, self.login_stack)
         self.login_stack.insertWidget(2, self.import_page)
         self.import_page.success.connect(self.login_successful)
-        self.import_page.changed.connect(lambda: self.ui.next_button.setEnabled(self.import_page.is_valid()))
+        self.import_page.isValid.connect(lambda x: self.ui.next_button.setEnabled(x))
 
         # # NOTE: The real problem is that the BrowserLogin page has a huge QLabel with word-wrapping enabled.
         # # That forces the whole form to vertically expand instead of horizontally. Since the form is not shown
@@ -110,21 +108,25 @@ class LoginDialog(BaseDialog):
 
         self.ui.main_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
 
-    def back_clicked(self):
-        self.ui.back_button.setEnabled(False)
-        self.ui.next_button.setEnabled(True)
-        self.login_stack.slideInWidget(self.landing_page)
-
+    @Slot()
     def browser_radio_clicked(self):
         self.login_stack.slideInWidget(self.browser_page)
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(False)
 
+    @Slot()
     def import_radio_clicked(self):
         self.login_stack.slideInWidget(self.import_page)
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(self.import_page.is_valid())
 
+    @Slot()
+    def back_clicked(self):
+        self.ui.back_button.setEnabled(False)
+        self.ui.next_button.setEnabled(True)
+        self.login_stack.slideInWidget(self.landing_page)
+
+    @Slot()
     def next_clicked(self):
         if self.login_stack.currentWidget() is self.landing_page:
             if self.landing_page.ui.login_browser_radio.isChecked():
@@ -141,6 +143,7 @@ class LoginDialog(BaseDialog):
             self.reject()
         self.open()
 
+    @Slot()
     def login_successful(self):
         try:
             if not self.core.login():

@@ -3,8 +3,8 @@ import platform
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import QThreadPool, QSettings, pyqtSlot
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QThreadPool, QSettings, Slot
+from PySide6.QtWidgets import (
     QWidget,
     QFileDialog,
     QLabel,
@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
 from legendary.models.game import SaveGameStatus
 
 from rare.models.game import RareGame
+from rare.models.options import options
 from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineSavePathResolver
 from rare.ui.components.tabs.games.game_info.cloud_settings_widget import Ui_CloudSettingsWidget
@@ -78,11 +79,7 @@ class CloudSaves(QWidget, SideTabContents):
         self.compute_save_path_button.clicked.connect(self.compute_save_path)
         self.cloud_ui.main_layout.addRow(None, self.compute_save_path_button)
 
-        self.cloud_ui.sync_check.stateChanged.connect(
-            lambda: self.settings.setValue(
-                f"{self.rgame.app_name}/auto_sync_cloud", self.cloud_ui.sync_check.isChecked()
-            )
-        )
+        self.cloud_ui.sync_check.stateChanged.connect(self.__on_sync_check_changed)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.sync_widget)
@@ -138,7 +135,14 @@ class CloudSaves(QWidget, SideTabContents):
             else:
                 self.cloud_save_path_edit.setText(new_path)
 
-    @pyqtSlot(str, str)
+    @Slot()
+    def __on_sync_check_changed(self):
+        if self.settings.value(*options.auto_sync_cloud) == self.cloud_ui.sync_check.isChecked():
+            self.settings.remove(f"{self.rgame.app_name}/{options.auto_sync_cloud.key}")
+        else:
+            self.settings.setValue(f"{self.rgame.app_name}/auto_sync_cloud", self.cloud_ui.sync_check.isChecked())
+
+    @Slot(str, str)
     def __on_wine_resolver_result(self, path, app_name):
         logger.info("Wine resolver finished for %s", app_name)
         logger.info("Computed save path: %s", path)

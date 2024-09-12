@@ -1,48 +1,48 @@
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject, Signal
 
 from .install import InstallOptionsModel, UninstallOptionsModel
 
 
 class GlobalSignals:
 
-    # set_main_tab_index = pyqtSignal(int)  # tab index
-    # update_gamelist = pyqtSignal(list)
+    # set_main_tab_index = Signal(int)  # tab index
+    # update_gamelist = Signal(list)
 
     class ApplicationSignals(QObject):
         # int: exit code
-        quit = pyqtSignal(int)
+        quit = Signal(int)
         # str: title, str: body
-        notify = pyqtSignal(str, str)
+        notify = Signal(str, str)
         # none
-        update_tray = pyqtSignal()
+        update_tray = Signal()
         # none
-        update_statusbar = pyqtSignal()
+        update_statusbar = Signal()
         # str: locale
-        # change_translation = pyqtSignal(str)
+        # change_translation = Signal(str)
 
     class GameSignals(QObject):
         # model
-        install = pyqtSignal(InstallOptionsModel)
+        install = Signal(InstallOptionsModel)
         # str: app_name
-        installed = pyqtSignal(str)
+        installed = Signal(str)
         # model
-        uninstall = pyqtSignal(UninstallOptionsModel)
+        uninstall = Signal(UninstallOptionsModel)
         # str: app_name
-        uninstalled = pyqtSignal(str)
+        uninstalled = Signal(str)
 
     class DownloadSignals(QObject):
         # str: app_name
-        enqueue = pyqtSignal(str)
+        enqueue = Signal(str)
         # str: app_name
-        dequeue = pyqtSignal(str)
+        dequeue = Signal(str)
 
     class DiscordRPCSignals(QObject):
         # str: app_name
-        update_presence = pyqtSignal(str)
+        update_presence = Signal(str)
         # str: app_name
-        remove_presence = pyqtSignal(str)
+        remove_presence = Signal(str)
         # none
-        update_settings = pyqtSignal()
+        update_settings = Signal()
 
     def __init__(self):
         self.application = GlobalSignals.ApplicationSignals()

@@ -2,9 +2,9 @@ import json
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import pyqtSignal, QUrl, QProcess, pyqtSlot
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QFrame, QApplication, QFormLayout, QLineEdit
+from PySide6.QtCore import Signal, QUrl, QProcess, Slot
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QFrame, QApplication, QFormLayout, QLineEdit
 from legendary.utils import webview_login
 
 from rare.lgndr.core import LegendaryCore
@@ -17,8 +17,8 @@ logger = getLogger("BrowserLogin")
 
 
 class BrowserLogin(QFrame):
-    success = pyqtSignal()
-    changed = pyqtSignal()
+    success = Signal()
+    isValid = Signal(bool)
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(BrowserLogin, self).__init__(parent=parent)
@@ -30,7 +30,7 @@ class BrowserLogin(QFrame):
         self.login_url = self.core.egs.get_auth_url()
 
         self.sid_edit = IndicatorLineEdit(
-            placeholder=self.tr("Insert authorizationCode here"), edit_func=self.text_changed, parent=self
+            placeholder=self.tr("Insert authorizationCode here"), edit_func=self.sid_edit_callback, parent=self
         )
         self.sid_edit.line_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.ui.link_text.setText(self.login_url)
@@ -42,9 +42,9 @@ class BrowserLogin(QFrame):
         )
 
         self.ui.open_button.clicked.connect(self.open_browser)
-        self.sid_edit.textChanged.connect(self.changed.emit)
+        self.sid_edit.textChanged.connect(lambda _: self.isValid.emit(self.is_valid()))
 
-    @pyqtSlot()
+    @Slot()
     def copy_link(self):
         clipboard = QApplication.instance().clipboard()
         clipboard.setText(self.login_url)
@@ -54,7 +54,7 @@ class BrowserLogin(QFrame):
         return self.sid_edit.is_valid
 
     @staticmethod
-    def text_changed(text) -> Tuple[bool, str, int]:
+    def sid_edit_callback(text) -> Tuple[bool, str, int]:
         if text:
             text = text.strip()
             if text.startswith("{") and text.endswith("}"):
@@ -81,7 +81,7 @@ class BrowserLogin(QFrame):
         except Exception as e:
             logger.warning(e)
 
-    @pyqtSlot()
+    @Slot()
     def open_browser(self):
         if not webview_login.webview_available:
             logger.warning("You don't have webengine installed, you will need to manually copy the authorizationCode.")

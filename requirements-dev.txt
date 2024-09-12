@@ -7,6 +7,6 @@ toml
 cx-freeze
 nuitka
 ordered-set
-PyQt5-stubs
+PySide6-stubs
 qstylizer
 graphql-query

@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QEvent, QObject, Qt
-from PyQt5.QtGui import QShowEvent, QMovie
-from PyQt5.QtWidgets import QLabel
+from PySide6.QtCore import QEvent, QObject, Qt
+from PySide6.QtGui import QShowEvent, QMovie
+from PySide6.QtWidgets import QLabel
 
 
 class LoadingWidget(QLabel):

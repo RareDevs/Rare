@@ -25,6 +25,7 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
+          pip3 install -r requirements-webview.txt
       - name: Build
         run: >-
           python -m nuitka
@@ -35,7 +36,8 @@ jobs:
           --static-libpython=no
           --standalone
           --enable-plugin=anti-bloat
-          --enable-plugin=pyqt5
+          --enable-plugin=pyside6
+          --enable-plugin=pywebview
           --show-modules
           --show-anti-bloat-changes
           --follow-stdlib
@@ -60,10 +62,6 @@ jobs:
           --windows-product-version=${{ inputs.version }}
           --windows-console-mode=disable
           rare
-      - name: Fix QtNetwork SSL
-        run: |
-          Copy-Item -Path "rare.dist\libcrypto-1_1.dll" -Destination "rare.dist\libcrypto-1_1-x64.dll"
-          Copy-Item -Path "rare.dist\libssl-1_1.dll" -Destination "rare.dist\libssl-1_1-x64.dll"
       - name: Compress
         run: |
           python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'rare.dist')"

@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QRect, Qt
-from PyQt5.QtGui import (
+from PySide6.QtCore import QRect, Qt
+from PySide6.QtGui import (
     QPixmap,
     QImage,
     QPainter,

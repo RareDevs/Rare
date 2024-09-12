@@ -1,8 +1,8 @@
 from logging import getLogger
 
-from PyQt5.QtCore import QFileSystemWatcher, Qt
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import QFileSystemWatcher, Qt
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import (
     QGroupBox,
     QHeaderView,
     QVBoxLayout,

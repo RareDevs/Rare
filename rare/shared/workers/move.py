@@ -2,7 +2,7 @@ import os
 import shutil
 from logging import getLogger
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PySide6.QtCore import Signal, QObject
 from legendary.lfs.utils import validate_files
 from legendary.models.game import VerifyResult
 
@@ -16,11 +16,11 @@ logger = getLogger("MoveWorker")
 class MoveWorker(QueueWorker):
     class Signals(QObject):
         # int: percentage, object: source size, object: dest size
-        progress = pyqtSignal(RareGame, int, object, object)
+        progress = Signal(RareGame, int, object, object)
         # str: destination path
-        result = pyqtSignal(RareGame, str)
+        result = Signal(RareGame, str)
         # str: error message
-        error = pyqtSignal(RareGame, str)
+        error = Signal(RareGame, str)
 
     def __init__(self, core: LegendaryCore, rgame: RareGame, dst_path: str, dst_exists: bool):
         super(MoveWorker, self).__init__()

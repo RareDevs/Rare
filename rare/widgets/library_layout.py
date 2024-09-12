@@ -1,7 +1,7 @@
 from typing import Callable
 
-from PyQt5.QtCore import Qt, QRect, QPoint
-from PyQt5.QtWidgets import QSizePolicy
+from PySide6.QtCore import Qt, QRect, QPoint
+from PySide6.QtWidgets import QSizePolicy
 
 from .flow_layout import FlowLayout
 

@@ -1,31 +1,31 @@
 import os
-from enum import IntEnum
+from enum import IntEnum, Enum
 from logging import getLogger
 import shlex
 from typing import Callable, Tuple, Optional, Dict, List
 
-from PyQt5.QtCore import (
+from PySide6.QtCore import (
     QSize,
-    pyqtSignal,
+    Signal,
     QFileInfo,
     QRunnable,
     QObject,
     QThreadPool,
-    pyqtSlot,
+    Slot,
     QDir,
 )
-from PyQt5.QtWidgets import (
+from PySide6.QtGui import QAbstractFileIconProvider
+from PySide6.QtWidgets import (
     QSizePolicy,
     QLabel,
     QFileDialog,
     QHBoxLayout,
     QWidget,
     QLineEdit,
-    QToolButton,
     QCompleter,
     QFileSystemModel,
     QStyledItemDelegate,
-    QFileIconProvider, QPushButton,
+    QPushButton,
 )
 
 from rare.utils.misc import qta_icon
@@ -94,7 +94,7 @@ class IndicatorReasonsStrings(QObject):
 
 class EditFuncRunnable(QRunnable):
     class Signals(QObject):
-        result = pyqtSignal(bool, str, int)
+        result = Signal(bool, str, int)
 
     def __init__(self, func: Callable[[str], Tuple[bool, str, int]], args: str):
         super(EditFuncRunnable, self).__init__()
@@ -117,7 +117,7 @@ class EditFuncRunnable(QRunnable):
 
 
 class IndicatorLineEdit(QWidget):
-    textChanged = pyqtSignal(str)
+    textChanged = Signal(str)
 
     def __init__(
         self,
@@ -205,7 +205,7 @@ class IndicatorLineEdit(QWidget):
         else:
             self.indicator_label.setToolTip(self.__reasons[IndicatorReasonsCommon.VALID])
 
-    @pyqtSlot(bool, str, int)
+    @Slot(bool, str, int)
     def __edit_handler(self, is_valid: bool, text: str, reason: int):
         self.__thread = None
         self.line_edit.blockSignals(True)
@@ -231,37 +231,42 @@ class IndicatorLineEdit(QWidget):
             self.save_func(text)
 
 
-class PathEditIconProvider(QFileIconProvider):
-    icons = [
-        ("mdi.file-cancel", "fa.file-excel-o"),  # Unknown
-        ("mdi.desktop-classic", "fa.desktop"),  # Computer
-        ("mdi.desktop-mac", "fa.desktop"),  # Desktop
-        ("mdi.trash-can", "fa.trash"),  # Trashcan
-        ("mdi.server-network", "fa.server"),  # Network
-        ("mdi.harddisk", "fa.desktop"),  # Drive
-        ("mdi.folder", "fa.folder"),  # Folder
-        ("mdi.file", "fa.file"),  # File
-        ("mdi.cog", "fa.cog"),  # Executable
-    ]
+class PathEditIconProvider(QAbstractFileIconProvider):
+    class CustomIconType(Enum):
+        Unknown = -1
+        Executable = -2
+
+    icons = {
+        CustomIconType.Unknown: ("mdi.file-cancel", "fa.file-excel-o"),  # Unknown
+        QAbstractFileIconProvider.IconType.Computer: ("mdi.desktop-classic", "fa.desktop"),  # Computer
+        QAbstractFileIconProvider.IconType.Desktop: ("mdi.desktop-mac", "fa.desktop"),  # Desktop
+        QAbstractFileIconProvider.IconType.Trashcan: ("mdi.trash-can", "fa.trash"),  # Trashcan
+        QAbstractFileIconProvider.IconType.Network: ("mdi.server-network", "fa.server"),  # Network
+        QAbstractFileIconProvider.IconType.Drive: ("mdi.harddisk", "fa.desktop"),  # Drive
+        QAbstractFileIconProvider.IconType.Folder: ("mdi.folder", "fa.folder"),  # Folder
+        QAbstractFileIconProvider.IconType.File: ("mdi.file", "fa.file"),  # File
+        CustomIconType.Executable: ("mdi.cog", "fa.cog"),  # Executable
+    }
 
     def __init__(self):
         super(PathEditIconProvider, self).__init__()
+        self.setOptions(QAbstractFileIconProvider.Option.DontUseCustomDirectoryIcons)
         self.icon_types = {}
-        for idx, (icn, fallback) in enumerate(PathEditIconProvider.icons):
-            self.icon_types.update({idx - 1: qta_icon(icn, fallback, color="#eeeeee")})
+        for idx, (icn, fallback) in PathEditIconProvider.icons.items():
+            self.icon_types.update({idx: qta_icon(icn, fallback, color="#eeeeee")})
 
     def icon(self, info_type):
         if isinstance(info_type, QFileInfo):
             if info_type.isRoot():
-                return self.icon_types[4]
+                return self.icon_types[QAbstractFileIconProvider.IconType.Drive]
             if info_type.isDir():
-                return self.icon_types[5]
+                return self.icon_types[QAbstractFileIconProvider.IconType.Folder]
             if info_type.isFile():
-                return self.icon_types[6]
+                return self.icon_types[QAbstractFileIconProvider.IconType.File]
             if info_type.isExecutable():
-                return self.icon_types[7]
-            return self.icon_types[-1]
-        return self.icon_types[int(info_type)]
+                return self.icon_types[PathEditIconProvider.CustomIconType.Executable]
+            return self.icon_types[PathEditIconProvider.CustomIconType.Unknown]
+        return self.icon_types[info_type]
 
 
 class PathEdit(IndicatorLineEdit):

@@ -5,7 +5,7 @@ from enum import IntEnum
 from logging import getLogger
 from typing import Optional, List, Tuple
 
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool, QSettings
+from PySide6.QtCore import QObject, Signal, QRunnable, QThreadPool, QSettings
 from legendary.lfs import eos
 from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
 from legendary.utils.selective_dl import get_sdl_appname
@@ -39,24 +39,24 @@ class RareGameBase(QObject):
 
     class Signals(QObject):
         class Progress(QObject):
-            start = pyqtSignal()
-            update = pyqtSignal(int)
-            finish = pyqtSignal(bool)
+            start = Signal()
+            update = Signal(int)
+            finish = Signal(bool)
 
         class Widget(QObject):
-            update = pyqtSignal()
+            update = Signal()
 
         class Download(QObject):
-            enqueue = pyqtSignal(str)
-            dequeue = pyqtSignal(str)
+            enqueue = Signal(str)
+            dequeue = Signal(str)
 
         class Game(QObject):
-            install = pyqtSignal(InstallOptionsModel)
-            installed = pyqtSignal(str)
-            uninstall = pyqtSignal(UninstallOptionsModel)
-            uninstalled = pyqtSignal(str)
-            launched = pyqtSignal(str)
-            finished = pyqtSignal(str)
+            install = Signal(InstallOptionsModel)
+            installed = Signal(str)
+            uninstall = Signal(UninstallOptionsModel)
+            uninstalled = Signal(str)
+            launched = Signal(str)
+            finished = Signal(str)
 
         def __init__(self, parent=None):
             super(RareGameBase.Signals, self).__init__(parent=parent)
@@ -215,10 +215,9 @@ class RareGameSlim(RareGameBase):
     def auto_sync_saves(self):
         auto_sync_cloud = QSettings(self).value(
             f"{self.app_name}/{options.auto_sync_cloud.key}",
-            options.auto_sync_cloud.default,
+            QSettings(self).value(*options.auto_sync_cloud),
             options.auto_sync_cloud.dtype
         )
-        auto_sync_cloud = auto_sync_cloud or QSettings(self).value(*options.auto_sync_cloud)
         return self.supports_cloud_saves and auto_sync_cloud
 
     @property
@@ -228,16 +227,16 @@ class RareGameSlim(RareGameBase):
         return None
 
     @property
-    def latest_save(self) -> Optional[RareSaveGame]:
+    def latest_save(self) -> RareSaveGame:
         if self.saves:
             saves = sorted(self.saves, key=lambda s: s.file.datetime, reverse=True)
             return saves[0]
-        return None
+        return RareSaveGame(None)
 
     @property
     def save_game_state(self) -> Tuple[SaveGameStatus, Tuple[Optional[datetime], Optional[datetime]]]:
         if self.save_path:
-            latest = s if (s := self.latest_save) is not None else RareSaveGame(None)
+            latest = self.latest_save
             # lk: if the save path wasn't known at startup, dt_local will be None
             # In that case resolve the save again before returning
             latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
@@ -247,7 +246,16 @@ class RareGameSlim(RareGameBase):
         return SaveGameStatus.NO_SAVE, (None, None)
 
     def upload_saves(self, thread=True):
+        if not self.supports_cloud_saves:
+            return
+        if self.state == RareGameSlim.State.SYNCING:
+            logger.error(f"{self.app_title} is already syncing")
+            return
+
         status, (dt_local, dt_remote) = self.save_game_state
+        if status == SaveGameStatus.NO_SAVE or not dt_local:
+            logger.warning("Can't upload non existing save")
+            return
 
         def _upload():
             logger.info(f"Uploading save for {self.app_title}")
@@ -256,15 +264,6 @@ class RareGameSlim(RareGameBase):
             self.state = RareGameSlim.State.IDLE
             self.update_saves()
 
-        if not self.supports_cloud_saves:
-            return
-        if status == SaveGameStatus.NO_SAVE or not dt_local:
-            logger.warning("Can't upload non existing save")
-            return
-        if self.state == RareGameSlim.State.SYNCING:
-            logger.error(f"{self.app_title} is already syncing")
-            return
-
         if thread:
             worker = QRunnable.create(_upload)
             QThreadPool.globalInstance().start(worker)
@@ -272,7 +271,16 @@ class RareGameSlim(RareGameBase):
             _upload()
 
     def download_saves(self, thread=True):
+        if not self.supports_cloud_saves:
+            return
+        if self.state == RareGameSlim.State.SYNCING:
+            logger.error(f"{self.app_title} is already syncing")
+            return
+
         status, (dt_local, dt_remote) = self.save_game_state
+        if status == SaveGameStatus.NO_SAVE or not dt_remote:
+            logger.error("Can't download non existing save")
+            return
 
         def _download():
             logger.info(f"Downloading save for {self.app_title}")
@@ -280,15 +288,6 @@ class RareGameSlim(RareGameBase):
             self.core.download_saves(self.app_name, self.latest_save.file.manifest_name, self.save_path)
             self.state = RareGameSlim.State.IDLE
             self.update_saves()
-
-        if not self.supports_cloud_saves:
-            return
-        if status == SaveGameStatus.NO_SAVE or not dt_remote:
-            logger.error("Can't download non existing save")
-            return
-        if self.state == RareGameSlim.State.SYNCING:
-            logger.error(f"{self.app_title} is already syncing")
-            return
 
         if thread:
             worker = QRunnable.create(_download)
@@ -315,6 +314,8 @@ class RareGameSlim(RareGameBase):
 
     @property
     def is_save_up_to_date(self):
+        if not self.saves:
+            return True
         status, (_, _) = self.save_game_state
         return status in {SaveGameStatus.SAME_AGE, SaveGameStatus.NO_SAVE}
 

@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 requirements = [
     "requests<3.0",
-    "PyQt5",
+    "PySide6-Essentials",
     "QtAwesome",
     "wheel",
     "setuptools",

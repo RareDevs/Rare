@@ -3,9 +3,9 @@ import shlex
 import shutil
 from typing import Tuple, Type, TypeVar
 
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtGui import QShowEvent
-from PyQt5.QtWidgets import QCheckBox, QFileDialog, QFormLayout, QVBoxLayout, QGroupBox
+from PySide6.QtCore import Qt, Slot
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import QCheckBox, QFileDialog, QFormLayout, QVBoxLayout, QGroupBox
 
 from rare.shared import LegendaryCoreSingleton
 import rare.utils.config_helper as config
@@ -66,7 +66,7 @@ class LaunchSettingsBase(QGroupBox):
 
         return super().showEvent(a0)
 
-    @pyqtSlot()
+    @Slot()
     def tool_enabled(self):
         self.wrappers_widget.update_state()
 

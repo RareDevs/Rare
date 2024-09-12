@@ -3,7 +3,7 @@ import shutil
 from logging import getLogger
 from typing import Tuple
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject, Signal
 from legendary.core import LegendaryCore
 from legendary.lfs.eos import remove_registry_entries
 
@@ -84,7 +84,7 @@ def uninstall_game(
 
 class UninstallWorker(Worker):
     class Signals(QObject):
-        result = pyqtSignal(RareGame, bool, str)
+        result = Signal(RareGame, bool, str)
 
     def __init__(self, core: LegendaryCore, rgame: RareGame, options: UninstallOptionsModel):
         super(UninstallWorker, self).__init__()

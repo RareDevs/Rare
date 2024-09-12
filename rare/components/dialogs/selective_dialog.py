@@ -1,5 +1,5 @@
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QVBoxLayout, QGroupBox
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QVBoxLayout, QGroupBox
 
 from rare.models.game import RareGame
 from rare.models.install import SelectiveDownloadsModel
@@ -9,7 +9,7 @@ from rare.widgets.selective_widget import SelectiveWidget
 
 
 class SelectiveDialog(ButtonDialog):
-    result_ready = pyqtSignal(RareGame, SelectiveDownloadsModel)
+    result_ready = Signal(RareGame, SelectiveDownloadsModel)
 
     def __init__(self, rgame: RareGame, parent=None):
         super(SelectiveDialog, self).__init__(parent=parent)

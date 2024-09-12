@@ -1,9 +1,9 @@
 import sys
 from abc import abstractmethod
 
-from PyQt5.QtCore import Qt, pyqtSlot, QCoreApplication, QSize
-from PyQt5.QtGui import QCloseEvent, QKeyEvent, QKeySequence
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Qt, Slot, QCoreApplication, QSize
+from PySide6.QtGui import QCloseEvent, QKeyEvent, QKeySequence
+from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
     QApplication,
@@ -193,7 +193,7 @@ class ActionDialog(ButtonDialog):
     def action_handler(self):
         raise NotImplementedError
 
-    @pyqtSlot()
+    @Slot()
     def action(self):
         self.setActive(True)
         self.action_handler()

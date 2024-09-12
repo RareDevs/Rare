@@ -3,7 +3,7 @@ from argparse import Namespace
 from enum import IntEnum
 from logging import getLogger
 
-from PyQt5.QtCore import QObject, pyqtSignal, QSettings
+from PySide6.QtCore import QObject, Signal, QSettings
 from requests.exceptions import HTTPError, ConnectionError
 
 from rare.lgndr.core import LegendaryCore
@@ -21,8 +21,8 @@ class FetchWorker(Worker):
         ENTITLEMENTS = 2
 
     class Signals(QObject):
-        progress = pyqtSignal(int, str)
-        result = pyqtSignal(object, int)
+        progress = Signal(int, str)
+        result = Signal(object, int)
 
     def __init__(self, core: LegendaryCore, args: Namespace):
         super(Worker, self).__init__()

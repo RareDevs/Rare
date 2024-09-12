@@ -1,9 +1,9 @@
 import logging
 from typing import List, Dict
 
-from PyQt5.QtCore import Qt, QUrl, pyqtSignal
-from PyQt5.QtGui import QFont, QDesktopServices, QKeyEvent
-from PyQt5.QtWidgets import (
+from PySide6.QtCore import Qt, QUrl, Signal
+from PySide6.QtGui import QFont, QDesktopServices, QKeyEvent
+from PySide6.QtWidgets import (
     QWidget,
     QLabel,
     QPushButton,
@@ -25,7 +25,7 @@ logger = logging.getLogger("StoreDetails")
 
 
 class StoreDetailsWidget(QWidget, SideTabContents):
-    back_clicked: pyqtSignal = pyqtSignal()
+    back_clicked: Signal = Signal()
 
     # TODO Design
     def __init__(self, installed: List, store_api: StoreAPI, parent=None):

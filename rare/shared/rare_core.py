@@ -6,7 +6,7 @@ from itertools import chain
 from logging import getLogger
 from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple, Set
 
-from PyQt5.QtCore import QObject, pyqtSignal, QSettings, pyqtSlot, QThreadPool, QRunnable, QTimer
+from PySide6.QtCore import QObject, Signal, QSettings, Slot, QThreadPool, QRunnable, QTimer
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile
 from requests.exceptions import HTTPError, ConnectionError
@@ -36,12 +36,12 @@ logger = getLogger("RareCore")
 
 
 class RareCore(QObject):
-    progress = pyqtSignal(int, str)
-    completed = pyqtSignal()
+    progress = Signal(int, str)
+    completed = Signal()
     # lk: these are unused but remain if case they are become relevant
-    # completed_saves = pyqtSignal()
-    # completed_origin = pyqtSignal()
-    # completed_entitlements = pyqtSignal()
+    # completed_saves = Signal()
+    # completed_origin = Signal()
+    # completed_entitlements = Signal()
 
     # lk: special case class attribute, this has to be here
     __instance: Optional['RareCore'] = None
@@ -333,12 +333,12 @@ class RareCore(QObject):
             progress = int(idx/length * self.__fetch_progress) + (100 - self.__fetch_progress)
             self.progress.emit(progress, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
 
-    @pyqtSlot(int, str)
+    @Slot(int, str)
     def __on_fetch_progress(self, increment: int, message: str):
         self.__fetch_progress += increment
         self.progress.emit(self.__fetch_progress, message)
 
-    @pyqtSlot(object, int)
+    @Slot(object, int)
     def __on_fetch_result(self, result: Tuple, result_type: int):
         if result_type == FetchWorker.Result.GAMESDLCS:
             self.__add_games_and_dlcs(*result)

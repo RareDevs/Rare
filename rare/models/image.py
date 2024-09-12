@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Tuple
 
-from PyQt5.QtCore import QSize
+from PySide6.QtCore import QSize
 
 
 class ImageType(Enum):

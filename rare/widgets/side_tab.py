@@ -1,15 +1,15 @@
 from logging import getLogger
 from typing import Union, Protocol
 
-from PyQt5.QtCore import (
+from PySide6.QtCore import (
     Qt,
     QRect,
     QSize,
     QPoint,
-    pyqtSignal,
+    Signal,
 )
-from PyQt5.QtGui import QFontMetrics
-from PyQt5.QtWidgets import (
+from PySide6.QtGui import QFontMetrics
+from PySide6.QtWidgets import (
     QStyle,
     QLabel,
     QWidget,
@@ -58,7 +58,7 @@ class SideTabBar(QTabBar):
 
 class SideTabContents(object):
     # str: title
-    set_title = pyqtSignal(str)
+    set_title = Signal(str)
     implements_scrollarea: bool = False
 
 
@@ -68,7 +68,7 @@ class SideTabContentsProtocol(Protocol):
     def layout(self) -> QLayout:
         pass
 
-    def set_title(self) -> pyqtSignal:
+    def set_title(self) -> Signal:
         pass
 
     def sizeHint(self) -> QSize:
@@ -115,7 +115,7 @@ class SideTabContainer(QWidget):
 
 
 class SideTabWidget(QTabWidget):
-    back_clicked = pyqtSignal()
+    back_clicked = Signal()
 
     def __init__(self, show_back: bool = False, padding: int = -1, parent=None):
         super(SideTabWidget, self).__init__(parent=parent)

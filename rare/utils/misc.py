@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import Union, Type, Dict, Tuple, Iterable
 
 import qtawesome
-from PyQt5.QtCore import (
+from PySide6.QtCore import (
     QObject,
     QSettings,
     QFile,
@@ -12,9 +12,9 @@ from PyQt5.QtCore import (
     QLocale,
     QDirIterator,
 )
-from PyQt5.QtGui import QPalette, QColor, QFontMetrics
-from PyQt5.QtWidgets import QApplication, QStyleFactory, QLabel
-from PyQt5.sip import wrappertype
+from PySide6.QtGui import QPalette, QColor, QFontMetrics
+from PySide6.QtWidgets import QApplication, QStyleFactory, QLabel
+from shiboken6.Shiboken import Object as ShibokenObject
 
 from rare.utils.paths import resources_path
 
@@ -184,11 +184,11 @@ def qta_icon(icn_str: str, fallback: str = None, **kwargs):
     return qtawesome.icon("ei.error", **kwargs)
 
 
-def widget_object_name(widget: Union[QObject, wrappertype, Type], suffix: str) -> str:
+def widget_object_name(widget: Union[QObject, ShibokenObject, Type], suffix: str) -> str:
     suffix = f"_{suffix}" if suffix else ""
     if isinstance(widget, QObject):
         return f"{type(widget).__name__}{suffix}"
-    elif isinstance(widget, wrappertype) or isinstance(widget, type):
+    elif isinstance(widget, ShibokenObject) or isinstance(widget, type):
         return f"{widget.__name__}{suffix}"
     else:
         raise RuntimeError(f"Argument {widget} not a QObject or type of QObject")

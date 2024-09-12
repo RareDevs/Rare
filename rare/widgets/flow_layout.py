@@ -1,7 +1,7 @@
 from typing import Optional, List, overload
 
-from PyQt5.QtCore import Qt, QRect, QSize, QPoint
-from PyQt5.QtWidgets import QLayout, QStyle, QSizePolicy, QLayoutItem, QWidget
+from PySide6.QtCore import Qt, QRect, QSize, QPoint
+from PySide6.QtWidgets import QLayout, QStyle, QSizePolicy, QLayoutItem, QWidget
 
 
 class FlowLayout(QLayout):

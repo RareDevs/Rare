@@ -22,7 +22,7 @@ repository = "https://github.com/RareDevs/Rare"
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.28.1"
-PyQt5 = "^5.15.7"
+PySide6-Essentials = "^6.5.3"
 QtAwesome = "^1.1.1"
 legendary-gl = "^0.20.34"
 pywebview = [
@@ -42,7 +42,7 @@ start = "rare.main:main"
 Nuitka = "^2.4.8"
 pylint = "^3.2.7"
 black = "^24.3.0"
-PyQt5-stubs = "^5.15.6.0"
+PySide6-stubs = "^6.4.2.0"
 
 #[build-system]
 #requires = ["setuptools>=42", "wheel", "nuitka", "toml"]
@@ -56,7 +56,7 @@ jobs = 4
 static-libpython = false
 standalone = true
 show-scons = false
-enable-plugin = ["anti-bloat", "pyqt5"]
+enable-plugin = ["anti-bloat", "pyside6"]
 show-anti-bloat-changes = true
 follow-stdlib = true
 follow-imports = true
