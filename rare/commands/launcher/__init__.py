@@ -255,7 +255,9 @@ class RareLauncher(RareApp):
     @Slot(int, int)
     @Slot(int, CloudSyncDialogResult)
     def __check_saves_finished(self, exit_code, action):
-        self.sync_dialog.deleteLater()
+        if self.sync_dialog is not None:
+            self.sync_dialog.deleteLater()
+            self.sync_dialog = None
         action = CloudSyncDialogResult(action)
         if action == CloudSyncDialogResult.UPLOAD:
             if self.console:
@@ -374,7 +376,9 @@ class RareLauncher(RareApp):
     @Slot(int)
     @Slot(CloudSyncDialogResult)
     def __sync_ready(self, action: CloudSyncDialogResult):
-        self.sync_dialog.deleteLater()
+        if self.sync_dialog is not None:
+            self.sync_dialog.deleteLater()
+            self.sync_dialog = None
         action = CloudSyncDialogResult(action)
         if action == CloudSyncDialogResult.CANCEL:
             self.no_sync_on_exit = True
