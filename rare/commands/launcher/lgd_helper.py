@@ -11,7 +11,7 @@ from legendary.models.game import LaunchParameters
 
 from rare.models.base_game import RareGameSlim
 
-logger = getLogger("RareLauncherHelper")
+logger = getLogger("RareLauncherUtils")
 
 
 class GameArgsError(Exception):
