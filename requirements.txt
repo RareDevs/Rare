@@ -1,4 +1,4 @@
-requests<3.0
+requests
 PySide6-Essentials
 QtAwesome
 setuptools

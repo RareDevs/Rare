@@ -25,7 +25,6 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
-          pip3 install -r requirements-webview.txt
       - name: Build
         run: >-
           python -m nuitka
@@ -37,7 +36,6 @@ jobs:
           --standalone
           --enable-plugin=anti-bloat
           --enable-plugin=pyside6
-          --enable-plugin=pywebview
           --show-modules
           --show-anti-bloat-changes
           --follow-stdlib
