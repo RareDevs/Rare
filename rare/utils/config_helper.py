@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Optional, Set, Any, List, Tuple
+from typing import Callable, Optional, Set, Any, Tuple
 
 from legendary.core import LegendaryCore
 from legendary.models.config import LGDConf
@@ -165,11 +165,11 @@ def get_prefix(app_name: str = "default") -> Optional[str]:
     if _wine_prefix and prefix_exists(_wine_prefix):
         return _wine_prefix
 
-    _compat_path = _config.get(f"default.env", "STEAM_COMPAT_DATA_PATH", fallback=None)
+    _compat_path = _config.get("default.env", "STEAM_COMPAT_DATA_PATH", fallback=None)
     if _compat_path and prefix_exists(_compat_prefix := os.path.join(_compat_path, "pfx")):
         return _compat_prefix
 
-    _wine_prefix = _config.get(f"default.env", "WINEPREFIX", fallback=None)
+    _wine_prefix = _config.get("default.env", "WINEPREFIX", fallback=None)
     _wine_prefix = _config.get("default", "wine_prefix", fallback=_wine_prefix)
     if _wine_prefix and prefix_exists(_wine_prefix):
         return _wine_prefix
