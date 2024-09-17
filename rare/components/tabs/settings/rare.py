@@ -92,6 +92,8 @@ class RareSettings(QWidget):
         self.ui.confirm_start.stateChanged.connect(
             lambda: self.settings.setValue(options.confirm_start.key, self.ui.confirm_start.isChecked())
         )
+        # TODO: implement use when starting game, disable for now
+        self.ui.confirm_start.setDisabled(True)
 
         self.ui.auto_sync_cloud.setChecked(self.settings.value(*options.auto_sync_cloud))
         self.ui.auto_sync_cloud.stateChanged.connect(
