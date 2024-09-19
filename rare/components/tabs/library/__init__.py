@@ -13,10 +13,8 @@ from rare.shared import (
 )
 from rare.shared import RareCore
 from rare.models.options import options
-from .game_info import GameInfoTabs
-from .game_widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
-from .game_widgets.icon_game_widget import IconGameWidget
-from .game_widgets.list_game_widget import ListGameWidget
+from .details import GameInfoTabs
+from .widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
 from .head_bar import LibraryHeadBar
 from .integrations import IntegrationsTabs
 

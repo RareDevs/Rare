@@ -103,8 +103,31 @@ class SteamRuntime(SteamBase):
 
 
 @dataclass
+class SteamAntiCheat:
+    steam_path: str
+    tool_path: str
+    steam_library: str
+    appmanifest: Dict
+
+    def __eq__(self, other):
+        return self.tool_path == other.tool_path
+
+    def __hash__(self):
+        return hash(self.tool_path)
+
+    @property
+    def name(self) -> str:
+        return self.appmanifest["AppState"]["name"]
+
+    @property
+    def appid(self) -> str:
+        return self.appmanifest["AppState"]["appid"]
+
+
+@dataclass
 class ProtonTool(SteamRuntime):
     runtime: SteamRuntime = None
+    anticheat: Dict[str, SteamAntiCheat] = None
 
     def __bool__(self) -> bool:
         if appid := self.required_tool:
@@ -121,6 +144,7 @@ class ProtonTool(SteamRuntime):
 class CompatibilityTool(SteamBase):
     compatibilitytool: Dict
     runtime: SteamRuntime = None
+    anticheat: Dict[str, SteamAntiCheat] = None
 
     def __bool__(self) -> bool:
         if appid := self.required_tool:
@@ -145,6 +169,33 @@ def find_appmanifests(library: str) -> List[dict]:
                 appmanifest = vdf.load(f)
             appmanifests.append(appmanifest)
     return appmanifests
+
+
+ANTICHEAT_RUNTIMES = {
+    "eac_runtime": "1826330",
+    "battleye_runtime": "1161040",
+}
+
+
+def find_anticheat(steam_path: str, library: str):
+    runtimes = {}
+    appmanifests = find_appmanifests(library)
+    common = os.path.join(library, "common")
+    for appmanifest in appmanifests:
+        if appmanifest["AppState"]["appid"] not in ANTICHEAT_RUNTIMES.values():
+            continue
+        folder = appmanifest["AppState"]["installdir"]
+        runtimes.update(
+            {
+                appmanifest["AppState"]["appid"]: SteamAntiCheat(
+                    steam_path=steam_path,
+                    steam_library=library,
+                    appmanifest=appmanifest,
+                    tool_path=os.path.join(common, folder),
+                )
+            }
+        )
+    return runtimes
 
 
 def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
@@ -257,7 +308,7 @@ def get_runtime(
     return runtimes.get(required_tool, None)
 
 
-def get_ulwgl_environment(
+def get_umu_environment(
     tool: Optional[ProtonTool] = None, compat_path: Optional[str] = None
 ) -> Dict:
     # If the tool is unset, return all affected env variable names
@@ -287,6 +338,8 @@ def get_steam_environment(
         environ["STEAM_COMPAT_LIBRARY_PATHS"] = ""
         environ["STEAM_COMPAT_MOUNTS"] = ""
         environ["STEAM_COMPAT_TOOL_PATHS"] = ""
+        environ["PROTON_EAC_RUNTIME"] = ""
+        environ["PROTON_BATTLEYE_RUNTIME"] = ""
         return environ
 
     environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = tool.steam_path
@@ -299,6 +352,11 @@ def get_steam_environment(
     if tool.runtime is not None:
         tool_paths.append(tool.runtime.tool_path)
     environ["STEAM_COMPAT_TOOL_PATHS"] = ":".join(tool_paths)
+    if tool.anticheat is not None:
+        if (appid := ANTICHEAT_RUNTIMES["eac_runtime"]) in tool.anticheat.keys():
+            environ["PROTON_EAC_RUNTIME"] = tool.anticheat[appid].tool_path
+        if (appid := ANTICHEAT_RUNTIMES["battleye_runtime"]) in tool.anticheat.keys():
+            environ["PROTON_BATTLEYE_RUNTIME"] = tool.anticheat[appid].tool_path
     return environ
 
 
@@ -317,6 +375,10 @@ def _find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     for library in steam_libraries:
         runtimes.update(find_runtimes(steam_path, library))
 
+    anticheat = {}
+    for library in steam_libraries:
+        anticheat.update(find_anticheat(steam_path, library))
+
     tools = []
     for library in steam_libraries:
         tools.extend(find_protons(steam_path, library))
@@ -325,6 +387,8 @@ def _find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     for tool in tools:
         runtime = get_runtime(tool, runtimes)
         tool.runtime = runtime
+        if tool.layer == "proton":
+            tool.anticheat = anticheat
 
     tools = list(filter(lambda t: bool(t), tools))
 
@@ -353,9 +417,11 @@ if __name__ == "__main__":
     from pprint import pprint
 
     tools = find_tools()
-    pprint(tools)
+    for tool in tools:
+        pprint(tool)
     umu = find_umu_launcher()
     pprint(umu)
+
 
     for tool in tools:
         print(get_steam_environment(tool))
