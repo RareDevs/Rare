@@ -83,7 +83,7 @@ css.QLabel["#QueueWorkerLabel"]['[workerType="Move"]'].setValues(
 
 
 # ProgressLabel
-from rare.components.tabs.games.game_widgets.library_widget import ProgressLabel
+from rare.components.tabs.library.widgets.library_widget import ProgressLabel
 css.QLabel[css_name(ProgressLabel)].setValues(
     borderWidth="1px",
     borderRadius="5%",
@@ -93,7 +93,7 @@ css.QLabel[css_name(ProgressLabel)].setValues(
 
 
 # IconGameWidget
-from rare.components.tabs.games.game_widgets.icon_widget import IconWidget
+from rare.components.tabs.library.widgets.icon_widget import IconWidget
 icon_background_props = {
     "backgroundColor": "rgba(0, 0, 0, 65%)",
 }
@@ -135,7 +135,7 @@ css.QPushButton[css_name(IconWidget, "Button")].hover.borderColor.setValue("gray
 
 
 # ListGameWidget
-from rare.components.tabs.games.game_widgets.list_widget import ListWidget
+from rare.components.tabs.library.widgets.list_widget import ListWidget
 css.QLabel[css_name(ListWidget, "TitleLabel")].fontWeight.setValue("bold")
 list_status_label_props = {
     "color": "white",
@@ -155,7 +155,7 @@ css.QLabel[css_name(ListWidget, "InfoLabel")].color.setValue("#999")
 
 
 # SelectViewWidget
-from rare.components.tabs.games.head_bar import SelectViewWidget
+from rare.components.tabs.library.head_bar import SelectViewWidget
 css.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
     border="none",
     backgroundColor="transparent",

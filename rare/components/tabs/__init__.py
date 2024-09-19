@@ -6,7 +6,7 @@ from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton
 from rare.utils.misc import qta_icon, ExitCodes
 from .account import AccountWidget
 from .downloads import DownloadsTab
-from .games import GamesLibrary
+from .library import GamesLibrary
 from .settings import SettingsTab
 from .store import StoreTab
 from .tab_widgets import MainTabBar, TabButtonWidget

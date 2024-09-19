@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QPushButton,
 )
 
-from rare.utils.misc import qta_icon, widget_object_name
+from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 
 
