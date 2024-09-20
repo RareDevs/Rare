@@ -204,6 +204,7 @@ class UbisoftGroup(QGroupBox):
     @Slot(set, set, str)
     def show_ubi_games(self, redeemed: set, entitlements: set, ubi_account_id: str):
         self.worker = None
+        self.loading_widget.stop()
         if not redeemed and ubi_account_id != "error":
             logger.error(
                 "No linked ubisoft account found! Link your accounts via your browser and try again."
@@ -256,8 +257,6 @@ class UbisoftGroup(QGroupBox):
                     )
                 )
             logger.info(f"Found {len(uplay_games) - activated} game(s) to redeem.")
-
-            self.loading_widget.stop()
 
             for game in uplay_games:
                 widget = UbiLinkWidget(
