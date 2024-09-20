@@ -42,6 +42,8 @@ def find_steam() -> Optional[str]:
 def find_steam_users(steam_path: str) -> List[SteamUser]:
     _users = []
     vdf_path = os.path.join(steam_path, "config", "loginusers.vdf")
+    if not os.path.exists(vdf_path):
+        return _users
     with open(vdf_path, 'r') as f:
         users = vdf.load(f).get("users", {})
     for long_id, user in users.items():
