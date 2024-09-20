@@ -1,5 +1,6 @@
 import os
 import platform
+from datetime import datetime
 from logging import getLogger
 from typing import Tuple
 
@@ -23,8 +24,8 @@ from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineSavePathResolver
 from rare.ui.components.tabs.games.game_info.cloud_settings_widget import Ui_CloudSettingsWidget
 from rare.ui.components.tabs.games.game_info.cloud_sync_widget import Ui_CloudSyncWidget
-from rare.utils.misc import qta_icon
 from rare.utils.metrics import timelogger
+from rare.utils.misc import qta_icon
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 from rare.widgets.loading_widget import LoadingWidget
 from rare.widgets.side_tab import SideTabContents
@@ -188,12 +189,11 @@ class CloudSaves(QWidget, SideTabContents):
 
         status, (dt_local, dt_remote) = self.rgame.save_game_state
 
+        local_tz = datetime.now().astimezone().tzinfo
         self.sync_ui.date_info_local.setText(
-            dt_local.strftime("%A, %d. %B %Y %X") if dt_local and self.rgame.save_path else "None"
-        )
+            dt_local.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_local else "None")
         self.sync_ui.date_info_remote.setText(
-            dt_remote.strftime("%A, %d. %B %Y %X") if dt_remote and self.rgame.save_path else "None"
-        )
+            dt_remote.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_remote else "None")
 
         newer = self.tr("Newer")
         self.sync_ui.age_label_local.setText(

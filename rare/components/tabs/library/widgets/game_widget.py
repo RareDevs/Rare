@@ -202,6 +202,10 @@ class GameWidget(LibraryWidget):
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
         if not isinstance(a1, QEvent):
             # FIXME: investigate why this happens
+            #
+            # ERROR: Supplied arg1 <class 'PySide6.QtCore.QRunnable'> with target \
+            # <class 'rare.components.tabs.library.widgets.icon_game_widget.IconGameWidget'> \
+            # is not a QEvent object
             logger.error("Supplied arg1 %s with target %s is not a QEvent object", type(a1), type(a0))
             return True
         if a0 is self.ui.launch_btn:

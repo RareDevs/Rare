@@ -67,7 +67,7 @@ class UbiGetInfoWorker(Worker):
 
             self.signals.worker_finished.emit(redeemed, entitlements, ubi_account_id)
         except Exception as e:
-            logger.error(str(e))
+            logger.error(e)
             self.signals.worker_finished.emit(set(), set(), "error")
 
 
@@ -107,31 +107,31 @@ class UbiLinkWidget(QFrame):
         self.game = game
         self.ubi_account_id = ubi_account_id
 
-        self.ok_indicator = QLabel(parent=self)
-        self.ok_indicator.setPixmap(qta_icon("fa.circle-o", color="grey").pixmap(20, 20))
-        self.ok_indicator.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+        self.redeem_indicator = QLabel(parent=self)
+        self.redeem_indicator.setPixmap(qta_icon("fa.circle-o", color="grey").pixmap(20, 20))
+        self.redeem_indicator.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
 
         self.title_label = ElideLabel(game.app_title, parent=self)
 
-        self.link_button = QPushButton(self.tr("Redeem in Ubisoft"), parent=self)
-        self.link_button.setMinimumWidth(150)
-        self.link_button.clicked.connect(self.activate)
+        self.redeem_button = QPushButton(self.tr("Redeem in Ubisoft"), parent=self)
+        self.redeem_button.setMinimumWidth(150)
+        self.redeem_button.clicked.connect(self.activate)
 
         if activated:
-            self.link_button.setText(self.tr("Already activated"))
-            self.link_button.setDisabled(True)
-            self.ok_indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
+            self.redeem_button.setText(self.tr("Already activated"))
+            self.redeem_button.setDisabled(True)
+            self.redeem_indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(-1, 0, 0, 0)
-        layout.addWidget(self.ok_indicator)
+        layout.addWidget(self.redeem_indicator)
         layout.addWidget(self.title_label, stretch=1)
-        layout.addWidget(self.link_button)
+        layout.addWidget(self.redeem_button)
 
     def activate(self):
-        self.link_button.setDisabled(True)
+        self.redeem_button.setDisabled(True)
         # self.ok_indicator.setPixmap(icon("mdi.loading", color="grey").pixmap(20, 20))
-        self.ok_indicator.setPixmap(qta_icon("mdi.transit-connection-horizontal", color="grey").pixmap(20, 20))
+        self.redeem_indicator.setPixmap(qta_icon("mdi.transit-connection-horizontal", color="grey").pixmap(20, 20))
 
         if self.args.debug:
             worker = UbiConnectWorker(RareCore.instance().core(), None, None)
@@ -144,14 +144,14 @@ class UbiLinkWidget(QFrame):
 
     def worker_finished(self, error):
         if not error:
-            self.ok_indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
-            self.link_button.setDisabled(True)
-            self.link_button.setText(self.tr("Already activated"))
+            self.redeem_indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
+            self.redeem_button.setDisabled(True)
+            self.redeem_button.setText(self.tr("Already activated"))
         else:
-            self.ok_indicator.setPixmap(qta_icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20)))
-            self.ok_indicator.setToolTip(error)
-            self.link_button.setText(self.tr("Try again"))
-            self.link_button.setDisabled(False)
+            self.redeem_indicator.setPixmap(qta_icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20)))
+            self.redeem_indicator.setToolTip(error)
+            self.redeem_button.setText(self.tr("Try again"))
+            self.redeem_button.setDisabled(False)
 
 
 class UbisoftGroup(QGroupBox):
@@ -167,19 +167,19 @@ class UbisoftGroup(QGroupBox):
 
         self.info_label = QLabel(parent=self)
         self.info_label.setText(self.tr("Getting information about your redeemable Ubisoft games."))
-        self.browser_button = QPushButton(self.tr("Link Ubisoft acccount"), parent=self)
-        self.browser_button.setMinimumWidth(140)
-        self.browser_button.clicked.connect(
+        self.link_button = QPushButton(self.tr("Link Ubisoft acccount"), parent=self)
+        self.link_button.setMinimumWidth(140)
+        self.link_button.clicked.connect(
             lambda: webbrowser.open("https://www.epicgames.com/id/link/ubisoft")
         )
-        self.browser_button.setEnabled(False)
+        self.link_button.setEnabled(False)
 
         self.loading_widget = LoadingWidget(self)
         self.loading_widget.stop()
 
         header_layout = QHBoxLayout()
         header_layout.addWidget(self.info_label, stretch=1)
-        header_layout.addWidget(self.browser_button)
+        header_layout.addWidget(self.link_button)
 
         layout = QVBoxLayout(self)
         layout.addLayout(header_layout)
@@ -204,6 +204,7 @@ class UbisoftGroup(QGroupBox):
     @Slot(set, set, str)
     def show_ubi_games(self, redeemed: set, entitlements: set, ubi_account_id: str):
         self.worker = None
+        self.loading_widget.stop()
         if not redeemed and ubi_account_id != "error":
             logger.error(
                 "No linked ubisoft account found! Link your accounts via your browser and try again."
@@ -211,14 +212,14 @@ class UbisoftGroup(QGroupBox):
             self.info_label.setText(
                 self.tr("Your account is not linked with Ubisoft. Please link your account and try again.")
             )
-            self.browser_button.setEnabled(True)
+            self.link_button.setEnabled(True)
         elif ubi_account_id == "error":
             self.info_label.setText(
                 self.tr("An error has occurred while requesting your account's Ubisoft information.")
             )
-            self.browser_button.setEnabled(True)
+            self.link_button.setEnabled(True)
         else:
-            self.browser_button.setEnabled(False)
+            self.link_button.setEnabled(False)
 
             uplay_games = []
             activated = 0
@@ -257,8 +258,6 @@ class UbisoftGroup(QGroupBox):
                 )
             logger.info(f"Found {len(uplay_games) - activated} game(s) to redeem.")
 
-            self.loading_widget.stop()
-
             for game in uplay_games:
                 widget = UbiLinkWidget(
                     game, ubi_account_id, activated=game.partner_link_id in redeemed, parent=self
@@ -273,4 +272,4 @@ class UbisoftGroup(QGroupBox):
                     parent=self,
                 )
                 self.layout().addWidget(widget)
-                self.browser_button.setEnabled(True)
+                self.link_button.setEnabled(True)
