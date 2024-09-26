@@ -34,6 +34,10 @@ class DownloadWidget(ImageWidget):
             QImage.Format.Format_ARGB32_Premultiplied,
         )
         painter = QPainter(device)
+        pixmap = pixmap.copy(
+            0, (pixmap.height() - self.sizeHint().height()) // 2,
+            pixmap.width(), self.sizeHint().height()
+        )
         brush = QBrush(pixmap)
         painter.fillRect(device.rect(), brush)
         # the gradient could be cached and reused as it is expensive
