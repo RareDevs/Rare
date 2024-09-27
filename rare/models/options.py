@@ -30,8 +30,9 @@ class Defaults(Namespace):
     auto_update = Value(key="auto_update", default=False, dtype=bool)
     auto_sync_cloud = Value(key="auto_sync_cloud", default=False, dtype=bool)
     confirm_start = Value(key="confirm_start", default=False, dtype=bool)
-    save_size = Value(key="save_size", default=False, dtype=bool)
-    window_size = Value(key="window_size", default=(1280, 720), dtype=tuple)
+    restore_window = Value(key="save_size", default=False, dtype=bool)
+    window_width = Value(key="window_width", default=1280, dtype=int)
+    window_height = Value(key="window_height", default=720, dtype=int)
     notification = Value(key="notification", default=True, dtype=bool)
     log_games = Value(key="show_console", default=False, dtype=bool)
 
