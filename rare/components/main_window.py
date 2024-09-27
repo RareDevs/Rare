@@ -94,10 +94,10 @@ class MainWindow(QMainWindow):
         # self.status_timer.setInterval(5000)
         # self.status_timer.start()
 
-        width, height = 1280, 720
-        if self.settings.value(*options.save_size):
-            width, height = self.settings.value(*options.window_size)
-
+        width, height = options.window_width.default, options.window_height.default
+        if self.settings.value(*options.restore_window):
+            width = self.settings.value(*options.window_width)
+            height = self.settings.value(*options.window_height)
         self.resize(width, height)
 
         if not self.args.offline:
@@ -155,9 +155,9 @@ class MainWindow(QMainWindow):
         self._window_launched = True
 
     def hide(self) -> None:
-        if self.settings.value(*options.save_size):
-            size = self.size().width(), self.size().height()
-            self.settings.setValue(options.window_size.key, size)
+        if self.settings.value(*options.restore_window):
+            self.settings.setValue(options.window_width.key, self.size().width())
+            self.settings.setValue(options.window_height.key, self.size().height())
         super(MainWindow, self).hide()
 
     def toggle(self):

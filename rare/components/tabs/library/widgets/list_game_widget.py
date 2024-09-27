@@ -87,6 +87,10 @@ class ListGameWidget(GameWidget):
             QImage.Format.Format_ARGB32_Premultiplied
         )
         painter = QPainter(device)
+        pixmap = pixmap.copy(
+            0, (pixmap.height() - self.sizeHint().height()) // 2,
+            pixmap.width(), self.sizeHint().height()
+        )
         brush = QBrush(pixmap)
         painter.fillRect(device.rect(), brush)
         # the gradient could be cached and reused as it is expensive
@@ -132,8 +136,16 @@ class ListGameWidget(GameWidget):
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, self._smooth_transform)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
         prog_h = (device.height() * progress // 100)
+        gray = gray.copy(
+            0, (gray.height() - self.sizeHint().height()) // 2,
+            gray.width(), self.sizeHint().height()
+        )
         brush = QBrush(gray)
         painter.fillRect(device.rect().adjusted(0, 0, 0, -prog_h), brush)
+        color = color.copy(
+            0, (color.height() - self.sizeHint().height()) // 2,
+            color.width(), self.sizeHint().height()
+        )
         brush.setTexture(color)
         painter.fillRect(device.rect().adjusted(0, device.height() - prog_h, 0, 0), brush)
         painter.end()

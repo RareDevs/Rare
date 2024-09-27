@@ -105,7 +105,7 @@ class RareSettings(QWidget):
             lambda: self.settings.setValue(options.notification.key, self.ui.notification.isChecked())
         )
 
-        self.ui.save_size.setChecked(self.settings.value(*options.save_size))
+        self.ui.save_size.setChecked(self.settings.value(*options.restore_window))
         self.ui.save_size.stateChanged.connect(self.save_window_size)
 
         self.ui.log_games.setChecked(self.settings.value(*options.log_games))
@@ -230,8 +230,9 @@ class RareSettings(QWidget):
 
     @Slot()
     def save_window_size(self):
-        self.settings.setValue(options.save_size.key, self.ui.save_size.isChecked())
-        self.settings.remove(options.window_size.key)
+        self.settings.setValue(options.restore_window.key, self.ui.save_size.isChecked())
+        self.settings.remove(options.window_width.key)
+        self.settings.remove(options.window_height.key)
 
     @Slot(int)
     def on_lang_changed(self, index: int):
