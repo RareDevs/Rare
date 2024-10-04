@@ -39,7 +39,7 @@ class WineSettings(QGroupBox):
             path="",
             file_mode=QFileDialog.FileMode.ExistingFile,
             name_filters=["wine", "wine64"],
-            edit_func=lambda text: (os.path.exists(text) or not text, text, IndicatorReasonsCommon.DIR_NOT_EXISTS),
+            edit_func=lambda text: (os.path.isfile(text) or not text, text, IndicatorReasonsCommon.FILE_NOT_EXISTS),
             save_func=self.save_exec,
         )
 
