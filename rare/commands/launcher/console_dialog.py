@@ -102,7 +102,7 @@ class ConsoleDialog(QDialog):
         if ok:
             if "." not in file:
                 file += ".log"
-            with open(file, "w") as f:
+            with open(file, "w", encoding="utf-8") as f:
                 f.write(self.console_edit.toPlainText())
                 f.close()
                 self.save_button.setText(self.tr("Saved"))

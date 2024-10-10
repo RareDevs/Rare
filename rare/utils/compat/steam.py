@@ -23,7 +23,7 @@ def find_steam() -> Optional[str]:
 
 def find_libraries(steam_path: str) -> Set[str]:
     vdf_path = os.path.join(steam_path, "config", "libraryfolders.vdf")
-    with open(vdf_path, "r") as f:
+    with open(vdf_path, "r", encoding="utf-8") as f:
         libraryfolders = vdf.load(f)["libraryfolders"]
     # libraries = [os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()]
     libraries = {os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()}
@@ -165,7 +165,7 @@ def find_appmanifests(library: str) -> List[dict]:
     appmanifests = []
     for entry in os.scandir(library):
         if entry.is_file() and entry.name.endswith(".acf"):
-            with open(os.path.join(library, entry.name), "r") as f:
+            with open(os.path.join(library, entry.name), "r", encoding="utf-8") as f:
                 appmanifest = vdf.load(f)
             appmanifests.append(appmanifest)
     return appmanifests
@@ -206,7 +206,7 @@ def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
         folder = appmanifest["AppState"]["installdir"]
         tool_path = os.path.join(common, folder)
         if os.path.isfile(vdf_file := os.path.join(tool_path, "toolmanifest.vdf")):
-            with open(vdf_file, "r") as f:
+            with open(vdf_file, "r", encoding="utf-8") as f:
                 toolmanifest = vdf.load(f)
                 if toolmanifest["manifest"]["compatmanager_layer_name"] == "container-runtime":
                     runtimes.update(
@@ -231,7 +231,7 @@ def find_protons(steam_path: str, library: str) -> List[ProtonTool]:
         folder = appmanifest["AppState"]["installdir"]
         tool_path = os.path.join(common, folder)
         if os.path.isfile(vdf_file := os.path.join(tool_path, "toolmanifest.vdf")):
-            with open(vdf_file, "r") as f:
+            with open(vdf_file, "r", encoding="utf-8") as f:
                 toolmanifest = vdf.load(f)
                 if toolmanifest["manifest"]["compatmanager_layer_name"] == "proton":
                     protons.append(
@@ -270,7 +270,7 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
             if not os.path.isfile(tool_vdf):
                 continue
 
-            with open(tool_vdf, "r") as f:
+            with open(tool_vdf, "r", encoding="utf-8") as f:
                 compatibilitytool = vdf.load(f)
 
             entry_tools = compatibilitytool["compatibilitytools"]["compat_tools"]
@@ -285,7 +285,7 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
                 if not os.path.isfile(manifest_vdf):
                     continue
 
-                with open(manifest_vdf, "r") as f:
+                with open(manifest_vdf, "r", encoding="utf-8") as f:
                     manifest = vdf.load(f)
 
                 tools.append(

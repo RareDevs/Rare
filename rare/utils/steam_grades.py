@@ -93,7 +93,7 @@ def load_json() -> dict:
         ids = {}
         for app in apps:
             ids[app["name"]] = app["appid"]
-        with open(file, "w") as f:
+        with open(file, "w", encoding="utf-8") as f:
             f.write(orjson.dumps(ids).decode("utf-8"))
         return ids
     else:
