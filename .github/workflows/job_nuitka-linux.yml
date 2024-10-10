@@ -1,4 +1,4 @@
-name: job_nuitka-win
+name: job_nuitka-linux
 
 on:
   workflow_call:
@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: "windows-latest"
+    runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -29,7 +29,7 @@ jobs:
         run: >-
           python -m nuitka
           --assume-yes-for-downloads
-          --msvc=latest
+          --mingw64
           --lto=no
           --jobs=4
           --static-libpython=no
@@ -50,9 +50,9 @@ jobs:
           --prefer-source-code
           --include-package=pypresence
           --include-package-data=qtawesome
-          --include-data-dir=rare\resources\images\=rare\resources\images\
-          --include-data-files=rare\resources\languages\rare_*.qm=rare\resources\languages\
-          --windows-icon-from-ico=rare\resources\images\Rare.ico
+          --include-data-dir=rare/resources/images/=rare/resources/images/
+          --include-data-files=rare/resources/languages/rare_*.qm=rare/resources/languages/
+          --windows-icon-from-ico=rare/resources/images/Rare.ico
           --windows-company-name=RareDevs
           --windows-product-name=Rare
           --windows-file-description=rare.exe
@@ -67,5 +67,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-portable-windows-${{ inputs.version }}.zip
+          name: Rare-portable-linux-${{ inputs.version }}.zip
           path: Rare.zip

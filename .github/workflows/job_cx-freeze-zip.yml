@@ -30,10 +30,10 @@ jobs:
         run: cxfreeze -c rare/main.py --target-dir dist --target-name rare --icon rare/resources/images/Rare.ico -OO --base-name Win32GUI
       - name: Compress
         run: |
-          python -c "import shutil; shutil.make_archive('Rare-Windows', 'zip', 'dist')"
+          python -c "import shutil; shutil.make_archive('Rare', 'zip', 'rare.dist')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-Windows-${{ inputs.version }}.zip
-          path: Rare-Windows.zip
+          name: Rare-portable-windows-${{ inputs.version }}.zip
+          path: Rare.zip

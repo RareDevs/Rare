@@ -35,7 +35,7 @@ jobs:
   ubuntu-release:
     needs: ubuntu
     name: Ubuntu
-    uses: ./.github/workflows/job_release.yml
+    uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
       file1: Rare.deb
@@ -49,7 +49,7 @@ jobs:
   appimage-release:
     needs: appimage
     name: AppImage
-    uses: ./.github/workflows/job_release.yml
+    uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
       file1: Rare.AppImage
@@ -58,7 +58,7 @@ jobs:
       name2: Rare-${{ github.ref_name }}.AppImage.zsync
 
   nuitka-win:
-    if: ${{ false }}
+    if: ${{ true }}
     name: Nuitka Windows
     uses: ./.github/workflows/job_nuitka-win.yml
     with:
@@ -66,11 +66,11 @@ jobs:
   nuitka-win-release:
     needs: nuitka-win
     name: Nuitka Windows
-    uses: ./.github/workflows/job_release.yml
+    uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-Windows.zip
-      name1: Rare-Windows-${{ github.ref_name }}.zip
+      file1: Rare-portable-windows.zip
+      name1: Rare-portable-windows-${{ github.ref_name }}.zip
 
   cx-freeze-msi:
     name: cx-Freeze msi
@@ -80,13 +80,14 @@ jobs:
   cx-freeze-msi-release:
     needs: cx-freeze-msi
     name: cx-Freeze msi
-    uses: ./.github/workflows/job_release.yml
+    uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
       file1: Rare.msi
       name1: Rare-${{ github.ref_name }}.msi
 
   cx-freeze-zip:
+    if: ${{ false }}
     name: cx-Freeze zip
     uses: ./.github/workflows/job_cx-freeze-zip.yml
     with:
@@ -94,11 +95,11 @@ jobs:
   cx-freeze-zip-release:
     needs: cx-freeze-zip
     name: cx-Freeze zip
-    uses: ./.github/workflows/job_release.yml
+    uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-Windows.zip
-      name1: Rare-Windows-${{ github.ref_name }}.zip
+      file1: Rare.zip
+      name1: Rare-portable-windows-${{ github.ref_name }}.zip
 
   macos:
     name: macOS
@@ -108,7 +109,7 @@ jobs:
   macos-release:
     needs: macos
     name: macOS
-    uses: ./.github/workflows/job_release.yml
+    uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
       file1: Rare.dmg
