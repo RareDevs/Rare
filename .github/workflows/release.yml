@@ -57,20 +57,50 @@ jobs:
       file2: Rare.AppImage.zsync
       name2: Rare-${{ github.ref_name }}.AppImage.zsync
 
-  nuitka-win:
+  nuitka-windows:
     if: ${{ true }}
     name: Nuitka Windows
     uses: ./.github/workflows/job_nuitka-win.yml
     with:
       version: ${{ github.ref_name }}
-  nuitka-win-release:
-    needs: nuitka-win
+  nuitka-windows-release:
+    needs: nuitka-windows
     name: Nuitka Windows
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-portable-windows.zip
+      file1: Rare.zip
       name1: Rare-portable-windows-${{ github.ref_name }}.zip
+
+  nuitka-linux:
+    if: ${{ true }}
+    name: Nuitka Linux
+    uses: ./.github/workflows/job_nuitka-linux.yml
+    with:
+      version: ${{ github.ref_name }}
+  nuitka-linux-release:
+    needs: nuitka-linux
+    name: Nuitka Linux
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ github.ref_name }}
+      file1: Rare.zip
+      name1: Rare-portable-linux-${{ github.ref_name }}.zip
+
+  nuitka-macos:
+    if: ${{ true }}
+    name: Nuitka MacOS
+    uses: ./.github/workflows/job_nuitka-macos.yml
+    with:
+      version: ${{ github.ref_name }}
+  nuitka-macos-release:
+    needs: nuitka-macos
+    name: Nuitka MacOS
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ github.ref_name }}
+      file1: Rare.zip
+      name1: Rare-portable-macos-${{ github.ref_name }}.zip
 
   cx-freeze-msi:
     name: cx-Freeze msi

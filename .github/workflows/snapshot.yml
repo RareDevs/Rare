@@ -85,22 +85,56 @@ jobs:
       file2: Rare.AppImage.zsync
       name2: Rare-${{ needs.version.outputs.version }}.AppImage.zsync
 
-  nuitka-win:
+  nuitka-windows:
     if: ${{ true }}
     needs: version
     name: Nuitka Windows
     uses: ./.github/workflows/job_nuitka-win.yml
     with:
       version: ${{ needs.version.outputs.version }}
-  nuitka-win-release:
+  nuitka-windows-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, nuitka-win]
+    needs: [version, prerelease, nuitka-windows]
     name: Nuitka Windows
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
       file1: Rare.zip
       name1: Rare-portable-windows-${{ needs.version.outputs.version }}.zip
+
+  nuitka-linux:
+    if: ${{ true }}
+    needs: version
+    name: Nuitka Linux
+    uses: ./.github/workflows/job_nuitka-linux.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+  nuitka-linux-release:
+    if: ${{ inputs.prerelease }}
+    needs: [version, prerelease, nuitka-linux]
+    name: Nuitka Linux
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.zip
+      name1: Rare-portable-linux-${{ needs.version.outputs.version }}.zip
+
+  nuitka-macos:
+    if: ${{ true }}
+    needs: version
+    name: Nuitka MacOS
+    uses: ./.github/workflows/job_nuitka-macos.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+  nuitka-macos-release:
+    if: ${{ inputs.prerelease }}
+    needs: [version, prerelease, nuitka-macos]
+    name: Nuitka MacOS
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.zip
+      name1: Rare-portable-macos-${{ needs.version.outputs.version }}.zip
 
   cx-freeze-msi:
     needs: version
