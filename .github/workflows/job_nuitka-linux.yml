@@ -29,7 +29,6 @@ jobs:
         run: >-
           python -m nuitka
           --assume-yes-for-downloads
-          --mingw64
           --lto=no
           --jobs=4
           --static-libpython=no
@@ -52,7 +51,7 @@ jobs:
           --include-package-data=qtawesome
           --include-data-dir=rare/resources/images/=rare/resources/images/
           --include-data-files=rare/resources/languages/rare_*.qm=rare/resources/languages/
-          --windows-icon-from-ico=rare/resources/images/Rare.ico
+          --windows-icon-from-ico=rare/resources/images/Rare.png
           --windows-company-name=RareDevs
           --windows-product-name=Rare
           --windows-file-description=rare.exe
