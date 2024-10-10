@@ -44,7 +44,7 @@ def find_steam_users(steam_path: str) -> List[SteamUser]:
     vdf_path = os.path.join(steam_path, "config", "loginusers.vdf")
     if not os.path.exists(vdf_path):
         return _users
-    with open(vdf_path, 'r') as f:
+    with open(vdf_path, "r", encoding="utf-8") as f:
         users = vdf.load(f).get("users", {})
     for long_id, user in users.items():
         _users.append(SteamUser(long_id, user))
@@ -56,7 +56,7 @@ def _load_shortcuts(steam_path: str, user: SteamUser) -> Dict[str, SteamShortcut
     vdf_path = os.path.join(steam_path, "userdata", str(user.short_id), "config", "shortcuts.vdf")
     if not os.path.exists(vdf_path):
         return _shortcuts
-    with open(vdf_path, 'rb') as f:
+    with open(vdf_path, "rb") as f:
         shortcuts = vdf.binary_load(f).get("shortcuts", {})
     for idx, shortcut in shortcuts.items():
         _shortcuts[idx] = SteamShortcut.from_dict(shortcut)
@@ -66,7 +66,7 @@ def _load_shortcuts(steam_path: str, user: SteamUser) -> Dict[str, SteamShortcut
 def _save_shortcuts(steam_path: str, user: SteamUser, shortcuts: Dict[str, SteamShortcut]) -> None:
     _shortcuts = {k: asdict(v) for k, v in shortcuts.items()}
     vdf_path = os.path.join(steam_path, "userdata", str(user.short_id), "config", "shortcuts.vdf")
-    with open(vdf_path, 'wb') as f:
+    with open(vdf_path, "wb") as f:
         vdf.binary_dump({"shortcuts": _shortcuts}, f)
 
 

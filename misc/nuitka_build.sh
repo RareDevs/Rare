@@ -24,7 +24,7 @@ nuitka_opts=(
     '--include-package=pypresence'
     '--include-package-data=qtawesome'
     '--include-data-dir=rare/resources/images/=rare/resources/images/'
-    '--include-data-files=rare/resources/languages/=rare/resources/languages/="rare_*.qm"'
+    '--include-data-files=rare/resources/languages/rare_*.qm=rare/resources/languages/'
     '--windows-icon-from-ico=rare/resources/images/Rare.ico'
     '--windows-company-name=RareDevs'
     '--windows-product-name=Rare'

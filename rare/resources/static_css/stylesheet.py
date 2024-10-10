@@ -172,7 +172,7 @@ css.QPushButton[css_name(ButtonLineEdit, "Button")].setValues(
 
 
 if __name__ == "__main__":
-    with open("stylesheet.qss", "w") as qss:
+    with open("stylesheet.qss", "w", encoding="utf-8") as qss:
         qss.write(f'\n/* This file is auto-generated from "{os.path.basename(__file__)}". DO NOT EDIT!!! */\n\n')
         qss.write(css.toString())
 
