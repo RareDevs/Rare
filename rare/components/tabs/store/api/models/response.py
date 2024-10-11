@@ -413,6 +413,9 @@ class ErrorModel:
     serviceResponse: str = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
 
+    def __str__(self):
+        return f"{self.correlationId} - {self.message}"
+
     @classmethod
     def from_dict(cls: Type["ErrorModel"], src: Dict[str, Any]) -> "ErrorModel":
         d = src.copy()

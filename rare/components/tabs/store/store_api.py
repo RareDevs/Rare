@@ -60,7 +60,7 @@ class StoreAPI(QObject):
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error.message)
+                    logger.error(error)
             elements = response.data.catalog.searchStore.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
@@ -89,7 +89,7 @@ class StoreAPI(QObject):
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error.message)
+                    logger.error(error)
             elements = response.data.wishlist.wishlistItems.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
@@ -124,7 +124,7 @@ class StoreAPI(QObject):
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error.message)
+                    logger.error(error)
             elements = response.data.catalog.searchStore.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
@@ -153,7 +153,7 @@ class StoreAPI(QObject):
                 response = ResponseModel.from_dict(data)
                 if response.errors:
                     for error in response.errors:
-                        logger.error(error.message)
+                        logger.error(error)
                 elements = response.data.catalog.searchStore.elements
             except (Exception, AttributeError, KeyError) as e:
                 if DEBUG():
@@ -213,7 +213,7 @@ class StoreAPI(QObject):
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error.message)
+                    logger.error(error)
             success = response.data.wishlist.addToWishlist.success
         except Exception as e:
             if DEBUG():
@@ -240,7 +240,7 @@ class StoreAPI(QObject):
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error.message)
+                    logger.error(error)
             success = response.data.wishlist.removeFromWishlist.success
         except Exception as e:
             if DEBUG():
