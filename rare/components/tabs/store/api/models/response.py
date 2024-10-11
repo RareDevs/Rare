@@ -408,12 +408,20 @@ class DataModel:
 
 @dataclass
 class ErrorModel:
+    message: str = None
+    correlationId: str = None
+    serviceResponse: str = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls: Type["ErrorModel"], src: Dict[str, Any]) -> "ErrorModel":
         d = src.copy()
-        return cls(unmapped=d)
+        return cls(
+            message=d.pop("message", ""),
+            correlationId= d.pop("correlationId", ""),
+            serviceResponse=d.pop("serviceResponse", ""),
+            unmapped=d
+        )
 
 
 @dataclass
@@ -429,7 +437,7 @@ class ExtensionsModel:
 @dataclass
 class ResponseModel:
     data: DataModel = None
-    errors: List[ErrorModel] = None
+    errors: Tuple[ErrorModel, ...] = None
     extensions: ExtensionsModel = None
     unmapped: Dict[str, Any] = field(default_factory=dict)
 
@@ -438,9 +446,6 @@ class ResponseModel:
         d = src.copy()
         data = DataModel.from_dict(x) if (x := d.pop("data", {})) else None
         _errors = d.pop("errors", [])
-        errors = [] if _errors else None
-        for item in _errors:
-            error = ErrorModel.from_dict(item)
-            errors.append(error)
+        errors = tuple(map(ErrorModel.from_dict, _errors))
         extensions = ExtensionsModel.from_dict(x) if (x := d.pop("extensions", {})) else None
         return cls(data=data, errors=errors, extensions=extensions, unmapped=d)

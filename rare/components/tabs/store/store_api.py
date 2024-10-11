@@ -45,38 +45,34 @@ class StoreAPI(QObject):
         self.browse_active = False
         self.next_browse_request = tuple(())
 
-    def get_free(self, handle_func: callable):
+    def get_free(self, callback: callable):
         url = "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions"
         params = {
             "locale": self.locale,
             "country": self.country_code,
             "allowCountries": self.country_code,
         }
-        self.manager.get(url, lambda data: self.__handle_free_games(data, handle_func), params=params)
+        self.manager.get(url, lambda data: self.__handle_free_games(data, callback), params=params)
 
     @staticmethod
-    def __handle_free_games(data, handle_func):
+    def __handle_free_games(data, callback):
         try:
             response = ResponseModel.from_dict(data)
-            results: Tuple[CatalogOfferModel, ...] = response.data.catalog.searchStore.elements
-            handle_func(results)
-        except KeyError as e:
+            if response.errors:
+                for error in response.errors:
+                    logger.error(error.message)
+            elements = response.data.catalog.searchStore.elements
+        except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise e
-            logger.error("Free games Api request failed")
-            handle_func(["error", "Key error"])
-            return
-        except Exception as e:
-            if DEBUG():
-                raise e
-            logger.error(f"Free games Api request failed: {e}")
-            handle_func(["error", e])
-            return
+            elements = False
+            logger.error("Free games request failed with: %s", e)
+        callback(elements)
 
-    def get_wishlist(self, handle_func):
+    def get_wishlist(self, callback):
         self.authed_manager.post(
             graphql_url,
-            lambda data: self.__handle_wishlist(data, handle_func),
+            lambda data: self.__handle_wishlist(data, callback),
             {
                 "query": wishlist_query,
                 "variables": {
@@ -88,26 +84,21 @@ class StoreAPI(QObject):
         )
 
     @staticmethod
-    def __handle_wishlist(data, handle_func):
+    def __handle_wishlist(data, callback):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
-                logger.error(response.errors)
-            handle_func(response.data.wishlist.wishlistItems.elements)
-        except KeyError as e:
+                for error in response.errors:
+                    logger.error(error.message)
+            elements = response.data.wishlist.wishlistItems.elements
+        except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise e
-            logger.error("Free games API request failed")
-            handle_func(["error", "Key error"])
-            return
-        except Exception as e:
-            if DEBUG():
-                raise e
-            logger.error(f"Free games API request failed")
-            handle_func(["error", e])
-            return
+            elements = False
+            logger.error("Wishlist request failed with: %s", e)
+        callback(elements)
 
-    def search_game(self, name, handler):
+    def search_game(self, name, callback):
         payload = {
             "query": search_query,
             "variables": {
@@ -125,60 +116,56 @@ class StoreAPI(QObject):
             },
         }
 
-        self.manager.post(graphql_url, lambda data: self.__handle_search(data, handler), payload)
+        self.manager.post(graphql_url, lambda data: self.__handle_search(data, callback), payload)
 
     @staticmethod
-    def __handle_search(data, handler):
+    def __handle_search(data, callback):
         try:
             response = ResponseModel.from_dict(data)
-            handler(response.data.catalog.searchStore.elements)
-        except KeyError as e:
+            if response.errors:
+                for error in response.errors:
+                    logger.error(error.message)
+            elements = response.data.catalog.searchStore.elements
+        except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise e
-            logger.error(str(e))
-            handler([])
-        except Exception as e:
-            if DEBUG():
-                raise e
-            logger.error(f"Search Api request failed: {e}")
-            handler([])
-            return
+            elements = False
+            logger.error("Search request failed with: %s", e)
+        callback(elements)
 
-    def browse_games(self, browse_model: SearchStoreQuery, handle_func):
+    def browse_games(self, browse_model: SearchStoreQuery, callback):
         if self.browse_active:
-            self.next_browse_request = (browse_model, handle_func)
+            self.next_browse_request = (browse_model, callback)
             return
         self.browse_active = True
         payload = {
             "query": search_query,
             "variables": browse_model.to_dict()
         }
-        self.manager.post(graphql_url, lambda data: self.__handle_browse_games(data, handle_func), payload)
+        self.manager.post(graphql_url, lambda data: self.__handle_browse_games(data, callback), payload)
 
-    def __handle_browse_games(self, data, handle_func):
+    def __handle_browse_games(self, data, callback):
         self.browse_active = False
         if data is None:
             data = {}
         if not self.next_browse_request:
             try:
                 response = ResponseModel.from_dict(data)
-                handle_func(response.data.catalog.searchStore.elements)
-            except KeyError as e:
+                if response.errors:
+                    for error in response.errors:
+                        logger.error(error.message)
+                elements = response.data.catalog.searchStore.elements
+            except (Exception, AttributeError, KeyError) as e:
                 if DEBUG():
                     raise e
-                logger.error(str(e))
-                handle_func([])
-            except Exception as e:
-                if DEBUG():
-                    raise e
-                logger.error(f"Browse games Api request failed: {e}")
-                handle_func([])
-                return
+                elements = False
+                logger.error("Browse request failed with: %s", e)
+            callback(elements)
         else:
             self.browse_games(*self.next_browse_request)  # pylint: disable=E1120
             self.next_browse_request = tuple(())
 
-    # def get_game_config_graphql(self, namespace: str, handle_func):
+    # def get_game_config_graphql(self, namespace: str, callback):
     #     payload = {
     #         "query": config_query,
     #         "variables": {
@@ -192,24 +179,24 @@ class StoreAPI(QObject):
     def __make_api_query(self):
         pass
 
-    def get_game_config_cms(self, slug: str, is_bundle: bool, handle_func):
+    def get_game_config_cms(self, slug: str, is_bundle: bool, callback):
         url = "https://store-content.ak.epicgames.com/api"
         url += f"/{self.locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
-        self.manager.get(url, lambda data: self.__handle_get_game(data, handle_func))
+        self.manager.get(url, lambda data: self.__handle_get_game(data, callback))
 
     @staticmethod
-    def __handle_get_game(data, handle_func):
+    def __handle_get_game(data, callback):
         try:
             product = DieselProduct.from_dict(data)
-            handle_func(product)
+            callback(product)
         except Exception as e:
             if DEBUG():
                 raise e
             logger.error(str(e))
-            # handle_func({})
+            # callback({})
 
     # needs a captcha
-    def add_to_wishlist(self, namespace, offer_id, handle_func: callable):
+    def add_to_wishlist(self, namespace, offer_id, callback: callable):
         payload = {
             "query": wishlist_add_query,
             "variables": {
@@ -219,21 +206,24 @@ class StoreAPI(QObject):
                 "locale": self.locale,
             },
         }
-        self.authed_manager.post(graphql_url, lambda data: self._handle_add_to_wishlist(data, handle_func), payload)
+        self.authed_manager.post(graphql_url, lambda data: self._handle_add_to_wishlist(data, callback), payload)
 
-    def _handle_add_to_wishlist(self, data, handle_func):
+    def _handle_add_to_wishlist(self, data, callback):
         try:
             response = ResponseModel.from_dict(data)
-            data = response.data.wishlist.addToWishlist
-            handle_func(data.success)
+            if response.errors:
+                for error in response.errors:
+                    logger.error(error.message)
+            success = response.data.wishlist.addToWishlist.success
         except Exception as e:
             if DEBUG():
                 raise e
-            logger.error(str(e))
-            handle_func(False)
+            logger.error("Add to wishlist request failed with: %s", e)
+            success = False
+        callback(success)
         self.update_wishlist.emit()
 
-    def remove_from_wishlist(self, namespace, offer_id, handle_func: callable):
+    def remove_from_wishlist(self, namespace, offer_id, callback: callable):
         payload = {
             "query": wishlist_remove_query,
             "variables": {
@@ -242,17 +232,20 @@ class StoreAPI(QObject):
                 "operation": "REMOVE",
             },
         }
-        self.authed_manager.post(graphql_url, lambda data: self._handle_remove_from_wishlist(data, handle_func),
+        self.authed_manager.post(graphql_url, lambda data: self._handle_remove_from_wishlist(data, callback),
                                  payload)
 
-    def _handle_remove_from_wishlist(self, data, handle_func):
+    def _handle_remove_from_wishlist(self, data, callback):
         try:
             response = ResponseModel.from_dict(data)
-            data = response.data.wishlist.removeFromWishlist
-            handle_func(data.success)
+            if response.errors:
+                for error in response.errors:
+                    logger.error(error.message)
+            success = response.data.wishlist.removeFromWishlist.success
         except Exception as e:
             if DEBUG():
                 raise e
-            logger.error(str(e))
-            handle_func(False)
+            logger.error("Remove from wishlist request failed with: %s", e)
+            success = False
+        callback(success)
         self.update_wishlist.emit()
