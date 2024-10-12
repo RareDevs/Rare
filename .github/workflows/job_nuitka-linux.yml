@@ -29,7 +29,6 @@ jobs:
         run: >-
           python -m nuitka
           --assume-yes-for-downloads
-          --clang
           --lto=no
           --jobs=4
           --static-libpython=no
@@ -69,3 +68,4 @@ jobs:
         with:
           name: Rare-portable-linux-${{ inputs.version }}.zip
           path: Rare.zip
+
