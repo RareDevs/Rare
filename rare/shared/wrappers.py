@@ -19,7 +19,7 @@ class Wrappers:
         self.__file = os.path.join(config_dir(), "wrappers.json")
         self.__wrappers_dict = {}
         try:
-            with open(self.__file) as f:
+            with open(self.__file, "r", encoding="utf-8") as f:
                 self.__wrappers_dict = json.load(f)
         except FileNotFoundError:
             logger.info("%s does not exist", self.__file)
@@ -114,7 +114,7 @@ class Wrappers:
         self.__wrappers_dict["wrappers"] = self.__wrappers
         self.__wrappers_dict["applists"] = self.__applists
 
-        with open(os.path.join(self.__file), "w+") as f:
+        with open(os.path.join(self.__file), "w+", encoding="utf-8") as f:
             json.dump(self.__wrappers_dict, f, default=lambda o: vars(o), indent=2)
 
 
