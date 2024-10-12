@@ -99,8 +99,10 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare.zip
-      name1: Rare-portable-macos-${{ github.ref_name }}.zip
+      file1: Rare-arm64.zip
+      name1: Rare-portable-macos-arm64-${{ github.ref_name }}.zip
+      file2: Rare-x86_64.zip
+      name2: Rare-portable-macos-x86_64-${{ github.ref_name }}.zip
 
   cx-freeze-msi:
     name: cx-Freeze msi

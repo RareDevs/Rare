@@ -9,7 +9,10 @@ on:
 
 jobs:
   build:
-    name: Build
+    strategy:
+      matrix:
+        arch: [ "arm64", "x86_64" ]
+    name: Build ${{ matrix.arch }}
     runs-on: "macos-latest"
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +30,7 @@ jobs:
           pip3 install -r requirements-presence.txt
       - name: Build
         run: >-
-          python -m nuitka
+          arch -${{ matrix.arch }} python -m nuitka
           --assume-yes-for-downloads
           --clang
           --lto=no
@@ -62,10 +65,10 @@ jobs:
           rare
       - name: Compress
         run: |
-          python -c "import shutil; shutil.make_archive('Rare', 'zip', 'rare.dist')"
+          python -c "import shutil; shutil.make_archive('Rare-${{ matrix.arch }}', 'zip', 'rare.dist')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-portable-macos-${{ inputs.version }}.zip
-          path: Rare.zip
+          name: Rare-portable-macos-${{ matrix.arch }}-${{ inputs.version }}.zip
+          path: Rare-${{ matrix.arch }}.zip
