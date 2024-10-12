@@ -156,7 +156,7 @@ class RareCore(QObject):
                 else:
                     path = os.path.expanduser('~/.config/legendary')
                 logger.info("Creating config in path: %s", config_path)
-                with open(os.path.join(path, "config.ini"), "w", encoding="utf-8") as config_file:
+                with open(os.path.join(path, "config.ini"), "w") as config_file:
                     config_file.write("[Legendary]")
                 self.__core = LegendaryCore()
 

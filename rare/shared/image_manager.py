@@ -237,7 +237,7 @@ class ImageManager(QObject):
         json_data["size"] = {"w": ImageSize.Tall.size.width(), "h": ImageSize.Tall.size.height()}
 
         # write image.json
-        with open(self.__img_json(game.app_name), "w", encoding="utf-8") as file:
+        with open(self.__img_json(game.app_name), "w") as file:
             json.dump(json_data, file)
 
         return bool(updates)
