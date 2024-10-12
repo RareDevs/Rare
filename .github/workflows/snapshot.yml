@@ -133,8 +133,10 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
-      file1: Rare.zip
-      name1: Rare-portable-macos-${{ needs.version.outputs.version }}.zip
+      file1: Rare-arm64.zip
+      name1: Rare-portable-macos-arm64-${{ needs.version.outputs.version }}.zip
+      file2: Rare-x86_64.zip
+      name2: Rare-portable-macos-x86_64-${{ needs.version.outputs.version }}.zip
 
   cx-freeze-msi:
     needs: version
