@@ -2,28 +2,21 @@ import setuptools
 
 from rare import __version__ as version
 
+
+def parse_requirements(filename):
+    """ load requirements from a pip requirements file """
+    lineiter = (line.strip() for line in open(filename))
+    return [line for line in lineiter if line and not line.startswith("#")]
+
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-requirements = [
-    "requests<3.0",
-    "PySide6-Essentials",
-    "QtAwesome",
-    "wheel",
-    "setuptools",
-    "legendary-gl>=0.20.34",
-    "orjson",
-    "vdf",
-    'pywin32; platform_system == "Windows"',
-]
+requirements = parse_requirements("requirements.txt")
 
 optional_reqs = dict(
-    webview=[
-        'pywebview[gtk]; platform_system == "Linux"',
-        'pywebview[gtk]; platform_system == "FreeBSD"',
-        'pywebview[cef]; platform_system == "Windows"',
-    ],
-    pypresence=["pypresence"]
+    webview=parse_requirements("requirements-webview.txt"),
+    pypresence=parse_requirements("requirements-presence.txt"),
 )
 
 setuptools.setup(
