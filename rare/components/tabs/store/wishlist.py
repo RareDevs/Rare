@@ -59,7 +59,7 @@ class WishlistFilter(IntEnum):
 
 class WishlistWidget(QWidget, SideTabContents):
     show_details = Signal(CatalogOfferModel)
-    update_wishlist_signal = Signal()
+    update_wishlist = Signal()
 
     def __init__(self, api: StoreAPI, parent=None):
         super(WishlistWidget, self).__init__(parent=parent)
@@ -91,7 +91,7 @@ class WishlistWidget(QWidget, SideTabContents):
         self.ui.order_combo.currentIndexChanged.connect(self.order_wishlist)
 
         self.ui.reload_button.setIcon(qta_icon("fa.refresh", color="white"))
-        self.ui.reload_button.clicked.connect(self.update_wishlist)
+        self.ui.reload_button.clicked.connect(self.__update_widget)
 
         self.ui.reverse_check.stateChanged.connect(
             lambda: self.order_wishlist(self.ui.order_combo.currentIndex())
@@ -100,10 +100,10 @@ class WishlistWidget(QWidget, SideTabContents):
         self.setEnabled(False)
 
     def showEvent(self, a0: QShowEvent) -> None:
-        self.update_wishlist()
+        self.__update_widget()
         return super().showEvent(a0)
 
-    def update_wishlist(self):
+    def __update_widget(self):
         self.setEnabled(False)
         self.api.get_wishlist(self.set_wishlist)
 
@@ -111,13 +111,13 @@ class WishlistWidget(QWidget, SideTabContents):
         self.api.remove_from_wishlist(
             game.namespace,
             game.id,
-            lambda success: self.update_wishlist()
+            lambda success: self.__update_widget()
             if success
             else QMessageBox.warning(
                 self, "Error", self.tr("Could not remove game from wishlist")
             ),
         )
-        self.update_wishlist_signal.emit()
+        self.update_wishlist.emit()
 
     @Slot(int)
     def filter_wishlist(self, index: int = int(WishlistFilter.NONE)):
