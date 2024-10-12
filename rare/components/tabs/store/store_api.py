@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Any
 
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QApplication
@@ -35,7 +35,6 @@ class StoreAPI(QObject):
         self.language_code: str = language
         self.country_code: str = country
         self.locale = f"{self.language_code}-{self.country_code}"
-        self.locale = "en-US"
         self.manager = QtRequests(parent=self)
         self.authed_manager = QtRequests(token=token, parent=self)
         self.cached_manager = QtRequests(cache=str(cache_dir().joinpath("store")), parent=self)
