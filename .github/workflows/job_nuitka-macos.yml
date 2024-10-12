@@ -72,3 +72,4 @@ jobs:
         with:
           name: Rare-portable-macos-${{ matrix.arch }}-${{ inputs.version }}.zip
           path: Rare-${{ matrix.arch }}.zip
+
