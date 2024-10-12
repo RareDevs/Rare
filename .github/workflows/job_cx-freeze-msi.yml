@@ -19,9 +19,9 @@ jobs:
           python-version: '3.12'
           check-latest: true
           architecture: x64
-      - name: Install Build Dependencies
+      - name: Install build dependencies
         run: pip3 install --upgrade cx_freeze wheel
-      - name: Install Target Dependencies
+      - name: Install target dependencies
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
@@ -35,3 +35,4 @@ jobs:
         with:
           name: Rare-${{ inputs.version }}.msi
           path: Rare.msi
+
