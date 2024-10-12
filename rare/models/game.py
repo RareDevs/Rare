@@ -152,7 +152,7 @@ class RareGame(RareGameSlim):
             metadata = {}
             file = os.path.join(data_dir(), "game_meta.json")
             try:
-                with open(file, "r") as f:
+                with open(file, "r", encoding="utf-8") as f:
                     metadata = json.load(f)
             except FileNotFoundError:
                 logger.info("%s does not exist", file)
@@ -175,7 +175,7 @@ class RareGame(RareGameSlim):
             metadata: Dict = self.__load_metadata_json()
             # pylint: disable=unsupported-assignment-operation
             metadata[self.app_name] = vars(self.metadata)
-            with open(os.path.join(data_dir(), "game_meta.json"), "w+") as file:
+            with open(os.path.join(data_dir(), "game_meta.json"), "w+", encoding="utf-8") as file:
                 json.dump(metadata, file, indent=2)
 
     def update_game(self):
