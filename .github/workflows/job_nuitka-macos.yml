@@ -65,6 +65,9 @@ jobs:
           rare
       - name: Compress
         run: |
+          find rare.dist -iname "*.so*" -type f -exec strip {} \;
+          find rare.dist -iname "*.dylib" -type f -exec strip {} \;
+          strip rare.dist/rare.bin
           python -c "import shutil; shutil.make_archive('Rare-${{ matrix.arch }}', 'zip', 'rare.dist')"
 
       - name: Upload artifact
