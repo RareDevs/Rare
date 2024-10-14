@@ -32,6 +32,7 @@ jobs:
         run: >-
           arch -${{ matrix.arch }} python -m nuitka
           --assume-yes-for-downloads
+          --show-scons
           --clang
           --lto=no
           --jobs=4
