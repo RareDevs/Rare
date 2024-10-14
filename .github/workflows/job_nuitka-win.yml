@@ -30,7 +30,7 @@ jobs:
           python -m nuitka
           --assume-yes-for-downloads
           --show-scons
-          --msvc=latest
+          --clang
           --lto=no
           --jobs=4
           --static-libpython=no
