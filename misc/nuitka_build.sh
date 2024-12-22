@@ -2,9 +2,10 @@
 
 nuitka_opts=(
     '--assume-yes-for-downloads'
-    '--mingw64'
+    '--show-scons'
+    '--clang'
     '--lto=no'
-    '--jobs=3'
+    '--jobs=4'
     '--static-libpython=no'
     '--standalone'
     '--enable-plugin=anti-bloat'

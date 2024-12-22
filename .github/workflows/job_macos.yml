@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           cache: pip
-          python-version: '3.12'
+          python-version: '3.13'
           check-latest: true
       - name: Install Build Dependencies
         run: pip install pyinstaller

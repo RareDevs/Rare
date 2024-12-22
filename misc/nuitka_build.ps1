@@ -1,9 +1,11 @@
 
 $nuitka_opts = @(
     '--assume-yes-for-downloads'
+    '--show-scons'
     '--mingw64'
+    '--clang'
     '--lto=no'
-    '--jobs=3'
+    '--jobs=4'
     '--static-libpython=no'
     '--standalone'
     '--enable-plugin=anti-bloat'
