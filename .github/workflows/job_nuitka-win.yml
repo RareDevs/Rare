@@ -10,13 +10,13 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: "windows-2019"
+    runs-on: windows-2019
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           cache: pip
-          python-version: '3.13'
+          python-version: '3.12'
           check-latest: true
           architecture: x64
       - name: Install build dependencies
@@ -30,7 +30,7 @@ jobs:
           python -m nuitka
           --assume-yes-for-downloads
           --show-scons
-          --msvc=latest
+          --clang
           --lto=no
           --jobs=4
           --static-libpython=no
