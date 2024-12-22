@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-from setuptools_scm import ScmVersion
 
 from rare import __version__ as version
 
