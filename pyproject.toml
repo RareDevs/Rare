@@ -13,7 +13,7 @@ force-exclude = '''
 [tool.poetry]
 name = "rare"
 version = "1.10.11"
-description = "A gui for legendary"
+description = "Open source alternative for Epic Games Launcher, using Legendary"
 authors = ["RareDevs"]
 license = "GPL3"
 readme = "README.md"
