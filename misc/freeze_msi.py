@@ -4,7 +4,7 @@ from rare import __version__
 
 name = 'Rare'
 author = 'RareDevs'
-description = 'A gui for legendary'
+description = 'Open source alternative for Epic Games Launcher, using Legendary'
 
 shortcut_table = [
     ("DesktopShortcut",  # Shortcut

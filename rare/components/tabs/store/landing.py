@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from typing import List
 
 from PySide6.QtCore import Qt, Slot, Signal, QObject, QEvent
@@ -184,7 +184,7 @@ class LandingWidget(QWidget, SideTabContents):
             self.free_games_next.layout().removeWidget(w)
             w.deleteLater()
 
-        date = datetime.now(UTC)
+        date = datetime.now(timezone.utc)
         free_now = []
         free_next = []
         for item in free_games:

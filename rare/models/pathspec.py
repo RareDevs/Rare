@@ -1,5 +1,5 @@
 import os
-from typing import Union, List, LiteralString
+from typing import Union, List
 
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
@@ -65,6 +65,6 @@ class PathSpec:
         if igame is not None:
             self.__egl_path_vars["{installdir}"] = igame.install_path
 
-    def resolve_egl_path_vars(self, path: str) -> Union[LiteralString, str, bytes]:
+    def resolve_egl_path_vars(self, path: str) -> Union[str, bytes]:
         cooked_path = (self.__egl_path_vars.get(p.lower(), p) for p in path.split("/"))
         return os.path.join(*cooked_path)

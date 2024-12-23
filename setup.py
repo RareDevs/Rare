@@ -25,7 +25,7 @@ setup(
     use_scm_version={"version_scheme": "only-version", "local_scheme": "no-local-version"},
     author="RareDevs",
     license="GPL-3",
-    description="A gui for legendary",
+    description="Open source alternative for Epic Games Launcher, using Legendary",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Dummerle/Rare",

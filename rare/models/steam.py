@@ -2,7 +2,7 @@ import platform
 import binascii
 import shlex
 from dataclasses import dataclass, field
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from typing import Dict, List, Type, Any
 
 
@@ -34,7 +34,7 @@ class SteamUser:
 
     @property
     def last_login(self) -> datetime:
-        return datetime.fromtimestamp(float(self._user.get("Timestamp", "0")), UTC)
+        return datetime.fromtimestamp(float(self._user.get("Timestamp", "0")), timezone.utc)
 
     @property
     def __dict__(self):
@@ -145,7 +145,7 @@ class SteamShortcut:
 
     @property
     def last_played(self):
-        return datetime.fromtimestamp(float(self.LastPlayTime), UTC)
+        return datetime.fromtimestamp(float(self.LastPlayTime), timezone.utc)
 
     @property
     def __dict__(self):
