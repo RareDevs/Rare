@@ -4,7 +4,7 @@
 
 ## A frontend for legendary, the open source Epic Games Launcher alternative
 
-Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PyQt5
+Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
 
 <div align="center">
     <img src="https://github.com/RareDevs/Rare/blob/main/rare/resources/images/Rare_nonsquared.png?raw=true" alt="Logo" width="200"/>
