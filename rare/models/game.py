@@ -2,7 +2,7 @@ import json
 import os
 import platform
 from dataclasses import dataclass, field
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from logging import getLogger
 from threading import Lock
 from typing import List, Optional, Dict, Set
@@ -30,11 +30,11 @@ class RareGame(RareGameSlim):
     class Metadata:
         queued: bool = False
         queue_pos: Optional[int] = None
-        last_played: datetime = datetime.min.replace(tzinfo=UTC)
-        grant_date: datetime = datetime.min.replace(tzinfo=UTC)
+        last_played: datetime = datetime.min.replace(tzinfo=timezone.utc)
+        grant_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
         steam_appid: Optional[int] = None
         steam_grade: Optional[str] = None
-        steam_date: datetime = datetime.min.replace(tzinfo=UTC)
+        steam_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
         steam_shortcut: Optional[int] = None
         tags: List[str] = field(default_factory=list)
 
@@ -42,7 +42,7 @@ class RareGame(RareGameSlim):
         @staticmethod
         def parse_date(strdate: str):
             dt = datetime.fromisoformat(strdate) if strdate else datetime.min
-            return dt.replace(tzinfo=UTC)
+            return dt.replace(tzinfo=timezone.utc)
 
         @classmethod
         def from_dict(cls, data: Dict):
@@ -63,11 +63,11 @@ class RareGame(RareGameSlim):
             return dict(
                 queued=self.queued,
                 queue_pos=self.queue_pos,
-                last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=UTC),
-                grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=UTC),
+                last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=timezone.utc),
+                grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=timezone.utc),
                 steam_appid=self.steam_appid,
                 steam_grade=self.steam_grade,
-                steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min.replace(tzinfo=UTC),
+                steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min.replace(tzinfo=timezone.utc),
                 steam_shortcut=self.steam_shortcut,
                 tags=self.tags,
             )
@@ -128,7 +128,7 @@ class RareGame(RareGameSlim):
     @Slot(int)
     def __game_launched(self, code: int):
         self.state = RareGame.State.RUNNING
-        self.metadata.last_played = datetime.now(UTC)
+        self.metadata.last_played = datetime.now(timezone.utc)
         if code == GameProcess.Code.ON_STARTUP:
             return
         self.__save_metadata()
@@ -440,7 +440,7 @@ class RareGame(RareGameSlim):
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
         if self.metadata.steam_grade != "pending":
-            elapsed_time = abs(datetime.now(UTC) - self.metadata.steam_date)
+            elapsed_time = abs(datetime.now(timezone.utc) - self.metadata.steam_date)
             if elapsed_time.days > 3:
                 logger.info("Refreshing ProtonDB grade for %s", self.app_title)
                 worker = QRunnable.create(self.set_steam_grade)
@@ -463,20 +463,20 @@ class RareGame(RareGameSlim):
         if appid and self.steam_appid is None:
             self.set_steam_appid(appid)
         self.metadata.steam_grade = grade
-        self.metadata.steam_date = datetime.now(UTC)
+        self.metadata.steam_date = datetime.now(timezone.utc)
         self.__save_metadata()
         self.signals.widget.update.emit()
 
     def grant_date(self, force=False) -> datetime:
         if not (entitlements := self.core.lgd.entitlements):
             return self.metadata.grant_date
-        if self.metadata.grant_date == datetime.min.replace(tzinfo=UTC) or force:
+        if self.metadata.grant_date == datetime.min.replace(tzinfo=timezone.utc) or force:
             logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
             entitlement = next(matching, None)
             grant_date = datetime.fromisoformat(
                 entitlement["grantDate"].replace("Z", "+00:00")
-            ) if entitlement else datetime.min.replace(tzinfo=UTC)
+            ) if entitlement else datetime.min.replace(tzinfo=timezone.utc)
             self.metadata.grant_date = grant_date
             self.__save_metadata()
         return self.metadata.grant_date

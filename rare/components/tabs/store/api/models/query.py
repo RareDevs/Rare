@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, UTC
+from datetime import datetime, timezone
 from typing import List
 
 
 @dataclass
 class SearchDateRange:
     start_date: datetime = datetime(year=1990, month=1, day=1, tzinfo=timezone.utc)
-    end_date: datetime = datetime.now(UTC)
+    end_date: datetime = datetime.now(timezone.utc)
 
     def __str__(self):
         def fmt_date(date: datetime) -> str:

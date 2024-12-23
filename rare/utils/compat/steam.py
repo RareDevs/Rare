@@ -1,7 +1,7 @@
 import os
 import shlex
 from dataclasses import dataclass
-from enum import StrEnum
+from enum import Enum
 from hashlib import md5
 from logging import getLogger
 from typing import Optional, Union, List, Dict, Set
@@ -42,7 +42,7 @@ def find_libraries(steam_path: str) -> Set[str]:
 # is a good trade-off for the amount of complexity supporting everything would ensue.
 
 
-class SteamVerb(StrEnum):
+class SteamVerb(Enum):
     RUN = "run"
     WAIT_FOR_EXIT_AND_RUN = "waitforexitandrun"
     RUN_IN_PREFIX = "runinprefix"
@@ -77,7 +77,7 @@ class SteamBase:
         cmd = "".join([shlex.quote(tool_path), self.toolmanifest["commandline"]])
         # NOTE: "waitforexitandrun" seems to be the verb used in by steam to execute stuff
         # `run` is used when setting up the environment, so use that if we are setting up the prefix.
-        cmd = cmd.replace("%verb%", str(verb))
+        cmd = cmd.replace("%verb%", verb.value)
         return shlex.split(cmd)
 
     def as_str(self, verb: SteamVerb = SteamVerb.DEFAULT):
