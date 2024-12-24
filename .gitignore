@@ -9,7 +9,7 @@ __pycache__
 /dist
 /deb_dist
 *.tar.gz
-/Rare.egg-info/
+*.egg-info/
 /venv*
 /test.py
 /.eggs
