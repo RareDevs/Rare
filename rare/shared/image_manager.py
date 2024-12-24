@@ -154,7 +154,8 @@ class ImageManager(QObject):
                 json_data["cache"] = None
                 json_data["scale"] = ImageSize.Tall.pixel_ratio
                 json_data["size"] = {"w": ImageSize.Tall.size.width(), "h": ImageSize.Tall.size.height()}
-                json.dump(json_data, open(self.__img_json(game.app_name), "w"))
+                with open(self.__img_json(game.app_name), "w", encoding="utf-8") as file:
+                    json.dump(json_data, file)
             else:
                 updates = [image for image in candidates if image["type"] in self.__img_types]
         else:
