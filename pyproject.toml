@@ -1,55 +1,111 @@
-[tool.black]
-line-length = 120
-target-version = ['py39', 'py310', 'py311', 'py312']
-include = '\.py$'
-force-exclude = '''
-/(
-    | rare/ui
-    | rare/legendary
-    | rare/resources
-)/
-'''
-
-[tool.poetry]
-name = "rare"
-version = "1.10.11"
-description = "Open source alternative for Epic Games Launcher, using Legendary"
-authors = ["RareDevs"]
-license = "GPL3"
-readme = "README.md"
-repository = "https://github.com/RareDevs/Rare"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-requests = "^2.28.1"
-PySide6-Essentials = "^6.8.1"
-QtAwesome = "^1.1.1"
-legendary-gl = "^0.20.34"
-pywebview = [
-    { version = "^3.6.3", platform = "windows", optional = true },
-    { version = "^3.6.3", platform = "darwin", optional = true },
-    { version = "^3.6.3", extras = ["gtk"], platform = "linux", optional = true },
-    { version = "^3.6.3", extras = ["gtk"], platform = "freebsd", optional = true },
+[project]
+name = "Rare"
+dynamic = ["version"]
+authors = [
+    { name = "Dummerle", email = "44114474+Dummerle@users.noreply.github.com" },
+    { name = "loathingKernel", email = "142770+loathingKernel@users.noreply.github.com" },
 ]
-orjson = "^3.8.0"
-vdf = "^3.4"
-pywin32 = { version = "^306", markers = "platform_system == 'Windows'" }
-pypresence = { version = "^4.2.1", optional = true }
+maintainers = [
+    { name = "loathingKernel", email = "142770+loathingKernel@users.noreply.github.com" },
+]
+description = "Open source alternative for Epic Games Launcher, using Legendary"
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+    "Operating System :: OS Independent"
+]
+requires-python = ">= 3.9"
+dependencies = [
+    "requests < 3.0",
+    "PySide6-Essentials >= 6.8.1",
+    "QtAwesome",
+    "legendary-gl >= 0.20.34 ;  platform_system != 'Windows' and platform_system != 'Darwin'",
+    "legendary-gl @ https://github.com/derrod/legendary/archive/3963382b3f33116154399be5dd2d2913336a1f0e.zip ; platform_system == 'Windows'",
+    "legendary-gl @ https://github.com/derrod/legendary/archive/3963382b3f33116154399be5dd2d2913336a1f0e.zip ; platform_system == 'Darwin'",
+    "orjson",
+    "vdf",
+    "pywin32 ; platform_system == 'Windows'",
+]
 
-[tool.poetry.scripts]
-start = "rare.main:main"
+[project.optional-dependencies]
+webview = [
+    "pywebview[gtk]; platform_system == 'Linux'",
+    "pywebview[gtk]; platform_system == 'FreeBSD'",
+    "pythonnet; platform_system == 'Windows'",
+    "pywebview; platform_system == 'Windows'",
+    "pyobjc; platform_system == 'Darwin'",
+    "pywebview; platform_system == 'Darwin'",
+]
+discord = [
+    "presence",
+]
+devel = [
+    "build",
+    "wheel",
+    "pylint",
+    "mypy",
+    "black[d]",
+    "cx-freeze",
+    "nuitka",
+    "PySide6-stubs",
+    "qstylizer",
+]
 
-[tool.poetry.dev-dependencies]
-Nuitka = "^2.4.8"
-pylint = "^3.2.7"
-black = "^24.3.0"
-PySide6-stubs = "^6.4.2.0"
+[project.urls]
+Homepage = "https://raredevs.github.io/Rare/"
+Repository = "https://github.com/RareDevs/Rare"
+Issues = "https://github.com/RareDevs/Rare/issues"
 
-#[build-system]
-#requires = ["setuptools>=42", "wheel", "nuitka", "toml"]
-#build-backend = "nuitka.distutils.Build"
+[project.gui-scripts]
+rare = "rare.main:main"
 
-[nuitka]
+[build-system]
+requires = [ "setuptools", "setuptools-scm", "wheel" ]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = [ "." ]
+namespaces = false
+
+#[tools.setuptools.package-data]
+#"rare.resources.images" = [ "Rare.ico", "Rare.icns", "Rare.png", "cover.png", "logo.png" ]
+#"rare.resources.languages" = [ "rare_*.qm" ]
+
+#[tool.setuptools.exclude-package-data]
+#"*" = [
+#    "*.ui",
+#    "*.qrc",
+#    "*.qss",
+#    "*.svg",
+#    "*.scheme",
+#    "*.ts",
+#    "Rare_source.png",
+#    "Rare_source.svg",
+#    "loader.webp",
+#    "stylesheet.py",
+#]
+#"rare.resources.colors" = [ "*.scheme" ]
+#"rare.resources.images" = [ "Rare_source.png", "Rare_source.svg", "loader.webp" ]
+#"rare.resources.languages" = [ "*.ts" ]
+#"rare.resources.static_css" = [ "stylesheet.py" ]
+
+[tool.setuptools.dynamic]
+version = { attr = "rare.__version__" }
+
+#[tool.setuptools_scm]
+#version_scheme = "only-version"
+#local_scheme = "no-local-version"
+
+[tool.nuitka]
 assume-yes-for-downloads = true
 mingw64 = true
 lto = false
@@ -73,3 +129,15 @@ windows-product-name = "Rare"
 windows-file-version = "1.10.11.0"
 windows-product-version = "1.10.11.0"
 windows-disable-console = true
+
+[tool.black]
+line-length = 120
+target-version = ['py39', 'py310', 'py311', 'py312', 'py313']
+include = '\.py$'
+force-exclude = '''
+/(
+    | rare/ui
+    | rare/legendary
+    | rare/resources
+)/
+'''
