@@ -1,9 +1,0 @@
-include README.md
-exclude rare/components/tabs/store/api/graphql/*
-exclude rare/resources/images/loader.webp
-exclude rare/resources/images/Rare_source.png
-exclude rare/resources/images/Rare_source.svg
-exclude rare/resources/languages/*.ts
-exclude rare/resources/colors/*
-global-exclude *.qrc *.qss *.svg
-recursive-exclude rare/ui *.ui
