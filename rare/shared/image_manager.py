@@ -149,7 +149,7 @@ class ImageManager(QObject):
                     fd.seek(0)
                     cache_data["DieselGameBoxWide"] = fd.read()
                 # cache_data["DieselGameBoxLogo"] = open(
-                #         resources_path.joinpath("images", "Rare_nonsquared.png"), "rb").read()
+                #         resources_path.joinpath("images", "logo.png"), "rb").read()
                 self.__convert(game, cache_data)
                 json_data["cache"] = None
                 json_data["scale"] = ImageSize.Tall.pixel_ratio
