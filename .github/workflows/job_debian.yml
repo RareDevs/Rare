@@ -26,6 +26,8 @@ jobs:
           sudo apt-get -y install makedeb
       - name: Prepare source directory
         run: |
+          sudo chown $(whoami) -R .
+          sudo chmod 755 -R .
           git clone https://github.com/RareDevs/package-mpr.git build
           sed '/^pkgver=/d' -i build/PKGBUILD
           sed '/^source=/d' -i build/PKGBUILD
@@ -34,7 +36,7 @@ jobs:
       - name: Run makedeb
         run: |
           cd build
-          makedeb -d
+          makedeb --syncdeps
           mv *.deb ../Rare.deb
 
       - name: Upload artifact
