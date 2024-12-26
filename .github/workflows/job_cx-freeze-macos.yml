@@ -36,6 +36,7 @@ jobs:
       - name: Build
         run: |
           arch -${{ matrix.arch }} python freeze.py bdist_dmg
+          find . -iname "*.dmg"
           mv dist/*.dmg Rare-${{ matrix.arch }}.dmg
 
       - name: Upload artifact
