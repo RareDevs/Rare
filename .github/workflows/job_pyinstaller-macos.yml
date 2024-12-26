@@ -1,4 +1,4 @@
-name: job_macos
+name: job_pyinstaller-macos
 
 on:
   workflow_call:
@@ -50,7 +50,7 @@ jobs:
         run: >-
           create-dmg/create-dmg
           Rare-${{ matrix.arch }}.dmg
-          dist/Rare.App
+          dist/Rare.app
           --volname Rare
           --volicon rare/resources/images/Rare.icns
 

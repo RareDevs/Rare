@@ -62,6 +62,23 @@ bdist_mac_options = {
     "bundle_name": f"{_name}",
 }
 
+bdist_dmg_options = {
+    "volume_label": _name,
+    "applications_shortcut": True,
+    "show_icon_preview": True,
+    "license": {
+        "default-language": "en_US",
+        "licenses": {
+            "en_US": _license,
+        },
+        "buttons": {
+            "en_US": [
+                "English", "Agree", "Disagree", "Print", "Save", "Instruction text"
+            ]
+        },
+    },
+}
+
 executables = [
     Executable(
         script="rare/main.py",
@@ -83,5 +100,6 @@ setup(
         "bdist_msi": bdist_msi_options,
         "bdist_appimage": bdist_appimage_options,
         "bdist_mac": bdist_mac_options,
+        "bdist_dmg": bdist_dmg_options,
     },
 )

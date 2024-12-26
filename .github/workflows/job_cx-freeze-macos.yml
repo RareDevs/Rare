@@ -29,7 +29,6 @@ jobs:
       - name: Install Build Dependencies
         run: |
           pip3 install --upgrade cx_freeze
-          git clone https://github.com/create-dmg/create-dmg
       - name: Install Target Dependencies
         run: |
           pip3 install -r requirements.txt
@@ -37,14 +36,8 @@ jobs:
       - name: Build
         run: >-
           arch -${{ matrix.arch }}
-          python freeze.py bdist_mac
-      - name: Create dmg
-        run: >-
-          create-dmg/create-dmg
-          Rare-${{ matrix.arch }}.dmg
-          dist/Rare-*.App
-          --volname Rare
-          --volicon rare/resources/images/Rare.icns
+          python freeze.py bdist_dmg
+          mv dist/*.dmg Rare-${{ matrix.arch }}.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

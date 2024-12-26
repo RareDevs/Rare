@@ -1,4 +1,4 @@
-name: job_cx-freeze-zip-win
+name: job_cx-freeze-zip-windows
 
 on:
   workflow_call:
