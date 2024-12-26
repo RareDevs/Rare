@@ -188,21 +188,3 @@ jobs:
       version: ${{ needs.version.outputs.version }}
       file1: Rare-portable-windows.zip
       name1: Rare-portable-windows-${{ needs.version.outputs.version }}.zip
-
-  macos:
-    if: ${{ false }}
-    needs: version
-    name: macOS
-    uses: ./.github/workflows/job_pyinstaller-macos.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-  macos-release:
-    if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, macos]
-    name: macOS
-    uses: ./.github/workflows/job_publish.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-      file1: Rare.dmg
-      name1: Rare-${{ needs.version.outputs.version }}.dmg
-
