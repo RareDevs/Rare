@@ -53,13 +53,11 @@ jobs:
           --include-package-data=qtawesome
           --include-data-dir=rare\resources\images\=rare\resources\images\
           --include-data-files=rare\resources\languages\rare_*.qm=rare\resources\languages\
-          --windows-icon-from-ico=rare\resources\images\Rare.ico
-          --windows-company-name=RareDevs
-          --windows-product-name=Rare
-          --windows-file-description=rare.exe
-          --windows-file-version=${{ inputs.version }}
-          --windows-product-version=${{ inputs.version }}
-          --windows-console-mode=disable
+          --company-name=RareDevs
+          --product-name=Rare
+          --file-version=${{ inputs.version }}
+          --product-version=${{ inputs.version }}
+          --file-description=rare
           rare
       - name: Compress
         run: |

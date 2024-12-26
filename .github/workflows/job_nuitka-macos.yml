@@ -61,16 +61,21 @@ jobs:
           --include-package-data=qtawesome
           --include-data-dir=rare/resources/images/=rare/resources/images/
           --include-data-files=rare/resources/languages/rare_*.qm=rare/resources/languages/
-          --windows-icon-from-ico=rare/resources/images/Rare.icns
-          --windows-company-name=RareDevs
-          --windows-product-name=Rare
-          --windows-file-description=rare.exe
-          --windows-file-version=${{ inputs.version }}
-          --windows-product-version=${{ inputs.version }}
-          --windows-console-mode=disable
+          --company-name=RareDevs
+          --product-name=Rare
+          --file-version=${{ inputs.version }}
+          --product-version=${{ inputs.version }}
+          --file-description=rare
+          --macos-create-app-bundle
+          --macos-app-name=Rare
+          --macos-app-mode=gui
+          --macos-app-version=${{ inputs.version }}
+          --macos-app-icon=rare/resources/images/Rare.icns
           rare
       - name: Compress
         run: |
+          ls
+          ls *
           find rare.dist -iname "*.so*" -type f -exec strip {} \;
           find rare.dist -iname "*.dylib" -type f -exec strip {} \;
           strip rare.dist/rare.bin
