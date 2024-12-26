@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           cache: pip
-          python-version: '3.13'
+          python-version: '3.12'
           check-latest: true
           architecture: ${{ matrix.pyarch }}
       - name: Install Build Dependencies

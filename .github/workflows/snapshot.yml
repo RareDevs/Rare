@@ -61,7 +61,7 @@ jobs:
   ubuntu-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, ubuntu]
-    name: Ubuntu Pre-release
+    name: Ubuntu
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -78,7 +78,7 @@ jobs:
   appimage-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, appimage]
-    name: AppImage Pre-release
+    name: AppImage
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -97,7 +97,7 @@ jobs:
   nuitka-linux-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, nuitka-linux]
-    name: Nuitka Linux Pre-release
+    name: Nuitka Linux
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -114,7 +114,7 @@ jobs:
   nuitka-macos-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, nuitka-macos]
-    name: Nuitka MacOS Pre-release
+    name: Nuitka MacOS
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -133,7 +133,7 @@ jobs:
   nuitka-windows-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, nuitka-windows]
-    name: Nuitka Windows Pre-release
+    name: Nuitka Windows
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -150,7 +150,7 @@ jobs:
   cx-freeze-appimage-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, cx-freeze-appimage]
-    name: cx-Freeze AppImage Pre-release
+    name: cx-Freeze AppImage
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -167,7 +167,7 @@ jobs:
   cx-freeze-macos-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, cx-freeze-macos]
-    name: cx-Freeze MacOS Pre-release
+    name: cx-Freeze MacOS
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -186,7 +186,7 @@ jobs:
   cx-freeze-msi-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, cx-freeze-msi]
-    name: cx-Freeze MSI Pre-release
+    name: cx-Freeze MSI
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -203,7 +203,7 @@ jobs:
   cx-freeze-zip-win-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, cx-freeze-zip-win]
-    name: cx-Freeze Portable Windows Pre-release
+    name: cx-Freeze Portable Windows
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -220,7 +220,7 @@ jobs:
   macos-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, macos]
-    name: macOS Pre-release
+    name: macOS
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
