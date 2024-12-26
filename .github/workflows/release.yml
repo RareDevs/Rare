@@ -118,18 +118,3 @@ jobs:
       version: ${{ github.ref_name }}
       file1: Rare.msi
       name1: Rare-${{ github.ref_name }}.msi
-
-  cx-freeze-zip-windows:
-    if: ${{ false }}
-    name: cx-Freeze Portable Windows
-    uses: ./.github/workflows/job_cx-freeze-zip-windows.yml
-    with:
-      version: ${{ github.ref_name }}
-  cx-freeze-zip-windows-release:
-    needs: cx-freeze-zip-windows
-    name: cx-Freeze Portable Windows
-    uses: ./.github/workflows/job_publish.yml
-    with:
-      version: ${{ github.ref_name }}
-      file1: Rare-portable-windows.zip
-      name1: Rare-portable-windows-${{ github.ref_name }}.zip
