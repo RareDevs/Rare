@@ -15,12 +15,13 @@ jobs:
     steps:
       - name: Install makedeb
         run: |
-          apt update -y
-          apt install wget gpg
+          apt-get -y update
+          apt-get -y install wget gpg
           wget -qO - 'https://proget.makedeb.org/debian-feeds/makedeb.pub' | gpg --dearmor | tee /usr/share/keyrings/makedeb-archive-keyring.gpg 1> /dev/null
           echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.makedeb.org/ makedeb main' | tee /etc/apt/sources.list.d/makedeb.list
-          apt update -y
-          apt install makedeb
+          apt-get -y update
+          apt-get -y upgrade
+          apt-get -y install makedeb
       - name: Prepare source directory
         run: |
           git clone https://github.com/RareDevs/package-mpr.git build
