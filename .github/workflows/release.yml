@@ -42,23 +42,6 @@ jobs:
       file1: Rare.deb
       name1: Rare-${{ github.ref_name }}.deb
 
-  appimage:
-    if: ${{ false }}
-    name: AppImage
-    uses: ./.github/workflows/job_appimage.yml
-    with:
-      version: ${{ github.ref_name }}
-  appimage-release:
-    needs: appimage
-    name: AppImage
-    uses: ./.github/workflows/job_publish.yml
-    with:
-      version: ${{ github.ref_name }}
-      file1: Rare.AppImage
-      name1: Rare-${{ github.ref_name }}.AppImage
-      file2: Rare.AppImage.zsync
-      name2: Rare-${{ github.ref_name }}.AppImage.zsync
-
   nuitka-linux:
     if: ${{ true }}
     name: Nuitka Linux

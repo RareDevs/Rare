@@ -68,25 +68,6 @@ jobs:
       file1: Rare.deb
       name1: Rare-${{ needs.version.outputs.version }}.deb
 
-  appimage:
-    if: ${{ false }}
-    needs: version
-    name: AppImage
-    uses: ./.github/workflows/job_appimage.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-  appimage-release:
-    if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, appimage]
-    name: AppImage
-    uses: ./.github/workflows/job_publish.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-      file1: Rare.AppImage
-      name1: Rare-${{ needs.version.outputs.version }}.AppImage
-      file2: Rare.AppImage.zsync
-      name2: Rare-${{ needs.version.outputs.version }}.AppImage.zsync
-
   nuitka-linux:
     if: ${{ true }}
     needs: version
