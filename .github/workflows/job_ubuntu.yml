@@ -11,19 +11,13 @@ jobs:
   build:
     name: Package
     runs-on: ubuntu-22.04
-    container: ghcr.io/makedeb/makedeb:debian-latest
+    container: ghcr.io/makedeb/makedeb:ubuntu-latest
     steps:
       - name: Prepare container
         run: |
           sudo apt-get -y update
           sudo apt-get -y upgrade
-          sudo apt-get -y install wget gpg git
-      - name: Install makedeb
-        run: |
-          wget -qO - 'https://proget.makedeb.org/debian-feeds/makedeb.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/makedeb-archive-keyring.gpg 1> /dev/null
-          echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.makedeb.org/ makedeb main' | sudo tee /etc/apt/sources.list.d/makedeb.list
-          sudo apt-get -y update
-          sudo apt-get -y install makedeb
+          sudo apt-get -y install git
       - name: Prepare source directory
         run: |
           sudo chown $(whoami) -R .
@@ -36,7 +30,7 @@ jobs:
       - name: Run makedeb
         run: |
           cd build
-          makedeb --syncdeps
+          makedeb -s
           mv *.deb ../Rare.deb
 
       - name: Upload artifact

@@ -27,15 +27,15 @@ jobs:
     with:
       version: ${{ github.ref_name }}
 
-  debian:
-    if: ${{ true }}
-    name: Debian
-    uses: ./.github/workflows/job_debian.yml
+  ubuntu:
+    if: ${{ false }}
+    name: Ubuntu
+    uses: ./.github/workflows/job_ubuntu.yml
     with:
       version: ${{ github.ref_name }}
-  debian-release:
-    needs: debian
-    name: Debian
+  ubuntu-release:
+    needs: ubuntu
+    name: Ubuntu
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
