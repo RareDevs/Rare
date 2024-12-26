@@ -51,23 +51,6 @@ jobs:
         discussionCategory: "Releases"
         makeLatest: true
 
-  ubuntu:
-    if: ${{ false }}
-    needs: version
-    name: Ubuntu
-    uses: ./.github/workflows/job_ubuntu.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-  ubuntu-release:
-    if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, ubuntu]
-    name: Ubuntu
-    uses: ./.github/workflows/job_publish.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-      file1: Rare.deb
-      name1: Rare-${{ needs.version.outputs.version }}.deb
-
   nuitka-linux:
     if: ${{ true }}
     needs: version
