@@ -11,8 +11,12 @@ jobs:
   build:
     strategy:
       matrix:
-        arch: [ "arm64", "x86_64" ]
-    name: Build ${{ matrix.arch }}
+        include:
+          - arch: "arm64"
+            pyarch: "arm64"
+          - arch: "x86_64"
+            pyarch: "x64"
+    name: Package ${{ matrix.arch }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +25,7 @@ jobs:
           cache: pip
           python-version: '3.13'
           check-latest: true
-          architecture: x64
+          architecture: ${{ matrix.pyarch }}
       - name: Install build dependencies
         run: pip3 install nuitka ordered-set
       - name: Install target dependencies
@@ -30,7 +34,8 @@ jobs:
           pip3 install -r requirements-presence.txt
       - name: Build
         run: >-
-          arch -${{ matrix.arch }} python -m nuitka
+          arch -${{ matrix.arch }}
+          python -m nuitka
           --assume-yes-for-downloads
           --show-scons
           --clang

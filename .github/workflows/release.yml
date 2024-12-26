@@ -21,20 +21,21 @@ jobs:
 
   pypi:
     if: "!github.event.release.prerelease"
-    name: PyPI
+    name: PyPI Release
     uses: ./.github/workflows/job_pypi.yml
     secrets: inherit
     with:
       version: ${{ github.ref_name }}
 
   ubuntu:
+    if: ${{ true }}
     name: Ubuntu
     uses: ./.github/workflows/job_ubuntu.yml
     with:
       version: ${{ github.ref_name }}
   ubuntu-release:
     needs: ubuntu
-    name: Ubuntu
+    name: Ubuntu Release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
@@ -42,13 +43,14 @@ jobs:
       name1: Rare-${{ github.ref_name }}.deb
 
   appimage:
+    if: ${{ false }}
     name: AppImage
     uses: ./.github/workflows/job_appimage.yml
     with:
       version: ${{ github.ref_name }}
   appimage-release:
     needs: appimage
-    name: AppImage
+    name: AppImage Release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
@@ -56,21 +58,6 @@ jobs:
       name1: Rare-${{ github.ref_name }}.AppImage
       file2: Rare.AppImage.zsync
       name2: Rare-${{ github.ref_name }}.AppImage.zsync
-
-  nuitka-windows:
-    if: ${{ true }}
-    name: Nuitka Windows
-    uses: ./.github/workflows/job_nuitka-win.yml
-    with:
-      version: ${{ github.ref_name }}
-  nuitka-windows-release:
-    needs: nuitka-windows
-    name: Nuitka Windows
-    uses: ./.github/workflows/job_publish.yml
-    with:
-      version: ${{ github.ref_name }}
-      file1: Rare.zip
-      name1: Rare-portable-windows-${{ github.ref_name }}.zip
 
   nuitka-linux:
     if: ${{ true }}
@@ -80,7 +67,7 @@ jobs:
       version: ${{ github.ref_name }}
   nuitka-linux-release:
     needs: nuitka-linux
-    name: Nuitka Linux
+    name: Nuitka Linux Release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
@@ -95,7 +82,7 @@ jobs:
       version: ${{ github.ref_name }}
   nuitka-macos-release:
     needs: nuitka-macos
-    name: Nuitka MacOS
+    name: Nuitka MacOS Release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
@@ -104,43 +91,92 @@ jobs:
       file2: Rare-x86_64.zip
       name2: Rare-portable-macos-x86_64-${{ github.ref_name }}.zip
 
-  cx-freeze-msi:
-    name: cx-Freeze msi
-    uses: ./.github/workflows/job_cx-freeze-msi.yml
+  nuitka-windows:
+    if: ${{ true }}
+    name: Nuitka Windows
+    uses: ./.github/workflows/job_nuitka-win.yml
     with:
       version: ${{ github.ref_name }}
-  cx-freeze-msi-release:
-    needs: cx-freeze-msi
-    name: cx-Freeze msi
-    uses: ./.github/workflows/job_publish.yml
-    with:
-      version: ${{ github.ref_name }}
-      file1: Rare.msi
-      name1: Rare-${{ github.ref_name }}.msi
-
-  cx-freeze-zip:
-    if: ${{ false }}
-    name: cx-Freeze zip
-    uses: ./.github/workflows/job_cx-freeze-zip.yml
-    with:
-      version: ${{ github.ref_name }}
-  cx-freeze-zip-release:
-    needs: cx-freeze-zip
-    name: cx-Freeze zip
+  nuitka-windows-release:
+    needs: nuitka-windows
+    name: Nuitka Windows Release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
       file1: Rare.zip
       name1: Rare-portable-windows-${{ github.ref_name }}.zip
 
+  cx-freeze-appimage:
+    if: ${{ true }}
+    name: cx-Freeze AppImage
+    uses: ./.github/workflows/job_cx-freeze-appimage.yml
+    with:
+      version: ${{ github.ref_name }}
+  cx-freeze-appimage-release:
+    needs: cx-freeze-appimage
+    name: cx-Freeze AppImage Release
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ github.ref_name }}
+      file1: Rare.Appimage
+      name1: Rare-${{ github.ref_name }}.Appimage
+
+  cx-freeze-macos:
+    if: ${{ true }}
+    name: cx-Freeze MacOS
+    uses: ./.github/workflows/job_cx-freeze-macos.yml
+    with:
+      version: ${{ github.ref_name }}
+  cx-freeze-macos-release:
+    needs: cx-freeze-macos
+    name: cx-Freeze MacOS Release
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ github.ref_name }}
+      file1: Rare-arm64.dmg
+      name1: Rare-arm64-${{ github.ref_name }}.dmg
+      file2: Rare-x86_64.dmg
+      name2: Rare-x86_64-${{ github.ref_name }}.dmg
+
+  cx-freeze-msi:
+    if: ${{ true }}
+    name: cx-Freeze MSI
+    uses: ./.github/workflows/job_cx-freeze-msi.yml
+    with:
+      version: ${{ github.ref_name }}
+  cx-freeze-msi-release:
+    needs: cx-freeze-msi
+    name: cx-Freeze MSI Release
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ github.ref_name }}
+      file1: Rare.msi
+      name1: Rare-${{ github.ref_name }}.msi
+
+  cx-freeze-zip-win:
+    if: ${{ false }}
+    name: cx-Freeze Portable Windows
+    uses: ./.github/workflows/job_cx-freeze-zip-win.yml
+    with:
+      version: ${{ github.ref_name }}
+  cx-freeze-zip-win-release:
+    needs: cx-freeze-zip-win
+    name: cx-Freeze Portable Windows Release
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ github.ref_name }}
+      file1: Rare-portable-windows.zip
+      name1: Rare-portable-windows-${{ github.ref_name }}.zip
+
   macos:
+    if: ${{ false }}
     name: macOS
     uses: ./.github/workflows/job_macos.yml
     with:
       version: ${{ github.ref_name }}
   macos-release:
     needs: macos
-    name: macOS
+    name: macOS Release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}

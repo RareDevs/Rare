@@ -1,4 +1,4 @@
-name: job_cx-freeze-zip
+name: job_cx-freeze-appimage
 
 on:
   workflow_call:
@@ -9,10 +9,14 @@ on:
 
 jobs:
   build:
-    name: Build
-    runs-on: windows-latest
+    name: Package
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt update
+          sudo apt install patchelf fakeroot
       - uses: actions/setup-python@v5
         with:
           cache: pip
@@ -20,28 +24,18 @@ jobs:
           check-latest: true
           architecture: x64
       - name: Install build dependencies
-        run: pip3 install --upgrade cx_freeze wheel
+        run: pip3 install --upgrade cx_freeze
       - name: Install target dependencies
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
-          pip3 install .
       - name: Build
-        run: >-
-          cxfreeze
-          -c rare/main.py
-          --target-dir dist
-          --target-name rare
-          --icon rare/resources/images/Rare.ico
-          -OO
-          --base-name Win32GUI
-      - name: Compress
         run: |
-          python -c "import shutil; shutil.make_archive('Rare', 'zip', 'rare.dist')"
+          python freeze.py bdist_appimage
+          mv dist/Rare-*.AppImage Rare.AppImage
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-portable-windows-${{ inputs.version }}.zip
-          path: Rare.zip
-
+          name: Rare-${{ inputs.version }}.AppImage
+          path: Rare.AppImage

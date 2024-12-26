@@ -1,4 +1,4 @@
-name: job_macos
+name: job_cx-freeze-macos
 
 on:
   workflow_call:
@@ -28,29 +28,21 @@ jobs:
           architecture: ${{ matrix.pyarch }}
       - name: Install Build Dependencies
         run: |
-          pip install --upgrade pyinstaller
+          pip3 install --upgrade cx_freeze
           git clone https://github.com/create-dmg/create-dmg
       - name: Install Target Dependencies
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
-      - name: Move files
-        run: mv rare/__main__.py __main__.py
       - name: Build
         run: >-
           arch -${{ matrix.arch }}
-          pyinstaller -F --name Rare
-          --add-data "rare/resources/languages/rare_*.qm:rare/resources/languages/"
-          --add-data "rare/resources/images/*:rare/resources/images/"
-          --windowed
-          --icon rare/resources/images/Rare.icns
-          --hidden-import=legendary
-          __main__.py
+          python freeze.py bdist_mac
       - name: Create dmg
         run: >-
           create-dmg/create-dmg
           Rare-${{ matrix.arch }}.dmg
-          dist/Rare.App
+          dist/Rare-*.App
           --volname Rare
           --volicon rare/resources/images/Rare.icns
 

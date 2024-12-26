@@ -1,4 +1,4 @@
-name: job_cx-freeze-msi
+name: job_cx-freeze-zip-win
 
 on:
   workflow_call:
@@ -25,14 +25,17 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
+          pip3 install .
       - name: Build
         run: |
-          python freeze.py bdist_msi
-          mv dist/*.msi Rare.msi
-
+          python freeze.py build_exe
+          mv dist/exe.* rare.dist
+      - name: Compress
+        run: |
+          python -c "import shutil; shutil.make_archive('Rare', 'zip', 'rare.dist')"
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ inputs.version }}.msi
-          path: Rare.msi
+          name: Rare-portable-windows-${{ inputs.version }}.zip
+          path: Rare.zip
 

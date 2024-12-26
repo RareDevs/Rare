@@ -52,6 +52,7 @@ jobs:
         makeLatest: false
 
   ubuntu:
+    if: ${{ true }}
     needs: version
     name: Ubuntu
     uses: ./.github/workflows/job_ubuntu.yml
@@ -60,7 +61,7 @@ jobs:
   ubuntu-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, ubuntu]
-    name: Ubuntu
+    name: Ubuntu Pre-release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -68,6 +69,7 @@ jobs:
       name1: Rare-${{ needs.version.outputs.version }}.deb
 
   appimage:
+    if: ${{ false }}
     needs: version
     name: AppImage
     uses: ./.github/workflows/job_appimage.yml
@@ -76,7 +78,7 @@ jobs:
   appimage-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, appimage]
-    name: AppImage
+    name: AppImage Pre-release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -84,23 +86,6 @@ jobs:
       name1: Rare-${{ needs.version.outputs.version }}.AppImage
       file2: Rare.AppImage.zsync
       name2: Rare-${{ needs.version.outputs.version }}.AppImage.zsync
-
-  nuitka-windows:
-    if: ${{ true }}
-    needs: version
-    name: Nuitka Windows
-    uses: ./.github/workflows/job_nuitka-win.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-  nuitka-windows-release:
-    if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, nuitka-windows]
-    name: Nuitka Windows
-    uses: ./.github/workflows/job_publish.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-      file1: Rare.zip
-      name1: Rare-portable-windows-${{ needs.version.outputs.version }}.zip
 
   nuitka-linux:
     if: ${{ true }}
@@ -112,7 +97,7 @@ jobs:
   nuitka-linux-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, nuitka-linux]
-    name: Nuitka Linux
+    name: Nuitka Linux Pre-release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -129,7 +114,7 @@ jobs:
   nuitka-macos-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, nuitka-macos]
-    name: Nuitka MacOS
+    name: Nuitka MacOS Pre-release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -138,33 +123,87 @@ jobs:
       file2: Rare-x86_64.zip
       name2: Rare-portable-macos-x86_64-${{ needs.version.outputs.version }}.zip
 
-  cx-freeze-msi:
+  nuitka-windows:
+    if: ${{ true }}
     needs: version
-    name: cx-Freeze msi
+    name: Nuitka Windows
+    uses: ./.github/workflows/job_nuitka-win.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+  nuitka-windows-release:
+    if: ${{ inputs.prerelease }}
+    needs: [version, prerelease, nuitka-windows]
+    name: Nuitka Windows Pre-release
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.zip
+      name1: Rare-portable-windows-${{ needs.version.outputs.version }}.zip
+
+  cx-freeze-appimage:
+    if: ${{ true }}
+    needs: version
+    name: cx-Freeze AppImage
+    uses: ./.github/workflows/job_cx-freeze-appimage.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+  cx-freeze-appimage-release:
+    if: ${{ inputs.prerelease }}
+    needs: [version, prerelease, cx-freeze-appimage]
+    name: cx-Freeze AppImage Pre-release
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare.Appimage
+      name1: Rare-${{ needs.version.outputs.version }}.Appimage
+
+  cx-freeze-macos:
+    if: ${{ true }}
+    needs: version
+    name: cx-Freeze MacOS
+    uses: ./.github/workflows/job_cx-freeze-macos.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+  cx-freeze-macos-release:
+    if: ${{ inputs.prerelease }}
+    needs: [version, prerelease, cx-freeze-macos]
+    name: cx-Freeze MacOS Pre-release
+    uses: ./.github/workflows/job_publish.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      file1: Rare-arm64.dmg
+      name1: Rare-arm64-${{ needs.version.outputs.version }}.dmg
+      file2: Rare-x86_64.dmg
+      name2: Rare-x86_64-${{ needs.version.outputs.version }}.dmg
+
+  cx-freeze-msi:
+    if: ${{ true }}
+    needs: version
+    name: cx-Freeze MSI
     uses: ./.github/workflows/job_cx-freeze-msi.yml
     with:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-msi-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, cx-freeze-msi]
-    name: cx-Freeze msi
+    name: cx-Freeze MSI Pre-release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
       file1: Rare.msi
       name1: Rare-${{ needs.version.outputs.version }}.msi
 
-  cx-freeze-zip:
+  cx-freeze-zip-win:
     if: ${{ false }}
     needs: version
-    name: cx-Freeze zip
-    uses: ./.github/workflows/job_cx-freeze-zip.yml
+    name: cx-Freeze Portable Windows
+    uses: ./.github/workflows/job_cx-freeze-zip-win.yml
     with:
       version: ${{ needs.version.outputs.version }}
-  cx-freeze-zip-release:
+  cx-freeze-zip-win-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, cx-freeze-zip]
-    name: cx-Freeze zip
+    needs: [version, prerelease, cx-freeze-zip-win]
+    name: cx-Freeze Portable Windows Pre-release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
@@ -172,6 +211,7 @@ jobs:
       name1: Rare-portable-windows-${{ needs.version.outputs.version }}.zip
 
   macos:
+    if: ${{ false }}
     needs: version
     name: macOS
     uses: ./.github/workflows/job_macos.yml
@@ -180,7 +220,7 @@ jobs:
   macos-release:
     if: ${{ inputs.prerelease }}
     needs: [version, prerelease, macos]
-    name: macOS
+    name: macOS Pre-release
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
