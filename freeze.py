@@ -58,7 +58,7 @@ bdist_appimage_options = {
 }
 
 bdist_mac_options = {
-    "iconfile": _icon,
+    "iconfile": f"{_icon}.icns",
     "bundle_name": f"{_name}",
 }
 
