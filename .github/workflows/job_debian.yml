@@ -11,17 +11,19 @@ jobs:
   build:
     name: Package
     runs-on: ubuntu-22.04
-    container: debian:sid
+    container: ghcr.io/makedeb/makedeb:debian-latest
     steps:
+      - name: Prepare container
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y upgrade
+          sudo apt-get -y install wget gpg git
       - name: Install makedeb
         run: |
-          apt-get -y update
-          apt-get -y install wget gpg git
-          wget -qO - 'https://proget.makedeb.org/debian-feeds/makedeb.pub' | gpg --dearmor | tee /usr/share/keyrings/makedeb-archive-keyring.gpg 1> /dev/null
-          echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.makedeb.org/ makedeb main' | tee /etc/apt/sources.list.d/makedeb.list
-          apt-get -y update
-          apt-get -y upgrade
-          apt-get -y install makedeb
+          wget -qO - 'https://proget.makedeb.org/debian-feeds/makedeb.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/makedeb-archive-keyring.gpg 1> /dev/null
+          echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.makedeb.org/ makedeb main' | sudo tee /etc/apt/sources.list.d/makedeb.list
+          sudo apt-get -y update
+          sudo apt-get -y install makedeb
       - name: Prepare source directory
         run: |
           git clone https://github.com/RareDevs/package-mpr.git build
@@ -29,7 +31,6 @@ jobs:
           sed '/^source=/d' -i build/PKGBUILD
           echo "pkgver=${{ inputs.version }}" >> build/PKGBUILD
           echo "source=(\"git+https://github.com/${{ github.repository }}.git#branch=${{ github.ref_name }}\")" >> build/PKGBUILD
-
       - name: Run makedeb
         run: |
           cd build
