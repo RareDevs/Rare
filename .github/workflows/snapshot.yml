@@ -51,17 +51,17 @@ jobs:
         discussionCategory: "Releases"
         makeLatest: false
 
-  ubuntu:
+  debian:
     if: ${{ true }}
     needs: version
-    name: Ubuntu
-    uses: ./.github/workflows/job_ubuntu.yml
+    name: Debian
+    uses: ./.github/workflows/job_debian.yml
     with:
       version: ${{ needs.version.outputs.version }}
-  ubuntu-release:
+  debian-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, ubuntu]
-    name: Ubuntu
+    needs: [version, prerelease, debian]
+    name: Debian
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}

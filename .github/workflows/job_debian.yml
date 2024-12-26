@@ -11,6 +11,7 @@ jobs:
   build:
     name: Package
     runs-on: ubuntu-22.04
+    container: debian:sid
     steps:
       - name: Install makedeb
         run: |
