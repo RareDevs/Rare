@@ -9,14 +9,7 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        include:
-          - arch: "arm64"
-            pyarch: "arm64"
-          - arch: "x86_64"
-            pyarch: "x64"
-    name: Package ${{ matrix.arch }}
+    name: Package
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +18,7 @@ jobs:
           cache: pip
           python-version: '3.12'
           check-latest: true
-          architecture: ${{ matrix.pyarch }}
+          architecture: 'arm64'
       - name: Install Build Dependencies
         run: |
           pip3 install --upgrade cx_freeze
@@ -35,11 +28,11 @@ jobs:
           pip3 install -r requirements-presence.txt
       - name: Build
         run: |
-          arch -${{ matrix.arch }} python freeze.py bdist_dmg
-          mv build/Rare.dmg Rare-${{ matrix.arch }}.dmg
+          python freeze.py bdist_dmg
+          mv build/Rare.dmg Rare.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ matrix.arch }}-${{ inputs.version }}.dmg
-          path: Rare-${{ matrix.arch }}.dmg
+          name: Rare-${{ inputs.version }}.dmg
+          path: Rare.dmg
