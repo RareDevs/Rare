@@ -121,16 +121,16 @@ jobs:
       file1: Rare.Appimage
       name1: Rare-${{ needs.version.outputs.version }}.Appimage
 
-  cx-freeze-macos:
+  cx-freeze-dmg:
     if: ${{ true }}
     needs: version
     name: cx-Freeze MacOS
-    uses: ./.github/workflows/job_cx-freeze-macos.yml
+    uses: ./.github/workflows/job_cx-freeze-dmg.yml
     with:
       version: ${{ needs.version.outputs.version }}
-  cx-freeze-macos-release:
+  cx-freeze-dmg-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, cx-freeze-macos]
+    needs: [version, prerelease, cx-freeze-dmg]
     name: cx-Freeze MacOS
     uses: ./.github/workflows/job_publish.yml
     with:
