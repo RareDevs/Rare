@@ -73,7 +73,7 @@ bdist_dmg_options = {
         },
         "buttons": {
             "en_US": [
-                "English", "Agree", "Disagree", "Print", "Save", "Instruction text"
+                "English", "Agree", "Disagree", "Print", "Save", "License"
             ]
         },
     },
