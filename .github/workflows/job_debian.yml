@@ -16,7 +16,7 @@ jobs:
       - name: Install makedeb
         run: |
           apt-get -y update
-          apt-get -y install wget gpg
+          apt-get -y install wget gpg git
           wget -qO - 'https://proget.makedeb.org/debian-feeds/makedeb.pub' | gpg --dearmor | tee /usr/share/keyrings/makedeb-archive-keyring.gpg 1> /dev/null
           echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.makedeb.org/ makedeb main' | tee /etc/apt/sources.list.d/makedeb.list
           apt-get -y update
