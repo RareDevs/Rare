@@ -15,11 +15,11 @@ jobs:
     steps:
       - name: Install makedeb
         run: |
-          apt update
+          apt update -y
           apt install wget gpg
           wget -qO - 'https://proget.makedeb.org/debian-feeds/makedeb.pub' | gpg --dearmor | tee /usr/share/keyrings/makedeb-archive-keyring.gpg 1> /dev/null
           echo 'deb [signed-by=/usr/share/keyrings/makedeb-archive-keyring.gpg arch=all] https://proget.makedeb.org/ makedeb main' | tee /etc/apt/sources.list.d/makedeb.list
-          apt update
+          apt update -y
           apt install makedeb
       - name: Prepare source directory
         run: |
