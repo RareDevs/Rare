@@ -57,8 +57,7 @@ jobs:
           --product-name=Rare
           --file-version=${{ inputs.version }}
           --product-version=${{ inputs.version }}
-          --file-description=rare
-          --windows-console-mode=disable
+          --file-description=rare.bin
           --windows-icon-from-ico=rare/resources/images/Rare.png
           rare
       - name: Compress

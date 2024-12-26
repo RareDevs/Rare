@@ -65,7 +65,7 @@ jobs:
           --product-name=Rare
           --file-version=${{ inputs.version }}
           --product-version=${{ inputs.version }}
-          --file-description=rare
+          --file-description=rare.bin
           --macos-create-app-bundle
           --macos-app-name=Rare
           --macos-app-mode=gui
