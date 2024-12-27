@@ -16,27 +16,20 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           cache: pip
-          python-version: '3.12'
+          python-version: '3.13'
           check-latest: true
           architecture: x64
       - name: Install Build Dependencies
         run: |
           pip3 install --upgrade cx_freeze
-          git clone https://github.com/create-dmg/create-dmg
       - name: Install Target Dependencies
         run: |
           pip3 install -r requirements.txt
           pip3 install -r requirements-presence.txt
       - name: Build
         run: |
-          python freeze.py bdist_mac
-      - name: Create dmg
-        run: >-
-          create-dmg/create-dmg
-          Rare.dmg
-          build/Rare.app
-          --volname Rare
-          --volicon rare/resources/images/Rare.icns
+          python freeze.py bdist_dmg
+          mv build/Rare.dmg Rare.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
