@@ -42,19 +42,20 @@ webview = [
     "pyobjc; platform_system == 'Darwin'",
     "pywebview; platform_system == 'Darwin'",
 ]
-discord = [
-    "presence",
+presence = [
+    "pypresence",
 ]
-devel = [
-    "build",
-    "wheel",
+dev = [
     "pylint",
     "mypy",
     "black[d]",
-    "cx-freeze",
-    "nuitka",
     "PySide6-stubs",
     "qstylizer",
+]
+packaging = [
+    "cx-freeze",
+    "nuitka",
+    "pyinstaller",
 ]
 
 [project.urls]

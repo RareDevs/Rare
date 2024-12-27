@@ -1,9 +1,5 @@
-build
-wheel
 pylint
 mypy
 black[d]
-cx-freeze
-nuitka
 PySide6-stubs
 qstylizer
