@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 nuitka_opts=(
+    '--output-dir=nuitka.workdir'
     '--assume-yes-for-downloads'
     '--show-scons'
     '--clang'
@@ -26,11 +27,12 @@ nuitka_opts=(
     '--include-package-data=qtawesome'
     '--include-data-dir=rare/resources/images/=rare/resources/images/'
     '--include-data-files=rare/resources/languages/rare_*.qm=rare/resources/languages/'
+    '--output-filename=Rare.bin'
+    '--file-description=Rare.bin'
     '--company-name=RareDevs'
     '--product-name=Rare'
     '--file-version=0.0.0.0'
     '--product-version=0.0.0.0'
-    '--file-description=rare.bin'
     '--macos-create-app-bundle'
     '--macos-app-name=Rare'
     '--macos-app-mode=gui'

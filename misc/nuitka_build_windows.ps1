@@ -1,5 +1,6 @@
 
 $nuitka_opts = @(
+    '--output-dir=nuitka.workdir'
     '--assume-yes-for-downloads'
     '--show-scons'
     '--mingw64'
@@ -25,11 +26,12 @@ $nuitka_opts = @(
     '--include-package-data=qtawesome'
     '--include-data-dir=rare\resources\images\=rare\resources\images\'
     '--include-data-files=rare\resources\languages\rare_*.qm=rare\resources\languages\'
+    '--output-filename=Rare.exe'
+    '--file-description=Rare.exe'
     '--company-name=RareDevs'
     '--product-name=Rare'
     '--file-version=0.0.0.0'
     '--product-version=0.0.0.0'
-    '--file-description=rare.exe'
     '--windows-console-mode=force'
     '--windows-icon-from-ico=rare\resources\images\Rare.ico'
 )
