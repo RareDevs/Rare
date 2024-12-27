@@ -47,7 +47,7 @@ msi_data = {
 
 bdist_msi_options = {
     "data": msi_data,
-    # "license_file": _license,
+    "license_file": _license,
     # generated with str(uuid.uuid3(uuid.NAMESPACE_DNS, 'io.github.dummerle.rare')).upper()
     "upgrade_code": "{85D9FCC2-733E-3D74-8DD4-8FE33A07ADF8}",
 }
