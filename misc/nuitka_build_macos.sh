@@ -26,13 +26,16 @@ nuitka_opts=(
     '--include-package-data=qtawesome'
     '--include-data-dir=rare/resources/images/=rare/resources/images/'
     '--include-data-files=rare/resources/languages/rare_*.qm=rare/resources/languages/'
-    '--windows-icon-from-ico=rare/resources/images/Rare.ico'
-    '--windows-company-name=RareDevs'
-    '--windows-product-name=Rare'
-    '--windows-file-description=rare.exe'
-    '--windows-file-version=0.0.0.0'
-    '--windows-product-version=0.0.0.0'
-    '--windows-console-mode=force'
+    '--company-name=RareDevs'
+    '--product-name=Rare'
+    '--file-version=0.0.0.0'
+    '--product-version=0.0.0.0'
+    '--file-description=rare.bin'
+    '--macos-create-app-bundle'
+    '--macos-app-name=Rare'
+    '--macos-app-mode=gui'
+    '--macos-app-version=0.0.0.0'
+    '--macos-app-icon=rare/resources/images/Rare.icns'
 )
 
 python -m nuitka "${nuitka_opts[@]}" rare

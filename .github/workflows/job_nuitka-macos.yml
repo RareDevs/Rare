@@ -66,7 +66,6 @@ jobs:
           --file-version=${{ inputs.version }}
           --product-version=${{ inputs.version }}
           --file-description=rare.bin
-          --macos-create-app-bundle
           --macos-app-name=Rare
           --macos-app-mode=gui
           --macos-app-version=${{ inputs.version }}
@@ -74,8 +73,6 @@ jobs:
           rare
       - name: Compress
         run: |
-          ls
-          ls *
           find rare.dist -iname "*.so*" -type f -exec strip {} \;
           find rare.dist -iname "*.dylib" -type f -exec strip {} \;
           strip rare.dist/rare.bin
