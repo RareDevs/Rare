@@ -48,7 +48,7 @@ class LegendarySettings(QWidget):
         # Platform specific installation directory for macOS games
         if pf.system() == "Darwin":
             self.mac_install_dir = PathEdit(
-                self.core.get_default_install_dir("Mac"),
+                path=self.core.get_default_install_dir("Mac"),
                 placeholder=self.tr("Default installation folder for macOS games"),
                 file_mode=QFileDialog.FileMode.Directory,
                 save_func=self.__mac_path_save,
@@ -57,7 +57,7 @@ class LegendarySettings(QWidget):
 
         # Platform-independent installation directory
         self.install_dir = PathEdit(
-            self.core.get_default_install_dir(),
+            path=self.core.get_default_install_dir(),
             placeholder=self.tr("Default installation folder for Windows games"),
             file_mode=QFileDialog.FileMode.Directory,
             save_func=self.__win_path_save,

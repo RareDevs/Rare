@@ -1,6 +1,7 @@
 import os.path
 import platform as pf
 from logging import getLogger
+from pydoc import replace
 from typing import Tuple
 
 from PySide6.QtCore import Qt, Slot
@@ -54,9 +55,13 @@ class GameLaunchSettings(LaunchSettingsBase):
         self.offline_combo.addItem(self.tr("Yes"), "true")
         self.offline_combo.currentIndexChanged.connect(self.__offline_changed)
 
+        self.override_exe_name_filters: Tuple[str, ...] = (
+            "*.exe", "*.app", "*.bat", "*.ps1", "*.sh"
+        )
+
         self.override_exe_edit = PathEdit(
             file_mode=QFileDialog.FileMode.ExistingFile,
-            name_filters=["*.exe", "*.app"],
+            name_filters=self.override_exe_name_filters,
             placeholder=self.tr("Relative path to the replacement executable"),
             edit_func=self.__override_exe_edit_callback,
             save_func=self.__override_exe_save_callback,
@@ -115,7 +120,7 @@ class GameLaunchSettings(LaunchSettingsBase):
         if not os.path.exists(path):
             return False, path, IndicatorReasonsCommon.WRONG_PATH
 
-        if not path.endswith(".exe") and not path.endswith(".app"):
+        if not path.endswith(tuple(map(lambda s: s.replace("*", ""), self.override_exe_name_filters))):
             return False, path, IndicatorReasonsCommon.WRONG_PATH
         path = os.path.relpath(path, self.igame.install_path)
         return True, path, IndicatorReasonsCommon.VALID

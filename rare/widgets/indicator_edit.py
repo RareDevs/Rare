@@ -274,7 +274,7 @@ class PathEdit(IndicatorLineEdit):
         path: str = "",
         file_mode: QFileDialog.FileMode = QFileDialog.FileMode.AnyFile,
         file_filter: QDir.Filter = 0,
-        name_filters: List[str] = None,
+        name_filters: Tuple[str, ...] = None,
         placeholder: str = "",
         edit_func: Callable[[str], Tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
