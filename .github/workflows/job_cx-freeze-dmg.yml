@@ -34,6 +34,7 @@ jobs:
       - name: Install build dependencies
         run: |
           pip3 install --upgrade cx_freeze
+          git clone https://github.com/create-dmg/create-dmg
       - name: Install target dependencies
         run: |
           pip3 install -r misc/requirements.in
@@ -46,7 +47,6 @@ jobs:
           python3 freeze.py bdist_mac
       - name: Create dmg
         run: >-
-          git clone https://github.com/create-dmg/create-dmg
           create-dmg/create-dmg
           Rare-${{ matrix.arch }}.dmg
           build/Rare.app
