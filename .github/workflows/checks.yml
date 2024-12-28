@@ -39,11 +39,14 @@ jobs:
           python3 -m pip install --upgrade pip
           pip3 install astroid
           pip3 install pylint
-      - name: Install Target Dependencies
+      - name: Install target dependencies
         run: |
-          pip3 install -r requirements.txt
-          pip3 install -r requirements-presence.txt
-      - name: Install Development Dependencies
+          pip3 install -r misc/requirements.in
+      - name: Generate version information
+        run: |
+          pip3 install setuptools-scm
+          python3 -m setuptools_scm --force-write-version-files
+      - name: Install development dependencies
         run: |
           pip3 install qstylizer
       - name: Analysis with pylint
