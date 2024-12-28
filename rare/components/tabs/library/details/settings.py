@@ -1,7 +1,6 @@
 import os.path
 import platform as pf
 from logging import getLogger
-from pydoc import replace
 from typing import Tuple
 
 from PySide6.QtCore import Qt, Slot
