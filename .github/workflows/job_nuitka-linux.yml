@@ -65,10 +65,12 @@ jobs:
           --file-version=${{ inputs.version }}
           --product-version=${{ inputs.version }}
           rare
-      - name: Compress
+      - name: Strip
         run: |
           find rare.dist -iname "*.so*" -type f -exec strip --strip-all {} \;
           strip --strip-all rare.dist/Rare.bin
+      - name: Compress
+        run: |
           python -c "import shutil; shutil.make_archive('Rare', 'zip', 'rare.dist')"
 
       - name: Upload artifact
