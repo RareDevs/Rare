@@ -1,6 +1,6 @@
 from cx_Freeze import setup, Executable
 
-from rare import __version__
+from rare import __version__ as _version
 
 _name = "Rare"
 _author = "RareDevs"
@@ -54,7 +54,7 @@ bdist_msi_options = {
 
 bdist_appimage_options = {
     "target_name": _name,
-    "target_version": __version__,
+    "target_version": _version,
 }
 
 bdist_mac_options = {
@@ -91,7 +91,7 @@ executables = [
 
 setup(
     name=_name,
-    version=__version__,
+    version=_version,
     author=_author,
     description=_description,
     executables=executables,

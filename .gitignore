@@ -17,6 +17,7 @@ __pycache__
 /AppDir/
 /System Volume Information/
 /test_files/
+rare/__version__.py
 # Nuitka build artifacts
 /rare.build
 /rare.dist
