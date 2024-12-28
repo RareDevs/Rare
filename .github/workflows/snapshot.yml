@@ -135,8 +135,10 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
-      file1: Rare.dmg
-      name1: Rare-${{ needs.version.outputs.version }}.dmg
+      file1: Rare-arm64.dmg
+      name1: Rare-arm64-${{ needs.version.outputs.version }}.dmg
+      file2: Rare-x86_64.dmg
+      name2: Rare-x86_64-${{ needs.version.outputs.version }}.dmg
 
   cx-freeze-msi:
     if: ${{ true }}

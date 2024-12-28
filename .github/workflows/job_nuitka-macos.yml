@@ -10,12 +10,13 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - arch: "arm64"
-            pyarch: "arm64"
-          - arch: "x86_64"
-            pyarch: "x64"
+          - arch: arm64
+            pyarch: arm64
+          - arch: x86_64
+            pyarch: x64
     name: Package ${{ matrix.arch }}
     runs-on: macos-latest
     steps:

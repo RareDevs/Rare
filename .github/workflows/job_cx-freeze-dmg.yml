@@ -9,8 +9,18 @@ on:
 
 jobs:
   build:
-    name: Package
-    runs-on: macos-13
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            pyarch: arm64
+            os: macos-14
+          - arch: x86_64
+            pyarch: x64
+            os: macos-13
+    name: Package ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,7 +30,7 @@ jobs:
           cache: pip
           python-version: '3.12'
           check-latest: true
-          architecture: x64
+          architecture: ${{ matrix.pyarch }}
       - name: Install build dependencies
         run: |
           pip3 install --upgrade cx_freeze
@@ -34,10 +44,10 @@ jobs:
       - name: Build
         run: |
           python3 freeze.py bdist_dmg
-          mv build/Rare.dmg Rare.dmg
+          mv build/Rare.dmg Rare-${{ matrix.arch }}.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ inputs.version }}.dmg
-          path: Rare.dmg
+          name: Rare-${{ matrix.arch }}-${{ inputs.version }}.dmg
+          path: Rare-${{ matrix.arch }}.dmg
