@@ -84,13 +84,12 @@ jobs:
           find rare.app -iname "*.so*" -type f -exec strip {} \;
           find rare.app -iname "*.dylib" -type f -exec strip {} \;
           find rare.app -iname "*.bin" -type f -exec strip {} \;
-      - name: Create dmg
+      - name: Compress
         run: |
-          pip3 install dmgbuild[badge_icons]
-          dmgbuild -s misc/dmgbuild_settings.py "Rare" Rare-${{ matrix.arch }}.dmg
+          python -c "import shutil; shutil.make_archive('Rare-${{ matrix.arch }}'.app, 'zip', 'rare.app')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ matrix.arch }}-${{ inputs.version }}.dmg
-          path: Rare-${{ matrix.arch }}.dmg
+          name: Rare-${{ matrix.arch }}-${{ inputs.version }}.app.zip
+          path: Rare-${{ matrix.arch }}.app.zip

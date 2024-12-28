@@ -54,10 +54,10 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-arm64.dmg
-      name1: Rare-arm64-${{ github.ref_name }}.dmg
-      file2: Rare-x86_64.dmg
-      name2: Rare-x86_64-${{ github.ref_name }}.dmg
+      file1: Rare-arm64.app.zip
+      name1: Rare-arm64-${{ github.ref_name }}.app.zip
+      file2: Rare-x86_64.app.zip
+      name2: Rare-x86_64-${{ github.ref_name }}.app.zip
 
   nuitka-windows:
     if: ${{ true }}
@@ -90,7 +90,7 @@ jobs:
       name1: Rare-${{ github.ref_name }}.Appimage
 
   cx-freeze-dmg:
-    if: ${{ false }}
+    if: ${{ true }}
     name: cx-Freeze MacOS
     uses: ./.github/workflows/job_cx-freeze-dmg.yml
     with:
