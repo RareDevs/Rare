@@ -81,10 +81,9 @@ jobs:
           rare
       - name: Strip
         run: |
-          find . -iname "Rare.bin"
-          find rare.dist/Rare.app -iname "*.so*" -type f -exec strip {} \;
-          find rare.dist/Rare.app -iname "*.dylib" -type f -exec strip {} \;
-          find rare.dist/Rare.app -iname "*.bin" -type f -exec strip {} \;
+          find rare.app -iname "*.so*" -type f -exec strip {} \;
+          find rare.app -iname "*.dylib" -type f -exec strip {} \;
+          find rare.app -iname "*.bin" -type f -exec strip {} \;
       - name: Create dmg
         run: |
           pip3 install dmgbuild[badge_icons]
