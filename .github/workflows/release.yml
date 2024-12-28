@@ -40,7 +40,7 @@ jobs:
     with:
       version: ${{ github.ref_name }}
       file1: Rare.zip
-      name1: Rare-portable-linux-${{ github.ref_name }}.zip
+      name1: Rare-linux-${{ github.ref_name }}.zip
 
   nuitka-macos:
     if: ${{ true }}
@@ -54,10 +54,10 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-arm64.app.zip
-      name1: Rare-arm64-${{ github.ref_name }}.app.zip
-      file2: Rare-x86_64.app.zip
-      name2: Rare-x86_64-${{ github.ref_name }}.app.zip
+      file1: Rare-macos-arm64.app.zip
+      name1: Rare-macos-arm64-${{ github.ref_name }}.app.zip
+      file2: Rare-macos-x86_64.app.zip
+      name2: Rare-macos-x86_64-${{ github.ref_name }}.app.zip
 
   nuitka-windows:
     if: ${{ true }}
@@ -72,7 +72,7 @@ jobs:
     with:
       version: ${{ github.ref_name }}
       file1: Rare.zip
-      name1: Rare-portable-windows-${{ github.ref_name }}.zip
+      name1: Rare-windows-${{ github.ref_name }}.zip
 
   cx-freeze-appimage:
     if: ${{ true }}
@@ -108,13 +108,13 @@ jobs:
 
   cx-freeze-msi:
     if: ${{ true }}
-    name: cx-Freeze MSI
+    name: cx-Freeze Windows
     uses: ./.github/workflows/job_cx-freeze-msi.yml
     with:
       version: ${{ github.ref_name }}
   cx-freeze-msi-release:
     needs: cx-freeze-msi
-    name: cx-Freeze MSI
+    name: cx-Freeze Windows
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}

@@ -76,5 +76,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-portable-linux-${{ inputs.version }}.zip
+          name: Rare-linux-${{ inputs.version }}.zip
           path: Rare.zip

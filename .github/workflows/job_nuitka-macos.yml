@@ -86,10 +86,10 @@ jobs:
           find rare.app -iname "*.bin" -type f -exec strip {} \;
       - name: Compress
         run: |
-          python -c "import shutil; shutil.make_archive('Rare-${{ matrix.arch }}'.app, 'zip', 'rare.app')"
+          python -c "import shutil; shutil.make_archive('Rare-${{ matrix.arch }}.app', 'zip', 'rare.app')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ matrix.arch }}-${{ inputs.version }}.app.zip
-          path: Rare-${{ matrix.arch }}.app.zip
+          name: Rare-macos-${{ matrix.arch }}-${{ inputs.version }}.app.zip
+          path: Rare-macos-${{ matrix.arch }}.app.zip
