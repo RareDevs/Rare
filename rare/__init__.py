@@ -1,4 +1,4 @@
-from rare.__version__ import __version__, __version_tuple__
+from rare._version import __version__, __version_tuple__
 
 __codename__ = "Garlic Crab"
 
