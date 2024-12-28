@@ -54,9 +54,9 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-macos-arm64.app.zip
+      file1: Rare-arm64.app.zip
       name1: Rare-macos-arm64-${{ github.ref_name }}.app.zip
-      file2: Rare-macos-x86_64.app.zip
+      file2: Rare-x86_64.app.zip
       name2: Rare-macos-x86_64-${{ github.ref_name }}.app.zip
 
   nuitka-windows:

@@ -82,9 +82,9 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
-      file1: Rare-macos-arm64.app.zip
+      file1: Rare-arm64.app.zip
       name1: Rare-macos-arm64-${{ needs.version.outputs.version }}.app.zip
-      file2: Rare-macos-x86_64.app.zip
+      file2: Rare-x86_64.app.zip
       name2: Rare-macos-x86_64-${{ needs.version.outputs.version }}.app.zip
 
   nuitka-windows:

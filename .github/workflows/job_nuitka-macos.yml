@@ -92,4 +92,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Rare-macos-${{ matrix.arch }}-${{ inputs.version }}.app.zip
-          path: Rare-macos-${{ matrix.arch }}.app.zip
+          path: Rare-${{ matrix.arch }}.app.zip
