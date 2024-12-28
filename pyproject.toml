@@ -67,7 +67,7 @@ Issues = "https://github.com/RareDevs/Rare/issues"
 rare = "rare.main:main"
 
 [build-system]
-requires = [ "setuptools>=64", "setuptools-scm>=8", "wheel" ]
+requires = [ "setuptools>=64", "setuptools-scm[toml]>=8", "wheel" ]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -76,7 +76,7 @@ include-package-data = false
 [tool.setuptools.packages.find]
 where = [ "." ]
 include = [ "rare*" ]
-exclude = [ ".github*", ".tx*", "docs*" ]
+exclude = [ "rare.mkrelease", ".github*", ".tx*", "docs*" ]
 namespaces = true
 
 [tool.setuptools.package-data]
@@ -87,22 +87,22 @@ namespaces = true
 version = { attr = "rare.__version__" }
 
 [tool.setuptools_scm]
-fallback_version = "1.10.11.0"
 # use only annotated tags ( omit `--tags` argument from `git describe`)
 git_describe_command = [ "git", "describe", "--dirty", "--long" ]
 #tag_regex = "(?P<version>^[0-9]+\\.[0-9]+\\.[0-9]+)(?P<suffix>.[0-9]+)?$"
-version_scheme = "tools.version:make"
+version_scheme = "rare.mkrelease:version"
 local_scheme = "no-local-version"
 version_file = "rare/__version__.py"
+fallback_version = "1.10.11.0"
 
 [tool.nuitka]
 assume-yes-for-downloads = true
+show-scons = true
 mingw64 = true
 lto = false
 jobs = 4
 static-libpython = false
 standalone = true
-show-scons = false
 enable-plugin = ["anti-bloat", "pyside6"]
 show-anti-bloat-changes = true
 follow-stdlib = true
@@ -113,12 +113,14 @@ include-package = "pypresence"
 include-package-data = "qtawesome"
 include-data-dir = "rare/resources/images/=rare/resources/images/"
 include-data-files = "rare/resources/languages/=rare/resources/laguanges/=rare_*.qm"
+output-filename = "Rare.exe"
+file-description = "Rare.exe"
+company-name = "RareDevs"
+product-name = "Rare"
+file-version = "1.10.11.0"
+product-version = "1.10.11.0"
+windows-console-mode = "disable"
 windows-icon-from-ico = "rare/resources/images/Rare.ico"
-windows-company-name = "Rare"
-windows-product-name = "Rare"
-windows-file-version = "1.10.11.0"
-windows-product-version = "1.10.11.0"
-windows-disable-console = true
 
 [tool.black]
 line-length = 120
