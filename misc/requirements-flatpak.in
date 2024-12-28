@@ -1,7 +1,7 @@
-requests<3.0
+requests < 3.0
 QtAwesome
 setuptools
-legendary-gl>=0.20.34
+legendary-gl >= 0.20.34
 # orjson  # needs the binary release, use req2flatpak
 vdf
 pypresence

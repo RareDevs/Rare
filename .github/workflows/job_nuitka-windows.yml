@@ -9,10 +9,12 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Package
     runs-on: windows-2019
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           cache: pip
@@ -20,11 +22,14 @@ jobs:
           check-latest: true
           architecture: x64
       - name: Install build dependencies
-        run: pip3 install nuitka ordered-set
+        run: pip3 install nuitka
       - name: Install target dependencies
         run: |
-          pip3 install -r requirements.txt
-          pip3 install -r requirements-presence.txt
+          pip3 install -r misc/requirements.in
+      - name: Generate version information
+        run: |
+          pip3 install setuptools-scm
+          python3 -m setuptools_scm --force-write-version-files
       - name: Build
         run: >-
           python -m nuitka
@@ -53,13 +58,14 @@ jobs:
           --include-package-data=qtawesome
           --include-data-dir=rare\resources\images\=rare\resources\images\
           --include-data-files=rare\resources\languages\rare_*.qm=rare\resources\languages\
-          --windows-icon-from-ico=rare\resources\images\Rare.ico
-          --windows-company-name=RareDevs
-          --windows-product-name=Rare
-          --windows-file-description=rare.exe
-          --windows-file-version=${{ inputs.version }}
-          --windows-product-version=${{ inputs.version }}
+          --output-filename=Rare.exe
+          --file-description=Rare.exe
+          --company-name=RareDevs
+          --product-name=Rare
+          --file-version=${{ inputs.version }}
+          --product-version=${{ inputs.version }}
           --windows-console-mode=disable
+          --windows-icon-from-ico=rare\resources\images\Rare.ico
           rare
       - name: Compress
         run: |
@@ -70,4 +76,3 @@ jobs:
         with:
           name: Rare-portable-windows-${{ inputs.version }}.zip
           path: Rare.zip
-

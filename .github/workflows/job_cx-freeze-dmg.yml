@@ -1,4 +1,4 @@
-name: job_cx-freeze-msi
+name: job_cx-freeze-macos
 
 on:
   workflow_call:
@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Package
-    runs-on: windows-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,11 +33,11 @@ jobs:
           python3 -m setuptools_scm --force-write-version-files
       - name: Build
         run: |
-          python3 freeze.py bdist_msi
-          mv dist/*.msi Rare.msi
+          python3 freeze.py bdist_dmg
+          mv build/Rare.dmg Rare.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ inputs.version }}.msi
-          path: Rare.msi
+          name: Rare-${{ inputs.version }}.dmg
+          path: Rare.dmg

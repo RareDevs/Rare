@@ -1,6 +1,130 @@
+[project]
+name = "Rare"
+dynamic = ["version"]
+authors = [
+    { name = "Dummerle", email = "44114474+Dummerle@users.noreply.github.com" },
+    { name = "loathingKernel", email = "142770+loathingKernel@users.noreply.github.com" },
+]
+maintainers = [
+    { name = "loathingKernel", email = "142770+loathingKernel@users.noreply.github.com" },
+]
+description = "Open source alternative for Epic Games Launcher, using Legendary"
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+    "Operating System :: OS Independent"
+]
+requires-python = ">= 3.9"
+dependencies = [
+    "requests < 3.0",
+    "PySide6-Essentials >= 6.8.1",
+    "QtAwesome",
+    "legendary-gl >= 0.20.34 ;  platform_system != 'Windows' and platform_system != 'Darwin'",
+    "legendary-gl @ https://github.com/derrod/legendary/archive/3963382b3f33116154399be5dd2d2913336a1f0e.zip ; platform_system == 'Windows'",
+    "legendary-gl @ https://github.com/derrod/legendary/archive/3963382b3f33116154399be5dd2d2913336a1f0e.zip ; platform_system == 'Darwin'",
+    "orjson",
+    "vdf",
+    "pywin32 ; platform_system == 'Windows'",
+]
+
+[project.optional-dependencies]
+webview = [
+    "pywebview[gtk]; platform_system == 'Linux'",
+    "pywebview[gtk]; platform_system == 'FreeBSD'",
+    "pythonnet; platform_system == 'Windows'",
+    "pywebview; platform_system == 'Windows'",
+    "pyobjc; platform_system == 'Darwin'",
+    "pywebview; platform_system == 'Darwin'",
+]
+presence = [
+    "pypresence",
+]
+dev = [
+    "pylint",
+    "mypy",
+    "black[d]",
+    "PySide6-stubs",
+    "qstylizer",
+]
+packaging = [
+    "cx-freeze",
+    "nuitka",
+    "pyinstaller",
+]
+
+[project.urls]
+Homepage = "https://raredevs.github.io/Rare/"
+Repository = "https://github.com/RareDevs/Rare"
+Issues = "https://github.com/RareDevs/Rare/issues"
+
+[project.gui-scripts]
+rare = "rare.main:main"
+
+[build-system]
+requires = [ "setuptools>=64", "setuptools-scm[toml]>=8", "wheel" ]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = [ "." ]
+include = [ "rare*" ]
+exclude = [ ".github*", ".tx*", "docs*" ]
+namespaces = true
+
+[tool.setuptools.package-data]
+"rare.resources.images" = [ "Rare.ico", "Rare.icns", "Rare.png", "cover.png", "logo.png" ]
+"rare.resources.languages" = [ "rare_*.qm" ]
+
+[tool.setuptools.dynamic]
+version = { attr = "rare.__version__" }
+
+[tool.setuptools_scm]
+# use only annotated tags ( omit `--tags` argument from `git describe`)
+git_describe_command = [ "git", "describe", "--dirty", "--long" ]
+#tag_regex = "(?P<version>^[0-9]+\\.[0-9]+\\.[0-9]+)(?P<suffix>.[0-9]+)?$"
+version_scheme = "tools.version:mkversion"
+local_scheme = "no-local-version"
+version_file = "rare/_version.py"
+fallback_version = "1.10.11.0"
+
+[tool.nuitka]
+assume-yes-for-downloads = true
+show-scons = true
+mingw64 = true
+lto = false
+jobs = 4
+static-libpython = false
+standalone = true
+enable-plugin = ["anti-bloat", "pyside6"]
+show-anti-bloat-changes = true
+follow-stdlib = true
+follow-imports = true
+nofollow-import-to = ["*.tests", "*.distutils", "distutils", "unittest", "pydoc", "tkinter", "test"]
+prefer-source-code = true
+include-package = "pypresence"
+include-package-data = "qtawesome"
+include-data-dir = "rare/resources/images/=rare/resources/images/"
+include-data-files = "rare/resources/languages/=rare/resources/laguanges/=rare_*.qm"
+output-filename = "Rare.exe"
+file-description = "Rare.exe"
+company-name = "RareDevs"
+product-name = "Rare"
+file-version = "1.10.11.0"
+product-version = "1.10.11.0"
+windows-console-mode = "disable"
+windows-icon-from-ico = "rare/resources/images/Rare.ico"
+
 [tool.black]
 line-length = 120
-target-version = ['py39', 'py310', 'py311', 'py312']
+target-version = ['py39', 'py310', 'py311', 'py312', 'py313']
 include = '\.py$'
 force-exclude = '''
 /(
@@ -9,15 +133,6 @@ force-exclude = '''
     | rare/resources
 )/
 '''
-
-[tool.poetry]
-name = "rare"
-version = "1.10.11"
-description = "Open source alternative for Epic Games Launcher, using Legendary"
-authors = ["RareDevs"]
-license = "GPL3"
-readme = "README.md"
-repository = "https://github.com/RareDevs/Rare"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -44,32 +159,3 @@ Nuitka = "^2.4.8"
 pylint = "^3.2.7"
 black = "^24.3.0"
 PySide6-stubs = "^6.4.2.0"
-
-#[build-system]
-#requires = ["setuptools>=42", "wheel", "nuitka", "toml"]
-#build-backend = "nuitka.distutils.Build"
-
-[nuitka]
-assume-yes-for-downloads = true
-mingw64 = true
-lto = false
-jobs = 4
-static-libpython = false
-standalone = true
-show-scons = false
-enable-plugin = ["anti-bloat", "pyside6"]
-show-anti-bloat-changes = true
-follow-stdlib = true
-follow-imports = true
-nofollow-import-to = ["*.tests", "*.distutils", "distutils", "unittest", "pydoc", "tkinter", "test"]
-prefer-source-code = true
-include-package = "pypresence"
-include-package-data = "qtawesome"
-include-data-dir = "rare/resources/images/=rare/resources/images/"
-include-data-files = "rare/resources/languages/=rare/resources/laguanges/=rare_*.qm"
-windows-icon-from-ico = "rare/resources/images/Rare.ico"
-windows-company-name = "Rare"
-windows-product-name = "Rare"
-windows-file-version = "1.10.11.0"
-windows-product-version = "1.10.11.0"
-windows-disable-console = true

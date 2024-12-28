@@ -129,10 +129,10 @@ class RareApp(QApplication):
 
         if color_scheme := self.settings.value(options.color_scheme.key, False):
             self.settings.setValue(options.style_sheet.key, "")
-            set_color_pallete(color_scheme)
+            set_color_pallete(str(color_scheme))
         elif style_sheet := self.settings.value(options.style_sheet.key, False):
             self.settings.setValue(options.color_scheme.key, "")
-            set_style_sheet(style_sheet)
+            set_style_sheet(str(style_sheet))
         else:
             self.setStyleSheet(get_static_style())
         self.setWindowIcon(QIcon(":/images/Rare.png"))

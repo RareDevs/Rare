@@ -1,5 +1,6 @@
 import webbrowser
 from logging import getLogger
+from typing import Tuple
 
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QShowEvent
@@ -12,11 +13,19 @@ from rare.utils.qt_requests import QtRequests
 logger = getLogger("About")
 
 
-def versiontuple(v):
+def versiontuple(v) -> Tuple[int, ...]:
     try:
-        return tuple(map(int, (v.split("."))))
-    except Exception:
-        return 9, 9, 9
+        vt = tuple(map(int, (v.split("."))))
+        # normalize version to 4 segments
+        if len(vt) > 4:
+            vt = vt[0:4]
+        if len(vt) < 4:
+            vt = (*vt, *(0 for _ in range(4 - len(vt))))
+        return vt
+    except Exception as e:
+        logger.error("Error while parsing version %s", v)
+        logger.error(e)
+        return 9, 9, 9, 9
 
 
 class About(QWidget):

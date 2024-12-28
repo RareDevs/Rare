@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
 
-nuitka_opts=(
+$nuitka_opts = @(
+    '--output-dir=nuitka.workdir'
     '--assume-yes-for-downloads'
     '--show-scons'
-    '--clang'
+    '--mingw64'
     '--lto=no'
     '--jobs=4'
     '--static-libpython=no'
@@ -24,15 +24,16 @@ nuitka_opts=(
     '--prefer-source-code'
     '--include-package=pypresence'
     '--include-package-data=qtawesome'
-    '--include-data-dir=rare/resources/images/=rare/resources/images/'
-    '--include-data-files=rare/resources/languages/rare_*.qm=rare/resources/languages/'
-    '--windows-icon-from-ico=rare/resources/images/Rare.ico'
-    '--windows-company-name=RareDevs'
-    '--windows-product-name=Rare'
-    '--windows-file-description=rare.exe'
-    '--windows-file-version=0.0.0.0'
-    '--windows-product-version=0.0.0.0'
+    '--include-data-dir=rare\resources\images\=rare\resources\images\'
+    '--include-data-files=rare\resources\languages\rare_*.qm=rare\resources\languages\'
+    '--output-filename=Rare.exe'
+    '--file-description=Rare.exe'
+    '--company-name=RareDevs'
+    '--product-name=Rare'
+    '--file-version=0.0.0.0'
+    '--product-version=0.0.0.0'
     '--windows-console-mode=force'
+    '--windows-icon-from-ico=rare\resources\images\Rare.ico'
 )
 
-python -m nuitka "${nuitka_opts[@]}" rare
+python -m nuitka $nuitka_opts rare

@@ -16,15 +16,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.12'
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip3 install setuptools wheel twine
-      - name: Build and publish
+          pip3 install setuptools build wheel twine
+      - name: Build
+        run: |
+          python3 -m build --sdist --wheel
+      - name: Publish
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
-          python setup.py sdist bdist_wheel
           twine upload dist/*

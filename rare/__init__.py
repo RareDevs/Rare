@@ -1,4 +1,5 @@
-__version__ = "1.10.11"
+from rare._version import __version__, __version_tuple__
+
 __codename__ = "Garlic Crab"
 
 # For PyCharm profiler
