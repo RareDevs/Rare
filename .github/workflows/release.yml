@@ -86,8 +86,8 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-${{ github.ref_name }}.Appimage
-      name1: Rare-${{ github.ref_name }}.Appimage
+      file1: Rare-${{ github.ref_name }}.AppImage
+      name1: Rare-${{ github.ref_name }}.AppImage
 
   cx-freeze-dmg:
     if: ${{ true }}
