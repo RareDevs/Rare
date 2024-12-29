@@ -38,10 +38,10 @@ jobs:
       - name: Build
         run: |
           python3 freeze.py bdist_appimage
-          mv dist/Rare-*.AppImage Rare.AppImage
+          mv dist/Rare-*.AppImage Rare-${{ inputs.version }}.AppImage
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Rare-${{ inputs.version }}.AppImage
-          path: Rare.AppImage
+          path: Rare-${{ inputs.version }}.AppImage

@@ -39,8 +39,8 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare.zip
-      name1: Rare-linux-${{ github.ref_name }}.zip
+      file1: Rare-${{ github.ref_name }}.zip
+      name1: Rare-${{ github.ref_name }}-linux.zip
 
   nuitka-macos:
     if: ${{ true }}
@@ -54,10 +54,10 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-arm64.app.zip
-      name1: Rare-macos-arm64-${{ github.ref_name }}.app.zip
-      file2: Rare-x86_64.app.zip
-      name2: Rare-macos-x86_64-${{ github.ref_name }}.app.zip
+      file1: Rare-${{ github.ref_name }}-arm64.app.zip
+      name1: Rare-${{ github.ref_name }}-arm64-macos.app.zip
+      file2: Rare-${{ github.ref_name }}-x86_64.app.zip
+      name2: Rare-${{ github.ref_name }}-x86_64-macos.app.zip
 
   nuitka-windows:
     if: ${{ true }}
@@ -71,8 +71,8 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare.zip
-      name1: Rare-windows-${{ github.ref_name }}.zip
+      file1: Rare-${{ github.ref_name }}.zip
+      name1: Rare-${{ github.ref_name }}-windows.zip
 
   cx-freeze-appimage:
     if: ${{ true }}
@@ -86,7 +86,7 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare.Appimage
+      file1: Rare-${{ github.ref_name }}.Appimage
       name1: Rare-${{ github.ref_name }}.Appimage
 
   cx-freeze-dmg:
@@ -101,10 +101,10 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-arm64.dmg
-      name1: Rare-arm64-${{ github.ref_name }}.dmg
-      file2: Rare-x86_64.dmg
-      name2: Rare-x86_64-${{ github.ref_name }}.dmg
+      file1: Rare-${{ github.ref_name }}-arm64.dmg
+      name1: Rare-${{ github.ref_name }}-arm64.dmg
+      file2: Rare-${{ github.ref_name }}-x86_64.dmg
+      name2: Rare-${{ github.ref_name }}-x86_64.dmg
 
   cx-freeze-msi:
     if: ${{ true }}
@@ -118,5 +118,5 @@ jobs:
     uses: ./.github/workflows/job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare.msi
+      file1: Rare-${{ github.ref_name }}.msi
       name1: Rare-${{ github.ref_name }}.msi

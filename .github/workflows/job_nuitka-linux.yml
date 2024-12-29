@@ -71,10 +71,11 @@ jobs:
           strip --strip-all rare.dist/Rare.bin
       - name: Compress
         run: |
-          python -c "import shutil; shutil.make_archive('Rare', 'zip', 'rare.dist')"
+          mv rare.dist Rare-${{ inputs.version }}
+          python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}', 'zip', '.', 'Rare-${{ inputs.version }}')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-linux-${{ inputs.version }}.zip
-          path: Rare.zip
+          name: Rare-${{ inputs.version }}-linux.zip
+          path: Rare-${{ inputs.version }}.zip

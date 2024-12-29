@@ -34,7 +34,6 @@ jobs:
       - name: Install build dependencies
         run: |
           pip3 install --upgrade cx_freeze
-          git clone https://github.com/create-dmg/create-dmg
       - name: Install target dependencies
         run: |
           pip3 install -r misc/requirements.in
@@ -44,17 +43,11 @@ jobs:
           python3 -m setuptools_scm --force-write-version-files
       - name: Build
         run: |
-          python3 freeze.py bdist_mac
-      - name: Create dmg
-        run: >-
-          create-dmg/create-dmg
-          Rare-${{ matrix.arch }}.dmg
-          build/Rare.app
-          --volname Rare
-          --volicon rare/resources/images/Rare.icns
+          python3 freeze.py bdist_dmg
+          mv build/Rare.dmg Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ matrix.arch }}-${{ inputs.version }}.dmg
-          path: Rare-${{ matrix.arch }}.dmg
+          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
+          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg

@@ -69,10 +69,11 @@ jobs:
           rare
       - name: Compress
         run: |
-          python -c "import shutil; shutil.make_archive('Rare', 'zip', 'rare.dist')"
+          mv rare.dist Rare-${{ inputs.version }}
+          python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}', 'zip', '.', 'Rare-${{ inputs.version }}')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-windows-${{ inputs.version }}.zip
-          path: Rare.zip
+          name: Rare-${{ inputs.version }}-windows.zip
+          path: Rare-${{ inputs.version }}.zip
