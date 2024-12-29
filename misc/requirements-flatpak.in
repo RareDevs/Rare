@@ -1,7 +1,9 @@
 requests < 3.0
+# PySide6-Essentials  # from flatpak
 QtAwesome
 setuptools
-legendary-gl >= 0.20.34
+setuptools-scm
+legendary-gl @ https://github.com/derrod/legendary/archive/3963382b3f33116154399be5dd2d2913336a1f0e.zip
 # orjson  # needs the binary release, use req2flatpak
 vdf
 pypresence

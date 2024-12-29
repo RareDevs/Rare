@@ -42,7 +42,7 @@ webview = [
     "pyobjc; platform_system == 'Darwin'",
     "pywebview; platform_system == 'Darwin'",
 ]
-presence = [
+discordrpc = [
     "pypresence",
 ]
 dev = [
@@ -83,14 +83,11 @@ namespaces = true
 "rare.resources.images" = [ "Rare.ico", "Rare.icns", "Rare.png", "cover.png", "logo.png" ]
 "rare.resources.languages" = [ "rare_*.qm" ]
 
-[tool.setuptools.dynamic]
-version = { attr = "rare.__version__" }
-
 [tool.setuptools_scm]
 # use only annotated tags ( omit `--tags` argument from `git describe`)
 git_describe_command = [ "git", "describe", "--dirty", "--long" ]
 #tag_regex = "(?P<version>^[0-9]+\\.[0-9]+\\.[0-9]+)(?P<suffix>.[0-9]+)?$"
-version_scheme = "tools.version:mkversion"
+version_scheme = "misc.version:mkversion"
 local_scheme = "no-local-version"
 version_file = "rare/_version.py"
 fallback_version = "1.10.11.0"

@@ -130,14 +130,14 @@ After installing Rare, if macOS complains that it is damaged, open a terminal an
 ```shell
 sudo xattr -dr com.apple.quarantine /Applications/Rare.app
 ```
-which will allow the application run normally.
+which will allow the application to run normally.
 
-Alternatively, you can install from `pip` or from source.
+Alternatively, you can install using `pip`/`pipx` or from source.
 
 
 ### Latest development version
 
-In the [actions](https://github.com/RareDevs/Rare/actions) tab you can find packages for the latest commits.
+In the [actions](https://github.com/RareDevs/Rare/actions/workflows/snapshot.yml) tab you can find packages for the latest commits.
 
 **Note**: They might be unstable and likely broken.
 

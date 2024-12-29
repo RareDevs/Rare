@@ -39,7 +39,6 @@ jobs:
           pip3 install -r misc/requirements.in
       - name: Generate version information
         run: |
-          pip3 install setuptools-scm
           python3 -m setuptools_scm --force-write-version-files
       - name: Build
         run: |
