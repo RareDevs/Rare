@@ -49,7 +49,7 @@ jobs:
         prerelease: true
         generateReleaseNotes: true
         discussionCategory: "Releases"
-        makeLatest: true
+        makeLatest: false
 
   nuitka-linux:
     if: ${{ true }}
