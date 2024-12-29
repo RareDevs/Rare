@@ -7,9 +7,9 @@
 Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
 
 <div align="center">
-    <img src="https://github.com/RareDevs/Rare/blob/main/rare/resources/images/Rare_nonsquared.png?raw=true" alt="Logo" width="200"/>
+    <img src="https://github.com/RareDevs/Rare/blob/main/rare/docs/assets/RareLogoWide.png?raw=true" alt="Logo" width="200"/>
     <p><i>Logo by <a href="https://github.com/MultisampledNight">@MultisampledNight</a> available
-        <a href="https://github.com/RareDevs/Rare/blob/main/rare/resources/images/">here</a>,
+        <a href="https://github.com/RareDevs/Rare/blob/main/rare/docs/assets/">here</a>,
         licensed under CC BY-SA 4.0</i></p>
 </div>
 
@@ -109,15 +109,22 @@ There are some AUR packages available:
 
 There is a `.dmg` file available in [releases page](https://github.com/RareDevs/Rare/releases).
 
-**Note**: When you launch it, you will see an error, that the package is from an unknown source. You have to enable it
-manually in `Settings -> Security and Privacy`. Otherwise, Gatekeeper will block Rare from running.
+Rare's macOS binaries are currently not singed and because of that  when you launch Rare, you will see an error,
+that the package is from an unknown source. You have to enable it manually in `Settings -> Security and Privacy`.
+Otherwise, Gatekeeper will block Rare from running.
 
-You can also use `pip`.
+After installing Rare, if macOS complains that it is damaged, open a terminal and run the following command
+```shell
+sudo xattr -dr com.apple.quarantine /Applications/Rare.app
+```
+which will allow the application to run normally.
+
+Alternatively, you can install using `pip`/`pipx` or from source.
 
 
 ### Latest development version
 
-In the [actions](https://github.com/RareDevs/Rare/actions) tab you can find packages for the latest commits.
+In the [actions](https://github.com/RareDevs/Rare/actions/workflows/snapshot.yml) tab you can find packages for the latest commits.
 
 **Note**: They might be unstable and likely broken.
 
@@ -154,10 +161,10 @@ environment's `PATH`
      ```
    * If you are on Arch you can run
      ```lang-default
-     sudo pacman --needed -S python-wheel python-setuptools python-pyqt5 python-qtawesome python-requests python-orjson
+     sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson
      ```
      ```
-     yay -S legendary
+     yay -S legendary python-vdf
      ```
    * If you are on FreeBSD you have to install py39-qt5 from the packages
      ```lang-default
