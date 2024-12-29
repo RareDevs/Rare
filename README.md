@@ -7,9 +7,9 @@
 Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
 
 <div align="center">
-    <img src="https://github.com/RareDevs/Rare/blob/main/rare/docs/assets/RareLogoWide.png?raw=true" alt="Logo" width="200"/>
+    <img src="https://github.com/RareDevs/Rare/blob/main/docs/assets/RareLogoWide.png?raw=true" alt="Logo" width="200"/>
     <p><i>Logo by <a href="https://github.com/MultisampledNight">@MultisampledNight</a> available
-        <a href="https://github.com/RareDevs/Rare/blob/main/rare/docs/assets/">here</a>,
+        <a href="https://github.com/RareDevs/Rare/blob/main/docs/assets/">here</a>,
         licensed under CC BY-SA 4.0</i></p>
 </div>
 
