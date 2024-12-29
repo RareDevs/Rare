@@ -80,7 +80,7 @@ exclude = [ ".github*", ".tx*", "docs*" ]
 namespaces = true
 
 [tool.setuptools.package-data]
-"rare.resources.images" = [ "Rare.ico", "Rare.icns", "Rare.png", "cover.png", "logo.png" ]
+"rare.resources.images" = [ "Rare.ico", "Rare.icns", "Rare.png", "Rare.svg", "cover.png", "logo.png" ]
 "rare.resources.languages" = [ "rare_*.qm" ]
 
 [tool.setuptools_scm]

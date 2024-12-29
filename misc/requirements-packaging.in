@@ -1,5 +1,8 @@
+build
 setuptools
 setuptools-scm
+wheel
+installer
 cx-freeze
 nuitka
 pyinstaller
