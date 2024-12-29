@@ -42,7 +42,7 @@ webview = [
     "pyobjc; platform_system == 'Darwin'",
     "pywebview; platform_system == 'Darwin'",
 ]
-presence = [
+discordrpc = [
     "pypresence",
 ]
 dev = [
@@ -82,9 +82,6 @@ namespaces = true
 [tool.setuptools.package-data]
 "rare.resources.images" = [ "Rare.ico", "Rare.icns", "Rare.png", "cover.png", "logo.png" ]
 "rare.resources.languages" = [ "rare_*.qm" ]
-
-[tool.setuptools.dynamic]
-version = { attr = "rare.__version__" }
 
 [tool.setuptools_scm]
 # use only annotated tags ( omit `--tags` argument from `git describe`)
