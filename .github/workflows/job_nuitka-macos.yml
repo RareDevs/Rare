@@ -10,12 +10,13 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - arch: "arm64"
-            pyarch: "arm64"
-          - arch: "x86_64"
-            pyarch: "x64"
+          - arch: arm64
+            pyarch: arm64
+          - arch: x86_64
+            pyarch: x64
     name: Package ${{ matrix.arch }}
     runs-on: macos-latest
     steps:
@@ -72,20 +73,24 @@ jobs:
           --product-name=Rare
           --file-version=${{ inputs.version }}
           --product-version=${{ inputs.version }}
+          --macos-create-app-bundle
           --macos-app-name=Rare
           --macos-app-mode=gui
           --macos-app-version=${{ inputs.version }}
           --macos-app-icon=rare/resources/images/Rare.icns
           rare
+      - name: Strip
+        run: |
+          find rare.app -iname "*.so*" -type f -exec strip {} \;
+          find rare.app -iname "*.dylib" -type f -exec strip {} \;
+          find rare.app -iname "*.bin" -type f -exec strip {} \;
       - name: Compress
         run: |
-          find rare.dist -iname "*.so*" -type f -exec strip {} \;
-          find rare.dist -iname "*.dylib" -type f -exec strip {} \;
-          strip rare.dist/Rare.bin
-          python -c "import shutil; shutil.make_archive('Rare-${{ matrix.arch }}', 'zip', 'rare.dist')"
+          mv rare.app Rare-${{ inputs.version }}-${{ matrix.arch }}.app
+          python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}-${{ matrix.arch }}.app', 'zip', '.', 'Rare-${{ inputs.version }}-${{ matrix.arch }}.app')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-portable-macos-${{ matrix.arch }}-${{ inputs.version }}.zip
-          path: Rare-${{ matrix.arch }}.zip
+          name: Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.app.zip
+          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.app.zip

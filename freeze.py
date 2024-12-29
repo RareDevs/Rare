@@ -16,7 +16,7 @@ build_exe_options = {
         "unittest",
         "pydoc",
     ],
-    "include_msvcr": False,
+    "include_msvcr": True,
     "optimize": 2,
 }
 

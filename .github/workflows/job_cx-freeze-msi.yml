@@ -34,10 +34,10 @@ jobs:
       - name: Build
         run: |
           python3 freeze.py bdist_msi
-          mv dist/*.msi Rare.msi
+          mv dist/*.msi Rare-${{ inputs.version }}.msi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Rare-${{ inputs.version }}.msi
-          path: Rare.msi
+          path: Rare-${{ inputs.version }}.msi

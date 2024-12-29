@@ -65,14 +65,17 @@ jobs:
           --file-version=${{ inputs.version }}
           --product-version=${{ inputs.version }}
           rare
-      - name: Compress
+      - name: Strip
         run: |
           find rare.dist -iname "*.so*" -type f -exec strip --strip-all {} \;
           strip --strip-all rare.dist/Rare.bin
-          python -c "import shutil; shutil.make_archive('Rare', 'zip', 'rare.dist')"
+      - name: Compress
+        run: |
+          mv rare.dist Rare-${{ inputs.version }}
+          python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}', 'zip', '.', 'Rare-${{ inputs.version }}')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-portable-linux-${{ inputs.version }}.zip
-          path: Rare.zip
+          name: Rare-${{ inputs.version }}-linux.zip
+          path: Rare-${{ inputs.version }}.zip

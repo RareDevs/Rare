@@ -15,17 +15,11 @@ logger = getLogger("About")
 
 def versiontuple(v) -> Tuple[int, ...]:
     try:
-        vt = tuple(map(int, (v.split("."))))
-        # normalize version to 4 segments
-        if len(vt) > 4:
-            vt = vt[0:4]
-        if len(vt) < 4:
-            vt = (*vt, *(0 for _ in range(4 - len(vt))))
-        return vt
+        return tuple(map(int, (v.split("."))))
     except Exception as e:
         logger.error("Error while parsing version %s", v)
         logger.error(e)
-        return 9, 9, 9, 9
+        return 99, 99, 99, 999
 
 
 class About(QWidget):
@@ -43,11 +37,10 @@ class About(QWidget):
         self.ui.open_browser.setVisible(False)
         self.ui.open_browser.setEnabled(False)
 
+        self.releases_url = "https://api.github.com/repos/RareDevs/Rare/releases/latest"
+
         self.manager = QtRequests(parent=self)
-        self.manager.get(
-            "https://api.github.com/repos/RareDevs/Rare/releases/latest",
-            self.update_available_finished,
-        )
+        self.manager.get(self.releases_url, self.update_available_finished)
 
         self.ui.open_browser.clicked.connect(
             lambda: webbrowser.open("https://github.com/RareDevs/Rare/releases/latest")
@@ -58,10 +51,7 @@ class About(QWidget):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        self.manager.get(
-            "https://api.github.com/repos/RareDevs/Rare/releases/latest",
-            self.update_available_finished,
-        )
+        self.manager.get(self.releases_url, self.update_available_finished)
         super().showEvent(a0)
 
     def update_available_finished(self, data: dict):
