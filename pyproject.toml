@@ -134,6 +134,20 @@ force-exclude = '''
 )/
 '''
 
+[tool.poetry]
+name = "Rare"
+version = "1.10.11.0"
+authors = [
+    "Dummerle 44114474+Dummerle@users.noreply.github.com",
+    "loathingKernel 142770+loathingKernel@users.noreply.github.com",
+]
+maintainers = [
+    "loathingKernel 142770+loathingKernel@users.noreply.github.com",
+]
+description = "Open source alternative for Epic Games Launcher, using Legendary"
+readme = "README.md"
+
+
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.28.1"
@@ -159,3 +173,7 @@ Nuitka = "^2.4.8"
 pylint = "^3.2.7"
 black = "^24.3.0"
 PySide6-stubs = "^6.4.2.0"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
