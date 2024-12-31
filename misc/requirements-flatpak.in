@@ -1,11 +1,6 @@
-build
-setuptools
-setuptools-scm
-wheel
-installer
 requests < 3.0
-#QtAwesome
-#legendary-gl
-#orjson
+QtAwesome
+legendary-gl
+orjson
 vdf
 pypresence
