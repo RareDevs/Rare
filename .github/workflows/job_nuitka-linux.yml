@@ -29,7 +29,7 @@ jobs:
           pip3 install -r misc/requirements.in
       - name: Generate version information
         run: |
-          python3 -m setuptools_scm --force-write-version-files
+          SETUPTOOLS_SCM_PRETEND_VERSION=${{ inputs.version }} python3 -m setuptools_scm --force-write-version-files
       - name: Build
         run: >-
           python -m nuitka
