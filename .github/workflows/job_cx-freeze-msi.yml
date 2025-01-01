@@ -29,8 +29,10 @@ jobs:
         run: |
           pip3 install -r misc/requirements.in
       - name: Generate version information
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
-          SETUPTOOLS_SCM_PRETEND_VERSION=${{ inputs.version }} python3 -m setuptools_scm --force-write-version-files
+          python3 -m setuptools_scm --force-write-version-files
       - name: Build
         run: |
           python3 freeze.py bdist_msi

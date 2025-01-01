@@ -25,6 +25,8 @@ jobs:
       - run: "true"
 
   pypi:
+    if: ${{ true }}
+    needs: version
     name: PyPI
     uses: ./.github/workflows/job_pypi.yml
     secrets: inherit
