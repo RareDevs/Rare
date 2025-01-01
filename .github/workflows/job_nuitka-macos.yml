@@ -41,6 +41,8 @@ jobs:
         run: |
          python3 -m setuptools_scm --force-write-version-files
       - name: Build
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: >-
           arch -${{ matrix.arch }}
           python -m nuitka
