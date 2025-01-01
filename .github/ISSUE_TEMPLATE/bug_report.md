@@ -31,9 +31,9 @@ If applicable, add screenshots to help explain your problem.
 
 Please complete the following information
 - Operating system: [e.g. Manjaro/Windows 10]
-- Version [e.g. 1.6.2]
-- Installation method [e.g. pip/msi/AppImage]
-- Python version (if installed through `pip` or your package manager)
+- Version: [e.g. 1.6.2]
+- Installation method: [e.g. pip/msi/AppImage]
+- Python version: (if installed through `pip` or your package manager)
 
 **Additional context**
 
