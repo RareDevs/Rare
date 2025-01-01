@@ -1,6 +1,6 @@
 from rare._version import __version__, __version_tuple__
 
-__codename__ = "Garlic Crab"
+__codename__ = "Boga Discus"
 
 # For PyCharm profiler
 if __name__ == "__main__":
