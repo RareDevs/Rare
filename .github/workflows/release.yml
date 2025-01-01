@@ -13,8 +13,13 @@ permissions:
 
 jobs:
 
+  version:
+    name: Describe
+    uses: ./.github/workflows/job_version.yml
+
   title:
-    name: Version ${{ github.ref_name }}
+    needs: version
+    name: Version ${{ needs.version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - run: "true"
