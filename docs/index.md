@@ -84,6 +84,8 @@ Run it via:
 flatpak run io.github.dummerle.rare
 ```
 
+Alternatively, you can download the flatpak package from [our repository](https://github.com/RareDevs/io.github.dummerle.rare/releases)
+
 ### AppImage
 
 Available in [releases page](https://github.com/RareDevs/Rare/releases).

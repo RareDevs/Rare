@@ -3,7 +3,7 @@ import sys
 
 from setuptools_scm import ScmVersion, get_version
 
-def mkversion(ver: ScmVersion) -> str:
+def mknumeric(ver: ScmVersion) -> str:
     return f"{ver.tag}.{ver.distance}"
 
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         root='..',
         relative_to=__file__,
         git_describe_command=["git", "describe", "--dirty", "--long"],
-        version_scheme=mkversion,
+        version_scheme=mknumeric,
         local_scheme="no-local-version"
     )
     sys.stdout.write(version)

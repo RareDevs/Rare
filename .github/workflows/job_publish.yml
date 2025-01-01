@@ -31,7 +31,7 @@ jobs:
           - name: ${{ inputs.name2 }}
             file: ${{ inputs.file2 }}
     steps:
-    - name: Download ${{ matrix.name }} from artifact
+    - name: Download ${{ matrix.name }} from artifacts
       uses: actions/download-artifact@v4
       if: ${{ matrix.name != '' }}
       with:
