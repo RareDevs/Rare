@@ -91,7 +91,7 @@ git_describe_command = [ "git", "describe", "--dirty", "--long" ]
 version_scheme = "misc.mkversion:mknumeric"
 local_scheme = "no-local-version"
 version_file = "rare/_version.py"
-fallback_version = "1.11.1.0"
+fallback_version = "1.11.2.0"
 
 [tool.nuitka]
 assume-yes-for-downloads = true
@@ -115,8 +115,8 @@ output-filename = "Rare.exe"
 file-description = "Rare.exe"
 company-name = "RareDevs"
 product-name = "Rare"
-file-version = "1.11.1.0"
-product-version = "1.11.1.0"
+file-version = "1.11.2.0"
+product-version = "1.11.2.0"
 windows-console-mode = "disable"
 windows-icon-from-ico = "rare/resources/images/Rare.ico"
 
@@ -134,7 +134,7 @@ force-exclude = '''
 
 [tool.poetry]
 name = "Rare"
-version = "1.11.1.0"
+version = "1.11.2.0"
 authors = [
     "Dummerle 44114474+Dummerle@users.noreply.github.com",
     "loathingKernel 142770+loathingKernel@users.noreply.github.com",
