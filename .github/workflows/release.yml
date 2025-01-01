@@ -45,7 +45,7 @@ jobs:
     name: Nuitka Linux
     uses: ./.github/workflows/job_publish.yml
     with:
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}.zip
       name1: Rare-${{ needs.version.outputs.version }}-linux.zip
 
@@ -61,7 +61,7 @@ jobs:
     name: Nuitka MacOS
     uses: ./.github/workflows/job_publish.yml
     with:
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-arm64.app.zip
       name1: Rare-${{ needs.version.outputs.version }}-arm64-macos.app.zip
       file2: Rare-${{ needs.version.outputs.version }}-x86_64.app.zip
@@ -79,7 +79,7 @@ jobs:
     name: Nuitka Windows
     uses: ./.github/workflows/job_publish.yml
     with:
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}.zip
       name1: Rare-${{ needs.version.outputs.version }}-windows.zip
 
@@ -95,7 +95,7 @@ jobs:
     name: cx-Freeze AppImage
     uses: ./.github/workflows/job_publish.yml
     with:
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}.AppImage
       name1: Rare-${{ needs.version.outputs.version }}.AppImage
 
@@ -111,7 +111,7 @@ jobs:
     name: cx-Freeze MacOS
     uses: ./.github/workflows/job_publish.yml
     with:
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-arm64.dmg
       name1: Rare-${{ needs.version.outputs.version }}-arm64.dmg
       file2: Rare-${{ needs.version.outputs.version }}-x86_64.dmg
@@ -129,6 +129,6 @@ jobs:
     name: cx-Freeze Windows
     uses: ./.github/workflows/job_publish.yml
     with:
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}.msi
       name1: Rare-${{ needs.version.outputs.version }}.msi
