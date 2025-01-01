@@ -60,7 +60,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
   nuitka-linux-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, nuitka-linux]
+    needs: [version, nuitka-linux, prerelease]
     name: Nuitka Linux
     uses: ./.github/workflows/job_publish.yml
     with:
@@ -77,7 +77,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
   nuitka-macos-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, nuitka-macos]
+    needs: [version, nuitka-macos, prerelease]
     name: Nuitka MacOS
     uses: ./.github/workflows/job_publish.yml
     with:
@@ -96,7 +96,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
   nuitka-windows-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, nuitka-windows]
+    needs: [version, nuitka-windows, prerelease]
     name: Nuitka Windows
     uses: ./.github/workflows/job_publish.yml
     with:
@@ -113,7 +113,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-appimage-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, cx-freeze-appimage]
+    needs: [version, cx-freeze-appimage, prerelease]
     name: cx-Freeze AppImage
     uses: ./.github/workflows/job_publish.yml
     with:
@@ -130,7 +130,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-dmg-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, cx-freeze-dmg]
+    needs: [version, cx-freeze-dmg, prerelease]
     name: cx-Freeze MacOS
     uses: ./.github/workflows/job_publish.yml
     with:
@@ -149,7 +149,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-msi-release:
     if: ${{ inputs.prerelease }}
-    needs: [version, prerelease, cx-freeze-msi]
+    needs: [version, cx-freeze-msi, prerelease]
     name: cx-Freeze Windows
     uses: ./.github/workflows/job_publish.yml
     with:
