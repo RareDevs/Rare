@@ -482,6 +482,10 @@ class RareGame(RareGameSlim):
             self.__save_metadata()
         return self.metadata.grant_date
 
+    def set_tags(self, tags: List[str]) -> None:
+        self.metadata.tags = tags
+        self.__save_metadata()
+
     def set_origin_attributes(self, path: str, size: int = 0) -> None:
         self.__origin_install_path = path
         self.__origin_install_size = size

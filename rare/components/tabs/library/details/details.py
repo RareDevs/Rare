@@ -12,7 +12,7 @@ from PySide6.QtCore import (
 )
 from PySide6.QtWidgets import (
     QWidget,
-    QMessageBox,
+    QMessageBox, QLineEdit, QHBoxLayout, QPushButton
 )
 
 from rare.models.install import SelectiveDownloadsModel, MoveGameModel
@@ -85,8 +85,16 @@ class GameDetails(QWidget, SideTabContents):
             "na": self.tr("Not applicable"),
         }
 
+        self.ui.hidden_check.checkStateChanged.connect(self.__on_tag_change)
+        self.ui.favorites_check.checkStateChanged.connect(self.__on_tag_change)
+        self.ui.backlog_check.checkStateChanged.connect(self.__on_tag_change)
+        self.ui.completed_check.checkStateChanged.connect(self.__on_tag_change)
+
+        self.custom_tags: list[QWidget] = []
+        self.ui.add_tag_button.setIcon(qta_icon("mdi.plus"))
+        self.ui.add_tag_button.clicked.connect(lambda: self.__on_tag_add())
+
         # lk: hide unfinished things
-        self.ui.tags_group.setVisible(False)
         self.ui.requirements_group.setVisible(False)
 
     @Slot()
@@ -155,7 +163,8 @@ class GameDetails(QWidget, SideTabContents):
             QMessageBox.warning(
                 self,
                 self.tr("Error - {}").format(self.rgame.app_title),
-                self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.rgame.app_title),
+                self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(
+                    self.rgame.app_title),
             )
             return
         if self.rgame.sdl_name is not None:
@@ -273,6 +282,44 @@ class GameDetails(QWidget, SideTabContents):
         )
 
     @Slot()
+    def __on_tag_change(self):
+        tag_list = []
+        if self.ui.hidden_check.isChecked():
+            tag_list.append("hidden")
+        if self.ui.favorites_check.isChecked():
+            tag_list.append("favorite")
+        if self.ui.backlog_check.isChecked():
+            tag_list.append("backlog")
+        if self.ui.completed_check.isChecked():
+            tag_list.append("completed")
+
+        for w in self.custom_tags:
+            tag_list.append(w.layout().itemAt(0).widget().text())
+
+        logger.info(f"Tags: {tag_list}")
+
+        self.rgame.set_tags(tag_list)
+
+
+    @Slot()
+    def __on_tag_add(self, text=""):
+        widget = QWidget()
+        layout = QHBoxLayout()
+        edit = QLineEdit(text)
+        edit.editingFinished.connect(self.__on_tag_change)
+        layout.addWidget(edit)
+        btn = QPushButton(qta_icon("mdi.trash-can"), None)
+        def delete_widget():
+            self.custom_tags.remove(widget)
+            widget.deleteLater()
+            self.__on_tag_change()
+        btn.clicked.connect(delete_widget)
+        layout.addWidget(btn)
+        widget.setLayout(layout)
+        self.ui.custom_tag_layout.addWidget(widget)
+        self.custom_tags.append(widget)
+
+    @Slot()
     def __update_widget(self):
         """ React to state updates from RareGame """
         self.image.setPixmap(self.rgame.get_pixmap(ImageSize.DisplayTall, True))
@@ -366,6 +413,20 @@ class GameDetails(QWidget, SideTabContents):
             self.ui.game_actions_stack.setCurrentWidget(self.ui.installed_page)
         else:
             self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
+
+        for w in self.custom_tags:
+            w.deleteLater()
+        self.custom_tags.clear()
+
+        self.ui.hidden_check.setChecked("hidden" in self.rgame.metadata.tags)
+        self.ui.favorites_check.setChecked("favorite" in self.rgame.metadata.tags)
+        self.ui.backlog_check.setChecked("backlog" in self.rgame.metadata.tags)
+        self.ui.completed_check.setChecked("completed" in self.rgame.metadata.tags)
+
+        for tag in self.rgame.metadata.tags:
+            if tag in ["hidden", "favorite", "backlog", "completed"]:
+                continue
+            self.__on_tag_add(tag)
 
     @Slot(RareGame)
     def update_game(self, rgame: RareGame):

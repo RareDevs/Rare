@@ -38,15 +38,12 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QCheckBox" name="hidden_check">
+        <item row="2" column="0" colspan="2">
+         <widget class="QCheckBox" name="backlog_check">
           <property name="text">
-           <string>Hidden</string>
+           <string>Backlog</string>
           </property>
          </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLineEdit" name="custom1_edit"/>
         </item>
         <item row="1" column="0" colspan="2">
          <widget class="QCheckBox" name="favorites_check">
@@ -55,29 +52,29 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QCheckBox" name="custom1_check">
+        <item row="0" column="0" colspan="2">
+         <widget class="QCheckBox" name="hidden_check">
           <property name="text">
-           <string notr="true"/>
+           <string>Hidden</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QCheckBox" name="backlog_check">
+        <item row="5" column="0" colspan="2">
+         <layout class="QVBoxLayout" name="custom_tag_layout">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+         </layout>
+        </item>
+        <item row="7" column="0" colspan="2">
+         <widget class="QPushButton" name="add_tag_button">
           <property name="text">
-           <string>Backlog</string>
+           <string/>
           </property>
          </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QCheckBox" name="custom2_check">
-          <property name="text">
-           <string notr="true"/>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLineEdit" name="custom2_edit"/>
         </item>
        </layout>
       </widget>
