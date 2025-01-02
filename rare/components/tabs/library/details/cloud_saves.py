@@ -42,6 +42,7 @@ class CloudSaves(QWidget, SideTabContents):
         self.sync_ui.setupUi(self.sync_widget)
 
         self.info_label = QLabel(self.tr("<b>This game doesn't support cloud saves</b>"))
+        self.info_label_not_installed = QLabel(self.tr("<b>Install this game to see cloud saves</b>"))
 
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
@@ -86,6 +87,7 @@ class CloudSaves(QWidget, SideTabContents):
         layout.addWidget(self.sync_widget)
         layout.addWidget(self.cloud_widget)
         layout.addWidget(self.info_label)
+        layout.addWidget(self.info_label_not_installed)
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding))
 
     @staticmethod
@@ -169,16 +171,16 @@ class CloudSaves(QWidget, SideTabContents):
             self.cloud_save_path_edit.setText(path)
 
     def __update_widget(self):
-        supports_saves = self.rgame.igame is not None and (
-                self.rgame.game.supports_cloud_saves or self.rgame.game.supports_mac_cloud_saves
-        )
+        supports_saves = self.rgame.game.supports_cloud_saves or self.rgame.game.supports_mac_cloud_saves
+        saves_ready = self.rgame.igame is not None and supports_saves
 
         self.sync_widget.setEnabled(
-            bool(supports_saves and self.rgame.save_path))  # and not self.rgame.is_save_up_to_date))
+            bool(saves_ready and self.rgame.save_path))  # and not self.rgame.is_save_up_to_date))
 
-        self.cloud_widget.setEnabled(supports_saves)
-        self.info_label.setVisible(not supports_saves)
-        if not supports_saves:
+        self.cloud_widget.setEnabled(saves_ready)
+        self.info_label.setVisible(not saves_ready and not supports_saves)
+        self.info_label_not_installed.setVisible(supports_saves and not self.rgame.is_installed)
+        if not saves_ready:
             self.sync_ui.date_info_local.setText("None")
             self.sync_ui.age_label_local.setText("None")
             self.sync_ui.date_info_remote.setText("None")
