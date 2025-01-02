@@ -71,6 +71,9 @@
         </item>
         <item row="7" column="0" colspan="2">
          <widget class="QPushButton" name="add_tag_button">
+          <property name="toolTip">
+           <string>Add custom tag</string>
+          </property>
           <property name="text">
            <string/>
           </property>
