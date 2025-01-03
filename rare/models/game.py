@@ -484,7 +484,7 @@ class RareGame(RareGameSlim):
 
     def set_tags(self, tags: List[str]) -> None:
         self.metadata.tags.clear()
-        self.metadata.tags.extend(tags)
+        self.metadata.tags.extend(map(lambda x: x.lower() ,tags))
         self.__save_metadata()
 
     def set_origin_attributes(self, path: str, size: int = 0) -> None:
