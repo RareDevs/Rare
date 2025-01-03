@@ -33,6 +33,8 @@ class ViewContainer(QWidget):
             visible = search_text in widget.rgame.metadata.tags
         elif library_filter == LibraryFilter.HIDDEN:
             visible = "hidden" in widget.rgame.metadata.tags
+        elif library_filter == LibraryFilter.FAVORITES:
+            visible = "favorite" in widget.rgame.metadata.tags
         elif "hidden" in widget.rgame.metadata.tags:
             visible = False
         elif library_filter == LibraryFilter.INSTALLED:

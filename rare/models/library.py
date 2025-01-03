@@ -15,6 +15,7 @@ class LibraryFilter(IntEnum):
     MAC = 6
     INSTALLABLE = 7
     INCLUDE_UE = 8
+    FAVORITES = 9
 
 
 class LibraryOrder(IntEnum):

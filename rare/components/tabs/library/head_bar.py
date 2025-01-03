@@ -40,6 +40,7 @@ class LibraryHeadBar(QWidget):
             LibraryFilter.INSTALLED: self.tr("Installed"),
             LibraryFilter.OFFLINE: self.tr("Offline"),
             LibraryFilter.HIDDEN: self.tr("Hidden"),
+            LibraryFilter.FAVORITES: self.tr("Favorites"),
         }
         for data, text in filters.items():
             self.filter.addItem(text, data)
