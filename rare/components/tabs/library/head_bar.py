@@ -159,7 +159,6 @@ class LibraryHeadBar(QWidget):
 
     def tag_updated(self):
         wordlist = list(map(lambda x: "::" + x, self.rcore.tag_list))
-        print(wordlist)
         self.search_bar.completer().model().setStringList(wordlist)
 
     def set_games_count(self, inst: int, avail: int) -> None:

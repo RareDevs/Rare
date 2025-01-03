@@ -300,7 +300,7 @@ class GameDetails(QWidget, SideTabContents):
         for w in self.custom_tags:
             tag_list.append(w.layout().itemAt(0).widget().text())
 
-        logger.info(f"Saving Tags for {self.rgame.game.app_title}: {tag_list}")
+        logger.debug(f"Saving Tags for {self.rgame.game.app_title}: {tag_list}")
 
         self.rgame.set_tags(tag_list)
 
@@ -428,8 +428,6 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.backlog_check.setChecked("backlog" in self.rgame.metadata.tags)
         self.ui.completed_check.setChecked("completed" in self.rgame.metadata.tags)
         self.editing = False
-
-        logger.info(f"Tags: {self.rgame.metadata.tags}")
 
         for tag in self.rgame.metadata.tags:
             if tag in ["hidden", "favorite", "backlog", "completed"]:
