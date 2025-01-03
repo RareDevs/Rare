@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'legendary.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,7 @@ class Ui_LegendarySettings(object):
     def setupUi(self, LegendarySettings):
         if not LegendarySettings.objectName():
             LegendarySettings.setObjectName(u"LegendarySettings")
-        LegendarySettings.resize(608, 420)
+        LegendarySettings.resize(621, 420)
         LegendarySettings.setWindowTitle(u"LegendarySettings")
         self.legendary_layout = QHBoxLayout(LegendarySettings)
         self.legendary_layout.setObjectName(u"legendary_layout")
@@ -32,7 +32,7 @@ class Ui_LegendarySettings(object):
         self.left_layout.setObjectName(u"left_layout")
         self.install_dir_group = QGroupBox(LegendarySettings)
         self.install_dir_group.setObjectName(u"install_dir_group")
-        self.install_dir_group.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.install_dir_group.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
         self.install_dir_layout = QVBoxLayout(self.install_dir_group)
         self.install_dir_layout.setObjectName(u"install_dir_layout")
 
@@ -40,10 +40,10 @@ class Ui_LegendarySettings(object):
 
         self.download_group = QGroupBox(LegendarySettings)
         self.download_group.setObjectName(u"download_group")
-        self.download_group.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.download_group.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
         self.download_layout = QFormLayout(self.download_group)
         self.download_layout.setObjectName(u"download_layout")
-        self.download_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.download_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.max_workers_label = QLabel(self.download_group)
         self.max_workers_label.setObjectName(u"max_workers_label")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
@@ -58,7 +58,7 @@ class Ui_LegendarySettings(object):
         self.max_workers_layout.setObjectName(u"max_workers_layout")
         self.max_worker_spin = QSpinBox(self.download_group)
         self.max_worker_spin.setObjectName(u"max_worker_spin")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.max_worker_spin.sizePolicy().hasHeightForWidth())
@@ -78,7 +78,7 @@ class Ui_LegendarySettings(object):
         self.max_workers_layout.addWidget(self.max_workers_info_label)
 
 
-        self.download_layout.setLayout(0, QFormLayout.ItemRole.FieldRole, self.max_workers_layout)
+        self.download_layout.setLayout(0, QFormLayout.FieldRole, self.max_workers_layout)
 
         self.max_memory_label = QLabel(self.download_group)
         self.max_memory_label.setObjectName(u"max_memory_label")
@@ -105,7 +105,7 @@ class Ui_LegendarySettings(object):
         self.max_memory_layout.addWidget(self.max_memory_info_label)
 
 
-        self.download_layout.setLayout(1, QFormLayout.ItemRole.FieldRole, self.max_memory_layout)
+        self.download_layout.setLayout(1, QFormLayout.FieldRole, self.max_memory_layout)
 
         self.preferred_cdn_label = QLabel(self.download_group)
         self.preferred_cdn_label.setObjectName(u"preferred_cdn_label")
@@ -115,7 +115,7 @@ class Ui_LegendarySettings(object):
         self.preferred_cdn_line = QLineEdit(self.download_group)
         self.preferred_cdn_line.setObjectName(u"preferred_cdn_line")
 
-        self.download_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.preferred_cdn_line)
+        self.download_layout.setWidget(2, QFormLayout.FieldRole, self.preferred_cdn_line)
 
         self.disable_https_label = QLabel(self.download_group)
         self.disable_https_label.setObjectName(u"disable_https_label")
@@ -125,7 +125,7 @@ class Ui_LegendarySettings(object):
         self.disable_https_check = QCheckBox(self.download_group)
         self.disable_https_check.setObjectName(u"disable_https_check")
 
-        self.download_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.disable_https_check)
+        self.download_layout.setWidget(3, QFormLayout.FieldRole, self.disable_https_check)
 
 
         self.left_layout.addWidget(self.download_group)
@@ -146,7 +146,7 @@ class Ui_LegendarySettings(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.locale_group.sizePolicy().hasHeightForWidth())
         self.locale_group.setSizePolicy(sizePolicy2)
-        self.locale_group.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.locale_group.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
         self.locale_layout = QVBoxLayout(self.locale_group)
         self.locale_layout.setObjectName(u"locale_layout")
 
@@ -154,7 +154,7 @@ class Ui_LegendarySettings(object):
 
         self.cleanup_group = QGroupBox(LegendarySettings)
         self.cleanup_group.setObjectName(u"cleanup_group")
-        self.cleanup_group.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.cleanup_group.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
         self.cleanup_layout = QVBoxLayout(self.cleanup_group)
         self.cleanup_layout.setObjectName(u"cleanup_layout")
         self.clean_keep_manifests_button = QPushButton(self.cleanup_group)
