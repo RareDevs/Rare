@@ -2,6 +2,7 @@ import configparser
 import os
 import time
 from argparse import Namespace
+from collections import defaultdict
 from itertools import chain
 from logging import getLogger
 from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple, Set
@@ -297,6 +298,7 @@ class RareCore(QObject):
         rgame.signals.game.finished.connect(self.__signals.discord_rpc.remove_presence)
 
         self.__library[rgame.app_name] = rgame
+        self.__signals.application.update_tag_list.emit()
 
     def __filter_games(self, condition: Callable[[RareGame], bool]) -> Iterator[RareGame]:
         return filter(condition, self.__library.values())
@@ -362,6 +364,13 @@ class RareCore(QObject):
         self.progress.emit(100, self.tr("Launching Rare"))
         self.completed.emit()
         QTimer.singleShot(100, self.__post_init)
+
+    @property
+    def tag_list(self) -> list[str]:
+        tags = {"hidden", "favorite", "backlog", "completed"}
+        for rgame in self.games:
+            tags.update(map(lambda x: x.lower(), rgame.metadata.tags))
+        return sorted(tags)
 
     def fetch(self):
         self.__start_time = time.perf_counter()
