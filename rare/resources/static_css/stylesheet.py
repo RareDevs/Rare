@@ -22,6 +22,18 @@ def css_name(widget: Union[wrappertype, QObject, Type], subwidget: str = ""):
 css = qstylizer.style.StyleSheet()
 
 
+# Common height for some broken elements
+for elem in (
+    css.QPushButton,
+    css.QProgressBar,
+    css.QSpinBox,
+    css.QToolButton,
+    css.QLineEdit,
+    css.QComboBox,
+):
+    elem.setValues(minHeight="2.75ex")
+
+
 # Generic flat button
 css['QPushButton[flat="true"]'].setValues(
     border="0px",
