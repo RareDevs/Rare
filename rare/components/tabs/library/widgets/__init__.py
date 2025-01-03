@@ -28,7 +28,10 @@ class ViewContainer(QWidget):
 
     @staticmethod
     def __visibility(widget: ViewWidget, library_filter, search_text) -> Tuple[bool, float]:
-        if library_filter == LibraryFilter.HIDDEN:
+        if search_text.startswith("::"):
+            search_text = search_text[2:]
+            visible = search_text in widget.rgame.metadata.tags
+        elif library_filter == LibraryFilter.HIDDEN:
             visible = "hidden" in widget.rgame.metadata.tags
         elif "hidden" in widget.rgame.metadata.tags:
             visible = False
@@ -52,6 +55,7 @@ class ViewContainer(QWidget):
         if (
             search_text not in widget.rgame.app_name.lower()
             and search_text not in widget.rgame.app_title.lower()
+            and search_text not in widget.rgame.metadata.tags
         ):
             opacity = 0.25
         else:
@@ -112,9 +116,13 @@ class IconViewContainer(ViewContainer):
         self._filter_view(IconGameWidget, filter_by, search_text)
 
     def order_view(self, order_by: LibraryOrder, search_text: str = ""):
-        if search_text:
+        if search_text and not search_text.startswith("::"):
             self.layout().sort(
                 lambda x: (search_text not in x.widget().rgame.app_title.lower(),)
+            )
+        elif search_text and search_text.startswith("::"):
+            self.layout().sort(
+                lambda x: (search_text in x.widget().rgame.metadata.tags,)
             )
         else:
             if (newest := order_by == LibraryOrder.NEWEST) or order_by == LibraryOrder.OLDEST:

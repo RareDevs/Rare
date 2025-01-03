@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QMenu,
     QSpacerItem,
     QSizePolicy,
+    QCompleter,
 )
 
 from rare.models.options import options, LibraryFilter, LibraryOrder
@@ -110,10 +111,19 @@ class LibraryHeadBar(QWidget):
         integrations.setIcon(qta_icon("mdi.tools"))
         integrations.setMenu(integrations_menu)
 
-        self.search_bar = ButtonLineEdit("fa5s.search", placeholder_text=self.tr("Search"))
+        self.search_bar = ButtonLineEdit("fa5s.search", placeholder_text=self.tr("Search (use :: to filter by tag)"))
         self.search_bar.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         self.search_bar.setObjectName("SearchBar")
         self.search_bar.setMinimumWidth(250)
+
+        wordlist = {"hidden", "favorite", "backlog", "completed"}
+        for game in self.rcore.games:
+            wordlist.update(game.metadata.tags)
+
+        wordlist = list(map(lambda x: "::" + x.lower(), wordlist))
+        completer = QCompleter(wordlist, self.search_bar)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.search_bar.setCompleter(completer)
 
         installed_tooltip = self.tr("Installed games")
         self.installed_icon = QLabel(parent=self)

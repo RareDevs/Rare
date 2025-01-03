@@ -85,6 +85,8 @@ class GameDetails(QWidget, SideTabContents):
             "na": self.tr("Not applicable"),
         }
 
+        self.editing = False
+
         self.ui.hidden_check.checkStateChanged.connect(self.__on_tag_change)
         self.ui.favorites_check.checkStateChanged.connect(self.__on_tag_change)
         self.ui.backlog_check.checkStateChanged.connect(self.__on_tag_change)
@@ -283,6 +285,8 @@ class GameDetails(QWidget, SideTabContents):
 
     @Slot()
     def __on_tag_change(self):
+        if self.editing:
+            return
         tag_list = []
         if self.ui.hidden_check.isChecked():
             tag_list.append("hidden")
@@ -296,7 +300,7 @@ class GameDetails(QWidget, SideTabContents):
         for w in self.custom_tags:
             tag_list.append(w.layout().itemAt(0).widget().text())
 
-        logger.info(f"Tags: {tag_list}")
+        logger.info(f"Saving Tags for {self.rgame.game.app_title}: {tag_list}")
 
         self.rgame.set_tags(tag_list)
 
@@ -418,10 +422,14 @@ class GameDetails(QWidget, SideTabContents):
             w.deleteLater()
         self.custom_tags.clear()
 
+        self.editing = True
         self.ui.hidden_check.setChecked("hidden" in self.rgame.metadata.tags)
         self.ui.favorites_check.setChecked("favorite" in self.rgame.metadata.tags)
         self.ui.backlog_check.setChecked("backlog" in self.rgame.metadata.tags)
         self.ui.completed_check.setChecked("completed" in self.rgame.metadata.tags)
+        self.editing = False
+
+        logger.info(f"Tags: {self.rgame.metadata.tags}")
 
         for tag in self.rgame.metadata.tags:
             if tag in ["hidden", "favorite", "backlog", "completed"]:
