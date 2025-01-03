@@ -31,6 +31,7 @@ class LibraryHeadBar(QWidget):
         super(LibraryHeadBar, self).__init__(parent=parent)
         self.logger = logging.getLogger(type(self).__name__)
         self.rcore = RareCore.instance()
+        self.signals = RareCore.instance().signals()
         self.settings = QSettings(self)
 
         self.filter = QComboBox(self)
@@ -115,15 +116,11 @@ class LibraryHeadBar(QWidget):
         self.search_bar.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         self.search_bar.setObjectName("SearchBar")
         self.search_bar.setMinimumWidth(250)
-
-        wordlist = {"hidden", "favorite", "backlog", "completed"}
-        for game in self.rcore.games:
-            wordlist.update(game.metadata.tags)
-
-        wordlist = list(map(lambda x: "::" + x.lower(), wordlist))
-        completer = QCompleter(wordlist, self.search_bar)
+        completer = QCompleter([], self.search_bar)
         completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.search_bar.setCompleter(completer)
+        self.signals.application.update_tag_list.connect(self.tag_updated)
+        self.tag_updated()
 
         installed_tooltip = self.tr("Installed games")
         self.installed_icon = QLabel(parent=self)
@@ -158,6 +155,11 @@ class LibraryHeadBar(QWidget):
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
         layout.addWidget(integrations)
         layout.addWidget(self.refresh_list)
+
+    def tag_updated(self):
+        wordlist = list(map(lambda x: "::" + x, self.rcore.tag_list))
+        print(wordlist)
+        self.search_bar.completer().model().setStringList(wordlist)
 
     def set_games_count(self, inst: int, avail: int) -> None:
         self.installed_label.setText(str(inst))

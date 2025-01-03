@@ -45,6 +45,7 @@ class GamesLibrary(QStackedWidget):
         self.game_info_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
         # Update visibility of hidden games
         self.game_info_page.back_clicked.connect(lambda: self.filter_games(self.head_bar.current_filter()))
+        self.game_info_page.back_clicked.connect(lambda: self.signals.application.update_tag_list.emit())
         self.game_info_page.import_clicked.connect(self.show_import)
         self.addWidget(self.game_info_page)
 
