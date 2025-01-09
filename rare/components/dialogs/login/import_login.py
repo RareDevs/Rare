@@ -1,4 +1,5 @@
 import os
+import platform
 from getpass import getuser
 from logging import getLogger
 
@@ -17,7 +18,7 @@ class ImportLogin(QFrame):
     isValid = Signal(bool)
 
     # FIXME: Use pathspec instead of duplicated code
-    if os.name == "nt":
+    if platform.system() == "Windows":
         localappdata = os.path.expandvars("%LOCALAPPDATA%")
     else:
         localappdata = os.path.join("drive_c/users", getuser(), "Local Settings/Application Data")
@@ -35,7 +36,7 @@ class ImportLogin(QFrame):
         self.text_egl_found = self.tr("Found EGL Program Data. Click 'Next' to import them.")
         self.text_egl_notfound = self.tr("Could not find EGL Program Data. ")
 
-        if os.name == "nt":
+        if platform.system() == "Windows":
             if not self.core.egl.appdata_path and os.path.exists(self.egl_appdata):
                 self.core.egl.appdata_path = self.egl_appdata
             if not self.core.egl.appdata_path:
@@ -43,6 +44,7 @@ class ImportLogin(QFrame):
             else:
                 self.ui.status_label.setText(self.text_egl_found)
                 self.found = True
+            self.ui.prefix_combo.setCurrentText(self.egl_appdata)
         else:
             if programdata_path := self.core.egl.programdata_path:
                 if wine_pfx := programdata_path.split("drive_c")[0]:
@@ -78,7 +80,7 @@ class ImportLogin(QFrame):
             self.ui.prefix_combo.setCurrentText(names[0])
 
     def is_valid(self) -> bool:
-        if os.name == "nt":
+        if platform.system() == "Windows":
             return self.found
         else:
             egl_wine_pfx = self.ui.prefix_combo.currentText()
