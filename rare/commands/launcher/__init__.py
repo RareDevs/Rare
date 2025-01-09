@@ -312,9 +312,8 @@ class RareLauncher(RareApp):
             self.logger.info("%s %s", args.executable, " ".join(args.arguments))
             if self.console:
                 self.console.log(f"Dry run {self.rgame.app_title} ({self.rgame.app_name})")
-                self.console.log(f"{shlex.join([args.executable] + args.arguments)}")
+                self.console.log(f"{shlex.join((args.executable, *args.arguments))}")
                 self.console.accept_close = True
-            print(shlex.join([args.executable] + args.arguments))
             self.stop()
             return
 
@@ -329,8 +328,12 @@ class RareLauncher(RareApp):
         if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
             if self.console:
                 self.console.log("Launching as a detached process")
-            subprocess.Popen([args.executable] + args.arguments, cwd=args.working_directory,
-                             env={i: args.environment.value(i) for i in args.environment.keys()})
+            subprocess.Popen(
+                (args.executable, *args.arguments),
+                cwd=args.working_directory,
+                env={i: args.environment.value(i) for i in args.environment.keys()},
+                shell=True
+            )
             self.stop()  # stop because we do not attach to the output
             return
 
