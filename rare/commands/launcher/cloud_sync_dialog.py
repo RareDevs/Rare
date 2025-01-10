@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QDialo
 from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
 
-from rare.ui.components.tabs.games.game_info.cloud_sync_widget import Ui_CloudSyncWidget
+from rare.ui.components.tabs.library.details.cloud_sync_widget import Ui_CloudSyncWidget
 from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title
 

@@ -6,8 +6,8 @@ from PySide6.QtWidgets import QFrame, QMessageBox, QToolBox
 
 from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
-from rare.ui.components.tabs.games.game_info.dlcs import Ui_GameDlcs
-from rare.ui.components.tabs.games.game_info.dlc_widget import Ui_GameDlcWidget
+from rare.ui.components.tabs.library.details.dlcs import Ui_GameDlcs
+from rare.ui.components.tabs.library.details.dlc_widget import Ui_GameDlcWidget
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
 from rare.utils.misc import widget_object_name, qta_icon

@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareEosOverlay
 from rare.shared import RareCore
-from rare.ui.components.tabs.games.integrations.eos_widget import Ui_EosWidget
+from rare.ui.components.tabs.library.integrations.eos_widget import Ui_EosWidget
 from rare.utils import config_helper as config
 from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel

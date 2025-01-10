@@ -88,17 +88,17 @@
 <context>
     <name>AvailableGameDlcWidget</name>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="80"/>
+        <location filename="../../components/tabs/library/details/game_dlc.py" line="80"/>
         <source>Install DLC</source>
         <translation>Встановити DLC</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="92"/>
+        <location filename="../../components/tabs/library/details/game_dlc.py" line="92"/>
         <source>Error</source>
         <translation>Помилка</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="92"/>
+        <location filename="../../components/tabs/library/details/game_dlc.py" line="92"/>
         <source>Base Game is not installed. Please install {} first</source>
         <translation>Базова гра не встановлена. Спочатку встановіть {}</translation>
     </message>
@@ -152,37 +152,37 @@
 <context>
     <name>CloudSaves</name>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="42"/>
+        <location filename="../../components/tabs/library/details/cloud_saves.py" line="42"/>
         <source>&lt;b&gt;This game doesn&apos;t support cloud saves&lt;/b&gt;</source>
         <translation>&lt;b&gt;Ця гра не підтримує хмарні збереження&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="63"/>
+        <location filename="../../components/tabs/library/details/cloud_saves.py" line="63"/>
         <source>Use &quot;Calculate path&quot; or &quot;Browse&quot; ...</source>
         <translation>Використовуйте «Обчислити шлях» або «Огляд» ...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="76"/>
+        <location filename="../../components/tabs/library/details/cloud_saves.py" line="76"/>
         <source>Calculate path</source>
         <translation>Обчислити шлях</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="130"/>
+        <location filename="../../components/tabs/library/details/cloud_saves.py" line="130"/>
         <source>Loading...</source>
         <translation>Завантаження...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="152"/>
+        <location filename="../../components/tabs/library/details/cloud_saves.py" line="152"/>
         <source>Error - {}</source>
         <translation>Помилка - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="193"/>
+        <location filename="../../components/tabs/library/details/cloud_saves.py" line="193"/>
         <source>Newer</source>
         <translation>Новіші</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/cloud_saves.py" line="152"/>
+        <location filename="../../components/tabs/library/details/cloud_saves.py" line="152"/>
         <source>Error while calculating path for &lt;b&gt;{}&lt;/b&gt;. Insufficient permissions to create &lt;b&gt;{}&lt;/b&gt;</source>
         <translation type="unfinished"/>
     </message>
@@ -190,17 +190,17 @@
 <context>
     <name>CloudSettingsWidget</name>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/cloud_settings_widget.py" line="40"/>
+        <location filename="../../ui/components/tabs/library/details/cloud_settings_widget.py" line="40"/>
         <source>Settings</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/cloud_settings_widget.py" line="41"/>
+        <location filename="../../ui/components/tabs/library/details/cloud_settings_widget.py" line="41"/>
         <source>Enable sync</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/cloud_settings_widget.py" line="42"/>
+        <location filename="../../ui/components/tabs/library/details/cloud_settings_widget.py" line="42"/>
         <source>Saves path</source>
         <translation type="unfinished"/>
     </message>
@@ -226,22 +226,22 @@
 <context>
     <name>CloudSyncWidget</name>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/cloud_sync_widget.py" line="90"/>
+        <location filename="../../ui/components/tabs/library/details/cloud_sync_widget.py" line="90"/>
         <source>Local</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/cloud_sync_widget.py" line="91"/>
+        <location filename="../../ui/components/tabs/library/details/cloud_sync_widget.py" line="91"/>
         <source>Upload</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/cloud_sync_widget.py" line="92"/>
+        <location filename="../../ui/components/tabs/library/details/cloud_sync_widget.py" line="92"/>
         <source>Cloud</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/cloud_sync_widget.py" line="93"/>
+        <location filename="../../ui/components/tabs/library/details/cloud_sync_widget.py" line="93"/>
         <source>Download</source>
         <translation type="unfinished"/>
     </message>
@@ -569,22 +569,22 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>EGLSyncExportGroup</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="312"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="312"/>
         <source>Exportable games</source>
         <translation>Ігри, які можна експортувати</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="313"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="313"/>
         <source>No games to export to EGL</source>
         <translation>Немає ігор для експорту в EGL</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="314"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="314"/>
         <source>Export</source>
         <translation>Експорт</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="330"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="330"/>
         <source>The following errors occurred while exporting.</source>
         <translation>Під час експорту виникли такі помилки.</translation>
     </message>
@@ -592,47 +592,47 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>EGLSyncGroup</name>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/egl_sync_group.py" line="47"/>
+        <location filename="../../ui/components/tabs/library/integrations/egl_sync_group.py" line="47"/>
         <source>Sync with Epic Games Launcher</source>
         <translation>Синхронізація з Epic Games Launcher</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/egl_sync_group.py" line="48"/>
+        <location filename="../../ui/components/tabs/library/integrations/egl_sync_group.py" line="48"/>
         <source>Prefix/Manifest path</source>
         <translation>Шлях префікса/маніфесту</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/egl_sync_group.py" line="51"/>
+        <location filename="../../ui/components/tabs/library/integrations/egl_sync_group.py" line="51"/>
         <source>Estimated path</source>
         <translation>Передбачуваний шлях</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/egl_sync_group.py" line="49"/>
+        <location filename="../../ui/components/tabs/library/integrations/egl_sync_group.py" line="49"/>
         <source>Enable automatic sync</source>
         <translation>Увімкнути автоматичну синхронізацію</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="90"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="90"/>
         <source>Updating...</source>
         <translation>Оновлення...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="33"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="33"/>
         <source>Path to the Wine prefix where EGL is installed, or the Manifests folder</source>
         <translation>Шлях до префікса Wine, де встановлено EGL, або теки Manifests</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="98"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="98"/>
         <source>Default Wine prefix is unset, or path does not exist. Create it or configure it in Settings -&gt; Linux.</source>
         <translation>Префікс Wine за замовчуванням не встановлено, або шлях не існує. Створіть його або налаштуйте в Налаштування -&gt; Linux.</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="105"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="105"/>
         <source>Default Wine prefix is set but EGL manifests path does not exist. Your configured default Wine prefix might not be where EGL is installed.</source>
         <translation>Префікс Wine за замовчуванням встановлено, але шлях до маніфесту EGL не існує. Ваш налаштований за умовчанням префікс Wine може бути не там, де встановлено EGL.</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/egl_sync_group.py" line="50"/>
+        <location filename="../../ui/components/tabs/library/integrations/egl_sync_group.py" line="50"/>
         <source>This will immediately synchronize with EGL</source>
         <translation type="unfinished"/>
     </message>
@@ -640,22 +640,22 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>EGLSyncImportGroup</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="350"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="350"/>
         <source>Importable games</source>
         <translation>Ігри, які можна імпортувати</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="351"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="351"/>
         <source>No games to import from EGL</source>
         <translation>Немає ігор для імпорту з EGL</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="352"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="352"/>
         <source>Import</source>
         <translation>Імпорт</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/egl_sync_group.py" line="369"/>
+        <location filename="../../components/tabs/library/integrations/egl_sync_group.py" line="369"/>
         <source>The following errors occurred while importing.</source>
         <translation>Під час імпортування виникли такі помилки.</translation>
     </message>
@@ -663,12 +663,12 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>EGLSyncListGroup</name>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/egl_sync_list_group.py" line="59"/>
+        <location filename="../../ui/components/tabs/library/integrations/egl_sync_list_group.py" line="59"/>
         <source>Select all</source>
         <translation>Вибрати все</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/egl_sync_list_group.py" line="60"/>
+        <location filename="../../ui/components/tabs/library/integrations/egl_sync_list_group.py" line="60"/>
         <source>Select none</source>
         <translation>Скасувати вибір</translation>
     </message>
@@ -707,7 +707,7 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>EosGroup</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/eos_group.py" line="260"/>
+        <location filename="../../components/tabs/library/integrations/eos_group.py" line="260"/>
         <source>Something went wrong while installing Overlay</source>
         <translation type="unfinished"/>
     </message>
@@ -715,32 +715,32 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>EosPrefixWidget</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/eos_group.py" line="92"/>
+        <location filename="../../components/tabs/library/integrations/eos_group.py" line="92"/>
         <source>Disable overlay</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/eos_group.py" line="94"/>
+        <location filename="../../components/tabs/library/integrations/eos_group.py" line="94"/>
         <source>Enable overlay</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/eos_group.py" line="107"/>
+        <location filename="../../components/tabs/library/integrations/eos_group.py" line="107"/>
         <source>Unavailable</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/eos_group.py" line="134"/>
+        <location filename="../../components/tabs/library/integrations/eos_group.py" line="134"/>
         <source>Failed to completely disable the active EOS Overlay.{}</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/eos_group.py" line="148"/>
+        <location filename="../../components/tabs/library/integrations/eos_group.py" line="148"/>
         <source> Since the previous overlay was managed by EGL you can safely ignore this is.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/eos_group.py" line="148"/>
+        <location filename="../../components/tabs/library/integrations/eos_group.py" line="148"/>
         <source>Failed to completely enable EOS overlay.{}</source>
         <translation type="unfinished"/>
     </message>
@@ -748,42 +748,42 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>EosWidget</name>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/eos_widget.py" line="95"/>
+        <location filename="../../ui/components/tabs/library/integrations/eos_widget.py" line="95"/>
         <source>Uninstall</source>
         <translation>Видалити</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/eos_widget.py" line="94"/>
+        <location filename="../../ui/components/tabs/library/integrations/eos_widget.py" line="94"/>
         <source>Update</source>
         <translation>Оновити</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/eos_widget.py" line="91"/>
+        <location filename="../../ui/components/tabs/library/integrations/eos_widget.py" line="91"/>
         <source>Install</source>
         <translation>Встановити</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/eos_widget.py" line="88"/>
+        <location filename="../../ui/components/tabs/library/integrations/eos_widget.py" line="88"/>
         <source>Epic Overlay</source>
         <translation>Epic Overlay</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/eos_widget.py" line="89"/>
+        <location filename="../../ui/components/tabs/library/integrations/eos_widget.py" line="89"/>
         <source>Status:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/eos_widget.py" line="90"/>
+        <location filename="../../ui/components/tabs/library/integrations/eos_widget.py" line="90"/>
         <source>Epic Online Services Overlay is not installed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/eos_widget.py" line="92"/>
+        <location filename="../../ui/components/tabs/library/integrations/eos_widget.py" line="92"/>
         <source>Version:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/eos_widget.py" line="93"/>
+        <location filename="../../ui/components/tabs/library/integrations/eos_widget.py" line="93"/>
         <source>Path:</source>
         <translation type="unfinished"/>
     </message>
@@ -791,22 +791,22 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>GameDlc</name>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_dlc.py" line="62"/>
+        <location filename="../../ui/components/tabs/library/details/game_dlc.py" line="62"/>
         <source>Installed DLCs</source>
         <translation>Встановлені DLC</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_dlc.py" line="61"/>
+        <location filename="../../ui/components/tabs/library/details/game_dlc.py" line="61"/>
         <source>No Downloadable Content has been installed.</source>
         <translation>Завантажуваний контент не встановлено.</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_dlc.py" line="64"/>
+        <location filename="../../ui/components/tabs/library/details/game_dlc.py" line="64"/>
         <source>Available DLCs</source>
         <translation>Доступні DLC</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_dlc.py" line="63"/>
+        <location filename="../../ui/components/tabs/library/details/game_dlc.py" line="63"/>
         <source>No Downloadable Content is available</source>
         <translation>Завантажуваний контент недоступний</translation>
     </message>
@@ -814,17 +814,17 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>GameDlcWidget</name>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_dlc_widget.py" line="108"/>
+        <location filename="../../ui/components/tabs/library/details/game_dlc_widget.py" line="108"/>
         <source>DLC Name</source>
         <translation>Назва DLC</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_dlc_widget.py" line="109"/>
+        <location filename="../../ui/components/tabs/library/details/game_dlc_widget.py" line="109"/>
         <source>Version</source>
         <translation>Версія</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_dlc_widget.py" line="110"/>
+        <location filename="../../ui/components/tabs/library/details/game_dlc_widget.py" line="110"/>
         <source>Application</source>
         <translation>Додаток</translation>
     </message>
@@ -832,207 +832,207 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>GameInfo</name>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="323"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="323"/>
         <source>Game Info</source>
         <translation>Інформація про гру</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="329"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="329"/>
         <source>Developer</source>
         <translation>Розробник</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="334"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="334"/>
         <source>Installation Path</source>
         <translation>Шлях встановлення</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="333"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="333"/>
         <source>Installation Size</source>
         <translation>Розмір встановлення</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="331"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="331"/>
         <source>Version</source>
         <translation>Версія</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="330"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="330"/>
         <source>Application Name</source>
         <translation>Назва додатка</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="336"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="336"/>
         <source>Actions</source>
         <translation>Дії</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="332"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="332"/>
         <source>ProtonDB Grade</source>
         <translation>Оцінка ProtonDB</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="113"/>
+        <location filename="../../components/tabs/library/details/details.py" line="113"/>
         <source>Repair file does not exist or game does not need a repair. Please verify game first</source>
         <translation>Файл відновлення не існує або гра не потребує відновлення. Спочатку перевірте цілісність файлів гри</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="335"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="335"/>
         <source>Platform</source>
         <translation>Платформа</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="150"/>
+        <location filename="../../components/tabs/library/details/details.py" line="150"/>
         <source>Error - {}</source>
         <translation>Помилка - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="150"/>
+        <location filename="../../components/tabs/library/details/details.py" line="150"/>
         <source>Installation path for &lt;b&gt;{}&lt;/b&gt; does not exist. Cannot continue.</source>
         <translation>Шлях встановлення для &lt;b&gt;{}&lt;/b&gt; не існує. Неможливо продовжити.</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="264"/>
+        <location filename="../../components/tabs/library/details/details.py" line="264"/>
         <source>Summary - {}</source>
         <translation>Підсумок - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="189"/>
+        <location filename="../../components/tabs/library/details/details.py" line="189"/>
         <source>&lt;b&gt;{}&lt;/b&gt; has been verified successfully. No missing or corrupt files found</source>
         <translation>&lt;b&gt;{}&lt;/b&gt; успішно перевірено. Зниклих або пошкоджених файлів не знайдено</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="73"/>
+        <location filename="../../components/tabs/library/details/details.py" line="73"/>
         <source>Platinum</source>
         <translation>Platinum</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="74"/>
+        <location filename="../../components/tabs/library/details/details.py" line="74"/>
         <source>Gold</source>
         <translation>Gold</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="75"/>
+        <location filename="../../components/tabs/library/details/details.py" line="75"/>
         <source>Silver</source>
         <translation>Silver</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="76"/>
+        <location filename="../../components/tabs/library/details/details.py" line="76"/>
         <source>Bronze</source>
         <translation>Bronze</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="77"/>
+        <location filename="../../components/tabs/library/details/details.py" line="77"/>
         <source>Borked</source>
         <translation>Borked</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="78"/>
+        <location filename="../../components/tabs/library/details/details.py" line="78"/>
         <source>Failed to get rating</source>
         <translation>Не вдалося отримати оцінку</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="79"/>
+        <location filename="../../components/tabs/library/details/details.py" line="79"/>
         <source>Loading...</source>
         <translation>Завантаження...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="80"/>
+        <location filename="../../components/tabs/library/details/details.py" line="80"/>
         <source>Not applicable</source>
         <translation>Не застосовується</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="127"/>
+        <location filename="../../components/tabs/library/details/details.py" line="127"/>
         <source>Repair and update? - {}</source>
         <translation>Відновити та оновити? - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="127"/>
+        <location filename="../../components/tabs/library/details/details.py" line="127"/>
         <source>There is an update for &lt;b&gt;{}&lt;/b&gt; from &lt;b&gt;{}&lt;/b&gt; to &lt;b&gt;{}&lt;/b&gt;. Do you want to update the game while repairing it?</source>
         <translation>Є оновлення для &lt;b&gt;{}&lt;/b&gt; з &lt;b&gt;{}&lt;/b&gt; до &lt;b&gt;{}&lt;/b&gt;. Хочете оновити гру, виправляючи її?</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="196"/>
+        <location filename="../../components/tabs/library/details/details.py" line="196"/>
         <source>&lt;b&gt;{}&lt;/b&gt; failed verification, &lt;b&gt;{}&lt;/b&gt; file(s) corrupted, &lt;b&gt;{}&lt;/b&gt; file(s) are missing. Do you want to repair them?</source>
         <translation>Помилка перевірки &lt;b&gt;{}&lt;/b&gt;, &lt;b&gt;{}&lt;/b&gt; файл(ів) пошкоджено, &lt;b&gt;{}&lt;/b&gt; файл(и) відсутні. Ви хочете їх відновити?</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="228"/>
+        <location filename="../../components/tabs/library/details/details.py" line="228"/>
         <source>Move game? - {}</source>
         <translation>Перемістити гру?  - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="228"/>
+        <location filename="../../components/tabs/library/details/details.py" line="228"/>
         <source>Destination &lt;b&gt;{}&lt;/b&gt; already exists. Are you sure you want to overwrite it?</source>
         <translation>Пункт призначення {} вже існує. Ви впевнені, що хочете перезаписати його?</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="264"/>
+        <location filename="../../components/tabs/library/details/details.py" line="264"/>
         <source>&lt;b&gt;{}&lt;/b&gt; successfully moved to &lt;b&gt;{}&lt;b&gt;.</source>
         <translation>&lt;b&gt;{}&lt;/b&gt; успішно переміщено до &lt;b&gt;{}&lt;b&gt;.</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="390"/>
+        <location filename="../../components/tabs/library/details/details.py" line="390"/>
         <source>Link/Launch</source>
         <translation>Посилання/Запуск</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_info.py" line="393"/>
+        <location filename="../../components/tabs/library/details/details.py" line="393"/>
         <source>Install</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="324"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="324"/>
         <source>Tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="325"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="325"/>
         <source>Completed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="326"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="326"/>
         <source>Hidden</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="327"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="327"/>
         <source>Favorites</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="328"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="328"/>
         <source>Backlog</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="337"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="337"/>
         <source>Modify</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="338"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="338"/>
         <source>Verify</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="339"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="339"/>
         <source>Repair</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="340"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="340"/>
         <source>Move</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="341"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="341"/>
         <source>Uninstall</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/game_info/game_info.py" line="343"/>
+        <location filename="../../ui/components/tabs/library/details/details.py" line="343"/>
         <source>Import</source>
         <translation type="unfinished"/>
     </message>
@@ -1040,32 +1040,32 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>GameInfoTabs</name>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="29"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="29"/>
         <source>Information</source>
         <translation>Інформація</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="32"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="32"/>
         <source>Settings</source>
         <translation>Параметри</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="38"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="38"/>
         <source>Downloadable Content</source>
         <translation>Завантажуваний контент</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="35"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="35"/>
         <source>Cloud Saves</source>
         <translation>Хмарні збереження</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="43"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="43"/>
         <source>Game Metadata</source>
         <translation>Метадані гри</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/__init__.py" line="45"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="45"/>
         <source>InstalledGame Metadata</source>
         <translation>Метадані встановленої гри</translation>
     </message>
@@ -1073,47 +1073,47 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>GameLaunchSettings</name>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_settings.py" line="53"/>
+        <location filename="../../components/tabs/library/details/game_settings.py" line="53"/>
         <source>Default</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_settings.py" line="54"/>
+        <location filename="../../components/tabs/library/details/game_settings.py" line="54"/>
         <source>No</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_settings.py" line="55"/>
+        <location filename="../../components/tabs/library/details/game_settings.py" line="55"/>
         <source>Yes</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_settings.py" line="58"/>
+        <location filename="../../components/tabs/library/details/game_settings.py" line="58"/>
         <source>Relative path to the replacement executable</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_settings.py" line="68"/>
+        <location filename="../../components/tabs/library/details/game_settings.py" line="68"/>
         <source>Game specific command line arguments</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_settings.py" line="71"/>
+        <location filename="../../components/tabs/library/details/game_settings.py" line="71"/>
         <source>Skip update check</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_settings.py" line="72"/>
+        <location filename="../../components/tabs/library/details/game_settings.py" line="72"/>
         <source>Offline mode</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_settings.py" line="73"/>
+        <location filename="../../components/tabs/library/details/game_settings.py" line="73"/>
         <source>Launch parameters</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_settings.py" line="74"/>
+        <location filename="../../components/tabs/library/details/game_settings.py" line="74"/>
         <source>Override executable</source>
         <translation type="unfinished"/>
     </message>
@@ -1121,92 +1121,92 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>GameListHeadBar</name>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="47"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="47"/>
         <source>Exclude Origin</source>
         <translation>Виключити Origin</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="85"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="85"/>
         <source>Import Game</source>
         <translation>Імпорт гри</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="107"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="107"/>
         <source>Search Game</source>
         <translation>Шукати</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="90"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="90"/>
         <source>Sync with EGL</source>
         <translation>Синхронізація з EGL</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="34"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="34"/>
         <source>All games</source>
         <translation>Всі ігри</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="112"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="112"/>
         <source>Installed games</source>
         <translation>Встановлені ігри</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="121"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="121"/>
         <source>Available games</source>
         <translation>Доступні ігри</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="93"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="93"/>
         <source>Epic Overlay and Ubisoft</source>
         <translation>Epic Оверлей та Ubisoft</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="103"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="103"/>
         <source>Integrations</source>
         <translation>Інтеграції</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="35"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="35"/>
         <source>Installed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="36"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="36"/>
         <source>Offline</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="43"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="43"/>
         <source>32bit games</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="45"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="45"/>
         <source>macOS games</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="48"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="48"/>
         <source>Include Unreal</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="64"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="64"/>
         <source>Title</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="65"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="65"/>
         <source>Recently played</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="66"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="66"/>
         <source>Newest</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/head_bar.py" line="67"/>
+        <location filename="../../components/tabs/library/head_bar.py" line="67"/>
         <source>Oldest</source>
         <translation type="unfinished"/>
     </message>
@@ -1219,132 +1219,132 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
         <translation>Безкоштовно</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="36"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="36"/>
         <source>Launch</source>
         <translation>Запустити</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="39"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="39"/>
         <source>Install</source>
         <translation>Встановити</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="52"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="52"/>
         <source>Reload Image</source>
         <translation>Оновити зображення</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="55"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="55"/>
         <source>Uninstall</source>
         <translation>Видалити</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="82"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="82"/>
         <source>Running...</source>
         <translation>Запуск...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="83"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="83"/>
         <source>Downloading...</source>
         <translation>Завантаження...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="84"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="84"/>
         <source>Verifying...</source>
         <translation>Перевірка...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="85"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="85"/>
         <source>Moving...</source>
         <translation>Переміщення...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="86"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="86"/>
         <source>Uninstalling...</source>
         <translation>Видалення...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="87"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="87"/>
         <source>Syncing saves...</source>
         <translation>Синхронізація збереження...</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="88"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="88"/>
         <source>Update available</source>
         <translation>Доступне оновлення</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="89"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="89"/>
         <source>Needs verification</source>
         <translation>Потребує перевірки</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="101"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="101"/>
         <source>Can&apos;t launch</source>
         <translation>Не вдається запустити</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="91"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="91"/>
         <source>Save is not up-to-date</source>
         <translation>Збереження не актуальне</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="95"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="95"/>
         <source>Show information</source>
         <translation>Показати інформацію</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="96"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="96"/>
         <source>Install game</source>
         <translation>Встановити гру</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="97"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="97"/>
         <source>Launch game</source>
         <translation>Запустити гру</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="98"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="98"/>
         <source>Launch offline</source>
         <translation>Запуск офлайн</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="99"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="99"/>
         <source>Launch without version check</source>
         <translation>Запуск без перевірки версії</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="100"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="100"/>
         <source>Launch/Link</source>
         <translation>Запуск/Посилання</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="263"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="263"/>
         <source>Remove Desktop link</source>
         <translation>Видалити посилання на робочий стіл</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="271"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="271"/>
         <source>Create Desktop link</source>
         <translation>Створити посилання на робочий стіл</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="265"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="265"/>
         <source>Remove Start Menu link</source>
         <translation>Видалити посилання на меню «Пуск»</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="273"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="273"/>
         <source>Create Start Menu link</source>
         <translation>Створити посилання на меню «Пуск»</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="240"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="240"/>
         <source>Warning</source>
         <translation>Попередження</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/game_widget.py" line="240"/>
+        <location filename="../../components/tabs/library/game_widgets/game_widget.py" line="240"/>
         <source>Creating shortcuts is currently unsupported on {}</source>
         <translation>Створення посиланнь наразі не підтримується на {}</translation>
     </message>
@@ -1352,77 +1352,77 @@ This is usually do it the game or Rare&apos;s game launcher already running</sou
 <context>
     <name>ImportGroup</name>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="96"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="96"/>
         <source>Import EGL game from a directory</source>
         <translation>Імпорт гри EGL з каталогу</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="97"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="97"/>
         <source>Installation path</source>
         <translation>Шлях встановлення</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="98"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="98"/>
         <source>Override app name</source>
         <translation>Перевизначити назву додатка</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="214"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="214"/>
         <source>Use in case the app name was not found automatically</source>
         <translation>Використовуйте, якщо назву додатка не знайдено автоматично</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="100"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="100"/>
         <source>Scan the installation path for game folders and import them</source>
         <translation>Просканувати шлях встановлення на наявність тек гри та імпортувати їх</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="101"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="101"/>
         <source>Import DLCs</source>
         <translation>Імпорт DLC</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="102"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="102"/>
         <source>If a game has DLCs, try to import them too</source>
         <translation>Якщо в грі є DLC, спробувати також імпортувати їх</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="376"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="376"/>
         <source>Success: &lt;b&gt;{}&lt;/b&gt; imported</source>
         <translation>Успішно: &lt;b&gt;{}&lt;/b&gt; імпортовано</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="380"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="380"/>
         <source>Failed: &lt;b&gt;{}&lt;/b&gt; - {}</source>
         <translation>Не вдалося: &lt;b&gt;{}&lt;/b&gt; - {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="384"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="384"/>
         <source>Error: Could not find AppName for &lt;b&gt;{}&lt;/b&gt;</source>
         <translation>Помилка: не вдалося знайти AppName для &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="393"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="393"/>
         <source>Import summary</source>
         <translation>Зведення про імпорт</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="406"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="406"/>
         <source>Success: {} imported</source>
         <translation>Успішно: {} імпортовано</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="410"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="410"/>
         <source>Failed: {} - {}</source>
         <translation>Не вдалося: {} – {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="414"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="414"/>
         <source>Error: Could not find AppName for {}</source>
         <translation>Помилка: не вдалося знайти AppName для {}</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="393"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="393"/>
         <source>Tried to import {} folders.
 
 Successfully imported {} games, failed to import {} games and {} errors occurred</source>
@@ -1431,47 +1431,47 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
 Успішно імпортовано {} ігор, не вдалося імпортувати {} ігор і виникли {} помилки</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="103"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="103"/>
         <source>Force import</source>
         <translation>Примусовий імпорт</translation>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="104"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="104"/>
         <source>Import game despite missing files</source>
         <translation>Імпортувати гру, незважаючи на відсутність файлів</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="314"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="314"/>
         <source>When importing multiple games, the current OS will be used at the platform for the games that support it, otherwise the Windows version will be imported.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="340"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="340"/>
         <source>Status: Importing games</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/import_group.py" line="388"/>
+        <location filename="../../components/tabs/library/integrations/import_group.py" line="388"/>
         <source>Status: Finished importing games</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="99"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="99"/>
         <source>Import all games</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="105"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="105"/>
         <source>Import game(s)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="106"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="106"/>
         <source>Platform</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../ui/components/tabs/games/integrations/import_group.py" line="107"/>
+        <location filename="../../ui/components/tabs/library/integrations/import_group.py" line="107"/>
         <source>Select the native platform of the game</source>
         <translation type="unfinished"/>
     </message>
@@ -1777,7 +1777,7 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
 <context>
     <name>InstalledGameDlcWidget</name>
     <message>
-        <location filename="../../components/tabs/games/game_info/game_dlc.py" line="59"/>
+        <location filename="../../components/tabs/library/details/game_dlc.py" line="59"/>
         <source>Uninstall DLC</source>
         <translation>Видалити DLC</translation>
     </message>
@@ -1785,27 +1785,27 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
 <context>
     <name>IntegrationsTabs</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="17"/>
+        <location filename="../../components/tabs/library/integrations/__init__.py" line="17"/>
         <source>To import games from Epic Games Store, please enable EGL Sync.</source>
         <translation>Щоб імпортувати ігри з Epic Games Store, увімкніть EGL Sync.</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="22"/>
+        <location filename="../../components/tabs/library/integrations/__init__.py" line="22"/>
         <source>Import Games</source>
         <translation>Імпорт ігор</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="25"/>
+        <location filename="../../components/tabs/library/integrations/__init__.py" line="25"/>
         <source>To import EGL games from directories, please use Import Game.</source>
         <translation>Щоб імпортувати ігри з EGL каталогу, скористайтеся кнопкою Імпорт гри.</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="30"/>
+        <location filename="../../components/tabs/library/integrations/__init__.py" line="30"/>
         <source>Sync with EGL</source>
         <translation>Синхронізація з EGL</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/__init__.py" line="41"/>
+        <location filename="../../components/tabs/library/integrations/__init__.py" line="41"/>
         <source>Epic Overlay and Ubisoft</source>
         <translation>Epic Overlay і Ubisoft</translation>
     </message>
@@ -2024,12 +2024,12 @@ Disabling this greatly improves start-up time, but some library filters may not 
 <context>
     <name>ListGameWidget</name>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/list_game_widget.py" line="37"/>
+        <location filename="../../components/tabs/library/game_widgets/list_game_widget.py" line="37"/>
         <source>Launch</source>
         <translation>Запуск</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/list_game_widget.py" line="37"/>
+        <location filename="../../components/tabs/library/game_widgets/list_game_widget.py" line="37"/>
         <source>Link/Play</source>
         <translation>Посилання/Відтворити</translation>
     </message>
@@ -2712,47 +2712,47 @@ Are you sure you want to quit?</source>
 <context>
     <name>ShopGameInfo</name>
     <message>
-        <location filename="../../components/tabs/store/game_info.py" line="58"/>
+        <location filename="../../components/tabs/store/details.py" line="58"/>
         <source>Remove from Wishlist</source>
         <translation>Видалити зі списку бажань</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/game_info.py" line="84"/>
+        <location filename="../../components/tabs/store/details.py" line="84"/>
         <source>Show Game on Epic Page</source>
         <translation>Показати гру на сторінці Epic</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/game_info.py" line="87"/>
+        <location filename="../../components/tabs/store/details.py" line="87"/>
         <source>Buy Game in Epic Games Store</source>
         <translation>Купити гру в Epic Games Store</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/game_info.py" line="93"/>
+        <location filename="../../components/tabs/store/details.py" line="93"/>
         <source>Loading</source>
         <translation>Завантаження</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/game_info.py" line="160"/>
+        <location filename="../../components/tabs/store/details.py" line="160"/>
         <source>Free</source>
         <translation>Безкоштовно</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/game_info.py" line="175"/>
+        <location filename="../../components/tabs/store/details.py" line="175"/>
         <source>Minimum</source>
         <translation>Мінімальні</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/game_info.py" line="177"/>
+        <location filename="../../components/tabs/store/details.py" line="177"/>
         <source>Recommend</source>
         <translation>Рекомендовані</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/game_info.py" line="196"/>
+        <location filename="../../components/tabs/store/details.py" line="196"/>
         <source>Could not get requirements</source>
         <translation>Не вдалося отримати вимоги</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/game_info.py" line="228"/>
+        <location filename="../../components/tabs/store/details.py" line="228"/>
         <source>Social Links</source>
         <translation>Соціальні посилання</translation>
     </message>
@@ -2904,17 +2904,17 @@ Are you sure you want to quit?</source>
 <context>
     <name>UbiLinkWidget</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="145"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="145"/>
         <source>Already activated</source>
         <translation>Вже активовано</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="149"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="149"/>
         <source>Try again</source>
         <translation>Спробуйте ще раз</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="112"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="112"/>
         <source>Redeem in Ubisoft</source>
         <translation type="unfinished"/>
     </message>
@@ -2922,42 +2922,42 @@ Are you sure you want to quit?</source>
 <context>
     <name>UbisoftGroup</name>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="156"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="156"/>
         <source>Link Ubisoft Games</source>
         <translation>Прив&apos;язати Ubisoft Games</translation>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="165"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="165"/>
         <source>Getting information about your redeemable Ubisoft games.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="166"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="166"/>
         <source>Link Ubisoft acccount</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="207"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="207"/>
         <source>Your account is not linked with Ubisoft. Please link your account and try again.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="212"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="212"/>
         <source>An error has occurred while requesting your account&apos;s Ubisoft information.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="245"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="245"/>
         <source>You don&apos;t own any Ubisoft games.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="247"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="247"/>
         <source>All your Ubisoft games have already been activated.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../components/tabs/games/integrations/ubisoft_group.py" line="249"/>
+        <location filename="../../components/tabs/library/integrations/ubisoft_group.py" line="249"/>
         <source>You have &lt;b&gt;{}&lt;/b&gt; games available to redeem.</source>
         <translation type="unfinished"/>
     </message>
@@ -3221,7 +3221,7 @@ Are you sure you want to quit?</source>
 <context>
     <name>widget</name>
     <message>
-        <location filename="../../components/tabs/games/game_widgets/list_widget.py" line="113"/>
+        <location filename="../../components/tabs/library/game_widgets/list_widget.py" line="113"/>
         <source>Install</source>
         <translation>Встановити</translation>
     </message>

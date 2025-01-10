@@ -14,8 +14,8 @@ from rare.lgndr.glue.exception import LgndrException
 from rare.models.pathspec import PathSpec
 from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WinePathResolver
-from rare.ui.components.tabs.games.integrations.egl_sync_group import Ui_EGLSyncGroup
-from rare.ui.components.tabs.games.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
+from rare.ui.components.tabs.library.integrations.egl_sync_group import Ui_EGLSyncGroup
+from rare.ui.components.tabs.library.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 

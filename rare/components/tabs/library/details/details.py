@@ -20,7 +20,7 @@ from rare.components.dialogs.selective_dialog import SelectiveDialog
 from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.shared.workers import VerifyWorker, MoveWorker
-from rare.ui.components.tabs.games.game_info.details import Ui_GameDetails
+from rare.ui.components.tabs.library.details.details import Ui_GameDetails
 from rare.utils.misc import format_size, qta_icon, style_hyperlink
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
