@@ -436,7 +436,7 @@ class RareLauncher(RareApp):
             self.server.close()
             self.server.deleteLater()
         except RuntimeError as e:
-            self.logger.error("Error occured while stopping server: %s", e)
+            self.logger.error("Error occurred while stopping server: %s", e)
 
         self.processEvents()
         if not self.console:
