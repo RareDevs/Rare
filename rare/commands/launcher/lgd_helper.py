@@ -171,7 +171,7 @@ def get_launch_args(rgame: RareGameSlim, init_args: InitArgs = None) -> LaunchAr
 
 def get_configured_process(env: dict = None):
     proc = QProcess()
-    proc.setProcessChannelMode(QProcess.MergedChannels)
+    proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
     proc.readyReadStandardOutput.connect(
         lambda: logger.info(
             str(proc.readAllStandardOutput().data(), "utf-8", "ignore")
