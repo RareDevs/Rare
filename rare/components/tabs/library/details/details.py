@@ -8,6 +8,7 @@ from PySide6.QtCore import (
     Qt,
     Slot,
     Signal,
+    QUrl,
 )
 from PySide6.QtWidgets import (
     QWidget,
@@ -49,6 +50,9 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.repair_button.setIcon(qta_icon("fa.wrench"))
         self.ui.move_button.setIcon(qta_icon("mdi.folder-move-outline"))
         self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
+
+        self.ui.grade.setOpenExternalLinks(True)
+        self.ui.install_path.setOpenExternalLinks(True)
 
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
@@ -287,7 +291,12 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.lbl_install_path.setEnabled(bool(self.rgame.install_path))
         self.ui.install_path.setEnabled(bool(self.rgame.install_path))
         self.ui.install_path.setText(
-            self.rgame.install_path if self.rgame.install_path else "N/A"
+            style_hyperlink(
+                QUrl.fromLocalFile(self.rgame.install_path).toString(),
+                self.rgame.install_path
+            )
+            if self.rgame.install_path
+            else "N/A"
         )
 
         self.ui.platform.setText(

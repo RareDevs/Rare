@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'details.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -93,9 +93,9 @@ class Ui_GameDetails(object):
         self.right_layout.setObjectName(u"right_layout")
         self.details_layout = QFormLayout()
         self.details_layout.setObjectName(u"details_layout")
-        self.details_layout.setSizeConstraint(QLayout.SetFixedSize)
-        self.details_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        self.details_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.details_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        self.details_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
+        self.details_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.details_layout.setHorizontalSpacing(12)
         self.details_layout.setVerticalSpacing(12)
         self.details_layout.setContentsMargins(6, 6, 6, 6)
@@ -109,88 +109,87 @@ class Ui_GameDetails(object):
         font = QFont()
         font.setBold(True)
         self.lbl_dev.setFont(font)
-        self.lbl_dev.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.lbl_dev.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(0, QFormLayout.LabelRole, self.lbl_dev)
 
         self.dev = QLabel(GameDetails)
         self.dev.setObjectName(u"dev")
         self.dev.setText(u"error")
-        self.dev.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
+        self.dev.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
-        self.details_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.dev)
+        self.details_layout.setWidget(0, QFormLayout.FieldRole, self.dev)
 
         self.lbl_app_name = QLabel(GameDetails)
         self.lbl_app_name.setObjectName(u"lbl_app_name")
         sizePolicy1.setHeightForWidth(self.lbl_app_name.sizePolicy().hasHeightForWidth())
         self.lbl_app_name.setSizePolicy(sizePolicy1)
         self.lbl_app_name.setFont(font)
-        self.lbl_app_name.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.lbl_app_name.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(1, QFormLayout.LabelRole, self.lbl_app_name)
 
         self.app_name = QLabel(GameDetails)
         self.app_name.setObjectName(u"app_name")
         self.app_name.setText(u"error")
-        self.app_name.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
+        self.app_name.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
-        self.details_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.app_name)
+        self.details_layout.setWidget(1, QFormLayout.FieldRole, self.app_name)
 
         self.lbl_version = QLabel(GameDetails)
         self.lbl_version.setObjectName(u"lbl_version")
         sizePolicy1.setHeightForWidth(self.lbl_version.sizePolicy().hasHeightForWidth())
         self.lbl_version.setSizePolicy(sizePolicy1)
         self.lbl_version.setFont(font)
-        self.lbl_version.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.lbl_version.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(2, QFormLayout.LabelRole, self.lbl_version)
 
         self.version = QLabel(GameDetails)
         self.version.setObjectName(u"version")
         self.version.setText(u"error")
-        self.version.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
+        self.version.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
-        self.details_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.version)
+        self.details_layout.setWidget(2, QFormLayout.FieldRole, self.version)
 
         self.lbl_grade = QLabel(GameDetails)
         self.lbl_grade.setObjectName(u"lbl_grade")
         sizePolicy1.setHeightForWidth(self.lbl_grade.sizePolicy().hasHeightForWidth())
         self.lbl_grade.setSizePolicy(sizePolicy1)
         self.lbl_grade.setFont(font)
-        self.lbl_grade.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.lbl_grade.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(3, QFormLayout.LabelRole, self.lbl_grade)
 
         self.grade = QLabel(GameDetails)
         self.grade.setObjectName(u"grade")
         self.grade.setText(u"error")
-        self.grade.setOpenExternalLinks(True)
-        self.grade.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
+        self.grade.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
-        self.details_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.grade)
+        self.details_layout.setWidget(3, QFormLayout.FieldRole, self.grade)
 
         self.lbl_install_size = QLabel(GameDetails)
         self.lbl_install_size.setObjectName(u"lbl_install_size")
         sizePolicy1.setHeightForWidth(self.lbl_install_size.sizePolicy().hasHeightForWidth())
         self.lbl_install_size.setSizePolicy(sizePolicy1)
         self.lbl_install_size.setFont(font)
-        self.lbl_install_size.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.lbl_install_size.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(4, QFormLayout.LabelRole, self.lbl_install_size)
 
         self.install_size = QLabel(GameDetails)
         self.install_size.setObjectName(u"install_size")
         self.install_size.setText(u"error")
-        self.install_size.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
+        self.install_size.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
-        self.details_layout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.install_size)
+        self.details_layout.setWidget(4, QFormLayout.FieldRole, self.install_size)
 
         self.lbl_install_path = QLabel(GameDetails)
         self.lbl_install_path.setObjectName(u"lbl_install_path")
         sizePolicy1.setHeightForWidth(self.lbl_install_path.sizePolicy().hasHeightForWidth())
         self.lbl_install_path.setSizePolicy(sizePolicy1)
         self.lbl_install_path.setFont(font)
-        self.lbl_install_path.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.lbl_install_path.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(5, QFormLayout.LabelRole, self.lbl_install_path)
 
@@ -198,16 +197,16 @@ class Ui_GameDetails(object):
         self.install_path.setObjectName(u"install_path")
         self.install_path.setText(u"error")
         self.install_path.setWordWrap(True)
-        self.install_path.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
+        self.install_path.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
-        self.details_layout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.install_path)
+        self.details_layout.setWidget(5, QFormLayout.FieldRole, self.install_path)
 
         self.lbl_platform = QLabel(GameDetails)
         self.lbl_platform.setObjectName(u"lbl_platform")
         sizePolicy1.setHeightForWidth(self.lbl_platform.sizePolicy().hasHeightForWidth())
         self.lbl_platform.setSizePolicy(sizePolicy1)
         self.lbl_platform.setFont(font)
-        self.lbl_platform.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.lbl_platform.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(6, QFormLayout.LabelRole, self.lbl_platform)
 
@@ -215,14 +214,14 @@ class Ui_GameDetails(object):
         self.platform.setObjectName(u"platform")
         self.platform.setText(u"error")
 
-        self.details_layout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.platform)
+        self.details_layout.setWidget(6, QFormLayout.FieldRole, self.platform)
 
         self.lbl_game_actions = QLabel(GameDetails)
         self.lbl_game_actions.setObjectName(u"lbl_game_actions")
         sizePolicy1.setHeightForWidth(self.lbl_game_actions.sizePolicy().hasHeightForWidth())
         self.lbl_game_actions.setSizePolicy(sizePolicy1)
         self.lbl_game_actions.setFont(font)
-        self.lbl_game_actions.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.lbl_game_actions.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(7, QFormLayout.LabelRole, self.lbl_game_actions)
 
@@ -339,7 +338,7 @@ class Ui_GameDetails(object):
 
         self.game_actions_stack.addWidget(self.uninstalled_page)
 
-        self.details_layout.setWidget(7, QFormLayout.ItemRole.FieldRole, self.game_actions_stack)
+        self.details_layout.setWidget(7, QFormLayout.FieldRole, self.game_actions_stack)
 
 
         self.right_layout.addLayout(self.details_layout)
@@ -352,7 +351,7 @@ class Ui_GameDetails(object):
         sizePolicy3.setHeightForWidth(self.requirements_group.sizePolicy().hasHeightForWidth())
         self.requirements_group.setSizePolicy(sizePolicy3)
         self.requirements_group.setFrameShape(QFrame.Shape.StyledPanel)
-        self.requirements_group.setFrameShadow(QFrame.Sunken)
+        self.requirements_group.setFrameShadow(QFrame.Shadow.Sunken)
         self.requirements_layout = QHBoxLayout(self.requirements_group)
         self.requirements_layout.setObjectName(u"requirements_layout")
         self.requirements_layout.setContentsMargins(0, 0, 0, 0)
