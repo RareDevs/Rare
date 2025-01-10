@@ -35,6 +35,20 @@ shortcut_table = [
         None,  # ShowCmd
         "TARGETDIR",  # WkDir
     ),
+    (
+        "StartMenuShortcut",  # Shortcut
+        "StartMenuFolder",  # Directory_
+        "Rare",  # Name
+        "TARGETDIR",  # Component_
+        "[TARGETDIR]Rare.exe",  # Target
+        None,  # Arguments
+        None,  # Description
+        None,  # Hotkey
+        None,  # Icon
+        None,  # IconIndex
+        None,  # ShowCmd
+        "TARGETDIR",  # WkDir
+    ),
 ]
 
 msi_data = {
