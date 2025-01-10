@@ -318,6 +318,7 @@ class RareLauncher(RareApp):
             return
 
         if args.is_origin_game:
+            # executable is a protocol link (link2ea://launchgame/...)
             QDesktopServices.openUrl(QUrl(args.executable))
             self.stop()  # stop because it is not a subprocess
             return
