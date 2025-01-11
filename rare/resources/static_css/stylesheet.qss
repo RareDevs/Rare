@@ -1,6 +1,24 @@
 
 /* This file is auto-generated from "stylesheet.py". DO NOT EDIT!!! */
 
+QPushButton {
+    min-height: 2.75ex;
+}
+QProgressBar {
+    min-height: 2.75ex;
+}
+QSpinBox {
+    min-height: 2.75ex;
+}
+QToolButton {
+    min-height: 2.75ex;
+}
+QLineEdit {
+    min-height: 2.75ex;
+}
+QComboBox {
+    min-height: 2.75ex;
+}
 QPushButton[flat="true"] {
     border: 0px;
     border-radius: 5px;

@@ -22,8 +22,8 @@ from rare.models.game import RareGame
 from rare.models.options import options
 from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineSavePathResolver
-from rare.ui.components.tabs.games.game_info.cloud_settings_widget import Ui_CloudSettingsWidget
-from rare.ui.components.tabs.games.game_info.cloud_sync_widget import Ui_CloudSyncWidget
+from rare.ui.components.tabs.library.details.cloud_settings_widget import Ui_CloudSettingsWidget
+from rare.ui.components.tabs.library.details.cloud_sync_widget import Ui_CloudSyncWidget
 from rare.utils.metrics import timelogger
 from rare.utils.misc import qta_icon
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon

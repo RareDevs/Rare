@@ -226,7 +226,7 @@ class RareSettings(QWidget):
 
     @Slot()
     def open_directory(self):
-        QDesktopServices.openUrl(QUrl(f"file://{log_dir()}"))
+        QDesktopServices.openUrl(QUrl.fromLocalFile(log_dir()))
 
     @Slot()
     def save_window_size(self):

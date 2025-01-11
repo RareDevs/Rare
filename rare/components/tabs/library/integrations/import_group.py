@@ -26,7 +26,7 @@ from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrImportGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus, get_boolean_choice_factory
 from rare.shared import RareCore
-from rare.ui.components.tabs.games.integrations.import_group import Ui_ImportGroup
+from rare.ui.components.tabs.library.integrations.import_group import Ui_ImportGroup
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon, PathEdit
 

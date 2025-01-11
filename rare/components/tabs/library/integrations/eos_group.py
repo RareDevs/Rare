@@ -3,7 +3,7 @@ import platform
 from logging import getLogger
 from typing import Optional
 
-from PySide6.QtCore import QRunnable, QObject, Signal, QThreadPool, Qt, Slot, QSize
+from PySide6.QtCore import QRunnable, QObject, Signal, QThreadPool, Qt, Slot, QSize, QUrl
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -20,9 +20,9 @@ from PySide6.QtWidgets import (
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareEosOverlay
 from rare.shared import RareCore
-from rare.ui.components.tabs.games.integrations.eos_widget import Ui_EosWidget
+from rare.ui.components.tabs.library.integrations.eos_widget import Ui_EosWidget
 from rare.utils import config_helper as config
-from rare.utils.misc import qta_icon
+from rare.utils.misc import qta_icon, style_hyperlink
 from rare.widgets.elide_label import ElideLabel
 
 logger = getLogger("EpicOverlay")
@@ -175,6 +175,7 @@ class EosGroup(QGroupBox):
         self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
 
         self.installed_path_label = ElideLabel(parent=self)
+        self.installed_path_label.setOpenExternalLinks(True)
         self.installed_version_label = ElideLabel(parent=self)
 
         self.ui.info_label_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.installed_version_label)
@@ -195,7 +196,11 @@ class EosGroup(QGroupBox):
 
         if self.overlay.is_installed:  # installed
             self.installed_version_label.setText(f"<b>{self.overlay.version}</b>")
-            self.installed_path_label.setText(os.path.normpath(self.overlay.install_path))
+            self.installed_path_label.setText(
+                style_hyperlink(
+                    QUrl.fromLocalFile(self.overlay.install_path).toString(), self.overlay.install_path
+                )
+            )
             self.ui.overlay_stack.setCurrentWidget(self.ui.info_page)
         else:
             self.ui.overlay_stack.setCurrentWidget(self.ui.install_page)
@@ -261,7 +266,11 @@ class EosGroup(QGroupBox):
             return
         self.ui.overlay_stack.setCurrentWidget(self.ui.info_page)
         self.installed_version_label.setText(f"<b>{self.overlay.version}</b>")
-        self.installed_path_label.setText(self.overlay.install_path)
+        self.installed_path_label.setText(
+            style_hyperlink(
+                QUrl.fromLocalFile(self.overlay.install_path).toString(), self.overlay.install_path
+            )
+        )
         self.ui.update_button.setEnabled(False)
 
     @Slot()

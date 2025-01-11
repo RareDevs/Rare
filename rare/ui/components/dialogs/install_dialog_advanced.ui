@@ -6,14 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>379</width>
-    <height>208</height>
+    <width>386</width>
+    <height>184</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string notr="true">InstallDialogAdvanced</string>
   </property>
   <layout class="QFormLayout" name="install_dialog_advanced_layout">
+   <property name="labelAlignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
    <item row="0" column="0">
     <widget class="QLabel" name="max_workers_label">
      <property name="text">
@@ -29,7 +32,7 @@
      <item>
       <widget class="QSpinBox" name="max_workers_spin">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -65,7 +68,7 @@
      <item>
       <widget class="QSpinBox" name="max_memory_spin">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
