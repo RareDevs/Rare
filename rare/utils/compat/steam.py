@@ -208,18 +208,20 @@ def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
         if os.path.isfile(vdf_file := os.path.join(tool_path, "toolmanifest.vdf")):
             with open(vdf_file, "r", encoding="utf-8") as f:
                 toolmanifest = vdf.load(f)
-                if toolmanifest["manifest"]["compatmanager_layer_name"] == "container-runtime":
-                    runtimes.update(
-                        {
-                            appmanifest["AppState"]["appid"]: SteamRuntime(
-                                steam_path=steam_path,
-                                steam_library=library,
-                                appmanifest=appmanifest,
-                                tool_path=tool_path,
-                                toolmanifest=toolmanifest["manifest"],
-                            )
-                        }
-                    )
+            if toolmanifest["manifest"].get("version", None) != "2":
+                continue
+            if toolmanifest["manifest"]["compatmanager_layer_name"] == "container-runtime":
+                runtimes.update(
+                    {
+                        appmanifest["AppState"]["appid"]: SteamRuntime(
+                            steam_path=steam_path,
+                            steam_library=library,
+                            appmanifest=appmanifest,
+                            tool_path=tool_path,
+                            toolmanifest=toolmanifest["manifest"],
+                        )
+                    }
+                )
     return runtimes
 
 
@@ -233,16 +235,18 @@ def find_protons(steam_path: str, library: str) -> List[ProtonTool]:
         if os.path.isfile(vdf_file := os.path.join(tool_path, "toolmanifest.vdf")):
             with open(vdf_file, "r", encoding="utf-8") as f:
                 toolmanifest = vdf.load(f)
-                if toolmanifest["manifest"]["compatmanager_layer_name"] == "proton":
-                    protons.append(
-                        ProtonTool(
-                            steam_path=steam_path,
-                            steam_library=library,
-                            appmanifest=appmanifest,
-                            tool_path=tool_path,
-                            toolmanifest=toolmanifest["manifest"],
-                        )
+            if toolmanifest["manifest"].get("version", None) != "2":
+                continue
+            if toolmanifest["manifest"]["compatmanager_layer_name"] == "proton":
+                protons.append(
+                    ProtonTool(
+                        steam_path=steam_path,
+                        steam_library=library,
+                        appmanifest=appmanifest,
+                        tool_path=tool_path,
+                        toolmanifest=toolmanifest["manifest"],
                     )
+                )
     return protons
 
 
