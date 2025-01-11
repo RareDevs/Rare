@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'rare.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -39,8 +39,8 @@ class Ui_RareSettings(object):
         self.interface_group.setSizePolicy(sizePolicy)
         self.interface_layout = QFormLayout(self.interface_group)
         self.interface_layout.setObjectName(u"interface_layout")
-        self.interface_layout.setFieldGrowthPolicy(QFormLayout.FieldsStayAtSizeHint)
-        self.interface_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.interface_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
+        self.interface_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.lang_label = QLabel(self.interface_group)
         self.lang_label.setObjectName(u"lang_label")
 
@@ -49,7 +49,7 @@ class Ui_RareSettings(object):
         self.lang_select = QComboBox(self.interface_group)
         self.lang_select.setObjectName(u"lang_select")
 
-        self.interface_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.lang_select)
+        self.interface_layout.setWidget(0, QFormLayout.FieldRole, self.lang_select)
 
         self.color_label = QLabel(self.interface_group)
         self.color_label.setObjectName(u"color_label")
@@ -59,7 +59,7 @@ class Ui_RareSettings(object):
         self.color_select = QComboBox(self.interface_group)
         self.color_select.setObjectName(u"color_select")
 
-        self.interface_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.color_select)
+        self.interface_layout.setWidget(1, QFormLayout.FieldRole, self.color_select)
 
         self.style_label = QLabel(self.interface_group)
         self.style_label.setObjectName(u"style_label")
@@ -69,7 +69,7 @@ class Ui_RareSettings(object):
         self.style_select = QComboBox(self.interface_group)
         self.style_select.setObjectName(u"style_select")
 
-        self.interface_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.style_select)
+        self.interface_layout.setWidget(2, QFormLayout.FieldRole, self.style_select)
 
         self.interface_info = QLabel(self.interface_group)
         self.interface_info.setObjectName(u"interface_info")
@@ -88,7 +88,7 @@ class Ui_RareSettings(object):
         self.view_combo = QComboBox(self.interface_group)
         self.view_combo.setObjectName(u"view_combo")
 
-        self.interface_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.view_combo)
+        self.interface_layout.setWidget(3, QFormLayout.FieldRole, self.view_combo)
 
 
         self.left_layout.addWidget(self.interface_group)
@@ -97,44 +97,49 @@ class Ui_RareSettings(object):
         self.settings_group.setObjectName(u"settings_group")
         self.behavior_layout = QGridLayout(self.settings_group)
         self.behavior_layout.setObjectName(u"behavior_layout")
-        self.save_size = QCheckBox(self.settings_group)
-        self.save_size.setObjectName(u"save_size")
+        self.confirm_start = QCheckBox(self.settings_group)
+        self.confirm_start.setObjectName(u"confirm_start")
 
-        self.behavior_layout.addWidget(self.save_size, 5, 0, 1, 1)
+        self.behavior_layout.addWidget(self.confirm_start, 3, 0, 1, 1)
 
-        self.notification = QCheckBox(self.settings_group)
-        self.notification.setObjectName(u"notification")
+        self.sys_tray_close = QCheckBox(self.settings_group)
+        self.sys_tray_close.setObjectName(u"sys_tray_close")
 
-        self.behavior_layout.addWidget(self.notification, 4, 0, 1, 1)
+        self.behavior_layout.addWidget(self.sys_tray_close, 0, 0, 1, 1)
 
         self.log_games = QCheckBox(self.settings_group)
         self.log_games.setObjectName(u"log_games")
 
-        self.behavior_layout.addWidget(self.log_games, 6, 0, 1, 1)
-
-        self.sys_tray = QCheckBox(self.settings_group)
-        self.sys_tray.setObjectName(u"sys_tray")
-
-        self.behavior_layout.addWidget(self.sys_tray, 0, 0, 1, 1)
-
-        self.auto_update = QCheckBox(self.settings_group)
-        self.auto_update.setObjectName(u"auto_update")
-
-        self.behavior_layout.addWidget(self.auto_update, 1, 0, 1, 1)
-
-        self.confirm_start = QCheckBox(self.settings_group)
-        self.confirm_start.setObjectName(u"confirm_start")
-
-        self.behavior_layout.addWidget(self.confirm_start, 2, 0, 1, 1)
+        self.behavior_layout.addWidget(self.log_games, 7, 0, 1, 1)
 
         self.auto_sync_cloud = QCheckBox(self.settings_group)
         self.auto_sync_cloud.setObjectName(u"auto_sync_cloud")
 
-        self.behavior_layout.addWidget(self.auto_sync_cloud, 3, 0, 1, 1)
+        self.behavior_layout.addWidget(self.auto_sync_cloud, 4, 0, 1, 1)
+
+        self.save_size = QCheckBox(self.settings_group)
+        self.save_size.setObjectName(u"save_size")
+
+        self.behavior_layout.addWidget(self.save_size, 6, 0, 1, 1)
+
+        self.auto_update = QCheckBox(self.settings_group)
+        self.auto_update.setObjectName(u"auto_update")
+
+        self.behavior_layout.addWidget(self.auto_update, 2, 0, 1, 1)
 
         self.settings_hspacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.behavior_layout.addItem(self.settings_hspacer, 2, 1, 2, 1)
+        self.behavior_layout.addItem(self.settings_hspacer, 3, 1, 2, 1)
+
+        self.notification = QCheckBox(self.settings_group)
+        self.notification.setObjectName(u"notification")
+
+        self.behavior_layout.addWidget(self.notification, 5, 0, 1, 1)
+
+        self.sys_tray_start = QCheckBox(self.settings_group)
+        self.sys_tray_start.setObjectName(u"sys_tray_start")
+
+        self.behavior_layout.addWidget(self.sys_tray_start, 1, 0, 1, 1)
 
 
         self.left_layout.addWidget(self.settings_group)
@@ -213,13 +218,14 @@ class Ui_RareSettings(object):
         self.interface_info.setText(QCoreApplication.translate("RareSettings", u"Restart Rare to apply changes.", None))
         self.view_label.setText(QCoreApplication.translate("RareSettings", u"Library view", None))
         self.settings_group.setTitle(QCoreApplication.translate("RareSettings", u"Behavior", None))
-        self.save_size.setText(QCoreApplication.translate("RareSettings", u"Restore window size on application startup", None))
-        self.notification.setText(QCoreApplication.translate("RareSettings", u"Show notifications when downloads complete", None))
-        self.log_games.setText(QCoreApplication.translate("RareSettings", u"Show console window when launching games", None))
-        self.sys_tray.setText(QCoreApplication.translate("RareSettings", u"Close to system tray", None))
-        self.auto_update.setText(QCoreApplication.translate("RareSettings", u"Queue game updates on application startup", None))
         self.confirm_start.setText(QCoreApplication.translate("RareSettings", u"Confirm before launching games", None))
+        self.sys_tray_close.setText(QCoreApplication.translate("RareSettings", u"Close to system tray", None))
+        self.log_games.setText(QCoreApplication.translate("RareSettings", u"Show console window when launching games", None))
         self.auto_sync_cloud.setText(QCoreApplication.translate("RareSettings", u"Automatically upload/download cloud saves", None))
+        self.save_size.setText(QCoreApplication.translate("RareSettings", u"Restore window size on application startup", None))
+        self.auto_update.setText(QCoreApplication.translate("RareSettings", u"Queue game updates on application startup", None))
+        self.notification.setText(QCoreApplication.translate("RareSettings", u"Show notifications when downloads complete", None))
+        self.sys_tray_start.setText(QCoreApplication.translate("RareSettings", u"Start minimized to the system tray", None))
         self.log_dir_group.setTitle(QCoreApplication.translate("RareSettings", u"Logs", None))
         self.log_dir_open_button.setText(QCoreApplication.translate("RareSettings", u"Open log folder", None))
         self.log_dir_clean_button.setText(QCoreApplication.translate("RareSettings", u"Clean log folder", None))

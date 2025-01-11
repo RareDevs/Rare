@@ -26,7 +26,10 @@ class Defaults(Namespace):
     exclude_entitlements = Value(key="exclude_entitlements", default=False, dtype=bool)
 
     language = Value(key="language", default=locale.getlocale()[0], dtype=str)
-    sys_tray = Value(key="sys_tray", default=True, dtype=bool)
+
+    sys_tray_close = Value(key="sys_tray", default=True, dtype=bool)
+    sys_tray_start = Value(key="sys_tray_start", default=False, dtype=bool)
+
     auto_update = Value(key="auto_update", default=False, dtype=bool)
     auto_sync_cloud = Value(key="auto_sync_cloud", default=False, dtype=bool)
     confirm_start = Value(key="confirm_start", default=False, dtype=bool)

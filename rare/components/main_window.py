@@ -28,7 +28,7 @@ from rare.widgets.elide_label import ElideLabel
 logger = getLogger("MainWindow")
 
 
-class MainWindow(QMainWindow):
+class RareWindow(QMainWindow):
     # int: exit code
     exit_app: Signal = Signal(int)
 
@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         self.__exit_code = 0
         self.__accept_close = False
         self._window_launched = False
-        super(MainWindow, self).__init__(parent=parent)
+        super(RareWindow, self).__init__(parent=parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
@@ -149,7 +149,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def show(self) -> None:
-        super(MainWindow, self).show()
+        super(RareWindow, self).show()
         if not self._window_launched:
             self.center_window()
         self._window_launched = True
@@ -158,7 +158,7 @@ class MainWindow(QMainWindow):
         if self.settings.value(*options.restore_window):
             self.settings.setValue(options.window_width.key, self.size().width())
             self.settings.setValue(options.window_height.key, self.size().height())
-        super(MainWindow, self).hide()
+        super(RareWindow, self).hide()
 
     def toggle(self):
         if self.isHidden():
@@ -212,13 +212,13 @@ class MainWindow(QMainWindow):
 
     def close(self) -> bool:
         self.__accept_close = True
-        return super(MainWindow, self).close()
+        return super(RareWindow, self).close()
 
     def closeEvent(self, e: QCloseEvent) -> None:
         # lk: `accept_close` is set to `True` by the `close()` method, overrides exiting to tray in `closeEvent()`
         # lk: ensures exiting instead of hiding when `close()` is called programmatically
         if not self.__accept_close:
-            if self.settings.value(*options.sys_tray):
+            if self.settings.value(*options.sys_tray_close):
                 self.hide()
                 e.ignore()
                 return
@@ -265,5 +265,5 @@ class MainWindow(QMainWindow):
         self.tray_icon.deleteLater()
         self.hide()
         self.exit_app.emit(self.__exit_code)
-        super(MainWindow, self).closeEvent(e)
+        super(RareWindow, self).closeEvent(e)
 

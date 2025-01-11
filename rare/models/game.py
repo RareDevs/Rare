@@ -20,7 +20,7 @@ from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
-from rare.utils.config_helper import set_envvar, get_option
+from rare.utils.config_helper import set_envvar, get_boolean
 
 logger = getLogger("RareGame")
 
@@ -566,10 +566,10 @@ class RareGame(RareGameSlim):
 
         cmd_line = get_rare_executable()
         executable, args = cmd_line[0], cmd_line[1:]
-        args.extend(["launch", self.app_name])
-        if offline or get_option(self.app_name, "offline", fallback=None):
+        args.extend(("launch", self.app_name))
+        if offline or get_boolean(self.app_name, "offline", fallback=False):
             args.append("--offline")
-        if skip_update_check or get_option(self.app_name, "skip_update_check", fallback=None):
+        if skip_update_check or get_boolean(self.app_name, "skip_update_check", fallback=False):
             args.append("--skip-update-check")
         if wine_bin:
             args.extend(["--wine-bin", wine_bin])

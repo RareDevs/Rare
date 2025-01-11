@@ -34,8 +34,8 @@ class InitArgs(Namespace):
             debug=args.debug,
             offline=args.offline,
             skip_update_check=args.skip_update_check,
-            wine_bin=args.wine_bin,
-            wine_prefix=args.wine_pfx,
+            wine_bin=args.wine_bin if hasattr(args, "wine_bin") else "",
+            wine_prefix=args.wine_pfx if hasattr(args, "wine_prefix") else "",
             dry_run=args.dry_run
         )
 
