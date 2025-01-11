@@ -333,7 +333,8 @@ class RareLauncher(RareApp):
                 (args.executable, *args.arguments),
                 cwd=args.working_directory,
                 env={i: args.environment.value(i) for i in args.environment.keys()},
-                shell=True
+                shell=True,
+                creationflags=subprocess.DETACHED_PROCESS,
             )
             self.stop()  # stop because we do not attach to the output
             return
