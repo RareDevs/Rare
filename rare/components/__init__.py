@@ -11,7 +11,7 @@ from requests import HTTPError
 
 from rare.models.options import options
 from rare.components.dialogs.launch_dialog import LaunchDialog
-from rare.components.main_window import MainWindow
+from rare.components.main_window import RareWindow
 from rare.shared import RareCore
 from rare.utils import paths
 from rare.utils.misc import ExitCodes
@@ -50,7 +50,7 @@ class Rare(RareApp):
         self.load_translator(language)
 
         # set Application name for settings
-        self.main_window: Optional[MainWindow] = None
+        self.main_window: Optional[RareWindow] = None
         self.launch_dialog: Optional[LaunchDialog] = None
         self.relogin_timer: Optional[QTimer] = None
 
@@ -91,10 +91,10 @@ class Rare(RareApp):
         self.relogin_timer.timeout.connect(self.relogin)
         self.poke_timer()
 
-        self.main_window = MainWindow()
+        self.main_window = RareWindow()
         self.main_window.exit_app.connect(self.__on_exit_app)
 
-        if not self.args.silent:
+        if (not self.args.silent) and (not self.settings.value(*options.sys_tray_start)):
             self.main_window.show()
 
         if self.args.test_start:

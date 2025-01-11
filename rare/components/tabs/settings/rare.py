@@ -78,9 +78,22 @@ class RareSettings(QWidget):
         self.discord_rpc_settings = DiscordRPCSettings(self)
         self.ui.right_layout.insertWidget(1, self.discord_rpc_settings, alignment=Qt.AlignmentFlag.AlignTop)
 
-        self.ui.sys_tray.setChecked(self.settings.value(*options.sys_tray))
-        self.ui.sys_tray.stateChanged.connect(
-            lambda: self.settings.setValue(options.sys_tray.key, self.ui.sys_tray.isChecked())
+        self.ui.sys_tray_close.setChecked(self.settings.value(*options.sys_tray_close))
+        self.ui.sys_tray_close.stateChanged.connect(
+            lambda: self.settings.setValue(options.sys_tray_close.key, self.ui.sys_tray_close.isChecked())
+        )
+
+        self.ui.sys_tray_start.setChecked(self.settings.value(*options.sys_tray_start))
+        self.ui.sys_tray_start.stateChanged.connect(
+            lambda: self.settings.setValue(options.sys_tray_start.key, self.ui.sys_tray_start.isChecked())
+        )
+
+        # Disable starting in system tray if closing to system tray is disabled.
+        self.ui.sys_tray_close.checkStateChanged.connect(
+            lambda: self.ui.sys_tray_start.setChecked(False)
+        )
+        self.ui.sys_tray_close.checkStateChanged.connect(
+            lambda: self.ui.sys_tray_start.setEnabled(self.ui.sys_tray_close.isChecked())
         )
 
         self.ui.auto_update.setChecked(self.settings.value(*options.auto_update))
