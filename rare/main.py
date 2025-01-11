@@ -1,6 +1,7 @@
 import multiprocessing
 import os
 import pathlib
+import platform
 import sys
 from argparse import ArgumentParser
 
@@ -65,16 +66,17 @@ def main() -> int:
     launch_parser.add_argument("--dry-run", help="Print arguments and exit", action="store_true")
     launch_parser.add_argument("--offline", help="Launch game offline",
                                action="store_true")
-    launch_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
-                               default=os.environ.get('LGDRY_WINE_BINARY', None),
-                               help='Set WINE binary to use to launch the app')
-    launch_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
-                               default=os.environ.get('LGDRY_WINE_PREFIX', None),
-                               help='Set WINE prefix to use')
     launch_parser.add_argument("--ask-sync-saves", help="Ask to sync cloud saves",
                                action="store_true")
     launch_parser.add_argument("--skip-update-check", help="Do not check for updates",
                                action="store_true")
+    if platform.system() != "Windows":
+        launch_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
+                                   default=os.environ.get('LGDRY_WINE_BINARY', None),
+                                   help='Set WINE binary to use to launch the app')
+        launch_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
+                                   default=os.environ.get('LGDRY_WINE_PREFIX', None),
+                                   help='Set WINE prefix to use')
 
     login_parser = subparsers.add_parser("login", aliases=["auth"])
     login_parser.add_argument("egl_version", help="Epic Games Launcher User Agent version",
