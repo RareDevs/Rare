@@ -56,8 +56,11 @@ class EosPrefixWidget(QFrame):
             prefix.replace(os.path.expanduser("~"), "~") if prefix is not None else overlay.app_title,
             parent=self,
         )
+        self.prefix_label.setAlignment(Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+
         self.overlay_label = ElideLabel(parent=self)
         self.overlay_label.setDisabled(True)
+        self.overlay_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter)
 
         self.path_select = QComboBox(self)
         self.path_select.setMaximumWidth(150)
@@ -68,11 +71,11 @@ class EosPrefixWidget(QFrame):
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(-1, 0, 0, 0)
-        layout.addWidget(self.indicator)
+        layout.addWidget(self.indicator, alignment=Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(self.prefix_label, stretch=2)
-        layout.addWidget(self.overlay_label, stretch=3)
-        layout.addWidget(self.path_select)
-        layout.addWidget(self.button)
+        layout.addWidget(self.overlay_label, stretch=1)
+        layout.addWidget(self.path_select, alignment=Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.button, alignment=Qt.AlignmentFlag.AlignRight)
 
         self.overlay = overlay
         self.prefix = prefix
@@ -98,12 +101,15 @@ class EosPrefixWidget(QFrame):
         active_path = os.path.normpath(p) if (p := self.overlay.active_path(self.prefix)) else ""
 
         self.overlay_label.setText(f"<i>{active_path}</i>")
+        self.overlay_label.setVisible(bool(active_path))
         self.path_select.clear()
 
         if not self.overlay.is_installed and not self.overlay.available_paths(self.prefix):
             self.setDisabled(True)
             self.indicator.setPixmap(qta_icon("fa.circle-o", color="grey").pixmap(20, 20))
-            self.overlay_label.setText(self.overlay.active_path(self.prefix))
+            active_path = self.overlay.active_path(self.prefix)
+            self.overlay_label.setText(f"<i>{active_path}</i>")
+            self.overlay_label.setVisible(bool(active_path))
             self.button.setText(self.tr("Unavailable"))
             return
 
@@ -168,18 +174,19 @@ class EosGroup(QGroupBox):
         self.ui.install_button.setObjectName("InstallButton")
         self.ui.uninstall_button.setObjectName("UninstallButton")
 
-        self.ui.install_page_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.ui.info_page_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.ui.install_page_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
+        self.ui.update_page_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
 
         self.ui.install_button.setIcon(qta_icon("ri.install-line"))
         self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
 
-        self.installed_path_label = ElideLabel(parent=self)
-        self.installed_path_label.setOpenExternalLinks(True)
-        self.installed_version_label = ElideLabel(parent=self)
+        self.version = ElideLabel(parent=self)
+        self.install_path = QLabel(parent=self)
+        self.install_path.setObjectName("LinkLabel")
+        self.install_path.setOpenExternalLinks(True)
 
-        self.ui.info_label_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.installed_version_label)
-        self.ui.info_label_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.installed_path_label)
+        self.ui.info_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.version)
+        self.ui.info_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.install_path)
 
         self.rcore = RareCore.instance()
         self.core = self.rcore.core()
@@ -194,31 +201,31 @@ class EosGroup(QGroupBox):
         self.ui.update_button.clicked.connect(self.install_overlay)
         self.ui.uninstall_button.clicked.connect(self.uninstall_overlay)
 
-        if self.overlay.is_installed:  # installed
-            self.installed_version_label.setText(f"<b>{self.overlay.version}</b>")
-            self.installed_path_label.setText(
-                style_hyperlink(
-                    QUrl.fromLocalFile(self.overlay.install_path).toString(), self.overlay.install_path
-                )
-            )
-            self.ui.overlay_stack.setCurrentWidget(self.ui.info_page)
-        else:
-            self.ui.overlay_stack.setCurrentWidget(self.ui.install_page)
-        self.ui.update_button.setEnabled(False)
-
         self.threadpool = QThreadPool.globalInstance()
         self.worker: Optional[CheckForUpdateWorker] = None
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        self.check_for_update()
-        self.update_prefixes()
         self.update_state()
+        self.update_prefixes()
+        self.check_for_update()
         super().showEvent(a0)
 
     @Slot()
     def update_state(self):
+        if self.overlay.is_installed:  # installed
+            self.version.setText(f"<b>{self.overlay.version}</b>")
+            self.ui.button_stack.setCurrentWidget(self.ui.update_page)
+        else:
+            self.version.setText(self.tr("<b>Epic Online Services Overlay is not installed</b>"))
+            self.ui.button_stack.setCurrentWidget(self.ui.install_page)
+        self.install_path.setEnabled(self.overlay.is_installed)
+        self.install_path.setText(
+            style_hyperlink(QUrl.fromLocalFile(self.overlay.install_path).toString(), self.overlay.install_path)
+            if self.overlay.is_installed else "N/A"
+        )
+
         self.ui.install_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
         self.ui.update_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE and self.overlay.has_update)
         self.ui.uninstall_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
@@ -244,7 +251,7 @@ class EosGroup(QGroupBox):
     @Slot(bool)
     def check_for_update_finished(self, update_available: bool):
         self.worker = None
-        self.ui.update_button.setEnabled(update_available)
+        self.ui.update_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE and update_available)
 
     def check_for_update(self):
         self.ui.update_button.setEnabled(False)
@@ -261,21 +268,14 @@ class EosGroup(QGroupBox):
     @Slot()
     def install_finished(self):
         if not self.overlay.is_installed:
-            logger.error("Something went wrong while installing overlay")
-            QMessageBox.warning(self, "Error", self.tr("Something went wrong while installing Overlay"))
+            logger.error("Something went wrong while installing EOS Overlay")
+            QMessageBox.warning(self, "Error", self.tr("Something went wrong while installing EOS Overlay"))
             return
-        self.ui.overlay_stack.setCurrentWidget(self.ui.info_page)
-        self.installed_version_label.setText(f"<b>{self.overlay.version}</b>")
-        self.installed_path_label.setText(
-            style_hyperlink(
-                QUrl.fromLocalFile(self.overlay.install_path).toString(), self.overlay.install_path
-            )
-        )
-        self.ui.update_button.setEnabled(False)
+        self.update_state()
 
     @Slot()
     def uninstall_finished(self):
-        self.ui.overlay_stack.setCurrentWidget(self.ui.install_page)
+        self.update_state()
 
     @Slot()
     def install_overlay(self):
@@ -283,7 +283,7 @@ class EosGroup(QGroupBox):
 
     def uninstall_overlay(self):
         if not self.overlay.is_installed:
-            logger.error("No Legendary-managed overlay installation found.")
-            self.ui.overlay_stack.setCurrentWidget(self.ui.install_page)
+            logger.error("No Legendary-managed EOS Overlay installation found.")
+            self.ui.button_stack.setCurrentWidget(self.ui.install_page)
             return
         self.overlay.uninstall()
