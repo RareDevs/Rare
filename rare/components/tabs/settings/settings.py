@@ -4,7 +4,7 @@ from logging import getLogger
 from .widgets.env_vars import EnvVars
 from .widgets.game import GameSettingsBase
 from .widgets.launch import LaunchSettingsBase
-from .widgets.overlay import DxvkSettings
+from .widgets.overlay import DxvkOverlaySettings, DxvkConfigSettings
 from .widgets.wrappers import WrapperSettings
 
 if pf.system() != "Windows":
@@ -26,18 +26,29 @@ class GameSettings(GameSettingsBase):
         if pf.system() != "Windows":
             if pf.system() in {"Linux", "FreeBSD"}:
                 super(GameSettings, self).__init__(
-                    LaunchSettings, DxvkSettings, EnvVars,
-                    WineSettings, ProtonSettings, MangoHudSettings,
+                    LaunchSettings,
+                    DxvkOverlaySettings,
+                    DxvkConfigSettings,
+                    EnvVars,
+                    WineSettings,
+                    ProtonSettings,
+                    MangoHudSettings,
                     parent=parent
                 )
             else:
                 super(GameSettings, self).__init__(
-                    LaunchSettings, DxvkSettings, EnvVars,
+                    LaunchSettings,
+                    DxvkOverlaySettings,
+                    DxvkConfigSettings,
+                    EnvVars,
                     WineSettings,
                     parent=parent
                 )
         else:
             super(GameSettings, self).__init__(
-                LaunchSettings, DxvkSettings, EnvVars,
+                LaunchSettings,
+                DxvkOverlaySettings,
+                DxvkConfigSettings,
+                EnvVars,
                 parent=parent
             )
