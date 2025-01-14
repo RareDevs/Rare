@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QLineEdit,
     QVBoxLayout,
-    QComboBox,
+    QComboBox, QCheckBox,
 )
 
 from rare.models.wrapper import Wrapper
@@ -104,6 +104,8 @@ class WrapperAddDialog(WrapperEditDialog):
 
 
 class WrapperWidget(QFrame):
+    # object: current
+    disable_wrapper = Signal(object)
     # object: current, object: new
     update_wrapper = Signal(object, object)
     # object: current
@@ -115,9 +117,11 @@ class WrapperWidget(QFrame):
         self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         self.setToolTip(wrapper.as_str)
 
-        text_lbl = QLabel(wrapper.name, parent=self)
-        text_lbl.setFont(QFont("monospace"))
-        text_lbl.setEnabled(wrapper.is_editable)
+        self.text_lbl = QCheckBox(wrapper.name, parent=self)
+        self.text_lbl.setChecked(wrapper.is_enabled)
+        self.text_lbl.setFont(QFont("monospace"))
+        self.text_lbl.setEnabled(wrapper.is_editable)
+        self.text_lbl.checkStateChanged.connect(self.__on_state_changed)
 
         image_lbl = QLabel(parent=self)
         image_lbl.setPixmap(qta_icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
@@ -142,7 +146,7 @@ class WrapperWidget(QFrame):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(image_lbl)
-        layout.addWidget(text_lbl)
+        layout.addWidget(self.text_lbl)
         layout.addWidget(manage_button)
         self.setLayout(layout)
 
@@ -154,6 +158,12 @@ class WrapperWidget(QFrame):
 
     def data(self) -> Wrapper:
         return self.wrapper
+
+    @Slot(Qt.CheckState)
+    def __on_state_changed(self, state: Qt.CheckState) -> None:
+        new_wrapper = Wrapper(command=self.wrapper.command, enabled=self.text_lbl.isChecked())
+        self.update_wrapper.emit(self.wrapper, new_wrapper)
+        self.deleteLater()
 
     @Slot()
     def __on_delete(self) -> None:
@@ -293,6 +303,7 @@ class WrapperSettings(QWidget):
             self.wrapper_container.addWidget(widget)
         else:
             self.wrapper_container.insertWidget(position, widget)
+        # widget.disable_wrapper.connect(self.__disable_wrapper)
         widget.update_wrapper.connect(self.__update_wrapper)
         widget.delete_wrapper.connect(self.__delete_wrapper)
 
@@ -319,7 +330,7 @@ class WrapperSettings(QWidget):
                 )
                 return
 
-        if wrapper.checksum in self.wrappers.get_game_md5sum_list(self.app_name):
+        if wrapper.checksum in self.wrappers.get_game_csum_list(self.app_name):
             QMessageBox.warning(
                 self,
                 self.tr("Warning"),
@@ -339,6 +350,15 @@ class WrapperSettings(QWidget):
                 return
 
         self.add_wrapper(wrapper, position)
+
+    @Slot(object)
+    def __disable_wrapper(self, wrapper: Wrapper):
+        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        index = wrappers.index(wrapper)
+        wrappers.remove(wrapper)
+        wrappers.insert(index, wrapper)
+        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.__add_wrapper(wrapper, index)
 
     @Slot(object)
     def __delete_wrapper(self, wrapper: Wrapper):
