@@ -233,7 +233,7 @@ class OverlaySettings(QGroupBox):
 class DxvkSettings(OverlaySettings):
     def __init__(self, parent=None):
         super(DxvkSettings, self).__init__(parent=parent)
-        self.setTitle(self.tr("DXVK settings"))
+        self.setTitle(self.tr("DXVK HUD"))
         grid = [
             OverlayCheckBox("fps", self.tr("FPS")),
             OverlayCheckBox("frametime", self.tr("Frametime")),
@@ -285,7 +285,7 @@ mangohud_gl_vsync = (
 class MangoHudSettings(OverlaySettings):
     def __init__(self, parent=None):
         super(MangoHudSettings, self).__init__(parent=parent)
-        self.setTitle(self.tr("MangoHud settings"))
+        self.setTitle(self.tr("MangoHud"))
         grid = [
             OverlayCheckBox("read_cfg", self.tr("Read config")),
             OverlayCheckBox("fps", self.tr("FPS"), default_enabled=True),

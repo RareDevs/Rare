@@ -18,7 +18,7 @@ logger = getLogger("EnvVars")
 class EnvVars(QGroupBox):
     def __init__(self, parent):
         super(EnvVars, self).__init__(parent=parent)
-        self.setTitle(self.tr("Environment variables"))
+        self.setTitle(self.tr("Environment"))
 
         self.core = LegendaryCoreSingleton()
         self.app_name: str = "default"
