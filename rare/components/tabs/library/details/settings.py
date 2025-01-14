@@ -11,7 +11,7 @@ from legendary.models.game import Game, InstalledGame
 from rare.components.tabs.settings.widgets.env_vars import EnvVars
 from rare.components.tabs.settings.widgets.game import GameSettingsBase
 from rare.components.tabs.settings.widgets.launch import LaunchSettingsBase
-from rare.components.tabs.settings.widgets.overlay import DxvkSettings
+from rare.components.tabs.settings.widgets.overlay import DxvkOverlaySettings, DxvkConfigSettings
 from rare.components.tabs.settings.widgets.wrappers import WrapperSettings
 from rare.models.game import RareGame
 from rare.utils import config_helper as config
@@ -210,10 +210,13 @@ if pf.system() != "Windows":
                 self.ctool.load_settings(rgame.app_name)
 
 
-class GameDxvkSettings(DxvkSettings):
+class GameDxvkOverlaySettings(DxvkOverlaySettings):
     def load_settings(self, app_name: str):
         self.app_name = app_name
 
+class GameDxvkConfigSettings(DxvkConfigSettings):
+    def load_settings(self, app_name: str):
+        self.app_name = app_name
 
 class GameEnvVars(EnvVars):
     def load_settings(self, app_name):
@@ -226,7 +229,8 @@ class GameSettings(GameSettingsBase):
             if pf.system() in {"Linux", "FreeBSD"}:
                 super(GameSettings, self).__init__(
                     launch_widget=GameLaunchSettings,
-                    dxvk_widget=GameDxvkSettings,
+                    dxvk_overlay_widget=GameDxvkOverlaySettings,
+                    dxvk_config_widget=GameDxvkConfigSettings,
                     envvar_widget=GameEnvVars,
                     runner_widget=GameRunnerSettings,
                     mangohud_widget=GameMangoHudSettings,
@@ -235,7 +239,8 @@ class GameSettings(GameSettingsBase):
             else:
                 super(GameSettings, self).__init__(
                     launch_widget=GameLaunchSettings,
-                    dxvk_widget=GameDxvkSettings,
+                    dxvk_overlay_widget=GameDxvkOverlaySettings,
+                    dxvk_config_widget=GameDxvkConfigSettings,
                     envvar_widget=GameEnvVars,
                     runner_widget=GameRunnerSettings,
                     parent=parent
@@ -243,7 +248,8 @@ class GameSettings(GameSettingsBase):
         else:
             super(GameSettings, self).__init__(
                 launch_widget=GameLaunchSettings,
-                dxvk_widget=GameDxvkSettings,
+                dxvk_overlay_widget=GameDxvkOverlaySettings,
+                dxvk_config_widget=GameDxvkConfigSettings,
                 envvar_widget=GameEnvVars,
                 parent=parent
             )
@@ -256,5 +262,6 @@ class GameSettings(GameSettingsBase):
             self.runner.load_settings(rgame)
             if pf.system() in {"Linux", "FreeBSD"}:
                 self.mangohud.load_settings(rgame.app_name)
-        self.dxvk.load_settings(rgame.app_name)
+        self.dxvk_overlay.load_settings(rgame.app_name)
+        self.dxvk_config.load_settings(rgame.app_name)
         self.env_vars.load_settings(rgame.app_name)
