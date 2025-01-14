@@ -13,10 +13,13 @@ class WrapperType(IntEnum):
 
 
 class Wrapper:
-    def __init__(self, command: Union[str, List[str]], name: str = None, wtype: WrapperType = None):
+    def __init__(
+        self, command: Union[str, List[str]], name: str = None, wtype: WrapperType = None, enabled: bool = True
+    ):
         self.__command: List[str] = shlex.split(command) if isinstance(command, str) else command
         self.__name: str = name if name is not None else os.path.basename(self.__command[0])
         self.__wtype: WrapperType = wtype if wtype is not None else WrapperType.USER_DEFINED
+        self.__enabled: bool = enabled or self.__wtype == WrapperType.COMPAT_TOOL
 
     @property
     def is_compat_tool(self) -> bool:
@@ -25,6 +28,14 @@ class Wrapper:
     @property
     def is_editable(self) -> bool:
         return self.__wtype in {WrapperType.USER_DEFINED, WrapperType.LEGENDARY_IMPORT}
+
+    @property
+    def is_enabled(self) -> bool:
+        return self.__enabled or self.is_compat_tool
+
+    @is_enabled.setter
+    def is_enabled(self, state: bool) -> None:
+        self.__enabled = state if not self.is_compat_tool else True
 
     @property
     def checksum(self) -> str:
