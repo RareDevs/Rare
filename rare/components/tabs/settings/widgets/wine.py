@@ -2,7 +2,7 @@ import os
 from logging import getLogger
 from typing import Optional
 
-from PySide6.QtCore import Signal, Qt, QSignalBlocker
+from PySide6.QtCore import Signal, Qt, QSignalBlocker, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFileDialog, QFormLayout, QGroupBox
 
@@ -19,7 +19,7 @@ class WineSettings(QGroupBox):
 
     def __init__(self, parent=None):
         super(WineSettings, self).__init__(parent=parent)
-        self.setTitle(self.tr("Wine settings"))
+        self.setTitle(self.tr("Wine"))
 
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
@@ -62,6 +62,7 @@ class WineSettings(QGroupBox):
 
         return super().showEvent(a0)
 
+    @Slot(bool)
     def tool_enabled(self, enabled: bool):
         if enabled:
             config.set_boolean(self.app_name, "no_wine", True)

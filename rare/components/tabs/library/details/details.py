@@ -38,6 +38,7 @@ class GameDetails(QWidget, SideTabContents):
         self.ui = Ui_GameDetails()
         self.ui.setupUi(self)
         # lk: set object names for CSS properties
+        self.ui.install_path.setObjectName("LinkLabel")
         self.ui.install_button.setObjectName("InstallButton")
         self.ui.modify_button.setObjectName("InstallButton")
         self.ui.uninstall_button.setObjectName("UninstallButton")

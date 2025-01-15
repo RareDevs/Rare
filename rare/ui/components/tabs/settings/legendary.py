@@ -32,7 +32,7 @@ class Ui_LegendarySettings(object):
         self.left_layout.setObjectName(u"left_layout")
         self.install_dir_group = QGroupBox(LegendarySettings)
         self.install_dir_group.setObjectName(u"install_dir_group")
-        self.install_dir_group.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.install_dir_group.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.install_dir_layout = QVBoxLayout(self.install_dir_group)
         self.install_dir_layout.setObjectName(u"install_dir_layout")
 
@@ -40,10 +40,10 @@ class Ui_LegendarySettings(object):
 
         self.download_group = QGroupBox(LegendarySettings)
         self.download_group.setObjectName(u"download_group")
-        self.download_group.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.download_group.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.download_layout = QFormLayout(self.download_group)
         self.download_layout.setObjectName(u"download_layout")
-        self.download_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.download_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.max_workers_label = QLabel(self.download_group)
         self.max_workers_label.setObjectName(u"max_workers_label")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
@@ -146,7 +146,7 @@ class Ui_LegendarySettings(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.locale_group.sizePolicy().hasHeightForWidth())
         self.locale_group.setSizePolicy(sizePolicy2)
-        self.locale_group.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.locale_group.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.locale_layout = QVBoxLayout(self.locale_group)
         self.locale_layout.setObjectName(u"locale_layout")
 
@@ -154,7 +154,7 @@ class Ui_LegendarySettings(object):
 
         self.cleanup_group = QGroupBox(LegendarySettings)
         self.cleanup_group.setObjectName(u"cleanup_group")
-        self.cleanup_group.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.cleanup_group.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.cleanup_layout = QVBoxLayout(self.cleanup_group)
         self.cleanup_layout.setObjectName(u"cleanup_layout")
         self.clean_keep_manifests_button = QPushButton(self.cleanup_group)
@@ -225,7 +225,7 @@ class Ui_LegendarySettings(object):
     # setupUi
 
     def retranslateUi(self, LegendarySettings):
-        self.install_dir_group.setTitle(QCoreApplication.translate("LegendarySettings", u"Default installation folder", None))
+        self.install_dir_group.setTitle(QCoreApplication.translate("LegendarySettings", u"Installation folder", None))
         self.download_group.setTitle(QCoreApplication.translate("LegendarySettings", u"Download settings", None))
         self.max_workers_label.setText(QCoreApplication.translate("LegendarySettings", u"Max workers", None))
         self.max_workers_info_label.setText(QCoreApplication.translate("LegendarySettings", u"Less is slower (0: Default)", None))
