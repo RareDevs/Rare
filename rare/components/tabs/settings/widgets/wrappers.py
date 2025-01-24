@@ -278,10 +278,10 @@ class WrapperSettings(QWidget):
     @Slot(QWidget, int)
     def __on_order_changed(self, widget: WrapperWidget, new_index: int):
         wrapper = widget.data()
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         wrappers.remove(wrapper)
         wrappers.insert(new_index, wrapper)
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
 
     @Slot()
     def __on_add(self) -> None:
@@ -308,12 +308,12 @@ class WrapperSettings(QWidget):
         widget.delete_wrapper.connect(self.__delete_wrapper)
 
     def add_wrapper(self, wrapper: Wrapper, position: int = -1):
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         if position < 0 or wrapper.is_compat_tool:
             wrappers.append(wrapper)
         else:
             wrappers.insert(position, wrapper)
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
         self.__add_wrapper(wrapper, position)
 
     def add_user_wrapper(self, wrapper: Wrapper, position: int = -1):
@@ -330,7 +330,7 @@ class WrapperSettings(QWidget):
                 )
                 return
 
-        if wrapper.checksum in self.wrappers.get_game_csum_list(self.app_name):
+        if wrapper.checksum in self.wrappers.get_checksums(self.app_name):
             QMessageBox.warning(
                 self,
                 self.tr("Warning"),
@@ -353,35 +353,35 @@ class WrapperSettings(QWidget):
 
     @Slot(object)
     def __disable_wrapper(self, wrapper: Wrapper):
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         index = wrappers.index(wrapper)
         wrappers.remove(wrapper)
         wrappers.insert(index, wrapper)
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
         self.__add_wrapper(wrapper, index)
 
     @Slot(object)
     def __delete_wrapper(self, wrapper: Wrapper):
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         wrappers.remove(wrapper)
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
         if not wrappers:
             self.wrapper_label.setVisible(True)
 
     @Slot(object, object)
     def __update_wrapper(self, old: Wrapper, new: Wrapper):
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         index = wrappers.index(old)
         wrappers.remove(old)
         wrappers.insert(index, new)
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
         self.__add_wrapper(new, index)
 
     @Slot()
     def update_state(self):
         for w in self.wrapper_container.findChildren(WrapperWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             w.deleteLater()
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         if not wrappers:
             self.wrapper_label.setVisible(True)
         for wrapper in wrappers:
