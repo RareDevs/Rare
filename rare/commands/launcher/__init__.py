@@ -17,7 +17,6 @@ from PySide6.QtCore import (
     QUrl,
     QRunnable,
     QThreadPool,
-    QSettings,
     Qt,
     Slot,
     QTimer,
@@ -167,10 +166,7 @@ class RareLauncher(RareApp):
         language = self.settings.value(*options.language)
         self.load_translator(language)
 
-        # if QSettings(self).value(*options.log_games) or (
-        #     game.app_name in DETACHED_APP_NAMES and platform.system() == "Windows"
-        # ):
-        if QSettings(self).value(*options.log_games):
+        if args.show_console:
             self.console = ConsoleDialog(game.app_title)
             self.console.show()
 
