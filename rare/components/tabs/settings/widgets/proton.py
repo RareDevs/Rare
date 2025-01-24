@@ -71,7 +71,7 @@ class ProtonSettings(QGroupBox):
             self.tool_combo.addItem(tool.name, tool)
         try:
             wrapper = next(
-                filter(lambda w: w.is_compat_tool, self.wrappers.get_game_wrapper_list(self.app_name))
+                filter(lambda w: w.is_compat_tool, self.wrappers.get_wrappers(self.app_name))
             )
             self.tool_wrapper = wrapper
             tool = next(filter(lambda t: t.checksum == wrapper.checksum, tools))
@@ -97,7 +97,7 @@ class ProtonSettings(QGroupBox):
             config.adjust_envvar(self.app_name, key, value)
             self.environ_changed.emit(key)
 
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         if self.tool_wrapper and self.tool_wrapper in wrappers:
             wrappers.remove(self.tool_wrapper)
         if steam_tool is None:
@@ -108,7 +108,7 @@ class ProtonSettings(QGroupBox):
             )
             wrappers.append(wrapper)
             self.tool_wrapper = wrapper
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
 
         self.tool_prefix.setEnabled(steam_tool is not None)
         if steam_tool:
