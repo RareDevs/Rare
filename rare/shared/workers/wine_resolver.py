@@ -42,7 +42,7 @@ class WinePathResolver(Worker):
 
         if config.get_boolean(app_name, "no_wine"):
             wrappers = Wrappers()
-            for w in wrappers.get_game_wrapper_list(app_name):
+            for w in wrappers.get_wrappers(app_name):
                 if w.is_compat_tool:
                     for t in steam.find_tools():
                         if t.checksum == w.checksum:
