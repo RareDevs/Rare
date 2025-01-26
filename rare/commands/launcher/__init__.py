@@ -1,4 +1,5 @@
 import json
+import os
 import platform
 import shlex
 import subprocess
@@ -334,6 +335,13 @@ class RareLauncher(RareApp):
             )
             self.stop()  # stop because we do not attach to the output
             return
+
+        # Sanity check environment (mostly for Linux)
+        # TODO: move to environment configuration, do not resuse variables from this block
+        command_line = shlex.join((args.executable, *args.arguments))
+        if os.environ.get("XDG_CURRENT_DESKTOP", None) == "gamescope" or "gamescope" in command_line:
+            # disable mangohud in gamescope
+            args.environment.insert("MANGOHUD", "0")
 
         if args.working_directory:
             self.game_process.setWorkingDirectory(args.working_directory)
