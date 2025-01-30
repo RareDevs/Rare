@@ -166,6 +166,14 @@ css.QPushButton[css_name(ListWidget, "Button")].textAlign.setValue("left")
 css.QLabel[css_name(ListWidget, "InfoLabel")].color.setValue("#999")
 
 
+# MainTabBar
+from rare.components.tabs.tab_widgets import MainTabBar
+css.QTabBar[css_name(MainTabBar, "")].tab.disabled.setValues(
+    border="0px",
+    backgroundColor="transparent",
+)
+
+
 # SelectViewWidget
 from rare.components.tabs.library.head_bar import SelectViewWidget
 css.QPushButton[css_name(SelectViewWidget, "Button")].setValues(

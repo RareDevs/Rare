@@ -453,7 +453,6 @@ QTabWidget::pane {
 QTabWidget::tab-bar {
 }
 QTabBar {
-    qproperty-drawBase: 0;
 }
 QTabBar::tab {
     margin: 0px;
@@ -678,6 +677,8 @@ QTabBar#MainTabBar::tab:top:selected {
 
 QPushButton#TabButtonWidget,
 QToolButton#TabButtonWidget {
+    margin: 1px 0px 1px 0px;
+    padding: 3px 6px 1px 6px;
     border-color: rgb( 51, 54, 59);
 }
 QPushButton#TabButtonWidget:disabled,

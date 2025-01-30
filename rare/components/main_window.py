@@ -38,6 +38,7 @@ class RareWindow(QMainWindow):
         self._window_launched = False
         super(RareWindow, self).__init__(parent=parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
+        # self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
         self.signals = RareCore.instance().signals()
