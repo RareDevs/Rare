@@ -126,7 +126,7 @@ class LandingWidget(QWidget, SideTabContents):
         free_scroll = FreeGamesScroll(self)
         free_container = QWidget(free_scroll)
         free_scroll.setWidget(free_container)
-        free_container_layout = QHBoxLayout(free_container)
+        free_container_layout = QVBoxLayout(free_container)
 
         free_scroll.setWidgetResizable(True)
         free_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
