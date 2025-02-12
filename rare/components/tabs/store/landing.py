@@ -107,13 +107,13 @@ class LandingWidget(QWidget, SideTabContents):
         self.setLayout(layout)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
-        self.free_games_now = StoreGroup(self.tr("Free now"), layout=QHBoxLayout, parent=self)
+        self.free_games_now = StoreGroup(self.tr("Free now"), layout=FlowLayout, parent=self)
         self.free_games_now.main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        self.free_games_now.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.free_games_now.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        self.free_games_next = StoreGroup(self.tr("Free next week"), layout=QHBoxLayout, parent=self)
+        self.free_games_next = StoreGroup(self.tr("Free next week"), layout=FlowLayout, parent=self)
         self.free_games_next.main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        self.free_games_next.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.free_games_next.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         self.discounts_group = StoreGroup(self.tr("Wishlist discounts"), layout=FlowLayout, parent=self)
         self.discounts_group.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -123,28 +123,8 @@ class LandingWidget(QWidget, SideTabContents):
         self.games_group.loading(False)
         self.games_group.setVisible(False)
 
-        free_scroll = FreeGamesScroll(self)
-        free_container = QWidget(free_scroll)
-        free_scroll.setWidget(free_container)
-        free_container_layout = QVBoxLayout(free_container)
-
-        free_scroll.setWidgetResizable(True)
-        free_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
-        free_scroll.setSizeAdjustPolicy(QScrollArea.SizeAdjustPolicy.AdjustToContents)
-        free_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-
-        free_container_layout.setContentsMargins(0, 0, 0, 0)
-        free_container_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-        free_container_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
-        free_container_layout.addWidget(self.free_games_now)
-        free_container_layout.addWidget(self.free_games_next)
-
-        free_scroll.widget().setAutoFillBackground(False)
-        free_scroll.viewport().setAutoFillBackground(False)
-
-        # layout.addWidget(self.free_games_now, alignment=Qt.AlignmentFlag.AlignTop)
-        # layout.addWidget(self.free_games_next, alignment=Qt.AlignmentFlag.AlignTop)
-        layout.addWidget(free_scroll, alignment=Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.free_games_now, alignment=Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.free_games_next, alignment=Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.discounts_group, alignment=Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.games_group, alignment=Qt.AlignmentFlag.AlignTop)
         layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding))
