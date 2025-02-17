@@ -33,12 +33,11 @@ def main() -> int:
         "-V", "--version", action="store_true", help="Shows version and exits"
     )
     parser.add_argument(
-        "-S",
-        "--silent",
-        action="store_true",
-        help="Launch Rare in background. Open it from System Tray Icon",
+        "-S", "--silent", action="store_true", help="Launch Rare in background. Open it from System Tray Icon",
     )
-    parser.add_argument("--debug", action="store_true", help="Launch in debug mode")
+    parser.add_argument(
+        "--debug", action="store_true", help="Launch in debug mode"
+    )
     parser.add_argument(
         "--offline", action="store_true", help="Launch Rare in offline mode"
     )
@@ -47,40 +46,56 @@ def main() -> int:
     )
 
     parser.add_argument(
-        "--desktop-shortcut",
-        action="store_true",
-        dest="desktop_shortcut",
+        "--desktop-shortcut", action="store_true", dest="desktop_shortcut",
         help="Use this, if there is no link on desktop to start Rare",
     )
     parser.add_argument(
-        "--startmenu-shortcut",
-        action="store_true",
-        dest="startmenu_shortcut",
+        "--startmenu-shortcut", action="store_true", dest="startmenu_shortcut",
         help="Use this, if there is no link in start menu to launch Rare",
     )
     subparsers = parser.add_subparsers(title="Commands", dest="subparser")
 
+    # Launch command
     launch_parser = subparsers.add_parser("launch", aliases=["start"])
-    launch_parser.add_argument("app_name", help="AppName of the game to launch",
-                               metavar="<App Name>", action="store")
-    launch_parser.add_argument("--dry-run", help="Print arguments and exit", action="store_true")
-    launch_parser.add_argument("--offline", help="Launch game offline",
-                               action="store_true")
-    launch_parser.add_argument("--ask-sync-saves", help="Ask to sync cloud saves",
-                               action="store_true")
-    launch_parser.add_argument("--skip-update-check", help="Do not check for updates",
-                               action="store_true")
+    launch_parser.add_argument(
+        "--dry-run", action="store_true", help="Print arguments and exit"
+    )
+    launch_parser.add_argument(
+        "--offline", action="store_true", help="Launch game offline"
+    )
+    launch_parser.add_argument(
+        "--ask-sync-saves", action="store_true", help="Ask to sync cloud saves"
+    )
+    launch_parser.add_argument(
+        "--skip-update-check", action="store_true", help="Do not check for updates"
+    )
+    launch_parser.add_argument(
+        "--show-console", action="store_true", help="Show a console window to log the application's output"
+    )
     if platform.system() != "Windows":
-        launch_parser.add_argument('--wine-bin', dest='wine_bin', action='store', metavar='<wine binary>',
-                                   default=os.environ.get('LGDRY_WINE_BINARY', None),
-                                   help='Set WINE binary to use to launch the app')
-        launch_parser.add_argument('--wine-prefix', dest='wine_pfx', action='store', metavar='<wine pfx path>',
-                                   default=os.environ.get('LGDRY_WINE_PREFIX', None),
-                                   help='Set WINE prefix to use')
+        launch_parser.add_argument(
+            '--wine-bin', action='store', dest='wine_bin', default=os.environ.get('LGDRY_WINE_BINARY', None),
+            metavar='<wine binary>',
+            help="Set WINE binary to use to launch the app",
+        )
+        launch_parser.add_argument(
+            '--wine-prefix', action='store', dest='wine_pfx', default=os.environ.get('LGDRY_WINE_PREFIX', None),
+            metavar='<wine pfx path>',
+            help="Set WINE prefix to use",
+        )
+    launch_parser.add_argument(
+        "app_name", action="store",
+        metavar="<App Name>",
+        help="AppName of the game to launch",
+    )
 
+    # Login command
     login_parser = subparsers.add_parser("login", aliases=["auth"])
-    login_parser.add_argument("egl_version", help="Epic Games Launcher User Agent version",
-                              metavar="<EGL Version>", action="store")
+    login_parser.add_argument(
+        "egl_version", action="store",
+        metavar="<EGL Version>",
+        help="Epic Games Launcher User Agent version",
+    )
 
     args = parser.parse_args()
 

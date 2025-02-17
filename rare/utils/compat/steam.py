@@ -23,6 +23,8 @@ def find_steam() -> Optional[str]:
 
 def find_libraries(steam_path: str) -> Set[str]:
     vdf_path = os.path.join(steam_path, "config", "libraryfolders.vdf")
+    if not os.path.isfile(vdf_path):
+        return set()
     with open(vdf_path, "r", encoding="utf-8") as f:
         libraryfolders = vdf.load(f)["libraryfolders"]
     # libraries = [os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()]

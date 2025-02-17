@@ -20,9 +20,10 @@ class GameArgsError(Exception):
 
 class InitArgs(Namespace):
     app_name: str
-    dry_run: bool = False
-    debug: bool = False
     offline: bool = False
+    debug: bool = False
+    dry_run: bool = False
+    show_console: bool = False
     skip_update_check: bool = False
     wine_prefix: str = ""
     wine_bin: str = ""
@@ -31,12 +32,13 @@ class InitArgs(Namespace):
     def from_argparse(cls, args):
         return cls(
             app_name=args.app_name,
-            debug=args.debug,
             offline=args.offline,
+            debug=args.debug,
+            dry_run=args.dry_run,
+            show_console=args.show_console,
             skip_update_check=args.skip_update_check,
             wine_bin=args.wine_bin if hasattr(args, "wine_bin") else "",
             wine_prefix=args.wine_pfx if hasattr(args, "wine_prefix") else "",
-            dry_run=args.dry_run
         )
 
 

@@ -7,20 +7,21 @@ from logging import getLogger
 from threading import Lock
 from typing import List, Optional, Dict, Set
 
-from PySide6.QtCore import QRunnable, Slot, QProcess, QThreadPool
+from PySide6.QtCore import QRunnable, Slot, QProcess, QThreadPool, QSettings
 from PySide6.QtGui import QPixmap
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
 
-from rare.models.image import ImageSize
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameBase, RareGameSlim
+from rare.models.image import ImageSize
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
+from rare.models.options import options
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
+from rare.utils.config_helper import set_envvar, get_boolean
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
-from rare.utils.config_helper import set_envvar, get_boolean
 
 logger = getLogger("RareGame")
 
@@ -556,6 +557,7 @@ class RareGame(RareGameSlim):
 
     def launch(
         self,
+        debug: bool = False,
         offline: bool = False,
         skip_update_check: bool = False,
         wine_bin: Optional[str] = None,
@@ -566,15 +568,20 @@ class RareGame(RareGameSlim):
 
         cmd_line = get_rare_executable()
         executable, args = cmd_line[0], cmd_line[1:]
-        args.extend(("launch", self.app_name))
+        args.append("launch")
         if offline or get_boolean(self.app_name, "offline", fallback=False):
             args.append("--offline")
+        if debug:
+            args.append("--debug")
+        if QSettings(self).value(*options.log_games):
+            args.append("--show-console")
         if skip_update_check or get_boolean(self.app_name, "skip_update_check", fallback=False):
             args.append("--skip-update-check")
         if wine_bin:
             args.extend(["--wine-bin", wine_bin])
         if wine_pfx:
             args.extend(["--wine-prefix", wine_pfx])
+        args.append(self.app_name)
 
         logger.info(f"Starting game process: ({executable} {' '.join(args)})")
         QProcess.startDetached(executable, args)

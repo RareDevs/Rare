@@ -126,6 +126,10 @@ QPushButton#ListWidgetButton {
 QLabel#ListWidgetInfoLabel {
     color: #999;
 }
+QTabBar#MainTabBar::tab:disabled {
+    border: 0px;
+    background-color: transparent;
+}
 QPushButton#SelectViewWidgetButton {
     border: none;
     background-color: transparent;

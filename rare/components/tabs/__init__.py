@@ -18,6 +18,7 @@ class MainTabWidget(QTabWidget):
 
     def __init__(self, parent):
         super(MainTabWidget, self).__init__(parent=parent)
+        self.setObjectName(type(self).__name__)
 
         self.rcore = RareCore.instance()
         self.core = LegendaryCoreSingleton()
@@ -44,7 +45,7 @@ class MainTabWidget(QTabWidget):
             self.setTabEnabled(self.store_index, not self.args.offline)
 
         # Space Tab
-        space_index = self.addTab(QWidget(self), "")
+        space_index = self.addTab(QWidget(self), "Rare")
         self.setTabEnabled(space_index, False)
         self.tab_bar.expanded = space_index
 
@@ -75,6 +76,8 @@ class MainTabWidget(QTabWidget):
             QShortcut("Alt+2", self).activated.connect(lambda: self.setCurrentIndex(self.downloads_index))
             QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(self.store_index))
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
+
+        self.setCurrentIndex(self.games_index)
 
     @Slot(int)
     def __on_downloads_update_title(self, num_downloads: int):

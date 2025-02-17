@@ -1,4 +1,5 @@
 import json
+import os
 import platform
 import shlex
 import subprocess
@@ -17,7 +18,6 @@ from PySide6.QtCore import (
     QUrl,
     QRunnable,
     QThreadPool,
-    QSettings,
     Qt,
     Slot,
     QTimer,
@@ -167,10 +167,7 @@ class RareLauncher(RareApp):
         language = self.settings.value(*options.language)
         self.load_translator(language)
 
-        # if QSettings(self).value(*options.log_games) or (
-        #     game.app_name in DETACHED_APP_NAMES and platform.system() == "Windows"
-        # ):
-        if QSettings(self).value(*options.log_games):
+        if args.show_console:
             self.console = ConsoleDialog(game.app_title)
             self.console.show()
 
@@ -338,6 +335,14 @@ class RareLauncher(RareApp):
             )
             self.stop()  # stop because we do not attach to the output
             return
+
+        # TODO: move to environment configuration, do not resuse variables from this block
+        # Sanity check environment (mostly for Linux)
+        command_line = shlex.join((args.executable, *args.arguments))
+        if os.environ.get("XDG_CURRENT_DESKTOP", None) == "gamescope" or "gamescope" in command_line:
+            # disable mangohud in gamescope
+            args.environment.insert("MANGOHUD", "0")
+        # TODO: end
 
         if args.working_directory:
             self.game_process.setWorkingDirectory(args.working_directory)
