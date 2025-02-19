@@ -52,7 +52,7 @@ class DlThread(QThread):
         self.debug = debug
 
     def __finish(self, result):
-        if result.code == DlResultCode.FINISHED:
+        if result.code == DlResultCode.FINISHED and not result.options.no_install:
             self.rgame.set_installed(True)
         self.rgame.state = RareGame.State.IDLE
         self.rgame.signals.progress.finish.emit(result.code != DlResultCode.FINISHED)
