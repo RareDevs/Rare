@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'landing_page.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -32,8 +32,8 @@ class Ui_LandingPage(object):
         self.main_layout = QFormLayout(LandingPage)
         self.main_layout.setObjectName(u"main_layout")
         self.main_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        self.main_layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
-        self.main_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.main_layout.setLabelAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.main_layout.setFormAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
         self.login_label = QLabel(LandingPage)
         self.login_label.setObjectName(u"login_label")
         sizePolicy.setHeightForWidth(self.login_label.sizePolicy().hasHeightForWidth())
@@ -60,7 +60,7 @@ class Ui_LandingPage(object):
         font1.setItalic(True)
         self.login_browser_label.setFont(font1)
 
-        self.main_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.login_browser_label)
+        self.main_layout.setWidget(1, QFormLayout.FieldRole, self.login_browser_label)
 
         self.login_import_radio = QRadioButton(LandingPage)
         self.login_import_radio.setObjectName(u"login_import_radio")
@@ -73,7 +73,7 @@ class Ui_LandingPage(object):
         self.login_import_label.setObjectName(u"login_import_label")
         self.login_import_label.setFont(font1)
 
-        self.main_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.login_import_label)
+        self.main_layout.setWidget(2, QFormLayout.FieldRole, self.login_import_label)
 
 
         self.retranslateUi(LandingPage)

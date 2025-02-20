@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'overlay.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -55,7 +55,7 @@ class Ui_OverlaySettings(object):
         self.options_layout.setObjectName(u"options_layout")
         self.options_form = QFormLayout()
         self.options_form.setObjectName(u"options_form")
-        self.options_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.options_form.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.options_layout.addLayout(self.options_form, 1, 0, 1, 1)
 

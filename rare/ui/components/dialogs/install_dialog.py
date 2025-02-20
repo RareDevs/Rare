@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'install_dialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -27,7 +27,7 @@ class Ui_InstallDialog(object):
         InstallDialog.setWindowTitle(u"InstallDialog")
         self.main_layout = QFormLayout(InstallDialog)
         self.main_layout.setObjectName(u"main_layout")
-        self.main_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.main_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.install_dir_label = QLabel(InstallDialog)
         self.install_dir_label.setObjectName(u"install_dir_label")
 
@@ -46,11 +46,11 @@ class Ui_InstallDialog(object):
         sizePolicy.setHeightForWidth(self.platform_combo.sizePolicy().hasHeightForWidth())
         self.platform_combo.setSizePolicy(sizePolicy)
 
-        self.main_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.platform_combo)
+        self.main_layout.setWidget(1, QFormLayout.FieldRole, self.platform_combo)
 
         self.shortcut_label = QLabel(InstallDialog)
         self.shortcut_label.setObjectName(u"shortcut_label")
-        self.shortcut_label.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.shortcut_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.main_layout.setWidget(2, QFormLayout.LabelRole, self.shortcut_label)
 
@@ -58,7 +58,7 @@ class Ui_InstallDialog(object):
         self.shortcut_check.setObjectName(u"shortcut_check")
         self.shortcut_check.setText(u"")
 
-        self.main_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.shortcut_check)
+        self.main_layout.setWidget(2, QFormLayout.FieldRole, self.shortcut_check)
 
         self.selectable_layout = QVBoxLayout()
         self.selectable_layout.setObjectName(u"selectable_layout")
@@ -81,7 +81,7 @@ class Ui_InstallDialog(object):
         font.setItalic(True)
         self.download_size_text.setFont(font)
 
-        self.main_layout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.download_size_text)
+        self.main_layout.setWidget(5, QFormLayout.FieldRole, self.download_size_text)
 
         self.install_size_label = QLabel(InstallDialog)
         self.install_size_label.setObjectName(u"install_size_label")
@@ -93,7 +93,7 @@ class Ui_InstallDialog(object):
         self.install_size_text.setFont(font)
         self.install_size_text.setWordWrap(True)
 
-        self.main_layout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.install_size_text)
+        self.main_layout.setWidget(6, QFormLayout.FieldRole, self.install_size_text)
 
         self.avail_space_label = QLabel(InstallDialog)
         self.avail_space_label.setObjectName(u"avail_space_label")
@@ -106,7 +106,7 @@ class Ui_InstallDialog(object):
         font1.setBold(True)
         self.avail_space.setFont(font1)
 
-        self.main_layout.setWidget(7, QFormLayout.ItemRole.FieldRole, self.avail_space)
+        self.main_layout.setWidget(7, QFormLayout.FieldRole, self.avail_space)
 
         self.warning_label = QLabel(InstallDialog)
         self.warning_label.setObjectName(u"warning_label")
@@ -116,12 +116,12 @@ class Ui_InstallDialog(object):
         self.warning_text = QLabel(InstallDialog)
         self.warning_text.setObjectName(u"warning_text")
         self.warning_text.setFont(font)
-        self.warning_text.setFrameShape(QFrame.Shape.StyledPanel)
+        self.warning_text.setFrameShape(QFrame.StyledPanel)
         self.warning_text.setFrameShadow(QFrame.Sunken)
         self.warning_text.setWordWrap(True)
         self.warning_text.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
 
-        self.main_layout.setWidget(8, QFormLayout.ItemRole.FieldRole, self.warning_text)
+        self.main_layout.setWidget(8, QFormLayout.FieldRole, self.warning_text)
 
 
         self.retranslateUi(InstallDialog)

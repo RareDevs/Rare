@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'wishlist.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -63,7 +63,7 @@ class Ui_Wishlist(object):
 
         self.scrollarea = QScrollArea(Wishlist)
         self.scrollarea.setObjectName(u"scrollarea")
-        self.scrollarea.setSizeAdjustPolicy(QScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.scrollarea.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.scrollarea.setWidgetResizable(True)
         self.container = QWidget()
         self.container.setObjectName(u"container")
@@ -73,7 +73,7 @@ class Ui_Wishlist(object):
         self.no_games_label = QLabel(self.container)
         self.no_games_label.setObjectName(u"no_games_label")
 
-        self.container_layout.addWidget(self.no_games_label, 0, Qt.AlignmentFlag.AlignTop)
+        self.container_layout.addWidget(self.no_games_label, 0, Qt.AlignTop)
 
         self.scrollarea.setWidget(self.container)
 

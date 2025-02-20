@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'download_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -46,7 +46,7 @@ class Ui_DownloadWidget(object):
         font1 = QFont()
         font1.setBold(True)
         self.dl_name_label.setFont(font1)
-        self.dl_name_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.dl_name_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.active_download_layout.addWidget(self.dl_name_label, 0, 0, 1, 1)
 
@@ -61,14 +61,14 @@ class Ui_DownloadWidget(object):
         self.dl_speed_label = QLabel(DownloadWidget)
         self.dl_speed_label.setObjectName(u"dl_speed_label")
         self.dl_speed_label.setFont(font1)
-        self.dl_speed_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.dl_speed_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.active_download_layout.addWidget(self.dl_speed_label, 1, 2, 1, 1)
 
         self.downloaded_label = QLabel(DownloadWidget)
         self.downloaded_label.setObjectName(u"downloaded_label")
         self.downloaded_label.setFont(font1)
-        self.downloaded_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.downloaded_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.active_download_layout.addWidget(self.downloaded_label, 2, 2, 1, 1)
 
@@ -86,7 +86,7 @@ class Ui_DownloadWidget(object):
         self.time_left_label = QLabel(DownloadWidget)
         self.time_left_label.setObjectName(u"time_left_label")
         self.time_left_label.setFont(font1)
-        self.time_left_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.time_left_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.active_download_layout.addWidget(self.time_left_label, 1, 0, 1, 1)
 
@@ -109,7 +109,7 @@ class Ui_DownloadWidget(object):
         self.cache_used_label = QLabel(DownloadWidget)
         self.cache_used_label.setObjectName(u"cache_used_label")
         self.cache_used_label.setFont(font1)
-        self.cache_used_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.cache_used_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.active_download_layout.addWidget(self.cache_used_label, 2, 0, 1, 1)
 

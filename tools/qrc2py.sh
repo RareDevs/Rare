@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
-_rcc_cmd="pyside6-rcc --compress 6 --threshold 0"
+_rcc_cmd="pyside6-rcc --compress 6 --compress-algo zlib --threshold 0"
 
 cwd="$(pwd)"
 cd "$(dirname "${0}")"/../ || exit
+
+force=0
+if [[ "$1" == "--force" ]]
+then
+  force=1
+fi
 
 resources=(
   "rare/resources/images/"
@@ -11,11 +17,6 @@ resources=(
 )
 
 resources_changed=0
-if [[ "$1" == "--force" ]]
-then
-  resources_changed=1
-fi
-
 for r in "${resources[@]}"
 do
   if [[ $(git diff --name-only HEAD "$r") ]]
@@ -24,7 +25,7 @@ do
   fi
 done
 
-if [[ $resources_changed -eq 1 ]]
+if [[ $resources_changed -eq 1 || $force -eq 1 ]]
 then
   echo "Re-compiling main resources"
   $_rcc_cmd \
@@ -32,7 +33,7 @@ then
       -o rare/resources/resources.py
 fi
 
-if [[ $(git diff --name-only HEAD "rare/resources/stylesheets/RareStyle/") ]]
+if [[ $(git diff --name-only HEAD "rare/resources/stylesheets/RareStyle/") || $force -eq 1 ]]
 then
   echo "Re-compiling RareStyle stylesheet resources"
   $_rcc_cmd \
@@ -41,7 +42,7 @@ then
 fi
 
 
-if [[ $(git diff --name-only HEAD "rare/resources/stylesheets/ChildOfMetropolis/") ]]
+if [[ $(git diff --name-only HEAD "rare/resources/stylesheets/ChildOfMetropolis/") || $force -eq 1 ]]
 then
   echo "Re-compiling ChildOfMetropolis stylesheet resources"
   $_rcc_cmd \

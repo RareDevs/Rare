@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'search.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -46,10 +46,10 @@ class Ui_SearchWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.filter_scrollarea.sizePolicy().hasHeightForWidth())
         self.filter_scrollarea.setSizePolicy(sizePolicy)
-        self.filter_scrollarea.setFrameShape(QFrame.Shape.NoFrame)
-        self.filter_scrollarea.setFrameShadow(QFrame.Shadow.Plain)
-        self.filter_scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.filter_scrollarea.setSizeAdjustPolicy(QScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.filter_scrollarea.setFrameShape(QFrame.NoFrame)
+        self.filter_scrollarea.setFrameShadow(QFrame.Plain)
+        self.filter_scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.filter_scrollarea.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.filter_scrollarea.setWidgetResizable(True)
         self.filter_container = QWidget()
         self.filter_container.setObjectName(u"filter_container")

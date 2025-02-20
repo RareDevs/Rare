@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'queue_info_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -37,7 +37,7 @@ class Ui_QueueInfoWidget(object):
         font = QFont()
         font.setBold(True)
         self.dl_size_label.setFont(font)
-        self.dl_size_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.dl_size_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.queue_info_layout.addWidget(self.dl_size_label, 1, 3, 1, 1)
 
@@ -51,7 +51,7 @@ class Ui_QueueInfoWidget(object):
         self.local_version_label = QLabel(QueueInfoWidget)
         self.local_version_label.setObjectName(u"local_version_label")
         self.local_version_label.setFont(font)
-        self.local_version_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.local_version_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.queue_info_layout.addWidget(self.local_version_label, 2, 1, 1, 1)
 
@@ -64,7 +64,7 @@ class Ui_QueueInfoWidget(object):
         self.install_size_label = QLabel(QueueInfoWidget)
         self.install_size_label.setObjectName(u"install_size_label")
         self.install_size_label.setFont(font)
-        self.install_size_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.install_size_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.queue_info_layout.addWidget(self.install_size_label, 2, 3, 1, 1)
 
@@ -89,7 +89,7 @@ class Ui_QueueInfoWidget(object):
         self.remote_version_label = QLabel(QueueInfoWidget)
         self.remote_version_label.setObjectName(u"remote_version_label")
         self.remote_version_label.setFont(font)
-        self.remote_version_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.remote_version_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.queue_info_layout.addWidget(self.remote_version_label, 1, 1, 1, 1)
 

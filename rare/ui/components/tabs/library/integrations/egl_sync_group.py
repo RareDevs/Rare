@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'egl_sync_group.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -28,7 +28,7 @@ class Ui_EGLSyncGroup(object):
         EGLSyncGroup.setChecked(False)
         self.egl_sync_layout = QFormLayout(EGLSyncGroup)
         self.egl_sync_layout.setObjectName(u"egl_sync_layout")
-        self.egl_sync_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.egl_sync_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.egl_path_edit_label = QLabel(EGLSyncGroup)
         self.egl_path_edit_label.setObjectName(u"egl_path_edit_label")
 
@@ -45,7 +45,7 @@ class Ui_EGLSyncGroup(object):
         font.setItalic(True)
         self.egl_sync_check.setFont(font)
 
-        self.egl_sync_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.egl_sync_check)
+        self.egl_sync_layout.setWidget(2, QFormLayout.FieldRole, self.egl_sync_check)
 
         self.import_export_layout = QVBoxLayout()
         self.import_export_layout.setObjectName(u"import_export_layout")

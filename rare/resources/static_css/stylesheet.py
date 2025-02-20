@@ -12,6 +12,7 @@ from rare.utils.misc import widget_object_name
 
 verbose = True
 compressLevel = 6
+compressAlgo = "zlib"
 compressThreshold = 0
 
 
@@ -201,6 +202,7 @@ if __name__ == "__main__":
         [
             "-g", "python",
             "--compress", str(compressLevel),
+            "--compress-algo", compressAlgo,
             "--threshold", str(compressThreshold),
             "--verbose" if verbose else "",
             "stylesheet.qrc",
