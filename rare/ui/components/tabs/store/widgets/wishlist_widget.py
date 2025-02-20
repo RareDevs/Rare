@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'wishlist_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -83,7 +83,7 @@ class Ui_WishlistWidget(object):
         self.verticalLayout_2.addLayout(self.price_layout)
 
 
-        self.main_layout.addWidget(self.info_widget, 0, Qt.AlignmentFlag.AlignTop)
+        self.main_layout.addWidget(self.info_widget, 0, Qt.AlignTop)
 
         self.delete_button = QPushButton(WishlistWidget)
         self.delete_button.setObjectName(u"delete_button")

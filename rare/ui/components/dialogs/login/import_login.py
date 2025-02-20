@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'import_login.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -46,8 +46,8 @@ class Ui_ImportLogin(object):
         self.form_layout.setObjectName(u"form_layout")
         self.form_layout.setSizeConstraint(QLayout.SetFixedSize)
         self.form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        self.form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-        self.form_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.form_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.form_layout.setFormAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
         self.prefix_layout = QHBoxLayout()
         self.prefix_layout.setObjectName(u"prefix_layout")
         self.prefix_combo = QComboBox(ImportLogin)
@@ -68,7 +68,7 @@ class Ui_ImportLogin(object):
 
         self.prefix_layout.setStretch(0, 1)
 
-        self.form_layout.setLayout(0, QFormLayout.ItemRole.FieldRole, self.prefix_layout)
+        self.form_layout.setLayout(0, QFormLayout.FieldRole, self.prefix_layout)
 
         self.prefix_label = QLabel(ImportLogin)
         self.prefix_label.setObjectName(u"prefix_label")
@@ -82,7 +82,7 @@ class Ui_ImportLogin(object):
         self.status_label.setFont(font1)
         self.status_label.setText(u"")
 
-        self.form_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.status_label)
+        self.form_layout.setWidget(1, QFormLayout.FieldRole, self.status_label)
 
 
         self.main_layout.addLayout(self.form_layout)

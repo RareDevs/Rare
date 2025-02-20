@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'import_group.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -28,7 +28,7 @@ class Ui_ImportGroup(object):
         ImportGroup.setWindowFilePath(u"")
         self.import_layout = QFormLayout(ImportGroup)
         self.import_layout.setObjectName(u"import_layout")
-        self.import_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.import_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.path_edit_label = QLabel(ImportGroup)
         self.path_edit_label.setObjectName(u"path_edit_label")
 
@@ -50,7 +50,7 @@ class Ui_ImportGroup(object):
         font.setItalic(True)
         self.import_folder_check.setFont(font)
 
-        self.import_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.import_folder_check)
+        self.import_layout.setWidget(3, QFormLayout.FieldRole, self.import_folder_check)
 
         self.import_dlcs_label = QLabel(ImportGroup)
         self.import_dlcs_label.setObjectName(u"import_dlcs_label")
@@ -61,7 +61,7 @@ class Ui_ImportGroup(object):
         self.import_dlcs_check.setObjectName(u"import_dlcs_check")
         self.import_dlcs_check.setFont(font)
 
-        self.import_layout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.import_dlcs_check)
+        self.import_layout.setWidget(4, QFormLayout.FieldRole, self.import_dlcs_check)
 
         self.import_force_label = QLabel(ImportGroup)
         self.import_force_label.setObjectName(u"import_force_label")
@@ -72,7 +72,7 @@ class Ui_ImportGroup(object):
         self.import_force_check.setObjectName(u"import_force_check")
         self.import_force_check.setFont(font)
 
-        self.import_layout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.import_force_check)
+        self.import_layout.setWidget(5, QFormLayout.FieldRole, self.import_force_check)
 
         self.import_button_label = QLabel(ImportGroup)
         self.import_button_label.setObjectName(u"import_button_label")
@@ -93,7 +93,7 @@ class Ui_ImportGroup(object):
         self.button_info_layout.addWidget(self.import_button)
 
 
-        self.import_layout.setLayout(6, QFormLayout.ItemRole.FieldRole, self.button_info_layout)
+        self.import_layout.setLayout(6, QFormLayout.FieldRole, self.button_info_layout)
 
         self.platform_label = QLabel(ImportGroup)
         self.platform_label.setObjectName(u"platform_label")
@@ -119,7 +119,7 @@ class Ui_ImportGroup(object):
         self.platform_layout.addWidget(self.platform_tooltip)
 
 
-        self.import_layout.setLayout(2, QFormLayout.ItemRole.FieldRole, self.platform_layout)
+        self.import_layout.setLayout(2, QFormLayout.FieldRole, self.platform_layout)
 
 
         self.retranslateUi(ImportGroup)

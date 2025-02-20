@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'browser_login.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -44,8 +44,8 @@ class Ui_BrowserLogin(object):
         self.form_layout.setObjectName(u"form_layout")
         self.form_layout.setSizeConstraint(QLayout.SetFixedSize)
         self.form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        self.form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-        self.form_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.form_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.form_layout.setFormAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
         self.open_button = QPushButton(BrowserLogin)
         self.open_button.setObjectName(u"open_button")
 
@@ -69,12 +69,12 @@ class Ui_BrowserLogin(object):
 
         self.link_layout.setStretch(0, 1)
 
-        self.form_layout.setLayout(0, QFormLayout.ItemRole.FieldRole, self.link_layout)
+        self.form_layout.setLayout(0, QFormLayout.FieldRole, self.link_layout)
 
         self.sid_label = QLabel(BrowserLogin)
         self.sid_label.setObjectName(u"sid_label")
         self.sid_label.setText(u"authorizationCode")
-        self.sid_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.sid_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.form_layout.setWidget(1, QFormLayout.LabelRole, self.sid_label)
 
@@ -85,7 +85,7 @@ class Ui_BrowserLogin(object):
         self.status_label.setFont(font1)
         self.status_label.setText(u"")
 
-        self.form_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.status_label)
+        self.form_layout.setWidget(2, QFormLayout.FieldRole, self.status_label)
 
 
         self.main_layout.addLayout(self.form_layout)

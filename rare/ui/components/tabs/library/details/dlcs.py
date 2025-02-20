@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'dlcs.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,7 @@ class Ui_GameDlcs(object):
             GameDlcs.setObjectName(u"GameDlcs")
         GameDlcs.resize(271, 141)
         GameDlcs.setWindowTitle(u"GameDlcs")
-        GameDlcs.setFrameShape(QFrame.Shape.StyledPanel)
+        GameDlcs.setFrameShape(QFrame.StyledPanel)
         GameDlcs.setFrameShadow(QFrame.Sunken)
         GameDlcs.setLineWidth(0)
         self.installed_dlc_page = QWidget()
@@ -36,7 +36,7 @@ class Ui_GameDlcs(object):
         self.installed_dlc_label = QLabel(self.installed_dlc_page)
         self.installed_dlc_label.setObjectName(u"installed_dlc_label")
 
-        self.installed_dlc_page_layout.addWidget(self.installed_dlc_label, 0, Qt.AlignmentFlag.AlignTop)
+        self.installed_dlc_page_layout.addWidget(self.installed_dlc_label, 0, Qt.AlignTop)
 
         self.installed_dlc_container = QWidget(self.installed_dlc_page)
         self.installed_dlc_container.setObjectName(u"installed_dlc_container")
@@ -44,7 +44,7 @@ class Ui_GameDlcs(object):
         self.installed_dlc_container_layout.setObjectName(u"installed_dlc_container_layout")
         self.installed_dlc_container_layout.setContentsMargins(0, 0, 3, 0)
 
-        self.installed_dlc_page_layout.addWidget(self.installed_dlc_container, 0, Qt.AlignmentFlag.AlignTop)
+        self.installed_dlc_page_layout.addWidget(self.installed_dlc_container, 0, Qt.AlignTop)
 
         self.installed_dlc_page_layout.setStretch(1, 1)
         GameDlcs.addItem(self.installed_dlc_page, u"Installed DLCs")
@@ -57,7 +57,7 @@ class Ui_GameDlcs(object):
         self.available_dlc_label = QLabel(self.available_dlc_page)
         self.available_dlc_label.setObjectName(u"available_dlc_label")
 
-        self.available_dlc_page_layou.addWidget(self.available_dlc_label, 0, Qt.AlignmentFlag.AlignTop)
+        self.available_dlc_page_layou.addWidget(self.available_dlc_label, 0, Qt.AlignTop)
 
         self.available_dlc_container = QWidget(self.available_dlc_page)
         self.available_dlc_container.setObjectName(u"available_dlc_container")
@@ -65,7 +65,7 @@ class Ui_GameDlcs(object):
         self.available_dlc_container_layout.setObjectName(u"available_dlc_container_layout")
         self.available_dlc_container_layout.setContentsMargins(0, 0, 3, 0)
 
-        self.available_dlc_page_layou.addWidget(self.available_dlc_container, 0, Qt.AlignmentFlag.AlignTop)
+        self.available_dlc_page_layou.addWidget(self.available_dlc_container, 0, Qt.AlignTop)
 
         self.available_dlc_page_layou.setStretch(1, 1)
         GameDlcs.addItem(self.available_dlc_page, u"Available DLCs")

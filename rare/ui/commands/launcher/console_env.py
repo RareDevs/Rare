@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'console_env.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -52,7 +52,7 @@ class Ui_ConsoleEnv(object):
 
         self.buttons = QDialogButtonBox(ConsoleEnv)
         self.buttons.setObjectName(u"buttons")
-        self.buttons.setOrientation(Qt.Orientation.Horizontal)
+        self.buttons.setOrientation(Qt.Horizontal)
         self.buttons.setStandardButtons(QDialogButtonBox.Close)
 
         self.layout.addWidget(self.buttons)

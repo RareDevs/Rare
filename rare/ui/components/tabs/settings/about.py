@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'about.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,7 +25,7 @@ class Ui_About(object):
         About.resize(507, 210)
         self.about_layout = QFormLayout(About)
         self.about_layout.setObjectName(u"about_layout")
-        self.about_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.about_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.version_label = QLabel(About)
         self.version_label.setObjectName(u"version_label")
         font = QFont()
@@ -38,7 +38,7 @@ class Ui_About(object):
         self.version.setObjectName(u"version")
         self.version.setText(u"error")
 
-        self.about_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.version)
+        self.about_layout.setWidget(0, QFormLayout.FieldRole, self.version)
 
         self.update_label = QLabel(About)
         self.update_label.setObjectName(u"update_label")
@@ -50,7 +50,7 @@ class Ui_About(object):
         self.update_lbl.setObjectName(u"update_lbl")
         self.update_lbl.setText(u"error")
 
-        self.about_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.update_lbl)
+        self.about_layout.setWidget(1, QFormLayout.FieldRole, self.update_lbl)
 
         self.open_browser = QPushButton(About)
         self.open_browser.setObjectName(u"open_browser")
@@ -60,7 +60,7 @@ class Ui_About(object):
         sizePolicy.setHeightForWidth(self.open_browser.sizePolicy().hasHeightForWidth())
         self.open_browser.setSizePolicy(sizePolicy)
 
-        self.about_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.open_browser)
+        self.about_layout.setWidget(2, QFormLayout.FieldRole, self.open_browser)
 
         self.dev_label = QLabel(About)
         self.dev_label.setObjectName(u"dev_label")
@@ -75,7 +75,7 @@ class Ui_About(object):
 "<a href='https://github.com/loathingkernel' style='color: #2980b9; text-decoration:none'>loathingkernel</a>")
         self.dev.setOpenExternalLinks(True)
 
-        self.about_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.dev)
+        self.about_layout.setWidget(3, QFormLayout.FieldRole, self.dev)
 
         self.lgd_dev_label = QLabel(About)
         self.lgd_dev_label.setObjectName(u"lgd_dev_label")
@@ -88,7 +88,7 @@ class Ui_About(object):
         self.lgd_dev.setText(u"<a href='https://github.com/derrod/' style='color: #2980b9; text-decoration:none'>derrod</a>")
         self.lgd_dev.setOpenExternalLinks(True)
 
-        self.about_layout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.lgd_dev)
+        self.about_layout.setWidget(5, QFormLayout.FieldRole, self.lgd_dev)
 
         self.license_label = QLabel(About)
         self.license_label.setObjectName(u"license_label")
@@ -99,7 +99,7 @@ class Ui_About(object):
         self.license = QLabel(About)
         self.license.setObjectName(u"license")
 
-        self.about_layout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.license)
+        self.about_layout.setWidget(6, QFormLayout.FieldRole, self.license)
 
         self.contrib_label = QLabel(About)
         self.contrib_label.setObjectName(u"contrib_label")
@@ -117,7 +117,7 @@ class Ui_About(object):
 "<br>\n"
 "<a href='https://github.com/gnanini' style='color: #2980b9; text-decoration:none'>gnanini</a> <i>steam grades</i>")
 
-        self.about_layout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label)
+        self.about_layout.setWidget(4, QFormLayout.FieldRole, self.label)
 
 
         self.retranslateUi(About)

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'queue_base_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,7 @@ class Ui_QueueBaseWidget(object):
             QueueBaseWidget.setObjectName(u"QueueBaseWidget")
         QueueBaseWidget.resize(380, 62)
         QueueBaseWidget.setWindowTitle(u"QueueBaseWidget")
-        QueueBaseWidget.setFrameShape(QFrame.Shape.StyledPanel)
+        QueueBaseWidget.setFrameShape(QFrame.StyledPanel)
         self.queue_base_layout = QHBoxLayout(QueueBaseWidget)
         self.queue_base_layout.setObjectName(u"queue_base_layout")
         self.queue_base_layout.setContentsMargins(0, 0, 0, 0)
@@ -46,18 +46,18 @@ class Ui_QueueBaseWidget(object):
         sizePolicy.setHeightForWidth(self.move_up_button.sizePolicy().hasHeightForWidth())
         self.move_up_button.setSizePolicy(sizePolicy)
         self.move_up_button.setText(u"")
-        self.move_up_button.setProperty("isSquare", 1)
+        self.move_up_button.setProperty(u"isSquare", 1)
 
-        self.move_buttons_layout.addWidget(self.move_up_button, 0, Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.move_buttons_layout.addWidget(self.move_up_button, 0, Qt.AlignLeft|Qt.AlignTop)
 
         self.move_down_button = QPushButton(self.move_buttons)
         self.move_down_button.setObjectName(u"move_down_button")
         sizePolicy.setHeightForWidth(self.move_down_button.sizePolicy().hasHeightForWidth())
         self.move_down_button.setSizePolicy(sizePolicy)
         self.move_down_button.setText(u"")
-        self.move_down_button.setProperty("isSquare", 1)
+        self.move_down_button.setProperty(u"isSquare", 1)
 
-        self.move_buttons_layout.addWidget(self.move_down_button, 0, Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignBottom)
+        self.move_buttons_layout.addWidget(self.move_down_button, 0, Qt.AlignLeft|Qt.AlignBottom)
 
 
         self.queue_base_layout.addWidget(self.move_buttons)
@@ -75,7 +75,7 @@ class Ui_QueueBaseWidget(object):
         self.remove_button = QPushButton(self.queue_buttons)
         self.remove_button.setObjectName(u"remove_button")
 
-        self.queue_buttons_layout.addWidget(self.remove_button, 0, Qt.AlignmentFlag.AlignBottom)
+        self.queue_buttons_layout.addWidget(self.remove_button, 0, Qt.AlignBottom)
 
 
         self.queue_base_layout.addWidget(self.queue_buttons)
@@ -93,7 +93,7 @@ class Ui_QueueBaseWidget(object):
         self.settings_button = QPushButton(self.update_buttons)
         self.settings_button.setObjectName(u"settings_button")
 
-        self.update_buttons_layout.addWidget(self.settings_button, 0, Qt.AlignmentFlag.AlignBottom)
+        self.update_buttons_layout.addWidget(self.settings_button, 0, Qt.AlignBottom)
 
 
         self.queue_base_layout.addWidget(self.update_buttons)

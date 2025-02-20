@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'dlc_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -30,8 +30,8 @@ class Ui_GameDlcWidget(object):
         sizePolicy.setHeightForWidth(GameDlcWidget.sizePolicy().hasHeightForWidth())
         GameDlcWidget.setSizePolicy(sizePolicy)
         GameDlcWidget.setWindowTitle(u"GameDlcWidget")
-        GameDlcWidget.setFrameShape(QFrame.Shape.StyledPanel)
-        GameDlcWidget.setFrameShadow(QFrame.Shadow.Plain)
+        GameDlcWidget.setFrameShape(QFrame.StyledPanel)
+        GameDlcWidget.setFrameShadow(QFrame.Plain)
         self.dlc_layout = QHBoxLayout(GameDlcWidget)
         self.dlc_layout.setObjectName(u"dlc_layout")
         self.dlc_layout.setContentsMargins(0, 0, 0, 0)
@@ -39,7 +39,7 @@ class Ui_GameDlcWidget(object):
         self.dlc_info.setObjectName(u"dlc_info")
         self.dlc_info_layout = QFormLayout(self.dlc_info)
         self.dlc_info_layout.setObjectName(u"dlc_info_layout")
-        self.dlc_info_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.dlc_info_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.dlc_info_layout.setContentsMargins(0, 0, 0, 0)
         self.dlc_name_label = QLabel(self.dlc_info)
         self.dlc_name_label.setObjectName(u"dlc_name_label")
@@ -60,7 +60,7 @@ class Ui_GameDlcWidget(object):
         self.dlc_name.setText(u"dlc_name")
         self.dlc_name.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
 
-        self.dlc_info_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.dlc_name)
+        self.dlc_info_layout.setWidget(0, QFormLayout.FieldRole, self.dlc_name)
 
         self.version_label = QLabel(self.dlc_info)
         self.version_label.setObjectName(u"version_label")
@@ -76,7 +76,7 @@ class Ui_GameDlcWidget(object):
         self.version.setText(u"version")
         self.version.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
 
-        self.dlc_info_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.version)
+        self.dlc_info_layout.setWidget(1, QFormLayout.FieldRole, self.version)
 
         self.app_name_label = QLabel(self.dlc_info)
         self.app_name_label.setObjectName(u"app_name_label")
@@ -92,7 +92,7 @@ class Ui_GameDlcWidget(object):
         self.app_name.setText(u"app_name")
         self.app_name.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
 
-        self.dlc_info_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.app_name)
+        self.dlc_info_layout.setWidget(2, QFormLayout.FieldRole, self.app_name)
 
 
         self.dlc_layout.addWidget(self.dlc_info)
@@ -111,7 +111,7 @@ class Ui_GameDlcWidget(object):
         self.action_button.setMinimumSize(QSize(160, 0))
         self.action_button.setText(u"Action")
 
-        self.dlc_layout.addWidget(self.action_button, 0, Qt.AlignmentFlag.AlignBottom)
+        self.dlc_layout.addWidget(self.action_button, 0, Qt.AlignBottom)
 
         self.dlc_layout.setStretch(1, 1)
 

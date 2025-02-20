@@ -94,7 +94,7 @@ class Ui_EosWidget(object):
 
         self.retranslateUi(EosWidget)
 
-        self.button_stack.setCurrentIndex(1)
+        self.button_stack.setCurrentIndex(0)
 
     # setupUi
 
