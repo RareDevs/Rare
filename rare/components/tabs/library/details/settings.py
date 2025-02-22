@@ -11,7 +11,7 @@ from legendary.models.game import Game, InstalledGame
 from rare.components.tabs.settings.widgets.env_vars import EnvVars
 from rare.components.tabs.settings.widgets.game import GameSettingsBase
 from rare.components.tabs.settings.widgets.launch import LaunchSettingsBase
-from rare.components.tabs.settings.widgets.overlay import DxvkSettings
+from rare.components.tabs.settings.widgets.overlay import DxvkOverlaySettings, DxvkConfigSettings
 from rare.components.tabs.settings.widgets.wrappers import WrapperSettings
 from rare.models.game import RareGame
 from rare.utils import config_helper as config
@@ -157,10 +157,13 @@ if pf.system() != "Windows":
                 self.app_name = app_name
 
 
-class GameDxvkSettings(DxvkSettings):
+class GameDxvkOverlaySettings(DxvkOverlaySettings):
     def load_settings(self, app_name: str):
         self.app_name = app_name
 
+class GameDxvkConfigSettings(DxvkConfigSettings):
+    def load_settings(self, app_name: str):
+        self.app_name = app_name
 
 class GameEnvVars(EnvVars):
     def load_settings(self, app_name):
@@ -172,19 +175,30 @@ class GameSettings(GameSettingsBase):
         if pf.system() != "Windows":
             if pf.system() in {"Linux", "FreeBSD"}:
                 super(GameSettings, self).__init__(
-                    GameLaunchSettings, GameDxvkSettings, GameEnvVars,
-                    GameWineSettings, GameProtonSettings, GameMangoHudSettings,
+                    GameLaunchSettings,
+                    GameDxvkOverlaySettings,
+                    GameDxvkConfigSettings,
+                    GameEnvVars,
+                    GameWineSettings,
+                    GameProtonSettings,
+                    GameMangoHudSettings,
                     parent=parent
                 )
             else:
                 super(GameSettings, self).__init__(
-                    GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                    GameLaunchSettings,
+                    GameDxvkOverlaySettings,
+                    GameDxvkConfigSettings,
+                    GameEnvVars,
                     GameWineSettings,
                     parent=parent
                 )
         else:
             super(GameSettings, self).__init__(
-                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
+                GameLaunchSettings,
+                GameDxvkOverlaySettings,
+                GameDxvkConfigSettings,
+                GameEnvVars,
                 parent=parent
             )
 
@@ -197,5 +211,6 @@ class GameSettings(GameSettingsBase):
             if pf.system() in {"Linux", "FreeBSD"}:
                 self.proton_tool.load_settings(rgame.app_name)
                 self.mangohud.load_settings(rgame.app_name)
-        self.dxvk.load_settings(rgame.app_name)
+        self.dxvk_overlay.load_settings(rgame.app_name)
+        self.dxvk_config.load_settings(rgame.app_name)
         self.env_vars.load_settings(rgame.app_name)
