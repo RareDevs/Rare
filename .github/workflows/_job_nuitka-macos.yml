@@ -1,4 +1,4 @@
-name: job_nuitka-win
+name: _job_nuitka-macos
 
 on:
   workflow_call:
@@ -9,8 +9,16 @@ on:
 
 jobs:
   build:
-    name: Package
-    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            pyarch: arm64
+          - arch: x86_64
+            pyarch: x64
+    name: Package ${{ matrix.arch }}
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,7 +29,7 @@ jobs:
           cache: pip
           python-version: '3.12'
           check-latest: true
-          architecture: x64
+          architecture: ${{ matrix.pyarch }}
       - name: Install build dependencies
         run: pip3 install nuitka
       - name: Install target dependencies
@@ -31,11 +39,15 @@ jobs:
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
-         python3 -m setuptools_scm --force-write-version-files
+          ./tools/ui2py.sh --force
+          ./tools/qrc2py.sh --force
+          ./tools/ts2qm.py
+          python3 -m setuptools_scm --force-write-version-files
       - name: Build
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: >-
+          arch -${{ matrix.arch }}
           python -m nuitka
           --assume-yes-for-downloads
           --show-scons
@@ -60,24 +72,32 @@ jobs:
           --prefer-source-code
           --include-package=pypresence
           --include-package-data=qtawesome
-          --include-data-dir=rare\resources\images\=rare\resources\images\
-          --include-data-files=rare\resources\languages\rare_*.qm=rare\resources\languages\
-          --output-filename=Rare.exe
-          --file-description=Rare.exe
+          --include-data-dir=rare/resources/images/=rare/resources/images/
+          --include-data-files=rare/resources/languages/rare_*.qm=rare/resources/languages/
+          --output-filename=Rare.bin
+          --file-description=Rare.bin
           --company-name=RareDevs
           --product-name=Rare
           --file-version=${{ inputs.version }}
           --product-version=${{ inputs.version }}
-          --windows-console-mode=disable
-          --windows-icon-from-ico=rare\resources\images\Rare.ico
+          --macos-create-app-bundle
+          --macos-app-name=Rare
+          --macos-app-mode=gui
+          --macos-app-version=${{ inputs.version }}
+          --macos-app-icon=rare/resources/images/Rare.icns
           rare
+      - name: Strip
+        run: |
+          find rare.app -iname "*.so*" -type f -exec strip {} \;
+          find rare.app -iname "*.dylib" -type f -exec strip {} \;
+          find rare.app -iname "*.bin" -type f -exec strip {} \;
       - name: Compress
         run: |
-          mv rare.dist Rare-${{ inputs.version }}
-          python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}', 'zip', '.', 'Rare-${{ inputs.version }}')"
+          mv rare.app Rare-${{ inputs.version }}-${{ matrix.arch }}.app
+          python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}-${{ matrix.arch }}.app', 'zip', '.', 'Rare-${{ inputs.version }}-${{ matrix.arch }}.app')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ inputs.version }}-windows.zip
-          path: Rare-${{ inputs.version }}.zip
+          name: Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.app.zip
+          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.app.zip

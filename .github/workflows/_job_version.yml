@@ -1,4 +1,4 @@
-name: job_version
+name: _job_version
 
 on:
   workflow_call:

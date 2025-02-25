@@ -1,4 +1,4 @@
-name: job_publish
+name: _job_publish
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: job_nuitka-linux
+name: _job_nuitka-win
 
 on:
   workflow_call:
@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Package
-    runs-on: ubuntu-22.04
+    runs-on: windows-2019
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,7 +31,10 @@ jobs:
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
-         python3 -m setuptools_scm --force-write-version-files
+          ./tools/ui2py.sh --force
+          ./tools/qrc2py.sh --force
+          ./tools/ts2qm.py
+          python3 -m setuptools_scm --force-write-version-files
       - name: Build
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
@@ -60,19 +63,17 @@ jobs:
           --prefer-source-code
           --include-package=pypresence
           --include-package-data=qtawesome
-          --include-data-dir=rare/resources/images/=rare/resources/images/
-          --include-data-files=rare/resources/languages/rare_*.qm=rare/resources/languages/
-          --output-filename=Rare.bin
-          --file-description=Rare.bin
+          --include-data-dir=rare\resources\images\=rare\resources\images\
+          --include-data-files=rare\resources\languages\rare_*.qm=rare\resources\languages\
+          --output-filename=Rare.exe
+          --file-description=Rare.exe
           --company-name=RareDevs
           --product-name=Rare
           --file-version=${{ inputs.version }}
           --product-version=${{ inputs.version }}
+          --windows-console-mode=disable
+          --windows-icon-from-ico=rare\resources\images\Rare.ico
           rare
-      - name: Strip
-        run: |
-          find rare.dist -iname "*.so*" -type f -exec strip --strip-all {} \;
-          strip --strip-all rare.dist/Rare.bin
       - name: Compress
         run: |
           mv rare.dist Rare-${{ inputs.version }}
@@ -81,5 +82,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ inputs.version }}-linux.zip
+          name: Rare-${{ inputs.version }}-windows.zip
           path: Rare-${{ inputs.version }}.zip

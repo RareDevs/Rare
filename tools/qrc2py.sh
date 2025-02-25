@@ -33,6 +33,14 @@ then
       -o rare/resources/resources.py
 fi
 
+if [[ $force -eq 1 ]]
+then
+  echo "Re-compiling static_css resources"
+  $_rcc_cmd \
+      rare/resources/static_css/stylesheet.qrc \
+      -o rare/resources/static_css/__init__.py
+fi
+
 if [[ $(git diff --name-only HEAD "rare/resources/stylesheets/RareStyle/") || $force -eq 1 ]]
 then
   echo "Re-compiling RareStyle stylesheet resources"
