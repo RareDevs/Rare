@@ -51,6 +51,16 @@ jobs:
         discussionCategory: "Releases"
         makeLatest: true
 
+  pypi:
+    if: ${{ true }}
+    needs: version
+    name: PyPI
+    uses: ./.github/workflows/_job_pypi.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.version }}
+      publish: false
+
   nuitka-linux:
     if: ${{ true }}
     needs: version

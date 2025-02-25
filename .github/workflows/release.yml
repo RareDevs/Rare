@@ -32,6 +32,7 @@ jobs:
     secrets: inherit
     with:
       version: ${{ needs.version.outputs.version }}
+      publish: true
 
   nuitka-linux:
     if: ${{ true }}

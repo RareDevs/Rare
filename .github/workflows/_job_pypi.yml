@@ -6,6 +6,10 @@ on:
       version:
         required: true
         type: string
+      publish:
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -28,8 +32,12 @@ jobs:
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
+          ./tools/ui2py.sh --force
+          ./tools/qrc2py.sh --force
+          ./tools/ts2qm.py
           python3 setup.py sdist bdist_wheel
       - name: Publish
+        if: ${{ inputs.publish }}
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}

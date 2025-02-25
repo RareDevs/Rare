@@ -32,6 +32,9 @@ jobs:
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
+          ./tools/ui2py.sh --force
+          ./tools/qrc2py.sh --force
+          ./tools/ts2qm.py
           python3 -m setuptools_scm --force-write-version-files
           python3 freeze.py bdist_msi
           mv dist/*.msi Rare-${{ inputs.version }}.msi
