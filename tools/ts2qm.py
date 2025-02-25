@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 import os
 import shlex
+from pathlib import Path
 
-for f in os.listdir(os.path.join(os.path.dirname(__file__), "../rare/resources/languages/")):
-    if f.endswith(".ts") and f != "source.ts":
+basedir = Path(__file__).parent.parent.joinpath("rare/resources/languages/")
+
+for f in basedir.iterdir():
+    if f.suffix == ".ts" and f.name != "source.ts":
         os.system(shlex.join((
             "pyside6-lrelease",
             "-compress",
             "-removeidentical",
-            f"{os.path.join(os.path.dirname(__file__), '../rare/resources/languages/', f)}",
+            str(f),
         )))
