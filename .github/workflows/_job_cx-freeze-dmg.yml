@@ -1,4 +1,4 @@
-name: job_cx-freeze-appimage
+name: _job_cx-freeze-macos
 
 on:
   workflow_call:
@@ -9,23 +9,29 @@ on:
 
 jobs:
   build:
-    name: Package
-    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            pyarch: arm64
+            os: macos-14
+          - arch: x86_64
+            pyarch: x64
+            os: macos-13
+    name: Package ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Install build dependencies
-        run: |
-          sudo apt update
-          sudo apt install patchelf fakeroot
       - uses: actions/setup-python@v5
         with:
           cache: pip
           python-version: '3.12'
           check-latest: true
-          architecture: x64
+          architecture: ${{ matrix.pyarch }}
       - name: Install build dependencies
         run: |
           pip3 install --upgrade cx_freeze
@@ -37,11 +43,11 @@ jobs:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
           python3 -m setuptools_scm --force-write-version-files
-          python3 freeze.py bdist_appimage
-          mv dist/Rare-*.AppImage Rare-${{ inputs.version }}.AppImage
+          python3 freeze.py bdist_dmg
+          mv build/Rare.dmg Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ inputs.version }}.AppImage
-          path: Rare-${{ inputs.version }}.AppImage
+          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
+          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg

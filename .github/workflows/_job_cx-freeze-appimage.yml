@@ -1,4 +1,4 @@
-name: job_cx-freeze-msi
+name: _job_cx-freeze-appimage
 
 on:
   workflow_call:
@@ -10,12 +10,16 @@ on:
 jobs:
   build:
     name: Package
-    runs-on: windows-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
+      - name: Install build dependencies
+        run: |
+          sudo apt update
+          sudo apt install patchelf fakeroot
       - uses: actions/setup-python@v5
         with:
           cache: pip
@@ -33,11 +37,11 @@ jobs:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
           python3 -m setuptools_scm --force-write-version-files
-          python3 freeze.py bdist_msi
-          mv dist/*.msi Rare-${{ inputs.version }}.msi
+          python3 freeze.py bdist_appimage
+          mv dist/Rare-*.AppImage Rare-${{ inputs.version }}.AppImage
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ inputs.version }}.msi
-          path: Rare-${{ inputs.version }}.msi
+          name: Rare-${{ inputs.version }}.AppImage
+          path: Rare-${{ inputs.version }}.AppImage

@@ -1,4 +1,4 @@
-name: job_nuitka-win
+name: _job_nuitka-win
 
 on:
   workflow_call:

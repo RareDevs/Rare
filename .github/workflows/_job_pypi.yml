@@ -1,4 +1,4 @@
-name: job_pypi
+name: _job_pypi
 
 on:
   workflow_call:

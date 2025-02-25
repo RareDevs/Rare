@@ -1,4 +1,4 @@
-name: job_cx-freeze-macos
+name: _job_cx-freeze-msi
 
 on:
   workflow_call:
@@ -9,18 +9,8 @@ on:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch: arm64
-            pyarch: arm64
-            os: macos-14
-          - arch: x86_64
-            pyarch: x64
-            os: macos-13
-    name: Package ${{ matrix.arch }}
-    runs-on: ${{ matrix.os }}
+    name: Package
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,7 +21,7 @@ jobs:
           cache: pip
           python-version: '3.12'
           check-latest: true
-          architecture: ${{ matrix.pyarch }}
+          architecture: x64
       - name: Install build dependencies
         run: |
           pip3 install --upgrade cx_freeze
@@ -43,11 +33,11 @@ jobs:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
           python3 -m setuptools_scm --force-write-version-files
-          python3 freeze.py bdist_dmg
-          mv build/Rare.dmg Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
+          python3 freeze.py bdist_msi
+          mv dist/*.msi Rare-${{ inputs.version }}.msi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
-          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
+          name: Rare-${{ inputs.version }}.msi
+          path: Rare-${{ inputs.version }}.msi
