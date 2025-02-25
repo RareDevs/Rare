@@ -11,5 +11,5 @@ for f in basedir.iterdir():
             "pyside6-lrelease",
             "-compress",
             "-removeidentical",
-            str(f),
+            f.as_posix(),
         )))
