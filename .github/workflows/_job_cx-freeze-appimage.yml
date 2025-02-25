@@ -16,10 +16,6 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Install build dependencies
-        run: |
-          sudo apt update
-          sudo apt install patchelf fakeroot
       - uses: actions/setup-python@v5
         with:
           cache: pip
@@ -28,11 +24,14 @@ jobs:
           architecture: x64
       - name: Install build dependencies
         run: |
+          sudo apt update
+          sudo apt install patchelf fakeroot
           pip3 install --upgrade cx_freeze
       - name: Install target dependencies
         run: |
           pip3 install -r misc/requirements.in
-      - name: Build
+      - name: Prepare
+        shell: bash
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
@@ -40,6 +39,10 @@ jobs:
           ./tools/qrc2py.sh --force
           ./tools/ts2qm.py
           python3 -m setuptools_scm --force-write-version-files
+      - name: Build
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
+        run: |
           python3 freeze.py bdist_appimage
           mv dist/Rare-*.AppImage Rare-${{ inputs.version }}.AppImage
 

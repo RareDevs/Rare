@@ -20,22 +20,30 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
+          cache: pip
           python-version: '3.12'
-      - name: Install dependencies
+          check-latest: true
+      - name: Install build dependencies
         run: |
           pip3 install --upgrade pip
-          pip3 install twine setuptools setuptools-scm
-      - name: Build
+          pip3 install twine setuptools setuptools-scm PySide6-Essentials
+      - name: Prepare
+        shell: bash
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
           ./tools/ui2py.sh --force
           ./tools/qrc2py.sh --force
           ./tools/ts2qm.py
+          python3 -m setuptools_scm --force-write-version-files
+      - name: Build
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
+        run: |
           python3 setup.py sdist bdist_wheel
+
       - name: Publish
         if: ${{ inputs.publish }}
         env:

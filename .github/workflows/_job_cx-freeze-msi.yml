@@ -28,7 +28,8 @@ jobs:
       - name: Install target dependencies
         run: |
           pip3 install -r misc/requirements.in
-      - name: Build
+      - name: Prepare
+        shell: bash
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
@@ -36,6 +37,10 @@ jobs:
           ./tools/qrc2py.sh --force
           ./tools/ts2qm.py
           python3 -m setuptools_scm --force-write-version-files
+      - name: Build
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
+        run: |
           python3 freeze.py bdist_msi
           mv dist/*.msi Rare-${{ inputs.version }}.msi
 
