@@ -56,11 +56,12 @@ class OverlayComboBox(QComboBox):
 
 
 class OverlayCheckBox(QCheckBox):
-    def __init__(self, option: str, title: str, desc: str = "", default_enabled: bool = False, parent=None):
+    def __init__(self, option: str, title: str, desc: str = "", default_enabled: bool = False, values: Tuple = None, parent=None):
         self.option = option
         super().__init__(title, parent=parent)
         self.setChecked(default_enabled)
         self.default_enabled = default_enabled
+        self.values = values
         self.setToolTip(desc)
 
     def setDefault(self):
@@ -69,12 +70,15 @@ class OverlayCheckBox(QCheckBox):
     def getValue(self) -> Optional[str]:
         # lk: return the check state in case of non-default, otherwise None
         checked = self.isChecked()
-        value = f"{self.option}={int(checked)}" if self.default_enabled else self.option
+        value = f"{self.option}={self.values[int(checked)] if self.values else int(checked)}" if self.default_enabled or self.values else self.option
         return value if checked ^ self.default_enabled else None
 
     def setValue(self, options: Dict[str, str]):
         if options.get(self.option, None) is not None:
-            self.setChecked(not self.default_enabled)
+            if self.values:
+                self.setChecked(bool(self.values.index(options[self.option])))
+            else:
+                self.setChecked(not self.default_enabled)
             options.pop(self.option)
         else:
             self.setChecked(self.default_enabled)
@@ -287,6 +291,40 @@ class DxvkConfigSettings(OverlaySettings):
     def update_settings_override(self, state: ActivationStates):
         pass
 
+
+class DxvkNvapiDrsSettings(OverlaySettings):
+    def __init__(self, parent=None):
+        super(DxvkNvapiDrsSettings, self).__init__(parent=parent)
+        self.setTitle(self.tr("DXVK NVAPI Driver Settings"))
+
+        def preset_range(start:str, end:str) -> Tuple[Tuple, ...]:
+            return tuple(tuple(f"{p}preset_{chr(c)}" for p in ("", "render_")) for c in range(ord(start), ord(end) + 1))
+
+        ngx_rr_presets = (
+            ("off", "off"),
+            *preset_range("a", "o"),
+            ("latest", "render_preset_latest"),
+            ("default", "default"),
+        )
+        ngx_sr_presets = (
+            ("off", "off"),
+            *preset_range("a", "o"),
+            ("latest", "render_preset_latest"),
+            ("default", "default"),
+        )
+        grid = [
+            OverlayCheckBox("ngx_dlss_sr_override", self.tr("Override Super Resolution"), values=("off", "on")),
+        ]
+        form = [
+            (OverlaySelectInput("ngx_dlss_rr_override_render_preset_selection", ngx_rr_presets), "Override Ray Reconstruction Preset"),
+            (OverlaySelectInput("ngx_dlss_sr_override_render_preset_selection", ngx_sr_presets), "Override Super Resolution Preset"),
+        ]
+        self.setupWidget(grid, form, envvar="DXVK_NVAPI_DRS_SETTINGS", force_disabled="0", force_defaults="", separator=",")
+
+    def update_settings_override(self, state: ActivationStates):
+        pass
+
+
 class MangoHudSettings(OverlaySettings):
     def __init__(self, parent=None):
         super(MangoHudSettings, self).__init__(parent=parent)
@@ -343,7 +381,6 @@ class MangoHudSettings(OverlaySettings):
             (OverlayNumberInput("font_size", 24), self.tr("Font size")),
             (OverlaySelectInput("position", mangohud_position), self.tr("Position")),
         ]
-
         self.setupWidget(grid, form, "MANGOHUD_CONFIG", "no_display", "read_cfg", separator=",")
 
     def showEvent(self, a0: QShowEvent):
@@ -377,7 +414,10 @@ if __name__ == "__main__":
     global config
     config = Namespace()
     def get_envvar(x, y, fallback):
-        return ""
+        if y == "DXVK_NVAPI_DRS_SETTINGS":
+            return "ngx_dlss_sr_override=off,ngx_dlss_rr_override_render_preset_selection=render_preset_d"
+        else:
+            return ""
     config.get_envvar = get_envvar
     config.set_option = lambda x, y, z: print(x, y, z)
     config.set_envvar = lambda x, y, z: print(x, y, z)
@@ -390,11 +430,13 @@ if __name__ == "__main__":
 
     dxvk_hud = DxvkOverlaySettings(dlg)
     dxvk_cfg = DxvkConfigSettings(dlg)
+    dxvk_nvapi_drs = DxvkNvapiDrsSettings(dlg)
     mangohud = MangoHudSettings(dlg)
 
     layout = QVBoxLayout(dlg)
     layout.addWidget(dxvk_hud)
     layout.addWidget(dxvk_cfg)
+    layout.addWidget(dxvk_nvapi_drs)
     layout.addWidget(mangohud)
 
     dlg.show()
