@@ -14,7 +14,7 @@ permissions:
 jobs:
 
   version:
-    name: Describe
+    name: Prepare
     uses: ./.github/workflows/_job_version.yml
     with:
       prerelease: false

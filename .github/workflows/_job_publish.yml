@@ -31,7 +31,12 @@ jobs:
     - name: Upload ${{ matrix.file }} to release
       if: ${{ matrix.file != '' }}
       shell: bash
-      run: |
-        gh release upload ${{ inputs.version }} ${{ matrix.file }} --clobber
+      run: >-
+        gh
+        --repo "${{ github.server_url }}/${{ github.repository }}"
+        release upload
+        ${{ inputs.version }}
+        ${{ matrix.file }}
+        --clobber
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
