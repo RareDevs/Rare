@@ -47,11 +47,11 @@ jobs:
         shell: bash
         run: >-
           gh release create
-          "${{ jobs.version.outputs.tag_abbrev }}.${{ jobs.version.outputs.tag_offset }}"
+          "${{ steps.describe.outputs.tag_abbrev }}.${{ steps.describe.outputs.tag_offset }}"
           --prerelease
           --latest
           --target main
-          --title "Pre-release ${{ jobs.version.outputs.tag_abbrev }}.${{ jobs.version.outputs.tag_offset }}"
+          --title "Pre-release ${{ steps.describe.outputs.tag_abbrev }}.${{ steps.describe.outputs.tag_offset }}"
           --generate-notes
           --notes-start-tag "${{ steps.describe.outputs.tag_abbrev }}"
           --discussion-category "Releases"
