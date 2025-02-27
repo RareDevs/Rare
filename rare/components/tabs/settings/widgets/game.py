@@ -18,7 +18,7 @@ from rare.utils import config_helper as config
 from rare.widgets.side_tab import SideTabContents
 from .env_vars import EnvVars
 from .launch import LaunchSettingsType
-from .overlay import DxvkSettings
+from .overlay import DxvkOverlaySettings, DxvkConfigSettings
 
 if pf.system() != "Windows":
     from .wine import WineSettings
@@ -33,7 +33,8 @@ class GameSettingsBase(QWidget, SideTabContents):
     def __init__(
         self,
         launch_widget: Type[LaunchSettingsType],
-        dxvk_widget: Type[DxvkSettings],
+        dxvk_hud_widget: Type[DxvkOverlaySettings],
+        dxvk_config_widget: Type[DxvkConfigSettings],
         envvar_widget: Type[EnvVars],
         wine_widget: Type['WineSettings'] = None,
         proton_widget: Type['ProtonSettings'] = None,
@@ -81,8 +82,11 @@ class GameSettingsBase(QWidget, SideTabContents):
         #         lambda: self.compat_stack.setCurrentIndex(self.compat_combo.currentData(Qt.ItemDataRole.UserRole))
         #     )
 
-        self.dxvk = dxvk_widget(self)
-        self.dxvk.environ_changed.connect(self.env_vars.reset_model)
+        self.dxvk_overlay = dxvk_hud_widget(self)
+        self.dxvk_overlay.environ_changed.connect(self.env_vars.reset_model)
+
+        self.dxvk_config = dxvk_config_widget(self)
+        self.dxvk_config.environ_changed.connect(self.env_vars.reset_model)
 
         if pf.system() in {"Linux", "FreeBSD"}:
             self.mangohud = mangohud_widget(self)
@@ -92,7 +96,8 @@ class GameSettingsBase(QWidget, SideTabContents):
         self.main_layout.addWidget(self.launch)
         if pf.system() != "Windows":
             self.main_layout.addWidget(self.compat)
-        self.main_layout.addWidget(self.dxvk)
+        self.main_layout.addWidget(self.dxvk_overlay)
+        self.main_layout.addWidget(self.dxvk_config)
         if pf.system() in {"Linux", "FreeBSD"}:
             self.main_layout.addWidget(self.mangohud)
         self.main_layout.addWidget(self.env_vars)

@@ -5,7 +5,7 @@ from typing import List, Dict, Tuple, Union, Optional
 
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QIntValidator, QDoubleValidator, QShowEvent
-from PySide6.QtWidgets import QGroupBox, QCheckBox, QLineEdit, QComboBox
+from PySide6.QtWidgets import QGroupBox, QCheckBox, QLineEdit, QComboBox, QSpinBox
 
 from rare.ui.components.tabs.settings.widgets.overlay import Ui_OverlaySettings
 from rare.utils import config_helper as config
@@ -56,11 +56,12 @@ class OverlayComboBox(QComboBox):
 
 
 class OverlayCheckBox(QCheckBox):
-    def __init__(self, option: str, title: str, desc: str = "", default_enabled: bool = False, parent=None):
+    def __init__(self, option: str, title: str, desc: str = "", default_enabled: bool = False, values: Tuple = None, parent=None):
         self.option = option
         super().__init__(title, parent=parent)
         self.setChecked(default_enabled)
         self.default_enabled = default_enabled
+        self.values = values
         self.setToolTip(desc)
 
     def setDefault(self):
@@ -69,12 +70,15 @@ class OverlayCheckBox(QCheckBox):
     def getValue(self) -> Optional[str]:
         # lk: return the check state in case of non-default, otherwise None
         checked = self.isChecked()
-        value = f"{self.option}={int(checked)}" if self.default_enabled else self.option
+        value = f"{self.option}={self.values[int(checked)] if self.values else int(checked)}" if self.default_enabled or self.values else self.option
         return value if checked ^ self.default_enabled else None
 
     def setValue(self, options: Dict[str, str]):
         if options.get(self.option, None) is not None:
-            self.setChecked(not self.default_enabled)
+            if self.values:
+                self.setChecked(bool(self.values.index(options[self.option])))
+            else:
+                self.setChecked(not self.default_enabled)
             options.pop(self.option)
         else:
             self.setChecked(self.default_enabled)
@@ -123,9 +127,10 @@ class OverlaySettings(QGroupBox):
         self.ui.show_overlay_combo.addItem(self.tr("Enabled (defaults)"), ActivationStates.DEFAULTS)
         self.ui.show_overlay_combo.addItem(self.tr("Enabled (custom)"), ActivationStates.CUSTOM)
 
-        self.envvar: str = None
-        self.force_disabled: str = None
-        self.force_defaults: str = None
+        self.envvar: Union[str, None] = None
+        self.force_disabled: Union[str, None] = None
+        self.force_defaults: Union[str, None] = None
+        self.separator: Union[str, None] = None
         self.app_name: str = "default"
 
         self.option_widgets: List[Union[OverlayCheckBox, OverlayLineEdit, OverlayComboBox]] = []
@@ -142,10 +147,12 @@ class OverlaySettings(QGroupBox):
         envvar: str,
         force_disabled: str,
         force_defaults: str,
+        separator: str,
     ):
         self.envvar = envvar
         self.force_disabled = force_disabled
         self.force_defaults = force_defaults
+        self.separator = separator
 
         for i, widget in enumerate(grid_map):
             widget.setParent(self.ui.options_group)
@@ -185,7 +192,7 @@ class OverlaySettings(QGroupBox):
             # custom options
             options = (name for widget in self.option_widgets if (name := widget.getValue()) is not None)
 
-            config.set_envvar(self.app_name, self.envvar, ",".join(options))
+            config.set_envvar(self.app_name, self.envvar, self.separator.join(options))
 
         self.environ_changed.emit(self.envvar)
         self.update_settings_override(current_state)
@@ -201,7 +208,7 @@ class OverlaySettings(QGroupBox):
 
         config_options = config.get_envvar(self.app_name, self.envvar, fallback=None)
         if config_options is None:
-            logger.debug("Overlay setting %s is not present", self.envvar)
+            logger.debug("Setting %s is not present", self.envvar)
             self.setCurrentState(ActivationStates.GLOBAL)
 
         elif config_options == self.force_disabled:
@@ -213,7 +220,7 @@ class OverlaySettings(QGroupBox):
         else:
             self.setCurrentState(ActivationStates.CUSTOM)
             opts = {}
-            for o in config_options.split(","):
+            for o in config_options.split(self.separator):
                 if "=" in o:
                     k, v = o.split("=")
                     opts[k] = v
@@ -224,68 +231,131 @@ class OverlaySettings(QGroupBox):
             for widget in self.option_widgets:
                 widget.setValue(opts)
             if opts:
-                logger.info("Remaining options without a gui switch: %s", ",".join(opts.keys()))
+                logger.info("Remaining options without a gui switch: %s", self.separator.join(opts.keys()))
 
         self.ui.options_group.blockSignals(False)
         return super().showEvent(a0)
 
 
-class DxvkSettings(OverlaySettings):
+class DxvkOverlaySettings(OverlaySettings):
     def __init__(self, parent=None):
-        super(DxvkSettings, self).__init__(parent=parent)
+        super(DxvkOverlaySettings, self).__init__(parent=parent)
         self.setTitle(self.tr("DXVK HUD"))
         grid = [
             OverlayCheckBox("fps", self.tr("FPS")),
-            OverlayCheckBox("frametime", self.tr("Frametime")),
+            OverlayCheckBox("frametimes", self.tr("Frame time graph")),
             OverlayCheckBox("memory", self.tr("Memory usage")),
+            OverlayCheckBox("allocations", self.tr("Memory chunk suballocation")),
             OverlayCheckBox("gpuload", self.tr("GPU usage")),
             OverlayCheckBox("devinfo", self.tr("Device info")),
             OverlayCheckBox("version", self.tr("DXVK version")),
             OverlayCheckBox("api", self.tr("D3D feature level")),
             OverlayCheckBox("compiler", self.tr("Compiler activity")),
+            OverlayCheckBox("devinfo", self.tr("GPU driver and version")),
+            OverlayCheckBox("drawcalls", self.tr("Draw calls per frame")),
         ]
         form = [
-            (OverlayNumberInput("scale", 1.0), self.tr("Scale"))
+            (OverlayNumberInput("scale", 1.0), self.tr("Scale")),
+            (OverlayNumberInput("opacity", 1.0), self.tr("Opacity")),
+
         ]
-        self.setupWidget(grid, form, "DXVK_HUD", "0", "1")
+        self.setupWidget(grid, form, envvar="DXVK_HUD", force_disabled="0", force_defaults="1", separator=",")
 
     def update_settings_override(self, state: ActivationStates):
         pass
 
 
-mangohud_position = (
-    ("default", "default"),
-    ("top-left", "top-left"),
-    ("top-right", "top-right"),
-    ("middle-left", "middle-left"),
-    ("middle-right", "middle-right"),
-    ("bottom-left", "bottom-left"),
-    ("bottom-right", "bottom-right"),
-    ("top-center", "top-center"),
-)
+class DxvkConfigSettings(OverlaySettings):
+    def __init__(self, parent=None):
+        super(DxvkConfigSettings, self).__init__(parent=parent)
+        self.setTitle(self.tr("DXVK Config"))
+        dxvk_config_trinary = (
+            ("Auto", "Auto"),
+            ("True", "True"),
+            ("False", "False")
+        )
+        grid = [
 
-mangohud_vsync = (
-    ("config", None),
-    ("adaptive", "0"),
-    ("off", "1"),
-    ("mailbox", "2"),
-    ("on", "3"),
-)
+        ]
+        form = [
+            (OverlayLineEdit("dxvk.deviceFilter", "",), "dxvk.deviceFilter"),
+            (OverlayNumberInput("dxgi.syncInterval", -1,), "dxgi.syncInterval"),
+            (OverlayNumberInput("d3d9.presentInterval", -1, ), "d3d9.presentInterval"),
+            (OverlayNumberInput("dxgi.maxFrameRate", 0,), "dxgi.maxFrameRate"),
+            (OverlayNumberInput("d3d9.maxFrameRate", 0,), "d3d9.maxFrameRate"),
+            (OverlaySelectInput("dxvk.tearFree", dxvk_config_trinary), "dxvk.tearFree"),
 
-mangohud_gl_vsync = (
-    ("config", None),
-    ("off", "0"),
-    ("on", "1"),
-    ("half", "2"),
-    ("third", "3"),
-    ("quarter", "4"),
-)
+        ]
+        self.setupWidget(grid, form, envvar="DXVK_CONFIG", force_disabled="0", force_defaults="", separator=";")
+
+    def update_settings_override(self, state: ActivationStates):
+        pass
+
+
+class DxvkNvapiDrsSettings(OverlaySettings):
+    def __init__(self, parent=None):
+        super(DxvkNvapiDrsSettings, self).__init__(parent=parent)
+        self.setTitle(self.tr("DXVK NVAPI Driver Settings"))
+
+        def preset_range(start:str, end:str) -> Tuple[Tuple, ...]:
+            return tuple(tuple(f"{p}preset_{chr(c)}" for p in ("", "render_")) for c in range(ord(start), ord(end) + 1))
+
+        ngx_rr_presets = (
+            ("off", "off"),
+            *preset_range("a", "o"),
+            ("latest", "render_preset_latest"),
+            ("default", "default"),
+        )
+        ngx_sr_presets = (
+            ("off", "off"),
+            *preset_range("a", "o"),
+            ("latest", "render_preset_latest"),
+            ("default", "default"),
+        )
+        grid = [
+            OverlayCheckBox("ngx_dlss_sr_override", self.tr("Override Super Resolution"), values=("off", "on")),
+        ]
+        form = [
+            (OverlaySelectInput("ngx_dlss_rr_override_render_preset_selection", ngx_rr_presets), "Override Ray Reconstruction Preset"),
+            (OverlaySelectInput("ngx_dlss_sr_override_render_preset_selection", ngx_sr_presets), "Override Super Resolution Preset"),
+        ]
+        self.setupWidget(grid, form, envvar="DXVK_NVAPI_DRS_SETTINGS", force_disabled="0", force_defaults="", separator=",")
+
+    def update_settings_override(self, state: ActivationStates):
+        pass
 
 
 class MangoHudSettings(OverlaySettings):
     def __init__(self, parent=None):
         super(MangoHudSettings, self).__init__(parent=parent)
         self.setTitle(self.tr("MangoHud"))
+        mangohud_position = (
+            ("default", "default"),
+            ("top-left", "top-left"),
+            ("top-right", "top-right"),
+            ("middle-left", "middle-left"),
+            ("middle-right", "middle-right"),
+            ("bottom-left", "bottom-left"),
+            ("bottom-right", "bottom-right"),
+            ("top-center", "top-center"),
+        )
+
+        mangohud_vsync = (
+            ("config", None),
+            ("adaptive", "0"),
+            ("off", "1"),
+            ("mailbox", "2"),
+            ("on", "3"),
+        )
+
+        mangohud_gl_vsync = (
+            ("config", None),
+            ("off", "0"),
+            ("on", "1"),
+            ("half", "2"),
+            ("third", "3"),
+            ("quarter", "4"),
+        )
         grid = [
             OverlayCheckBox("read_cfg", self.tr("Read config")),
             OverlayCheckBox("fps", self.tr("FPS"), default_enabled=True),
@@ -311,8 +381,7 @@ class MangoHudSettings(OverlaySettings):
             (OverlayNumberInput("font_size", 24), self.tr("Font size")),
             (OverlaySelectInput("position", mangohud_position), self.tr("Position")),
         ]
-
-        self.setupWidget(grid, form, "MANGOHUD_CONFIG", "no_display", "read_cfg")
+        self.setupWidget(grid, form, "MANGOHUD_CONFIG", "no_display", "read_cfg", separator=",")
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
@@ -339,21 +408,35 @@ class MangoHudSettings(OverlaySettings):
 
 if __name__ == "__main__":
     import sys
+    from argparse import Namespace
     from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout
 
-    from legendary.core import LegendaryCore
-
-    core = LegendaryCore()
-    config.init_config_handler(core)
+    global config
+    config = Namespace()
+    def get_envvar(x, y, fallback):
+        if y == "DXVK_NVAPI_DRS_SETTINGS":
+            return "ngx_dlss_sr_override=off,ngx_dlss_rr_override_render_preset_selection=render_preset_d"
+        else:
+            return ""
+    config.get_envvar = get_envvar
+    config.set_option = lambda x, y, z: print(x, y, z)
+    config.set_envvar = lambda x, y, z: print(x, y, z)
+    config.remove_option = lambda x, y: print(x, y)
+    config.remove_envvar = lambda x, y: print(x, y)
+    config.save_config = lambda: print()
 
     app = QApplication(sys.argv)
     dlg = QDialog()
 
-    dxvk = DxvkSettings(dlg)
+    dxvk_hud = DxvkOverlaySettings(dlg)
+    dxvk_cfg = DxvkConfigSettings(dlg)
+    dxvk_nvapi_drs = DxvkNvapiDrsSettings(dlg)
     mangohud = MangoHudSettings(dlg)
 
     layout = QVBoxLayout(dlg)
-    layout.addWidget(dxvk)
+    layout.addWidget(dxvk_hud)
+    layout.addWidget(dxvk_cfg)
+    layout.addWidget(dxvk_nvapi_drs)
     layout.addWidget(mangohud)
 
     dlg.show()

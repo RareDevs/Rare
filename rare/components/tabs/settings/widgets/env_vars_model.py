@@ -30,6 +30,7 @@ class EnvVarsTableModel(QAbstractTableModel):
 
         self.__readonly = {
             "DXVK_HUD",
+            "DXVK_CONFIG",
             "MANGOHUD",
             "MANGOHUD_CONFIG",
         }
