@@ -43,14 +43,14 @@ jobs:
     - shell: bash
       run: >-
         gh release create
-        ${{ needs.version.outputs.version }}
+        "${{ needs.version.outputs.version }}"
         --prerelease
         --latest
         --target main
-        --title Pre-release ${{ needs.version.outputs.version }}
+        --title "Pre-release ${{ needs.version.outputs.version }}"
         --generate-notes
-        --notes-start-tag ${{ needs.version.outputs.previous }}
-        --discussion-category Releases
+        --notes-start-tag "${{ needs.version.outputs.previous }}"
+        --discussion-category "Releases"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
