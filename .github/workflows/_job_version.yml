@@ -2,6 +2,11 @@ name: _job_version
 
 on:
   workflow_call:
+    inputs:
+      prerelease:
+        required: true
+        type: boolean
+        default: false
     outputs:
       version:
         value: "${{ jobs.version.outputs.tag_abbrev }}.${{ jobs.version.outputs.tag_offset }}"
@@ -37,3 +42,18 @@ jobs:
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           echo "full_desc=$(git describe --long --tags)" >> $GITHUB_OUTPUT
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+      - name: Create pre-release
+        if: ${{ inputs.prerelease }}
+        shell: bash
+        run: >-
+          gh release create
+          "${{ jobs.version.outputs.tag_abbrev }}.${{ jobs.version.outputs.tag_offset }}"
+          --prerelease
+          --latest
+          --target main
+          --title "Pre-release ${{ jobs.version.outputs.tag_abbrev }}.${{ jobs.version.outputs.tag_offset }}"
+          --generate-notes
+          --notes-start-tag "${{ steps.describe.outputs.tag_abbrev }}"
+          --discussion-category "Releases"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
