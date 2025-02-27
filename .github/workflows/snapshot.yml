@@ -7,8 +7,8 @@ on:
     inputs:
       prerelease:
         description: "Create a pre-release"
+        required: false
         default: false
-        required: true
         type: boolean
   pull_request:
     branches:
