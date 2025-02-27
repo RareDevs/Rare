@@ -28,6 +28,7 @@ jobs:
         id: describe
         shell: bash
         run: |
+          git fetch origin +refs/tags/*:refs/tags/*
           tag_abbrev=$(git tag --sort=v:refname | grep -oE "(^[0-9]+\.[0-9]+(.[0-9]+)?)$" | tail -1)
           echo "tag_abbrev=$tag_abbrev" >> $GITHUB_OUTPUT
           echo "tag_offset=$(git rev-list $tag_abbrev..HEAD --count)" >> $GITHUB_OUTPUT
