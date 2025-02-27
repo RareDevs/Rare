@@ -24,10 +24,10 @@ permissions:
 jobs:
 
   version:
-    name: Describe
+    name: Prepare
     uses: ./.github/workflows/_job_version.yml
     with:
-      prerelease: ${{ inputs.prerelease }}
+      prerelease: ${{ inputs.prerelease == 'true' }}
 
   title:
     needs: version
