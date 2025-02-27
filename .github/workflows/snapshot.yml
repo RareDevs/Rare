@@ -40,16 +40,19 @@ jobs:
     name: Create pre-release
     runs-on: ubuntu-latest
     steps:
-    - uses: ncipollo/release-action@v1
-      with:
-        tag: ${{ needs.version.outputs.version }}
-        commit: "main"
-        name: Pre-release ${{ needs.version.outputs.version }}
-        draft: false
-        prerelease: true
-        generateReleaseNotes: true
-        discussionCategory: "Releases"
-        makeLatest: true
+    - shell: bash
+      run: >-
+        gh release create
+        ${{ needs.version.outputs.version }}
+        --prerelease
+        --latest
+        --target main
+        --title Pre-release ${{ needs.version.outputs.version }}
+        --generate-notes
+        --notes-start-tag ${{ needs.version.outputs.previous }}
+        --discussion-category Releases
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   pypi:
     if: ${{ true }}
@@ -75,8 +78,7 @@ jobs:
     uses: ./.github/workflows/_job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
-      file1: Rare-${{ needs.version.outputs.version }}.zip
-      name1: Rare-${{ needs.version.outputs.version }}-linux.zip
+      file1: Rare-${{ needs.version.outputs.version }}-linux.zip
 
   nuitka-macos:
     if: ${{ true }}
@@ -92,10 +94,8 @@ jobs:
     uses: ./.github/workflows/_job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
-      file1: Rare-${{ needs.version.outputs.version }}-arm64.app.zip
-      name1: Rare-${{ needs.version.outputs.version }}-arm64-macos.app.zip
-      file2: Rare-${{ needs.version.outputs.version }}-x86_64.app.zip
-      name2: Rare-${{ needs.version.outputs.version }}-x86_64-macos.app.zip
+      file1: Rare-${{ needs.version.outputs.version }}-arm64-macos.app.zip
+      file2: Rare-${{ needs.version.outputs.version }}-x86_64-macos.app.zip
 
   nuitka-windows:
     if: ${{ true }}
@@ -111,8 +111,7 @@ jobs:
     uses: ./.github/workflows/_job_publish.yml
     with:
       version: ${{ needs.version.outputs.version }}
-      file1: Rare-${{ needs.version.outputs.version }}.zip
-      name1: Rare-${{ needs.version.outputs.version }}-windows.zip
+      file1: Rare-${{ needs.version.outputs.version }}-windows.zip
 
   cx-freeze-appimage:
     if: ${{ true }}
@@ -129,7 +128,6 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
       file1: Rare-${{ needs.version.outputs.version }}.AppImage
-      name1: Rare-${{ needs.version.outputs.version }}.AppImage
 
   cx-freeze-dmg:
     if: ${{ true }}
@@ -146,9 +144,7 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
       file1: Rare-${{ needs.version.outputs.version }}-arm64.dmg
-      name1: Rare-${{ needs.version.outputs.version }}-arm64.dmg
       file2: Rare-${{ needs.version.outputs.version }}-x86_64.dmg
-      name2: Rare-${{ needs.version.outputs.version }}-x86_64.dmg
 
   cx-freeze-msi:
     if: ${{ true }}
@@ -165,4 +161,3 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
       file1: Rare-${{ needs.version.outputs.version }}.msi
-      name1: Rare-${{ needs.version.outputs.version }}.msi

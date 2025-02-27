@@ -78,12 +78,14 @@ jobs:
           --windows-icon-from-ico=rare\resources\images\Rare.ico
           rare
       - name: Compress
+        shell: bash
         run: |
           mv rare.dist Rare-${{ inputs.version }}
           python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}', 'zip', '.', 'Rare-${{ inputs.version }}')"
+          mv Rare-${{ inputs.version }}.zip Rare-${{ inputs.version }}-windows.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Rare-${{ inputs.version }}-windows.zip
-          path: Rare-${{ inputs.version }}.zip
+          path: Rare-${{ inputs.version }}-windows.zip
