@@ -27,7 +27,7 @@ jobs:
     name: Prepare
     uses: ./.github/workflows/_job_version.yml
     with:
-      prerelease: ${{ inputs.prerelease == 'true' }}
+      prerelease: ${{ inputs.prerelease || false }}
 
   title:
     needs: version
