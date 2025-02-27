@@ -5,6 +5,8 @@ on:
     outputs:
       version:
         value: "${{ jobs.version.outputs.tag_abbrev }}.${{ jobs.version.outputs.tag_offset }}"
+      previous:
+        value: "${{ jobs.version.outputs.tag_abbrev }}"
       branch:
         value: "${{ jobs.version.outputs.branch }}"
 

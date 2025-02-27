@@ -80,12 +80,14 @@ jobs:
           find rare.dist -iname "*.so*" -type f -exec strip --strip-all {} \;
           strip --strip-all rare.dist/Rare.bin
       - name: Compress
+        shell: bash
         run: |
           mv rare.dist Rare-${{ inputs.version }}
           python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}', 'zip', '.', 'Rare-${{ inputs.version }}')"
+          mv Rare-${{ inputs.version }}.zip Rare-${{ inputs.version }}-linux.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Rare-${{ inputs.version }}-linux.zip
-          path: Rare-${{ inputs.version }}.zip
+          path: Rare-${{ inputs.version }}-linux.zip

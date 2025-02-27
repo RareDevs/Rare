@@ -95,12 +95,14 @@ jobs:
           find rare.app -iname "*.dylib" -type f -exec strip {} \;
           find rare.app -iname "*.bin" -type f -exec strip {} \;
       - name: Compress
+        shell: bash
         run: |
           mv rare.app Rare-${{ inputs.version }}-${{ matrix.arch }}.app
           python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}-${{ matrix.arch }}.app', 'zip', '.', 'Rare-${{ inputs.version }}-${{ matrix.arch }}.app')"
+          mv Rare-${{ inputs.version }}-${{ matrix.arch }}.app.zip Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.app.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.app.zip
-          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.app.zip
+          path: Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.app.zip
