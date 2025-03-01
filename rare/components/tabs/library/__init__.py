@@ -65,7 +65,6 @@ class GamesLibrary(QStackedWidget):
         self.head_bar.filterChanged.connect(self.scroll_to_top)
         self.head_bar.orderChanged.connect(self.order_games)
         self.head_bar.orderChanged.connect(self.scroll_to_top)
-        self.head_bar.refresh_list.clicked.connect(self.library_controller.update_game_views)
 
         # signals
         self.signals.game.installed.connect(self.update_count_games_label)
@@ -139,16 +138,16 @@ class GamesLibrary(QStackedWidget):
 
     @Slot(object)
     @Slot(object, str)
-    def filter_games(self, library_filter: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
+    def filter_games(self, library_filter: LibraryFilter = None, search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
 
-        self.library_controller.filter_game_views(library_filter, search_text.lower())
+        self.library_controller.filter_game_view(library_filter, search_text.lower())
 
     @Slot(object)
     @Slot(object, str)
-    def order_games(self, library_order: LibraryOrder = LibraryFilter.ALL, search_text: str = ""):
+    def order_games(self, library_order: LibraryOrder = None, search_text: str = ""):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
 
-        self.library_controller.order_game_views(library_order, search_text.lower())
+        self.library_controller.order_game_view(library_order, search_text.lower())

@@ -82,7 +82,11 @@ class ViewContainer(QWidget):
         return w
 
     @abstractmethod
-    def order_view(self):
+    def filter_view(self, filter_by, search_text):
+        pass
+
+    @abstractmethod
+    def order_view(self, order_by, search_text):
         pass
 
 
@@ -98,16 +102,16 @@ class IconViewContainer(ViewContainer):
     def add_widget(self, rgame: RareGame) -> IconGameWidget:
         return self._add_widget(IconGameWidget, rgame)
 
-    def filter_view(self, filter_by: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
-        self._filter_view(IconGameWidget, filter_by, search_text)
-
     def update_view(self):
         self._update_view(IconGameWidget)
 
     def find_widget(self, app_name: str) -> ViewWidget:
         return self._find_widget(IconGameWidget, app_name)
 
-    def order_view(self, order_by: LibraryOrder = LibraryOrder.TITLE, search_text: str = ""):
+    def filter_view(self, filter_by: LibraryFilter, search_text: str = ""):
+        self._filter_view(IconGameWidget, filter_by, search_text)
+
+    def order_view(self, order_by: LibraryOrder, search_text: str = ""):
         if search_text:
             self.layout().sort(
                 lambda x: (search_text not in x.widget().rgame.app_title.lower(),)
@@ -143,16 +147,16 @@ class ListViewContainer(ViewContainer):
     def add_widget(self, rgame: RareGame) -> ListGameWidget:
         return self._add_widget(ListGameWidget, rgame)
 
-    def filter_view(self, filter_by: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
-        self._filter_view(ListGameWidget, filter_by, search_text)
-
     def update_view(self):
         self._update_view(ListGameWidget)
 
     def find_widget(self, app_name: str) -> ViewWidget:
         return self._find_widget(ListGameWidget, app_name)
 
-    def order_view(self, order_by: LibraryOrder = LibraryOrder.TITLE, search_text: str = ""):
+    def filter_view(self, filter_by: LibraryFilter, search_text: str = ""):
+        self._filter_view(ListGameWidget, filter_by, search_text)
+
+    def order_view(self, order_by: LibraryOrder, search_text: str = ""):
         list_widgets = self.findChildren(ListGameWidget)
         if search_text:
             list_widgets.sort(key=lambda x: (search_text not in x.rgame.app_title.lower(),))
@@ -188,30 +192,37 @@ class LibraryWidgetController(QObject):
             self._container: ListViewContainer = ListViewContainer(self.rcore, parent)
         parent.setWidget(self._container)
 
-        self.signals.game.installed.connect(self.order_game_views)
-        self.signals.game.uninstalled.connect(self.order_game_views)
+        self._current_filter: LibraryFilter = LibraryFilter.ALL
+        self._current_order: LibraryOrder = LibraryOrder.TITLE
+
+        self.rcore.completed.connect(self.refresh_game_view)
+        self.signals.game.installed.connect(self.update_game_view)
+        self.signals.game.uninstalled.connect(self.update_game_view)
 
     def add_game(self, rgame: RareGame):
-        return self.add_widgets(rgame)
+        return self.add_widget(rgame)
 
-    def add_widgets(self, rgame: RareGame) -> ViewWidget:
+    def add_widget(self, rgame: RareGame) -> ViewWidget:
         return self._container.add_widget(rgame)
 
-    def filter_game_views(self, filter_by: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
-        self._container.filter_view(filter_by, search_text)
-        self.order_game_views(search_text=search_text)
+    def filter_game_view(self, filter_by: LibraryFilter = None, search_text: str = ""):
+        self._current_filter = filter_by if filter_by is not None else self._current_filter
+        self._container.filter_view(self._current_filter, search_text)
+        self.order_game_view(self._current_order, search_text=search_text)
 
     @Slot()
-    def order_game_views(self, order_by: LibraryOrder = LibraryOrder.TITLE, search_text: str = ""):
-        self._container.order_view(order_by, search_text)
+    def order_game_view(self, order_by: LibraryOrder = None, search_text: str = ""):
+        self._current_order = order_by if order_by is not None else self._current_order
+        self._container.order_view(self._current_order, search_text)
 
     @Slot()
-    @Slot(list)
-    def update_game_views(self, app_names: List[str] = None):
-        if app_names:
-            return
+    def update_game_view(self):
+        self.order_game_view(self._current_order)
+
+    @Slot()
+    def refresh_game_view(self):
         self._container.update_view()
-        self.order_game_views()
+        self.order_game_view(self._current_order)
 
     def __find_widget(self, app_name: str) -> Union[ViewWidget, None]:
         return self._container.find_widget(app_name)
