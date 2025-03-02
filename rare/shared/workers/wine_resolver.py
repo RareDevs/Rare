@@ -58,6 +58,14 @@ class WinePathResolver(Worker):
         # pylint: disable=E0606
         env = compat_utils.get_host_environment(env, silent=True)
 
+        if tool is not None:
+            _cmd = core.get_app_launch_command(
+                app_name,
+                wrapper=tool.as_str(steam.SteamVerb.WAIT_FOR_EXIT_AND_RUN) if tool is not None else None,
+                disable_wine=config.get_boolean(app_name, "no_wine")
+            )
+            compat_utils.execute(_cmd, ["c:\\windows\\system32\\wineboot.exe", "-u"], env)
+
         return cmd, env
 
     @staticmethod

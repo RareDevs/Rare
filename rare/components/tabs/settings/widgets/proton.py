@@ -4,7 +4,7 @@ from typing import Tuple, Union, Optional
 
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox
+from PySide6.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox, QHBoxLayout, QPushButton
 
 from rare.models.wrapper import Wrapper, WrapperType
 from rare.shared import RareCore
@@ -38,12 +38,21 @@ class ProtonSettings(QGroupBox):
             parent=self
         )
 
+        # self.winetricks_button = QPushButton(self.tr("Winetricks"), self)
+        # self.create_button = QPushButton(self.tr("Create prefix"), self)
+        #
+        # button_layout = QHBoxLayout()
+        # button_layout.addWidget(self.winetricks_button)
+        # button_layout.addWidget(self.create_button)
+        # button_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
+
         layout = QFormLayout(self)
         layout.addRow(self.tr("Proton tool"), self.tool_combo)
         layout.addRow(self.tr("Compat data"), self.tool_prefix)
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
+        # layout.addRow(button_layout)
 
         self.app_name: str = "default"
         self.core = RareCore.instance().core()
@@ -104,7 +113,7 @@ class ProtonSettings(QGroupBox):
         self.tool_prefix.setEnabled(steam_tool is not None)
         if steam_tool:
             if not (compatdata_path := config.get_proton_compatdata(self.app_name, fallback="")):
-                compatdata_path = proton_compat_dir(self.app_name)
+                compatdata_path = proton_compat_dir(RareCore.instance().get_game(self.app_name).folder_name)
                 config.save_proton_compatdata(self.app_name, str(compatdata_path))
                 target = compatdata_path.joinpath("pfx")
                 if not target.is_dir():

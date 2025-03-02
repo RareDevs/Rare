@@ -98,12 +98,12 @@ def applications_dir() -> Path:
     return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.ApplicationsLocation))
 
 
-def proton_compat_dir(app_name: str) -> Path:
-    return data_dir().joinpath(f"compatdata/{app_name}")
+def proton_compat_dir(dirname: str) -> Path:
+    return data_dir().joinpath(f"compatdata/{dirname}")
 
 
-def wine_compat_dir(app_name: str) -> Path:
-    return proton_compat_dir(app_name).joinpath("pfx")
+def wine_compat_dir(dirname: str) -> Path:
+    return proton_compat_dir(dirname).joinpath("pfx")
 
 
 # fmt: off
