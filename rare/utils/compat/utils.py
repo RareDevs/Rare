@@ -108,7 +108,7 @@ def execute(command: List[str], arguments: List[str], environment: Mapping) -> T
 def resolve_path(command: List[str], environment: Mapping, path: str) -> str:
     path = path.strip().replace("/", "\\")
     # lk: if path does not exist form
-    arguments = ["cmd.exe", "/c", "echo", path]
+    arguments = ["c:\\windows\\system32\\cmd.exe", "/c", "echo", path]
     # lk: if path exists and needs a case-sensitive interpretation form
     # cmd = [wine_cmd, 'cmd', '/c', f'cd {path} & cd']
     out, err = execute(command, arguments, environment)
@@ -124,7 +124,7 @@ def query_reg_path(wine_exec: str, wine_env: Mapping, reg_path: str):
 
 
 def query_reg_key(command: List[str], environment: Mapping, reg_path: str, reg_key) -> str:
-    arguments = ["reg.exe", "query", reg_path, "/v", reg_key]
+    arguments = ["c:\\windows\\system32\\reg.exe", "query", reg_path, "/v", reg_key]
     out, err = execute(command, arguments, environment)
     out, err = out.strip(), err.strip()
     if not out:
@@ -145,7 +145,7 @@ def convert_to_windows_path(wine_exec: str, wine_env: Mapping, path: str) -> str
 
 def convert_to_unix_path(command: List[str], environment: Mapping, path: str) -> str:
     path = path.strip().strip('"')
-    arguments = ["winepath.exe", "-u", path]
+    arguments = ["c:\\windows\\system32\\winepath.exe", "-u", path]
     out, err = execute(command, arguments, environment)
     out, err = out.strip(), err.strip()
     if not out:
