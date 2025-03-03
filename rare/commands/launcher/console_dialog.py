@@ -1,5 +1,4 @@
-import os
-from typing import Union
+from typing import Union, Dict
 
 from PySide6.QtCore import QProcessEnvironment, Signal, QSize, Qt
 from PySide6.QtGui import QTextCursor, QFont, QCursor, QCloseEvent
@@ -16,12 +15,12 @@ from PySide6.QtWidgets import (
 
 from rare.ui.commands.launcher.console_env import Ui_ConsoleEnv
 from rare.widgets.dialogs import dialog_title, game_title
+from .lgd_helper import dict_to_qprocenv
 
 
 class ConsoleDialog(QDialog):
     term = Signal()
     kill = Signal()
-    env: QProcessEnvironment
 
     def __init__(self, app_title: str, parent=None):
         super(ConsoleDialog, self).__init__(parent=parent)
@@ -65,8 +64,9 @@ class ConsoleDialog(QDialog):
 
         self.setLayout(layout)
 
-        self.env_variables = ConsoleEnv(app_title, self)
-        self.env_variables.hide()
+        self.env_variables: QProcessEnvironment = None
+        self.env_console = ConsoleEnv(app_title, self)
+        self.env_console.hide()
 
         self.accept_close = False
 
@@ -107,12 +107,12 @@ class ConsoleDialog(QDialog):
                 f.close()
                 self.save_button.setText(self.tr("Saved"))
 
-    def set_env(self, env: QProcessEnvironment):
-        self.env = env
+    def set_env(self, env: Dict):
+        self.env_variables = dict_to_qprocenv(env)
 
     def show_env(self):
-        self.env_variables.setTable(self.env)
-        self.env_variables.show()
+        self.env_console.setTable(self.env_variables)
+        self.env_console.show()
 
     def log(self, text: str):
         self.console_edit.log(f"Rare: {text}")

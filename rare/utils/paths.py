@@ -98,12 +98,25 @@ def applications_dir() -> Path:
     return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.ApplicationsLocation))
 
 
-def proton_compat_dir(dirname: str) -> Path:
-    return data_dir().joinpath(f"compatdata/{dirname}")
+def proton_compat_dir(name: str) -> Path:
+    if not (compat_dir := data_dir().joinpath(f"compatdata/{name}")).is_dir():
+        compat_dir.mkdir(parents=True)
+        if not (prefix_dir := compat_dir.joinpath("pfx")).is_dir():
+            prefix_dir.mkdir(parents=True)
+    return compat_dir
 
 
-def wine_compat_dir(dirname: str) -> Path:
-    return proton_compat_dir(dirname).joinpath("pfx")
+def wine_prefix_dir(name: str) -> Path:
+    if not (prefix_dir := proton_compat_dir(name).joinpath("pfx")).is_dir():
+        prefix_dir.mkdir(parents=True)
+    return prefix_dir
+
+
+def shader_cache_dir(name: str) -> Path:
+    if not (shader_dir := proton_compat_dir(name).joinpath("shader_cache")).is_dir():
+        shader_dir.mkdir(parents=True)
+    return shader_dir
+
 
 
 # fmt: off
