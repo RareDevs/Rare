@@ -39,7 +39,8 @@ class RunnerSettingsBase(QGroupBox):
         # self.compat_layout.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.compat_stack)
         # self.compat_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
 
-        if pf.system() in {"Linux", "FreeBSD"}:
+        self.ctool = False
+        if proton_widget is not None:
             self.ctool = proton_widget(self)
             self.ctool.environ_changed.connect(self.environ_changed)
             self.ctool.tool_enabled.connect(self.wine.tool_enabled)

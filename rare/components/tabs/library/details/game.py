@@ -1,45 +1,32 @@
-import os.path
-import platform as pf
+import os
 from logging import getLogger
 from typing import Tuple
 
-from PySide6.QtCore import Qt, Slot, QSignalBlocker
+from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QFileDialog, QComboBox, QLineEdit, QCheckBox, QFormLayout
+from PySide6.QtWidgets import QFileDialog, QComboBox, QLineEdit
 from legendary.models.game import Game, InstalledGame
 
+from rare.components.tabs.settings.game import GameSettingsBase
 from rare.components.tabs.settings.widgets.env_vars import EnvVars
-from rare.components.tabs.settings.widgets.game import GameSettingsBase
 from rare.components.tabs.settings.widgets.launch import LaunchSettingsBase
-from rare.components.tabs.settings.widgets.overlay import DxvkOverlaySettings, DxvkConfigSettings
 from rare.components.tabs.settings.widgets.wrappers import WrapperSettings
 from rare.models.game import RareGame
 from rare.utils import config_helper as config
-from rare.utils.paths import compat_shaders_dir
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
-if pf.system() != "Windows":
-    from rare.components.tabs.settings.widgets.runner import RunnerSettingsBase
-    from rare.components.tabs.settings.widgets.wine import WineSettings
-    if pf.system() in {"Linux", "FreeBSD"}:
-        from rare.components.tabs.settings.widgets.proton import ProtonSettings
-        from rare.components.tabs.settings.widgets.overlay import MangoHudSettings
-
-logger = getLogger("GameSettings")
+logger = getLogger("LocalGameSettings")
 
 
-class GameWrapperSettings(WrapperSettings):
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-
+class LocalWrapperSettings(WrapperSettings):
     def load_settings(self, app_name: str):
         self.app_name = app_name
 
 
-class GameLaunchSettings(LaunchSettingsBase):
+class LocalLaunchSettings(LaunchSettingsBase):
 
     def __init__(self, parent=None):
-        super(GameLaunchSettings, self).__init__(GameWrapperSettings, parent=parent)
+        super(LocalLaunchSettings, self).__init__(LocalWrapperSettings, parent=parent)
 
         self.game: Game = None
         self.igame: InstalledGame = None
@@ -144,124 +131,21 @@ class GameLaunchSettings(LaunchSettingsBase):
         self.wrappers_widget.load_settings(rgame.app_name)
 
 
-if pf.system() != "Windows":
-
-    class GameWineSettings(WineSettings):
-        def load_settings(self, app_name):
-            self.app_name = app_name
-
-    if pf.system() in {"Linux", "FreeBSD"}:
-        class GameProtonSettings(ProtonSettings):
-            def load_settings(self, app_name: str):
-                self.app_name = app_name
-
-        class GameMangoHudSettings(MangoHudSettings):
-            def load_settings(self, app_name: str):
-                self.app_name = app_name
-
-    class GameRunnerSettings(RunnerSettingsBase):
-        def __init__(self, parent=None):
-            if pf.system() in {"Linux", "FreeBSD"}:
-                super(GameRunnerSettings, self).__init__(GameWineSettings, GameProtonSettings, parent=parent)
-            else:
-                super(GameRunnerSettings, self).__init__(GameWineSettings, parent=parent)
-
-            self.rgame: RareGame = None
-
-            self.shader_cache_check = QCheckBox(self.tr("Use game-specific shader cache directory"), self)
-            font = self.font()
-            font.setItalic(True)
-            self.shader_cache_check.setFont(font)
-            self.shader_cache_check.checkStateChanged.connect(self.__shader_cache_check_changed)
-
-            form_layout = QFormLayout()
-            form_layout.addRow(self.tr("Shader cache"), self.shader_cache_check)
-
-            self.main_layout.addLayout(form_layout)
-
-        def showEvent(self, a0: QShowEvent):
-            if a0.spontaneous():
-                return super().showEvent(a0)
-
-            _ = QSignalBlocker(self.shader_cache_check)
-            caches = all((config.get_envvar(self.app_name, envvar, False) for envvar in {
-                "__GL_SHADER_DISK_CACHE_PATH", "MESA_SHADER_CACHE_DIR", "DXVK_STATE_CACHE_PATH", "VKD3D_SHADER_CACHE_PATH"
-            }))
-            self.shader_cache_check.setChecked(caches)
-
-            return super().showEvent(a0)
-
-        @Slot(Qt.CheckState)
-        def __shader_cache_check_changed(self, state: Qt.CheckState):
-            for envvar in {
-                "__GL_SHADER_DISK_CACHE_PATH", "MESA_SHADER_CACHE_DIR", "DXVK_STATE_CACHE_PATH", "VKD3D_SHADER_CACHE_PATH"
-            }:
-                if state == Qt.CheckState.Checked:
-                    config.set_envvar(self.app_name, envvar, compat_shaders_dir(self.rgame.folder_name).as_posix())
-                else:
-                    config.remove_envvar(self.app_name, envvar)
-                self.environ_changed.emit(envvar)
-
-        def load_settings(self, rgame: RareGame):
-            self.rgame = rgame
-            self.app_name = rgame.app_name
-            self.wine.load_settings(rgame.app_name)
-            if pf.system() in {"Linux", "FreeBSD"}:
-                self.ctool.load_settings(rgame.app_name)
-
-
-class GameDxvkOverlaySettings(DxvkOverlaySettings):
-    def load_settings(self, app_name: str):
-        self.app_name = app_name
-
-class GameDxvkConfigSettings(DxvkConfigSettings):
-    def load_settings(self, app_name: str):
-        self.app_name = app_name
-
-class GameEnvVars(EnvVars):
+class LocalEnvVars(EnvVars):
     def load_settings(self, app_name):
         self.app_name = app_name
 
 
-class GameSettings(GameSettingsBase):
+class LocalGameSettings(GameSettingsBase):
     def __init__(self, parent=None):
-        if pf.system() != "Windows":
-            if pf.system() in {"Linux", "FreeBSD"}:
-                super(GameSettings, self).__init__(
-                    launch_widget=GameLaunchSettings,
-                    dxvk_overlay_widget=GameDxvkOverlaySettings,
-                    dxvk_config_widget=GameDxvkConfigSettings,
-                    envvar_widget=GameEnvVars,
-                    runner_widget=GameRunnerSettings,
-                    mangohud_widget=GameMangoHudSettings,
-                    parent=parent
-                )
-            else:
-                super(GameSettings, self).__init__(
-                    launch_widget=GameLaunchSettings,
-                    dxvk_overlay_widget=GameDxvkOverlaySettings,
-                    dxvk_config_widget=GameDxvkConfigSettings,
-                    envvar_widget=GameEnvVars,
-                    runner_widget=GameRunnerSettings,
-                    parent=parent
-                )
-        else:
-            super(GameSettings, self).__init__(
-                launch_widget=GameLaunchSettings,
-                dxvk_overlay_widget=GameDxvkOverlaySettings,
-                dxvk_config_widget=GameDxvkConfigSettings,
-                envvar_widget=GameEnvVars,
-                parent=parent
-            )
+        super(LocalGameSettings, self).__init__(
+            launch_widget=LocalLaunchSettings,
+            envvar_widget=LocalEnvVars,
+            parent=parent
+        )
 
     def load_settings(self, rgame: RareGame):
         self.set_title.emit(rgame.app_title)
         self.app_name = rgame.app_name
         self.launch.load_settings(rgame)
-        if pf.system() != "Windows":
-            self.runner.load_settings(rgame)
-            if pf.system() in {"Linux", "FreeBSD"}:
-                self.mangohud.load_settings(rgame.app_name)
-        self.dxvk_overlay.load_settings(rgame.app_name)
-        self.dxvk_config.load_settings(rgame.app_name)
         self.env_vars.load_settings(rgame.app_name)

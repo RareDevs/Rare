@@ -28,13 +28,13 @@ class EnvVarsTableModel(QAbstractTableModel):
         self.__validator = re.compile(r"(^[A-Za-z_][A-Za-z0-9_]*)")
         self.__data_map: ChainMap = ChainMap()
 
-        self.__readonly = {
-            "DXVK_HUD",
-            "DXVK_CONFIG",
-            "MANGOHUD",
-            "MANGOHUD_CONFIG",
-        }
         if platform.system() != "Windows":
+            self.__readonly = {
+                "DXVK_HUD",
+                "DXVK_CONFIG",
+                "MANGOHUD",
+                "MANGOHUD_CONFIG",
+            }
             self.__readonly.update(get_wine_environment().keys())
         if platform.system() in {"Linux", "FreeBSD"}:
             self.__readonly.update(get_steam_environment().keys())
