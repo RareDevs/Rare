@@ -175,3 +175,5 @@ def get_prefix(app_name: str = "default") -> Optional[str]:
         return _wine_prefix
 
     return None
+
+__all__ = []
