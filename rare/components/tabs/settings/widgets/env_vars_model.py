@@ -37,7 +37,10 @@ class EnvVarsTableModel(QAbstractTableModel):
             self.__readonly.update(get_wine_environment().keys())
         if platform.system() in {"Linux", "FreeBSD"}:
             self.__readonly.update(get_steam_environment().keys())
-
+            self.__readonly.update({
+                "__GL_SHADER_DISK_CACHE_PATH", "MESA_SHADER_CACHE_DIR",
+                "DXVK_STATE_CACHE_PATH", "VKD3D_SHADER_CACHE_PATH",
+            })
         self.__default: str = "default"
         self.__appname: str = None
 

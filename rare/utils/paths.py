@@ -112,10 +112,16 @@ def wine_prefix_dir(name: str) -> Path:
     return prefix_dir
 
 
-def shader_cache_dir(name: str) -> Path:
-    if not (shader_dir := proton_compat_dir(name).joinpath("shader_cache")).is_dir():
+def compat_shaders_dir(name: str) -> Path:
+    if not (shader_dir := proton_compat_dir(name).joinpath("cache/shaders")).is_dir():
         shader_dir.mkdir(parents=True)
     return shader_dir
+
+
+def compat_logs_dir(name: str) -> Path:
+    if not (logs_dir := proton_compat_dir(name).joinpath("cache/logs")).is_dir():
+        logs_dir.mkdir(parents=True)
+    return logs_dir
 
 
 

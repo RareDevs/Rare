@@ -21,10 +21,9 @@ from .launch import LaunchSettingsType
 from .overlay import DxvkSettings
 
 if pf.system() != "Windows":
-    from .wine import WineSettings
+    from .runner import RunnerSettingsType
 
 if pf.system() in {"Linux", "FreeBSD"}:
-    from .proton import ProtonSettings
     from .overlay import MangoHudSettings
 
 
@@ -35,8 +34,7 @@ class GameSettingsBase(QWidget, SideTabContents):
         launch_widget: Type[LaunchSettingsType],
         dxvk_widget: Type[DxvkSettings],
         envvar_widget: Type[EnvVars],
-        wine_widget: Type['WineSettings'] = None,
-        proton_widget: Type['ProtonSettings'] = None,
+        runner_widget: Type['RunnerSettingsType'] = None,
         mangohud_widget: Type['MangoHudSettings'] = None,
         parent=None
     ):
@@ -50,36 +48,9 @@ class GameSettingsBase(QWidget, SideTabContents):
         self.env_vars = envvar_widget(self)
 
         if pf.system() != "Windows":
-            self.compat = QGroupBox(self.tr("Compatibility"), parent=self)
-        #     self.compat_label = QLabel(self.tr("Runner"))
-        #     self.compat_combo = QComboBox(self)
-        #     self.compat_stack = QStackedWidget(self)
-
-            self.compat_layout = QVBoxLayout(self.compat)
-        #     self.compat_layout = QFormLayout(self.compat)
-        #     self.compat_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.compat_label)
-        #     self.compat_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.compat_combo)
-        #     self.compat_layout.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.compat_stack)
-        #     self.compat_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
-        #
-            self.wine = wine_widget(self)
-            self.wine.environ_changed.connect(self.env_vars.reset_model)
-            self.compat_layout.addWidget(self.wine)
-        #     wine_index = self.compat_stack.addWidget(self.wine)
-        #     self.compat_combo.addItem("Wine", wine_index)
-
-            if pf.system() in {"Linux", "FreeBSD"}:
-                self.proton_tool = proton_widget(self)
-                self.proton_tool.environ_changed.connect(self.env_vars.reset_model)
-                self.proton_tool.tool_enabled.connect(self.wine.tool_enabled)
-                self.proton_tool.tool_enabled.connect(self.launch.tool_enabled)
-                self.compat_layout.addWidget(self.proton_tool)
-        #         proton_index = self.compat_stack.addWidget(self.proton_tool)
-        #         self.compat_combo.addItem("Proton", proton_index)
-
-        #     self.compat_combo.currentIndexChanged.connect(
-        #         lambda: self.compat_stack.setCurrentIndex(self.compat_combo.currentData(Qt.ItemDataRole.UserRole))
-        #     )
+            self.runner = runner_widget(self)
+            self.runner.environ_changed.connect(self.env_vars.reset_model)
+            self.runner.tool_enabled.connect(self.launch.tool_enabled)
 
         self.dxvk = dxvk_widget(self)
         self.dxvk.environ_changed.connect(self.env_vars.reset_model)
@@ -91,7 +62,7 @@ class GameSettingsBase(QWidget, SideTabContents):
         self.main_layout = QVBoxLayout(self)
         self.main_layout.addWidget(self.launch)
         if pf.system() != "Windows":
-            self.main_layout.addWidget(self.compat)
+            self.main_layout.addWidget(self.runner)
         self.main_layout.addWidget(self.dxvk)
         if pf.system() in {"Linux", "FreeBSD"}:
             self.main_layout.addWidget(self.mangohud)
