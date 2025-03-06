@@ -57,7 +57,7 @@ class WrapperEditDialog(ButtonDialog):
         self.setCentralLayout(self.widget_layout)
 
         self.accept_button.setText(self.tr("Save"))
-        self.accept_button.setIcon(qta_icon("fa.edit"))
+        self.accept_button.setIcon(qta_icon("fa.edit", "fa5s.edit"))
         self.accept_button.setEnabled(False)
 
         self.result: Tuple = ()
@@ -135,7 +135,7 @@ class WrapperWidget(QFrame):
         manage_menu.addActions([edit_action, delete_action])
 
         manage_button = QPushButton(parent=self)
-        manage_button.setIcon(qta_icon("mdi.menu", fallback="fa.align-justify"))
+        manage_button.setIcon(qta_icon("mdi.menu", "fa5s.align-justify"))
         manage_button.setMenu(manage_menu)
         manage_button.setEnabled(wrapper.is_editable)
         if not wrapper.is_editable:
@@ -240,19 +240,20 @@ class WrapperSettings(QWidget):
     def __init__(self, parent=None):
         super(WrapperSettings, self).__init__(parent=parent)
 
-        self.wrapper_label = QLabel(self.tr("No wrappers defined"), self)
-        self.wrapper_label.setFrameStyle(QLabel.Shape.StyledPanel | QLabel.Shadow.Plain)
-        self.wrapper_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-
         self.add_button = QPushButton(self.tr("Add wrapper"), self)
         self.add_button.clicked.connect(self.__on_add)
 
         self.wrapper_scroll = WrapperSettingsScroll(self)
         self.wrapper_scroll.setMinimumHeight(self.add_button.minimumSizeHint().height())
 
-        self.wrapper_container = WrapperContainer(self.wrapper_label, self.wrapper_scroll)
+        self.wrapper_container = WrapperContainer(self.wrapper_scroll)
         self.wrapper_container.orderChanged.connect(self.__on_order_changed)
         self.wrapper_scroll.setWidget(self.wrapper_container)
+
+        self.wrapper_label = QLabel(self.tr("No wrappers defined"), self)
+        self.wrapper_label.setFrameStyle(QLabel.Shape.StyledPanel | QLabel.Shadow.Plain)
+        self.wrapper_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.wrapper_container.main_layout.addWidget(self.wrapper_label)
 
         # lk: set object names for the stylesheet
         self.setObjectName("WrapperSettings")
@@ -392,18 +393,17 @@ class WrapperContainer(QWidget):
     # QWidget: moving widget, int: new index
     orderChanged: Signal = Signal(QWidget, int)
 
-    def __init__(self, label: QLabel, parent=None):
+    def __init__(self, parent=None):
         super(WrapperContainer, self).__init__(parent=parent)
         self.setAcceptDrops(True)
         self.__layout = QHBoxLayout()
         self.__drag_widget: Optional[QWidget] = None
 
-        main_layout = QHBoxLayout(self)
-        main_layout.addWidget(label)
-        main_layout.addLayout(self.__layout)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        main_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
+        self.main_layout = QHBoxLayout(self)
+        self.main_layout.addLayout(self.__layout)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        self.main_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)
