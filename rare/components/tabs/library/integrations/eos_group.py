@@ -106,7 +106,7 @@ class EosPrefixWidget(QFrame):
 
         if not self.overlay.is_installed and not self.overlay.available_paths(self.prefix):
             self.setDisabled(True)
-            self.indicator.setPixmap(qta_icon("fa.circle-o", color="grey").pixmap(20, 20))
+            self.indicator.setPixmap(qta_icon("fa.circle-o", "fa5.circle", color="grey").pixmap(20, 20))
             active_path = self.overlay.active_path(self.prefix)
             self.overlay_label.setText(f"<i>{active_path}</i>")
             self.overlay_label.setVisible(bool(active_path))
@@ -114,9 +114,9 @@ class EosPrefixWidget(QFrame):
             return
 
         if self.overlay.is_enabled(self.prefix):
-            self.indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
+            self.indicator.setPixmap(qta_icon("fa.check-circle-o", "fa5.check-circle", color="green").pixmap(QSize(20, 20)))
         else:
-            self.indicator.setPixmap(qta_icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20)))
+            self.indicator.setPixmap(qta_icon("fa.times-circle-o", "fa5.times-circle", color="red").pixmap(QSize(20, 20)))
 
         install_path = os.path.normpath(p) if (p := self.overlay.install_path) else ""
 
@@ -178,6 +178,7 @@ class EosGroup(QGroupBox):
         self.ui.update_page_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
 
         self.ui.install_button.setIcon(qta_icon("ri.install-line"))
+        self.ui.update_button.setIcon(qta_icon("ri.arrow-up-circle-line"))
         self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
 
         self.version = ElideLabel(parent=self)

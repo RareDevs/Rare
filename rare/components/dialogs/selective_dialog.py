@@ -31,7 +31,7 @@ class SelectiveDialog(ButtonDialog):
         self.setCentralLayout(layout)
 
         self.accept_button.setText(self.tr("Verify"))
-        self.accept_button.setIcon(qta_icon("fa.check"))
+        self.accept_button.setIcon(qta_icon("fa.check", "fa5s.check"))
 
         self.options: SelectiveDownloadsModel = SelectiveDownloadsModel(rgame.app_name)
 

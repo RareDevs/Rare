@@ -1,5 +1,4 @@
 import json
-import os
 import platform
 import shlex
 import subprocess
@@ -35,7 +34,7 @@ from rare.models.options import options
 from rare.widgets.rare_app import RareApp, RareAppException
 from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
 from .console_dialog import ConsoleDialog
-from .lgd_helper import get_launch_args, InitArgs, get_configured_process, LaunchArgs, GameArgsError
+from .lgd_helper import get_launch_args, InitArgs, LaunchArgs, dict_to_qprocenv, get_configured_qprocess
 
 DETACHED_APP_NAMES = {
     "0a2d9f6403244d12969e11da6713137b",  # Fall Guys
@@ -87,19 +86,19 @@ class PreLaunch(QRunnable):
             return None
 
         if launch_args.pre_launch_command:
-            proc = get_configured_process()
-            proc.setProcessEnvironment(launch_args.environment)
+            proc = get_configured_qprocess(shlex.split(launch_args.pre_launch_command), launch_args.environment)
+            proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
+            proc.readyReadStandardOutput.connect(
+                lambda: self.logger.info(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
+            )
             self.signals.pre_launch_command_started.emit()
-            prelaunch = shlex.split(launch_args.pre_launch_command)
-            command = prelaunch.pop(0) if len(prelaunch) else ""
-            arguments = prelaunch if len(prelaunch) else []
-            self.logger.info("Running pre-launch command %s, %s", command, shlex.join(arguments))
+            self.logger.info("Running pre-launch command %s, %s", proc.program(), proc.arguments())
             if launch_args.pre_launch_wait:
-                proc.start(command, arguments)
+                proc.start()
                 self.logger.info("Waiting for pre-launch command to finish")
                 proc.waitForFinished(-1)
             else:
-                proc.startDetached(command, arguments)
+                proc.startDetached()
         return launch_args
 
 
@@ -306,7 +305,7 @@ class RareLauncher(RareApp):
 
         if self.args.dry_run:
             self.logger.info("Dry run %s (%s)", self.rgame.app_title, self.rgame.app_name)
-            self.logger.info("%s %s", args.executable, " ".join(args.arguments))
+            self.logger.info("Command: %s, %s", args.executable, " ".join(args.arguments))
             if self.console:
                 self.console.log(f"Dry run {self.rgame.app_title} ({self.rgame.app_name})")
                 self.console.log(f"{shlex.join((args.executable, *args.arguments))}")
@@ -314,13 +313,14 @@ class RareLauncher(RareApp):
             self.stop()
             return
 
-        if args.is_origin_game:
+        if platform.system() == "Windows" and args.is_origin_game:
             # executable is a protocol link (link2ea://launchgame/...)
             QDesktopServices.openUrl(QUrl(args.executable))
             self.stop()  # stop because it is not a subprocess
             return
 
-        self.logger.debug("Launch command %s, %s", args.executable, " ".join(args.arguments))
+        self.logger.info("Starting %s (%s)", self.rgame.app_title, self.rgame.app_name)
+        self.logger.info("Command: %s, %s", args.executable, " ".join(args.arguments))
         self.logger.debug("Working directory %s", args.working_directory)
 
         if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
@@ -328,32 +328,28 @@ class RareLauncher(RareApp):
                 self.console.log(f"Launching {args.executable} as a detached process")
             subprocess.Popen(
                 (args.executable, *args.arguments),
+                stdin=None, stdout=None, stderr=None,
                 cwd=args.working_directory,
-                env={i: args.environment.value(i) for i in args.environment.keys()},
+                env=args.environment,
                 shell=True,
                 creationflags=subprocess.DETACHED_PROCESS,
             )
             self.stop()  # stop because we do not attach to the output
             return
 
-        # TODO: move to environment configuration, do not resuse variables from this block
-        # Sanity check environment (mostly for Linux)
-        command_line = shlex.join((args.executable, *args.arguments))
-        if os.environ.get("XDG_CURRENT_DESKTOP", None) == "gamescope" or "gamescope" in command_line:
-            # disable mangohud in gamescope
-            args.environment.insert("MANGOHUD", "0")
-        # TODO: end
-
+        self.game_process.setProgram(args.executable)
+        self.game_process.setArguments(args.arguments)
         if args.working_directory:
             self.game_process.setWorkingDirectory(args.working_directory)
-        self.game_process.setProcessEnvironment(args.environment)
+        self.game_process.setProcessEnvironment(dict_to_qprocenv(args.environment))
         # send start message after process started
-        self.game_process.started.connect(lambda: self.send_message(StateChangedModel(
-            action=Actions.state_update, app_name=self.rgame.app_name,
-            new_state=StateChangedModel.States.started
+        self.game_process.started.connect(
+            lambda: self.send_message(StateChangedModel(
+                action=Actions.state_update,
+                app_name=self.rgame.app_name,
+                new_state=StateChangedModel.States.started
         )))
-        # self.logger.debug("Executing prelaunch command %s, %s", args.executable, args.arguments)
-        self.game_process.start(args.executable, args.arguments)
+        self.game_process.start()
 
     def error_occurred(self, error_str: str):
         self.logger.warning(error_str)
@@ -466,6 +462,7 @@ def launch(args: Namespace) -> int:
         app.logger.info("%s received. Stopping", strsignal(s))
         app.stop()
         app.exit(1)
+        return 1
 
     signal(SIGINT, sighandler)
     signal(SIGTERM, sighandler)

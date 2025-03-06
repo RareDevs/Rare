@@ -19,7 +19,7 @@ from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.models.options import options
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
-from rare.utils.config_helper import set_envvar, get_boolean
+import rare.utils.config_helper as config
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
 
@@ -454,9 +454,9 @@ class RareGame(RareGameSlim):
         return self.metadata.steam_appid
 
     def set_steam_appid(self, appid: int):
-        set_envvar(self.app_name, "SteamAppId", str(appid))
-        set_envvar(self.app_name, "SteamGameId", str(appid))
-        set_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
+        config.set_envvar(self.app_name, "SteamAppId", str(appid))
+        config.set_envvar(self.app_name, "SteamGameId", str(appid))
+        config.set_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
         self.metadata.steam_appid = appid
 
     def set_steam_grade(self) -> None:
@@ -569,13 +569,13 @@ class RareGame(RareGameSlim):
         cmd_line = get_rare_executable()
         executable, args = cmd_line[0], cmd_line[1:]
         args.append("launch")
-        if offline or get_boolean(self.app_name, "offline", fallback=False):
+        if offline or config.get_boolean(self.app_name, "offline", fallback=False):
             args.append("--offline")
         if debug:
             args.append("--debug")
         if QSettings(self).value(*options.log_games):
             args.append("--show-console")
-        if skip_update_check or get_boolean(self.app_name, "skip_update_check", fallback=False):
+        if skip_update_check or config.get_boolean(self.app_name, "skip_update_check", fallback=False):
             args.append("--skip-update-check")
         if wine_bin:
             args.extend(["--wine-bin", wine_bin])
@@ -584,7 +584,10 @@ class RareGame(RareGameSlim):
         args.append(self.app_name)
 
         logger.info(f"Starting game process: ({executable} {' '.join(args)})")
-        QProcess.startDetached(executable, args)
+        proc = QProcess()
+        proc.setProgram(executable)
+        proc.setArguments(args)
+        proc.startDetached()
         self.game_process.connect_to_server(on_startup=False)
         return True
 

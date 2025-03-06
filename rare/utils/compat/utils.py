@@ -28,27 +28,44 @@ def read_registry(registry: str, prefix: str) -> ConfigParser:
     return reg
 
 
-def get_configured_qprocess(command: List[str], environment: Mapping) -> QProcess:
-    logger.debug("Executing command: %s", command)
+def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[str], Dict]:
+    logger.debug("Preparing process: %s", command)
+    _env = os.environ.copy()
+    _command = command.copy()
+    if os.environ.get("container") == "flatpak":
+        flatpak_command = ["flatpak-spawn", "--host"]
+        flatpak_command.extend(f"--env={name}={value}" for name, value in environment.items())
+        _command = flatpak_command + command
+    else:
+        _env.update(environment)
+    return  _command[0], _command[1:] if len(_command) > 1 else [], _env
+
+
+def dict_to_qprocenv(env: Dict) -> QProcessEnvironment:
+    _env = QProcessEnvironment()
+    for name, value in env.items():
+        _env.insert(name, value)
+    return _env
+
+
+def get_configured_qprocess(command: List[str], environment: Dict) -> QProcess:
+    cmd, args, env = prepare_process(command, environment)
     proc = QProcess()
-    proc.setProcessChannelMode(QProcess.SeparateChannels)
-    penv = QProcessEnvironment()
-    for ek, ev in environment.items():
-        penv.insert(ek, ev)
-    proc.setProcessEnvironment(penv)
-    proc.setProgram(command[0])
-    proc.setArguments(command[1:])
+    proc.setProcessChannelMode(QProcess.ProcessChannelMode.SeparateChannels)
+    proc.setProcessEnvironment(dict_to_qprocenv(env))
+    proc.setProgram(cmd)
+    proc.setArguments(args)
     return proc
 
 
-def get_configured_subprocess(command: List[str], environment: Mapping) -> subprocess.Popen:
-    logger.debug("Executing command: %s", command)
+def get_configured_subprocess(command: List[str], environment: Dict) -> subprocess.Popen:
+    cmd, args, env = prepare_process(command, environment)
     return subprocess.Popen(
-        command,
+        (cmd, *args),
         stdin=None,
         stdout=subprocess.PIPE,
-        stderr=None,
-        env=environment,
+        stderr=subprocess.PIPE,
+        env=env,
         shell=False,
         text=False,
     )
@@ -56,7 +73,6 @@ def get_configured_subprocess(command: List[str], environment: Mapping) -> subpr
 
 def execute_subprocess(command: List[str], arguments: List[str], environment: Mapping) -> Tuple[str, str]:
     proc = get_configured_subprocess(command + arguments, environment)
-    print(proc.args)
     out, err = proc.communicate()
     out, err = out.decode("utf-8", "ignore") if out else "", err.decode("utf-8", "ignore") if err else ""
 
@@ -86,19 +102,8 @@ def execute_qprocess(command: List[str], arguments: List[str], environment: Mapp
 
 
 def execute(command: List[str], arguments: List[str], environment: Mapping) -> Tuple[str, str]:
-    # Use the current environment if we are in flatpak or our own if we are on host
-    # In flatpak our environment is passed through `flatpak-spawn` arguments
-    if os.environ.get("container") == "flatpak":
-        flatpak_command = ["flatpak-spawn", "--host"]
-        flatpak_command.extend(f"--env={name}={value}" for name, value in environment.items())
-        _command = flatpak_command + command
-        _environment = os.environ.copy()
-    else:
-        _command = command
-        _environment = environment
-
     try:
-        out, err = execute_qprocess(_command, arguments, _environment)
+        out, err = execute_qprocess(command, arguments, environment)
     except Exception as e:
         out, err = "", str(e)
 
@@ -153,11 +158,10 @@ def convert_to_unix_path(command: List[str], environment: Mapping, path: str) ->
     return os.path.realpath(out) if (out := out.strip()) else out
 
 
-def get_host_environment(app_environment: Dict, silent: bool = True) -> Dict:
+def get_host_environment(app_environment: Dict, silent: bool = False) -> Dict:
     # Get a clean environment if we are in flatpak, this environment will be passed
     # to `flatpak-spawn`, otherwise use the system's.
-    _environ = {} if os.environ.get("container") == "flatpak" else os.environ.copy()
-    _environ.update(app_environment)
+    _environ = app_environment.copy()
     if silent:
         _environ["WINEESYNC"] = "0"
         _environ["WINEFSYNC"] = "0"

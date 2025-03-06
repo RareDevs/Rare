@@ -63,38 +63,6 @@ class LandingPage(SlidingStackedWidget, SideTabContents):
         self.slideInWidget(self.details_widget)
 
 
-class FreeGamesScroll(QScrollArea):
-    def __init__(self, parent=None):
-        super(FreeGamesScroll, self).__init__(parent=parent)
-        self.setObjectName(type(self).__name__)
-
-    def setWidget(self, w):
-        super().setWidget(w)
-        w.installEventFilter(self)
-
-    def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
-        if a0 is self.widget() and a1.type() == QEvent.Type.Resize:
-            self.__resize(a0)
-            return a0.event(a1)
-        return False
-
-    def __resize(self, e: QResizeEvent):
-        minh = self.horizontalScrollBar().minimum()
-        maxh = self.horizontalScrollBar().maximum()
-        # lk: when the scrollbar is not visible, min and max are 0
-        if maxh > minh:
-            height = (
-                e.size().height()
-                + self.rect().height() // 2
-                - self.contentsRect().height() // 2
-                + self.widget().layout().spacing()
-                + self.horizontalScrollBar().sizeHint().height()
-            )
-        else:
-            height = e.size().height() + self.rect().height() - self.contentsRect().height()
-        self.setMinimumHeight(max(height, self.minimumHeight()))
-
-
 class LandingWidget(QWidget, SideTabContents):
     show_details = Signal(CatalogOfferModel)
 

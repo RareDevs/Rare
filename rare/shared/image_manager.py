@@ -436,13 +436,13 @@ class ImageManager(QObject):
         if not ret.isNull():
             device = ImageSize.Preset(
                 divisor=preset.base.divisor,
-                pixel_ratio=QApplication.instance().devicePixelRatio(),
+                pixel_ratio=1,
                 orientation=preset.base.orientation,
                 base=preset
             )
             ret.setDevicePixelRatio(preset.pixel_ratio)
             # lk: Scaling happens at painting. It might be inefficient so leave this here as an alternative
-            # lk: If this is uncommented, the transformation in ImageWidget should be adjusted also
+            # lk: If this is uncommented, the transformation in ImageWidget should be adjusted too
             ret = ret.scaled(
                 device.size,
                 Qt.AspectRatioMode.KeepAspectRatio,

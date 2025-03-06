@@ -1,5 +1,4 @@
-import os.path
-import platform as pf
+import os
 from logging import getLogger
 from typing import Tuple
 
@@ -8,36 +7,26 @@ from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFileDialog, QComboBox, QLineEdit
 from legendary.models.game import Game, InstalledGame
 
+from rare.components.tabs.settings.game import GameSettingsBase
 from rare.components.tabs.settings.widgets.env_vars import EnvVars
-from rare.components.tabs.settings.widgets.game import GameSettingsBase
 from rare.components.tabs.settings.widgets.launch import LaunchSettingsBase
-from rare.components.tabs.settings.widgets.overlay import DxvkSettings
 from rare.components.tabs.settings.widgets.wrappers import WrapperSettings
 from rare.models.game import RareGame
 from rare.utils import config_helper as config
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
-if pf.system() != "Windows":
-    from rare.components.tabs.settings.widgets.wine import WineSettings
-    if pf.system() in {"Linux", "FreeBSD"}:
-        from rare.components.tabs.settings.widgets.proton import ProtonSettings
-        from rare.components.tabs.settings.widgets.overlay import MangoHudSettings
-
-logger = getLogger("GameSettings")
+logger = getLogger("LocalGameSettings")
 
 
-class GameWrapperSettings(WrapperSettings):
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-
+class LocalWrapperSettings(WrapperSettings):
     def load_settings(self, app_name: str):
         self.app_name = app_name
 
 
-class GameLaunchSettings(LaunchSettingsBase):
+class LocalLaunchSettings(LaunchSettingsBase):
 
     def __init__(self, parent=None):
-        super(GameLaunchSettings, self).__init__(GameWrapperSettings, parent=parent)
+        super(LocalLaunchSettings, self).__init__(LocalWrapperSettings, parent=parent)
 
         self.game: Game = None
         self.igame: InstalledGame = None
@@ -142,60 +131,21 @@ class GameLaunchSettings(LaunchSettingsBase):
         self.wrappers_widget.load_settings(rgame.app_name)
 
 
-if pf.system() != "Windows":
-    class GameWineSettings(WineSettings):
-        def load_settings(self, app_name):
-            self.app_name = app_name
-
-    if pf.system() in {"Linux", "FreeBSD"}:
-        class GameProtonSettings(ProtonSettings):
-            def load_settings(self, app_name: str):
-                self.app_name = app_name
-
-        class GameMangoHudSettings(MangoHudSettings):
-            def load_settings(self, app_name: str):
-                self.app_name = app_name
-
-
-class GameDxvkSettings(DxvkSettings):
-    def load_settings(self, app_name: str):
-        self.app_name = app_name
-
-
-class GameEnvVars(EnvVars):
+class LocalEnvVars(EnvVars):
     def load_settings(self, app_name):
         self.app_name = app_name
 
 
-class GameSettings(GameSettingsBase):
+class LocalGameSettings(GameSettingsBase):
     def __init__(self, parent=None):
-        if pf.system() != "Windows":
-            if pf.system() in {"Linux", "FreeBSD"}:
-                super(GameSettings, self).__init__(
-                    GameLaunchSettings, GameDxvkSettings, GameEnvVars,
-                    GameWineSettings, GameProtonSettings, GameMangoHudSettings,
-                    parent=parent
-                )
-            else:
-                super(GameSettings, self).__init__(
-                    GameLaunchSettings, GameDxvkSettings, GameEnvVars,
-                    GameWineSettings,
-                    parent=parent
-                )
-        else:
-            super(GameSettings, self).__init__(
-                GameLaunchSettings, GameDxvkSettings, GameEnvVars,
-                parent=parent
-            )
+        super(LocalGameSettings, self).__init__(
+            launch_widget=LocalLaunchSettings,
+            envvar_widget=LocalEnvVars,
+            parent=parent
+        )
 
     def load_settings(self, rgame: RareGame):
         self.set_title.emit(rgame.app_title)
         self.app_name = rgame.app_name
         self.launch.load_settings(rgame)
-        if pf.system() != "Windows":
-            self.wine.load_settings(rgame.app_name)
-            if pf.system() in {"Linux", "FreeBSD"}:
-                self.proton_tool.load_settings(rgame.app_name)
-                self.mangohud.load_settings(rgame.app_name)
-        self.dxvk.load_settings(rgame.app_name)
         self.env_vars.load_settings(rgame.app_name)

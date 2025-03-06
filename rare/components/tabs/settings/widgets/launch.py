@@ -5,10 +5,10 @@ from typing import Tuple, Type, TypeVar
 
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QCheckBox, QFileDialog, QFormLayout, QVBoxLayout, QGroupBox, QLineEdit
+from PySide6.QtWidgets import QCheckBox, QFileDialog, QFormLayout, QVBoxLayout, QGroupBox, QLineEdit, QSizePolicy
 
-from rare.shared import LegendaryCoreSingleton
 import rare.utils.config_helper as config
+from rare.shared import LegendaryCoreSingleton
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 from .wrappers import WrapperSettings
 
@@ -39,9 +39,10 @@ class LaunchSettingsBase(QGroupBox):
         self.prelaunch_args.setToolTip(self.prelaunch_args.placeholderText())
         self.prelaunch_args.textChanged.connect(self.__prelaunch_changed)
 
-        self.prelaunch_check = QCheckBox(self.tr("Wait for the pre-launch command to finish before launching the game"))
         font = self.font()
         font.setItalic(True)
+
+        self.prelaunch_check = QCheckBox(self.tr("Wait for the pre-launch command to finish before launching the game"))
         self.prelaunch_check.setFont(font)
         self.prelaunch_check.stateChanged.connect(self.__prelauch_check_changed)
 

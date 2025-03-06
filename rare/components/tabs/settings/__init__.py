@@ -1,8 +1,11 @@
+import platform as pf
+
 from rare.shared import ArgumentsSingleton
 from rare.widgets.side_tab import SideTabWidget
 from .about import About
+from .compat import GlobalCompatSettings
 from .debug import DebugSettings
-from .settings import GameSettings
+from .game import GlobalGameSettings
 from .legendary import LegendarySettings
 from .rare import RareSettings
 
@@ -18,8 +21,12 @@ class SettingsTab(SideTabWidget):
         legendary_settings = LegendarySettings(self)
         self.legendary_index = self.addTab(legendary_settings, "Legendary")
 
-        game_settings = GameSettings(self)
-        self.settings_index = self.addTab(game_settings, self.tr("Defaults"))
+        game_settings = GlobalGameSettings(self)
+        self.game_index = self.addTab(game_settings, self.tr("Defaults"))
+
+        if pf.system() != "Windows":
+            compat_settings = GlobalCompatSettings(self)
+            self.compat_index = self.addTab(compat_settings, self.tr("Compatibility"))
 
         self.about = About(self)
         title = self.tr("About")

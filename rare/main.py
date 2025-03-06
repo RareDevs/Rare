@@ -19,8 +19,6 @@ def main() -> int:
             sys.stderr = open(os.devnull, 'w')
 
     os.environ["QT_QPA_PLATFORMTHEME"] = ""
-    os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "1"
-    os.environ["QT_SCALE_FACTOR_ROUNDING_POLICY"] = "Floor"
     if "LEGENDARY_CONFIG_PATH" in os.environ:
         os.environ["LEGENDARY_CONFIG_PATH"] = os.path.expanduser(os.environ["LEGENDARY_CONFIG_PATH"])
 

@@ -236,15 +236,15 @@ class PathEditIconProvider(QAbstractFileIconProvider):
         Executable = -2
 
     icons = {
-        CustomIconType.Unknown: ("mdi.file-cancel", "fa.file-excel-o"),  # Unknown
-        QAbstractFileIconProvider.IconType.Computer: ("mdi.desktop-classic", "fa.desktop"),  # Computer
-        QAbstractFileIconProvider.IconType.Desktop: ("mdi.desktop-mac", "fa.desktop"),  # Desktop
-        QAbstractFileIconProvider.IconType.Trashcan: ("mdi.trash-can", "fa.trash"),  # Trashcan
-        QAbstractFileIconProvider.IconType.Network: ("mdi.server-network", "fa.server"),  # Network
-        QAbstractFileIconProvider.IconType.Drive: ("mdi.harddisk", "fa.desktop"),  # Drive
-        QAbstractFileIconProvider.IconType.Folder: ("mdi.folder", "fa.folder"),  # Folder
-        QAbstractFileIconProvider.IconType.File: ("mdi.file", "fa.file"),  # File
-        CustomIconType.Executable: ("mdi.cog", "fa.cog"),  # Executable
+        CustomIconType.Unknown: ("mdi.file-cancel", "fa5.file-excel"),  # Unknown
+        QAbstractFileIconProvider.IconType.Computer: ("mdi.desktop-classic", "fa5s.desktop"),  # Computer
+        QAbstractFileIconProvider.IconType.Desktop: ("mdi.desktop-mac", "fa5s.desktop"),  # Desktop
+        QAbstractFileIconProvider.IconType.Trashcan: ("mdi.trash-can", "fa5s.trash"),  # Trashcan
+        QAbstractFileIconProvider.IconType.Network: ("mdi.server-network", "fa5s.server"),  # Network
+        QAbstractFileIconProvider.IconType.Drive: ("mdi.harddisk", "fa5s.desktop"),  # Drive
+        QAbstractFileIconProvider.IconType.Folder: ("mdi.folder", "fa5.folder"),  # Folder
+        QAbstractFileIconProvider.IconType.File: ("mdi.file", "fa5.file"),  # File
+        CustomIconType.Executable: ("mdi.cog", "fa5s.cog"),  # Executable
     }
 
     def __init__(self):

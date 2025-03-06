@@ -41,7 +41,7 @@ class CloudSyncDialog(ButtonDialog):
         layout.addWidget(sync_widget)
 
         self.accept_button.setText(self.tr("Skip"))
-        self.accept_button.setIcon(qta_icon("fa.chevron-right"))
+        self.accept_button.setIcon(qta_icon("fa.chevron-right", "fa5s.chevron-right"))
 
         self.setCentralLayout(layout)
 
@@ -65,8 +65,8 @@ class CloudSyncDialog(ButtonDialog):
         self.sync_ui.date_info_remote.setText(
             dt_remote.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_remote else "None")
 
-        self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
-        self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))
+        self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa5s.desktop").pixmap(128, 128))
+        self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "fa5s.cloud").pixmap(128, 128))
 
         self.sync_ui.upload_button.clicked.connect(self.__on_upload)
         self.sync_ui.download_button.clicked.connect(self.__on_download)

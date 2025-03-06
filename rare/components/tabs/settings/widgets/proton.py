@@ -4,7 +4,7 @@ from typing import Tuple, Union, Optional
 
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox
 
 from rare.models.wrapper import Wrapper, WrapperType
 from rare.shared import RareCore
@@ -115,9 +115,6 @@ class ProtonSettings(QGroupBox):
             if not (compatdata_path := config.get_proton_compatdata(self.app_name, fallback="")):
                 compatdata_path = proton_compat_dir(RareCore.instance().get_game(self.app_name).folder_name)
                 config.save_proton_compatdata(self.app_name, str(compatdata_path))
-                target = compatdata_path.joinpath("pfx")
-                if not target.is_dir():
-                    os.makedirs(target, exist_ok=True)
             self.tool_prefix.setText(str(compatdata_path))
         else:
             self.tool_prefix.setText("")

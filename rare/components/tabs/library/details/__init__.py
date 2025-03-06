@@ -1,3 +1,4 @@
+import platform as pf
 from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
@@ -8,10 +9,11 @@ from rare.models.game import RareGame
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
 from rare.utils.json_formatter import QJsonModel
 from rare.widgets.side_tab import SideTabWidget, SideTabContents
-from .dlcs import GameDlcs
-from .details import GameDetails
-from .settings import GameSettings
 from .cloud_saves import CloudSaves
+from .compat import LocalCompatSettings
+from .details import GameDetails
+from .dlcs import GameDlcs
+from .game import LocalGameSettings
 
 
 class GameInfoTabs(SideTabWidget):
@@ -28,8 +30,12 @@ class GameInfoTabs(SideTabWidget):
         self.details_tab.import_clicked.connect(self.import_clicked)
         self.details_index = self.addTab(self.details_tab, self.tr("Information"))
 
-        self.settings_tab = GameSettings(self)
-        self.settings_index = self.addTab(self.settings_tab, self.tr("Settings"))
+        self.game_settings_tab = LocalGameSettings(self)
+        self.game_settings_index = self.addTab(self.game_settings_tab, self.tr("Settings"))
+
+        if pf.system() != "Windows":
+            self.compat_settings_tab = LocalCompatSettings(self)
+            self.compat_settings_index = self.addTab(self.compat_settings_tab, self.tr("Compatibility"))
 
         self.cloud_saves_tab = CloudSaves(self)
         self.cloud_saves_index = self.addTab(self.cloud_saves_tab, self.tr("Cloud Saves"))
@@ -51,8 +57,13 @@ class GameInfoTabs(SideTabWidget):
     def update_game(self, rgame: RareGame):
         self.details_tab.update_game(rgame)
 
-        self.settings_tab.load_settings(rgame)
-        self.settings_tab.setEnabled(rgame.is_installed or rgame.is_origin)
+        self.game_settings_tab.load_settings(rgame)
+        self.game_settings_tab.launch.setEnabled(rgame.is_installed or rgame.is_origin)
+        self.game_settings_tab.env_vars.setEnabled(rgame.is_installed or rgame.is_origin)
+
+        if pf.system() != "Windows":
+            self.compat_settings_tab.load_settings(rgame)
+            self.compat_settings_tab.setEnabled(rgame.is_installed or rgame.is_origin)
 
         self.dlcs_tab.update_dlcs(rgame)
         self.dlcs_tab.setEnabled(rgame.is_installed and bool(rgame.owned_dlcs))

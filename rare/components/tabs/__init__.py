@@ -51,7 +51,7 @@ class MainTabWidget(QTabWidget):
 
         # Settings Tab
         self.settings_tab = SettingsTab(self)
-        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear"), "")
+        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), "")
         self.settings_tab.about.update_available_ready.connect(
             lambda: self.tab_bar.setTabText(self.settings_index, "(!)")
         )
@@ -61,7 +61,7 @@ class MainTabWidget(QTabWidget):
         self.account_widget.exit_app.connect(self.__on_exit_app)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
-        account_button = TabButtonWidget(qta_icon("mdi.account-circle", fallback="fa.user"), tooltip="Menu")
+        account_button = TabButtonWidget(qta_icon("mdi.account-circle", "fa5s.user"), tooltip="Menu")
         account_menu = QMenu(account_button)
         account_menu.addAction(account_action)
         account_button.setMenu(account_menu)

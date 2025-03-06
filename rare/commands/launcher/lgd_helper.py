@@ -1,10 +1,11 @@
 import os
 import platform
+import shlex
 import shutil
 from argparse import Namespace
 from dataclasses import dataclass, field
 from logging import getLogger
-from typing import List
+from typing import List, Dict, Tuple
 
 from PySide6.QtCore import QProcess, QProcessEnvironment
 from legendary.models.game import LaunchParameters
@@ -47,7 +48,7 @@ class LaunchArgs:
     executable: str = ""
     arguments: List[str] = field(default_factory=list)
     working_directory: str = ""
-    environment: QProcessEnvironment = None
+    environment: Dict[str, str] = field(default_factory=dict)
     pre_launch_command: str = ""
     pre_launch_wait: bool = False
     is_origin_game: bool = False  # only for windows to launch as url
@@ -62,30 +63,19 @@ def get_origin_params(rgame: RareGameSlim, init_args: InitArgs, launch_args: Lau
 
     origin_uri = core.get_origin_uri(app_name, init_args.offline)
     if platform.system() == "Windows":
-        launch_args.executable = origin_uri
-        launch_args.arguments = []
-        # only set it here true, because on linux it is a launch command like every other game
-        launch_args.is_origin_game = True
-        return launch_args
-
-    command = core.get_app_launch_command(app_name)
-    if not os.path.exists(command[0]) and shutil.which(command[0]) is None:
-        return launch_args
-    command.append(origin_uri)
-
-    env = core.get_app_environment(app_name)
-    launch_args.environment = QProcessEnvironment.systemEnvironment()
-
-    if os.environ.get("container") == "flatpak":
-        flatpak_command = ["flatpak-spawn", "--host"]
-        flatpak_command.extend(f"--env={name}={value}" for name, value in env.items())
-        command = flatpak_command + command
+        command = [origin_uri]
     else:
-        for name, value in env.items():
-            launch_args.environment.insert(name, value)
+        command = core.get_app_launch_command(app_name)
+        if not os.path.exists(command[0]) and shutil.which(command[0]) is None:
+            return launch_args
+        command.append(origin_uri)
 
-    launch_args.executable = command[0]
-    launch_args.arguments = command[1:]
+    exe, args, env = prepare_process(command, core.get_app_environment(app_name))
+
+    launch_args.is_origin_game = True
+    launch_args.executable = exe
+    launch_args.arguments = args
+    launch_args.environment = env
 
     return launch_args
 
@@ -118,26 +108,17 @@ def get_game_params(rgame: RareGameSlim, args: InitArgs, launch_args: LaunchArgs
         )
 
     full_params = []
-    launch_args.environment = QProcessEnvironment.systemEnvironment()
-
-    if os.environ.get("container") == "flatpak":
-        full_params.extend(["flatpak-spawn", "--host"])
-        full_params.extend(
-            f"--env={name}={value}"
-            for name, value in params.environment.items()
-        )
-    else:
-        for name, value in params.environment.items():
-            launch_args.environment.insert(name, value)
-
     full_params.extend(params.launch_command)
     full_params.append(os.path.join(params.game_directory, params.game_executable))
     full_params.extend(params.game_parameters)
     full_params.extend(params.egl_parameters)
     full_params.extend(params.user_parameters)
 
-    launch_args.executable = full_params[0]
-    launch_args.arguments = full_params[1:]
+    exe, args, env = prepare_process(full_params, params.environment)
+
+    launch_args.executable = exe
+    launch_args.arguments = args
+    launch_args.environment = env
     launch_args.working_directory = params.working_directory
 
     return launch_args
@@ -171,18 +152,53 @@ def get_launch_args(rgame: RareGameSlim, init_args: InitArgs = None) -> LaunchAr
     return resp
 
 
-def get_configured_process(env: dict = None):
-    proc = QProcess()
-    proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
-    proc.readyReadStandardOutput.connect(
-        lambda: logger.info(
-            str(proc.readAllStandardOutput().data(), "utf-8", "ignore")
-        )
-    )
-    environment = QProcessEnvironment.systemEnvironment()
-    if env:
-        for e in env:
-            environment.insert(e, env[e])
-    proc.setProcessEnvironment(environment)
+def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[str], Dict]:
+    logger.debug("Preparing process: %s", command)
 
+    # Sanity check environment (mostly for Linux)
+    command_line = shlex.join(command)
+    if os.environ.get("XDG_CURRENT_DESKTOP", None) == "gamescope" or "gamescope" in command_line:
+        # disable mangohud in gamescope
+        environment["MANGOHUD"] = "0"
+    # ensure shader compat dirs exist
+    if platform.system() in {"Linux", "FreeBSD"}:
+        for key in {
+            "WINEPREFIX",
+            "__GL_SHADER_DISK_CACHE_PATH", "MESA_SHADER_CACHE_DIR",
+            "DXVK_STATE_CACHE_PATH", "VKD3D_SHADER_CACHE_PATH",
+        }:
+            if key in environment and not os.path.isdir(environment[key]):
+                os.makedirs(environment[key], exist_ok=True)
+        if "STEAM_COMPAT_DATA_PATH" in environment:
+            compat_pfx = os.path.join(environment["STEAM_COMPAT_DATA_PATH"], "pfx")
+            if not os.path.isdir(compat_pfx):
+                os.makedirs(environment[key], exist_ok=True)
+
+    _env = os.environ.copy()
+    _command = command.copy()
+
+    if os.environ.get("container") == "flatpak":
+        flatpak_command = ["flatpak-spawn", "--host"]
+        flatpak_command.extend(f"--env={name}={value}" for name, value in environment.items())
+        _command = flatpak_command + command
+    else:
+        _env.update(environment)
+
+    return  _command[0], _command[1:] if len(_command) > 1 else [], _env
+
+
+def dict_to_qprocenv(env: Dict) -> QProcessEnvironment:
+    _env = QProcessEnvironment()
+    for name, value in env.items():
+        _env.insert(name, value)
+    return _env
+
+
+def get_configured_qprocess(command: List[str], environment: Dict) -> QProcess:
+    cmd, args, env = prepare_process(command, environment)
+    proc = QProcess()
+    proc.setProcessChannelMode(QProcess.ProcessChannelMode.SeparateChannels)
+    proc.setProcessEnvironment(dict_to_qprocenv(env))
+    proc.setProgram(cmd)
+    proc.setArguments(args)
     return proc
