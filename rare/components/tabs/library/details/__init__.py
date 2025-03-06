@@ -58,7 +58,8 @@ class GameInfoTabs(SideTabWidget):
         self.details_tab.update_game(rgame)
 
         self.game_settings_tab.load_settings(rgame)
-        self.game_settings_tab.setEnabled(rgame.is_installed or rgame.is_origin)
+        self.game_settings_tab.launch.setEnabled(rgame.is_installed or rgame.is_origin)
+        self.game_settings_tab.env_vars.setEnabled(rgame.is_installed or rgame.is_origin)
 
         if pf.system() != "Windows":
             self.compat_settings_tab.load_settings(rgame)
