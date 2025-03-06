@@ -178,6 +178,7 @@ class EosGroup(QGroupBox):
         self.ui.update_page_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
 
         self.ui.install_button.setIcon(qta_icon("ri.install-line"))
+        self.ui.update_button.setIcon(qta_icon("ri.arrow-up-circle-line"))
         self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
 
         self.version = ElideLabel(parent=self)

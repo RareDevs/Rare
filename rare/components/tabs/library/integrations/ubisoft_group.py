@@ -108,7 +108,7 @@ class UbiLinkWidget(QFrame):
         self.ubi_account_id = ubi_account_id
 
         self.redeem_indicator = QLabel(parent=self)
-        self.redeem_indicator.setPixmap(qta_icon("fa.circle-o", color="grey").pixmap(20, 20))
+        self.redeem_indicator.setPixmap(qta_icon("fa.circle-o", "fa5.circle", color="grey").pixmap(20, 20))
         self.redeem_indicator.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
 
         self.title_label = ElideLabel(game.app_title, parent=self)
@@ -120,7 +120,7 @@ class UbiLinkWidget(QFrame):
         if activated:
             self.redeem_button.setText(self.tr("Already activated"))
             self.redeem_button.setDisabled(True)
-            self.redeem_indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
+            self.redeem_indicator.setPixmap(qta_icon("fa.check-circle-o", "fa5.check-circle", color="green").pixmap(QSize(20, 20)))
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(-1, 0, 0, 0)
@@ -144,11 +144,11 @@ class UbiLinkWidget(QFrame):
 
     def worker_finished(self, error):
         if not error:
-            self.redeem_indicator.setPixmap(qta_icon("fa.check-circle-o", color="green").pixmap(QSize(20, 20)))
+            self.redeem_indicator.setPixmap(qta_icon("fa.check-circle-o", "fa5.check-circle", color="green").pixmap(QSize(20, 20)))
             self.redeem_button.setDisabled(True)
             self.redeem_button.setText(self.tr("Already activated"))
         else:
-            self.redeem_indicator.setPixmap(qta_icon("fa.times-circle-o", color="red").pixmap(QSize(20, 20)))
+            self.redeem_indicator.setPixmap(qta_icon("fa.times-circle-o", "fa5.times-circle", color="red").pixmap(QSize(20, 20)))
             self.redeem_indicator.setToolTip(error)
             self.redeem_button.setText(self.tr("Try again"))
             self.redeem_button.setDisabled(False)

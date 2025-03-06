@@ -206,10 +206,12 @@ class StoreDetailsWidget(QWidget, SideTabContents):
                 continue
             name = name.replace("link", "").lower()
             if name == "homepage":
-                icn = qta_icon("mdi.web-box", "fa5s.search", scale_factor=1.5)
+                icn = qta_icon("mdi.web", "fa5s.globe", scale_factor=1.2)
+            elif name == "title":
+                icn = qta_icon("mdi.home-circle", "fa5s.home", scale_factor=1.2)
             else:
                 try:
-                    icn = qta_icon(f"mdi.{name}", f"fa.{name}", scale_factor=1.5)
+                    icn = qta_icon(f"mdi.{name}", f"fa5b.{name}", scale_factor=1.2)
                 except Exception as e:
                     logger.error(str(e))
                     continue
@@ -238,6 +240,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
 class SocialButton(QPushButton):
     def __init__(self, icn, url, parent=None):
         super(SocialButton, self).__init__(icn, "", parent=parent)
+        self.setFixedSize(36, 36)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.url = url
         self.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(url)))
