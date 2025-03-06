@@ -744,6 +744,10 @@ QScrollArea#WrapperSettingsScroll {
     border-color: rgb( 47,  79,  79);
     background-color: rgb( 38,  38,  51);
 }
+QScrollArea#WrapperSettingsScroll:disabled {
+    border-color: rgb( 67,  71,  77);
+    background-color: rgb( 32,  34,  37);
+}
 QScrollBar#WrapperSettingsScrollBar {
     background-color: rgb( 40,  42,  46);
 }
