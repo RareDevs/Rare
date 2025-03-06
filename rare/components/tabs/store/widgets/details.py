@@ -55,7 +55,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.requirements_tabs.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.ui.requirements_layout.addWidget(self.requirements_tabs)
 
-        self.ui.back_button.setIcon(qta_icon("fa.chevron-left"))
+        self.ui.back_button.setIcon(qta_icon("fa.chevron-left", "fa5s.chevron-left"))
         self.ui.back_button.clicked.connect(self.back_clicked)
 
         self.setDisabled(False)
@@ -206,7 +206,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
                 continue
             name = name.replace("link", "").lower()
             if name == "homepage":
-                icn = qta_icon("mdi.web", "fa.search", scale_factor=1.5)
+                icn = qta_icon("mdi.web-box", "fa5s.search", scale_factor=1.5)
             else:
                 try:
                     icn = qta_icon(f"mdi.{name}", f"fa.{name}", scale_factor=1.5)

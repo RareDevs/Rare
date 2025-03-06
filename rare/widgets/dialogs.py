@@ -79,7 +79,7 @@ class ButtonDialog(BaseDialog):
 
         self.reject_button = QPushButton(self)
         self.reject_button.setText(self.tr("Cancel"))
-        self.reject_button.setIcon(qta_icon("fa.remove"))
+        self.reject_button.setIcon(qta_icon("fa.remove", "fa5s.times"))
         self.reject_button.setAutoDefault(False)
         self.reject_button.clicked.connect(self.reject)
 

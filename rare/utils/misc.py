@@ -178,7 +178,7 @@ def qta_icon(icn_str: str, fallback: str = None, **kwargs):
         try:
             return qtawesome.icon(fallback, **kwargs)
         except Exception as e:
-            logger.error(str(e))
+            logger.error(f"{e} {icn_str}")
     if kwargs.get("color"):
         kwargs["color"] = "red"
     return qtawesome.icon("ei.error", **kwargs)

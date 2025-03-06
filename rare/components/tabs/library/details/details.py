@@ -46,9 +46,9 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.install_button.setIcon(qta_icon("ri.install-line"))
         self.ui.import_button.setIcon(qta_icon("mdi.application-import"))
 
-        self.ui.modify_button.setIcon(qta_icon("fa.gear"))
-        self.ui.verify_button.setIcon(qta_icon("fa.check"))
-        self.ui.repair_button.setIcon(qta_icon("fa.wrench"))
+        self.ui.modify_button.setIcon(qta_icon("mdi.content-save-edit-outline"))
+        self.ui.verify_button.setIcon(qta_icon("mdi.check-underline"))
+        self.ui.repair_button.setIcon(qta_icon("mdi.progress-wrench"))
         self.ui.move_button.setIcon(qta_icon("mdi.folder-move-outline"))
         self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
 

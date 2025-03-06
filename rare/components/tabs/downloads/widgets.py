@@ -5,7 +5,7 @@ from PySide6.QtCore import Signal, Qt, QThreadPool, Slot
 from PySide6.QtWidgets import QWidget, QFrame
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
-from qtawesome import icon
+from rare.utils.misc import qta_icon
 
 from rare.models.install import InstallQueueItemModel, InstallOptionsModel, InstallDownloadModel
 from rare.shared import RareCore, ImageManagerSingleton
@@ -138,12 +138,12 @@ class QueueWidget(QFrame):
         self.old_igame = old_igame
         self.item = item
 
-        self.ui.move_up_button.setIcon(icon("fa.arrow-up"))
+        self.ui.move_up_button.setIcon(qta_icon("fa.arrow-up", "fa5s.arrow-up"))
         self.ui.move_up_button.clicked.connect(
             lambda: self.move_up.emit(self.item.options.app_name)
         )
 
-        self.ui.move_down_button.setIcon(icon("fa.arrow-down"))
+        self.ui.move_down_button.setIcon(qta_icon("fa.arrow-down", "fa5s.arrow-down"))
         self.ui.move_down_button.clicked.connect(
             lambda: self.move_down.emit(self.item.options.app_name)
         )

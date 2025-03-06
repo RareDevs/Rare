@@ -34,7 +34,7 @@ class BrowserLogin(QFrame):
         )
         self.sid_edit.line_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.ui.link_text.setText(self.login_url)
-        self.ui.copy_button.setIcon(qta_icon("mdi.content-copy", "fa.copy"))
+        self.ui.copy_button.setIcon(qta_icon("mdi.content-copy", "fa5.copy"))
         self.ui.copy_button.clicked.connect(self.copy_link)
         self.ui.form_layout.setWidget(
             self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0],

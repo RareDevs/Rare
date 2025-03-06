@@ -20,7 +20,7 @@ class AccountWidget(QWidget):
         if not username:
             username = "Offline"
 
-        self.open_browser = QPushButton(qta_icon("fa.external-link"), self.tr("Account settings"))
+        self.open_browser = QPushButton(qta_icon("fa.external-link", "fa5s.external-link-alt"), self.tr("Account settings"))
         self.open_browser.clicked.connect(
             lambda: webbrowser.open(
                 "https://www.epicgames.com/account/personal?productName=epicgames"

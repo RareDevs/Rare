@@ -90,7 +90,7 @@ class WishlistWidget(QWidget, SideTabContents):
             self.ui.order_combo.addItem(text, data)
         self.ui.order_combo.currentIndexChanged.connect(self.order_wishlist)
 
-        self.ui.reload_button.setIcon(qta_icon("fa.refresh", color="white"))
+        self.ui.reload_button.setIcon(qta_icon("fa.refresh", "fa5s.sync", color="white"))
         self.ui.reload_button.clicked.connect(self.__update_widget)
 
         self.ui.reverse_check.stateChanged.connect(

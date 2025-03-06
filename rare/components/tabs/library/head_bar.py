@@ -89,11 +89,11 @@ class LibraryHeadBar(QWidget):
 
         integrations_menu = QMenu(parent=self)
         import_action = QAction(
-            qta_icon("mdi.import", "fa.arrow-down"), self.tr("Import Game"), integrations_menu
+            qta_icon("mdi.import", "fa5s.arrow-down"), self.tr("Import Game"), integrations_menu
         )
 
         import_action.triggered.connect(self.goto_import)
-        egl_sync_action = QAction(qta_icon("mdi.sync", "fa.refresh"), self.tr("Sync with EGL"), integrations_menu)
+        egl_sync_action = QAction(qta_icon("mdi.sync",  "fa5s.sync"), self.tr("Sync with EGL"), integrations_menu)
         egl_sync_action.triggered.connect(self.goto_egl_sync)
 
         eos_ubisoft_action = QAction(
@@ -110,7 +110,7 @@ class LibraryHeadBar(QWidget):
         integrations.setIcon(qta_icon("mdi.tools"))
         integrations.setMenu(integrations_menu)
 
-        self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search"))
+        self.search_bar = ButtonLineEdit("fa5s.search", placeholder_text=self.tr("Search"))
         self.search_bar.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         self.search_bar.setObjectName("SearchBar")
         self.search_bar.setMinimumWidth(250)
@@ -132,7 +132,7 @@ class LibraryHeadBar(QWidget):
         self.available_label.setToolTip(available_tooltip)
 
         self.refresh_list = QPushButton(parent=self)
-        self.refresh_list.setIcon(qta_icon("fa.refresh"))  # Reload icon
+        self.refresh_list.setIcon(qta_icon("fa.refresh", "fa5s.sync"))  # Reload icon
         self.refresh_list.clicked.connect(self.__refresh_clicked)
 
         layout = QHBoxLayout(self)

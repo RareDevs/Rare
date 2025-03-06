@@ -97,9 +97,9 @@ class LoginDialog(BaseDialog):
 
         self.login_stack.setCurrentWidget(self.landing_page)
 
-        self.ui.exit_button.setIcon(qta_icon("fa.remove"))
-        self.ui.back_button.setIcon(qta_icon("fa.chevron-left"))
-        self.ui.next_button.setIcon(qta_icon("fa.chevron-right"))
+        self.ui.exit_button.setIcon(qta_icon("fa.remove", "fa5s.times"))
+        self.ui.back_button.setIcon(qta_icon("fa.chevron-left", "fa5s.chevron-left"))
+        self.ui.next_button.setIcon(qta_icon("fa.chevron-right", "fa5s.chevron-right"))
 
         # lk: Set next as the default button only to stop closing the dialog when pressing enter
         self.ui.exit_button.setAutoDefault(False)

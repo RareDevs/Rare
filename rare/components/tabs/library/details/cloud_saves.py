@@ -47,8 +47,8 @@ class CloudSaves(QWidget, SideTabContents):
         self.core = RareCore.instance().core()
         self.settings = QSettings()
 
-        self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa.desktop").pixmap(128, 128))
-        self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "ei.cloud").pixmap(128, 128))
+        self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa5s.desktop").pixmap(128, 128))
+        self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "fa5s.cloud").pixmap(128, 128))
 
         self.sync_ui.upload_button.clicked.connect(self.upload)
         self.sync_ui.download_button.clicked.connect(self.download)
@@ -75,7 +75,7 @@ class CloudSaves(QWidget, SideTabContents):
             self.cloud_save_path_edit
         )
 
-        self.compute_save_path_button = QPushButton(qta_icon("fa.magic"), self.tr("Calculate path"))
+        self.compute_save_path_button = QPushButton(qta_icon("fa.magic", "fa5s.magic"), self.tr("Resolve path"))
         self.compute_save_path_button.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         self.compute_save_path_button.clicked.connect(self.compute_save_path)
         self.cloud_ui.main_layout.addRow(None, self.compute_save_path_button)

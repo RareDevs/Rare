@@ -78,7 +78,7 @@ class SearchWidget(QWidget, SideTabContents):
         self.next_search = ""
         self.wishlist: List = []
 
-        self.search_bar = ButtonLineEdit("fa.search", placeholder_text=self.tr("Search"))
+        self.search_bar = ButtonLineEdit("fa5s.search", placeholder_text=self.tr("Search"))
         self.results_scrollarea = ResultsWidget(self.store_api, self)
         self.results_scrollarea.show_details.connect(self.show_details)
 
