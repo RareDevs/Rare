@@ -56,7 +56,7 @@ def remove_envvar(app_name: str, option: str) -> None:
     remove_option(f"{app_name}.env", option)
 
 
-def save_option(app_name: str, option: str, value: str) -> None:
+def adjust_option(app_name: str, option: str, value: str) -> None:
     if value:
         set_option(app_name, option, value)
     else:
@@ -77,7 +77,7 @@ def get_boolean(app_name: str, option: str, fallback: bool = False) -> bool:
     return _config.getboolean(app_name, option, fallback=fallback)
 
 
-def save_envvar(app_name: str, option: str, value: str) -> None:
+def adjust_envvar(app_name: str, option: str, value: str) -> None:
     if value:
         set_envvar(app_name, option, value)
     else:
@@ -94,9 +94,9 @@ def get_envvar_fallback(app_name: str, option: str, fallback: Any = None) -> str
     return _option
 
 
-def save_wine_prefix(app_name: str, value: str) -> None:
-    save_envvar(app_name, "WINEPREFIX", value)
-    save_option(app_name, "wine_prefix", value)
+def adjust_wine_prefix(app_name: str, value: str) -> None:
+    adjust_envvar(app_name, "WINEPREFIX", value)
+    adjust_option(app_name, "wine_prefix", value)
 
 
 def get_wine_prefix(app_name: str, fallback: Any = None):
@@ -111,8 +111,8 @@ def get_wine_prefix_fallback(app_name: str, fallback: Any = None) -> str:
     return _prefix
 
 
-def save_proton_compatdata(app_name: str, value: str) -> None:
-    save_envvar(app_name, "STEAM_COMPAT_DATA_PATH", value)
+def adjust_proton_compatdata(app_name: str, value: str) -> None:
+    adjust_envvar(app_name, "STEAM_COMPAT_DATA_PATH", value)
 
 
 def get_proton_compatdata(app_name: Optional[str] = None, fallback: Any = None) -> str:
