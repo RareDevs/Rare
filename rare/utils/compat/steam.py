@@ -339,6 +339,7 @@ def get_steam_environment(
     # IMPORTANT: keep this in sync with the code below
     environ = {"STEAM_COMPAT_DATA_PATH": compat_path if compat_path else ""}
     if tool is None:
+        environ["STORE"] = ""
         environ["STEAM_COMPAT_DATA_PATH"] = ""
         environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
         environ["STEAM_COMPAT_LIBRARY_PATHS"] = ""
@@ -348,6 +349,7 @@ def get_steam_environment(
         environ["PROTON_BATTLEYE_RUNTIME"] = ""
         return environ
 
+    environ["STORE"] = "egs"
     environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = tool.steam_path
     if isinstance(tool, ProtonTool):
         environ["STEAM_COMPAT_LIBRARY_PATHS"] = tool.steam_library
