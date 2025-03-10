@@ -102,7 +102,7 @@ class Wrappers:
 
     def __save_config(self, app_name: str):
         command_string = self.get_game_wrapper_string(app_name)
-        config.save_option(app_name, "wrapper", command_string)
+        config.adjust_option(app_name, "wrapper", command_string)
 
     def __save_wrappers(self):
         existing = {wrap_id for wrap_id in self.__wrappers.keys()}

@@ -83,7 +83,7 @@ class LaunchSettingsBase(QGroupBox):
     @staticmethod
     def __prelaunch_cmd_edit_callback(text: str) -> Tuple[bool, str, int]:
         if not text.strip():
-            return True, text, IndicatorReasonsCommon.VALID
+            return True, text, IndicatorReasonsCommon.UNDEFINED
         if not os.path.isfile(text) and not shutil.which(text):
             return False, text, IndicatorReasonsCommon.FILE_NOT_EXISTS
         else:
@@ -100,12 +100,12 @@ class LaunchSettingsBase(QGroupBox):
     def __prelaunch_changed(self):
         command = self.prelaunch_cmd.text().strip()
         if not command:
-            config.save_option(self.app_name, "pre_launch_command", command)
+            config.adjust_option(self.app_name, "pre_launch_command", command)
             config.remove_option(self.app_name, "pre_launch_wait")
             return
         command = shlex.quote(command)
         arguments = self.prelaunch_args.text().strip()
-        config.save_option(self.app_name, "pre_launch_command", " ".join([command, arguments]))
+        config.adjust_option(self.app_name, "pre_launch_command", " ".join([command, arguments]))
 
 
 LaunchSettingsType = TypeVar("LaunchSettingsType", bound=LaunchSettingsBase)
