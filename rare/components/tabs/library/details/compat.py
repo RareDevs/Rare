@@ -6,7 +6,7 @@ from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QCheckBox, QFormLayout
 
 from rare.components.tabs.settings.compat import CompatSettingsBase
-from rare.components.tabs.settings.widgets.overlay import DxvkOverlaySettings, DxvkConfigSettings
+from rare.components.tabs.settings.widgets.overlay import DxvkHudSettings, DxvkConfigSettings, DxvkNvapiDrsSettings
 from rare.components.tabs.settings.widgets.runner import RunnerSettingsBase
 from rare.components.tabs.settings.widgets.wine import WineSettings
 from rare.models.game import RareGame
@@ -87,7 +87,7 @@ class LocalRunnerSettings(RunnerSettingsBase):
             self.ctool.load_settings(rgame.app_name)
 
 
-class LocalDxvkOverlaySettings(DxvkOverlaySettings):
+class LocalDxvkHudSettings(DxvkHudSettings):
     def load_settings(self, app_name: str):
         self.app_name = app_name
 
@@ -96,21 +96,27 @@ class LocalDxvkConfigSettings(DxvkConfigSettings):
     def load_settings(self, app_name: str):
         self.app_name = app_name
 
+class LocalDxvkNvapiDrsSettings(DxvkNvapiDrsSettings):
+    def load_settings(self, app_name: str):
+        self.app_name = app_name
+
 
 class LocalCompatSettings(CompatSettingsBase):
     def __init__(self, parent=None):
         if pf.system() in {"Linux", "FreeBSD"}:
             super(LocalCompatSettings, self).__init__(
-                dxvk_overlay_widget=LocalDxvkOverlaySettings,
+                dxvk_hud_widget=LocalDxvkHudSettings,
                 dxvk_config_widget=LocalDxvkConfigSettings,
+                dxvk_nvapi_drs_widget=LocalDxvkNvapiDrsSettings,
                 runner_widget=LocalRunnerSettings,
                 mangohud_widget=LocalMangoHudSettings,
                 parent=parent
             )
         else:
             super(LocalCompatSettings, self).__init__(
-                dxvk_overlay_widget=LocalDxvkOverlaySettings,
+                dxvk_hud_widget=LocalDxvkHudSettings,
                 dxvk_config_widget=LocalDxvkConfigSettings,
+                dxvk_nvapi_drs_widget=LocalDxvkNvapiDrsSettings,
                 runner_widget=LocalRunnerSettings,
                 parent=parent
             )
@@ -122,5 +128,6 @@ class LocalCompatSettings(CompatSettingsBase):
         self.runner.load_settings(rgame)
         if self.mangohud:
             self.mangohud.load_settings(rgame.app_name)
-        self.dxvk_overlay.load_settings(rgame.app_name)
+        self.dxvk_hud.load_settings(rgame.app_name)
         self.dxvk_config.load_settings(rgame.app_name)
+        self.dxvk_nvapi_drs.load_settings(rgame.app_name)

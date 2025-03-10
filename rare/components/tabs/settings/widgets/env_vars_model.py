@@ -32,6 +32,7 @@ class EnvVarsTableModel(QAbstractTableModel):
             self.__readonly = {
                 "DXVK_HUD",
                 "DXVK_CONFIG",
+                "DXVK_NVAPI_DRS_SETTINGS",
                 "MANGOHUD",
                 "MANGOHUD_CONFIG",
             }
@@ -39,8 +40,10 @@ class EnvVarsTableModel(QAbstractTableModel):
         if platform.system() in {"Linux", "FreeBSD"}:
             self.__readonly.update(get_steam_environment().keys())
             self.__readonly.update({
-                "__GL_SHADER_DISK_CACHE_PATH", "MESA_SHADER_CACHE_DIR",
-                "DXVK_STATE_CACHE_PATH", "VKD3D_SHADER_CACHE_PATH",
+                "__GL_SHADER_DISK_CACHE_PATH",
+                "MESA_SHADER_CACHE_DIR",
+                "DXVK_STATE_CACHE_PATH",
+                "VKD3D_SHADER_CACHE_PATH",
             })
         self.__default: str = "default"
         self.__appname: str = None
