@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'overlay.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -28,25 +28,25 @@ class Ui_OverlaySettings(object):
         OverlaySettings.setTitle(u"")
         self.main_layout = QGridLayout(OverlaySettings)
         self.main_layout.setObjectName(u"main_layout")
-        self.show_overlay_label = QLabel(OverlaySettings)
-        self.show_overlay_label.setObjectName(u"show_overlay_label")
+        self.overlay_state_label = QLabel(OverlaySettings)
+        self.overlay_state_label.setObjectName(u"overlay_state_label")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.show_overlay_label.sizePolicy().hasHeightForWidth())
-        self.show_overlay_label.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.overlay_state_label.sizePolicy().hasHeightForWidth())
+        self.overlay_state_label.setSizePolicy(sizePolicy)
 
-        self.main_layout.addWidget(self.show_overlay_label, 0, 0, 1, 1)
+        self.main_layout.addWidget(self.overlay_state_label, 0, 0, 1, 1)
 
-        self.show_overlay_combo = QComboBox(OverlaySettings)
-        self.show_overlay_combo.setObjectName(u"show_overlay_combo")
+        self.overlay_state_combo = QComboBox(OverlaySettings)
+        self.overlay_state_combo.setObjectName(u"overlay_state_combo")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.show_overlay_combo.sizePolicy().hasHeightForWidth())
-        self.show_overlay_combo.setSizePolicy(sizePolicy1)
+        sizePolicy1.setHeightForWidth(self.overlay_state_combo.sizePolicy().hasHeightForWidth())
+        self.overlay_state_combo.setSizePolicy(sizePolicy1)
 
-        self.main_layout.addWidget(self.show_overlay_combo, 0, 1, 1, 2)
+        self.main_layout.addWidget(self.overlay_state_combo, 0, 1, 1, 2)
 
         self.options_group = QGroupBox(OverlaySettings)
         self.options_group.setObjectName(u"options_group")
@@ -55,7 +55,7 @@ class Ui_OverlaySettings(object):
         self.options_layout.setObjectName(u"options_layout")
         self.options_form = QFormLayout()
         self.options_form.setObjectName(u"options_form")
-        self.options_form.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.options_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.options_layout.addLayout(self.options_form, 1, 0, 1, 1)
 
@@ -76,7 +76,7 @@ class Ui_OverlaySettings(object):
     # setupUi
 
     def retranslateUi(self, OverlaySettings):
-        self.show_overlay_label.setText(QCoreApplication.translate("OverlaySettings", u"Show HUD", None))
+        self.overlay_state_label.setText(QCoreApplication.translate("OverlaySettings", u"error", None))
         pass
     # retranslateUi
 
