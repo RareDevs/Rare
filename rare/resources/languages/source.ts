@@ -166,7 +166,7 @@
     </message>
     <message>
         <location filename="../../components/tabs/library/details/cloud_saves.py" line="78"/>
-        <source>Calculate path</source>
+        <source>Resolve path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -252,32 +252,32 @@
 <context>
     <name>ConsoleDialog</name>
     <message>
-        <location filename="../../commands/launcher/console_dialog.py" line="30"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="29"/>
         <source>Console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../commands/launcher/console_dialog.py" line="40"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="39"/>
         <source>Show environment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../commands/launcher/console_dialog.py" line="44"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="43"/>
         <source>Save output to file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../commands/launcher/console_dialog.py" line="48"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="47"/>
         <source>Clear console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../commands/launcher/console_dialog.py" line="54"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="53"/>
         <source>Terminate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../commands/launcher/console_dialog.py" line="59"/>
+        <location filename="../../commands/launcher/console_dialog.py" line="58"/>
         <source>Kill</source>
         <translation type="unfinished"></translation>
     </message>
@@ -544,55 +544,96 @@
     </message>
 </context>
 <context>
-    <name>DxvkSettings</name>
+    <name>DxvkConfigSettings</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="236"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="271"/>
+        <source>DXVK Config</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DxvkNvapiDrsSettings</name>
+    <message>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="298"/>
+        <source>DXVK NVAPI Driver Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="316"/>
+        <source>Override Super Resolution</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DxvkOverlaySettings</name>
+    <message>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="243"/>
         <source>DXVK HUD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="238"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="245"/>
         <source>FPS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="239"/>
-        <source>Frametime</source>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="246"/>
+        <source>Frame time graph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="240"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="247"/>
         <source>Memory usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="241"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="248"/>
+        <source>Memory chunk suballocation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="249"/>
         <source>GPU usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="242"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="250"/>
         <source>Device info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="243"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="251"/>
         <source>DXVK version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="244"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="252"/>
         <source>D3D feature level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="245"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="253"/>
         <source>Compiler activity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="248"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="254"/>
+        <source>GPU driver and version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="255"/>
+        <source>Draw calls per frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="258"/>
         <source>Scale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="259"/>
+        <source>Opacity</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -714,22 +755,22 @@
 <context>
     <name>EnvVarsTableModel</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="89"/>
+        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="93"/>
         <source>Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="92"/>
+        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="96"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="129"/>
+        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="133"/>
         <source>Disabled, please set the variable name first.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="134"/>
+        <location filename="../../components/tabs/settings/widgets/env_vars_model.py" line="138"/>
         <source>Readonly, please edit this via setting the appropriate setting.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -737,12 +778,12 @@
 <context>
     <name>EosGroup</name>
     <message>
-        <location filename="../../components/tabs/library/integrations/eos_group.py" line="221"/>
+        <location filename="../../components/tabs/library/integrations/eos_group.py" line="222"/>
         <source>&lt;b&gt;Epic Online Services Overlay is not installed&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/library/integrations/eos_group.py" line="272"/>
+        <location filename="../../components/tabs/library/integrations/eos_group.py" line="273"/>
         <source>Something went wrong while installing EOS Overlay</source>
         <translation type="unfinished"></translation>
     </message>
@@ -921,8 +962,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/library/details/details.py" line="403"/>
         <location filename="../../ui/components/tabs/library/details/details.ui" line="557"/>
+        <location filename="../../components/tabs/library/details/details.py" line="403"/>
         <source>Install</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1066,89 +1107,43 @@
 <context>
     <name>GameInfoTabs</name>
     <message>
-        <location filename="../../components/tabs/library/details/__init__.py" line="29"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="31"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/library/details/__init__.py" line="32"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="34"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/library/details/__init__.py" line="35"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="38"/>
+        <source>Compatibility</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/__init__.py" line="41"/>
         <source>Cloud Saves</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/library/details/__init__.py" line="38"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="44"/>
         <source>Downloadable Content</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/library/details/__init__.py" line="43"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="49"/>
         <source>Game Metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/library/details/__init__.py" line="45"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="51"/>
         <source>InstalledGame Metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/library/details/__init__.py" line="47"/>
+        <location filename="../../components/tabs/library/details/__init__.py" line="53"/>
         <source>RareGame Metadata</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>GameLaunchSettings</name>
-    <message>
-        <location filename="../../components/tabs/library/details/settings.py" line="46"/>
-        <location filename="../../components/tabs/library/details/settings.py" line="52"/>
-        <source>Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/library/details/settings.py" line="47"/>
-        <location filename="../../components/tabs/library/details/settings.py" line="53"/>
-        <source>No</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/library/details/settings.py" line="48"/>
-        <location filename="../../components/tabs/library/details/settings.py" line="54"/>
-        <source>Yes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/library/details/settings.py" line="64"/>
-        <source>Relative path to the replacement executable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/library/details/settings.py" line="71"/>
-        <source>Game specific command line arguments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/library/details/settings.py" line="74"/>
-        <source>Skip update check</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/library/details/settings.py" line="75"/>
-        <source>Offline mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/library/details/settings.py" line="76"/>
-        <source>Launch parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/library/details/settings.py" line="77"/>
-        <source>Override executable</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1169,14 +1164,6 @@ This normally means that the game is already running.</source>
         <location filename="../../shared/game_process.py" line="107"/>
         <source>Error in game {}:
 {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>GameSettingsBase</name>
-    <message>
-        <location filename="../../components/tabs/settings/widgets/game.py" line="53"/>
-        <source>Compatibility</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1606,8 +1593,8 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/dialogs/install_dialog.py" line="230"/>
         <location filename="../../ui/components/dialogs/install_dialog.ui" line="131"/>
+        <location filename="../../components/dialogs/install_dialog.py" line="230"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1821,22 +1808,22 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
 <context>
     <name>LandingWidget</name>
     <message>
-        <location filename="../../components/tabs/store/landing.py" line="110"/>
+        <location filename="../../components/tabs/store/landing.py" line="78"/>
         <source>Free now</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/landing.py" line="114"/>
+        <location filename="../../components/tabs/store/landing.py" line="82"/>
         <source>Free next week</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/landing.py" line="118"/>
+        <location filename="../../components/tabs/store/landing.py" line="86"/>
         <source>Wishlist discounts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/landing.py" line="121"/>
+        <location filename="../../components/tabs/store/landing.py" line="89"/>
         <source>Free to play</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1942,17 +1929,17 @@ Successfully imported {} games, failed to import {} games and {} errors occurred
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/launch.py" line="42"/>
+        <location filename="../../components/tabs/settings/widgets/launch.py" line="45"/>
         <source>Wait for the pre-launch command to finish before launching the game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/launch.py" line="60"/>
+        <location filename="../../components/tabs/settings/widgets/launch.py" line="61"/>
         <source>Wrappers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/launch.py" line="61"/>
+        <location filename="../../components/tabs/settings/widgets/launch.py" line="62"/>
         <source>Pre-launch</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2202,6 +2189,70 @@ Disabling this greatly improves start-up time, but some library filters may not 
     </message>
 </context>
 <context>
+    <name>LocalLaunchSettings</name>
+    <message>
+        <location filename="../../components/tabs/library/details/game.py" line="35"/>
+        <location filename="../../components/tabs/library/details/game.py" line="41"/>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/game.py" line="36"/>
+        <location filename="../../components/tabs/library/details/game.py" line="42"/>
+        <source>No</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/game.py" line="37"/>
+        <location filename="../../components/tabs/library/details/game.py" line="43"/>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/game.py" line="53"/>
+        <source>Relative path to the replacement executable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/game.py" line="60"/>
+        <source>Game specific command line arguments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/game.py" line="63"/>
+        <source>Skip update check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/game.py" line="64"/>
+        <source>Offline mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/game.py" line="65"/>
+        <source>Launch parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/game.py" line="66"/>
+        <source>Override executable</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>LocalRunnerSettings</name>
+    <message>
+        <location filename="../../components/tabs/library/details/compat.py" line="50"/>
+        <source>Use game-specific shader cache directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/library/details/compat.py" line="55"/>
+        <source>Shader cache</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>LoginDialog</name>
     <message>
         <location filename="../../components/dialogs/login/__init__.py" line="158"/>
@@ -2276,112 +2327,112 @@ Disabling this greatly improves start-up time, but some library filters may not 
 <context>
     <name>MangoHudSettings</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="288"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="331"/>
         <source>MangoHud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="290"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="360"/>
         <source>Read config</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="291"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="361"/>
         <source>FPS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="292"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="362"/>
         <source>Frame time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="293"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="363"/>
         <source>CPU load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="294"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="364"/>
         <source>GPU load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="295"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="365"/>
         <source>CPU temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="296"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="366"/>
         <source>GPU temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="297"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="367"/>
         <source>Memory usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="298"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="368"/>
         <source>VRAM usage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="299"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="369"/>
         <source>Local time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="300"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="370"/>
         <source>MangoHud version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="301"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="371"/>
         <source>System architecture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="302"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="372"/>
         <source>FPS graph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="303"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="373"/>
         <source>GPU name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="304"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="374"/>
         <source>CPU power consumption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="305"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="375"/>
         <source>GPU power consumption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="308"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="378"/>
         <source>FPS limit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="309"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="379"/>
         <source>Vulkan vsync</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="310"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="380"/>
         <source>OpenGL vsync</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="311"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="381"/>
         <source>Font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="312"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="382"/>
         <source>Position</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2438,27 +2489,27 @@ Disabling this greatly improves start-up time, but some library filters may not 
 <context>
     <name>OverlaySettings</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="121"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="125"/>
         <source>Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="122"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="126"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="123"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="127"/>
         <source>Enabled (defaults)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="124"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="128"/>
         <source>Enabled (custom)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/overlay.py" line="135"/>
+        <location filename="../../components/tabs/settings/widgets/overlay.py" line="140"/>
         <source>Custom options</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2494,17 +2545,17 @@ Disabling this greatly improves start-up time, but some library filters may not 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/proton.py" line="42"/>
+        <location filename="../../components/tabs/settings/widgets/proton.py" line="50"/>
         <source>Proton tool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/proton.py" line="43"/>
+        <location filename="../../components/tabs/settings/widgets/proton.py" line="51"/>
         <source>Compat data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/proton.py" line="59"/>
+        <location filename="../../components/tabs/settings/widgets/proton.py" line="68"/>
         <source>Don&apos;t use a compatibility tool</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2798,12 +2849,12 @@ Are you sure you want to quit?</source>
 <context>
     <name>RequirementsWidget</name>
     <message>
-        <location filename="../../components/tabs/store/widgets/details.py" line="256"/>
+        <location filename="../../components/tabs/store/widgets/details.py" line="259"/>
         <source>Minimum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/widgets/details.py" line="258"/>
+        <location filename="../../components/tabs/store/widgets/details.py" line="261"/>
         <source>Recommend</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2813,6 +2864,14 @@ Are you sure you want to quit?</source>
     <message>
         <location filename="../../components/tabs/store/search.py" line="257"/>
         <source>No results found</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RunnerSettingsBase</name>
+    <message>
+        <location filename="../../components/tabs/settings/widgets/runner.py" line="26"/>
+        <source>Compatibility</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2910,17 +2969,22 @@ Are you sure you want to quit?</source>
 <context>
     <name>SettingsTab</name>
     <message>
-        <location filename="../../components/tabs/settings/__init__.py" line="22"/>
+        <location filename="../../components/tabs/settings/__init__.py" line="25"/>
         <source>Defaults</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/__init__.py" line="26"/>
-        <source>About</source>
+        <location filename="../../components/tabs/settings/__init__.py" line="29"/>
+        <source>Compatibility</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../components/tabs/settings/__init__.py" line="33"/>
+        <source>About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/settings/__init__.py" line="40"/>
         <source>Debug</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2961,8 +3025,8 @@ Are you sure you want to quit?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/store/widgets/details.py" line="133"/>
         <location filename="../../ui/components/tabs/store/details.ui" line="304"/>
+        <location filename="../../components/tabs/store/widgets/details.py" line="133"/>
         <source>Add to wishlist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3250,34 +3314,34 @@ Are you sure you want to quit?</source>
 <context>
     <name>WrapperSettings</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="243"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="233"/>
         <source>No wrappers defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="247"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="237"/>
         <source>Add wrapper</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="328"/>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="336"/>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="344"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="317"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="325"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="333"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="329"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="318"/>
         <source>Do not insert compatibility tools manually. Add them through Proton settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="337"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="326"/>
         <source>Wrapper &lt;b&gt;{0}&lt;/b&gt; is already in the list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="345"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="334"/>
         <source>Wrapper &lt;b&gt;{0}&lt;/b&gt; is not in $PATH. Add it anyway?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3285,12 +3349,12 @@ Are you sure you want to quit?</source>
 <context>
     <name>WrapperWidget</name>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="142"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="138"/>
         <source>Manage through settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="144"/>
+        <location filename="../../components/tabs/settings/widgets/wrappers.py" line="140"/>
         <source>Manage</source>
         <translation type="unfinished"></translation>
     </message>
