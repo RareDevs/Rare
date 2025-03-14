@@ -93,7 +93,7 @@ class LocalLaunchSettings(LaunchSettingsBase):
     @Slot(int)
     def __skip_update_changed(self, index):
         data = self.skip_update_combo.itemData(index, Qt.ItemDataRole.UserRole)
-        config.save_option(self.app_name, "skip_update_check", data)
+        config.adjust_option(self.app_name, "skip_update_check", data)
 
     def __override_exe_edit_callback(self, path: str) -> Tuple[bool, str, int]:
         if not path or self.igame is None:
@@ -114,15 +114,15 @@ class LocalLaunchSettings(LaunchSettingsBase):
         return True, path, IndicatorReasonsCommon.VALID
 
     def __override_exe_save_callback(self, path: str):
-        config.save_option(self.app_name, "override_exe", path)
+        config.adjust_option(self.app_name, "override_exe", path)
 
     @Slot(int)
     def __offline_changed(self, index):
         data = self.skip_update_combo.itemData(index, Qt.ItemDataRole.UserRole)
-        config.save_option(self.app_name, "offline", data)
+        config.adjust_option(self.app_name, "offline", data)
 
     def __launch_params_changed(self, value) -> None:
-        config.save_option(self.app_name, "start_params", value)
+        config.adjust_option(self.app_name, "start_params", value)
 
     def load_settings(self, rgame: RareGame):
         self.game = rgame.game

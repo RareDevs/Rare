@@ -197,7 +197,7 @@ class IndicatorLineEdit(QWidget):
         self.__reasons.extend(reasons)
 
     def __indicator(self, valid, reason: int = 0):
-        color = "green" if valid else "red"
+        color = "gray" if reason == IndicatorReasonsCommon.UNDEFINED else "green" if valid else "red"
         self.indicator_label.setPixmap(qta_icon("ei.info-circle", color=color).pixmap(16, 16))
         if not valid:
             self.indicator_label.setToolTip(self.__reasons[reason])
