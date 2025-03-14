@@ -3,21 +3,15 @@
 ################################################################################
 ## Form generated from reading UI file 'console_env.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractButton, QAbstractItemView, QApplication, QDialog,
-    QDialogButtonBox, QHeaderView, QSizePolicy, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtCore import (QCoreApplication, Qt)
+from PySide6.QtGui import (QFont)
+from PySide6.QtWidgets import (QAbstractItemView, QDialogButtonBox, QTableWidget,
+    QTableWidgetItem, QVBoxLayout)
 
 class Ui_ConsoleEnv(object):
     def setupUi(self, ConsoleEnv):
@@ -65,9 +59,9 @@ class Ui_ConsoleEnv(object):
 
     def retranslateUi(self, ConsoleEnv):
         ___qtablewidgetitem = self.table.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("ConsoleEnv", u"Variable", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("ConsoleEnv", u"Variable", None))
         ___qtablewidgetitem1 = self.table.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("ConsoleEnv", u"Value", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("ConsoleEnv", u"Value", None))
         pass
     # retranslateUi
 
