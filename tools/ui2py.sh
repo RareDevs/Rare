@@ -2,11 +2,13 @@
 
 _uic_cmd() {
     echo "Generating python file for ${ui}"
-    pyside6-uic "${1}" -a -o "${1%.ui}.py"
+    pyfile="${1%.ui}.py"
+    pyside6-uic "${1}" -a -o "${pyfile}"
+    ruff check --fix "${pyfile}"
 }
 
 force=0
-if [[ "$1" == "--force" ]]
+if [[ "${1}" == "--force" ]]
 then
     force=1
 elif [ -n "${1}" ]; then
@@ -28,11 +30,11 @@ then
 fi
 
 for ui in $changed; do
-    if [ ! -f "$ui" ]; then
-      echo "$ui does not exist. Skipping"
+    if [ ! -f "${ui}" ]; then
+      echo "${ui} does not exist. Skipping"
       continue
     fi
     _uic_cmd "${ui}"
 done
 
-cd "$cwd" || exit
+cd "${cwd}" || exit
