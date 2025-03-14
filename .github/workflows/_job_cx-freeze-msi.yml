@@ -24,7 +24,7 @@ jobs:
           architecture: x64
       - name: Install build dependencies
         run: |
-          pip3 install --upgrade cx_freeze
+          pip3 install --upgrade cx_freeze ruff
       - name: Install target dependencies
         run: |
           pip3 install -r misc/requirements.in
