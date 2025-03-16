@@ -148,7 +148,7 @@ class RareGame(RareGameSlim):
     __metadata_lock: Lock = Lock()
 
     @staticmethod
-    def __load_metadata_json() -> Dict:
+    def __load_metadata_json() -> Optional[Dict]:
         if RareGame.__metadata_json is None:
             metadata = {}
             file = os.path.join(data_dir(), "game_meta.json")
@@ -457,6 +457,7 @@ class RareGame(RareGameSlim):
         config.set_envvar(self.app_name, "SteamAppId", str(appid))
         config.set_envvar(self.app_name, "SteamGameId", str(appid))
         config.set_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
+        config.set_envvar(self.app_name, "UMU_ID", f"umu-{appid}")
         self.metadata.steam_appid = appid
 
     def set_steam_grade(self) -> None:
@@ -587,6 +588,12 @@ class RareGame(RareGameSlim):
         if wine_pfx:
             args.extend(["--wine-prefix", wine_pfx])
         args.append(self.app_name)
+
+        if not config.get_envvar(self.app_name, "STORE", False):
+            config.set_envvar(self.app_name, "STORE", "egs")
+        if not config.get_envvar(self.app_name, "UMU_ID", False) and self.metadata.steam_appid:
+            config.set_envvar(self.app_name, "UMU_ID", f"umu-{self.metadata.steam_appid}")
+        config.save_config()
 
         logger.info(f"Starting game process: ({executable} {' '.join(args)})")
         proc = QProcess()
