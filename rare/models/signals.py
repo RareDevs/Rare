@@ -19,6 +19,7 @@ class GlobalSignals:
         update_statusbar = Signal()
         # str: locale
         # change_translation = Signal(str)
+        update_tag_list = Signal()
 
     class GameSignals(QObject):
         # model

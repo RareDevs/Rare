@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QMenu,
     QSpacerItem,
     QSizePolicy,
+    QCompleter,
 )
 
 from rare.models.options import options, LibraryFilter, LibraryOrder
@@ -31,6 +32,7 @@ class LibraryHeadBar(QWidget):
         super(LibraryHeadBar, self).__init__(parent=parent)
         self.logger = logging.getLogger(type(self).__name__)
         self.rcore = RareCore.instance()
+        self.signals = RareCore.instance().signals()
         self.settings = QSettings(self)
 
         self.filter = QComboBox(self)
@@ -38,7 +40,8 @@ class LibraryHeadBar(QWidget):
             LibraryFilter.ALL: self.tr("All games"),
             LibraryFilter.INSTALLED: self.tr("Installed"),
             LibraryFilter.OFFLINE: self.tr("Offline"),
-            # LibraryFilter.HIDDEN: self.tr("Hidden"),
+            LibraryFilter.HIDDEN: self.tr("Hidden"),
+            LibraryFilter.FAVORITES: self.tr("Favorites"),
         }
         for data, text in filters.items():
             self.filter.addItem(text, data)
@@ -110,10 +113,15 @@ class LibraryHeadBar(QWidget):
         integrations.setIcon(qta_icon("mdi.tools"))
         integrations.setMenu(integrations_menu)
 
-        self.search_bar = ButtonLineEdit("fa5s.search", placeholder_text=self.tr("Search"))
+        self.search_bar = ButtonLineEdit("fa5s.search", placeholder_text=self.tr("Search (use :: to filter by tag)"))
         self.search_bar.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         self.search_bar.setObjectName("SearchBar")
         self.search_bar.setMinimumWidth(250)
+        completer = QCompleter([], self.search_bar)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.search_bar.setCompleter(completer)
+        self.signals.application.update_tag_list.connect(self.tag_updated)
+        self.tag_updated()
 
         installed_tooltip = self.tr("Installed games")
         self.installed_icon = QLabel(parent=self)
@@ -148,6 +156,10 @@ class LibraryHeadBar(QWidget):
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
         layout.addWidget(integrations)
         layout.addWidget(self.refresh_list)
+
+    def tag_updated(self):
+        wordlist = list(map(lambda x: "::" + x, self.rcore.tag_list))
+        self.search_bar.completer().model().setStringList(wordlist)
 
     def set_games_count(self, inst: int, avail: int) -> None:
         self.installed_label.setText(str(inst))

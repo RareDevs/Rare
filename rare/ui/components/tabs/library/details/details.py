@@ -17,9 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QFormLayout, QFrame,
     QGridLayout, QGroupBox, QHBoxLayout, QLabel,
-    QLayout, QLineEdit, QProgressBar, QPushButton,
-    QSizePolicy, QSpacerItem, QStackedWidget, QVBoxLayout,
-    QWidget)
+    QLayout, QProgressBar, QPushButton, QSizePolicy,
+    QSpacerItem, QStackedWidget, QVBoxLayout, QWidget)
 
 class Ui_GameDetails(object):
     def setupUi(self, GameDetails):
@@ -46,42 +45,31 @@ class Ui_GameDetails(object):
 
         self.tags_layout.addWidget(self.completed_check, 3, 0, 1, 2)
 
-        self.hidden_check = QCheckBox(self.tags_group)
-        self.hidden_check.setObjectName(u"hidden_check")
+        self.backlog_check = QCheckBox(self.tags_group)
+        self.backlog_check.setObjectName(u"backlog_check")
 
-        self.tags_layout.addWidget(self.hidden_check, 0, 0, 1, 2)
-
-        self.custom1_edit = QLineEdit(self.tags_group)
-        self.custom1_edit.setObjectName(u"custom1_edit")
-
-        self.tags_layout.addWidget(self.custom1_edit, 4, 1, 1, 1)
+        self.tags_layout.addWidget(self.backlog_check, 2, 0, 1, 2)
 
         self.favorites_check = QCheckBox(self.tags_group)
         self.favorites_check.setObjectName(u"favorites_check")
 
         self.tags_layout.addWidget(self.favorites_check, 1, 0, 1, 2)
 
-        self.custom1_check = QCheckBox(self.tags_group)
-        self.custom1_check.setObjectName(u"custom1_check")
-        self.custom1_check.setText(u"")
+        self.hidden_check = QCheckBox(self.tags_group)
+        self.hidden_check.setObjectName(u"hidden_check")
 
-        self.tags_layout.addWidget(self.custom1_check, 4, 0, 1, 1)
+        self.tags_layout.addWidget(self.hidden_check, 0, 0, 1, 2)
 
-        self.backlog_check = QCheckBox(self.tags_group)
-        self.backlog_check.setObjectName(u"backlog_check")
+        self.custom_tag_layout = QVBoxLayout()
+        self.custom_tag_layout.setObjectName(u"custom_tag_layout")
+        self.custom_tag_layout.setContentsMargins(-1, 0, -1, 0)
 
-        self.tags_layout.addWidget(self.backlog_check, 2, 0, 1, 2)
+        self.tags_layout.addLayout(self.custom_tag_layout, 5, 0, 1, 2)
 
-        self.custom2_check = QCheckBox(self.tags_group)
-        self.custom2_check.setObjectName(u"custom2_check")
-        self.custom2_check.setText(u"")
+        self.add_tag_button = QPushButton(self.tags_group)
+        self.add_tag_button.setObjectName(u"add_tag_button")
 
-        self.tags_layout.addWidget(self.custom2_check, 5, 0, 1, 1)
-
-        self.custom2_edit = QLineEdit(self.tags_group)
-        self.custom2_edit.setObjectName(u"custom2_edit")
-
-        self.tags_layout.addWidget(self.custom2_edit, 5, 1, 1, 1)
+        self.tags_layout.addWidget(self.add_tag_button, 7, 0, 1, 2)
 
 
         self.left_layout.addWidget(self.tags_group)
@@ -374,9 +362,10 @@ class Ui_GameDetails(object):
     def retranslateUi(self, GameDetails):
         self.tags_group.setTitle(QCoreApplication.translate("GameDetails", u"Tags", None))
         self.completed_check.setText(QCoreApplication.translate("GameDetails", u"Completed", None))
-        self.hidden_check.setText(QCoreApplication.translate("GameDetails", u"Hidden", None))
-        self.favorites_check.setText(QCoreApplication.translate("GameDetails", u"Favorites", None))
         self.backlog_check.setText(QCoreApplication.translate("GameDetails", u"Backlog", None))
+        self.favorites_check.setText(QCoreApplication.translate("GameDetails", u"Favorites", None))
+        self.hidden_check.setText(QCoreApplication.translate("GameDetails", u"Hidden", None))
+        self.add_tag_button.setText("")
         self.lbl_dev.setText(QCoreApplication.translate("GameDetails", u"Developer", None))
         self.lbl_app_name.setText(QCoreApplication.translate("GameDetails", u"Application name", None))
         self.lbl_version.setText(QCoreApplication.translate("GameDetails", u"Version", None))
