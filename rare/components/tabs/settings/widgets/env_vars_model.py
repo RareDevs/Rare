@@ -70,7 +70,7 @@ class EnvVarsTableModel(QAbstractTableModel):
             index = index.row()
         try:
             return list(self.__data_map)[index]
-        except Exception as e:
+        except Exception:
             return ""
 
     def __is_local(self, index: Union[QModelIndex, int]):

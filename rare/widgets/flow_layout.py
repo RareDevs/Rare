@@ -19,13 +19,13 @@ class FlowLayout(QLayout):
     def indexOf(self, a0: QWidget) -> int:
         try:
             return next(idx for idx, item in enumerate(self._items) if item.widget() is a0)
-        except:
+        except Exception:
             return -1
 
     def indexOf(self, a0: QLayoutItem) -> int:
         try:
             return self._items.index(a0)
-        except:
+        except Exception:
             return -1
 
     def addItem(self, a0: QLayoutItem) -> None:

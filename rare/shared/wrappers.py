@@ -2,7 +2,7 @@ import json
 import os
 from logging import getLogger
 import shlex
-from typing import List, Dict, Iterable, Union, Tuple, Set
+from typing import List, Dict, Iterable, Set
 from rare.utils import config_helper as config
 
 from PySide6.QtCore import QSettings
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     config.set_option = lambda x, y, z: print("set_option:", x, y, z)
     config.remove_option = lambda x, y: print("remove_option:", x, y)
     config.save_config = lambda: print("save_config:")
-    config.save_option = lambda x, y, z: print("save_option:", x, y, z)
+    config.adjust_option = lambda x, y, z: print("save_option:", x, y, z)
 
     wr = Wrappers()
 

@@ -1,7 +1,7 @@
 import sys
 from abc import abstractmethod
 
-from PySide6.QtCore import Qt, Slot, QCoreApplication, QSize
+from PySide6.QtCore import Qt, Slot, QCoreApplication
 from PySide6.QtGui import QCloseEvent, QKeyEvent, QKeySequence
 from PySide6.QtWidgets import (
     QDialog,

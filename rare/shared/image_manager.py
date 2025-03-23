@@ -12,7 +12,6 @@ from typing import Tuple, Dict, Union, Type, List, Callable
 import requests
 from PySide6.QtCore import Qt, Signal, QObject, QSize, QThreadPool, QRunnable, QRect, QRectF, Slot
 from PySide6.QtGui import QPixmap, QImage, QPainter, QPainterPath, QBrush, QTransform, QPen
-from PySide6.QtWidgets import QApplication
 from legendary.models.game import Game
 
 from rare.lgndr.core import LegendaryCore
@@ -121,7 +120,7 @@ class ImageManager(QObject):
             )
             try:
                 best = matches[0]
-            except IndexError as e:
+            except IndexError:
                 best = {}
             return best
 

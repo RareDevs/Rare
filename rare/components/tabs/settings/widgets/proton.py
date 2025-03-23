@@ -124,7 +124,7 @@ class ProtonSettings(QGroupBox):
     @staticmethod
     def proton_prefix_edit(text: str) -> Tuple[bool, str, int]:
         if not text:
-            return False, text, IndicatorReasonsCommon.EMPTY
+            return False, text, IndicatorReasonsCommon.IS_EMPTY
         parent_dir = os.path.dirname(text)
         return os.path.exists(parent_dir), text, IndicatorReasonsCommon.DIR_NOT_EXISTS
 

@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Callable, Tuple, Any
+from typing import Callable
 
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QApplication
@@ -16,7 +16,6 @@ from .api.models.query import SearchStoreQuery
 from .api.models.diesel import DieselProduct
 from .api.models.response import (
     ResponseModel,
-    CatalogOfferModel,
 )
 
 logger = getLogger("StoreAPI")

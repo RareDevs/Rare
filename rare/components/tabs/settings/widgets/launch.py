@@ -5,7 +5,7 @@ from typing import Tuple, Type, TypeVar
 
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QCheckBox, QFileDialog, QFormLayout, QVBoxLayout, QGroupBox, QLineEdit, QSizePolicy
+from PySide6.QtWidgets import QCheckBox, QFileDialog, QFormLayout, QVBoxLayout, QGroupBox, QLineEdit
 
 import rare.utils.config_helper as config
 from rare.shared import LegendaryCoreSingleton

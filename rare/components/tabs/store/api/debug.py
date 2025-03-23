@@ -14,7 +14,7 @@ class DebugView(QTreeView):
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
         try:
             self.model.load(data)
-        except Exception as e:
+        except Exception:
             pass
         self.resizeColumnToContents(0)
 
