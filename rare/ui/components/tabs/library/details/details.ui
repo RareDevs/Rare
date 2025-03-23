@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>814</width>
-    <height>470</height>
+    <height>598</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,55 +27,23 @@
        <property name="title">
         <string>Tags</string>
        </property>
-       <layout class="QGridLayout" name="tags_layout">
-        <property name="horizontalSpacing">
-         <number>0</number>
-        </property>
-        <item row="3" column="0" colspan="2">
-         <widget class="QCheckBox" name="completed_check">
-          <property name="text">
-           <string>Completed</string>
-          </property>
-         </widget>
+       <layout class="QVBoxLayout" name="tags_group_layout">
+        <item>
+         <layout class="QVBoxLayout" name="tags_layout"/>
         </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QCheckBox" name="backlog_check">
-          <property name="text">
-           <string>Backlog</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QCheckBox" name="favorites_check">
-          <property name="text">
-           <string>Favorites</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QCheckBox" name="hidden_check">
-          <property name="text">
-           <string>Hidden</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0" colspan="2">
-         <layout class="QVBoxLayout" name="custom_tag_layout">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-         </layout>
-        </item>
-        <item row="7" column="0" colspan="2">
+        <item alignment="Qt::AlignmentFlag::AlignRight">
          <widget class="QPushButton" name="add_tag_button">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="toolTip">
            <string>Add custom tag</string>
           </property>
           <property name="text">
-           <string/>
+           <string>Add tag</string>
           </property>
          </widget>
         </item>

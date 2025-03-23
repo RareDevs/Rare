@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from logging import getLogger
 from threading import Lock
-from typing import List, Optional, Dict, Set
+from typing import List, Optional, Dict, Set, Tuple
 
 from PySide6.QtCore import QRunnable, Slot, QProcess, QThreadPool, QSettings
 from PySide6.QtGui import QPixmap
@@ -33,11 +33,11 @@ class RareGame(RareGameSlim):
         queue_pos: Optional[int] = None
         last_played: datetime = datetime.min.replace(tzinfo=timezone.utc)
         grant_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
-        steam_appid: Optional[int] = None
+        steam_appid: Optional[str] = None
         steam_grade: Optional[str] = None
         steam_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
         steam_shortcut: Optional[int] = None
-        tags: List[str] = field(default_factory=list)
+        tags: Tuple[str, ...] = field(default_factory=tuple)
 
         # For compatibility with previously created game metadata
         @staticmethod
@@ -52,11 +52,11 @@ class RareGame(RareGameSlim):
                 queue_pos=data.get("queue_pos", None),
                 last_played=RareGame.Metadata.parse_date(data.get("last_played", "")),
                 grant_date=RareGame.Metadata.parse_date(data.get("grant_date", "")),
-                steam_appid=data.get("steam_appid", None),
+                steam_appid=str(data.get("steam_appid", None)),
                 steam_grade=data.get("steam_grade", None),
                 steam_date=RareGame.Metadata.parse_date(data.get("steam_date", "")),
                 steam_shortcut=data.get("steam_shortcut", None),
-                tags=data.get("tags", []),
+                tags=data.get("tags",()),
             )
 
         @property
@@ -437,6 +437,10 @@ class RareGame(RareGameSlim):
             self.store_igame()
             self.signals.widget.update.emit()
 
+    def reset_steam_date(self):
+        self.metadata.steam_date = datetime.min.replace(tzinfo=timezone.utc)
+        self.signals.widget.update.emit()
+
     def steam_grade(self) -> str:
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
@@ -450,20 +454,21 @@ class RareGame(RareGameSlim):
         return self.metadata.steam_grade
 
     @property
-    def steam_appid(self) -> Optional[int]:
+    def steam_appid(self) -> Optional[str]:
         return self.metadata.steam_appid
 
-    def set_steam_appid(self, appid: int):
-        config.set_envvar(self.app_name, "SteamAppId", str(appid))
-        config.set_envvar(self.app_name, "SteamGameId", str(appid))
-        config.set_envvar(self.app_name, "STEAM_COMPAT_APP_ID", str(appid))
-        config.set_envvar(self.app_name, "UMU_ID", f"umu-{appid}")
+    @steam_appid.setter
+    def steam_appid(self, appid: str) -> None:
+        config.adjust_envvar(self.app_name, "SteamAppId", appid)
+        config.adjust_envvar(self.app_name, "SteamGameId", appid)
+        config.adjust_envvar(self.app_name, "STEAM_COMPAT_APP_ID", appid)
+        config.adjust_envvar(self.app_name, "UMU_ID", f"umu-{appid}" if appid else "umu-default")
         self.metadata.steam_appid = appid
 
     def set_steam_grade(self) -> None:
-        appid, grade = get_rating(self.core, self.app_name)
+        appid, grade = get_rating(self.core, self.app_name, self.steam_appid)
         if appid and self.steam_appid is None:
-            self.set_steam_appid(appid)
+            self.steam_appid = appid
         self.metadata.steam_grade = grade
         self.metadata.steam_date = datetime.now(timezone.utc)
         self.__save_metadata()
@@ -483,9 +488,14 @@ class RareGame(RareGameSlim):
             self.__save_metadata()
         return self.metadata.grant_date
 
-    def set_tags(self, tags: List[str]) -> None:
-        self.metadata.tags.clear()
-        self.metadata.tags.extend(map(lambda x: x.lower() ,tags))
+    @property
+    def tags(self) -> Tuple[str, ...]:
+        return tuple(tag for tag in map(lambda x: x.lower().strip(), self.metadata.tags) if bool(tag))
+
+    @tags.setter
+    def tags(self, tags: Tuple[str, ...]) -> None:
+        self.metadata.tags = tuple(tag for tag in map(lambda x: x.lower().strip(), tags) if bool(tag))
+        logger.debug(f"Saving tags for {self.game.app_title}: {self.metadata.tags}")
         self.__save_metadata()
 
     def set_origin_attributes(self, path: str, size: int = 0) -> None:
