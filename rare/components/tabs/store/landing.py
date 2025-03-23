@@ -2,10 +2,9 @@ import logging
 from datetime import datetime, timezone
 from typing import List
 
-from PySide6.QtCore import Qt, Slot, Signal, QObject, QEvent
-from PySide6.QtGui import QShowEvent, QHideEvent, QResizeEvent
+from PySide6.QtCore import Qt, Slot, Signal
+from PySide6.QtGui import QShowEvent, QHideEvent
 from PySide6.QtWidgets import (
-    QHBoxLayout,
     QWidget,
     QSizePolicy,
     QVBoxLayout,

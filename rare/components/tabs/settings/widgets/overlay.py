@@ -5,7 +5,7 @@ from typing import List, Dict, Tuple, Union, Optional
 
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QIntValidator, QDoubleValidator, QShowEvent
-from PySide6.QtWidgets import QGroupBox, QCheckBox, QLineEdit, QComboBox, QSpinBox
+from PySide6.QtWidgets import QGroupBox, QCheckBox, QLineEdit, QComboBox
 
 from rare.ui.components.tabs.settings.widgets.overlay import Ui_OverlaySettings
 from rare.utils import config_helper as config

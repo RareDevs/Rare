@@ -1,4 +1,3 @@
-import sys
 from abc import abstractmethod
 from dataclasses import dataclass
 from enum import IntEnum

@@ -100,6 +100,6 @@ class GameMetadataView(QTreeView, SideTabContents):
         self.model.clear()
         try:
             self.model.load(vars(view))
-        except Exception as e:
+        except Exception:
             pass
         self.resizeColumnToContents(0)

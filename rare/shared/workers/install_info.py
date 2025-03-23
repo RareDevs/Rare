@@ -1,4 +1,3 @@
-import os
 from logging import getLogger
 
 from PySide6.QtCore import QObject, Signal

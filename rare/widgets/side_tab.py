@@ -3,9 +3,7 @@ from typing import Union, Protocol
 
 from PySide6.QtCore import (
     Qt,
-    QRect,
     QSize,
-    QPoint,
     Signal,
 )
 from PySide6.QtGui import QFontMetrics

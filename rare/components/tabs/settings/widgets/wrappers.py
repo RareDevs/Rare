@@ -60,7 +60,7 @@ class WrapperEditDialog(ButtonDialog):
         self.accept_button.setIcon(qta_icon("fa.edit", "fa5s.edit"))
         self.accept_button.setEnabled(False)
 
-        self.result: Tuple = ()
+        self.result: Tuple = (False, "")
 
     def setup(self, wrapper: Wrapper):
         header = self.tr("Edit wrapper")

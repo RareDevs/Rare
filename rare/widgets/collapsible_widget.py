@@ -188,7 +188,6 @@ if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication, QDialog
     from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
     from rare.utils.misc import set_style_sheet
-    from rare.resources.stylesheets import RareStyle
     app = QApplication(sys.argv)
 
     set_style_sheet("RareStyle")
