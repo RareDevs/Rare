@@ -1,9 +1,8 @@
 import os
-import sys
 from typing import Union, Type
 
 import qstylizer.style
-from PySide6.QtCore import QDir, QObject
+from PySide6.QtCore import QObject
 from PySide6.QtGui import QColor
 from PySide6.scripts.pyside_tool import qt_tool_wrapper
 from shiboken6.Shiboken import Object as wrappertype
@@ -189,6 +188,18 @@ css.QPushButton[css_name(ButtonLineEdit, "Button")].setValues(
     backgroundColor="transparent",
     border="0px",
     padding="0px",
+)
+
+
+# GameTagCheckBox
+from rare.components.tabs.library.details.details import GameTagCheckBox
+css.QCheckBox[css_name(GameTagCheckBox, "")].setValues(
+    margin="1px",
+    borderWidth="1px",
+    borderStyle="solid",
+    borderColor="black",
+    borderRadius="3px",
+    padding="3px",
 )
 
 

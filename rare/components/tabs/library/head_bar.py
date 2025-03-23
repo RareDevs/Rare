@@ -117,11 +117,6 @@ class LibraryHeadBar(QWidget):
         self.search_bar.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         self.search_bar.setObjectName("SearchBar")
         self.search_bar.setMinimumWidth(250)
-        completer = QCompleter([], self.search_bar)
-        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        self.search_bar.setCompleter(completer)
-        self.signals.application.update_tag_list.connect(self.tag_updated)
-        self.tag_updated()
 
         installed_tooltip = self.tr("Installed games")
         self.installed_icon = QLabel(parent=self)
@@ -157,9 +152,16 @@ class LibraryHeadBar(QWidget):
         layout.addWidget(integrations)
         layout.addWidget(self.refresh_list)
 
-    def tag_updated(self):
-        wordlist = list(map(lambda x: "::" + x, self.rcore.tag_list))
-        self.search_bar.completer().model().setStringList(wordlist)
+        self.signals.application.update_game_tags.connect(self.__game_tags_updated)
+        self.__game_tags_updated()
+
+    def __game_tags_updated(self):
+        if self.search_bar.completer():
+            self.search_bar.completer().deleteLater()
+        wordlist = tuple(map(lambda x: "::" + x, self.rcore.game_tags))
+        completer = QCompleter(wordlist, self.search_bar)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.search_bar.setCompleter(completer)
 
     def set_games_count(self, inst: int, avail: int) -> None:
         self.installed_label.setText(str(inst))

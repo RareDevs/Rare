@@ -139,3 +139,11 @@ QPushButton#ButtonLineEditButton {
     border: 0px;
     padding: 0px;
 }
+QCheckBox#GameTagCheckBox {
+    margin: 1px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 3px;
+    padding: 3px;
+}
