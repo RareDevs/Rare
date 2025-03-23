@@ -1,9 +1,10 @@
 import os
 from enum import IntEnum, Enum
 from logging import getLogger
-from typing import Callable, Tuple, Optional, Dict, List
+from typing import Callable, Optional, Dict, Tuple, Set
 
 from PySide6.QtCore import (
+    Qt,
     QSize,
     Signal,
     QFileInfo,
@@ -13,15 +14,17 @@ from PySide6.QtCore import (
     Slot,
     QDir,
 )
-from PySide6.QtGui import QAbstractFileIconProvider
+from PySide6.QtGui import QAbstractFileIconProvider, QStandardItemModel
 from PySide6.QtWidgets import (
+    QCompleter,
+    QTreeView,
+    QHeaderView,
     QSizePolicy,
     QLabel,
     QFileDialog,
     QHBoxLayout,
     QWidget,
     QLineEdit,
-    QCompleter,
     QFileSystemModel,
     QStyledItemDelegate,
     QPushButton,
@@ -34,8 +37,8 @@ logger = getLogger("IndicatorEdit")
 
 class IndicatorReasonsCommon(IntEnum):
     VALID = 0
-    UNDEFINED = 1
-    EMPTY = 2
+    INVALID = 1
+    IS_EMPTY = 2
     WRONG_FORMAT = 3
     WRONG_PATH = 4
     DIR_NOT_EMPTY = 5
@@ -43,6 +46,7 @@ class IndicatorReasonsCommon(IntEnum):
     FILE_NOT_EXISTS = 7
     GAME_NOT_INSTALLED = 8
     GAME_NOT_EXISTS = 9
+    UNDEFINED = 10
 
 
 class IndicatorReasons(IntEnum):
@@ -67,8 +71,8 @@ class IndicatorReasonsStrings(QObject):
         super(IndicatorReasonsStrings, self).__init__(parent=parent)
         self.__text = {
             IndicatorReasonsCommon.VALID: self.tr("Ok!"),
-            IndicatorReasonsCommon.UNDEFINED: self.tr("Unknown error occurred"),
-            IndicatorReasonsCommon.EMPTY: self.tr("Value can not be empty"),
+            IndicatorReasonsCommon.INVALID: self.tr("Unknown error occurred"),
+            IndicatorReasonsCommon.IS_EMPTY: self.tr("Value can not be empty"),
             IndicatorReasonsCommon.WRONG_FORMAT: self.tr("Wrong format"),
             IndicatorReasonsCommon.WRONG_PATH: self.tr("Wrong file or directory"),
             IndicatorReasonsCommon.DIR_NOT_EMPTY: self.tr("Directory is not empty"),
@@ -76,6 +80,7 @@ class IndicatorReasonsStrings(QObject):
             IndicatorReasonsCommon.FILE_NOT_EXISTS: self.tr("File does not exist"),
             IndicatorReasonsCommon.GAME_NOT_INSTALLED: self.tr("Game is not installed"),
             IndicatorReasonsCommon.GAME_NOT_EXISTS: self.tr("Game does not exist"),
+            IndicatorReasonsCommon.UNDEFINED: self.tr("Unset"),
         }
 
     def __getitem__(self, item: int) -> str:
@@ -139,6 +144,16 @@ class IndicatorLineEdit(QWidget):
         self.line_edit.setPlaceholderText(placeholder if placeholder else self.tr("Use global/default settings"))
         self.line_edit.setToolTip(placeholder if placeholder else "")
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Policy.Fixed)
+        # Add informative label
+        self.info_label = QLabel(self)
+        self.info_label.setObjectName(f"{self.objectName()}Label")
+        self.info_label.setFrameStyle(QLabel.Shape.StyledPanel | QLabel.Shadow.Plain)
+        self.info_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        line_edit_layout = QHBoxLayout(self.line_edit)
+        line_edit_layout.addWidget(self.info_label)
+        line_edit_layout.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight)
+        line_edit_layout.setContentsMargins(0, 0, 2, 0)
+        self.info_label.setVisible(False)
         # Add completer
         self.setCompleter(completer)
         layout.addWidget(self.line_edit)
@@ -182,6 +197,11 @@ class IndicatorLineEdit(QWidget):
 
     def setText(self, text: str):
         self.line_edit.setText(text)
+
+    def setInfo(self, text:str):
+        text = text.strip()
+        self.info_label.setVisible(bool(text))
+        self.info_label.setText(text)
 
     def setCompleter(self, completer: Optional[QCompleter]):
         if old := self.line_edit.completer():
@@ -346,3 +366,27 @@ class PathEdit(IndicatorLineEdit):
             name = dlg.selectedFiles()[0]
             self.__completer_model.setRootPath(name)
             self.line_edit.setText(name)
+
+
+class ColumnCompleter(QCompleter):
+
+    def __init__(self, items: Set[Tuple[str, str]], parent=None):
+        super(ColumnCompleter, self).__init__(parent)
+
+        model = QStandardItemModel(len(items), 2, self)
+        for idx, item in enumerate(items):
+            app_name, app_title = item
+            model.setData(model.index(idx, 0), app_title)
+            model.setData(model.index(idx, 1), app_name)
+        self.setModel(model)
+
+        treeview = QTreeView()
+        self.setPopup(treeview)
+        treeview.setRootIsDecorated(False)
+        treeview.header().hide()
+        treeview.header().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        treeview.header().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+
+        self.setFilterMode(Qt.MatchFlag.MatchContains)
+        self.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        # self.setCompletionMode(QCompleter.UnfilteredPopupCompletion)

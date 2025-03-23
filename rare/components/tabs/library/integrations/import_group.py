@@ -7,13 +7,10 @@ from pathlib import Path
 from typing import List, Tuple, Optional, Set, Dict
 
 from PySide6.QtCore import Qt, Signal, QRunnable, QObject, QThreadPool, Slot
-from PySide6.QtGui import QStandardItemModel, QShowEvent
+from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QFileDialog,
     QGroupBox,
-    QCompleter,
-    QTreeView,
-    QHeaderView,
     QMessageBox,
     QStackedWidget,
     QProgressBar,
@@ -28,7 +25,7 @@ from rare.lgndr.glue.monkeys import LgndrIndirectStatus, get_boolean_choice_fact
 from rare.shared import RareCore
 from rare.ui.components.tabs.library.integrations.import_group import Ui_ImportGroup
 from rare.widgets.elide_label import ElideLabel
-from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon, PathEdit
+from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon, PathEdit, ColumnCompleter
 
 logger = getLogger("Import")
 
@@ -144,30 +141,6 @@ class ImportWorker(QRunnable):
         return status.success, status.message
 
 
-class AppNameCompleter(QCompleter):
-
-    def __init__(self, app_names: Set[Tuple[str, str]], parent=None):
-        super(AppNameCompleter, self).__init__(parent)
-
-        model = QStandardItemModel(len(app_names), 2, self)
-        for idx, game in enumerate(app_names):
-            app_name, app_title = game
-            model.setData(model.index(idx, 0), app_title)
-            model.setData(model.index(idx, 1), app_name)
-        self.setModel(model)
-
-        treeview = QTreeView()
-        self.setPopup(treeview)
-        treeview.setRootIsDecorated(False)
-        treeview.header().hide()
-        treeview.header().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        treeview.header().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-
-        self.setFilterMode(Qt.MatchFlag.MatchContains)
-        self.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        # self.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
-
-
 class ImportGroup(QGroupBox):
     def __init__(self, parent=None):
         super(ImportGroup, self).__init__(parent=parent)
@@ -185,10 +158,10 @@ class ImportGroup(QGroupBox):
         self.path_edit = PathEdit(
             path=self.core.get_default_install_dir(self.core.default_platform),
             file_mode=QFileDialog.FileMode.Directory,
-            edit_func=self.path_edit_callback,
+            edit_func=self.__path_edit_callback,
             parent=self,
         )
-        self.path_edit.textChanged.connect(self.path_changed)
+        self.path_edit.textChanged.connect(self.__path_changed)
         self.ui.import_layout.setWidget(
             self.ui.import_layout.getWidgetPosition(self.ui.path_edit_label)[0],
             QFormLayout.ItemRole.FieldRole, self.path_edit
@@ -196,11 +169,11 @@ class ImportGroup(QGroupBox):
 
         self.app_name_edit = IndicatorLineEdit(
             placeholder=self.tr("Use in case the app name was not found automatically"),
-            edit_func=self.app_name_edit_callback,
-            save_func=self.app_name_save_callback,
+            edit_func=self.__app_name_edit_callback,
+            save_func=self.__app_name_save_callback,
             parent=self,
         )
-        self.app_name_edit.textChanged.connect(self.app_name_changed)
+        self.app_name_edit.textChanged.connect(self.__app_name_changed)
         self.ui.import_layout.setWidget(
             self.ui.import_layout.getWidgetPosition(self.ui.app_name_label)[0],
             QFormLayout.ItemRole.FieldRole, self.app_name_edit
@@ -233,7 +206,7 @@ class ImportGroup(QGroupBox):
         self.__app_names = {rgame.app_title: rgame.app_name for rgame in self.rcore.games}
         self.__install_dirs = {rgame.folder_name for rgame in self.rcore.games if not rgame.is_dlc}
         self.app_name_edit.setCompleter(
-            AppNameCompleter(app_names={(rgame.app_name, rgame.app_title) for rgame in self.rcore.games})
+            ColumnCompleter(items={(rgame.app_name, rgame.app_title) for rgame in self.rcore.games})
         )
         super().showEvent(a0)
 
@@ -245,17 +218,17 @@ class ImportGroup(QGroupBox):
             )
             self.app_name_edit.setText(app_name)
 
-    def path_edit_callback(self, path) -> Tuple[bool, str, int]:
+    def __path_edit_callback(self, path) -> Tuple[bool, str, int]:
         if not os.path.exists(path):
             return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
         if os.path.exists(os.path.join(path, ".egstore")):
             return True, path, IndicatorReasonsCommon.VALID
         elif os.path.basename(path) in self.__install_dirs:
             return True, path, IndicatorReasonsCommon.VALID
-        return False, path, IndicatorReasonsCommon.UNDEFINED
+        return False, path, IndicatorReasonsCommon.INVALID
 
     @Slot(str)
-    def path_changed(self, path: str):
+    def __path_changed(self, path: str):
         self.info_label.setText("")
         self.ui.import_folder_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
@@ -264,7 +237,8 @@ class ImportGroup(QGroupBox):
         else:
             self.app_name_edit.setText("")
 
-    def app_name_edit_callback(self, text) -> Tuple[bool, str, int]:
+    def __app_name_edit_callback(self, text) -> Tuple[bool, str, int]:
+        self.app_name_edit.setInfo("")
         if not text:
             return False, text, IndicatorReasonsCommon.UNDEFINED
         if text in self.__app_names.keys():
@@ -274,14 +248,15 @@ class ImportGroup(QGroupBox):
         else:
             return False, text, IndicatorReasonsCommon.GAME_NOT_EXISTS
 
-    def app_name_save_callback(self, text) -> None:
+    def __app_name_save_callback(self, text) -> None:
         rgame = self.rcore.get_game(text)
+        self.app_name_edit.setInfo(rgame.app_title)
         self.ui.platform_combo.clear()
         self.ui.platform_combo.addItems(rgame.platforms)
         self.ui.platform_combo.setCurrentText(rgame.default_platform)
 
     @Slot(str)
-    def app_name_changed(self, app_name: str):
+    def __app_name_changed(self, app_name: str):
         self.info_label.setText("")
         self.ui.import_dlcs_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
