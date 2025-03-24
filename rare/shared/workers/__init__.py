@@ -5,3 +5,16 @@ from .uninstall import UninstallWorker
 from .verify import VerifyWorker
 from .wine_resolver import OriginWineWorker
 from .worker import Worker, QueueWorker
+
+__all__ = [
+    FetchWorker,
+    GamesDlcsWorker,
+    EntitlementsWorker,
+    InstallInfoWorker,
+    MoveWorker,
+    UninstallWorker,
+    VerifyWorker,
+    OriginWineWorker,
+    Worker,
+    QueueWorker,
+]

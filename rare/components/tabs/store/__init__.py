@@ -2,8 +2,7 @@ from PySide6.QtGui import QShowEvent, QHideEvent
 from legendary.core import LegendaryCore
 
 from rare.widgets.side_tab import SideTabWidget
-from .api.models.response import CatalogOfferModel
-from .landing import LandingWidget, LandingPage
+from .landing import LandingPage
 from .search import SearchPage
 from .store_api import StoreAPI
 from .wishlist import WishlistPage

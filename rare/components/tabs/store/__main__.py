@@ -22,7 +22,6 @@ class StoreWindow(QDialog):
 
 
 if __name__ == "__main__":
-    import rare.resources.static_css
     # import rare.resources.stylesheets.RareStyle
     from rare.utils.misc import set_style_sheet
 

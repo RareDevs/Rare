@@ -1,3 +1,5 @@
+import importlib.util
+
 from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QGroupBox
 
@@ -33,9 +35,7 @@ class DiscordRPCSettings(QGroupBox):
             lambda: self.settings.setValue(options.discord_rpc_time.key, self.ui.show_time.isChecked())
         )
 
-        try:
-            import pypresence
-        except ModuleNotFoundError:
+        if not importlib.util.find_spec("pypresence"):
             self.setDisabled(True)
             self.setToolTip(self.tr("Pypresence is not installed"))
 
