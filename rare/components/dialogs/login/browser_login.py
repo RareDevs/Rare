@@ -91,7 +91,7 @@ class BrowserLogin(QFrame):
             proc = QProcess(self)
             proc.start(cmd[0], cmd[1:])
             proc.waitForFinished(-1)
-            out, err = (
+            out, _ = (
                 proc.readAllStandardOutput().data().decode("utf-8", "ignore"),
                 proc.readAllStandardError().data().decode("utf-8", "ignore")
             )

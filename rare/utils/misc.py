@@ -75,7 +75,7 @@ def load_color_scheme(path: str) -> QPalette:
                     palette.setColor(group, role, palette.color(QPalette.ColorGroup.Active, role))
             scheme.endGroup()
         scheme.endGroup()
-    except:
+    except Exception:
         palette = None
     return palette
 
@@ -131,8 +131,8 @@ def set_style_sheet(style_sheet: str) -> None:
     file.close()
     qApp.setStyleSheet(stylesheet + static)
 
-    icon_color_normal = qApp.palette().color(QPalette.ColorRole.Text).name()
-    icon_color_disabled = qApp.palette().color(QPalette.ColorRole.Text).name()
+    icon_color_normal = qApp.palette().color(QPalette.ColorRole.Text).name()  # noqa: F841
+    icon_color_disabled = qApp.palette().color(QPalette.ColorRole.Text).name()  # noqa: F841
     qtawesome.set_defaults(color="#eee", color_disabled="#eee")
 
 

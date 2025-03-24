@@ -127,7 +127,7 @@ def main() -> int:
     try:
         # this object only allows one instance per machine
 
-        me = singleton.SingleInstance()
+        me = singleton.SingleInstance()  # noqa: F841
     except singleton.SingleInstanceException:
         print("Rare is already running")
         from rare.utils.paths import lock_file
