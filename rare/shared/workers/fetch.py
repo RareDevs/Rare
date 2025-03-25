@@ -9,6 +9,7 @@ from requests.exceptions import HTTPError, ConnectionError
 from rare.lgndr.core import LegendaryCore
 from rare.utils.metrics import timelogger
 from rare.models.options import options
+from rare.utils import steam_grades
 from .worker import Worker
 
 logger = getLogger("FetchWorker")
@@ -19,6 +20,7 @@ class FetchWorker(Worker):
         ERROR = 0
         GAMESDLCS = 1
         ENTITLEMENTS = 2
+        STEAMAPPIDS = 3
 
     class Signals(QObject):
         progress = Signal(int, str)
@@ -30,6 +32,21 @@ class FetchWorker(Worker):
         self.core = core
         self.args = args
         self.settings = QSettings()
+
+
+class SteamAppIdsWorker(FetchWorker):
+
+    def run_real(self):
+        if platform.system() != "Windows" and not self.args.offline:
+            self.signals.progress.emit(0, self.signals.tr("Updating Steam AppIds"))
+            with timelogger(logger, "Request Steam AppIds"):
+                try:
+                    with timelogger(logger, "steam grades load: "):
+                        steam_grades.load_steam_appids()
+                except Exception as e:
+                    logger.warning(e)
+        self.signals.result.emit((), FetchWorker.Result.STEAMAPPIDS)
+        return
 
 
 class EntitlementsWorker(FetchWorker):
@@ -49,7 +66,7 @@ class EntitlementsWorker(FetchWorker):
                     logger.warning(e)
                     entitlements = self.core.egs.get_user_entitlements()
             self.core.lgd.entitlements = entitlements
-            logger.info(f"Entitlements: %s", len(list(entitlements)))
+            logger.info("Entitlements: %s", len(list(entitlements)))
         self.signals.result.emit(entitlements, FetchWorker.Result.ENTITLEMENTS)
         return
 
@@ -103,7 +120,7 @@ class GamesDlcsWorker(FetchWorker):
             games, dlc_dict = self.core.get_game_and_dlc_list(
                 update_assets=need_windows, platform="Windows", skip_ue=not want_unreal
             )
-        logger.info(f"Games: %s. Games with DLCs: %s", len(games), len(dlc_dict))
+        logger.info("Games: %s. Games with DLCs: %s", len(games), len(dlc_dict))
 
         # Fetch non-asset games
         if want_non_asset:
@@ -112,7 +129,7 @@ class GamesDlcsWorker(FetchWorker):
                 with timelogger(logger, "Request non-asset"):
                     na_games, na_dlc_dict = self.core.get_non_asset_library_items(force_refresh=False, skip_ue=False)
             except (HTTPError, ConnectionError) as e:
-                logger.error(f"Network error while fetching non asset games")
+                logger.error("Network error while fetching non asset games")
                 logger.error(e)
                 na_games, na_dlc_dict = ([], {})
             # NOTE: This is here because of broken appIds from Epic
@@ -134,3 +151,4 @@ class GamesDlcsWorker(FetchWorker):
 
         self.signals.progress.emit(40, self.signals.tr("Preparing library"))
         self.signals.result.emit((games, dlc_dict), FetchWorker.Result.GAMESDLCS)
+

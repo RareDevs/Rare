@@ -152,8 +152,9 @@ class ImportGroup(QGroupBox):
         self.worker: Optional[ImportWorker] = None
         self.threadpool = QThreadPool.globalInstance()
 
-        self.__app_names: Dict[str, str] = dict()
-        self.__install_dirs: Set[str] = set()
+        self.__app_names: Dict[str, str] = None
+        self.__app_titles: Dict[str, str] = None
+        self.__install_dirs: Set[str] = None
 
         self.path_edit = PathEdit(
             path=self.core.get_default_install_dir(self.core.default_platform),
@@ -204,10 +205,9 @@ class ImportGroup(QGroupBox):
         if a0.spontaneous():
             return super().showEvent(a0)
         self.__app_names = {rgame.app_title: rgame.app_name for rgame in self.rcore.games}
+        self.__app_titles = {rgame.app_name: rgame.app_title for rgame in self.rcore.games}
         self.__install_dirs = {rgame.folder_name for rgame in self.rcore.games if not rgame.is_dlc}
-        self.app_name_edit.setCompleter(
-            ColumnCompleter(items={(rgame.app_name, rgame.app_title) for rgame in self.rcore.games})
-        )
+        self.app_name_edit.setCompleter(ColumnCompleter(items=self.__app_names.items()))
         super().showEvent(a0)
 
     def set_game(self, app_name: str):
@@ -243,7 +243,7 @@ class ImportGroup(QGroupBox):
             return False, text, IndicatorReasonsCommon.UNDEFINED
         if text in self.__app_names.keys():
             return True, self.__app_names[text], IndicatorReasonsCommon.VALID
-        if text in self.__app_names.values():
+        if text in self.__app_titles.keys():
             return True, text, IndicatorReasonsCommon.VALID
         else:
             return False, text, IndicatorReasonsCommon.GAME_NOT_EXISTS

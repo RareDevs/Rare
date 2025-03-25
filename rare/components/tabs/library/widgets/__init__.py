@@ -30,7 +30,6 @@ class ViewContainer(QWidget):
     def __visibility(widget: ViewWidget, library_filter, search_text) -> Tuple[bool, float]:
         if search_text.startswith("::"):
             search_text = search_text.removeprefix("::")
-            visible = search_text in widget.rgame.metadata.tags
             visible = True
         elif library_filter == LibraryFilter.HIDDEN:
             visible = "hidden" in widget.rgame.metadata.tags

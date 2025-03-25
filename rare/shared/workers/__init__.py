@@ -7,14 +7,14 @@ from .wine_resolver import OriginWineWorker
 from .worker import Worker, QueueWorker
 
 __all__ = [
-    FetchWorker,
-    GamesDlcsWorker,
-    EntitlementsWorker,
-    InstallInfoWorker,
-    MoveWorker,
-    UninstallWorker,
-    VerifyWorker,
-    OriginWineWorker,
-    Worker,
-    QueueWorker,
+    "EntitlementsWorker",
+    "FetchWorker",
+    "GamesDlcsWorker",
+    "InstallInfoWorker",
+    "MoveWorker",
+    "OriginWineWorker",
+    "QueueWorker",
+    "UninstallWorker",
+    "VerifyWorker",
+    "Worker",
 ]

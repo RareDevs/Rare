@@ -10,6 +10,7 @@ from PySide6.QtCore import (
     Slot,
     Signal,
     QUrl,
+    QCoreApplication,
 )
 from PySide6.QtGui import QShowEvent, QFontMetrics, QHideEvent
 from PySide6.QtWidgets import (
@@ -456,11 +457,18 @@ class GameDetails(QWidget, SideTabContents):
 class GameTagCheckBox(QCheckBox):
     checkStateChangedData = Signal(Qt.CheckState, str)
 
+    tag_translations = {
+        "backlog": QCoreApplication.translate("GameTagCheckBox", u"Backlog", None),
+        "completed": QCoreApplication.translate("GameTagCheckBox", u"Completed", None),
+        "favorite": QCoreApplication.translate("GameTagCheckBox", u"Favorite", None),
+        "hidden": QCoreApplication.translate("GameTagCheckBox", u"Hidden", None),
+    }
+
     def __init__(self, tag: str, parent=None):
         super(GameTagCheckBox, self).__init__(tag, parent)
         self.setObjectName(type(self).__name__)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.setText(tag)
+        self.setText(self.tag_translations[tag])
         self.tag = tag
         base_color = (int(sha1(tag.encode('utf-8')).hexdigest()[0:6], base=16) & 0x707070) | 0x0c0c0c
         border_color = base_color | 0x3f3f3f

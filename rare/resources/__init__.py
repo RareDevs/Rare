@@ -3,4 +3,4 @@ import rare.resources.resources as resources
 import rare.resources.static_css as static_css
 import rare.resources.stylesheets as stylesheets
 
-__all__ = [resources, static_css, stylesheets]
+__all__ = ["resources", "static_css", "stylesheets"]
