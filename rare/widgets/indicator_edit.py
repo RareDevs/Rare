@@ -1,7 +1,8 @@
 import os
 from enum import IntEnum, Enum
 from logging import getLogger
-from typing import Callable, Optional, Dict, Tuple, Set
+from typing import Callable, Optional, Dict, Tuple
+from collections.abc import ItemsView
 
 from PySide6.QtCore import (
     Qt,
@@ -370,12 +371,12 @@ class PathEdit(IndicatorLineEdit):
 
 class ColumnCompleter(QCompleter):
 
-    def __init__(self, items: Set[Tuple[str, str]], parent=None):
+    def __init__(self, items: ItemsView[str, str], parent=None):
         super(ColumnCompleter, self).__init__(parent)
 
         model = QStandardItemModel(len(items), 2, self)
         for idx, item in enumerate(items):
-            app_name, app_title = item
+            app_title, app_name = item
             model.setData(model.index(idx, 0), app_title)
             model.setData(model.index(idx, 1), app_name)
         self.setModel(model)

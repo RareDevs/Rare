@@ -752,6 +752,7 @@ QScrollBar#WrapperSettingsScrollBar {
     background-color: rgb( 40,  42,  46);
 }
 /*
+QLabel#IndicatorLineEditLabel,
 QLabel#WrapperSettingsLabel {
     border-width: 1px;
     border-style: solid;
@@ -761,6 +762,7 @@ QLabel#WrapperSettingsLabel {
     border-color: rgb( 47,  79,  79);
     background-color: rgb( 38,  38,  51);
 }
+QLabel#IndicatorLineEditLabel:disabled,
 QLabel#WrapperSettingsLabel:disabled {
     border-color: rgb( 67,  71,  77);
     background-color: rgb( 32,  34,  37);

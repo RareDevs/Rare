@@ -66,7 +66,7 @@ class RareGame(RareGameSlim):
                 queue_pos=self.queue_pos,
                 last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=timezone.utc),
                 grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=timezone.utc),
-                steam_appid=self.steam_appid,
+                steam_appid=str(self.steam_appid),
                 steam_grade=self.steam_grade,
                 steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min.replace(tzinfo=timezone.utc),
                 steam_shortcut=self.steam_shortcut,

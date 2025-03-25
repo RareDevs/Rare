@@ -2,7 +2,7 @@ import platform as pf
 from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QKeyEvent
+from PySide6.QtGui import QKeyEvent, QShowEvent
 from PySide6.QtWidgets import QTreeView
 
 from rare.models.game import RareGame
@@ -93,6 +93,11 @@ class GameMetadataView(QTreeView, SideTabContents):
         self.model = QJsonModel()
         self.setModel(self.model)
         self.rgame: Optional[RareGame] = None
+
+    def showEvent(self, event: QShowEvent):
+        if event.spontaneous():
+            return super().showEvent(event)
+        super().showEvent(event)
 
     def update_game(self, rgame: RareGame, view):
         self.rgame = rgame
