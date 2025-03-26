@@ -1,4 +1,5 @@
 import difflib
+import lzma
 import os
 from datetime import datetime
 from enum import Enum
@@ -14,13 +15,12 @@ from rare.utils.paths import cache_dir
 logger = getLogger("SteamGrades")
 
 replace_chars = ",;.:-_ "
-steamids_url = "https://raredevs.github.io/wring/steam_appids.json"
+steamids_url = "https://raredevs.github.io/wring/steam_appids.json.xz"
 protondb_url = "https://www.protondb.com/api/v1/reports/summaries/"
 
 __steam_appids: Dict = None
 __steam_titles: Dict = None
-__steam_json_version: int = 3
-__protondb_grades: Dict = None
+__steam_appids_version: int = 3
 __active_download: bool = False
 
 
@@ -57,7 +57,8 @@ def get_rating(core: LegendaryCore, app_name: str, steam_appid: int = None) -> T
             if not steam_appid:
                 raise Exception
         grade = get_grade(steam_appid)
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
         logger.error("Failed to get ProtonDB rating for %s", game.app_title)
         return 0, "fail"
     else:
@@ -72,21 +73,22 @@ def get_grade(steam_code):
     res = requests.get(f"{protondb_url}{steam_code}.json")
     try:
         app = orjson.loads(res.text)
-    except orjson.JSONDecodeError:
+    except orjson.JSONDecodeError as e:
+        logger.exception(e)
         logger.error("Failed to get ProtonDB response for %s", steam_code)
         return "fail"
 
     return app.get("tier", "fail")
 
 
-def download_steam_appids() -> str:
+def download_steam_appids() -> bytes:
     global __active_download
     if __active_download:
-        return ""
+        return b""
     __active_download = True
     resp = requests.get(steamids_url)
     __active_download = False
-    return resp.text
+    return resp.content
 
 
 def load_steam_appids() -> Tuple[Dict, Dict]:
@@ -96,7 +98,7 @@ def load_steam_appids() -> Tuple[Dict, Dict]:
         return __steam_appids, __steam_titles
 
     file = os.path.join(cache_dir(), "steam_appids.json")
-    version = __steam_json_version
+    version = __steam_appids_version
     elapsed_days = 0
 
     if os.path.exists(file):
@@ -104,11 +106,12 @@ def load_steam_appids() -> Tuple[Dict, Dict]:
         elapsed_days = abs(datetime.now() - mod_time).days
         json = orjson.loads(open(file, "r").read())
         version = json.get("version", 0)
-        if version >= __steam_json_version:
+        if version >= __steam_appids_version:
             __steam_appids = json["games"]
 
-    if not os.path.exists(file) or elapsed_days > 7 or version < __steam_json_version:
-        if text := download_steam_appids():
+    if not os.path.exists(file) or elapsed_days > 3 or version < __steam_appids_version:
+        if content := download_steam_appids():
+            text = lzma.decompress(content).decode("utf-8")
             with open(file, "w", encoding="utf-8") as f:
                 f.write(text)
             json = orjson.loads(text)
