@@ -132,7 +132,7 @@ def get_steam_id(title: str) -> int:
     if not __steam_appids or not __steam_titles:
         __steam_appids, __steam_titles = load_steam_appids()
 
-    if title in __steam_appids.values():
+    if title in __steam_titles.keys():
         steam_name = [title]
     else:
         steam_name = difflib.get_close_matches(title, __steam_appids.keys(), n=1, cutoff=0.5)
