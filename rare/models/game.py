@@ -101,6 +101,7 @@ class RareGame(RareGameSlim):
         self.progress: int = 0
         self.signals.progress.start.connect(lambda: self.__on_progress_update(0))
         self.signals.progress.update.connect(self.__on_progress_update)
+        self.__steam_grade_pending: bool = False
 
         self.game_process = GameProcess(self.game)
         self.game_process.launched.connect(self.__game_launched)
@@ -441,18 +442,6 @@ class RareGame(RareGameSlim):
         self.metadata.steam_date = datetime.min.replace(tzinfo=timezone.utc)
         self.signals.widget.update.emit()
 
-    def steam_grade(self) -> str:
-        if platform.system() == "Windows" or self.is_unreal:
-            return "na"
-        if self.metadata.steam_grade != "pending":
-            elapsed_time = abs(datetime.now(timezone.utc) - self.metadata.steam_date)
-            if elapsed_time.days > 3:
-                logger.info("Refreshing ProtonDB grade for %s", self.app_title)
-                worker = QRunnable.create(self.set_steam_grade)
-                QThreadPool.globalInstance().start(worker)
-                self.metadata.steam_grade = "pending"
-        return self.metadata.steam_grade
-
     @property
     def steam_appid(self) -> Optional[str]:
         return self.metadata.steam_appid
@@ -464,6 +453,21 @@ class RareGame(RareGameSlim):
         config.adjust_envvar(self.app_name, "STEAM_COMPAT_APP_ID", appid)
         config.adjust_envvar(self.app_name, "UMU_ID", f"umu-{appid}" if appid else "umu-default")
         self.metadata.steam_appid = appid
+        self.__save_metadata()
+
+    def steam_grade(self) -> str:
+        if platform.system() == "Windows" or self.is_unreal:
+            return "na"
+        if self.__steam_grade_pending:
+            return "pending"
+        elapsed_time = abs(datetime.now(timezone.utc) - self.metadata.steam_date)
+        if elapsed_time.days > 3:
+            logger.info("Refreshing ProtonDB grade for %s", self.app_title)
+            worker = QRunnable.create(self.set_steam_grade)
+            self.__steam_grade_pending = True
+            QThreadPool.globalInstance().start(worker)
+            return "pending"
+        return self.metadata.steam_grade
 
     def set_steam_grade(self) -> None:
         appid, grade = get_rating(self.core, self.app_name, self.steam_appid)
@@ -471,6 +475,7 @@ class RareGame(RareGameSlim):
             self.steam_appid = appid
         self.metadata.steam_grade = grade
         self.metadata.steam_date = datetime.now(timezone.utc)
+        self.__steam_grade_pending = False
         self.__save_metadata()
         self.signals.widget.update.emit()
 
