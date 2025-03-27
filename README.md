@@ -39,7 +39,7 @@ You can find the longs in the following locations depending on your operating sy
 |---------|----------------------------------------------------------|
 | Windows | `C:\Users\<username>\AppData\Local\Rare\Rare\cache\logs` |
 | Linux   | `/home/<username>/.cache/Rare/Rare/logs`                 |
-| masOS   | `/Users/<username>/Library/Caches/Rare/Rare/logs`        |
+| macOS   | `/Users/<username>/Library/Caches/Rare/Rare/logs`        |
 
 In these folders you will find files named like below
 
@@ -162,7 +162,7 @@ environment's `PATH`
 |---------|--------------------------------------------|
 | Windows | `<python_installation_folder>\Scripts`     |
 | Linux   | `/home/<username>/.local/bin`              |
-| masOS   | `/Users/<username>/Library/Python/3.x/bin` |
+| macOS   | `/Users/<username>/Library/Python/3.x/bin` |
 
 
 ### Run from source
