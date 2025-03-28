@@ -2,7 +2,6 @@ import configparser
 import os
 import time
 from argparse import Namespace
-from collections import defaultdict
 from itertools import chain
 from logging import getLogger
 from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple, Set
@@ -18,7 +17,7 @@ from rare.models.game import RareGame, RareEosOverlay
 from rare.models.signals import GlobalSignals
 from rare.utils.metrics import timelogger
 from rare.utils import config_helper
-from rare.utils.steam_shortcuts import load_steam_shortcuts
+from rare.utils import steam_shortcuts
 from .image_manager import ImageManager
 from .workers import (
     QueueWorker,
@@ -29,6 +28,7 @@ from .workers import (
     EntitlementsWorker,
     OriginWineWorker,
 )
+from .workers.fetch import SteamAppIdsWorker
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
 from .wrappers import Wrappers
@@ -80,6 +80,7 @@ class RareCore(QObject):
         self.__fetch_progress: int = 0
         self.__fetched_games_dlcs: bool = False
         self.__fetched_entitlements: bool = False
+        self.__fetched_steamappids: bool = False
 
         RareCore.__instance = self
 
@@ -267,7 +268,7 @@ class RareCore(QObject):
         # lk: Case-insensitive search for the game's executable (example: Brothers - A Tale of two Sons)
         executable_path = os.path.join(rgame.igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))
         file_list = map(str.lower, os.listdir(os.path.dirname(executable_path)))
-        if not os.path.basename(executable_path).lower() in file_list:
+        if os.path.basename(executable_path).lower() not in file_list:
             rgame.igame.needs_verification = True
             self.__core.lgd.set_installed_game(rgame.app_name, rgame.igame)
             rgame.update_igame()
@@ -298,7 +299,6 @@ class RareCore(QObject):
         rgame.signals.game.finished.connect(self.__signals.discord_rpc.remove_presence)
 
         self.__library[rgame.app_name] = rgame
-        self.__signals.application.update_tag_list.emit()
 
     def __filter_games(self, condition: Callable[[RareGame], bool]) -> Iterator[RareGame]:
         return filter(condition, self.__library.values())
@@ -350,27 +350,26 @@ class RareCore(QObject):
             self.__core.lgd.entitlements = result
             self.__fetched_entitlements = True
 
+        if result_type == FetchWorker.Result.STEAMAPPIDS:
+            self.__fetched_steamappids = True
+
         logger.info("Acquired data from %s worker", FetchWorker.Result(result_type).name)
 
         # Return early if there are still things to fetch
-        if not all({self.__fetched_games_dlcs, self.__fetched_entitlements}):
+        if not all({self.__fetched_games_dlcs, self.__fetched_entitlements, self.__fetched_steamappids}):
             return
 
         logger.debug("Fetch time %s seconds", time.perf_counter() - self.__start_time)
         self.__wrappers.import_wrappers(
             self.__core, self.__settings, [rgame.app_name for rgame in self.games]
         )
-        load_steam_shortcuts()
+
+        # Look for Rare shortcuts in Steam
+        steam_shortcuts.load_steam_shortcuts()
+
         self.progress.emit(100, self.tr("Launching Rare"))
         self.completed.emit()
         QTimer.singleShot(100, self.__post_init)
-
-    @property
-    def tag_list(self) -> list[str]:
-        tags = {"hidden", "favorite", "backlog", "completed"}
-        for rgame in self.games:
-            tags.update(map(lambda x: x.lower(), rgame.metadata.tags))
-        return sorted(tags)
 
     def fetch(self):
         self.__start_time = time.perf_counter()
@@ -383,8 +382,14 @@ class RareCore(QObject):
         entitlements_worker.signals.progress.connect(self.__on_fetch_progress)
         entitlements_worker.signals.result.connect(self.__on_fetch_result)
 
+        steamappids_worker = SteamAppIdsWorker(self.__core, self.__args)
+        steamappids_worker.signals.progress.connect(self.__on_fetch_progress)
+        steamappids_worker.signals.result.connect(self.__on_fetch_result)
+
         QThreadPool.globalInstance().start(games_dlcs_worker)
         QThreadPool.globalInstance().start(entitlements_worker)
+        QThreadPool.globalInstance().start(steamappids_worker)
+
 
     def fetch_saves(self):
         def __fetch() -> None:
@@ -418,6 +423,15 @@ class RareCore(QObject):
         if not self.__args.offline:
             self.fetch_saves()
         self.resolve_origin()
+
+    @property
+    def game_tags(self) -> Tuple[str, ...]:
+        default_tags = ("favorite", "backlog", "completed", "hidden")
+        custom_tags = set()
+        for rgame in self.games:
+            custom_tags.update(rgame.tags)
+        custom_tags = custom_tags.difference(default_tags)
+        return *default_tags, *sorted(custom_tags)
 
     @property
     def games_and_dlcs(self) -> Iterator[RareGame]:

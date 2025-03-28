@@ -28,7 +28,7 @@ def find_steam() -> Optional[str]:
         except FileNotFoundError:
             try:  # 64-bit
                 key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Valve\\Steam")
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 return None
         return winreg.QueryValueEx(key, "InstallPath")[0]
     # return the first valid path
@@ -185,7 +185,6 @@ def remove_steam_coverart(shortcut: SteamShortcut):
 
 if __name__ == "__main__":
 
-    from pprint import pprint
 
     load_steam_shortcuts()
 

@@ -1,8 +1,8 @@
 import logging
-from typing import List, Dict
+from typing import List
 
 from PySide6.QtCore import Qt, QUrl, Signal
-from PySide6.QtGui import QFont, QDesktopServices, QKeyEvent
+from PySide6.QtGui import QDesktopServices, QKeyEvent
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,

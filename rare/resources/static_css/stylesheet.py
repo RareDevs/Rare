@@ -1,9 +1,8 @@
 import os
-import sys
 from typing import Union, Type
 
 import qstylizer.style
-from PySide6.QtCore import QDir, QObject
+from PySide6.QtCore import QObject
 from PySide6.QtGui import QColor
 from PySide6.scripts.pyside_tool import qt_tool_wrapper
 from shiboken6.Shiboken import Object as wrappertype
@@ -96,7 +95,7 @@ css.QLabel["#QueueWorkerLabel"]['[workerType="Move"]'].setValues(
 
 
 # ProgressLabel
-from rare.components.tabs.library.widgets.library_widget import ProgressLabel
+from rare.components.tabs.library.widgets.library_widget import ProgressLabel  # noqa: E402
 css.QLabel[css_name(ProgressLabel)].setValues(
     borderWidth="1px",
     borderRadius="5%",
@@ -106,7 +105,7 @@ css.QLabel[css_name(ProgressLabel)].setValues(
 
 
 # IconGameWidget
-from rare.components.tabs.library.widgets.icon_widget import IconWidget
+from rare.components.tabs.library.widgets.icon_widget import IconWidget  # noqa: E402
 icon_background_props = {
     "backgroundColor": "rgba(0, 0, 0, 65%)",
 }
@@ -148,7 +147,7 @@ css.QPushButton[css_name(IconWidget, "Button")].hover.borderColor.setValue("gray
 
 
 # ListGameWidget
-from rare.components.tabs.library.widgets.list_widget import ListWidget
+from rare.components.tabs.library.widgets.list_widget import ListWidget  # noqa: E402
 css.QLabel[css_name(ListWidget, "TitleLabel")].fontWeight.setValue("bold")
 list_status_label_props = {
     "color": "white",
@@ -168,7 +167,7 @@ css.QLabel[css_name(ListWidget, "InfoLabel")].color.setValue("#999")
 
 
 # MainTabBar
-from rare.components.tabs.tab_widgets import MainTabBar
+from rare.components.tabs.tab_widgets import MainTabBar  # noqa: E402
 css.QTabBar[css_name(MainTabBar, "")].tab.disabled.setValues(
     border="0px",
     backgroundColor="transparent",
@@ -176,7 +175,7 @@ css.QTabBar[css_name(MainTabBar, "")].tab.disabled.setValues(
 
 
 # SelectViewWidget
-from rare.components.tabs.library.head_bar import SelectViewWidget
+from rare.components.tabs.library.head_bar import SelectViewWidget  # noqa: E402
 css.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
     border="none",
     backgroundColor="transparent",
@@ -184,11 +183,23 @@ css.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
 
 
 # ButtonLineEdit
-from rare.widgets.button_edit import ButtonLineEdit
+from rare.widgets.button_edit import ButtonLineEdit  # noqa: E402
 css.QPushButton[css_name(ButtonLineEdit, "Button")].setValues(
     backgroundColor="transparent",
     border="0px",
     padding="0px",
+)
+
+
+# GameTagCheckBox
+from rare.components.tabs.library.details.details import GameTagCheckBox  # noqa: E402
+css.QCheckBox[css_name(GameTagCheckBox, "")].setValues(
+    margin="1px",
+    borderWidth="1px",
+    borderStyle="solid",
+    borderColor="black",
+    borderRadius="3px",
+    padding="3px",
 )
 
 

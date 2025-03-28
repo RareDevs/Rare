@@ -7,11 +7,9 @@ from typing import Mapping, Dict, List, Tuple
 
 from PySide6.QtCore import QProcess, QProcessEnvironment
 
-from rare.utils import config_helper as config
 if pf.system() != "Windows":
-    from . import wine
     if pf.system() in {"Linux", "FreeBSD"}:
-        from . import steam
+        pass
 
 logger = getLogger("CompatUtils")
 

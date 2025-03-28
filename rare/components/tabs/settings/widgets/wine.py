@@ -78,7 +78,7 @@ class WineSettings(QGroupBox):
     def save_prefix(self, path: str) -> None:
         if self.app_name is None:
             raise RuntimeError
-        config.save_wine_prefix(self.app_name, path)
+        config.adjust_wine_prefix(self.app_name, path)
         self.environ_changed.emit("WINEPREFIX")
 
     def load_exec(self) -> str:
@@ -89,4 +89,4 @@ class WineSettings(QGroupBox):
     def save_exec(self, text: str) -> None:
         if self.app_name is None:
             raise RuntimeError
-        config.save_option(self.app_name, "wine_executable", text)
+        config.adjust_option(self.app_name, "wine_executable", text)

@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 from rare.shared import LegendaryCoreSingleton
 from rare.utils import config_helper as config
 from rare.widgets.side_tab import SideTabContents
-from .widgets.overlay import DxvkOverlaySettings, DxvkConfigSettings
+from .widgets.overlay import DxvkHudSettings, DxvkConfigSettings, DxvkNvapiDrsSettings
 from .widgets.runner import RunnerSettingsBase, RunnerSettingsType
 from .widgets.wine import WineSettings
 
@@ -28,8 +28,9 @@ class CompatSettingsBase(QWidget, SideTabContents):
 
     def __init__(
         self,
-        dxvk_overlay_widget: Type[DxvkOverlaySettings],
+        dxvk_hud_widget: Type[DxvkHudSettings],
         dxvk_config_widget: Type[DxvkConfigSettings],
+        dxvk_nvapi_drs_widget: Type[DxvkNvapiDrsSettings],
         runner_widget: Type['RunnerSettingsType'],
         mangohud_widget: Type['MangoHudSettings'] = None,
         parent=None
@@ -44,11 +45,14 @@ class CompatSettingsBase(QWidget, SideTabContents):
         self.runner.environ_changed.connect(self.environ_changed)
         self.runner.tool_enabled.connect(self.tool_enabled)
 
-        self.dxvk_overlay = dxvk_overlay_widget(self)
-        self.dxvk_overlay.environ_changed.connect(self.environ_changed)
+        self.dxvk_hud = dxvk_hud_widget(self)
+        self.dxvk_hud.environ_changed.connect(self.environ_changed)
 
         self.dxvk_config = dxvk_config_widget(self)
         self.dxvk_config.environ_changed.connect(self.environ_changed)
+
+        self.dxvk_nvapi_drs = dxvk_nvapi_drs_widget(self)
+        self.dxvk_nvapi_drs.environ_changed.connect(self.environ_changed)
 
         self.mangohud = False
         if mangohud_widget is not None:
@@ -57,8 +61,9 @@ class CompatSettingsBase(QWidget, SideTabContents):
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.addWidget(self.runner)
-        self.main_layout.addWidget(self.dxvk_overlay)
+        self.main_layout.addWidget(self.dxvk_hud)
         self.main_layout.addWidget(self.dxvk_config)
+        self.main_layout.addWidget(self.dxvk_nvapi_drs)
         if mangohud_widget is not None:
             self.main_layout.addWidget(self.mangohud)
         self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -82,16 +87,18 @@ class GlobalCompatSettings(CompatSettingsBase):
     def __init__(self, parent=None):
         if pf.system() in {"Linux", "FreeBSD"}:
             super(GlobalCompatSettings, self).__init__(
-                dxvk_overlay_widget=DxvkOverlaySettings,
+                dxvk_hud_widget=DxvkHudSettings,
                 dxvk_config_widget=DxvkConfigSettings,
+                dxvk_nvapi_drs_widget=DxvkNvapiDrsSettings,
                 runner_widget=GlobalRunnerSettings,
                 mangohud_widget=MangoHudSettings,
                 parent=parent
             )
         else:
             super(GlobalCompatSettings, self).__init__(
-                dxvk_overlay_widget=DxvkOverlaySettings,
+                dxvk_hud_widget=DxvkHudSettings,
                 dxvk_config_widget=DxvkConfigSettings,
+                dxvk_nvapi_drs_widget=DxvkNvapiDrsSettings,
                 runner_widget=GlobalRunnerSettings,
                 parent=parent
             )

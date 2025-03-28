@@ -259,7 +259,7 @@ class QJsonModel(QtCore.QAbstractItemModel):
                 document[ch.key] = self.genJson(ch)
             return document
 
-        elif item.type == list:
+        elif item.type is list:
             document = []
             for i in range(nchild):
                 ch = item.child(i)

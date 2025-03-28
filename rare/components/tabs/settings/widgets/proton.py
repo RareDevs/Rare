@@ -71,7 +71,7 @@ class ProtonSettings(QGroupBox):
             self.tool_combo.addItem(tool.name, tool)
         try:
             wrapper = next(
-                filter(lambda w: w.is_compat_tool, self.wrappers.get_game_wrapper_list(self.app_name))
+                filter(lambda w: w.is_compat_tool, self.wrappers.get_wrappers(self.app_name))
             )
             self.tool_wrapper = wrapper
             tool = next(filter(lambda t: t.checksum == wrapper.checksum, tools))
@@ -94,10 +94,10 @@ class ProtonSettings(QGroupBox):
 
         steam_environ = steam.get_steam_environment(steam_tool, self.tool_prefix.text())
         for key, value in steam_environ.items():
-            config.save_envvar(self.app_name, key, value)
+            config.adjust_envvar(self.app_name, key, value)
             self.environ_changed.emit(key)
 
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         if self.tool_wrapper and self.tool_wrapper in wrappers:
             wrappers.remove(self.tool_wrapper)
         if steam_tool is None:
@@ -108,13 +108,13 @@ class ProtonSettings(QGroupBox):
             )
             wrappers.append(wrapper)
             self.tool_wrapper = wrapper
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
 
         self.tool_prefix.setEnabled(steam_tool is not None)
         if steam_tool:
             if not (compatdata_path := config.get_proton_compatdata(self.app_name, fallback="")):
                 compatdata_path = proton_compat_dir(RareCore.instance().get_game(self.app_name).folder_name)
-                config.save_proton_compatdata(self.app_name, str(compatdata_path))
+                config.adjust_proton_compatdata(self.app_name, str(compatdata_path))
             self.tool_prefix.setText(str(compatdata_path))
         else:
             self.tool_prefix.setText("")
@@ -124,13 +124,13 @@ class ProtonSettings(QGroupBox):
     @staticmethod
     def proton_prefix_edit(text: str) -> Tuple[bool, str, int]:
         if not text:
-            return False, text, IndicatorReasonsCommon.EMPTY
+            return False, text, IndicatorReasonsCommon.IS_EMPTY
         parent_dir = os.path.dirname(text)
         return os.path.exists(parent_dir), text, IndicatorReasonsCommon.DIR_NOT_EXISTS
 
     def proton_prefix_save(self, text: str):
         if not text:
             return
-        config.save_proton_compatdata(self.app_name, text)
+        config.adjust_proton_compatdata(self.app_name, text)
         self.environ_changed.emit("STEAM_COMPAT_DATA_PATH")
 

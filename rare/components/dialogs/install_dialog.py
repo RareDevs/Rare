@@ -1,12 +1,12 @@
 import os
 import platform as pf
 import shutil
-from typing import Tuple, List, Union, Optional
+from typing import Tuple, Optional
 
 from PySide6.QtCore import QThreadPool, QSettings
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QFileDialog, QCheckBox, QWidget, QFormLayout
+from PySide6.QtWidgets import QFileDialog, QWidget, QFormLayout
 
 from rare.models.game import RareGame
 from rare.models.install import InstallDownloadModel, InstallQueueItemModel, InstallOptionsModel
@@ -368,14 +368,3 @@ class InstallDialog(ActionDialog):
 
     def reject_handler(self):
         self.__queue_item = InstallQueueItemModel(options=self.__options, download=None)
-
-
-class TagCheckBox(QCheckBox):
-    def __init__(self, text, desc, tags: List[str], parent=None):
-        super(TagCheckBox, self).__init__(parent)
-        self.setText(text)
-        self.setToolTip(desc)
-        self.tags = tags
-
-    def isChecked(self) -> Union[bool, List[str]]:
-        return self.tags if super(TagCheckBox, self).isChecked() else False

@@ -25,7 +25,6 @@ from rare.utils.paths import create_desktop_link, desktop_links_supported
 from .download import DownloadWidget
 from .groups import UpdateGroup, QueueGroup
 from .thread import DlThread, DlResultModel, DlResultCode
-from .widgets import UpdateWidget, QueueWidget
 
 logger = getLogger("Download")
 

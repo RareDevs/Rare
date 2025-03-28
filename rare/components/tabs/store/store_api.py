@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import Callable, Tuple, Any
 
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QApplication
@@ -16,14 +15,14 @@ from .api.models.query import SearchStoreQuery
 from .api.models.diesel import DieselProduct
 from .api.models.response import (
     ResponseModel,
-    CatalogOfferModel,
 )
 
 logger = getLogger("StoreAPI")
 graphql_url = "https://graphql.epicgames.com/graphql"
 
 
-DEBUG: Callable[[], bool] = lambda: "--debug" in QApplication.arguments()
+def DEBUG() -> bool:
+    return "--debug" in QApplication.arguments()
 
 
 class StoreAPI(QObject):

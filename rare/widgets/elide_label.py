@@ -2,7 +2,7 @@ from typing import Union
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFontMetrics, QResizeEvent
-from PySide6.QtWidgets import QLabel, QWidget
+from PySide6.QtWidgets import QLabel
 
 
 class ElideLabel(QLabel):

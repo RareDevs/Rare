@@ -1,18 +1,21 @@
 import os
 import platform
 import shutil
+from hashlib import sha1
 from logging import getLogger
-from typing import Optional
+from typing import Optional, Tuple
 
 from PySide6.QtCore import (
     Qt,
     Slot,
     Signal,
     QUrl,
+    QCoreApplication,
 )
+from PySide6.QtGui import QShowEvent, QFontMetrics, QHideEvent
 from PySide6.QtWidgets import (
     QWidget,
-    QMessageBox, QLineEdit, QHBoxLayout, QPushButton
+    QMessageBox, QLineEdit, QCheckBox, QVBoxLayout, QSizePolicy
 )
 
 from rare.models.install import SelectiveDownloadsModel, MoveGameModel
@@ -25,6 +28,7 @@ from rare.utils.misc import format_size, qta_icon, style_hyperlink
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
 from rare.components.dialogs.move_dialog import MoveDialog, is_game_dir
+from rare.widgets.dialogs import ButtonDialog, game_title
 
 logger = getLogger("GameInfo")
 
@@ -58,7 +62,6 @@ class GameDetails(QWidget, SideTabContents):
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
         self.args = RareCore.instance().args()
-        # self.image_manager = RareCore.instance().image_manager()
 
         self.rgame: Optional[RareGame] = None
 
@@ -85,16 +88,8 @@ class GameDetails(QWidget, SideTabContents):
             "na": self.tr("Not applicable"),
         }
 
-        self.editing = False
-
-        self.ui.hidden_check.checkStateChanged.connect(self.__on_tag_change)
-        self.ui.favorites_check.checkStateChanged.connect(self.__on_tag_change)
-        self.ui.backlog_check.checkStateChanged.connect(self.__on_tag_change)
-        self.ui.completed_check.checkStateChanged.connect(self.__on_tag_change)
-
-        self.custom_tags: list[QWidget] = []
         self.ui.add_tag_button.setIcon(qta_icon("mdi.plus"))
-        self.ui.add_tag_button.clicked.connect(lambda: self.__on_tag_add())
+        self.ui.add_tag_button.clicked.connect(self.__on_tag_add)
 
         # lk: hide unfinished things
         self.ui.requirements_group.setVisible(False)
@@ -283,45 +278,39 @@ class GameDetails(QWidget, SideTabContents):
             self.tr("<b>{}</b> successfully moved to <b>{}<b>.").format(rgame.app_title, dst_path),
         )
 
-    @Slot()
-    def __on_tag_change(self):
-        if self.editing:
-            return
-        tag_list = []
-        if self.ui.hidden_check.isChecked():
-            tag_list.append("hidden")
-        if self.ui.favorites_check.isChecked():
-            tag_list.append("favorite")
-        if self.ui.backlog_check.isChecked():
-            tag_list.append("backlog")
-        if self.ui.completed_check.isChecked():
-            tag_list.append("completed")
-
-        for w in self.custom_tags:
-            tag_list.append(w.layout().itemAt(0).widget().text())
-
-        logger.debug(f"Saving Tags for {self.rgame.game.app_title}: {tag_list}")
-
-        self.rgame.set_tags(tag_list)
-
+    @Slot(Qt.CheckState, str)
+    def __on_tag_changed(self, state: Qt.CheckState, tag: str):
+        tags = set(self.rgame.tags)
+        tags.add(tag) if state == Qt.CheckState.Checked else tags.remove(tag)
+        self.rgame.tags = tuple(tags)
 
     @Slot()
-    def __on_tag_add(self, text=""):
-        widget = QWidget()
-        layout = QHBoxLayout()
-        edit = QLineEdit(text)
-        edit.editingFinished.connect(self.__on_tag_change)
-        layout.addWidget(edit)
-        btn = QPushButton(qta_icon("mdi.trash-can"), None)
-        def delete_widget():
-            self.custom_tags.remove(widget)
-            widget.deleteLater()
-            self.__on_tag_change()
-        btn.clicked.connect(delete_widget)
-        layout.addWidget(btn)
-        widget.setLayout(layout)
-        self.ui.custom_tag_layout.addWidget(widget)
-        self.custom_tags.append(widget)
+    def __on_tag_add(self):
+        dialog = GameTagAddDialog(self.rgame, self.rcore.game_tags, self)
+        dialog.result_ready.connect(self.__on_tag_add_result)
+        dialog.show()
+
+    @Slot(bool, str)
+    def __on_tag_add_result(self, accepted: bool, tag: str):
+        if accepted and tag:
+            new_tag = GameTagCheckBox(tag, parent=self.ui.tags_group)
+            new_tag.checkStateChangedData.connect(self.__on_tag_changed)
+            # check tag after signal to invoke the save procedure
+            new_tag.setChecked(True)
+            self.ui.tags_layout.addWidget(new_tag)
+
+    def showEvent(self, event: QShowEvent):
+        if event.spontaneous():
+            return super().showEvent(event)
+        self.__update_widget()
+        super().showEvent(event)
+
+    def hideEvent(self, event: QHideEvent):
+        if event.spontaneous():
+            return super().hideEvent(event)
+        self.rcore.signals().application.update_game_tags.emit()
+        super().hideEvent(event)
+
 
     @Slot()
     def __update_widget(self):
@@ -366,7 +355,7 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.grade.setText(
             style_hyperlink(
                 f"https://www.protondb.com/app/{self.rgame.steam_appid}",
-                self.steam_grade_ratings[self.rgame.steam_grade()]
+                f"{self.steam_grade_ratings[self.rgame.steam_grade()]} ({self.rgame.steam_appid})"
             )
         )
 
@@ -418,21 +407,14 @@ class GameDetails(QWidget, SideTabContents):
         else:
             self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
 
-        for w in self.custom_tags:
+        for w in self.ui.tags_group.findChildren(GameTagCheckBox, options=Qt.FindChildOption.FindDirectChildrenOnly):
             w.deleteLater()
-        self.custom_tags.clear()
 
-        self.editing = True
-        self.ui.hidden_check.setChecked("hidden" in self.rgame.metadata.tags)
-        self.ui.favorites_check.setChecked("favorite" in self.rgame.metadata.tags)
-        self.ui.backlog_check.setChecked("backlog" in self.rgame.metadata.tags)
-        self.ui.completed_check.setChecked("completed" in self.rgame.metadata.tags)
-        self.editing = False
-
-        for tag in self.rgame.metadata.tags:
-            if tag in ["hidden", "favorite", "backlog", "completed"]:
-                continue
-            self.__on_tag_add(tag)
+        for tag in self.rcore.game_tags:
+            tag_check = GameTagCheckBox(tag, parent=self.ui.tags_group)
+            tag_check.setChecked(tag in self.rgame.tags)
+            tag_check.checkStateChangedData.connect(self.__on_tag_changed)
+            self.ui.tags_layout.addWidget(tag_check)
 
     @Slot(RareGame)
     def update_game(self, rgame: RareGame):
@@ -470,4 +452,79 @@ class GameDetails(QWidget, SideTabContents):
             self.ui.install_button.setText(self.tr("Install"))
 
         self.rgame = rgame
-        self.__update_widget()
+
+
+class GameTagCheckBox(QCheckBox):
+    checkStateChangedData = Signal(Qt.CheckState, str)
+
+    tag_translations = {
+        "backlog": QCoreApplication.translate("GameTagCheckBox", u"Backlog", None),
+        "completed": QCoreApplication.translate("GameTagCheckBox", u"Completed", None),
+        "favorite": QCoreApplication.translate("GameTagCheckBox", u"Favorite", None),
+        "hidden": QCoreApplication.translate("GameTagCheckBox", u"Hidden", None),
+    }
+
+    def __init__(self, tag: str, parent=None):
+        super(GameTagCheckBox, self).__init__(tag, parent)
+        self.setObjectName(type(self).__name__)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setText(self.tag_translations[tag])
+        self.tag = tag
+        base_color = (int(sha1(tag.encode('utf-8')).hexdigest()[0:6], base=16) & 0x707070) | 0x0c0c0c
+        border_color = base_color | 0x3f3f3f
+        luminance = (
+            ((base_color & 0xff0000) >> 16) * 0.2126
+            + ((base_color & 0x00ff00) >> 8) * 0.7152
+            + (base_color & 0x0000ff) * 0.0722
+        )
+        font_color = "white" if luminance < 140 else "black"
+        style = (
+            "QCheckBox#{0}{{color: {1};border-color: #{2:x};background-color: #{3:x};}}"
+        ).format(self.objectName(), font_color, border_color, base_color)
+        self.setStyleSheet(style)
+        self.checkStateChanged.connect(lambda state: self.checkStateChangedData.emit(state, self.tag))
+
+    def setText(self, text, /):
+        fm = QFontMetrics(self.font())
+        elide_text = fm.elidedText(text, Qt.TextElideMode.ElideRight, self.width(), Qt.TextFlag.TextShowMnemonic)
+        super().setText(elide_text)
+
+class GameTagAddDialog(ButtonDialog):
+    result_ready = Signal(bool, str)
+
+    def __init__(self, rgame: RareGame, tags: Tuple[str, ...], parent=None):
+        super(GameTagAddDialog, self).__init__(parent=parent)
+        header = self.tr("Add tag")
+        self.setWindowTitle(header)
+        self.setSubtitle(game_title(header, rgame.app_title))
+
+        self.line_edit = QLineEdit(self)
+        self.line_edit.textChanged.connect(self.__on_text_changed)
+
+        self.widget_layout = QVBoxLayout()
+        self.widget_layout.addWidget(self.line_edit)
+
+        self.setCentralLayout(self.widget_layout)
+
+        self.accept_button.setText(self.tr("Save"))
+        self.accept_button.setIcon(qta_icon("fa.edit", "fa5s.edit"))
+        self.accept_button.setEnabled(False)
+
+        self.tags = tags
+        self.result: Tuple = (False, "")
+
+    @Slot(str)
+    def __on_text_changed(self, text: str):
+        enabled = all(
+            (bool(text), len(text) > 4, text not in self.tags)
+        )
+        self.accept_button.setEnabled(enabled)
+
+    def done_handler(self):
+        self.result_ready.emit(*self.result)
+
+    def accept_handler(self):
+        self.result = (True, self.line_edit.text())
+
+    def reject_handler(self):
+        self.result = (False, self.line_edit.text())

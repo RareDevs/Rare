@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QLineEdit,
     QVBoxLayout,
-    QComboBox,
+    QComboBox, QCheckBox,
 )
 
 from rare.models.wrapper import Wrapper
@@ -57,10 +57,10 @@ class WrapperEditDialog(ButtonDialog):
         self.setCentralLayout(self.widget_layout)
 
         self.accept_button.setText(self.tr("Save"))
-        self.accept_button.setIcon(qta_icon("fa.edit"))
+        self.accept_button.setIcon(qta_icon("fa.edit", "fa5s.edit"))
         self.accept_button.setEnabled(False)
 
-        self.result: Tuple = ()
+        self.result: Tuple = (False, "")
 
     def setup(self, wrapper: Wrapper):
         header = self.tr("Edit wrapper")
@@ -104,6 +104,8 @@ class WrapperAddDialog(WrapperEditDialog):
 
 
 class WrapperWidget(QFrame):
+    # object: current
+    disable_wrapper = Signal(object)
     # object: current, object: new
     update_wrapper = Signal(object, object)
     # object: current
@@ -115,9 +117,11 @@ class WrapperWidget(QFrame):
         self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         self.setToolTip(wrapper.as_str)
 
-        text_lbl = QLabel(wrapper.name, parent=self)
-        text_lbl.setFont(QFont("monospace"))
-        text_lbl.setEnabled(wrapper.is_editable)
+        self.text_lbl = QCheckBox(wrapper.name, parent=self)
+        self.text_lbl.setChecked(wrapper.is_enabled)
+        self.text_lbl.setFont(QFont("monospace"))
+        self.text_lbl.setEnabled(wrapper.is_editable)
+        self.text_lbl.checkStateChanged.connect(self.__on_state_changed)
 
         image_lbl = QLabel(parent=self)
         image_lbl.setPixmap(qta_icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
@@ -131,7 +135,7 @@ class WrapperWidget(QFrame):
         manage_menu.addActions([edit_action, delete_action])
 
         manage_button = QPushButton(parent=self)
-        manage_button.setIcon(qta_icon("mdi.menu", fallback="fa.align-justify"))
+        manage_button.setIcon(qta_icon("mdi.menu", "fa5s.align-justify"))
         manage_button.setMenu(manage_menu)
         manage_button.setEnabled(wrapper.is_editable)
         if not wrapper.is_editable:
@@ -142,7 +146,7 @@ class WrapperWidget(QFrame):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(image_lbl)
-        layout.addWidget(text_lbl)
+        layout.addWidget(self.text_lbl)
         layout.addWidget(manage_button)
         self.setLayout(layout)
 
@@ -154,6 +158,12 @@ class WrapperWidget(QFrame):
 
     def data(self) -> Wrapper:
         return self.wrapper
+
+    @Slot(Qt.CheckState)
+    def __on_state_changed(self, state: Qt.CheckState) -> None:
+        new_wrapper = Wrapper(command=self.wrapper.command, enabled=self.text_lbl.isChecked())
+        self.update_wrapper.emit(self.wrapper, new_wrapper)
+        self.deleteLater()
 
     @Slot()
     def __on_delete(self) -> None:
@@ -230,19 +240,20 @@ class WrapperSettings(QWidget):
     def __init__(self, parent=None):
         super(WrapperSettings, self).__init__(parent=parent)
 
-        self.wrapper_label = QLabel(self.tr("No wrappers defined"), self)
-        self.wrapper_label.setFrameStyle(QLabel.Shape.StyledPanel | QLabel.Shadow.Plain)
-        self.wrapper_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-
         self.add_button = QPushButton(self.tr("Add wrapper"), self)
         self.add_button.clicked.connect(self.__on_add)
 
         self.wrapper_scroll = WrapperSettingsScroll(self)
         self.wrapper_scroll.setMinimumHeight(self.add_button.minimumSizeHint().height())
 
-        self.wrapper_container = WrapperContainer(self.wrapper_label, self.wrapper_scroll)
+        self.wrapper_container = WrapperContainer(self.wrapper_scroll)
         self.wrapper_container.orderChanged.connect(self.__on_order_changed)
         self.wrapper_scroll.setWidget(self.wrapper_container)
+
+        self.wrapper_label = QLabel(self.tr("No wrappers defined"), self)
+        self.wrapper_label.setFrameStyle(QLabel.Shape.StyledPanel | QLabel.Shadow.Plain)
+        self.wrapper_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.wrapper_container.main_layout.addWidget(self.wrapper_label)
 
         # lk: set object names for the stylesheet
         self.setObjectName("WrapperSettings")
@@ -268,10 +279,10 @@ class WrapperSettings(QWidget):
     @Slot(QWidget, int)
     def __on_order_changed(self, widget: WrapperWidget, new_index: int):
         wrapper = widget.data()
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         wrappers.remove(wrapper)
         wrappers.insert(new_index, wrapper)
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
 
     @Slot()
     def __on_add(self) -> None:
@@ -293,16 +304,17 @@ class WrapperSettings(QWidget):
             self.wrapper_container.addWidget(widget)
         else:
             self.wrapper_container.insertWidget(position, widget)
+        # widget.disable_wrapper.connect(self.__disable_wrapper)
         widget.update_wrapper.connect(self.__update_wrapper)
         widget.delete_wrapper.connect(self.__delete_wrapper)
 
     def add_wrapper(self, wrapper: Wrapper, position: int = -1):
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         if position < 0 or wrapper.is_compat_tool:
             wrappers.append(wrapper)
         else:
             wrappers.insert(position, wrapper)
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
         self.__add_wrapper(wrapper, position)
 
     def add_user_wrapper(self, wrapper: Wrapper, position: int = -1):
@@ -319,7 +331,7 @@ class WrapperSettings(QWidget):
                 )
                 return
 
-        if wrapper.checksum in self.wrappers.get_game_md5sum_list(self.app_name):
+        if wrapper.checksum in self.wrappers.get_checksums(self.app_name):
             QMessageBox.warning(
                 self,
                 self.tr("Warning"),
@@ -341,27 +353,36 @@ class WrapperSettings(QWidget):
         self.add_wrapper(wrapper, position)
 
     @Slot(object)
-    def __delete_wrapper(self, wrapper: Wrapper):
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+    def __disable_wrapper(self, wrapper: Wrapper):
+        wrappers = self.wrappers.get_wrappers(self.app_name)
+        index = wrappers.index(wrapper)
         wrappers.remove(wrapper)
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        wrappers.insert(index, wrapper)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
+        self.__add_wrapper(wrapper, index)
+
+    @Slot(object)
+    def __delete_wrapper(self, wrapper: Wrapper):
+        wrappers = self.wrappers.get_wrappers(self.app_name)
+        wrappers.remove(wrapper)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
         if not wrappers:
             self.wrapper_label.setVisible(True)
 
     @Slot(object, object)
     def __update_wrapper(self, old: Wrapper, new: Wrapper):
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         index = wrappers.index(old)
         wrappers.remove(old)
         wrappers.insert(index, new)
-        self.wrappers.set_game_wrapper_list(self.app_name, wrappers)
+        self.wrappers.set_wrappers(self.app_name, wrappers)
         self.__add_wrapper(new, index)
 
     @Slot()
     def update_state(self):
         for w in self.wrapper_container.findChildren(WrapperWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             w.deleteLater()
-        wrappers = self.wrappers.get_game_wrapper_list(self.app_name)
+        wrappers = self.wrappers.get_wrappers(self.app_name)
         if not wrappers:
             self.wrapper_label.setVisible(True)
         for wrapper in wrappers:
@@ -372,18 +393,17 @@ class WrapperContainer(QWidget):
     # QWidget: moving widget, int: new index
     orderChanged: Signal = Signal(QWidget, int)
 
-    def __init__(self, label: QLabel, parent=None):
+    def __init__(self, parent=None):
         super(WrapperContainer, self).__init__(parent=parent)
         self.setAcceptDrops(True)
         self.__layout = QHBoxLayout()
         self.__drag_widget: Optional[QWidget] = None
 
-        main_layout = QHBoxLayout(self)
-        main_layout.addWidget(label)
-        main_layout.addLayout(self.__layout)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        main_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
+        self.main_layout = QHBoxLayout(self)
+        self.main_layout.addLayout(self.__layout)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        self.main_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)

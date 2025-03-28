@@ -7,15 +7,15 @@ from legendary.utils.selective_dl import get_sdl_appname
 from rare.models.game import RareGame
 
 
-class TagCheckBox(QCheckBox):
+class InstallTagCheckBox(QCheckBox):
     def __init__(self, text, desc, tags: List[str], parent=None):
-        super(TagCheckBox, self).__init__(parent)
+        super(InstallTagCheckBox, self).__init__(parent)
         self.setText(text)
         self.setToolTip(desc)
         self.tags = tags
 
     def isChecked(self) -> Union[bool, List[str]]:
-        return self.tags if super(TagCheckBox, self).isChecked() else False
+        return self.tags if super(InstallTagCheckBox, self).isChecked() else False
 
 
 class SelectiveWidget(QWidget):
@@ -36,7 +36,7 @@ class SelectiveWidget(QWidget):
             sdl_data = core.get_sdl_data(sdl_name, platform=platform)
             if sdl_data:
                 for tag, info in sdl_data.items():
-                    cb = TagCheckBox(info["name"].strip(), info["description"].strip(), info["tags"])
+                    cb = InstallTagCheckBox(info["name"].strip(), info["description"].strip(), info["tags"])
                     if tag == "__required":
                         cb.setChecked(True)
                         cb.setDisabled(True)
@@ -51,7 +51,7 @@ class SelectiveWidget(QWidget):
 
     def install_tags(self):
         install_tags = [""]
-        for cb in self.findChildren(TagCheckBox, options=Qt.FindChildOption.FindDirectChildrenOnly):
+        for cb in self.findChildren(InstallTagCheckBox, options=Qt.FindChildOption.FindDirectChildrenOnly):
             if data := cb.isChecked():
                 # noinspection PyTypeChecker
                 install_tags.extend(data)

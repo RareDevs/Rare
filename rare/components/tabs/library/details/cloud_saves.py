@@ -41,9 +41,6 @@ class CloudSaves(QWidget, SideTabContents):
         self.sync_ui = Ui_CloudSyncWidget()
         self.sync_ui.setupUi(self.sync_widget)
 
-        self.info_label = QLabel(self.tr("<b>This game doesn't support cloud saves</b>"))
-        self.info_label_not_installed = QLabel(self.tr("<b>Install this game to see cloud saves</b>"))
-
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
         self.settings = QSettings()
@@ -83,11 +80,12 @@ class CloudSaves(QWidget, SideTabContents):
 
         self.cloud_ui.sync_check.stateChanged.connect(self.__on_sync_check_changed)
 
+        self.info_label = QLabel(parent=self)
+
         layout = QVBoxLayout(self)
         layout.addWidget(self.sync_widget)
         layout.addWidget(self.cloud_widget)
         layout.addWidget(self.info_label)
-        layout.addWidget(self.info_label_not_installed)
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding))
 
     @staticmethod
@@ -178,8 +176,14 @@ class CloudSaves(QWidget, SideTabContents):
             bool(saves_ready and self.rgame.save_path))  # and not self.rgame.is_save_up_to_date))
 
         self.cloud_widget.setEnabled(saves_ready)
-        self.info_label.setVisible(not saves_ready and not supports_saves)
-        self.info_label_not_installed.setVisible(supports_saves and not self.rgame.is_installed)
+        info_text = (
+            self.tr("<b>This game doesn't support cloud saves</b>") if not supports_saves else (
+                self.tr("<b>This game supports cloud saves, but it's not installed</b>")
+                if self.rgame.igame is None else ""
+            )
+        )
+        self.info_label.setText(info_text)
+        self.info_label.setVisible(bool(info_text))
         if not saves_ready:
             self.sync_ui.date_info_local.setText("None")
             self.sync_ui.age_label_local.setText("None")

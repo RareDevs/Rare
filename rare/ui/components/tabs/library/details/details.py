@@ -3,28 +3,23 @@
 ################################################################################
 ## Form generated from reading UI file 'details.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QFormLayout, QFrame,
-    QGridLayout, QGroupBox, QHBoxLayout, QLabel,
-    QLayout, QProgressBar, QPushButton, QSizePolicy,
-    QSpacerItem, QStackedWidget, QVBoxLayout, QWidget)
+from PySide6.QtCore import (QCoreApplication, QSize, Qt)
+from PySide6.QtGui import (QFont)
+from PySide6.QtWidgets import (QFormLayout, QFrame, QGroupBox,
+    QHBoxLayout, QLabel, QLayout, QProgressBar,
+    QPushButton, QSizePolicy, QSpacerItem, QStackedWidget,
+    QVBoxLayout, QWidget)
 
 class Ui_GameDetails(object):
     def setupUi(self, GameDetails):
         if not GameDetails.objectName():
             GameDetails.setObjectName(u"GameDetails")
-        GameDetails.resize(814, 470)
+        GameDetails.resize(814, 598)
         GameDetails.setWindowTitle(u"GameDetails")
         self.main_layout = QHBoxLayout(GameDetails)
         self.main_layout.setObjectName(u"main_layout")
@@ -37,39 +32,22 @@ class Ui_GameDetails(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tags_group.sizePolicy().hasHeightForWidth())
         self.tags_group.setSizePolicy(sizePolicy)
-        self.tags_layout = QGridLayout(self.tags_group)
+        self.tags_group_layout = QVBoxLayout(self.tags_group)
+        self.tags_group_layout.setObjectName(u"tags_group_layout")
+        self.tags_layout = QVBoxLayout()
         self.tags_layout.setObjectName(u"tags_layout")
-        self.tags_layout.setHorizontalSpacing(0)
-        self.completed_check = QCheckBox(self.tags_group)
-        self.completed_check.setObjectName(u"completed_check")
 
-        self.tags_layout.addWidget(self.completed_check, 3, 0, 1, 2)
-
-        self.backlog_check = QCheckBox(self.tags_group)
-        self.backlog_check.setObjectName(u"backlog_check")
-
-        self.tags_layout.addWidget(self.backlog_check, 2, 0, 1, 2)
-
-        self.favorites_check = QCheckBox(self.tags_group)
-        self.favorites_check.setObjectName(u"favorites_check")
-
-        self.tags_layout.addWidget(self.favorites_check, 1, 0, 1, 2)
-
-        self.hidden_check = QCheckBox(self.tags_group)
-        self.hidden_check.setObjectName(u"hidden_check")
-
-        self.tags_layout.addWidget(self.hidden_check, 0, 0, 1, 2)
-
-        self.custom_tag_layout = QVBoxLayout()
-        self.custom_tag_layout.setObjectName(u"custom_tag_layout")
-        self.custom_tag_layout.setContentsMargins(-1, 0, -1, 0)
-
-        self.tags_layout.addLayout(self.custom_tag_layout, 5, 0, 1, 2)
+        self.tags_group_layout.addLayout(self.tags_layout)
 
         self.add_tag_button = QPushButton(self.tags_group)
         self.add_tag_button.setObjectName(u"add_tag_button")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.add_tag_button.sizePolicy().hasHeightForWidth())
+        self.add_tag_button.setSizePolicy(sizePolicy1)
 
-        self.tags_layout.addWidget(self.add_tag_button, 7, 0, 1, 2)
+        self.tags_group_layout.addWidget(self.add_tag_button, 0, Qt.AlignmentFlag.AlignRight)
 
 
         self.left_layout.addWidget(self.tags_group)
@@ -89,11 +67,11 @@ class Ui_GameDetails(object):
         self.details_layout.setContentsMargins(6, 6, 6, 6)
         self.lbl_dev = QLabel(GameDetails)
         self.lbl_dev.setObjectName(u"lbl_dev")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.lbl_dev.sizePolicy().hasHeightForWidth())
-        self.lbl_dev.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.lbl_dev.sizePolicy().hasHeightForWidth())
+        self.lbl_dev.setSizePolicy(sizePolicy2)
         font = QFont()
         font.setBold(True)
         self.lbl_dev.setFont(font)
@@ -110,8 +88,8 @@ class Ui_GameDetails(object):
 
         self.lbl_app_name = QLabel(GameDetails)
         self.lbl_app_name.setObjectName(u"lbl_app_name")
-        sizePolicy1.setHeightForWidth(self.lbl_app_name.sizePolicy().hasHeightForWidth())
-        self.lbl_app_name.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lbl_app_name.sizePolicy().hasHeightForWidth())
+        self.lbl_app_name.setSizePolicy(sizePolicy2)
         self.lbl_app_name.setFont(font)
         self.lbl_app_name.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -126,8 +104,8 @@ class Ui_GameDetails(object):
 
         self.lbl_version = QLabel(GameDetails)
         self.lbl_version.setObjectName(u"lbl_version")
-        sizePolicy1.setHeightForWidth(self.lbl_version.sizePolicy().hasHeightForWidth())
-        self.lbl_version.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lbl_version.sizePolicy().hasHeightForWidth())
+        self.lbl_version.setSizePolicy(sizePolicy2)
         self.lbl_version.setFont(font)
         self.lbl_version.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -142,8 +120,8 @@ class Ui_GameDetails(object):
 
         self.lbl_grade = QLabel(GameDetails)
         self.lbl_grade.setObjectName(u"lbl_grade")
-        sizePolicy1.setHeightForWidth(self.lbl_grade.sizePolicy().hasHeightForWidth())
-        self.lbl_grade.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lbl_grade.sizePolicy().hasHeightForWidth())
+        self.lbl_grade.setSizePolicy(sizePolicy2)
         self.lbl_grade.setFont(font)
         self.lbl_grade.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -158,8 +136,8 @@ class Ui_GameDetails(object):
 
         self.lbl_install_size = QLabel(GameDetails)
         self.lbl_install_size.setObjectName(u"lbl_install_size")
-        sizePolicy1.setHeightForWidth(self.lbl_install_size.sizePolicy().hasHeightForWidth())
-        self.lbl_install_size.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lbl_install_size.sizePolicy().hasHeightForWidth())
+        self.lbl_install_size.setSizePolicy(sizePolicy2)
         self.lbl_install_size.setFont(font)
         self.lbl_install_size.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -174,8 +152,8 @@ class Ui_GameDetails(object):
 
         self.lbl_install_path = QLabel(GameDetails)
         self.lbl_install_path.setObjectName(u"lbl_install_path")
-        sizePolicy1.setHeightForWidth(self.lbl_install_path.sizePolicy().hasHeightForWidth())
-        self.lbl_install_path.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lbl_install_path.sizePolicy().hasHeightForWidth())
+        self.lbl_install_path.setSizePolicy(sizePolicy2)
         self.lbl_install_path.setFont(font)
         self.lbl_install_path.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -191,8 +169,8 @@ class Ui_GameDetails(object):
 
         self.lbl_platform = QLabel(GameDetails)
         self.lbl_platform.setObjectName(u"lbl_platform")
-        sizePolicy1.setHeightForWidth(self.lbl_platform.sizePolicy().hasHeightForWidth())
-        self.lbl_platform.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lbl_platform.sizePolicy().hasHeightForWidth())
+        self.lbl_platform.setSizePolicy(sizePolicy2)
         self.lbl_platform.setFont(font)
         self.lbl_platform.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -206,8 +184,8 @@ class Ui_GameDetails(object):
 
         self.lbl_game_actions = QLabel(GameDetails)
         self.lbl_game_actions.setObjectName(u"lbl_game_actions")
-        sizePolicy1.setHeightForWidth(self.lbl_game_actions.sizePolicy().hasHeightForWidth())
-        self.lbl_game_actions.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lbl_game_actions.sizePolicy().hasHeightForWidth())
+        self.lbl_game_actions.setSizePolicy(sizePolicy2)
         self.lbl_game_actions.setFont(font)
         self.lbl_game_actions.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -274,11 +252,11 @@ class Ui_GameDetails(object):
         self.move_button_layout.setContentsMargins(0, 0, 0, 0)
         self.move_button = QPushButton(self.move_button_page)
         self.move_button.setObjectName(u"move_button")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.move_button.sizePolicy().hasHeightForWidth())
-        self.move_button.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.move_button.sizePolicy().hasHeightForWidth())
+        self.move_button.setSizePolicy(sizePolicy3)
 
         self.move_button_layout.addWidget(self.move_button)
 
@@ -333,11 +311,11 @@ class Ui_GameDetails(object):
 
         self.requirements_group = QFrame(GameDetails)
         self.requirements_group.setObjectName(u"requirements_group")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.requirements_group.sizePolicy().hasHeightForWidth())
-        self.requirements_group.setSizePolicy(sizePolicy3)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.requirements_group.sizePolicy().hasHeightForWidth())
+        self.requirements_group.setSizePolicy(sizePolicy4)
         self.requirements_group.setFrameShape(QFrame.Shape.StyledPanel)
         self.requirements_group.setFrameShadow(QFrame.Shadow.Sunken)
         self.requirements_layout = QHBoxLayout(self.requirements_group)
@@ -361,11 +339,10 @@ class Ui_GameDetails(object):
 
     def retranslateUi(self, GameDetails):
         self.tags_group.setTitle(QCoreApplication.translate("GameDetails", u"Tags", None))
-        self.completed_check.setText(QCoreApplication.translate("GameDetails", u"Completed", None))
-        self.backlog_check.setText(QCoreApplication.translate("GameDetails", u"Backlog", None))
-        self.favorites_check.setText(QCoreApplication.translate("GameDetails", u"Favorites", None))
-        self.hidden_check.setText(QCoreApplication.translate("GameDetails", u"Hidden", None))
-        self.add_tag_button.setText("")
+#if QT_CONFIG(tooltip)
+        self.add_tag_button.setToolTip(QCoreApplication.translate("GameDetails", u"Add custom tag", None))
+#endif // QT_CONFIG(tooltip)
+        self.add_tag_button.setText(QCoreApplication.translate("GameDetails", u"Add tag", None))
         self.lbl_dev.setText(QCoreApplication.translate("GameDetails", u"Developer", None))
         self.lbl_app_name.setText(QCoreApplication.translate("GameDetails", u"Application name", None))
         self.lbl_version.setText(QCoreApplication.translate("GameDetails", u"Version", None))
