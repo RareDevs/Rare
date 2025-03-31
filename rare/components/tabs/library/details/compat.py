@@ -86,10 +86,8 @@ class LocalRunnerSettings(RunnerSettingsBase):
         _ = QSignalBlocker(self.shader_cache_check)
         self.shader_cache_check.setChecked(caches)
         _ = QSignalBlocker(self.steam_appid_edit)
-        self.steam_appid_edit.setText(str(self.rgame.steam_appid))
-        self.steam_appid_edit.setInfo(
-            self.__steam_titles[self.rgame.steam_appid] if self.rgame.steam_appid else ""
-        )
+        self.steam_appid_edit.setText(self.rgame.steam_appid if self.rgame.steam_appid else "")
+        self.steam_appid_edit.setInfo(self.__steam_titles.get(self.rgame.steam_appid, ""))
         return super().showEvent(a0)
 
     def __steam_appid_edit_callback(self, text: str) -> Tuple[bool, str, int]:
@@ -104,7 +102,7 @@ class LocalRunnerSettings(RunnerSettingsBase):
             return False, text, IndicatorReasonsCommon.GAME_NOT_EXISTS
 
     def __steam_appid_save_callback(self, text: str) -> None:
-        self.steam_appid_edit.setInfo(self.__steam_titles[text] if text else "")
+        self.steam_appid_edit.setInfo(self.__steam_titles.get(text, ""))
         if text == self.rgame.steam_appid:
             return
         self.rgame.steam_appid = text
