@@ -348,7 +348,6 @@ class EGLSyncImportGroup(EGLSyncListGroup):
         self.setTitle(self.tr("Importable games"))
         self.ui.label.setText(self.tr("No games to import from EGL"))
         self.ui.action_button.setText(self.tr("Import"))
-        self.list_func = self.core.egl_get_importable
 
     def populate(self, enabled: bool):
         if enabled:
