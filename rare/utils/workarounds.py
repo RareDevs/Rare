@@ -134,6 +134,15 @@ __workarounds: Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Set]]]]] = {
             },
         },
     },
+    # Cities Skylines
+    "bcbc03d8812a44c18f41cf7d5f849265": {
+        "options": {
+            "override_exe": {
+                "value": "Cities.exe",
+                "os": __os_all,
+            },
+        },
+    },
 }
 
 
