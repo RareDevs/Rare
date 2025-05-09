@@ -173,6 +173,7 @@ def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[st
             compat_pfx = os.path.join(environment["STEAM_COMPAT_DATA_PATH"], "pfx")
             if not os.path.isdir(compat_pfx):
                 os.makedirs(environment[key], exist_ok=True)
+        environment["WINEDLLOVERRIDES"] = environment.get("WINEDLLOVERRIDES", "") + ";lsteamclient=d;"
 
     _env = os.environ.copy()
     _command = command.copy()
