@@ -31,6 +31,9 @@ class InstallDialogAdvanced(CollapsibleFrame):
         self.ui = Ui_InstallDialogAdvanced()
         self.ui.setupUi(self.widget)
         self.setWidget(self.widget)
+        self.ui.exclude_prefix_label.setVisible(False)
+        self.ui.exclude_prefix_info.setVisible(False)
+        self.ui.exclude_prefix_button.setVisible(False)
 
 
 class InstallDialogSelective(CollapsibleFrame):

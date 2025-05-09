@@ -297,7 +297,7 @@ class GameDetails(QWidget, SideTabContents):
             new_tag.checkStateChangedData.connect(self.__on_tag_changed)
             # check tag after signal to invoke the save procedure
             new_tag.setChecked(True)
-            self.ui.tags_layout.addWidget(new_tag)
+            self.ui.tags_vlayout.addWidget(new_tag)
 
     def showEvent(self, event: QShowEvent):
         if event.spontaneous():
@@ -414,7 +414,7 @@ class GameDetails(QWidget, SideTabContents):
             tag_check = GameTagCheckBox(tag, parent=self.ui.tags_group)
             tag_check.setChecked(tag in self.rgame.tags)
             tag_check.checkStateChangedData.connect(self.__on_tag_changed)
-            self.ui.tags_layout.addWidget(tag_check)
+            self.ui.tags_vlayout.addWidget(tag_check)
 
     @Slot(RareGame)
     def update_game(self, rgame: RareGame):
@@ -468,7 +468,7 @@ class GameTagCheckBox(QCheckBox):
         super(GameTagCheckBox, self).__init__(tag, parent)
         self.setObjectName(type(self).__name__)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.setText(self.tag_translations[tag])
+        self.setText(self.tag_translations.get(tag, tag))
         self.tag = tag
         base_color = (int(sha1(tag.encode('utf-8')).hexdigest()[0:6], base=16) & 0x707070) | 0x0c0c0c
         border_color = base_color | 0x3f3f3f

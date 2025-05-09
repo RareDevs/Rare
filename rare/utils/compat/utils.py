@@ -166,6 +166,7 @@ def get_host_environment(app_environment: Dict, silent: bool = False) -> Dict:
         _environ["WINE_DISABLE_FAST_SYNC"] = "1"
         _environ["WINEDEBUG"] = "-all"
         _environ["WINEDLLOVERRIDES"] = "winemenubuilder=d;mscoree=d;mshtml=d;"
+        _environ["WINEDLLOVERRIDES"] += "winex11.drv,winewayland.drv=d;"
         # lk: pressure-vessel complains about this but it doesn't fail due to it
         #_environ["DISPLAY"] = ""
     return _environ

@@ -10,21 +10,22 @@
 
 from PySide6.QtCore import (QCoreApplication, Qt)
 from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QCheckBox, QFormLayout, QHBoxLayout,
-    QLabel, QSizePolicy, QSpinBox)
+from PySide6.QtWidgets import (QCheckBox, QFormLayout, QFrame,
+    QHBoxLayout, QLabel, QPushButton, QSizePolicy,
+    QSpinBox)
 
 class Ui_InstallDialogAdvanced(object):
     def setupUi(self, InstallDialogAdvanced):
         if not InstallDialogAdvanced.objectName():
             InstallDialogAdvanced.setObjectName(u"InstallDialogAdvanced")
-        InstallDialogAdvanced.resize(386, 184)
+        InstallDialogAdvanced.resize(461, 246)
         InstallDialogAdvanced.setWindowTitle(u"InstallDialogAdvanced")
         self.install_dialog_advanced_layout = QFormLayout(InstallDialogAdvanced)
         self.install_dialog_advanced_layout.setObjectName(u"install_dialog_advanced_layout")
-        self.install_dialog_advanced_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.install_dialog_advanced_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.max_workers_label = QLabel(InstallDialogAdvanced)
         self.max_workers_label.setObjectName(u"max_workers_label")
-        self.max_workers_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.max_workers_label.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.install_dialog_advanced_layout.setWidget(0, QFormLayout.LabelRole, self.max_workers_label)
 
@@ -53,7 +54,7 @@ class Ui_InstallDialogAdvanced(object):
 
         self.max_memory_label = QLabel(InstallDialogAdvanced)
         self.max_memory_label.setObjectName(u"max_memory_label")
-        self.max_memory_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.max_memory_label.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.install_dialog_advanced_layout.setWidget(1, QFormLayout.LabelRole, self.max_memory_label)
 
@@ -137,6 +138,30 @@ class Ui_InstallDialogAdvanced(object):
 
         self.install_dialog_advanced_layout.setWidget(6, QFormLayout.FieldRole, self.download_only_check)
 
+        self.exclude_prefix_label = QLabel(InstallDialogAdvanced)
+        self.exclude_prefix_label.setObjectName(u"exclude_prefix_label")
+
+        self.install_dialog_advanced_layout.setWidget(7, QFormLayout.LabelRole, self.exclude_prefix_label)
+
+        self.exclude_prefix_layout = QHBoxLayout()
+        self.exclude_prefix_layout.setObjectName(u"exclude_prefix_layout")
+        self.exclude_prefix_info = QLabel(InstallDialogAdvanced)
+        self.exclude_prefix_info.setObjectName(u"exclude_prefix_info")
+        self.exclude_prefix_info.setFrameShape(QFrame.Shape.StyledPanel)
+        self.exclude_prefix_info.setFrameShadow(QFrame.Shadow.Sunken)
+        self.exclude_prefix_info.setWordWrap(True)
+
+        self.exclude_prefix_layout.addWidget(self.exclude_prefix_info)
+
+        self.exclude_prefix_button = QPushButton(InstallDialogAdvanced)
+        self.exclude_prefix_button.setObjectName(u"exclude_prefix_button")
+
+        self.exclude_prefix_layout.addWidget(self.exclude_prefix_button)
+
+        self.exclude_prefix_layout.setStretch(0, 1)
+
+        self.install_dialog_advanced_layout.setLayout(7, QFormLayout.FieldRole, self.exclude_prefix_layout)
+
 
         self.retranslateUi(InstallDialogAdvanced)
     # setupUi
@@ -154,6 +179,9 @@ class Ui_InstallDialogAdvanced(object):
         self.ignore_space_check.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Use with caution!", None))
         self.download_only_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Download only", None))
         self.download_only_check.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Do not try to install.", None))
+        self.exclude_prefix_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Excluded files", None))
+        self.exclude_prefix_info.setText("")
+        self.exclude_prefix_button.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Select...", None))
         pass
     # retranslateUi
 

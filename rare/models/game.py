@@ -5,12 +5,12 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from logging import getLogger
 from threading import Lock
-from typing import List, Optional, Dict, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
-from PySide6.QtCore import QRunnable, Slot, QProcess, QThreadPool, QSettings
-from PySide6.QtGui import QPixmap
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
+from PySide6.QtCore import QProcess, QRunnable, QSettings, QThreadPool, Slot
+from PySide6.QtGui import QPixmap
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameBase, RareGameSlim
@@ -19,9 +19,10 @@ from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.models.options import options
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
-import rare.utils.config_helper as config
+from rare.utils import config_helper as config
 from rare.utils.paths import data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
+from rare.utils.workarounds import apply_workarounds
 
 logger = getLogger("RareGame")
 
@@ -52,7 +53,7 @@ class RareGame(RareGameSlim):
                 queue_pos=data.get("queue_pos", None),
                 last_played=RareGame.Metadata.parse_date(data.get("last_played", "")),
                 grant_date=RareGame.Metadata.parse_date(data.get("grant_date", "")),
-                steam_appid=str(data.get("steam_appid", None)),
+                steam_appid=str(appid) if (appid := data.get("steam_appid", None)) else None,
                 steam_grade=data.get("steam_grade", None),
                 steam_date=RareGame.Metadata.parse_date(data.get("steam_date", "")),
                 steam_shortcut=data.get("steam_shortcut", None),
@@ -66,7 +67,7 @@ class RareGame(RareGameSlim):
                 queue_pos=self.queue_pos,
                 last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=timezone.utc),
                 grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=timezone.utc),
-                steam_appid=str(self.steam_appid),
+                steam_appid=str(self.steam_appid) if self.steam_appid else None,
                 steam_grade=self.steam_grade,
                 steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min.replace(tzinfo=timezone.utc),
                 steam_shortcut=self.steam_shortcut,
@@ -108,6 +109,9 @@ class RareGame(RareGameSlim):
         self.game_process.finished.connect(self.__game_finished)
         if self.is_installed and not self.is_dlc:
             self.game_process.connect_to_server(on_startup=True)
+
+        if self.is_installed:
+            apply_workarounds(self.app_name)
 
     def add_dlc(self, dlc) -> None:
         # lk: plug dlc progress signals to the game's
@@ -291,6 +295,7 @@ class RareGame(RareGameSlim):
         """
         if installed:
             self.update_igame()
+            apply_workarounds(self.app_name)
             if not self.is_dlc:
                 self.core.egstore_delete(self.igame)
                 self.core.egstore_write(self.igame.app_name)
@@ -606,8 +611,11 @@ class RareGame(RareGameSlim):
 
         if not config.get_envvar(self.app_name, "STORE", False):
             config.set_envvar(self.app_name, "STORE", "egs")
-        if not config.get_envvar(self.app_name, "UMU_ID", False) and self.metadata.steam_appid:
-            config.set_envvar(self.app_name, "UMU_ID", f"umu-{self.metadata.steam_appid}")
+        if not config.get_envvar(self.app_name, "UMU_ID", False):
+            config.set_envvar(
+                self.app_name, "UMU_ID",
+                f"umu-{self.metadata.steam_appid}" if self.metadata.steam_appid else "umu-default"
+            )
         config.save_config()
 
         logger.info(f"Starting game process: ({executable} {' '.join(args)})")
