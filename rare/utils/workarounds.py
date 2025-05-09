@@ -125,6 +125,15 @@ __workarounds: Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Set]]]]] = {
             },
         },
     },
+    # F1® Manager 2024
+    "03c9fe3b2869452ba8433ee7708a3e93": {
+        "options": {
+            "override_exe": {
+                "value": "F1Manager24/Binaries/Win64/F1Manage",
+                "os": __os_all,
+            },
+        },
+    },
 }
 
 
