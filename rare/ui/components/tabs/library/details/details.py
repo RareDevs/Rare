@@ -34,20 +34,20 @@ class Ui_GameDetails(object):
         self.tags_group.setSizePolicy(sizePolicy)
         self.tags_group_layout = QVBoxLayout(self.tags_group)
         self.tags_group_layout.setObjectName(u"tags_group_layout")
-        self.tags_layout = QVBoxLayout()
-        self.tags_layout.setObjectName(u"tags_layout")
-
-        self.tags_group_layout.addLayout(self.tags_layout)
-
         self.add_tag_button = QPushButton(self.tags_group)
         self.add_tag_button.setObjectName(u"add_tag_button")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.add_tag_button.sizePolicy().hasHeightForWidth())
         self.add_tag_button.setSizePolicy(sizePolicy1)
 
-        self.tags_group_layout.addWidget(self.add_tag_button, 0, Qt.AlignmentFlag.AlignRight)
+        self.tags_group_layout.addWidget(self.add_tag_button, 0, Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTop)
+
+        self.tags_vlayout = QVBoxLayout()
+        self.tags_vlayout.setObjectName(u"tags_vlayout")
+
+        self.tags_group_layout.addLayout(self.tags_vlayout)
 
 
         self.left_layout.addWidget(self.tags_group)
@@ -311,11 +311,8 @@ class Ui_GameDetails(object):
 
         self.requirements_group = QFrame(GameDetails)
         self.requirements_group.setObjectName(u"requirements_group")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.requirements_group.sizePolicy().hasHeightForWidth())
-        self.requirements_group.setSizePolicy(sizePolicy4)
+        sizePolicy1.setHeightForWidth(self.requirements_group.sizePolicy().hasHeightForWidth())
+        self.requirements_group.setSizePolicy(sizePolicy1)
         self.requirements_group.setFrameShape(QFrame.Shape.StyledPanel)
         self.requirements_group.setFrameShadow(QFrame.Shadow.Sunken)
         self.requirements_layout = QHBoxLayout(self.requirements_group)

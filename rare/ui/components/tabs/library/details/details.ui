@@ -28,13 +28,10 @@
         <string>Tags</string>
        </property>
        <layout class="QVBoxLayout" name="tags_group_layout">
-        <item>
-         <layout class="QVBoxLayout" name="tags_layout"/>
-        </item>
-        <item alignment="Qt::AlignmentFlag::AlignRight">
+        <item alignment="Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop">
          <widget class="QPushButton" name="add_tag_button">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -46,6 +43,9 @@
            <string>Add tag</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="tags_vlayout"/>
         </item>
        </layout>
       </widget>
