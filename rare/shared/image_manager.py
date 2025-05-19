@@ -6,7 +6,7 @@ import zlib
 # from concurrent import futures
 from logging import getLogger
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Set
+from typing import TYPE_CHECKING, Optional, Set, Any
 from typing import Tuple, Dict, Union, Type, List, Callable
 
 import requests
@@ -57,6 +57,7 @@ class ImageManager(QObject):
             self.signals.completed.emit(self.game)
 
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
+        self.__cache_version = 2
         # lk: the ordering in __img_types matters for the order of fallbacks
         # {'AndroidIcon', 'DieselGameBox', 'DieselGameBoxLogo', 'DieselGameBoxTall', 'DieselGameBoxWide',
         #  'ESRB', 'Featured', 'OfferImageTall', 'OfferImageWide', 'Screenshot', 'Thumbnail'}
@@ -108,6 +109,7 @@ class ImageManager(QObject):
         # Load image checksums
         if not self.__img_json(game.app_name).is_file():
             json_data: Dict = dict(zip(self.__img_types, [None] * len(self.__img_types)))
+            json_data["version"] = self.__cache_version
         else:
             json_data = json.load(open(self.__img_json(game.app_name), "r"))
 
@@ -140,12 +142,12 @@ class ImageManager(QObject):
         # TODO: Move this into the thread, maybe, concurrency could help here too
         updates = []
         if not all(file.is_file() for file in self.__img_all(game.app_name)):
-            # lk: fast path for games without images, convert Rare's logo
             if not candidates:
+                # lk: fast path for games without images, convert Rare's logo
                 cache_data: Dict = dict(zip(self.__img_types, [None] * len(self.__img_types)))
                 with open(resources_path.joinpath("images", "cover.png"), "rb") as fd:
                     cache_data["DieselGameBoxTall"] = fd.read()
-                    fd.seek(0)
+                with open(resources_path.joinpath("images", "cover.png"), "rb") as fd:
                     cache_data["DieselGameBoxWide"] = fd.read()
                 # cache_data["DieselGameBoxLogo"] = open(
                 #         resources_path.joinpath("images", "logo.png"), "rb").read()
@@ -168,7 +170,7 @@ class ImageManager(QObject):
     def __download(self, updates: List, json_data: Dict, game: Game, use_async: bool = False) -> bool:
         # Decompress existing image.cache
         if not self.__img_cache(game.app_name).is_file():
-            cache_data = dict(zip(self.__img_types, [None] * len(self.__img_types)))
+            cache_data: Dict[str, Any] = dict(zip(self.__img_types, [None] * len(self.__img_types)))
         else:
             cache_data = self.__decompress(game)
 
@@ -203,7 +205,7 @@ class ImageManager(QObject):
         #         cache_data[req.image_type] = req.result().content
         # else:
         for image in downloads:
-            logger.info(f"Downloading {image['type']} for {game.app_name} ({game.app_title})")
+            logger.info("Downloading %s for %s (%s)", image['type'], game.app_name, game.app_title)
             json_data[image["type"]] = image["md5"]
             if image["type"] in self.__img_tall_types:
                 payload = {"resize": 1, "w": ImageSize.Tall.size.width(), "h": ImageSize.Tall.size.height()}
@@ -213,11 +215,21 @@ class ImageManager(QObject):
                 # Set the larger of the sizes for everything else
                 payload = {"resize": 1, "w": ImageSize.Wide.size.width(), "h": ImageSize.Wide.size.height()}
             try:
-                # cache_data[image["type"]] = requests.get(image["url"], params=payload).content
                 cache_data[image["type"]] = requests.get(image["url"], params=payload, timeout=10).content
             except Exception as e:
                 logger.error(e)
                 return False
+
+        # lk: test the cached and downloaded data if they describe an image with valid dimensions
+        # I do not like this, it should add a bunch of processing for something simple but I am out of ideas
+        for image in updates:
+            image_data = QImage().fromData(cache_data[image["type"]])
+            if not (image_data.width() and image_data.height()):
+                with open(resources_path.joinpath("images", "cover.png"), "rb") as fd:
+                    cache_data[image["type"]] = fd.read()
+                json_data[image["type"]] = None
+                logger.error("Invalid image %s data for %s (%s)", image['type'], game.app_name, game.app_title)
+            del image_data
 
         self.__convert(game, cache_data)
         # lk: don't keep the cache if there is no logo (kept for me)
@@ -264,6 +276,39 @@ class ImageManager(QObject):
         return ImageManager.__icon_overlay
 
     @staticmethod
+    def __convert_image(image_data, logo_data, preset: ImageSize.Preset) -> QImage:
+        image = QImage()
+        image.loadFromData(image_data)
+        image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
+        # lk: Images are not always at the correct aspect ratio, so crop them to size
+        wr, hr = preset.aspect_ratio
+        factor = min(image.width() // wr, image.height() // hr)
+        rem_w = (image.width() - factor * wr) // 2
+        rem_h = (image.height() - factor * hr) // 2
+        image = image.copy(rem_w, rem_h, factor * wr, factor * hr)
+
+        if logo_data is not None:
+            logo = QImage()
+            logo.loadFromData(logo_data)
+            logo.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
+            if logo.width() > image.width():
+                logo = logo.scaled(
+                    image.width(),
+                    image.height(),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation
+                )
+            painter = QPainter(image)
+            painter.drawImage((image.width() - logo.width()) // 2, image.height() - logo.height(), logo)
+            painter.end()
+
+        return image.scaled(
+            preset.size,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
+        )
+
+    @staticmethod
     def __convert_icon(cover: QImage) -> QImage:
         icon_size = QSize(128, 128)
         icon = QImage(icon_size, QImage.Format.Format_ARGB32_Premultiplied)
@@ -284,6 +329,21 @@ class ImageManager(QObject):
         painter.end()
         return icon
 
+    @staticmethod
+    def __save_image(image: QImage, color_path: Path, gray_path: Path):
+        # this is not required if we ever want to re-apply the alpha channel
+        # image = image.convertToFormat(QImage.Format_Indexed8)
+        # add the alpha channel back to the cover
+        image = image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
+        image.save(color_path.as_posix(), format="PNG")
+        # quick way to convert to grayscale, but keep the alpha channel
+        alpha = image.convertToFormat(QImage.Format.Format_Alpha8)
+        image = image.convertToFormat(QImage.Format.Format_Grayscale8)
+        # add the alpha channel back to the grayscale cover
+        image = image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
+        image.setAlphaChannel(alpha)
+        image.save(gray_path.as_posix(), format="PNG")
+
     def __convert(self, game, images, force=False) -> None:
         for file in self.__img_all(game.app_name):
             if force and file.exists():
@@ -301,61 +361,15 @@ class ImageManager(QObject):
         wide_data = find_image_data(self.__img_wide_types)
         logo_data = find_image_data(self.__img_logo_types)
 
-        def convert_image(image_data, logo_data, preset: ImageSize.Preset) -> QImage:
-            image = QImage()
-            image.loadFromData(image_data)
-            image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
-            # lk: Images are not always at the correct aspect ratio, so crop them to size
-            wr, hr = preset.aspect_ratio
-            factor = min(image.width() // wr, image.height() // hr)
-            rem_w = (image.width() - factor * wr) // 2
-            rem_h = (image.height() - factor * hr) // 2
-            image = image.copy(rem_w, rem_h, factor * wr, factor * hr)
-
-            if logo_data is not None:
-                logo = QImage()
-                logo.loadFromData(logo_data)
-                logo.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
-                if logo.width() > image.width():
-                    logo = logo.scaled(
-                        image.width(),
-                        image.height(),
-                        Qt.AspectRatioMode.KeepAspectRatio,
-                        Qt.TransformationMode.SmoothTransformation
-                    )
-                painter = QPainter(image)
-                painter.drawImage((image.width() - logo.width()) // 2, image.height() - logo.height(), logo)
-                painter.end()
-
-            return image.scaled(
-                preset.size,
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation
-            )
-
-        tall = convert_image(tall_data, logo_data, ImageSize.Tall)
-        wide = convert_image(wide_data, logo_data, ImageSize.Wide)
+        tall = self.__convert_image(tall_data, logo_data, ImageSize.Tall)
+        wide = self.__convert_image(wide_data, logo_data, ImageSize.Wide)
 
         icon = self.__convert_icon(tall)
         icon.save(desktop_icon_path(game.app_name).as_posix(), format=desktop_icon_suffix().upper())
 
-        def save_image(image: QImage, color_path: Path, gray_path: Path):
-            # this is not required if we ever want to re-apply the alpha channel
-            # image = image.convertToFormat(QImage.Format_Indexed8)
-            # add the alpha channel back to the cover
-            image = image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
-            image.save(color_path.as_posix(), format="PNG")
-            # quick way to convert to grayscale, but keep the alpha channel
-            alpha = image.convertToFormat(QImage.Format.Format_Alpha8)
-            image = image.convertToFormat(QImage.Format.Format_Grayscale8)
-            # add the alpha channel back to the grayscale cover
-            image = image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
-            image.setAlphaChannel(alpha)
-            image.save(gray_path.as_posix(), format="PNG")
-
-        save_image(icon, image_icon_path(game.app_name), image_icon_path(game.app_name, color=False))
-        save_image(tall, image_tall_path(game.app_name), image_tall_path(game.app_name, color=False))
-        save_image(wide, image_wide_path(game.app_name), image_wide_path(game.app_name, color=False))
+        self.__save_image(icon, image_icon_path(game.app_name), image_icon_path(game.app_name, color=False))
+        self.__save_image(tall, image_tall_path(game.app_name), image_tall_path(game.app_name, color=False))
+        self.__save_image(wide, image_wide_path(game.app_name), image_wide_path(game.app_name, color=False))
 
     def __compress(self, game: Game, data: Dict) -> None:
         archive = open(self.__img_cache(game.app_name), "wb")
