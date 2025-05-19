@@ -151,8 +151,10 @@ style.QLabel[css_name(ListWidget, "TitleLabel")].fontWeight.setValue("bold")
 list_status_label_props = {
     "color": "white",
     "backgroundColor": "rgba(0, 0, 0, 75%)",
-    "border": "1px solid black",
-    "borderRadius": "5px",
+    "border": "0px solid black",
+    "borderRadius": "3px",
+    "paddingLeft": "0.3em",
+    "paddingRight": "0.3em",
 }
 style.QLabel[css_name(ListWidget, "StatusLabel")].setValues(
     fontWeight="bold",

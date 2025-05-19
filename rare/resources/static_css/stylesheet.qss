@@ -110,14 +110,18 @@ QLabel#ListWidgetStatusLabel {
     font-weight: bold;
     color: white;
     background-color: rgba(0, 0, 0, 75%);
-    border: 1px solid black;
-    border-radius: 5px;
+    border: 0px solid black;
+    border-radius: 3px;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
 }
 QLabel#ListWidgetTooltipLabel {
     color: white;
     background-color: rgba(0, 0, 0, 75%);
-    border: 1px solid black;
-    border-radius: 5px;
+    border: 0px solid black;
+    border-radius: 3px;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
 }
 QPushButton#ListWidgetButton {
     text-align: left;
