@@ -42,7 +42,7 @@ def subreaper(args: Namespace, other: List[str]) -> int:
     prctl_ret = prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0, 0)
     logger.debug("prctl exited with status: %s", prctl_ret)
 
-    pid = os.fork()
+    pid = os.fork()  # pylint: disable=E1101
     if pid == -1:
         logger.error("Fork failed")
 
@@ -54,7 +54,7 @@ def subreaper(args: Namespace, other: List[str]) -> int:
 
     while True:
         try:
-            wait_pid, wait_status = os.wait()
+            wait_pid, wait_status = os.wait()  # pylint: disable=E1101
             logger.info("Child %s exited with wait status: %s", wait_pid, wait_status)
         except ChildProcessError as e:
             logger.info(e)
