@@ -63,4 +63,4 @@ def subreaper(args: Namespace, other: List[str]) -> int:
     return wait_status
 
 
-__all__ = "subreaper"
+__all__ = ["subreaper"]

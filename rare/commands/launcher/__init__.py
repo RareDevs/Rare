@@ -32,6 +32,7 @@ from rare.models.base_game import RareGameSlim
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
 from rare.models.options import options
 from rare.widgets.rare_app import RareApp, RareAppException
+from rare.utils.paths import get_rare_executable
 from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
 from .console_dialog import ConsoleDialog
 from .lgd_helper import get_launch_args, InitArgs, LaunchArgs, dict_to_qprocenv, get_configured_qprocess
@@ -337,10 +338,22 @@ class RareLauncher(RareApp):
             self.stop()  # stop because we do not attach to the output
             return
 
-        self.game_process.setProgram(args.executable)
-        self.game_process.setArguments(args.arguments)
-        if args.working_directory:
-            self.game_process.setWorkingDirectory(args.working_directory)
+        if platform.system() == "Linux":
+            cmd_line = get_rare_executable()
+            executable, arguments = cmd_line[0], cmd_line[1:]
+
+            workdir = []
+            if args.working_directory:
+                workdir = ["--workdir", args.working_directory]
+
+            self.game_process.setProgram(executable)
+            self.game_process.setArguments([*arguments, "subreaper", *workdir, args.executable, *args.arguments])
+        else:
+            self.game_process.setProgram(args.executable)
+            self.game_process.setArguments(args.arguments)
+            if args.working_directory:
+                self.game_process.setWorkingDirectory(args.working_directory)
+
         self.game_process.setProcessEnvironment(dict_to_qprocenv(args.environment))
         # send start message after process started
         self.game_process.started.connect(
@@ -447,7 +460,7 @@ class RareLauncher(RareApp):
             self.console.on_process_exit(self.rgame.app_title, exit_code)
 
 
-def launch(args: Namespace) -> int:
+def launcher(args: Namespace) -> int:
     args = InitArgs.from_argparse(args)
 
     QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
@@ -482,3 +495,5 @@ def launch(args: Namespace) -> int:
         # if not sip.isdeleted(app.server):
         #     app.server.close()
     return exit_code
+
+__all__ = ["launcher"]
