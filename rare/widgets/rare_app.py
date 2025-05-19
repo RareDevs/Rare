@@ -77,35 +77,29 @@ class RareApp(QApplication):
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
 
+        # Set up common logging channel to stderr
+        logging.basicConfig(
+            format="[%(name)s] %(levelname)s: %(message)s",
+            level=logging.DEBUG if args.debug else logging.INFO,
+            stream=sys.stderr,
+        )
+
         start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
         file_handler = logging.FileHandler(
             filename=os.path.join(paths.log_dir(), log_file.format(start_time)),
             encoding="utf-8",
         )
         file_handler.setFormatter(fmt=logging.Formatter("[%(name)s] %(levelname)s: %(message)s"))
+        file_handler.setLevel(logging.DEBUG if args.debug else logging.INFO)
 
-        # Set up common logging channel to stderr
-        if args.debug:
-            logging.basicConfig(
-                format="[%(name)s] %(levelname)s: %(message)s",
-                level=logging.DEBUG,
-                stream=sys.stderr,
-            )
-            file_handler.setLevel(logging.DEBUG)
-            logging.root.addHandler(file_handler)
-            logging.getLogger().setLevel(level=logging.DEBUG)
-            # keep requests, asyncio and pillow quiet
-            logging.getLogger("requests").setLevel(logging.WARNING)
-            logging.getLogger("urllib3").setLevel(logging.WARNING)
-            logging.getLogger("asyncio").setLevel(logging.WARNING)
-        else:
-            logging.basicConfig(
-                format="[%(name)s] %(levelname)s: %(message)s",
-                level=logging.INFO,
-                stream=sys.stderr,
-            )
-            file_handler.setLevel(logging.DEBUG)
-            logging.root.addHandler(file_handler)
+        logging.root.addHandler(file_handler)
+        logging.getLogger().setLevel(logging.DEBUG if args.debug else logging.INFO)
+
+        # keep requests, asyncio and pillow quiet
+        logging.getLogger("requests").setLevel(logging.WARNING)
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
+        logging.getLogger("asyncio").setLevel(logging.WARNING)
+
         self.logger.info(
             f"Launching Rare version {rare.__version__} Codename: {rare.__codename__}\n"
             f" - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
