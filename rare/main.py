@@ -95,7 +95,21 @@ def main() -> int:
         help="Epic Games Launcher User Agent version",
     )
 
-    args = parser.parse_args()
+    # Subreaper command
+    subreaper_parser = subparsers.add_parser("subreaper", aliases=["reaper"])
+    subreaper_parser.add_argument(
+        '--workdir', action='store', dest='workdir',
+        metavar='<workdir>',
+        help="Run command in this directory",
+    )
+
+    subreaper_parser.add_argument(
+        "command", action="store",
+        metavar="<command>",
+        help="Command to execute in the subreaper"
+    )
+
+    args, other = parser.parse_known_args()
 
     if args.desktop_shortcut or args.startmenu_shortcut:
         from rare.utils.paths import create_desktop_link
@@ -115,12 +129,17 @@ def main() -> int:
         return 0
 
     if args.subparser in {"login", "auth"}:
-        from rare.commands.webview import launch
-        return launch(args)
+        from rare.commands.webview import webview
+        return webview(args)
 
     if args.subparser in {"launch", "start"}:
-        from rare.commands.launcher import launch
-        return launch(args)
+        from rare.commands.launcher import launcher
+        return launcher(args)
+
+    if args.subparser in {"subreaper", "reaper"}:
+        from rare.commands.subreaper import subreaper
+        return subreaper(args, other)
+
 
     from rare.utils import singleton
 
