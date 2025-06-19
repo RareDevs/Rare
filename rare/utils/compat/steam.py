@@ -200,7 +200,7 @@ def find_anticheat(steam_path: str, library: str):
     return runtimes
 
 
-def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
+def find_steam_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
     runtimes = {}
     appmanifests = find_appmanifests(library)
     common = os.path.join(library, "common")
@@ -210,9 +210,9 @@ def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
         if os.path.isfile(vdf_file := os.path.join(tool_path, "toolmanifest.vdf")):
             with open(vdf_file, "r", encoding="utf-8") as f:
                 toolmanifest = vdf.load(f)
-            if toolmanifest["manifest"].get("version", None) != "2":
+            if toolmanifest["manifest"].get("version") != "2":
                 continue
-            if toolmanifest["manifest"]["compatmanager_layer_name"] == "container-runtime":
+            if toolmanifest["manifest"].get("compatmanager_layer_name") == "container-runtime":
                 runtimes.update(
                     {
                         appmanifest["AppState"]["appid"]: SteamRuntime(
@@ -227,8 +227,8 @@ def find_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
     return runtimes
 
 
-def find_protons(steam_path: str, library: str) -> List[ProtonTool]:
-    protons = []
+def find_steam_tools(steam_path: str, library: str) -> List[ProtonTool]:
+    tools = []
     appmanifests = find_appmanifests(library)
     common = os.path.join(library, "common")
     for appmanifest in appmanifests:
@@ -237,10 +237,10 @@ def find_protons(steam_path: str, library: str) -> List[ProtonTool]:
         if os.path.isfile(vdf_file := os.path.join(tool_path, "toolmanifest.vdf")):
             with open(vdf_file, "r", encoding="utf-8") as f:
                 toolmanifest = vdf.load(f)
-            if toolmanifest["manifest"].get("version", None) != "2":
+            if toolmanifest["manifest"].get("version") != "2":
                 continue
-            if toolmanifest["manifest"]["compatmanager_layer_name"] == "proton":
-                protons.append(
+            if toolmanifest["manifest"].get("compatmanager_layer_name") == "proton":
+                tools.append(
                     ProtonTool(
                         steam_path=steam_path,
                         steam_library=library,
@@ -249,7 +249,7 @@ def find_protons(steam_path: str, library: str) -> List[ProtonTool]:
                         toolmanifest=toolmanifest["manifest"],
                     )
                 )
-    return protons
+    return tools
 
 
 def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
@@ -381,7 +381,7 @@ def _find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
 
     runtimes = {}
     for library in steam_libraries:
-        runtimes.update(find_runtimes(steam_path, library))
+        runtimes.update(find_steam_runtimes(steam_path, library))
 
     anticheat = {}
     for library in steam_libraries:
@@ -389,7 +389,7 @@ def _find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
 
     tools = []
     for library in steam_libraries:
-        tools.extend(find_protons(steam_path, library))
+        tools.extend(find_steam_tools(steam_path, library))
     tools.extend(find_compatibility_tools(steam_path))
 
     for tool in tools:
