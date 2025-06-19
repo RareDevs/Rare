@@ -281,7 +281,7 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
 
             entry_tools = compatibilitytool["compatibilitytools"]["compat_tools"]
             for entry_tool in entry_tools.values():
-                if entry_tool["from_oslist"] != "windows" and entry_tool["to_oslist"] != "linux":
+                if entry_tool.get("from_oslist") != "windows" or entry_tool.get("to_oslist") != "linux":
                     continue
 
                 install_path = entry_tool["install_path"]
@@ -399,6 +399,7 @@ def _find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
             tool.anticheat = anticheat
 
     tools = list(filter(lambda t: bool(t), tools))
+    tools = sorted(tools, key=lambda x: x.name)
 
     return tools
 
