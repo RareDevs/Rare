@@ -1,14 +1,17 @@
+#!/usr/bin/env python3
+
 import logging
 import os
 import sys
 from argparse import Namespace
-from ctypes import CDLL, c_int, c_ulong
+from ctypes import CDLL, c_int, c_ulong, create_string_buffer, byref
 from ctypes.util import find_library
 from logging import getLogger
 from typing import List
 
 # Constant defined in prctl.h
 # See prctl(2) for more details
+PR_SET_NAME = 15
 PR_SET_CHILD_SUBREAPER = 36
 
 
@@ -25,22 +28,32 @@ def subreaper(args: Namespace, other: List[str]) -> int:
         stream=sys.stderr,
     )
 
+    logger.debug("command: %s", args)
+    logger.debug("arguments: %s", other)
+
     command: List[str] = [args.command, *other]
     workdir: str = args.workdir
-    wait_status: int = 0
+    child_status: int = 0
 
     libc: str = get_libc()
     prctl = CDLL(libc).prctl
     prctl.restype = c_int
     prctl.argtypes = [
         c_int,
-        c_ulong,
-        c_ulong,
-        c_ulong,
-        c_ulong,
+        # c_ulong,
+        # c_ulong,
+        # c_ulong,
+        # c_ulong,
     ]
+
+    proc_name = b"reaper"
+    buff = create_string_buffer(len(proc_name)+1)
+    buff.value = proc_name
+    prctl_ret = prctl(PR_SET_NAME, byref(buff), 0, 0, 0)
+    logger.debug("prctl PR_SET_NAME exited with status: %s", prctl_ret)
+
     prctl_ret = prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0, 0)
-    logger.debug("prctl exited with status: %s", prctl_ret)
+    logger.debug("prctl PR_SET_CHILD_SUBREAPER exited with status: %s", prctl_ret)
 
     pid = os.fork()  # pylint: disable=E1101
     if pid == -1:
@@ -54,13 +67,20 @@ def subreaper(args: Namespace, other: List[str]) -> int:
 
     while True:
         try:
-            wait_pid, wait_status = os.wait()  # pylint: disable=E1101
-            logger.info("Child %s exited with wait status: %s", wait_pid, wait_status)
+            child_pid, child_status = os.wait()  # pylint: disable=E1101
+            logger.info("Child %s exited with wait status: %s", child_pid, child_status)
         except ChildProcessError as e:
             logger.info(e)
             break
 
-    return wait_status
+    return child_status
+
+
+if __name__ == "__main__":
+    sep = sys.argv.index("--")
+    argv = sys.argv[sep+1:]
+    args = Namespace(command=argv.pop(0), workdir=os.getcwd(), debug=True)
+    subreaper(args, argv)
 
 
 __all__ = ["subreaper"]
