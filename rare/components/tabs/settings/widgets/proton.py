@@ -113,7 +113,8 @@ class ProtonSettings(QGroupBox):
         self.tool_prefix.setEnabled(steam_tool is not None)
         if steam_tool:
             if not (compatdata_path := config.get_proton_compatdata(self.app_name, fallback="")):
-                compatdata_path = proton_compat_dir(RareCore.instance().get_game(self.app_name).folder_name)
+                folder_name = self.app_name if self.app_name == "default" else RareCore.instance().get_game(self.app_name).folder_name
+                compatdata_path = proton_compat_dir(folder_name)
                 config.adjust_proton_compatdata(self.app_name, str(compatdata_path))
             self.tool_prefix.setText(str(compatdata_path))
         else:
