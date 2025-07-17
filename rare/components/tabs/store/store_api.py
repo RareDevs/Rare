@@ -18,7 +18,7 @@ from .api.models.response import (
 )
 
 logger = getLogger("StoreAPI")
-graphql_url = "https://graphql.epicgames.com/graphql"
+graphql_url = "https://store.epicgames.com/graphql"
 
 
 def DEBUG() -> bool:

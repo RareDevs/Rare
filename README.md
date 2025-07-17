@@ -56,6 +56,18 @@ If you don't have a GitHub account or you just want to chat, you also can contac
 https://discord.gg/YvmABK9YSk
 
 
+## Common issues
+* If you are using multiple accounts, there is a chance that at some point you will not be able to log in into your account and see something like the following.
+  > Login failed. Decryption of EPIC launcher user information failed.
+
+  In that case navigate to one of the following directorories depending on your operating system and delete `user.json`
+
+  | OS      | Path                               |
+  |---------|------------------------------------|
+  | Windows | `%USERPROFILE%\.config\legendary\` |
+  | Linux   | `$HOME/.config/legendary/`         |
+  | macOS   | `$HOME/.config/legendary/`         |
+
 
 ## Installation
 
