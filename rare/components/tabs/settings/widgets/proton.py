@@ -93,6 +93,13 @@ class ProtonSettings(QGroupBox):
         steam_tool: Union[steam.ProtonTool, steam.CompatibilityTool] = self.tool_combo.itemData(index)
 
         steam_environ = steam.get_steam_environment(steam_tool, self.tool_prefix.text())
+        install_path = RareCore.instance().get_game(self.app_name).install_path
+        library_paths = steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] if "STEAM_COMPAT_LIBRARY_PATHS" in steam_environ else ""
+        library_paths = ":".join([library_paths, os.path.dirname(install_path)]) if library_paths else os.path.dirname(install_path)
+        steam_environ.update({
+            "STEAM_COMPAT_INSTALL_PATH": install_path,
+            "STEAM_COMPAT_LIBRARY_PATHS": library_paths,
+        })
         for key, value in steam_environ.items():
             config.adjust_envvar(self.app_name, key, value)
             self.environ_changed.emit(key)
