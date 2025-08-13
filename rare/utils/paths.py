@@ -5,7 +5,7 @@ import shutil
 import sys
 from logging import getLogger
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 
 from PySide6.QtCore import QStandardPaths
 
@@ -113,16 +113,58 @@ def wine_prefix_dir(name: str) -> Path:
 
 
 def compat_shaders_dir(name: str) -> Path:
-    if not (shader_dir := proton_compat_dir(name).joinpath("cache/shaders")).is_dir():
+    if not (shader_dir := proton_compat_dir(name).joinpath("shadercache")).is_dir():
         shader_dir.mkdir(parents=True)
     return shader_dir
 
 
 def compat_logs_dir(name: str) -> Path:
-    if not (logs_dir := proton_compat_dir(name).joinpath("cache/logs")).is_dir():
+    if not (logs_dir := proton_compat_dir(name).joinpath("logs")).is_dir():
         logs_dir.mkdir(parents=True)
     return logs_dir
 
+
+def setup_compat_shaders_dir(path: str) -> Dict:
+    """Setup per-game shader cache if shader pre-caching is disabled
+
+    """
+    environ = {}
+    shader_cache_name = "steamapp_shader_cache"
+    shader_cache_vars = {
+        # Nvidia
+        "__GL_SHADER_DISK_CACHE_APP_NAME": shader_cache_name,
+        "__GL_SHADER_DISK_CACHE_PATH": os.path.join(path, "nvidiav1"),
+        "__GL_SHADER_DISK_CACHE_READ_ONLY_APP_NAME": "steam_shader_cache;steamapp_merged_shader_cache",
+        "__GL_SHADER_DISK_CACHE_SIZE": "5000000000",
+        #"__GL_SHADER_DISK_CACHE_SKIP_CLEANUP": "1",
+        # Mesa
+        "MESA_DISK_CACHE_READ_ONLY_FOZ_DBS": "steam_cache,steam_precompiled",
+        "MESA_DISK_CACHE_SINGLE_FILE": "1",
+        "MESA_GLSL_CACHE_DIR": path,
+        "MESA_GLSL_CACHE_MAX_SIZE": "5G",
+        "MESA_SHADER_CACHE_DIR": path,
+        "MESA_SHADER_CACHE_MAX_SIZE": "5G",
+        # AMD VK
+        "AMD_VK_PIPELINE_CACHE_FILENAME": shader_cache_name,
+        "AMD_VK_PIPELINE_CACHE_PATH": os.path.join(path, "AMDv1"),
+        "AMD_VK_USE_PIPELINE_CACHE": "1",
+        # DXVK
+        "DXVK_STATE_CACHE_PATH": os.path.join(path, "DXVK_state_cache"),
+        # VKD3D
+        "VKD3D_SHADER_CACHE_PATH": os.path.join(path, "VKD3D_shader_cache")
+    }
+    for (key, value) in shader_cache_vars.items():
+        if key in {
+            "__GL_SHADER_DISK_CACHE_PATH",
+            "MESA_GLSL_CACHE_DIR",
+            "MESA_SHADER_CACHE_DIR",
+            "AMD_VK_PIPELINE_CACHE_PATH",
+            "DXVK_STATE_CACHE_PATH",
+            "VKD3D_SHADER_CACHE_PATH",
+        }:
+            os.makedirs(value, exist_ok=True)
+        environ[key] = value
+    return environ
 
 
 # fmt: off

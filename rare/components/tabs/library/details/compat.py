@@ -80,11 +80,8 @@ class LocalRunnerSettings(RunnerSettingsBase):
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
             return super().showEvent(a0)
-        caches = all((config.get_envvar(self.app_name, envvar, False) for envvar in {
-            "__GL_SHADER_DISK_CACHE_PATH", "MESA_SHADER_CACHE_DIR", "DXVK_STATE_CACHE_PATH", "VKD3D_SHADER_CACHE_PATH"
-        }))
         _ = QSignalBlocker(self.shader_cache_check)
-        self.shader_cache_check.setChecked(caches)
+        self.shader_cache_check.setChecked(bool(config.get_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", False)))
         _ = QSignalBlocker(self.steam_appid_edit)
         self.steam_appid_edit.setText(self.rgame.steam_appid if self.rgame.steam_appid else "")
         self.steam_appid_edit.setInfo(self.__steam_titles.get(self.rgame.steam_appid, ""))
@@ -110,14 +107,11 @@ class LocalRunnerSettings(RunnerSettingsBase):
 
     @Slot(Qt.CheckState)
     def __shader_cache_check_changed(self, state: Qt.CheckState):
-        for envvar in {
-            "__GL_SHADER_DISK_CACHE_PATH", "MESA_SHADER_CACHE_DIR", "DXVK_STATE_CACHE_PATH", "VKD3D_SHADER_CACHE_PATH"
-        }:
-            if state == Qt.CheckState.Checked:
-                config.set_envvar(self.app_name, envvar, compat_shaders_dir(self.rgame.folder_name).as_posix())
-            else:
-                config.remove_envvar(self.app_name, envvar)
-            self.environ_changed.emit(envvar)
+        if state == Qt.CheckState.Checked:
+            config.set_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", compat_shaders_dir(self.rgame.folder_name).as_posix())
+        else:
+            config.remove_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH")
+        self.environ_changed.emit("STEAM_COMPAT_SHADER_PATH")
 
     def load_settings(self, rgame: RareGame):
         self.rgame = rgame
