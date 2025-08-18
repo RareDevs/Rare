@@ -136,7 +136,7 @@ def setup_compat_shaders_dir(path: str) -> Dict:
         "__GL_SHADER_DISK_CACHE_PATH": os.path.join(path, "nvidiav1"),
         "__GL_SHADER_DISK_CACHE_READ_ONLY_APP_NAME": "steam_shader_cache;steamapp_merged_shader_cache",
         "__GL_SHADER_DISK_CACHE_SIZE": "5000000000",
-        #"__GL_SHADER_DISK_CACHE_SKIP_CLEANUP": "1",
+        "__GL_SHADER_DISK_CACHE_SKIP_CLEANUP": "1",
         # Mesa
         "MESA_DISK_CACHE_READ_ONLY_FOZ_DBS": "steam_cache,steam_precompiled",
         "MESA_DISK_CACHE_SINGLE_FILE": "1",
