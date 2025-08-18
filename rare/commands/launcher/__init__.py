@@ -164,9 +164,6 @@ class RareLauncher(RareApp):
             return
         self.rgame = RareGameSlim(self.core, game, self)
 
-        language = self.settings.value(*options.language)
-        self.load_translator(language)
-
         if args.show_console:
             self.console = ConsoleDialog(game.app_title)
             self.console.show()
