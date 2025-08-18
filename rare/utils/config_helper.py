@@ -67,7 +67,7 @@ def get_option(app_name: str, option: str, fallback: Any = None) -> str:
     return _config.get(app_name, option, fallback=fallback)
 
 
-def get_option_default(app_name: str, option: str, fallback: Any = None) -> str:
+def get_option_global(app_name: str, option: str, fallback: Any = None) -> str:
     _option = get_option("default", option, fallback=fallback)
     _option = get_option(app_name, option, fallback=_option)
     return _option
@@ -88,7 +88,7 @@ def get_envvar(app_name: str, option: str, fallback: Any = None) -> str:
     return get_option(f"{app_name}.env", option, fallback=fallback)
 
 
-def get_envvar_default(app_name: str, option: str, fallback: Any = None) -> str:
+def get_envvar_global(app_name: str, option: str, fallback: Any = None) -> str:
     _option = _config.get("default.env", option, fallback=fallback)
     _option = _config.get(f'{app_name}.env', option, fallback=_option)
     return _option
@@ -105,7 +105,7 @@ def get_wine_prefix(app_name: str, fallback: Any = None):
     return _prefix
 
 
-def get_wine_prefix_default(app_name: str, fallback: Any = None) -> str:
+def get_wine_prefix_global(app_name: str, fallback: Any = None) -> str:
     _prefix = get_wine_prefix("default", fallback)
     _prefix = get_wine_prefix(app_name, fallback=_prefix)
     return _prefix
@@ -121,8 +121,8 @@ def get_proton_compat_data_path(app_name: Optional[str] = None, fallback: Any = 
     return _compat
 
 
-def get_proton_compat_data_path_default(app_name: Optional[str] = None, fallback: Any = None) -> str:
-    _compat = get_envvar_default(app_name, "STEAM_COMPAT_DATA_PATH", fallback=fallback)
+def get_proton_compat_data_path_global(app_name: Optional[str] = None, fallback: Any = None) -> str:
+    _compat = get_envvar_global(app_name, "STEAM_COMPAT_DATA_PATH", fallback=fallback)
     # return os.path.join(_compat, "pfx") if _compat else fallback
     return _compat
 
