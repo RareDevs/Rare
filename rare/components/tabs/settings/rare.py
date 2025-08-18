@@ -79,13 +79,13 @@ class RareSettings(QWidget):
         self.ui.right_layout.insertWidget(1, self.discord_rpc_settings, alignment=Qt.AlignmentFlag.AlignTop)
 
         self.ui.sys_tray_close.setChecked(self.settings.value(*options.sys_tray_close))
-        self.ui.sys_tray_close.stateChanged.connect(
-            lambda: self.settings.setValue(options.sys_tray_close.key, self.ui.sys_tray_close.isChecked())
+        self.ui.sys_tray_close.checkStateChanged.connect(
+            lambda x: self.settings.setValue(options.sys_tray_close.key, bool(x.value))
         )
 
         self.ui.sys_tray_start.setChecked(self.settings.value(*options.sys_tray_start))
-        self.ui.sys_tray_start.stateChanged.connect(
-            lambda: self.settings.setValue(options.sys_tray_start.key, self.ui.sys_tray_start.isChecked())
+        self.ui.sys_tray_start.checkStateChanged.connect(
+            lambda x: self.settings.setValue(options.sys_tray_start.key, bool(x.value))
         )
 
         # Disable starting in system tray if closing to system tray is disabled.
@@ -93,37 +93,37 @@ class RareSettings(QWidget):
             lambda: self.ui.sys_tray_start.setChecked(False)
         )
         self.ui.sys_tray_close.checkStateChanged.connect(
-            lambda: self.ui.sys_tray_start.setEnabled(self.ui.sys_tray_close.isChecked())
+            lambda x: self.ui.sys_tray_start.setEnabled(bool(x.value))
         )
 
         self.ui.auto_update.setChecked(self.settings.value(*options.auto_update))
-        self.ui.auto_update.stateChanged.connect(
-            lambda: self.settings.setValue(options.auto_update.key, self.ui.auto_update.isChecked())
+        self.ui.auto_update.checkStateChanged.connect(
+            lambda x: self.settings.setValue(options.auto_update.key, bool(x.value))
         )
 
         self.ui.confirm_start.setChecked(self.settings.value(*options.confirm_start))
-        self.ui.confirm_start.stateChanged.connect(
-            lambda: self.settings.setValue(options.confirm_start.key, self.ui.confirm_start.isChecked())
+        self.ui.confirm_start.checkStateChanged.connect(
+            lambda x: self.settings.setValue(options.confirm_start.key, bool(x.value))
         )
         # TODO: implement use when starting game, disable for now
         self.ui.confirm_start.setDisabled(True)
 
         self.ui.auto_sync_cloud.setChecked(self.settings.value(*options.auto_sync_cloud))
-        self.ui.auto_sync_cloud.stateChanged.connect(
-            lambda: self.settings.setValue(options.auto_sync_cloud.key, self.ui.auto_sync_cloud.isChecked())
+        self.ui.auto_sync_cloud.checkStateChanged.connect(
+            lambda x: self.settings.setValue(options.auto_sync_cloud.key, bool(x.value))
         )
 
         self.ui.notification.setChecked(self.settings.value(*options.notification))
-        self.ui.notification.stateChanged.connect(
-            lambda: self.settings.setValue(options.notification.key, self.ui.notification.isChecked())
+        self.ui.notification.checkStateChanged.connect(
+            lambda x: self.settings.setValue(options.notification.key, bool(x.value))
         )
 
         self.ui.save_size.setChecked(self.settings.value(*options.restore_window))
-        self.ui.save_size.stateChanged.connect(self.save_window_size)
+        self.ui.save_size.checkStateChanged.connect(self.save_window_size)
 
         self.ui.log_games.setChecked(self.settings.value(*options.log_games))
-        self.ui.log_games.stateChanged.connect(
-            lambda: self.settings.setValue(options.log_games.key, self.ui.log_games.isChecked())
+        self.ui.log_games.checkStateChanged.connect(
+            lambda x: self.settings.setValue(options.log_games.key, bool(x.value))
         )
 
         if desktop_links_supported():
@@ -241,9 +241,9 @@ class RareSettings(QWidget):
     def open_directory(self):
         QDesktopServices.openUrl(QUrl.fromLocalFile(log_dir()))
 
-    @Slot()
-    def save_window_size(self):
-        self.settings.setValue(options.restore_window.key, self.ui.save_size.isChecked())
+    @Slot(Qt.CheckState)
+    def save_window_size(self, state: Qt.CheckState):
+        self.settings.setValue(options.restore_window.key, bool(state.value))
         self.settings.remove(options.window_width.key)
         self.settings.remove(options.window_height.key)
 
