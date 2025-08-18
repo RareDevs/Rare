@@ -81,6 +81,8 @@ def execute_subprocess(command: List[str], arguments: List[str], environment: Ma
 
 
 def execute_qprocess(command: List[str], arguments: List[str], environment: Mapping) -> Tuple[str, str]:
+    logger.debug("WINEPREFIX: %s", environment.get("WINEPREFIX", None))
+    logger.debug("STEAM_COMPAT_DATA_PATH: %s", environment.get("STEAM_COMPAT_DATA_PATH", None))
     proc = get_configured_qprocess(command + arguments, environment)
     proc.start()
     proc.waitForFinished(-1)

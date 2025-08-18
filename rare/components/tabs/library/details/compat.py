@@ -1,3 +1,4 @@
+import os.path
 import platform as pf
 from logging import getLogger
 from typing import Tuple
@@ -15,9 +16,10 @@ from rare.components.tabs.settings.widgets.overlay import (
 from rare.components.tabs.settings.widgets.runner import RunnerSettingsBase
 from rare.components.tabs.settings.widgets.wine import WineSettings
 from rare.models.game import RareGame
+from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.utils import steam_grades
-from rare.utils.paths import compat_shaders_dir
+from rare.utils.paths import compat_shaders_dir, proton_compat_dir
 from rare.widgets.indicator_edit import (
     ColumnCompleter,
     IndicatorLineEdit,
@@ -40,6 +42,13 @@ if pf.system() in {"Linux", "FreeBSD"}:
     class LocalProtonSettings(ProtonSettings):
         def load_settings(self, app_name: str):
             self.app_name = app_name
+
+        def _get_compat_path(self, location: ProtonSettings.CompatLocation):
+            folder_name = "default"
+            if location == ProtonSettings.CompatLocation.ISOLATED:
+                folder_name = RareCore.instance().get_game(self.app_name).folder_name
+            compatdata_path = proton_compat_dir(folder_name)
+            return compatdata_path
 
     class LocalMangoHudSettings(MangoHudSettings):
         def load_settings(self, app_name: str):
