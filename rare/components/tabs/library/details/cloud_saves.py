@@ -141,7 +141,7 @@ class CloudSaves(QWidget, SideTabContents):
         if self.settings.value(*options.auto_sync_cloud) == self.cloud_ui.sync_check.isChecked():
             self.settings.remove(f"{self.rgame.app_name}/{options.auto_sync_cloud.key}")
         else:
-            self.settings.setValue(f"{self.rgame.app_name}/auto_sync_cloud", self.cloud_ui.sync_check.isChecked())
+            self.settings.setValue(f"{self.rgame.app_name}/{options.auto_sync_cloud.key}", self.cloud_ui.sync_check.isChecked())
 
     @Slot(str, str)
     def __on_wine_resolver_result(self, path, app_name):
