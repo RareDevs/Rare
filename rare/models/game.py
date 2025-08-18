@@ -123,7 +123,7 @@ class RareGame(RareGameSlim):
     def __on_progress_update(self, progress: int):
         self.progress = progress
 
-    def worker(self) -> Optional[QRunnable]:
+    def get_worker(self) -> Optional[QRunnable]:
         return self.__worker
 
     def set_worker(self, worker: Optional[QRunnable]):
@@ -460,7 +460,7 @@ class RareGame(RareGameSlim):
         self.metadata.steam_appid = appid
         self.__save_metadata()
 
-    def steam_grade(self) -> str:
+    def get_steam_grade(self) -> str:
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
         if self.__steam_grade_pending:
