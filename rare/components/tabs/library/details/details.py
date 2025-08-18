@@ -355,7 +355,7 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.grade.setText(
             style_hyperlink(
                 f"https://www.protondb.com/app/{self.rgame.steam_appid}",
-                f"{self.steam_grade_ratings[self.rgame.steam_grade()]} ({self.rgame.steam_appid})"
+                f"{self.steam_grade_ratings[self.rgame.get_steam_grade()]} ({self.rgame.steam_appid})"
             )
         )
 
@@ -419,7 +419,7 @@ class GameDetails(QWidget, SideTabContents):
     @Slot(RareGame)
     def update_game(self, rgame: RareGame):
         if self.rgame is not None:
-            if (worker := self.rgame.worker()) is not None:
+            if (worker := self.rgame.get_worker()) is not None:
                 if isinstance(worker, VerifyWorker):
                     try:
                         worker.signals.progress.disconnect(self.__on_verify_progress)
@@ -435,7 +435,7 @@ class GameDetails(QWidget, SideTabContents):
         self.rgame = None
 
         rgame.signals.widget.update.connect(self.__update_widget)
-        if (worker := rgame.worker()) is not None:
+        if (worker := rgame.get_worker()) is not None:
             if isinstance(worker, VerifyWorker):
                 worker.signals.progress.connect(self.__on_verify_progress)
             if isinstance(worker, MoveWorker):
