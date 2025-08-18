@@ -57,6 +57,12 @@ class WinePathResolver(Worker):
         env = core.get_app_environment(app_name, disable_wine=config.get_boolean(app_name, "no_wine"))
         # pylint: disable=E0606
         env = compat_utils.get_host_environment(env, silent=True)
+        env.update({
+            "SteamAppId": config.get_envvar_default(app_name, "SteamAppId", "default"),
+            "SteamGameId": config.get_envvar_default(app_name, "SteamGameId", "default"),
+            "STEAM_COMPAT_APP_ID": config.get_envvar_default(app_name, "STEAM_COMPAT_APP_ID", "default"),
+            "UMU_ID": config.get_envvar_default(app_name, "UMU_ID", "default"),
+        })
 
         if tool is not None:
             _cmd = core.get_app_launch_command(
