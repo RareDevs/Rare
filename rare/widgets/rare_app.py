@@ -110,6 +110,9 @@ class RareApp(QApplication):
 
         self.settings = QSettings(self)
 
+        language = self.settings.value(*options.language)
+        self.load_translator(language)
+
         # Style
         # lk: this is a bit silly but serves well until we have a class
         # lk: store the default qt style name from the system on startup as a property for later reference

@@ -46,9 +46,6 @@ class Rare(RareApp):
         self.signals = RareCore.instance().signals()
         self.core = RareCore.instance().core()
 
-        language = self.settings.value(*options.language)
-        self.load_translator(language)
-
         # set Application name for settings
         self.main_window: Optional[RareWindow] = None
         self.launch_dialog: Optional[LaunchDialog] = None
