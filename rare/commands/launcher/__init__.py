@@ -30,7 +30,6 @@ from legendary.models.game import SaveGameStatus
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameSlim
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
-from rare.models.options import options
 from rare.widgets.rare_app import RareApp, RareAppException
 from rare.utils.paths import get_rare_executable
 from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult

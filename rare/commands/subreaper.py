@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 from argparse import Namespace
-from ctypes import CDLL, c_int, c_ulong, create_string_buffer, byref
+from ctypes import CDLL, c_int, create_string_buffer, byref
 from ctypes.util import find_library
 from logging import getLogger
 from typing import List
