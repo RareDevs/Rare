@@ -58,10 +58,10 @@ class WinePathResolver(Worker):
         # pylint: disable=E0606
         env = compat_utils.get_host_environment(env, silent=True)
         env.update({
-            "SteamAppId": config.get_envvar_global(app_name, "SteamAppId", "default"),
-            "SteamGameId": config.get_envvar_global(app_name, "SteamGameId", "default"),
-            "STEAM_COMPAT_APP_ID": config.get_envvar_global(app_name, "STEAM_COMPAT_APP_ID", "default"),
-            "UMU_ID": config.get_envvar_global(app_name, "UMU_ID", "default"),
+            "SteamAppId": config.get_envvar_with_global(app_name, "SteamAppId", "default"),
+            "SteamGameId": config.get_envvar_with_global(app_name, "SteamGameId", "default"),
+            "STEAM_COMPAT_APP_ID": config.get_envvar_with_global(app_name, "STEAM_COMPAT_APP_ID", "default"),
+            "UMU_ID": config.get_envvar_with_global(app_name, "UMU_ID", "default"),
         })
 
         if tool is not None:
