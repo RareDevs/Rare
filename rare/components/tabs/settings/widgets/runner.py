@@ -1,9 +1,10 @@
 import platform as pf
 from typing import Type, TypeVar
 
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QGroupBox, QVBoxLayout
+from PySide6.QtCore import Signal, QSettings, Slot, Qt
+from PySide6.QtWidgets import QGroupBox, QVBoxLayout, QCheckBox, QFormLayout
 
+from rare.models.options import options
 from .wine import WineSettings
 
 if pf.system() in {"Linux", "FreeBSD"}:
@@ -24,6 +25,7 @@ class RunnerSettingsBase(QGroupBox):
     ):
         super().__init__(parent=parent)
         self.setTitle(self.tr("Compatibility"))
+        self.settings = QSettings(self)
 
         self.app_name: str = "default"
 
@@ -46,6 +48,12 @@ class RunnerSettingsBase(QGroupBox):
             self.ctool.tool_enabled.connect(self.wine.tool_enabled)
             self.ctool.tool_enabled.connect(self.tool_enabled)
 
+        font = self.font()
+        font.setItalic(True)
+        self.shader_cache_check = QCheckBox(self.tr("Use game-specific shader cache directory"), self)
+        self.shader_cache_check.setFont(font)
+        self.shader_cache_check.checkStateChanged.connect(self._shader_cache_check_changed)
+
         self.main_layout = QVBoxLayout(self)
         self.main_layout.addWidget(self.wine)
         # wine_index = self.compat_stack.addWidget(self.wine)
@@ -54,5 +62,12 @@ class RunnerSettingsBase(QGroupBox):
         # proton_index = self.compat_stack.addWidget(self.proton_tool)
         # self.compat_combo.addItem("Proton", proton_index)
 
+        self.form_layout = QFormLayout()
+        self.form_layout.addRow(self.tr("Shader cache"), self.shader_cache_check)
+        self.main_layout.addLayout(self.form_layout)
+
+    @Slot(Qt.CheckState)
+    def _shader_cache_check_changed(self, state: Qt.CheckState):
+        self.settings.setValue(options.local_shader_cache.key, bool(state.value))
 
 RunnerSettingsType = TypeVar("RunnerSettingsType", bound=RunnerSettingsBase)

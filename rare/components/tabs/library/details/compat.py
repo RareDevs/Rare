@@ -1,11 +1,9 @@
-import os.path
 import platform as pf
 from logging import getLogger
 from typing import Tuple
 
 from PySide6.QtCore import QSignalBlocker, Qt, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QCheckBox, QFormLayout
 
 from rare.components.tabs.settings.compat import CompatSettingsBase
 from rare.components.tabs.settings.widgets.overlay import (
@@ -16,6 +14,7 @@ from rare.components.tabs.settings.widgets.overlay import (
 from rare.components.tabs.settings.widgets.runner import RunnerSettingsBase
 from rare.components.tabs.settings.widgets.wine import WineSettings
 from rare.models.game import RareGame
+from rare.models.options import options
 from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.utils import steam_grades
@@ -64,13 +63,6 @@ class LocalRunnerSettings(RunnerSettingsBase):
 
         self.rgame: RareGame = None
 
-        font = self.font()
-        font.setItalic(True)
-
-        self.shader_cache_check = QCheckBox(self.tr("Use game-specific shader cache directory"), self)
-        self.shader_cache_check.setFont(font)
-        self.shader_cache_check.checkStateChanged.connect(self.__shader_cache_check_changed)
-
         self.steam_appid_edit = IndicatorLineEdit(
             placeholder=self.tr("Use in case the SteamAppID was not found automatically"),
             edit_func=self.__steam_appid_edit_callback,
@@ -79,18 +71,16 @@ class LocalRunnerSettings(RunnerSettingsBase):
         )
         self.__steam_appids, self.__steam_titles = steam_grades.load_steam_appids()
         self.steam_appid_edit.setCompleter(ColumnCompleter(items=self.__steam_appids.items()))
-
-        form_layout = QFormLayout()
-        form_layout.addRow(self.tr("Shader cache"), self.shader_cache_check)
-        form_layout.addRow(self.tr("Steam AppID"), self.steam_appid_edit)
-
-        self.main_layout.addLayout(form_layout)
+        self.form_layout.addRow(self.tr("Steam AppID"), self.steam_appid_edit)
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
             return super().showEvent(a0)
         _ = QSignalBlocker(self.shader_cache_check)
-        self.shader_cache_check.setChecked(bool(config.get_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", False)))
+        is_local_cache_enabled = options.get_with_global(self.settings, options.local_shader_cache, self.rgame.app_name)
+        has_local_cache_path = bool(config.get_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", False))
+        self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
+        self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
         _ = QSignalBlocker(self.steam_appid_edit)
         self.steam_appid_edit.setText(self.rgame.steam_appid if self.rgame.steam_appid else "")
         self.steam_appid_edit.setInfo(self.__steam_titles.get(self.rgame.steam_appid, ""))
@@ -115,11 +105,12 @@ class LocalRunnerSettings(RunnerSettingsBase):
         self.rgame.reset_steam_date()
 
     @Slot(Qt.CheckState)
-    def __shader_cache_check_changed(self, state: Qt.CheckState):
-        if state == Qt.CheckState.Checked:
-            config.set_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", compat_shaders_dir(self.rgame.folder_name).as_posix())
+    def _shader_cache_check_changed(self, state: Qt.CheckState):
+        if checked := (state != Qt.CheckState.Unchecked):
+            config.set_envvar(self.rgame.app_name, "STEAM_COMPAT_SHADER_PATH", compat_shaders_dir(self.rgame.folder_name).as_posix())
         else:
-            config.remove_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH")
+            config.remove_envvar(self.rgame.app_name, "STEAM_COMPAT_SHADER_PATH")
+        options.set_with_global(self.settings, options.local_shader_cache, checked, self.rgame.app_name)
         self.environ_changed.emit("STEAM_COMPAT_SHADER_PATH")
 
     def load_settings(self, rgame: RareGame):

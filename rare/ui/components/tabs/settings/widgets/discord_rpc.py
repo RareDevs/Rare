@@ -20,13 +20,10 @@ class Ui_DiscordRPCSettings(object):
         DiscordRPCSettings.setWindowTitle(u"DiscordRPCSettings")
         self.main_layout = QGridLayout(DiscordRPCSettings)
         self.main_layout.setObjectName(u"main_layout")
-        self.enable = QComboBox(DiscordRPCSettings)
-        self.enable.addItem("")
-        self.enable.addItem("")
-        self.enable.addItem("")
-        self.enable.setObjectName(u"enable")
+        self.mode_combo = QComboBox(DiscordRPCSettings)
+        self.mode_combo.setObjectName(u"mode_combo")
 
-        self.main_layout.addWidget(self.enable, 0, 1, 1, 1)
+        self.main_layout.addWidget(self.mode_combo, 0, 1, 1, 1)
 
         self.label = QLabel(DiscordRPCSettings)
         self.label.setObjectName(u"label")
@@ -38,20 +35,20 @@ class Ui_DiscordRPCSettings(object):
 
         self.main_layout.addWidget(self.label, 0, 0, 1, 1)
 
-        self.show_game = QCheckBox(DiscordRPCSettings)
-        self.show_game.setObjectName(u"show_game")
+        self.game_check = QCheckBox(DiscordRPCSettings)
+        self.game_check.setObjectName(u"game_check")
 
-        self.main_layout.addWidget(self.show_game, 1, 0, 1, 2)
+        self.main_layout.addWidget(self.game_check, 1, 0, 1, 2)
 
-        self.show_os = QCheckBox(DiscordRPCSettings)
-        self.show_os.setObjectName(u"show_os")
+        self.os_check = QCheckBox(DiscordRPCSettings)
+        self.os_check.setObjectName(u"os_check")
 
-        self.main_layout.addWidget(self.show_os, 2, 0, 1, 2)
+        self.main_layout.addWidget(self.os_check, 2, 0, 1, 2)
 
-        self.show_time = QCheckBox(DiscordRPCSettings)
-        self.show_time.setObjectName(u"show_time")
+        self.time_check = QCheckBox(DiscordRPCSettings)
+        self.time_check.setObjectName(u"time_check")
 
-        self.main_layout.addWidget(self.show_time, 3, 0, 1, 2)
+        self.main_layout.addWidget(self.time_check, 3, 0, 1, 2)
 
 
         self.retranslateUi(DiscordRPCSettings)
@@ -59,13 +56,9 @@ class Ui_DiscordRPCSettings(object):
 
     def retranslateUi(self, DiscordRPCSettings):
         DiscordRPCSettings.setTitle(QCoreApplication.translate("DiscordRPCSettings", u"Discord RPC", None))
-        self.enable.setItemText(0, QCoreApplication.translate("DiscordRPCSettings", u"When Playing", None))
-        self.enable.setItemText(1, QCoreApplication.translate("DiscordRPCSettings", u"Always", None))
-        self.enable.setItemText(2, QCoreApplication.translate("DiscordRPCSettings", u"Never", None))
-
         self.label.setText(QCoreApplication.translate("DiscordRPCSettings", u"Show", None))
-        self.show_game.setText(QCoreApplication.translate("DiscordRPCSettings", u"Show Game", None))
-        self.show_os.setText(QCoreApplication.translate("DiscordRPCSettings", u"Show OS", None))
-        self.show_time.setText(QCoreApplication.translate("DiscordRPCSettings", u"Show Time playing", None))
+        self.game_check.setText(QCoreApplication.translate("DiscordRPCSettings", u"Show game", None))
+        self.os_check.setText(QCoreApplication.translate("DiscordRPCSettings", u"Show OS", None))
+        self.time_check.setText(QCoreApplication.translate("DiscordRPCSettings", u"Show play time", None))
     # retranslateUi
 

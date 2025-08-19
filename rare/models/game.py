@@ -20,7 +20,7 @@ from rare.models.options import options
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils import config_helper as config
-from rare.utils.paths import data_dir, get_rare_executable
+from rare.utils.paths import data_dir, get_rare_executable, compat_shaders_dir
 from rare.utils.steam_grades import get_rating
 from rare.utils.workarounds import apply_workarounds
 
@@ -616,6 +616,10 @@ class RareGame(RareGameSlim):
                 self.app_name, "UMU_ID",
                 f"umu-{self.metadata.steam_appid}" if self.metadata.steam_appid else "umu-default"
             )
+        if options.get_with_global(QSettings(self), options.local_shader_cache, self.app_name):
+            config.set_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", compat_shaders_dir(self.folder_name).as_posix())
+        else:
+            config.remove_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH")
         config.save_config()
 
         logger.info(f"Starting game process: ({executable} {' '.join(args)})")

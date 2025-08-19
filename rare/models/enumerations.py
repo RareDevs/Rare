@@ -23,3 +23,9 @@ class LibraryOrder(IntEnum):
     RECENT = 2
     NEWEST = 3
     OLDEST = 4
+
+
+class DiscordRPCMode(IntEnum):
+    NEVER = 0
+    GAME_ONLY = 1
+    ALWAYS = 2

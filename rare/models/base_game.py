@@ -213,11 +213,7 @@ class RareGameSlim(RareGameBase):
 
     @property
     def auto_sync_saves(self):
-        auto_sync_cloud = QSettings(self).value(
-            f"{self.app_name}/{options.auto_sync_cloud.key}",
-            QSettings(self).value(*options.auto_sync_cloud),
-            options.auto_sync_cloud.dtype
-        )
+        auto_sync_cloud = options.get_with_global(QSettings(self), options.auto_sync_cloud, self.app_name)
         return self.supports_cloud_saves and auto_sync_cloud
 
     @property

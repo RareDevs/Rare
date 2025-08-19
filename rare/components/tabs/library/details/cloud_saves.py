@@ -4,7 +4,7 @@ from datetime import datetime
 from logging import getLogger
 from typing import Tuple
 
-from PySide6.QtCore import QThreadPool, QSettings, Slot
+from PySide6.QtCore import QThreadPool, QSettings, Slot, Qt
 from PySide6.QtWidgets import (
     QWidget,
     QFileDialog,
@@ -43,7 +43,7 @@ class CloudSaves(QWidget, SideTabContents):
 
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
-        self.settings = QSettings()
+        self.settings = QSettings(self)
 
         self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa5s.desktop").pixmap(128, 128))
         self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "fa5s.cloud").pixmap(128, 128))
@@ -78,7 +78,7 @@ class CloudSaves(QWidget, SideTabContents):
         self.compute_save_path_button.clicked.connect(self.compute_save_path)
         self.cloud_ui.main_layout.addRow(None, self.compute_save_path_button)
 
-        self.cloud_ui.sync_check.stateChanged.connect(self.__on_sync_check_changed)
+        self.cloud_ui.sync_check.checkStateChanged.connect(self.__on_sync_check_changed)
 
         self.info_label = QLabel(parent=self)
 
@@ -136,12 +136,11 @@ class CloudSaves(QWidget, SideTabContents):
             else:
                 self.cloud_save_path_edit.setText(new_path)
 
-    @Slot()
-    def __on_sync_check_changed(self):
-        if self.settings.value(*options.auto_sync_cloud) == self.cloud_ui.sync_check.isChecked():
-            self.settings.remove(f"{self.rgame.app_name}/{options.auto_sync_cloud.key}")
-        else:
-            self.settings.setValue(f"{self.rgame.app_name}/{options.auto_sync_cloud.key}", self.cloud_ui.sync_check.isChecked())
+    @Slot(Qt.CheckState)
+    def __on_sync_check_changed(self, state: Qt.CheckState):
+        options.set_with_global(
+            self.settings, options.auto_sync_cloud, state != Qt.CheckState.Unchecked, self.rgame.app_name
+        )
 
     @Slot(str, str)
     def __on_wine_resolver_result(self, path, app_name):
