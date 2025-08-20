@@ -30,7 +30,7 @@ class WinePathResolver(Worker):
         result_ready = Signal(str, str)
 
     def __init__(self, core: LegendaryCore, app_name: str, path: str):
-        super(WinePathResolver, self). __init__()
+        super(WinePathResolver, self).__init__()
         self.signals = WinePathResolver.Signals()
         self.core = core
         self.app_name = app_name
@@ -52,23 +52,25 @@ class WinePathResolver(Worker):
         cmd = core.get_app_launch_command(
             app_name,
             wrapper=tool.as_str(steam.SteamVerb.RUN_IN_PREFIX) if tool is not None else None,
-            disable_wine=config.get_boolean(app_name, "no_wine")
+            disable_wine=config.get_boolean(app_name, "no_wine"),
         )
         env = core.get_app_environment(app_name, disable_wine=config.get_boolean(app_name, "no_wine"))
         # pylint: disable=E0606
         env = compat_utils.get_host_environment(env, silent=True)
-        env.update({
-            "SteamAppId": config.get_envvar_with_global(app_name, "SteamAppId", "default"),
-            "SteamGameId": config.get_envvar_with_global(app_name, "SteamGameId", "default"),
-            "STEAM_COMPAT_APP_ID": config.get_envvar_with_global(app_name, "STEAM_COMPAT_APP_ID", "default"),
-            "UMU_ID": config.get_envvar_with_global(app_name, "UMU_ID", "default"),
-        })
+        env.update(
+            {
+                "SteamAppId": config.get_envvar_with_global(app_name, "SteamAppId", "default"),
+                "SteamGameId": config.get_envvar_with_global(app_name, "SteamGameId", "default"),
+                "STEAM_COMPAT_APP_ID": config.get_envvar_with_global(app_name, "STEAM_COMPAT_APP_ID", "default"),
+                "UMU_ID": config.get_envvar_with_global(app_name, "UMU_ID", "default"),
+            }
+        )
 
         if tool is not None:
             _cmd = core.get_app_launch_command(
                 app_name,
                 wrapper=tool.as_str(steam.SteamVerb.WAIT_FOR_EXIT_AND_RUN) if tool is not None else None,
-                disable_wine=config.get_boolean(app_name, "no_wine")
+                disable_wine=config.get_boolean(app_name, "no_wine"),
             )
             compat_utils.execute(_cmd, ["c:\\windows\\system32\\wineboot.exe", "-u"], env)
 
@@ -95,7 +97,6 @@ class WinePathResolver(Worker):
 
 
 class WineSavePathResolver(WinePathResolver):
-
     def __init__(self, core: LegendaryCore, rgame: RareGame):
         path = PathSpec(core, rgame.igame).resolve_egl_path_vars(rgame.raw_save_path)
         super(WineSavePathResolver, self).__init__(rgame.core, rgame.app_name, str(path))
@@ -128,16 +129,11 @@ class OriginWineWorker(WinePathResolver):
         t = time.time()
 
         for rgame in self.games:
-
-            reg_path: str = rgame.game.metadata \
-                .get("customAttributes", {}) \
-                .get("RegistryPath", {}).get("value", None)
+            reg_path: str = rgame.game.metadata.get("customAttributes", {}).get("RegistryPath", {}).get("value", None)
             if not reg_path:
                 continue
 
-            reg_key: str = rgame.game.metadata \
-                .get("customAttributes", {}) \
-                .get("RegistryKey", {}).get("value", None)
+            reg_key: str = rgame.game.metadata.get("customAttributes", {}).get("RegistryKey", {}).get("value", None)
             if not reg_key:
                 continue
 
@@ -171,17 +167,32 @@ class OriginWineWorker(WinePathResolver):
                     if install_dir:
                         logger.debug("Found Unix install directory %s", install_dir)
                     else:
-                        logger.info("Could not find Unix install directory for '%s'", rgame.app_title)
+                        logger.info(
+                            "Could not find Unix install directory for '%s'",
+                            rgame.app_title,
+                        )
                 else:
-                    logger.info("Could not find Wine install directory for '%s'", rgame.app_title)
+                    logger.info(
+                        "Could not find Wine install directory for '%s'",
+                        rgame.app_title,
+                    )
 
             if install_dir:
                 if os.path.isdir(install_dir):
                     install_size = path_size(install_dir)
                     rgame.set_origin_attributes(install_dir, install_size)
-                    logger.info("Origin game '%s' (%s, %s)", rgame.app_title, install_dir, format_size(install_size))
+                    logger.info(
+                        "Origin game '%s' (%s, %s)",
+                        rgame.app_title,
+                        install_dir,
+                        format_size(install_size),
+                    )
                 else:
-                    logger.warning("Origin game '%s' (%s does not exist)", rgame.app_title, install_dir)
+                    logger.warning(
+                        "Origin game '%s' (%s does not exist)",
+                        rgame.app_title,
+                        install_dir,
+                    )
             else:
                 logger.info("Origin game '%s' is not installed", rgame.app_title)
         logger.info("Origin worker finished in %ss", time.time() - t)

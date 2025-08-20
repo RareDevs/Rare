@@ -60,10 +60,8 @@ class CloudSyncDialog(ButtonDialog):
             self.status = CloudSyncDialogResult.SKIP
 
         local_tz = datetime.now().astimezone().tzinfo
-        self.sync_ui.date_info_local.setText(
-            dt_local.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_local else "None")
-        self.sync_ui.date_info_remote.setText(
-            dt_remote.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_remote else "None")
+        self.sync_ui.date_info_local.setText(dt_local.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_local else "None")
+        self.sync_ui.date_info_remote.setText(dt_remote.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_remote else "None")
 
         self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa5s.desktop").pixmap(128, 128))
         self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "fa5s.cloud").pixmap(128, 128))

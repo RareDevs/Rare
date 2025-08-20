@@ -13,7 +13,10 @@ from PySide6.QtWidgets import (
     QFrame,
 )
 
-from rare.components.tabs.store.api.models.response import CatalogOfferModel, WishlistItemModel
+from rare.components.tabs.store.api.models.response import (
+    CatalogOfferModel,
+    WishlistItemModel,
+)
 from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
@@ -26,7 +29,6 @@ logger = logging.getLogger("StoreLanding")
 
 
 class LandingPage(SlidingStackedWidget, SideTabContents):
-
     def __init__(self, store_api: StoreAPI, parent=None):
         super(LandingPage, self).__init__(parent=parent)
         self.implements_scrollarea = True

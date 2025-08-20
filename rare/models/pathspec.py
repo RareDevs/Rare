@@ -8,7 +8,6 @@ from rare.utils.config_helper import get_prefixes
 
 
 class PathSpec:
-
     @staticmethod
     def egl_appdata() -> str:
         return r"%LOCALAPPDATA%\EpicGamesLauncher\Saved\Config\Windows"
@@ -23,12 +22,7 @@ class PathSpec:
 
     @staticmethod
     def wine_egl_programdata() -> str:
-        return PathSpec.egl_programdata(
-        ).replace(
-            "\\", "/"
-        ).replace(
-            "%PROGRAMDATA%", PathSpec.wine_programdata()
-        )
+        return PathSpec.egl_programdata().replace("\\", "/").replace("%PROGRAMDATA%", PathSpec.wine_programdata())
 
     @staticmethod
     def prefix_egl_programdata(prefix: str) -> str:
@@ -38,9 +32,7 @@ class PathSpec:
     def wine_egl_prefixes(results: int = 0) -> Union[List[str], str]:
         possible_prefixes = get_prefixes()
         prefixes = [
-            prefix
-            for prefix, _ in possible_prefixes
-            if os.path.exists(os.path.join(prefix, PathSpec.wine_egl_programdata()))
+            prefix for prefix, _ in possible_prefixes if os.path.exists(os.path.join(prefix, PathSpec.wine_egl_programdata()))
         ]
         if not prefixes:
             return ""

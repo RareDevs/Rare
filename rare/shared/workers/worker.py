@@ -92,4 +92,3 @@ class QueueWorker(Worker):
     def kill(self):
         raise NotImplementedError
         self._kill = True
-

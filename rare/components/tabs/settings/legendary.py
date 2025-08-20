@@ -3,16 +3,20 @@ import re
 from logging import getLogger
 from typing import Tuple, Set
 
-from PySide6.QtCore import QObject, Signal, QThreadPool, QSettings, Slot
+from PySide6.QtCore import QObject, Signal, QThreadPool, Slot, Qt
 from PySide6.QtGui import QShowEvent, QHideEvent
 from PySide6.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
-from rare.models.options import options
+from rare.models.settings import settings, RareAppSettings
 from rare.shared import LegendaryCoreSingleton
 from rare.shared.workers.worker import Worker
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.misc import format_size
-from rare.widgets.indicator_edit import PathEdit, IndicatorLineEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import (
+    PathEdit,
+    IndicatorLineEdit,
+    IndicatorReasonsCommon,
+)
 
 logger = getLogger("LegendarySettings")
 
@@ -30,9 +34,7 @@ class RefreshGameMetaWorker(Worker):
 
     def run_real(self) -> None:
         for platform in self.platforms:
-            self.core.get_game_and_dlc_list(
-                True, platform=platform, force_refresh=True, skip_ue=self.skip_ue
-            )
+            self.core.get_game_and_dlc_list(True, platform=platform, force_refresh=True, skip_ue=self.skip_ue)
         self.signals.finished.emit()
 
 
@@ -41,7 +43,7 @@ class LegendarySettings(QWidget):
         super(LegendarySettings, self).__init__(parent=parent)
         self.ui = Ui_LegendarySettings()
         self.ui.setupUi(self)
-        self.settings = QSettings(self)
+        self.settings = RareAppSettings.instance()
 
         self.core = LegendaryCoreSingleton()
 
@@ -65,28 +67,20 @@ class LegendarySettings(QWidget):
         self.ui.install_dir_layout.addWidget(self.install_dir)
 
         # Max Workers
-        self.ui.max_worker_spin.setValue(
-            self.core.lgd.config["Legendary"].getint("max_workers", fallback=0)
-        )
+        self.ui.max_worker_spin.setValue(self.core.lgd.config["Legendary"].getint("max_workers", fallback=0))
         self.ui.max_worker_spin.valueChanged.connect(self.max_worker_save)
 
         # Max memory
-        self.ui.max_memory_spin.setValue(
-            self.core.lgd.config["Legendary"].getint("max_memory", fallback=0)
-        )
+        self.ui.max_memory_spin.setValue(self.core.lgd.config["Legendary"].getint("max_memory", fallback=0))
         self.ui.max_memory_spin.valueChanged.connect(self.max_memory_save)
 
         # Preferred CDN
-        self.ui.preferred_cdn_line.setText(
-            self.core.lgd.config["Legendary"].get("preferred_cdn", fallback="")
-        )
+        self.ui.preferred_cdn_line.setText(self.core.lgd.config["Legendary"].get("preferred_cdn", fallback=""))
         self.ui.preferred_cdn_line.textChanged.connect(self.preferred_cdn_save)
 
         # Disable HTTPS
-        self.ui.disable_https_check.setChecked(
-            self.core.lgd.config["Legendary"].getboolean("disable_https", fallback=False)
-        )
-        self.ui.disable_https_check.stateChanged.connect(self.disable_https_save)
+        self.ui.disable_https_check.setChecked(self.core.lgd.config["Legendary"].getboolean("disable_https", fallback=False))
+        self.ui.disable_https_check.checkStateChanged.connect(self.disable_https_save)
 
         # Clean metadata
         self.ui.clean_button.clicked.connect(lambda: self.clean_metadata(keep_manifests=False))
@@ -101,30 +95,30 @@ class LegendarySettings(QWidget):
         )
         self.ui.locale_layout.addWidget(self.locale_edit)
 
-        self.ui.fetch_win32_check.setChecked(self.settings.value(*options.win32_meta))
-        self.ui.fetch_win32_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.win32_meta.key, self.ui.fetch_win32_check.isChecked())
+        self.ui.fetch_win32_check.setChecked(self.settings.get_value(settings.win32_meta))
+        self.ui.fetch_win32_check.checkStateChanged.connect(
+            lambda s: self.settings.set_value(settings.win32_meta, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.fetch_macos_check.setChecked(self.settings.value(*options.macos_meta))
-        self.ui.fetch_macos_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.macos_meta.key, self.ui.fetch_macos_check.isChecked())
+        self.ui.fetch_macos_check.setChecked(self.settings.get_value(settings.macos_meta))
+        self.ui.fetch_macos_check.checkStateChanged.connect(
+            lambda s: self.settings.set_value(settings.macos_meta, s != Qt.CheckState.Unchecked)
         )
         self.ui.fetch_macos_check.setDisabled(pf.system() == "Darwin")
 
-        self.ui.fetch_unreal_check.setChecked(self.settings.value(*options.unreal_meta))
-        self.ui.fetch_unreal_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.unreal_meta.key, self.ui.fetch_unreal_check.isChecked())
+        self.ui.fetch_unreal_check.setChecked(self.settings.get_value(settings.unreal_meta))
+        self.ui.fetch_unreal_check.checkStateChanged.connect(
+            lambda s: self.settings.set_value(settings.unreal_meta, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.exclude_non_asset_check.setChecked(self.settings.value(*options.exclude_non_asset))
-        self.ui.exclude_non_asset_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.exclude_non_asset.key, self.ui.exclude_non_asset_check.isChecked())
+        self.ui.exclude_non_asset_check.setChecked(self.settings.get_value(settings.exclude_non_asset))
+        self.ui.exclude_non_asset_check.checkStateChanged.connect(
+            lambda s: self.settings.set_value(settings.exclude_non_asset, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.exclude_entitlements_check.setChecked(self.settings.value(*options.exclude_entitlements))
-        self.ui.exclude_entitlements_check.stateChanged.connect(
-            lambda: self.settings.setValue(options.exclude_entitlements.key, self.ui.exclude_entitlements_check.isChecked())
+        self.ui.exclude_entitlements_check.setChecked(self.settings.get_value(settings.exclude_entitlements))
+        self.ui.exclude_entitlements_check.checkStateChanged.connect(
+            lambda s: self.settings.set_value(settings.exclude_entitlements, s != Qt.CheckState.Unchecked)
         )
 
         self.ui.refresh_metadata_button.clicked.connect(self.refresh_metadata)
@@ -211,11 +205,9 @@ class LegendarySettings(QWidget):
         else:
             self.core.lgd.config.remove_option("Legendary", "preferred_cdn")
 
-    @Slot(int)
-    def disable_https_save(self, checked: int):
-        self.core.lgd.config.set(
-            "Legendary", "disable_https", str(bool(checked)).lower()
-        )
+    @Slot(Qt.CheckState)
+    def disable_https_save(self, state: Qt.CheckState):
+        self.core.lgd.config.set("Legendary", "disable_https", str(state != Qt.CheckState.Unchecked).lower())
 
     def clean_metadata(self, keep_manifests: bool):
         before = self.core.lgd.get_dir_size()
@@ -225,28 +217,20 @@ class LegendarySettings(QWidget):
 
         if not keep_manifests:
             logger.debug("Removing manifests...")
-            installed = [
-                (ig.app_name, ig.version, ig.platform) for ig in self.core.get_installed_list()
-            ]
-            installed.extend(
-                (ig.app_name, ig.version, ig.platform) for ig in self.core.get_installed_dlc_list()
-            )
+            installed = [(ig.app_name, ig.version, ig.platform) for ig in self.core.get_installed_list()]
+            installed.extend((ig.app_name, ig.version, ig.platform) for ig in self.core.get_installed_dlc_list())
             self.core.lgd.clean_manifests(installed)
 
         logger.debug("Removing tmp data")
         self.core.lgd.clean_tmp_data()
 
         after = self.core.lgd.get_dir_size()
-        logger.info(
-            f"Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB."
-        )
+        logger.info(f"Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.")
         if (before - after) > 0:
             QMessageBox.information(
                 self,
                 "Cleanup",
-                self.tr("Cleanup complete! Successfully removed {}").format(
-                    format_size(before - after)
-                ),
+                self.tr("Cleanup complete! Successfully removed {}").format(format_size(before - after)),
             )
         else:
             QMessageBox.information(self, "Cleanup", "Nothing to clean")

@@ -15,4 +15,3 @@ class StoreGroup(QGroupBox):
             self.loading_widget.start()
         else:
             self.loading_widget.stop()
-

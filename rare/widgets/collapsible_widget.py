@@ -1,7 +1,13 @@
 from abc import abstractmethod
 from typing import Optional
 
-from PySide6.QtCore import QParallelAnimationGroup, Qt, QPropertyAnimation, QAbstractAnimation, QSize
+from PySide6.QtCore import (
+    QParallelAnimationGroup,
+    Qt,
+    QPropertyAnimation,
+    QAbstractAnimation,
+    QSize,
+)
 from PySide6.QtWidgets import (
     QWidget,
     QFrame,
@@ -24,6 +30,7 @@ class CollapsibleBase(object):
         # Adapted from python version
         https://newbedev.com/how-to-make-an-expandable-collapsable-section-widget-in-qt
     """
+
     def __init__(self, parent=None):
         self.animation_duration = None
         self.toggle_animation = None
@@ -186,8 +193,11 @@ class CollapsibleGroupBox(QGroupBox, CollapsibleBase):
 if __name__ == "__main__":
     import sys
     from PySide6.QtWidgets import QApplication, QDialog
-    from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
+    from rare.ui.components.dialogs.install_dialog_advanced import (
+        Ui_InstallDialogAdvanced,
+    )
     from rare.utils.misc import set_style_sheet
+
     app = QApplication(sys.argv)
 
     set_style_sheet("RareStyle")
@@ -241,4 +251,3 @@ if __name__ == "__main__":
     dialog.layout().setSizeConstraint(QVBoxLayout.SizeConstraint.SetFixedSize)
     dialog.show()
     sys.exit(app.exec_())
-

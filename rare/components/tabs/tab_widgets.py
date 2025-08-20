@@ -27,10 +27,12 @@ class MainTabBar(QTabBar):
         return size
 
     def __align_button(self):
-        self.button.move(QPoint(
-            self.tabRect(self.expanded).right() - self.button.width() - self.style().PixelMetric.PM_DefaultFrameWidth,
-            self.tabRect(self.expanded).bottom() - self.button.height()
-        ))
+        self.button.move(
+            QPoint(
+                self.tabRect(self.expanded).right() - self.button.width() - self.style().PixelMetric.PM_DefaultFrameWidth,
+                self.tabRect(self.expanded).bottom() - self.button.height(),
+            )
+        )
 
     def resizeEvent(self, e: QResizeEvent):
         super().resizeEvent(e)

@@ -90,7 +90,7 @@ def get_envvar(app_name: str, option: str, fallback: Any = None) -> str:
 
 def get_envvar_with_global(app_name: str, option: str, fallback: Any = None) -> str:
     _option = _config.get("default.env", option, fallback=fallback)
-    _option = _config.get(f'{app_name}.env', option, fallback=_option)
+    _option = _config.get(f"{app_name}.env", option, fallback=_option)
     return _option
 
 
@@ -100,8 +100,8 @@ def adjust_wine_prefix(app_name: str, value: str) -> None:
 
 
 def get_wine_prefix(app_name: str, fallback: Any = None):
-    _prefix = get_envvar(app_name, 'WINEPREFIX', fallback=fallback)
-    _prefix = get_option(app_name, 'wine_prefix', fallback=_prefix)
+    _prefix = get_envvar(app_name, "WINEPREFIX", fallback=fallback)
+    _prefix = get_option(app_name, "wine_prefix", fallback=_prefix)
     return _prefix
 
 
@@ -132,7 +132,7 @@ def get_wine_prefixes() -> Set[Tuple[str, str]]:
     for name, section in _config.items():
         pfx = section.get("WINEPREFIX") or section.get("wine_prefix")
         if pfx:
-            _prefixes.update([(pfx, name[:-len(".env")] if name.endswith(".env") else name)])
+            _prefixes.update([(pfx, name[: -len(".env")] if name.endswith(".env") else name)])
     _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
     return {(p, n) for p, n in _prefixes if os.path.isdir(p)}
 
@@ -142,7 +142,7 @@ def get_proton_prefixes() -> Set[Tuple[str, str]]:
     for name, section in _config.items():
         pfx = os.path.join(compat_path, "pfx") if (compat_path := section.get("STEAM_COMPAT_DATA_PATH")) else ""
         if pfx:
-            _prefixes.update([(pfx, name[:-len(".env")] if name.endswith(".env") else name)])
+            _prefixes.update([(pfx, name[: -len(".env")] if name.endswith(".env") else name)])
     _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
     return {(p, n) for p, n in _prefixes if os.path.isdir(p)}
 
@@ -175,5 +175,6 @@ def get_prefix(app_name: str = "default") -> Optional[str]:
         return _wine_prefix
 
     return None
+
 
 __all__ = []

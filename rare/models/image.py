@@ -13,8 +13,13 @@ class ImageType(Enum):
 
 class ImageSize:
     class Preset:
-        def __init__(self, divisor: float, pixel_ratio: float, orientation: ImageType = ImageType.Tall,
-                     base: 'ImageSize.Preset' = None):
+        def __init__(
+            self,
+            divisor: float,
+            pixel_ratio: float,
+            orientation: ImageType = ImageType.Tall,
+            base: "ImageSize.Preset" = None,
+        ):
             self.__divisor = divisor
             self.__pixel_ratio = pixel_ratio
             if orientation == ImageType.Tall:
@@ -32,7 +37,7 @@ class ImageSize:
             self.__smooth_transform = divisor <= 2
             self.__base = base if base is not None else self
 
-        def __eq__(self, other: 'ImageSize.Preset'):
+        def __eq__(self, other: "ImageSize.Preset"):
             return (
                 self.__size == other.size
                 and self.__divisor == other.divisor
@@ -70,7 +75,7 @@ class ImageSize:
                 return 0, 0
 
         @property
-        def base(self) -> 'ImageSize.Preset':
+        def base(self) -> "ImageSize.Preset":
             return self.__base
 
     Tall = Preset(1, 1)

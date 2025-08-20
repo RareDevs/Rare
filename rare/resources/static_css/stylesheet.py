@@ -23,12 +23,12 @@ style = qstylizer.style.StyleSheet()
 
 # Common height for some broken elements
 for elem in (
-        style.QPushButton,
-        style.QProgressBar,
-        style.QSpinBox,
-        style.QToolButton,
-        style.QLineEdit,
-        style.QComboBox,
+    style.QPushButton,
+    style.QProgressBar,
+    style.QSpinBox,
+    style.QToolButton,
+    style.QLineEdit,
+    style.QComboBox,
 ):
     elem.setValues(minHeight="2.75ex")
 
@@ -49,29 +49,17 @@ style.QLabel["#InfoLabel"].setValues(
 )
 
 # [Un]InstallButton
-style.QPushButton["#InstallButton"].setValues(
-    borderColor=QColor(0, 180, 0).name(),
-    backgroundColor=QColor(0, 120, 0).name()
-)
-style.QPushButton["#InstallButton"].hover.setValues(
-    borderColor=QColor(0, 135, 0).name(),
-    backgroundColor=QColor(0, 90, 0).name()
-)
+style.QPushButton["#InstallButton"].setValues(borderColor=QColor(0, 180, 0).name(), backgroundColor=QColor(0, 120, 0).name())
+style.QPushButton["#InstallButton"].hover.setValues(borderColor=QColor(0, 135, 0).name(), backgroundColor=QColor(0, 90, 0).name())
 style.QPushButton["#InstallButton"].disabled.setValues(
-    borderColor=QColor(0, 60, 0).name(),
-    backgroundColor=QColor(0, 40, 0).name()
+    borderColor=QColor(0, 60, 0).name(), backgroundColor=QColor(0, 40, 0).name()
 )
-style.QPushButton["#UninstallButton"].setValues(
-    borderColor=QColor(180, 0, 0).name(),
-    backgroundColor=QColor(120, 0, 0).name()
-)
+style.QPushButton["#UninstallButton"].setValues(borderColor=QColor(180, 0, 0).name(), backgroundColor=QColor(120, 0, 0).name())
 style.QPushButton["#UninstallButton"].hover.setValues(
-    borderColor=QColor(135, 0, 0).name(),
-    backgroundColor=QColor(90, 0, 0).name()
+    borderColor=QColor(135, 0, 0).name(), backgroundColor=QColor(90, 0, 0).name()
 )
 style.QPushButton["#UninstallButton"].disabled.setValues(
-    borderColor=QColor(60, 0, 0).name(),
-    backgroundColor=QColor(40, 0, 0).name()
+    borderColor=QColor(60, 0, 0).name(), backgroundColor=QColor(40, 0, 0).name()
 )
 
 
@@ -84,17 +72,18 @@ style.QLabel["#QueueWorkerLabel"].setValues(
 verify_color = QColor("#d6af57")
 style.QLabel["#QueueWorkerLabel"]['[workerType="Verify"]'].setValues(
     borderColor=verify_color.darker(200).name(),
-    backgroundColor=verify_color.darker(400).name()
+    backgroundColor=verify_color.darker(400).name(),
 )
 move_color = QColor("#41cad9")
 style.QLabel["#QueueWorkerLabel"]['[workerType="Move"]'].setValues(
     borderColor=move_color.darker(200).name(),
-    backgroundColor=move_color.darker(400).name()
+    backgroundColor=move_color.darker(400).name(),
 )
 
 
 # ProgressLabel
 from rare.components.tabs.library.widgets.library_widget import ProgressLabel  # noqa: E402
+
 style.QLabel[css_name(ProgressLabel)].setValues(
     borderWidth="1px",
     borderRadius="5%",
@@ -105,6 +94,7 @@ style.QLabel[css_name(ProgressLabel)].setValues(
 
 # IconGameWidget
 from rare.components.tabs.library.widgets.icon_widget import IconWidget  # noqa: E402
+
 icon_background_props = {
     "backgroundColor": "rgba(0, 0, 0, 65%)",
 }
@@ -139,14 +129,13 @@ icon_square_button_props = {
     "borderRadius": "10%",
 }
 icon_square_button_props.update(icon_background_props)
-style.QPushButton[css_name(IconWidget, "Button")].setValues(
-    **icon_square_button_props
-)
+style.QPushButton[css_name(IconWidget, "Button")].setValues(**icon_square_button_props)
 style.QPushButton[css_name(IconWidget, "Button")].hover.borderColor.setValue("gray")
 
 
 # ListGameWidget
 from rare.components.tabs.library.widgets.list_widget import ListWidget  # noqa: E402
+
 style.QLabel[css_name(ListWidget, "TitleLabel")].fontWeight.setValue("bold")
 list_status_label_props = {
     "color": "white",
@@ -169,6 +158,7 @@ style.QLabel[css_name(ListWidget, "InfoLabel")].color.setValue("#999")
 
 # MainTabBar
 from rare.components.tabs.tab_widgets import MainTabBar  # noqa: E402
+
 style.QTabBar[css_name(MainTabBar, "")].tab.disabled.setValues(
     border="0px",
     backgroundColor="transparent",
@@ -177,6 +167,7 @@ style.QTabBar[css_name(MainTabBar, "")].tab.disabled.setValues(
 
 # SelectViewWidget
 from rare.components.tabs.library.head_bar import SelectViewWidget  # noqa: E402
+
 style.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
     border="none",
     backgroundColor="transparent",
@@ -185,6 +176,7 @@ style.QPushButton[css_name(SelectViewWidget, "Button")].setValues(
 
 # ButtonLineEdit
 from rare.widgets.button_edit import ButtonLineEdit  # noqa: E402
+
 style.QPushButton[css_name(ButtonLineEdit, "Button")].setValues(
     backgroundColor="transparent",
     border="0px",
@@ -194,6 +186,7 @@ style.QPushButton[css_name(ButtonLineEdit, "Button")].setValues(
 
 # GameTagCheckBox
 from rare.components.tabs.library.details.details import GameTagCheckBox  # noqa: E402
+
 style.QCheckBox[css_name(GameTagCheckBox, "")].setValues(
     margin="1px",
     borderWidth="1px",
@@ -212,13 +205,18 @@ if __name__ == "__main__":
     qt_tool_wrapper(
         "rcc",
         [
-            "-g", "python",
-            "--compress", str(compressLevel),
-            "--compress-algo", compressAlgo,
-            "--threshold", str(compressThreshold),
+            "-g",
+            "python",
+            "--compress",
+            str(compressLevel),
+            "--compress-algo",
+            compressAlgo,
+            "--threshold",
+            str(compressThreshold),
             "--verbose" if verbose else "",
             os.path.join(os.path.dirname(__file__), "stylesheet.qrc"),
-            "-o", os.path.join(os.path.dirname(__file__), "__init__.py"),
+            "-o",
+            os.path.join(os.path.dirname(__file__), "__init__.py"),
         ],
-        True
+        True,
     )

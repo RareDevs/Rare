@@ -30,13 +30,15 @@ class EnvVarsTableModel(QAbstractTableModel):
 
         self.__readonly = set()
         if platform.system() != "Windows":
-            self.__readonly.update({
-                "DXVK_HUD",
-                "DXVK_CONFIG",
-                "DXVK_NVAPI_DRS_SETTINGS",
-                "MANGOHUD",
-                "MANGOHUD_CONFIG",
-            })
+            self.__readonly.update(
+                {
+                    "DXVK_HUD",
+                    "DXVK_CONFIG",
+                    "DXVK_NVAPI_DRS_SETTINGS",
+                    "MANGOHUD",
+                    "MANGOHUD_CONFIG",
+                }
+            )
             self.__readonly.update(get_wine_environment().keys())
         if platform.system() in {"Linux", "FreeBSD"}:
             self.__readonly.update(get_steam_environment().keys())
@@ -57,7 +59,7 @@ class EnvVarsTableModel(QAbstractTableModel):
             self.core.lgd.config[f"{self.__appname}.env"] = {}
         self.__data_map = ChainMap(
             self.core.lgd.config[f"{self.__appname}.env"],
-            self.core.lgd.config[f"{self.__default}.env"] if self.__appname != self.__default else {}
+            self.core.lgd.config[f"{self.__default}.env"] if self.__appname != self.__default else {},
         )
         self.endResetModel()
 
@@ -134,7 +136,12 @@ class EnvVarsTableModel(QAbstractTableModel):
             if self.__key(index) in self.__readonly:
                 return self.tr("Readonly, please edit this via setting the appropriate setting.")
 
-    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+    def headerData(
+        self,
+        section: int,
+        orientation: Qt.Orientation,
+        role: int = Qt.ItemDataRole.DisplayRole,
+    ) -> Any:
         if role == Qt.ItemDataRole.DisplayRole:
             if orientation == Qt.Orientation.Horizontal:
                 return self.__title(section)
@@ -216,9 +223,17 @@ class EnvVarsTableModel(QAbstractTableModel):
                     self.beginInsertRows(QModelIndex(), self.__data_length(), self.__data_length())
                     self.endInsertRows()
                 self.dataChanged.emit(index, self.index(index.row(), 1), [])
-                self.dataChanged.emit(self.index(self.__data_length() - 1, 0), self.index(self.__data_length() - 1, 1), [])
+                self.dataChanged.emit(
+                    self.index(self.__data_length() - 1, 0),
+                    self.index(self.__data_length() - 1, 1),
+                    [],
+                )
                 self.headerDataChanged.emit(Qt.Orientation.Vertical, index.row(), index.row())
-                self.headerDataChanged.emit(Qt.Orientation.Vertical, self.__data_length() - 1, self.__data_length() - 1)
+                self.headerDataChanged.emit(
+                    Qt.Orientation.Vertical,
+                    self.__data_length() - 1,
+                    self.__data_length() - 1,
+                )
 
         else:
             # lk: the check for key existance before assigning a value is ommitted
@@ -259,7 +274,13 @@ class EnvVarsTableModel(QAbstractTableModel):
 
 
 if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout, QTableView, QHeaderView
+    from PySide6.QtWidgets import (
+        QApplication,
+        QDialog,
+        QVBoxLayout,
+        QTableView,
+        QHeaderView,
+    )
 
     from rare.utils.misc import set_style_sheet
     from legendary.core import LegendaryCore

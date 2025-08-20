@@ -17,6 +17,7 @@ def __screen_height() -> int:
 def __screen_width() -> int:
     return QApplication.instance().primaryScreen().geometry().width()
 
+
 # Keeps a dictionary of workarounds.
 # Can use the following placeholders: res_width, res_height
 __workarounds: Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Set]]]]] = {

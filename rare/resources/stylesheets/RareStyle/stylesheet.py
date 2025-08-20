@@ -25,7 +25,7 @@ with open(os.path.join(os.path.dirname(__file__), "template.qss"), "r", encoding
     style = qstylizer.parser.parse(template.read())
 
 background_color_base = QColor(32, 34, 37)
-background_color_control = QColor( 51, 54, 59)
+background_color_control = QColor(51, 54, 59)
 background_color_editable = QColor(38, 38, 51)
 background_color_selection = QColor(39, 66, 66)
 
@@ -69,13 +69,18 @@ if __name__ == "__main__":
     qt_tool_wrapper(
         "rcc",
         [
-            "-g", "python",
-            "--compress", str(compressLevel),
-            "--compress-algo", compressAlgo,
-            "--threshold", str(compressThreshold),
+            "-g",
+            "python",
+            "--compress",
+            str(compressLevel),
+            "--compress-algo",
+            compressAlgo,
+            "--threshold",
+            str(compressThreshold),
             "--verbose" if verbose else "",
             os.path.join(os.path.dirname(__file__), "stylesheet.qrc"),
-            "-o", os.path.join(os.path.dirname(__file__), "__init__.py"),
+            "-o",
+            os.path.join(os.path.dirname(__file__), "__init__.py"),
         ],
-        True
+        True,
     )

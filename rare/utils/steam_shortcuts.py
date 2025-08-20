@@ -8,7 +8,13 @@ from dataclasses import asdict
 
 import vdf
 
-from rare.utils.paths import image_icon_path, image_wide_path, image_tall_path, desktop_icon_path, get_rare_executable
+from rare.utils.paths import (
+    image_icon_path,
+    image_wide_path,
+    image_tall_path,
+    desktop_icon_path,
+    get_rare_executable,
+)
 from rare.models.steam import SteamUser, SteamShortcut
 
 if platform.system() == "Windows":
@@ -98,11 +104,13 @@ def load_steam_shortcuts():
     else:
         steam_user = next(
             filter(lambda x: x.most_recent, steam_users),
-            sorted(steam_users, key=lambda x: x.last_login, reverse=True)[0]
+            sorted(steam_users, key=lambda x: x.last_login, reverse=True)[0],
         )
         logger.info(
             "Found most recently logged-in user %s(%s) (%s)",
-            steam_user.account_name, steam_user.persona_name, steam_user.last_login
+            steam_user.account_name,
+            steam_user.persona_name,
+            steam_user.last_login,
         )
     __steam_user = steam_user
 
@@ -114,7 +122,7 @@ def save_steam_shortcuts():
         "%s Steam shortcuts for user %s(%s)",
         "Saving" if __steam_shortcuts else "Removing",
         __steam_user.account_name,
-        __steam_user.persona_name
+        __steam_user.persona_name,
     )
     _save_shortcuts(__steam_dir, __steam_user, __steam_shortcuts)
 
@@ -158,7 +166,7 @@ def add_steam_shortcut(app_name: str, app_title: str) -> SteamShortcut:
     )
 
     key = int(max(__steam_shortcuts.keys(), default="0"))
-    __steam_shortcuts[str(key+1)] = shortcut
+    __steam_shortcuts[str(key + 1)] = shortcut
     return shortcut
 
 
@@ -184,8 +192,6 @@ def remove_steam_coverart(shortcut: SteamShortcut):
 
 
 if __name__ == "__main__":
-
-
     load_steam_shortcuts()
 
     print(__steam_dir)

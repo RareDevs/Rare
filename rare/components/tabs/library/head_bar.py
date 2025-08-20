@@ -1,6 +1,6 @@
 import logging
 
-from PySide6.QtCore import QSettings, Signal, Slot, QSize, Qt
+from PySide6.QtCore import Signal, Slot, QSize, Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QCompleter,
 )
 
-from rare.models.options import options, LibraryFilter, LibraryOrder
+from rare.models.settings import settings, RareAppSettings, LibraryFilter, LibraryOrder
 from rare.shared import RareCore
 from rare.utils.misc import qta_icon
 from rare.widgets.button_edit import ButtonLineEdit
@@ -33,7 +33,7 @@ class LibraryHeadBar(QWidget):
         self.logger = logging.getLogger(type(self).__name__)
         self.rcore = RareCore.instance()
         self.signals = RareCore.instance().signals()
-        self.settings = QSettings(self)
+        self.settings = RareAppSettings.instance()
 
         self.filter = QComboBox(self)
         filters = {
@@ -52,24 +52,24 @@ class LibraryHeadBar(QWidget):
             self.filter.addItem(self.tr("macOS games"), LibraryFilter.MAC)
         if self.rcore.origin_games:
             self.filter.addItem(self.tr("Exclude Origin"), LibraryFilter.INSTALLABLE)
-        self.filter.addItem(self.tr("Include Unreal"),     LibraryFilter.INCLUDE_UE)
+        self.filter.addItem(self.tr("Include Unreal"), LibraryFilter.INCLUDE_UE)
 
         try:
-            _filter = LibraryFilter(self.settings.value(*options.library_filter))
+            _filter = LibraryFilter(self.settings.get_value(settings.library_filter))
             if (index := self.filter.findData(_filter, Qt.ItemDataRole.UserRole)) < 0:
                 raise ValueError(f"Filter '{_filter}' is not available")
             else:
                 self.filter.setCurrentIndex(index)
         except (TypeError, ValueError) as e:
             self.logger.error("Error while loading library: %s", e)
-            self.settings.setValue(options.library_filter.key, options.library_filter.default)
-            _filter = LibraryFilter(options.library_filter.default)
+            self.settings.set_value(settings.library_filter, settings.library_filter.default)
+            _filter = LibraryFilter(settings.library_filter.default)
             self.filter.setCurrentIndex(self.filter.findData(_filter, Qt.ItemDataRole.UserRole))
         self.filter.currentIndexChanged.connect(self.__filter_changed)
 
         self.order = QComboBox(parent=self)
         sortings = {
-            LibraryOrder.TITLE:  self.tr("Title"),
+            LibraryOrder.TITLE: self.tr("Title"),
             LibraryOrder.RECENT: self.tr("Recently played"),
             LibraryOrder.NEWEST: self.tr("Newest"),
             LibraryOrder.OLDEST: self.tr("Oldest"),
@@ -78,29 +78,37 @@ class LibraryHeadBar(QWidget):
             self.order.addItem(text, data)
 
         try:
-            _order = LibraryOrder(self.settings.value(*options.library_order))
+            _order = LibraryOrder(self.settings.get_value(settings.library_order))
             if (index := self.order.findData(_order, Qt.ItemDataRole.UserRole)) < 0:
                 raise ValueError(f"Order '{_order}' is not available")
             else:
                 self.order.setCurrentIndex(index)
         except (TypeError, ValueError) as e:
             self.logger.error("Error while loading library: %s", e)
-            self.settings.setValue(options.library_order.key, options.library_order.default)
-            _order = LibraryOrder(options.library_order.default)
+            self.settings.set_value(settings.library_order, settings.library_order.default)
+            _order = LibraryOrder(settings.library_order.default)
             self.order.setCurrentIndex(self.order.findData(_order, Qt.ItemDataRole.UserRole))
         self.order.currentIndexChanged.connect(self.__order_changed)
 
         integrations_menu = QMenu(parent=self)
         import_action = QAction(
-            qta_icon("mdi.import", "fa5s.arrow-down"), self.tr("Import Game"), integrations_menu
+            qta_icon("mdi.import", "fa5s.arrow-down"),
+            self.tr("Import Game"),
+            integrations_menu,
         )
 
         import_action.triggered.connect(self.goto_import)
-        egl_sync_action = QAction(qta_icon("mdi.sync",  "fa5s.sync"), self.tr("Sync with EGL"), integrations_menu)
+        egl_sync_action = QAction(
+            qta_icon("mdi.sync", "fa5s.sync"),
+            self.tr("Sync with EGL"),
+            integrations_menu,
+        )
         egl_sync_action.triggered.connect(self.goto_egl_sync)
 
         eos_ubisoft_action = QAction(
-            qta_icon("mdi.rocket", "fa.rocket"), self.tr("Epic Overlay and Ubisoft"), integrations_menu
+            qta_icon("mdi.rocket", "fa.rocket"),
+            self.tr("Epic Overlay and Ubisoft"),
+            integrations_menu,
         )
         eos_ubisoft_action.triggered.connect(self.goto_eos_ubisoft)
 
@@ -178,7 +186,7 @@ class LibraryHeadBar(QWidget):
     def __filter_changed(self, index: int):
         data = self.filter.itemData(index, Qt.ItemDataRole.UserRole)
         self.filterChanged.emit(data)
-        self.settings.setValue(options.library_filter.key, int(data))
+        self.settings.set_value(settings.library_filter, data)
 
     def current_order(self) -> LibraryOrder:
         return self.order.currentData(Qt.ItemDataRole.UserRole)
@@ -187,7 +195,7 @@ class LibraryHeadBar(QWidget):
     def __order_changed(self, index: int):
         data = self.order.itemData(index, Qt.ItemDataRole.UserRole)
         self.orderChanged.emit(data)
-        self.settings.setValue(options.library_order.key, int(data))
+        self.settings.set_value(settings.library_order, data)
 
 
 class SelectViewWidget(QWidget):
@@ -226,5 +234,3 @@ class SelectViewWidget(QWidget):
         self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="#eee"))
         self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
         self.toggled.emit(False)
-
-

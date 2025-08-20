@@ -8,8 +8,17 @@ from PySide6.QtGui import QMouseEvent, QShowEvent, QPaintEvent, QAction
 from PySide6.QtWidgets import QMessageBox
 
 from rare.models.game import RareGame
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton, ImageManagerSingleton
-from rare.utils.paths import desktop_links_supported, desktop_link_path, create_desktop_link
+from rare.shared import (
+    LegendaryCoreSingleton,
+    GlobalSignalsSingleton,
+    ArgumentsSingleton,
+    ImageManagerSingleton,
+)
+from rare.utils.paths import (
+    desktop_links_supported,
+    desktop_link_path,
+    create_desktop_link,
+)
 from rare.utils.steam_shortcuts import (
     steam_shortcuts_supported,
     steam_shortcut_exists,
@@ -206,7 +215,11 @@ class GameWidget(LibraryWidget):
             # ERROR: Supplied arg1 <class 'PySide6.QtCore.QRunnable'> with target \
             # <class 'rare.components.tabs.library.widgets.icon_game_widget.IconGameWidget'> \
             # is not a QEvent object
-            logger.error("Supplied arg1 %s with target %s is not a QEvent object", type(a1), type(a0))
+            logger.error(
+                "Supplied arg1 %s with target %s is not a QEvent object",
+                type(a1),
+                type(a0),
+            )
             return True
         if a0 is self.ui.launch_btn:
             if a1.type() == QEvent.Type.Enter:

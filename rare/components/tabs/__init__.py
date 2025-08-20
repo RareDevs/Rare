@@ -2,7 +2,12 @@ from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShortcut
 from PySide6.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QMessageBox
 
-from rare.shared import RareCore, LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
+from rare.shared import (
+    RareCore,
+    LegendaryCoreSingleton,
+    GlobalSignalsSingleton,
+    ArgumentsSingleton,
+)
 from rare.utils.misc import qta_icon, ExitCodes
 from .account import AccountWidget
 from .downloads import DownloadsTab
@@ -52,9 +57,7 @@ class MainTabWidget(QTabWidget):
         # Settings Tab
         self.settings_tab = SettingsTab(self)
         self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), "")
-        self.settings_tab.about.update_available_ready.connect(
-            lambda: self.tab_bar.setTabText(self.settings_index, "(!)")
-        )
+        self.settings_tab.about.update_available_ready.connect(lambda: self.tab_bar.setTabText(self.settings_index, "(!)"))
 
         # Account Button
         self.account_widget = AccountWidget(self)
@@ -81,7 +84,10 @@ class MainTabWidget(QTabWidget):
 
     @Slot(int)
     def __on_downloads_update_title(self, num_downloads: int):
-        self.setTabText(self.indexOf(self.downloads_tab), self.tr("Downloads ({})").format(num_downloads))
+        self.setTabText(
+            self.indexOf(self.downloads_tab),
+            self.tr("Downloads ({})").format(num_downloads),
+        )
 
     def mouse_clicked(self, index):
         if index == self.games_index:

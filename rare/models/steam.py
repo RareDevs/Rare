@@ -53,7 +53,6 @@ class SteamUser:
 
 @dataclass
 class SteamShortcut:
-
     appid: int
     AppName: str
     Exe: str
@@ -150,6 +149,8 @@ class SteamShortcut:
     @property
     def __dict__(self):
         ret = dict(
-            shortcut_appid=self.shortcut_appid(), grid_appid=self.coverart_appid(), last_played=self.last_played
+            shortcut_appid=self.shortcut_appid(),
+            grid_appid=self.coverart_appid(),
+            last_played=self.last_played,
         )
         return ret

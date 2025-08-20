@@ -24,7 +24,6 @@ class LocalWrapperSettings(WrapperSettings):
 
 
 class LocalLaunchSettings(LaunchSettingsBase):
-
     def __init__(self, parent=None):
         super(LocalLaunchSettings, self).__init__(LocalWrapperSettings, parent=parent)
 
@@ -44,7 +43,11 @@ class LocalLaunchSettings(LaunchSettingsBase):
         self.offline_combo.currentIndexChanged.connect(self.__offline_changed)
 
         self.override_exe_name_filters: Tuple[str, ...] = (
-            "*.exe", "*.app", "*.bat", "*.ps1", "*.sh"
+            "*.exe",
+            "*.app",
+            "*.bat",
+            "*.ps1",
+            "*.sh",
         )
 
         self.override_exe_edit = PathEdit(
@@ -53,7 +56,7 @@ class LocalLaunchSettings(LaunchSettingsBase):
             placeholder=self.tr("Relative path to the replacement executable"),
             edit_func=self.__override_exe_edit_callback,
             save_func=self.__override_exe_save_callback,
-            parent=self
+            parent=self,
         )
 
         self.launch_params_edit = QLineEdit(self)
@@ -138,11 +141,7 @@ class LocalEnvVars(EnvVars):
 
 class LocalGameSettings(GameSettingsBase):
     def __init__(self, parent=None):
-        super(LocalGameSettings, self).__init__(
-            launch_widget=LocalLaunchSettings,
-            envvar_widget=LocalEnvVars,
-            parent=parent
-        )
+        super(LocalGameSettings, self).__init__(launch_widget=LocalLaunchSettings, envvar_widget=LocalEnvVars, parent=parent)
 
     def load_settings(self, rgame: RareGame):
         self.set_title.emit(rgame.app_title)

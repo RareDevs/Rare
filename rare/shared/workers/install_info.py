@@ -32,17 +32,13 @@ class InstallInfoWorker(Worker):
             if not self.options.overlay:
                 cli = LegendaryCLI(self.core)
                 status = LgndrIndirectStatus()
-                result = cli.install_game(
-                    LgndrInstallGameArgs(**self.options.as_install_kwargs(), indirect_status=status)
-                )
+                result = cli.install_game(LgndrInstallGameArgs(**self.options.as_install_kwargs(), indirect_status=status))
                 if result:
                     download = InstallDownloadModel(*result)
                 else:
                     raise LgndrException(status.message)
             else:
-                dlm, analysis, igame = self.core.prepare_overlay_install(
-                    path=self.options.base_path
-                )
+                dlm, analysis, igame = self.core.prepare_overlay_install(path=self.options.base_path)
 
                 download = InstallDownloadModel(
                     dlm=dlm,

@@ -5,7 +5,14 @@ from typing import Tuple, Type, TypeVar
 
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QCheckBox, QFileDialog, QFormLayout, QVBoxLayout, QGroupBox, QLineEdit
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QFileDialog,
+    QFormLayout,
+    QVBoxLayout,
+    QGroupBox,
+    QLineEdit,
+)
 
 import rare.utils.config_helper as config
 from rare.shared import LegendaryCoreSingleton
@@ -14,12 +21,7 @@ from .wrappers import WrapperSettings
 
 
 class LaunchSettingsBase(QGroupBox):
-
-    def __init__(
-        self,
-        wrapper_widget: Type[WrapperSettings],
-        parent=None
-    ):
+    def __init__(self, wrapper_widget: Type[WrapperSettings], parent=None):
         super(LaunchSettingsBase, self).__init__(parent=parent)
         self.setTitle(self.tr("Launch"))
 
@@ -44,7 +46,7 @@ class LaunchSettingsBase(QGroupBox):
 
         self.prelaunch_check = QCheckBox(self.tr("Wait for the pre-launch command to finish before launching the game"))
         self.prelaunch_check.setFont(font)
-        self.prelaunch_check.stateChanged.connect(self.__prelauch_check_changed)
+        self.prelaunch_check.checkStateChanged.connect(self.__prelauch_check_changed)
 
         prelaunch_layout = QVBoxLayout()
         prelaunch_layout.addWidget(self.prelaunch_cmd)
@@ -93,8 +95,9 @@ class LaunchSettingsBase(QGroupBox):
         self.prelaunch_check.setEnabled(bool(text))
         self.__prelaunch_changed()
 
-    def __prelauch_check_changed(self):
-        config.set_boolean(self.app_name, "pre_launch_wait", self.prelaunch_check.isChecked())
+    @Slot(Qt.CheckState)
+    def __prelauch_check_changed(self, state: Qt.CheckState):
+        config.set_boolean(self.app_name, "pre_launch_wait", state != Qt.CheckState.Unchecked)
 
     @Slot()
     def __prelaunch_changed(self):
